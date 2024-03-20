@@ -307,10 +307,14 @@ class ObjectSetViewModel(
                         proceedWithSettingUnsplashImage(action)
                     }
                     is Action.OpenObject -> proceedWithOpeningObject(action.id)
-                    is Action.OpenCollection -> proceedWithOpeningObjectCollection(action.id)
+                    is Action.OpenCollection -> proceedWithOpeningObjectCollection(
+                        target = action.target,
+                        space = action.space
+                    )
                     is Action.Duplicate -> proceedWithNavigation(
-                        target = action.id,
-                        layout = ObjectType.Layout.SET
+                        target = action.target,
+                        layout = ObjectType.Layout.SET,
+                        space = action.space
                     )
                     else -> {}
                 }
@@ -934,6 +938,7 @@ class ObjectSetViewModel(
             proceedWithNavigation(
                 target = target,
                 layout = obj.layout,
+                space = requireNotNull(obj.spaceId),
                 identityProfileLink = obj.getSingleValue(Relations.IDENTITY_PROFILE_LINK)
             )
         }
@@ -951,6 +956,7 @@ class ObjectSetViewModel(
                 proceedWithNavigation(
                     target = target,
                     layout = obj.layout,
+                    space = requireNotNull(obj.spaceId),
                     identityProfileLink = obj.getSingleValue(Relations.IDENTITY_PROFILE_LINK)
                 )
             } else {
@@ -1353,7 +1359,10 @@ class ObjectSetViewModel(
 
     //region NAVIGATION
 
-    private suspend fun proceedWithOpeningObject(target: Id, layout: ObjectType.Layout? = null) {
+    private suspend fun proceedWithOpeningObject(
+        target: Id,
+        layout: ObjectType.Layout? = null
+    ) {
         Timber.d("proceedWithOpeningObject, target:[$target], layout:[$layout]")
         if (target == context) {
             toast("You are already here")
@@ -1361,11 +1370,7 @@ class ObjectSetViewModel(
             return
         }
         isCustomizeViewPanelVisible.value = false
-        val navigateCommand = when (layout) {
-            ObjectType.Layout.SET,
-            ObjectType.Layout.COLLECTION -> AppNavigation.Command.OpenSetOrCollection(target = target)
-            else -> AppNavigation.Command.OpenObject(id = target)
-        }
+        val navigateCommand = AppNavigation.Command.OpenObject(id = target)
         closeBlock.async(context).fold(
             onSuccess = { navigate(EventWrapper(navigateCommand)) },
             onFailure = {
@@ -1393,7 +1398,10 @@ class ObjectSetViewModel(
         }
     }
 
-    private suspend fun proceedWithOpeningObjectCollection(target: Id) {
+    private suspend fun proceedWithOpeningObjectCollection(
+        target: Id,
+        space: Id
+    ) {
         if (target == context) {
             toast("You are already here")
             Timber.d("proceedWithOpeningObject, target == context")
@@ -1403,11 +1411,25 @@ class ObjectSetViewModel(
         jobs += viewModelScope.launch {
             closeBlock.async(context).fold(
                 onSuccess = {
-                    navigate(EventWrapper(AppNavigation.Command.OpenSetOrCollection(target = target)))
+                    navigate(
+                        EventWrapper(
+                            AppNavigation.Command.OpenSetOrCollection(
+                                target = target,
+                                space = space
+                            )
+                        )
+                    )
                 },
                 onFailure = {
                     Timber.e(it, "Error while closing object set: $context")
-                    navigate(EventWrapper(AppNavigation.Command.OpenSetOrCollection(target = target)))
+                    navigate(
+                        EventWrapper(
+                            AppNavigation.Command.OpenSetOrCollection(
+                                target = target,
+                                space = space
+                            )
+                        )
+                    )
                 }
             )
         }
@@ -1415,6 +1437,7 @@ class ObjectSetViewModel(
 
     private suspend fun proceedWithNavigation(
         target: Id,
+        space: Id,
         layout: ObjectType.Layout?,
         identityProfileLink: Id? = null
     ) {
@@ -1438,11 +1461,25 @@ class ObjectSetViewModel(
             ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
                 closeBlock.async(context).fold(
                     onSuccess = {
-                        navigate(EventWrapper(AppNavigation.Command.OpenSetOrCollection(target)))
+                        navigate(
+                            EventWrapper(
+                                AppNavigation.Command.OpenSetOrCollection(
+                                    target = target,
+                                    space = space
+                                )
+                            )
+                        )
                     },
                     onFailure = {
                         Timber.e(it, "Error while closing object set: $context")
-                        navigate(EventWrapper(AppNavigation.Command.OpenSetOrCollection(target)))
+                        navigate(
+                            EventWrapper(
+                                AppNavigation.Command.OpenSetOrCollection(
+                                    target = target,
+                                    space = space
+                                )
+                            )
+                        )
                     }
                 )
             }

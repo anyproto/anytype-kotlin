@@ -78,9 +78,9 @@ abstract class ObjectMenuViewModelBase(
     )
     val options: Flow<ObjectMenuOptionsProvider.Options> = _options
 
-    abstract fun onIconClicked(ctx: Id)
-    abstract fun onCoverClicked(ctx: Id)
-    abstract fun onLayoutClicked(ctx: Id)
+    abstract fun onIconClicked(ctx: Id, space: Id)
+    abstract fun onCoverClicked(ctx: Id, space: Id)
+    abstract fun onLayoutClicked(ctx: Id, space: Id)
     abstract fun onRelationsClicked()
 
     fun onHistoryClicked() {
@@ -111,7 +111,7 @@ abstract class ObjectMenuViewModelBase(
         }
     }
 
-    abstract fun onActionClicked(ctx: Id, action: ObjectAction)
+    abstract fun onActionClicked(ctx: Id, space: Id, action: ObjectAction)
 
     abstract fun buildActions(
         ctx: Id,
@@ -188,6 +188,7 @@ abstract class ObjectMenuViewModelBase(
 
     fun onBackLinkOrAddToObjectAction(
         ctx: Id,
+        space: Id,
         backLinkId: Id,
         backLinkName: String,
         backLinkLayout: ObjectType.Layout?,
@@ -206,12 +207,16 @@ abstract class ObjectMenuViewModelBase(
             ObjectType.Layout.TODO,
             ObjectType.Layout.NOTE -> {
                 onLinkedMyselfTo(
-                    myself = ctx, addTo = backLinkId, fromName = fromName
+                    myself = ctx,
+                    addTo = backLinkId,
+                    fromName = fromName,
+                    space = space
                 )
             }
             ObjectType.Layout.COLLECTION -> {
                 proceedWithAddObjectToCollection(
                     ctx = ctx,
+                    space = space,
                     collection = backLinkId,
                     collectionName = backLinkName,
                     collectionIcon = backLinkIcon,
@@ -224,6 +229,7 @@ abstract class ObjectMenuViewModelBase(
 
     private fun proceedWithAddObjectToCollection(
         ctx: Id,
+        space: Id,
         collection: Id,
         collectionName: String,
         collectionIcon: ObjectIcon,
@@ -249,7 +255,8 @@ abstract class ObjectMenuViewModelBase(
                             currentObjectName = fromName,
                             targetObjectName = collectionName,
                             icon = collectionIcon,
-                            isCollection = true
+                            isCollection = true,
+                            space = space
                         )
                     )
                 },
@@ -258,7 +265,12 @@ abstract class ObjectMenuViewModelBase(
         }
     }
 
-    fun onLinkedMyselfTo(myself: Id, addTo: Id, fromName: String?) {
+    fun onLinkedMyselfTo(
+        myself: Id,
+        addTo: Id,
+        fromName: String?,
+        space: Id
+    ) {
         Timber.d("onLinkedMyselfTo, myself:[$myself], addTo:[$addTo], fromName:[$fromName]")
         jobs += viewModelScope.launch {
             val startTime = System.currentTimeMillis()
@@ -267,8 +279,7 @@ abstract class ObjectMenuViewModelBase(
                     objectToLink = myself,
                     objectToPlaceLink = addTo,
                     saveAsLastOpened = true,
-                    // TODO resolve space from screen args or from object details
-                    spaceId = SpaceId(spaceManager.get())
+                    spaceId = SpaceId(space)
                 )
             ).fold(
                 onSuccess = { obj ->
@@ -281,7 +292,8 @@ abstract class ObjectMenuViewModelBase(
                             id = addTo,
                             currentObjectName = fromName,
                             targetObjectName = obj.getProperName(),
-                            icon = ObjectIcon.from(obj, obj.layout, urlBuilder)
+                            icon = ObjectIcon.from(obj, obj.layout, urlBuilder),
+                            space = requireNotNull(obj.spaceId)
                         )
                     )
                 },
@@ -303,14 +315,19 @@ abstract class ObjectMenuViewModelBase(
         }
     }
 
-    fun proceedWithOpeningCollection(id: Id) {
-        Timber.d("proceedWithOpeningCollection, id:[$id]")
+    fun proceedWithOpeningCollection(target: Id, space: Id) {
+        Timber.d("proceedWithOpeningCollection, id:[$target]")
         viewModelScope.launch {
-            delegator.delegate(Action.OpenCollection(id))
+            delegator.delegate(
+                Action.OpenCollection(
+                    target = target,
+                    space = space
+                )
+            )
         }
     }
 
-    fun proceedWithDuplication(ctx: Id, details: Map<Id, Block.Fields>?) {
+    fun proceedWithDuplication(ctx: Id, space: Id, details: Map<Id, Block.Fields>?) {
         Timber.d("proceedWithDuplication, ctx:[$ctx]")
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
@@ -319,9 +336,14 @@ abstract class ObjectMenuViewModelBase(
                     Timber.e(it, "Duplication error")
                     _toasts.emit(SOMETHING_WENT_WRONG_MSG)
                 },
-                success = {
+                success = { id ->
                     _toasts.emit("Your object is duplicated")
-                    delegator.delegate(Action.Duplicate(it))
+                    delegator.delegate(
+                        Action.Duplicate(
+                            target = id,
+                            space = space
+                        )
+                    )
                     sendAnalyticsDuplicateEvent(
                         analytics = analytics,
                         startTime = startTime,
@@ -406,6 +428,7 @@ abstract class ObjectMenuViewModelBase(
         data class ShareDebugGoroutines(val path: String) : Command()
         data class OpenSnackbar(
             val id: Id,
+            val space: Id,
             val currentObjectName: String?,
             val targetObjectName: String?,
             val icon: ObjectIcon,

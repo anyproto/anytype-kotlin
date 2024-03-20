@@ -55,7 +55,7 @@ abstract class ObjectMenuBaseFragment :
 
     private val actionAdapter by lazy {
         ObjectActionAdapter { action ->
-            vm.onActionClicked(ctx, action)
+            vm.onActionClicked(ctx, space, action)
         }
     }
 
@@ -76,10 +76,10 @@ abstract class ObjectMenuBaseFragment :
     override fun onStart() {
         click(binding.objectDiagnostics) { vm.onDiagnosticsClicked(ctx) }
         click(binding.optionHistory) { vm.onHistoryClicked() }
-        click(binding.optionLayout) { vm.onLayoutClicked(ctx) }
-        click(binding.optionIcon) { vm.onIconClicked(ctx) }
+        click(binding.optionLayout) { vm.onLayoutClicked(ctx, space) }
+        click(binding.optionIcon) { vm.onIconClicked(ctx, space) }
         click(binding.optionRelations) { vm.onRelationsClicked() }
-        click(binding.optionCover) { vm.onCoverClicked(ctx) }
+        click(binding.optionCover) { vm.onCoverClicked(ctx, space) }
         click(binding.debugGoroutines) { vm.onDiagnosticsGoroutinesClicked(ctx) }
 
         proceed(vm.actions) { actionAdapter.submitList(it) }
@@ -249,7 +249,10 @@ abstract class ObjectMenuBaseFragment :
                     anchor = binding.anchor
                 ) {
                     if (command.isCollection) {
-                        vm.proceedWithOpeningCollection(command.id)
+                        vm.proceedWithOpeningCollection(
+                            target = command.id,
+                            space = command.space
+                        )
                     } else {
                         vm.proceedWithOpeningPage(command.id)
                     }
@@ -260,22 +263,34 @@ abstract class ObjectMenuBaseFragment :
 
     override fun onMoveTo(
         target: Id,
+        space: Id,
         blocks: List<Id>,
         text: String,
         icon: ObjectIcon,
         isDataView: Boolean
     ) {
-        vm.onLinkedMyselfTo(myself = ctx, addTo = target, fromName)
+        vm.onLinkedMyselfTo(
+            myself = ctx,
+            addTo = target,
+            fromName = fromName,
+            space = space
+        )
     }
 
-    override fun backLink(id: Id, name: String, layout: ObjectType.Layout?, icon: ObjectIcon) {
+    override fun backLink(
+        id: Id,
+        name: String,
+        layout: ObjectType.Layout?,
+        icon: ObjectIcon
+    ) {
         vm.onBackLinkOrAddToObjectAction(
             ctx = ctx,
             backLinkId = id,
             backLinkName = name,
             backLinkLayout = layout,
             backLinkIcon = icon,
-            fromName = fromName.orEmpty()
+            fromName = fromName.orEmpty(),
+            space = space
         )
     }
 

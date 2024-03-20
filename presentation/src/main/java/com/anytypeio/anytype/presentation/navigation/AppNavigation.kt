@@ -10,7 +10,12 @@ interface AppNavigation {
 
     fun openSpaceSettings()
 
-    fun openObjectSet(target: String, isPopUpToDashboard: Boolean = false)
+    fun openObjectSet(
+        target: Id,
+        space: Id,
+        isPopUpToDashboard: Boolean = false
+    )
+    @Deprecated("Provide space id")
     fun openDocument(id: String)
     fun openModalTemplateSelect(
         template: Id,
@@ -76,8 +81,11 @@ interface AppNavigation {
         data class ExitToDesktopAndOpenPage(val pageId: String) : Command()
         object OpenPageSearch : Command()
 
-        data class OpenSetOrCollection(val target: String, val isPopUpToDashboard: Boolean = false) :
-            Command()
+        data class OpenSetOrCollection(
+            val target: Id,
+            val space: Id,
+            val isPopUpToDashboard: Boolean = false
+        ) : Command()
 
         data class LaunchObjectSet(val target: Id) : Command()
 

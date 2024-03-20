@@ -1035,7 +1035,6 @@ class Middleware @Inject constructor(
         val response = service.objectCreateSet(request)
 
         if (BuildConfig.DEBUG) logResponse(response)
-
         return Response.Set.Create(
             targetId = response.objectId,
             payload = response.event.toPayload(),

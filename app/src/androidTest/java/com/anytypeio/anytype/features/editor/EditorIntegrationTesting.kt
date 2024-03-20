@@ -80,7 +80,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
 
         // SETUP
 
-        val args = bundleOf(EditorFragment.ID_KEY to root)
+        val args = bundleOf(EditorFragment.CTX_KEY to root)
 
         val blocks = listOf(
             BLOCK_H1,
@@ -155,7 +155,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
 
         // SETUP
 
-        val args = bundleOf(EditorFragment.ID_KEY to root)
+        val args = bundleOf(EditorFragment.CTX_KEY to root)
 
         val document = listOf(
             Block(
@@ -201,7 +201,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
     @Test
     fun shouldClearFocusAfterClickedOnHideKeyboard() {
 
-        val args = bundleOf(EditorFragment.ID_KEY to root)
+        val args = bundleOf(EditorFragment.CTX_KEY to root)
 
         val document = listOf(
             Block(
@@ -245,7 +245,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
 
         // SETUP
 
-        val args = bundleOf(EditorFragment.ID_KEY to root)
+        val args = bundleOf(EditorFragment.CTX_KEY to root)
 
         val text = "FooBar"
 

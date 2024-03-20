@@ -182,6 +182,7 @@ abstract class RelationValueBaseViewModel(
                             items.add(
                                 RelationValueView.Object.Default(
                                     id = id,
+                                    space = requireNotNull(wrapper.spaceId),
                                     name = wrapper.getProperName(),
                                     typeName = objectType?.name,
                                     type = type,
@@ -470,6 +471,7 @@ abstract class RelationValueBaseViewModel(
     fun onObjectClicked(
         ctx: Id,
         id: Id,
+        space: Id,
         layout: ObjectType.Layout?,
         profileLinkIdentity: Id? = null
     ) {
@@ -495,7 +497,12 @@ abstract class RelationValueBaseViewModel(
                 }
                 ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
                     viewModelScope.launch {
-                        navigation.emit(AppNavigation.Command.OpenSetOrCollection(id))
+                        navigation.emit(
+                            AppNavigation.Command.OpenSetOrCollection(
+                                target = id,
+                                space = space
+                            )
+                        )
                     }
                 }
                 else -> Timber.d("Unexpected layout: $layout").also {

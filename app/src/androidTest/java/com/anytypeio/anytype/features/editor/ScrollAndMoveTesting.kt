@@ -34,7 +34,7 @@ class ScrollAndMoveTesting : EditorTestSetup() {
 //    @get:Rule
 //    val coroutineTestRule = CoroutinesTestRule()
 
-    val args = bundleOf(EditorFragment.ID_KEY to root)
+    val args = bundleOf(EditorFragment.CTX_KEY to root)
 
     private val title = Block(
         id = MockDataFactory.randomUuid(),

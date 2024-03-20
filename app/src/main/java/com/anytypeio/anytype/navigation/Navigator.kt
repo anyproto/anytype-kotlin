@@ -36,7 +36,7 @@ class Navigator : AppNavigation {
         navController?.navigate(
             R.id.objectNavigation,
             Bundle().apply {
-                putString(EditorFragment.ID_KEY, id)
+                putString(EditorFragment.CTX_KEY, id)
             }
         )
     }
@@ -76,7 +76,7 @@ class Navigator : AppNavigation {
     override fun launchDocument(id: String) {
         navController?.navigate(
             R.id.objectNavigation,
-            bundleOf(EditorFragment.ID_KEY to id),
+            bundleOf(EditorFragment.CTX_KEY to id),
             navOptions {
                 launchSingleTop = true
                 popUpTo(R.id.pageSearchFragment) {
@@ -109,7 +109,7 @@ class Navigator : AppNavigation {
     override fun launchObjectFromSplash(id: Id) {
         navController?.navigate(
             R.id.action_splashScreen_to_objectScreen,
-            bundleOf(EditorFragment.ID_KEY to id),
+            bundleOf(EditorFragment.CTX_KEY to id),
         )
     }
 
@@ -149,18 +149,25 @@ class Navigator : AppNavigation {
     override fun exitToDesktopAndOpenPage(pageId: String) {
         navController?.navigate(
             R.id.homeScreen,
-            bundleOf(EditorFragment.ID_KEY to pageId),
+            bundleOf(EditorFragment.CTX_KEY to pageId),
             navOptions {
                 launchSingleTop = true
             }
         )
     }
 
-    override fun openObjectSet(target: String, isPopUpToDashboard: Boolean) {
+    override fun openObjectSet(
+        target: Id,
+        space: Id,
+        isPopUpToDashboard: Boolean
+    ) {
         if (isPopUpToDashboard) {
             navController?.navigate(
                 R.id.dataViewNavigation,
-                bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to target),
+                ObjectSetFragment.args(
+                    ctx = target,
+                    space = space
+                ),
                 navOptions {
                     popUpTo(R.id.main_navigation) { inclusive = true }
                 }
@@ -168,7 +175,10 @@ class Navigator : AppNavigation {
         } else {
             navController?.navigate(
                 R.id.dataViewNavigation,
-                bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to target)
+                ObjectSetFragment.args(
+                    ctx = target,
+                    space = space
+                )
             )
         }
     }

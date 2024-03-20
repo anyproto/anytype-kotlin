@@ -43,6 +43,7 @@ sealed class RelationValueView {
 
         data class Default(
             override val id: Id,
+            val space: Id,
             val name: String,
             val typeName: String?,
             val type: String?,

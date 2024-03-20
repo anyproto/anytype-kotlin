@@ -382,6 +382,11 @@ class EditorViewModel(
     var context: String = EMPTY_CONTEXT
 
     /**
+     * Space in which this document exists.
+     */
+    lateinit var space: Id
+
+    /**
      * Current document
      */
     val blocks: Document get() = orchestrator.stores.document.get()
@@ -420,11 +425,16 @@ class EditorViewModel(
                     is Action.SetUnsplashImage -> {
                         proceedWithSettingUnsplashImage(action)
                     }
-                    is Action.Duplicate -> proceedWithOpeningObject(action.id)
+                    is Action.Duplicate -> proceedWithOpeningObject(
+                        target = action.target
+                    )
                     Action.SearchOnPage -> onEnterSearchModeClicked()
                     Action.UndoRedo -> onUndoRedoActionClicked()
                     is Action.OpenObject -> proceedWithOpeningObject(action.id)
-                    is Action.OpenCollection -> proceedWithOpeningDataViewObject(action.id)
+                    is Action.OpenCollection -> proceedWithOpeningDataViewObject(
+                        target = action.target,
+                        space = action.space
+                    )
                 }
             }
         }
@@ -3123,7 +3133,18 @@ class EditorViewModel(
 
     private fun proceedWithOpeningDataViewBlock(dv: Content.DataView) {
         if (dv.targetObjectId.isNotEmpty()) {
-            proceedWithOpeningDataViewObject(dv.targetObjectId)
+            proceedWithOpeningDataViewObject(
+                target = dv.targetObjectId,
+                space = orchestrator.stores.details.current().let { details ->
+                    val detail = details.details[dv.targetObjectId]
+                    if (detail != null && detail.map.isNotEmpty()) {
+                        val wrapper = ObjectWrapper.Basic(detail.map)
+                        wrapper.spaceId ?: "TODO Fallback to space id from this object"
+                    } else {
+                        "TODO Fallback to space id from this object"
+                    }
+                }
+            )
             viewModelScope.sendAnalyticsOpenAsObject(
                 analytics = analytics,
                 type = EventsDictionary.Type.dataView
@@ -3161,7 +3182,13 @@ class EditorViewModel(
                 }
             }
             ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
-                proceedWithOpeningDataViewObject(target = target)
+                val space = wrapper.spaceId
+                if (space != null) {
+                    proceedWithOpeningDataViewObject(
+                        target = target,
+                        space = checkNotNull(wrapper.spaceId)
+                    )
+                }
             }
             else -> {
                 sendToast("Cannot open object with layout: ${wrapper.layout}")
@@ -4042,7 +4069,12 @@ class EditorViewModel(
                                             Command.OpenObjectTypeMenu(listOf(ObjectTypeMenuItem.ChangeType))
 
                                         is FindObjectSetForType.Response.Success ->
-                                            Command.OpenObjectTypeMenu(clicked.items(set = response.obj.id))
+                                            Command.OpenObjectTypeMenu(
+                                                clicked.items(
+                                                    set = response.obj.id,
+                                                    space = requireNotNull(response.obj.spaceId)
+                                                )
+                                            )
                                     }
                                     commands.postValue(EventWrapper(command))
                                 }
@@ -4271,7 +4303,14 @@ class EditorViewModel(
     private fun proceedWithOpeningObject(obj: ObjectWrapper.Basic) {
         when (val navigation = obj.navigation()) {
             is OpenObjectNavigation.OpenDataView -> {
-                navigate(EventWrapper(AppNavigation.Command.OpenSetOrCollection(navigation.target)))
+                navigate(
+                    EventWrapper(
+                        AppNavigation.Command.OpenSetOrCollection(
+                            target = navigation.target,
+                            space = navigation.space
+                        )
+                    )
+                )
             }
             is OpenObjectNavigation.OpenEditor -> {
                 navigate(EventWrapper(AppNavigation.Command.OpenObject(navigation.target)))
@@ -4282,7 +4321,11 @@ class EditorViewModel(
         }
     }
 
-    fun proceedWithOpeningDataViewObject(target: Id, isPopUpToDashboard: Boolean = false) {
+    fun proceedWithOpeningDataViewObject(
+        target: Id,
+        space: Id,
+        isPopUpToDashboard: Boolean = false
+    ) {
         viewModelScope.launch {
             closePage.async(context).fold(
                 onFailure = {
@@ -4290,7 +4333,8 @@ class EditorViewModel(
                     navigate(
                         EventWrapper(
                             AppNavigation.Command.OpenSetOrCollection(
-                                target,
+                                target = target,
+                                space = space,
                                 isPopUpToDashboard
                             )
                         )
@@ -4300,7 +4344,8 @@ class EditorViewModel(
                     navigate(
                         EventWrapper(
                             AppNavigation.Command.OpenSetOrCollection(
-                                target,
+                                target = target,
+                                space = space,
                                 isPopUpToDashboard
                             )
                         )
@@ -4454,7 +4499,11 @@ class EditorViewModel(
         objectToSet.async(params).fold(
             onFailure = { error -> Timber.e(error, "Error convert object to set") },
             onSuccess = {
-                proceedWithOpeningDataViewObject(target = context, isPopUpToDashboard = true)
+                proceedWithOpeningDataViewObject(
+                    target = context,
+                    space = space,
+                    isPopUpToDashboard = true
+                )
                 viewModelScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
                     analytics = analytics,
                     startTime = startTime,
@@ -4472,7 +4521,11 @@ class EditorViewModel(
         objectToCollection.async(params).fold(
             onFailure = { error -> Timber.e(error, "Error convert object to collection") },
             onSuccess = {
-                proceedWithOpeningDataViewObject(target = context, isPopUpToDashboard = true)
+                proceedWithOpeningDataViewObject(
+                    target = context,
+                    space = space,
+                    isPopUpToDashboard = true
+                )
                 viewModelScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
                     analytics = analytics,
                     startTime = startTime,
@@ -4965,7 +5018,7 @@ class EditorViewModel(
                 sorts = sorts,
                 filters = ObjectSearchConstants.filterTypes(
                     spaces = buildList {
-                        add(spaceManager.get())
+                        add(space)
                     },
                     recommendedLayouts = SupportedLayouts.editorLayouts
                 ),
@@ -5348,6 +5401,7 @@ class EditorViewModel(
 
     fun proceedWithMoveToAction(
         target: Id,
+        space: Id,
         text: String,
         icon: ObjectIcon,
         blocks: List<Id>,
@@ -5374,6 +5428,7 @@ class EditorViewModel(
                         dispatch(
                             Command.OpenObjectSnackbar(
                                 id = target,
+                                space = space,
                                 fromText = "${blocks.size} block${if (blocks.size > 1) "s" else ""} ",
                                 toText = text,
                                 icon = icon,
@@ -6169,11 +6224,16 @@ class EditorViewModel(
             createObjectSet(
                 CreateObjectSet.Params(
                     type = type,
-                    space = spaceManager.get()
+                    space = space
                 )
             ).process(
                 failure = { Timber.e(it, "Error while creating a set of type: $type") },
-                success = { response -> proceedWithOpeningDataViewObject(response.target) }
+                success = { response ->
+                    proceedWithOpeningDataViewObject(
+                        target = response.target,
+                        space = space
+                    )
+                }
             )
         }
     }

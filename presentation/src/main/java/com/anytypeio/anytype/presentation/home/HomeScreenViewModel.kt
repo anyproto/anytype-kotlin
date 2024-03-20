@@ -1103,7 +1103,12 @@ class HomeScreenViewModel(
     private fun proceedWithOpeningObject(obj: ObjectWrapper.Basic) {
         when(val navigation = obj.navigation()) {
             is OpenObjectNavigation.OpenDataView -> {
-                navigate(Navigation.OpenSet(navigation.target))
+                navigate(
+                    Navigation.OpenSet(
+                        ctx = navigation.target,
+                        space = navigation.target
+                    )
+                )
             }
             is OpenObjectNavigation.OpenEditor -> {
                 navigate(Navigation.OpenObject(navigation.target))
@@ -1423,7 +1428,7 @@ class HomeScreenViewModel(
 
     sealed class Navigation {
         data class OpenObject(val ctx: Id) : Navigation()
-        data class OpenSet(val ctx: Id) : Navigation()
+        data class OpenSet(val ctx: Id, val space: Id) : Navigation()
         data class ExpandWidget(val subscription: Subscription) : Navigation()
     }
 
@@ -1599,7 +1604,7 @@ typealias Containers = List<WidgetContainer>?
 
 sealed class OpenObjectNavigation {
     data class OpenEditor(val target: Id) : OpenObjectNavigation()
-    data class OpenDataView(val target: Id): OpenObjectNavigation()
+    data class OpenDataView(val target: Id, val space: Id): OpenObjectNavigation()
     data class UnexpectedLayoutError(val layout: ObjectType.Layout?): OpenObjectNavigation()
 }
 
@@ -1625,7 +1630,10 @@ fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
         }
         ObjectType.Layout.SET,
         ObjectType.Layout.COLLECTION -> {
-            OpenObjectNavigation.OpenDataView(id)
+            OpenObjectNavigation.OpenDataView(
+                target = id,
+                space = spaceId!!
+            )
         }
         else -> {
             OpenObjectNavigation.UnexpectedLayoutError(layout)

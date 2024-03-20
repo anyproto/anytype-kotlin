@@ -35,7 +35,7 @@ class MarkupTesting : EditorTestSetup() {
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
-    val args = bundleOf(EditorFragment.ID_KEY to root)
+    val args = bundleOf(EditorFragment.CTX_KEY to root)
 
     @Before
     override fun setup() {

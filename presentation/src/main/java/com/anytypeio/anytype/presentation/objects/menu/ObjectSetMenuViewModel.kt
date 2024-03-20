@@ -100,7 +100,7 @@ class ObjectSetMenuViewModel(
         }
     }
 
-    override fun onIconClicked(ctx: Id) {
+    override fun onIconClicked(ctx: Id, space: Id) {
         val dataViewState = objectState.value.dataViewState() ?: return
         viewModelScope.launch {
             if (dataViewState.objectRestrictions.contains(ObjectRestriction.DETAILS)) {
@@ -111,7 +111,7 @@ class ObjectSetMenuViewModel(
         }
     }
 
-    override fun onCoverClicked(ctx: Id) {
+    override fun onCoverClicked(ctx: Id, space: Id) {
         val dataViewState = objectState.value.dataViewState() ?: return
         viewModelScope.launch {
             if (dataViewState.objectRestrictions.contains(ObjectRestriction.DETAILS)) {
@@ -122,7 +122,7 @@ class ObjectSetMenuViewModel(
         }
     }
 
-    override fun onLayoutClicked(ctx: Id) {
+    override fun onLayoutClicked(ctx: Id, space: Id) {
         val dataViewState = objectState.value.dataViewState() ?: return
         viewModelScope.launch {
             if (dataViewState.objectRestrictions.contains(ObjectRestriction.LAYOUT_CHANGE)) {
@@ -168,7 +168,7 @@ class ObjectSetMenuViewModel(
         add(ObjectAction.LINK_TO)
     }
 
-    override fun onActionClicked(ctx: Id, action: ObjectAction) {
+    override fun onActionClicked(ctx: Id, space: Id, action: ObjectAction) {
         when (action) {
             ObjectAction.DELETE -> {
                 proceedWithUpdatingArchivedStatus(ctx = ctx, isArchived = true)
@@ -186,7 +186,11 @@ class ObjectSetMenuViewModel(
                 proceedWithLinkTo()
             }
             ObjectAction.DUPLICATE -> {
-                proceedWithDuplication(ctx = ctx, details = objectState.value.dataViewState()?.details)
+                proceedWithDuplication(
+                    ctx = ctx,
+                    space = space,
+                    details = objectState.value.dataViewState()?.details
+                )
             }
             ObjectAction.CREATE_WIDGET -> {
                 val details = objectState.value.dataViewState()?.details?.get(ctx)

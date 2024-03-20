@@ -157,7 +157,7 @@ class SelectObjectTypeFragment : BaseBottomSheetComposeFragment() {
                             findNavController().navigate(
                                 R.id.objectNavigation,
                                 bundleOf(
-                                    EditorFragment.ID_KEY to nav.target
+                                    EditorFragment.CTX_KEY to nav.target
                                 )
                             )
                         }

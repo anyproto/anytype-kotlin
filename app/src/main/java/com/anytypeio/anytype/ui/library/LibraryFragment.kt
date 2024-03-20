@@ -147,7 +147,7 @@ class LibraryFragment : BaseComposeFragment() {
                         R.id.libraryFragment,
                         R.id.objectNavigation,
                         bundleOf(
-                            EditorFragment.ID_KEY to it.id
+                            EditorFragment.CTX_KEY to it.id
                         )
                     )
                 }

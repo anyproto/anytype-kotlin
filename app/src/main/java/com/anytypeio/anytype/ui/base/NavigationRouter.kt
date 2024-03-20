@@ -20,8 +20,9 @@ class NavigationRouter(
                     templateTypeKey = command.templateTypeKey
                 )
                 is AppNavigation.Command.OpenSetOrCollection -> navigation.openObjectSet(
-                    command.target,
-                    command.isPopUpToDashboard
+                    target = command.target,
+                    space = command.space,
+                    isPopUpToDashboard = command.isPopUpToDashboard
                 )
                 is AppNavigation.Command.LaunchObjectSet -> navigation.launchObjectSet(command.target)
                 is AppNavigation.Command.LaunchDocument -> navigation.launchDocument(command.id)

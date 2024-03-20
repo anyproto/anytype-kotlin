@@ -115,7 +115,8 @@ abstract class  RelationValueBaseFragment<T: ViewBinding> : BaseBottomSheetFragm
                         ctx = ctx,
                         id = o.id,
                         layout = o.layout,
-                        profileLinkIdentity = o.profileLinkIdentity
+                        profileLinkIdentity = o.profileLinkIdentity,
+                        space = o.space
                     )
                 } else {
                     vm.onNonExistentObjectClicked(
@@ -199,7 +200,7 @@ abstract class  RelationValueBaseFragment<T: ViewBinding> : BaseBottomSheetFragm
             is AppNavigation.Command.OpenObject -> {
                 findNavController().navigate(
                     R.id.objectNavigation,
-                    bundleOf(EditorFragment.ID_KEY to command.id)
+                    bundleOf(EditorFragment.CTX_KEY to command.id)
                 )
             }
             else -> toast("Unexpected nav command: $command")

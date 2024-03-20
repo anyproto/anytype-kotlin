@@ -12,7 +12,7 @@ class ObjectTypePopupMenu(
     context: Context,
     anchor: View,
     onChangeTypeClicked: () -> Unit,
-    onOpenSetClicked: (Id) -> Unit,
+    onOpenSetClicked: (Id, Id) -> Unit,
     onCreateSetClicked: (Id) -> Unit,
     items: List<ObjectTypeMenuItem>
 ) : PopupMenu(context, anchor, Gravity.BOTTOM, 0, R.style.DefaultPopupMenuStyle) {
@@ -49,7 +49,7 @@ class ObjectTypePopupMenu(
                         index,
                         res.getString(R.string.menu_type_open_set, objectTypeMenuItem.typeName)
                     ).setOnMenuItemClickListener {
-                        onOpenSetClicked(objectTypeMenuItem.set)
+                        onOpenSetClicked(objectTypeMenuItem.set, objectTypeMenuItem.space)
                         true
                     }
                 }

@@ -8,13 +8,13 @@ import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Relations.SOURCE_OBJECT
+import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.ext.readableFileSize
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.library.LibraryView
 import com.anytypeio.anytype.presentation.linking.LinkToItemView
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
-import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
@@ -234,6 +234,7 @@ fun List<ObjectWrapper.Basic>.toRelationObjectValueView(
             if (obj.isDeleted == null || obj.isDeleted == false) {
                 RelationValueView.Object.Default(
                     id = obj.id,
+                    space = requireNotNull(obj.spaceId),
                     name = obj.getProperName(),
                     typeName = getProperTypeName(
                         id = typeUrl,

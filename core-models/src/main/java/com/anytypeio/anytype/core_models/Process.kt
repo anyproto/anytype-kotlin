@@ -13,10 +13,6 @@ data class Process(
         SaveFile,
         RecoverAccount,
         Migration;
-
-        companion object {
-            fun fromInt(value: Int) = values().getOrElse(value) { DropFiles }
-        }
     }
 
     enum class State {
@@ -25,10 +21,6 @@ data class Process(
         Done,
         Canceled,
         Error;
-
-        companion object {
-            fun fromInt(value: Int) = values().getOrElse(value) { None }
-        }
     }
 
     data class Progress(

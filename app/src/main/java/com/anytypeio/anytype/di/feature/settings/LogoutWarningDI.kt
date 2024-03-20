@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.misc.AppActionManager
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
@@ -45,13 +46,15 @@ object LogoutWarningModule {
         objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
         spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
         appActionManager: AppActionManager,
+        userPermissionProvider: UserPermissionProvider
     ): LogoutWarningViewModel.Factory = LogoutWarningViewModel.Factory(
         logout = logout,
         analytics = analytics,
         relationsSubscriptionManager = relationsSubscriptionManager,
         appActionManager = appActionManager,
         spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
-        objectTypesSubscriptionManager = objectTypesSubscriptionManager
+        objectTypesSubscriptionManager = objectTypesSubscriptionManager,
+        userPermissionProvider = userPermissionProvider
     )
 
     @JvmStatic

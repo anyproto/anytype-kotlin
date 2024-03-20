@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.ImportGetStartedUseCase
 import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
@@ -111,6 +112,7 @@ interface OnboardingSoulCreationDependencies : ComponentDependencies {
     fun spaceManager(): SpaceManager
     fun spaceStatusWatcher(): SpaceDeletedStatusWatcher
     fun localeProvider(): LocaleProvider
+    fun userPermissionProvider(): UserPermissionProvider
 }
 
 @Scope

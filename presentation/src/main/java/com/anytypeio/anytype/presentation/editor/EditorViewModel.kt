@@ -1539,7 +1539,6 @@ class EditorViewModel(
                         isArchived = false,
                         isFavorite = false,
                         isLocked = false,
-                        fromName = wrapper.getProperObjectName().orEmpty(),
                         isTemplate = true
                     )
                 )
@@ -1552,7 +1551,6 @@ class EditorViewModel(
                         isArchived = details[context]?.isArchived ?: false,
                         isFavorite = details[context]?.isFavorite ?: false,
                         isLocked = mode == EditorMode.Locked,
-                        fromName = wrapper.getProperObjectName().orEmpty(),
                         isTemplate = isObjectTemplate()
                     )
                 )

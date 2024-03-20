@@ -224,7 +224,8 @@ abstract class RelationValueBaseViewModel(
                                 mime = wrapper.fileMimeType.orEmpty(),
                                 ext = wrapper.fileExt.orEmpty(),
                                 image = wrapper.iconImage,
-                                removable = isRemovable
+                                removable = isRemovable,
+                                space = requireNotNull(wrapper.spaceId)
                             )
                         )
                     }

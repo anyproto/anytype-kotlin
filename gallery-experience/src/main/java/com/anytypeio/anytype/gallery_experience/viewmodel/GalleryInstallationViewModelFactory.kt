@@ -6,6 +6,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.gallery_experience.DownloadGalleryManifest
 import com.anytypeio.anytype.domain.gallery_experience.ImportExperience
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.domain.spaces.GetSpaceViews
 import com.anytypeio.anytype.domain.workspace.EventProcessChannel
@@ -21,6 +22,7 @@ class GalleryInstallationViewModelFactory @Inject constructor(
     private val createSpace: CreateSpace,
     private val urlBuilder: UrlBuilder,
     private val spaceGradientProvider: SpaceGradientProvider,
+    private val  userPermissionProvider: UserPermissionProvider,
     private val eventProcessChannel: EventProcessChannel
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
@@ -34,6 +36,7 @@ class GalleryInstallationViewModelFactory @Inject constructor(
             urlBuilder = urlBuilder,
             spaceGradientProvider = spaceGradientProvider,
             createSpace = createSpace,
+            userPermissionProvider = userPermissionProvider,
             eventProcessChannel = eventProcessChannel
         ) as T
     }

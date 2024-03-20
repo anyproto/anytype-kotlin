@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.gallery_experience.DownloadGalleryManifest
 import com.anytypeio.anytype.domain.gallery_experience.ImportExperience
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.domain.spaces.GetSpaceViews
 import com.anytypeio.anytype.domain.workspace.EventProcessChannel
@@ -34,6 +35,7 @@ class GalleryInstallationViewModel(
     private val createSpace: CreateSpace,
     private val urlBuilder: UrlBuilder,
     private val spaceGradientProvider: SpaceGradientProvider,
+    private val userPermissionProvider: UserPermissionProvider,
     private val eventProcessChannel: EventProcessChannel
 ) : ViewModel() {
 
@@ -41,6 +43,8 @@ class GalleryInstallationViewModel(
     val spacesViewState =
         MutableStateFlow(GalleryInstallationSpacesState(emptyList(), false))
     val command = MutableStateFlow<GalleryInstallationNavigation?>(null)
+
+    private val MAX_SPACES = 10
 
     init {
         Timber.d("GalleryInstallationViewModel init, viewModelParams: $viewModelParams")
@@ -73,11 +77,12 @@ class GalleryInstallationViewModel(
             getSpaceViews.async(Unit).fold(
                 onSuccess = { spaces ->
                     Timber.d("GetSpaceViews success, spaceViews: $spaces")
+                    val filteredSpaces = filterSpacesByPermissions(spaces)
                     spacesViewState.value = GalleryInstallationSpacesState(
-                        spaces = spaces.map {
+                        spaces = filteredSpaces.map {
                             it.toView(urlBuilder, spaceGradientProvider)
                         },
-                        isNewButtonVisible = true
+                        isNewButtonVisible = filteredSpaces.size < MAX_SPACES
                     )
                     command.value = GalleryInstallationNavigation.Spaces
                 },
@@ -173,6 +178,14 @@ class GalleryInstallationViewModel(
                     command.value = GalleryInstallationNavigation.Exit
                 }
             }
+        }
+    }
+
+    private fun filterSpacesByPermissions(spaces: List<ObjectWrapper.SpaceView>): List<ObjectWrapper.SpaceView> {
+        return spaces.filter {
+            val targetSpaceId = it.targetSpaceId ?: return@filter false
+            val userPermissions = userPermissionProvider.get(SpaceId(targetSpaceId))
+            userPermissions?.isOwnerOrEditor() == true
         }
     }
 

@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.ImportGetStartedUseCase
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
@@ -48,7 +49,8 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
     private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
-    private val localeProvider: LocaleProvider
+    private val localeProvider: LocaleProvider,
+    private val userPermissionProvider: UserPermissionProvider
 ) : BaseViewModel() {
 
     init {
@@ -135,6 +137,7 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         relationsSubscriptionManager.onStart()
         objectTypesSubscriptionManager.onStart()
         spaceDeletedStatusWatcher.onStart()
+        userPermissionProvider.start()
     }
 
     private fun proceedWithSettingAccountName(name: String) {
@@ -217,7 +220,8 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
         private val crashReporter: CrashReporter,
         private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
-        private val localeProvider: LocaleProvider
+        private val localeProvider: LocaleProvider,
+        private val userPermissionProvider: UserPermissionProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -235,7 +239,8 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                 objectTypesSubscriptionManager = objectTypesSubscriptionManager,
                 crashReporter = crashReporter,
                 spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
-                localeProvider = localeProvider
+                localeProvider = localeProvider,
+                userPermissionProvider = userPermissionProvider
             ) as T
         }
     }

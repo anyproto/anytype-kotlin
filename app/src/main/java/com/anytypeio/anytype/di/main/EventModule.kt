@@ -4,6 +4,8 @@ import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.data.auth.account.AccountStatusDataChannel
 import com.anytypeio.anytype.data.auth.account.AccountStatusRemoteChannel
 import com.anytypeio.anytype.data.auth.event.EventDataChannel
+import com.anytypeio.anytype.data.auth.event.EventProcessDateChannel
+import com.anytypeio.anytype.data.auth.event.EventProcessRemoteChannel
 import com.anytypeio.anytype.data.auth.event.EventRemoteChannel
 import com.anytypeio.anytype.data.auth.event.FileLimitsDataChannel
 import com.anytypeio.anytype.data.auth.event.SubscriptionDataChannel
@@ -15,6 +17,7 @@ import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
 import com.anytypeio.anytype.data.auth.event.FileLimitsRemoteChannel
+import com.anytypeio.anytype.domain.workspace.EventProcessChannel
 import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.interactor.*
@@ -128,6 +131,20 @@ object EventModule {
     fun provideFileLimitsDataChannel(
         channel: FileLimitsRemoteChannel
     ): FileLimitsEventChannel = FileLimitsDataChannel(channel = channel)
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideEventProcessRemoteChannel(
+        proxy: EventProxy
+    ): EventProcessRemoteChannel = EventProcessMiddlewareChannel(events = proxy)
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideProcessDataChannel(
+        channel: EventProcessRemoteChannel
+    ): EventProcessChannel = EventProcessDateChannel(channel = channel)
 
     @Module
     interface Bindings {

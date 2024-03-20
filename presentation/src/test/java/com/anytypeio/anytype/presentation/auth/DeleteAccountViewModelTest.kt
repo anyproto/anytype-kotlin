@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.misc.AppActionManager
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
@@ -82,6 +83,9 @@ class DeleteAccountViewModelTest {
 
     lateinit var vm: DeletedAccountViewModel
 
+    @Mock
+    lateinit var userPermissionProvider: UserPermissionProvider
+
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
@@ -105,7 +109,8 @@ class DeleteAccountViewModelTest {
             relationsSubscriptionManager = relationsSubscriptionManager,
             spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
             objectTypesSubscriptionManager = objectTypesSubscriptionManager,
-            appActionManager = appActionManager
+            appActionManager = appActionManager,
+            userPermissionProvider = userPermissionProvider
         )
     }
 

@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
@@ -63,7 +64,8 @@ object MainEntryModule {
         checkAuthorizationStatus: CheckAuthorizationStatus,
         configStorage: ConfigStorage,
         spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
-        localeProvider: LocaleProvider
+        localeProvider: LocaleProvider,
+        userPermissionProvider: UserPermissionProvider
     ): MainViewModelFactory = MainViewModelFactory(
         resumeAccount = resumeAccount,
         analytics = analytics,
@@ -76,7 +78,8 @@ object MainEntryModule {
         checkAuthorizationStatus = checkAuthorizationStatus,
         configStorage = configStorage,
         spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
-        localeProvider = localeProvider
+        localeProvider = localeProvider,
+        userPermissionProvider = userPermissionProvider
     )
 
     @JvmStatic

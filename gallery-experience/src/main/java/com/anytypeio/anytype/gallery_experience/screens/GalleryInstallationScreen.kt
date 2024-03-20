@@ -50,6 +50,7 @@ import coil.compose.AsyncImage
 import com.anytypeio.anytype.core_models.ManifestInfo
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
+import com.anytypeio.anytype.core_ui.views.ButtonPrimaryLoading
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
@@ -248,8 +249,9 @@ private fun SuccessScreen(
         }
     }
     Spacer(modifier = Modifier.height(39.dp))
-    ButtonPrimary(
-        modifier = Modifier
+    ButtonPrimaryLoading(
+        loading = state.isLoading,
+        modifierButton = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
         onClick = { onInstallClicked() },

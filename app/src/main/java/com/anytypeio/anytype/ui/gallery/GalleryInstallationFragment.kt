@@ -30,6 +30,7 @@ import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.bottomSheet
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import javax.inject.Inject
+import timber.log.Timber
 
 class GalleryInstallationFragment : BaseBottomSheetComposeFragment() {
 
@@ -62,6 +63,7 @@ class GalleryInstallationFragment : BaseBottomSheetComposeFragment() {
     override fun onStart() {
         super.onStart()
         jobs += subscribe(vm.command) { command ->
+            Timber.d("GalleryInstallationFragment command: $command")
             when (command) {
                 GalleryInstallationNavigation.Main -> navController.navigate(
                     GalleryInstallationNavigation.Main.route
@@ -70,6 +72,7 @@ class GalleryInstallationFragment : BaseBottomSheetComposeFragment() {
                     GalleryInstallationNavigation.Spaces.route
                 )
                 GalleryInstallationNavigation.Dismiss -> navController.popBackStack()
+                GalleryInstallationNavigation.Exit -> dismiss()
                 else -> {}
             }
         }

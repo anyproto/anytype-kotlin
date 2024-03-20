@@ -821,22 +821,22 @@ fun MProcess.toCoreModel(): Process {
 
 fun MProcessType.toCoreModel(): Process.Type {
     return when (this) {
-        MProcessType.DropFiles -> Process.Type.DropFiles
-        MProcessType.Import -> Process.Type.Import
-        MProcessType.Export -> Process.Type.Export
-        MProcessType.SaveFile -> Process.Type.SaveFile
-        MProcessType.RecoverAccount -> Process.Type.RecoverAccount
-        MProcessType.Migration ->  Process.Type.Migration
+        MProcessType.DropFiles -> Process.Type.DROP_FILES
+        MProcessType.Import -> Process.Type.IMPORT
+        MProcessType.Export -> Process.Type.EXPORT
+        MProcessType.SaveFile -> Process.Type.SAVE_FILE
+        MProcessType.RecoverAccount -> Process.Type.RECOVER_ACCOUNT
+        MProcessType.Migration ->  Process.Type.MIGRATION
     }
 }
 
 fun MProcessState.toCoreModel(): Process.State {
     return when (this) {
-        MProcessState.None -> Process.State.None
-        MProcessState.Running -> Process.State.Running
-        MProcessState.Done -> Process.State.Done
-        MProcessState.Canceled -> Process.State.Canceled
-        MProcessState.Error -> Process.State.Error
+        MProcessState.None -> Process.State.NONE
+        MProcessState.Running -> Process.State.RUNNING
+        MProcessState.Done -> Process.State.DONE
+        MProcessState.Canceled -> Process.State.CANCELED
+        MProcessState.Error -> Process.State.ERROR
     }
 }
 

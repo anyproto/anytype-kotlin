@@ -7,20 +7,20 @@ data class Process(
     val progress: Progress?
 ) {
     enum class Type {
-        DropFiles,
-        Import,
-        Export,
-        SaveFile,
-        RecoverAccount,
-        Migration;
+        DROP_FILES,
+        IMPORT,
+        EXPORT,
+        SAVE_FILE,
+        RECOVER_ACCOUNT,
+        MIGRATION
     }
 
     enum class State {
-        None,
-        Running,
-        Done,
-        Canceled,
-        Error;
+        NONE,
+        RUNNING,
+        DONE,
+        CANCELED,
+        ERROR
     }
 
     data class Progress(

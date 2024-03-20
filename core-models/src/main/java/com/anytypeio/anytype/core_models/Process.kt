@@ -28,4 +28,18 @@ data class Process(
         val done: Long,
         val message: String
     )
+
+    sealed class Event {
+        data class New(
+            val process: Process?
+        ) : Event()
+
+        data class Update(
+            val process: Process?
+        ) : Event()
+
+        data class Done(
+            val process: Process?
+        ) : Event()
+    }
 }

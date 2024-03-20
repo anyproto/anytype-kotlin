@@ -294,7 +294,10 @@ class HomeScreenFragment : BaseComposeFragment() {
                 target = destination.ctx,
                 space = destination.space
             )
-            is Navigation.ExpandWidget -> navigation().launchCollections(destination.subscription)
+            is Navigation.ExpandWidget -> navigation().launchCollections(
+                subscription = destination.subscription,
+                space = destination.space
+            )
         }
     }
 

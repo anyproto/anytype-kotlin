@@ -73,10 +73,13 @@ class Navigator : AppNavigation {
         )
     }
 
-    override fun launchDocument(id: String) {
+    override fun launchDocument(target: String, space: Id) {
         navController?.navigate(
             R.id.objectNavigation,
-            bundleOf(EditorFragment.CTX_KEY to id),
+            EditorFragment.args(
+                ctx = target,
+                space = space
+            ),
             navOptions {
                 launchSingleTop = true
                 popUpTo(R.id.pageSearchFragment) {

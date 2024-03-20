@@ -29,8 +29,8 @@ class NavigationRouter(
                 )
                 is AppNavigation.Command.LaunchObjectSet -> navigation.launchObjectSet(command.target)
                 is AppNavigation.Command.LaunchDocument -> navigation.launchDocument(
-                    target = command.id,
-                    space = command.id
+                    target = command.target,
+                    space = command.space
                 )
                 is AppNavigation.Command.LaunchObjectFromSplash -> navigation.launchObjectFromSplash(
                     command.target

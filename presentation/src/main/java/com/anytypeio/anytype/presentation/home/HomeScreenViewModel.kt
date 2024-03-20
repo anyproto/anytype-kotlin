@@ -757,7 +757,14 @@ class HomeScreenViewModel(
                     bundled = source
                 )
                 // TODO switch to bundled widgets id
-                navigate(Navigation.ExpandWidget(Subscription.Favorites))
+                viewModelScope.launch {
+                    navigation(
+                        Navigation.ExpandWidget(
+                            subscription = Subscription.Favorites,
+                            space = spaceManager.get()
+                        )
+                    )
+                }
             }
             is Widget.Source.Bundled.Sets -> {
                 viewModelScope.sendSelectHomeTabEvent(
@@ -765,7 +772,14 @@ class HomeScreenViewModel(
                     bundled = source
                 )
                 // TODO switch to bundled widgets id
-                navigate(Navigation.ExpandWidget(Subscription.Sets))
+                viewModelScope.launch {
+                    navigation(
+                        Navigation.ExpandWidget(
+                            subscription = Subscription.Sets,
+                            space = spaceManager.get()
+                        )
+                    )
+                }
             }
 
             is Widget.Source.Bundled.Recent -> {
@@ -774,7 +788,14 @@ class HomeScreenViewModel(
                     bundled = source
                 )
                 // TODO switch to bundled widgets id
-                navigate(Navigation.ExpandWidget(Subscription.Recent))
+                viewModelScope.launch {
+                    navigation(
+                        Navigation.ExpandWidget(
+                            subscription = Subscription.Recent,
+                            space = spaceManager.get()
+                        )
+                    )
+                }
             }
 
             is Widget.Source.Bundled.RecentLocal -> {
@@ -783,7 +804,14 @@ class HomeScreenViewModel(
                     bundled = source
                 )
                 // TODO switch to bundled widgets id
-                navigate(Navigation.ExpandWidget(Subscription.RecentLocal))
+                viewModelScope.launch {
+                    navigation(
+                        Navigation.ExpandWidget(
+                            subscription = Subscription.RecentLocal,
+                            space = spaceManager.get()
+                        )
+                    )
+                }
             }
 
             is Widget.Source.Bundled.Collections -> {
@@ -792,7 +820,14 @@ class HomeScreenViewModel(
                     bundled = source
                 )
                 // TODO switch to bundled widgets id
-                navigate(Navigation.ExpandWidget(Subscription.Collections))
+                viewModelScope.launch {
+                    navigation(
+                        Navigation.ExpandWidget(
+                            subscription = Subscription.Collections,
+                            space = spaceManager.get()
+                        )
+                    )
+                }
             }
 
             is Widget.Source.Default -> {
@@ -830,18 +865,41 @@ class HomeScreenViewModel(
     }
 
     fun onBundledWidgetClicked(widget: Id) {
-        when (widget) {
-            Subscriptions.SUBSCRIPTION_SETS -> {
-                navigate(Navigation.ExpandWidget(Subscription.Sets))
-            }
-            Subscriptions.SUBSCRIPTION_RECENT -> {
-                navigate(Navigation.ExpandWidget(Subscription.Recent))
-            }
-            Subscriptions.SUBSCRIPTION_ARCHIVED -> {
-                navigate(Navigation.ExpandWidget(Subscription.Bin))
-            }
-            Subscriptions.SUBSCRIPTION_FAVORITES -> {
-                navigate(Navigation.ExpandWidget(Subscription.Favorites))
+        viewModelScope.launch {
+            val space = spaceManager.get()
+            when (widget) {
+                Subscriptions.SUBSCRIPTION_SETS -> {
+                    navigation(
+                        Navigation.ExpandWidget(
+                            subscription = Subscription.Sets,
+                            space = space
+                        )
+                    )
+                }
+                Subscriptions.SUBSCRIPTION_RECENT -> {
+                    navigation(
+                        Navigation.ExpandWidget(
+                            subscription = Subscription.Recent,
+                            space = space
+                        )
+                    )
+                }
+                Subscriptions.SUBSCRIPTION_ARCHIVED -> {
+                    navigation(
+                        Navigation.ExpandWidget(
+                            subscription = Subscription.Bin,
+                            space = space
+                        )
+                    )
+                }
+                Subscriptions.SUBSCRIPTION_FAVORITES -> {
+                    navigation(
+                        Navigation.ExpandWidget(
+                            subscription = Subscription.Favorites,
+                            space = space
+                        )
+                    )
+                }
             }
         }
     }
@@ -1443,7 +1501,7 @@ class HomeScreenViewModel(
     sealed class Navigation {
         data class OpenObject(val ctx: Id, val space: Id) : Navigation()
         data class OpenSet(val ctx: Id, val space: Id) : Navigation()
-        data class ExpandWidget(val subscription: Subscription) : Navigation()
+        data class ExpandWidget(val subscription: Subscription, val space: Id) : Navigation()
     }
 
     class Factory @Inject constructor(

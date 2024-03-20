@@ -226,7 +226,7 @@ open class ObjectSetFragment :
     }
 
     private val ctx: Id get() = argString(CONTEXT_ID_KEY)
-    private val space: Id = arg<String>(SPACE_ID_KEY)
+    private val space: Id get() = arg<String>(SPACE_ID_KEY)
 
     @Inject
     lateinit var factory: ObjectSetViewModelFactory

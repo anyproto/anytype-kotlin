@@ -35,16 +35,7 @@ class NavigationRouter(
                     target = command.target,
                     space = command.space
                 )
-                is AppNavigation.Command.LaunchObjectFromSplash -> navigation.launchObjectFromSplash(
-                    command.target
-                )
-
-                is AppNavigation.Command.LaunchObjectSetFromSplash -> navigation.launchObjectSetFromSplash(
-                    command.target
-                )
-
                 is AppNavigation.Command.OpenUserSettingsScreen -> navigation.openUserSettingsScreen()
-
                 is AppNavigation.Command.Exit -> navigation.exit()
                 is AppNavigation.Command.ExitToDesktop -> navigation.exitToDesktop()
                 is AppNavigation.Command.OpenDebugSettingsScreen -> navigation.openDebugSettings()

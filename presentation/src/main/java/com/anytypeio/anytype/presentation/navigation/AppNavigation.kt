@@ -29,8 +29,6 @@ interface AppNavigation {
 
     fun launchDocument(target: String, space: Id)
     fun launchCollections(subscription: Subscription, space: Id)
-    fun launchObjectFromSplash(id: Id)
-    fun launchObjectSetFromSplash(id: Id)
     fun launchObjectSet(target: Id, space: Id)
 
     fun openKeychainScreen()
@@ -62,10 +60,7 @@ interface AppNavigation {
         object ExitFromMigrationScreen : Command()
 
         data class OpenObject(val target: Id, val space: Id) : Command()
-
         data class LaunchDocument(val target: Id, val space: Id) : Command()
-        data class LaunchObjectFromSplash(val target: Id) : Command()
-        data class LaunchObjectSetFromSplash(val target: Id) : Command()
         data class OpenModalTemplateSelect(
             val template: Id,
             val templateTypeId: Id,

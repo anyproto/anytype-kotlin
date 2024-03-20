@@ -116,20 +116,6 @@ class Navigator : AppNavigation {
         )
     }
 
-    override fun launchObjectFromSplash(id: Id) {
-        navController?.navigate(
-            R.id.action_splashScreen_to_objectScreen,
-            bundleOf(EditorFragment.CTX_KEY to id),
-        )
-    }
-
-    override fun launchObjectSetFromSplash(id: Id) {
-        navController?.navigate(
-            R.id.action_splashScreen_to_objectSetScreen,
-            bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to id),
-        )
-    }
-
     override fun openKeychainScreen() {
         navController?.navigate(R.id.action_open_keychain)
     }

@@ -94,25 +94,24 @@ fun GalleryInstallationScreen(
 @Composable
 private fun LoadingScreen() {
     val infiniteTransition = rememberInfiniteTransition(label = "")
-    val translateAnim by infiniteTransition.animateFloat(
+    val color = colorResource(id = R.color.dashboard_background)
+    val shimmerColorShades = listOf(
+        color.copy(alpha = 0.6f),
+        color.copy(alpha = 0.2f),
+        color.copy(alpha = 0.6f)
+    )
+    val shimmerAnimation = infiniteTransition.animateFloat(
         initialValue = 0f,
         targetValue = 1000f,
         animationSpec = infiniteRepeatable(
-            animation = tween(
-                durationMillis = 200,
-                easing = LinearEasing
-            ),
+            animation = tween(durationMillis = 1000),
             repeatMode = RepeatMode.Restart
         ), label = ""
     )
     val brush = Brush.linearGradient(
-        colors = listOf(
-            Color(0xFFF5F5F5),
-            Color(0xFFEBEBEB),
-            Color(0xFFF5F5F5)
-        ),
-        start = Offset(10f, 10f),
-        end = Offset(translateAnim, translateAnim)
+        colors = shimmerColorShades,
+        start = Offset.Zero,
+        end = Offset(x = shimmerAnimation.value, y = 0F)
     )
     Spacer(modifier = Modifier.height(24.dp))
     Box(

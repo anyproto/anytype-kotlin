@@ -98,7 +98,6 @@ class EditorMenuTest : EditorPresentationTestSetup() {
                 isArchived = false,
                 isFavorite = false,
                 isLocked = false,
-                fromName = "",
                 isTemplate = false,
                 space = space,
                 ctx = root
@@ -154,7 +153,6 @@ class EditorMenuTest : EditorPresentationTestSetup() {
                 isArchived = false,
                 isFavorite = false,
                 isLocked = false,
-                fromName = "",
                 isTemplate = false,
                 space = space,
                 ctx = root
@@ -236,7 +234,6 @@ class EditorMenuTest : EditorPresentationTestSetup() {
                 isFavorite = false,
                 isLocked = false,
                 isArchived = false,
-                fromName = "",
                 isTemplate = false,
                 space = space,
                 ctx = root

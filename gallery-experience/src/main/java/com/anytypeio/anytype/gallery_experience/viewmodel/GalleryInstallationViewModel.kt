@@ -101,7 +101,7 @@ class GalleryInstallationViewModel(
             (mainState.value as? GalleryInstallationState.Success)?.copy(isLoading = true) ?: return
         val params = CreateSpace.Params(
             details = mapOf(
-                Relations.NAME to manifestInfo.name,
+                Relations.NAME to manifestInfo.title,
                 Relations.ICON_OPTION to spaceGradientProvider.randomId().toDouble()
             )
         )

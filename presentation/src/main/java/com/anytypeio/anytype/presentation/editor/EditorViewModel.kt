@@ -376,11 +376,13 @@ class EditorViewModel(
 
     /**
      * Currently opened document id.
+     * TODO move to vm params
      */
     var context: String = EMPTY_CONTEXT
 
     /**
      * Space in which this document exists.
+     * TODO move to vm params
      */
     lateinit var space: String
 

@@ -7,7 +7,7 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 sealed class GalleryInstallationState {
     object Hidden : GalleryInstallationState()
     object Loading : GalleryInstallationState()
-    data class Success(val info: ManifestInfo) : GalleryInstallationState()
+    data class Success(val info: ManifestInfo, val isLoading: Boolean = false) : GalleryInstallationState()
 }
 
 data class GalleryInstallationSpacesState(
@@ -21,6 +21,7 @@ sealed class GalleryInstallationNavigation(val route: String) {
     object Success : GalleryInstallationNavigation("success")
     object Error : GalleryInstallationNavigation("error")
     object Dismiss : GalleryInstallationNavigation("")
+    object Exit : GalleryInstallationNavigation("exit")
 }
 
 data class GallerySpaceView(

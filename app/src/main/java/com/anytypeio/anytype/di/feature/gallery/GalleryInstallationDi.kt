@@ -7,6 +7,8 @@ import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.workspace.EventProcessChannel
 import com.anytypeio.anytype.gallery_experience.viewmodel.GalleryInstallationViewModel
 import com.anytypeio.anytype.gallery_experience.viewmodel.GalleryInstallationViewModelFactory
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
@@ -65,4 +67,6 @@ interface GalleryInstallationComponentDependencies : ComponentDependencies {
     fun appCoroutineDispatchers(): AppCoroutineDispatchers
     fun analytics(): Analytics
     fun urlBuilder(): UrlBuilder
+    fun userPermissionProvider(): UserPermissionProvider
+    fun eventProcessChannel(): EventProcessChannel
 }

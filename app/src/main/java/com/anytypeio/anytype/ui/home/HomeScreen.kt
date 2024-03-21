@@ -566,6 +566,8 @@ fun HomeScreenBottomToolbar(
                 .fillMaxSize()
                 .then(
                     if (isReadOnlyAccess)
+                        Modifier
+                    else
                         Modifier.noRippleCombinedClickable(
                             onLongClicked = {
                                 onCreateNewObjectLongClicked().also {
@@ -576,8 +578,6 @@ fun HomeScreenBottomToolbar(
                                 onCreateNewObjectClicked()
                             }
                         )
-                    else
-                        Modifier
                 )
         ) {
             Image(

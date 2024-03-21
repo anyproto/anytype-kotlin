@@ -2516,7 +2516,7 @@ class Middleware @Inject constructor(
     @Throws(Exception::class)
     fun importExperience(
         command: Command.ImportExperience
-    ): Payload {
+    ) {
         val request = Rpc.Object.ImportExperience.Request(
             spaceId = command.space.id,
             url = command.url,
@@ -2526,7 +2526,6 @@ class Middleware @Inject constructor(
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectImportExperience(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return response.event.toPayload()
     }
 
     private fun logRequest(any: Any) {

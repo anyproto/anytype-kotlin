@@ -415,5 +415,5 @@ interface BlockRemote {
     suspend fun getSpaceInviteLink(spaceId: SpaceId): SpaceInviteLink
 
     suspend fun downloadGalleryManifest(command: Command.DownloadGalleryManifest): ManifestInfo?
-    suspend fun importExperience(command: Command.ImportExperience): Payload
+    suspend fun importExperience(command: Command.ImportExperience)
 }

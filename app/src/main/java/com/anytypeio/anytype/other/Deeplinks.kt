@@ -32,7 +32,7 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
                     source = source.orEmpty()
                 )
             } catch (e: Exception) {
-                Timber.e(e, "Error while resolving deeplink: $deeplink")
+                //Timber.e(e, "Error while resolving deeplink: $deeplink")
                 DeepLinkResolver.Action.Unknown
             }
         }
@@ -42,7 +42,7 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
         }
 
         else -> DeepLinkResolver.Action.Unknown
-    }.also { Timber.d("Resolved deeplink: $deeplink to action: $it") }
+    }//.also { Timber.d("Resolved deeplink: $deeplink to action: $it") }
 }
 
 object DefaultSpaceInviteResolver : SpaceInviteResolver {

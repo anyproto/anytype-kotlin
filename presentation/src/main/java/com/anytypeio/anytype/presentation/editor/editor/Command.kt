@@ -63,7 +63,6 @@ sealed class Command {
         val isArchived: Boolean,
         val isFavorite: Boolean,
         val isLocked: Boolean,
-        val fromName: String,
         val isTemplate: Boolean
     ) : Command()
 

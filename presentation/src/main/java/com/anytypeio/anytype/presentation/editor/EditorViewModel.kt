@@ -1551,7 +1551,6 @@ class EditorViewModel(
                         isArchived = false,
                         isFavorite = false,
                         isLocked = false,
-                        fromName = wrapper.getProperObjectName().orEmpty(),
                         isTemplate = true
                     )
                 )
@@ -1564,7 +1563,6 @@ class EditorViewModel(
                         isArchived = details[context]?.isArchived ?: false,
                         isFavorite = details[context]?.isFavorite ?: false,
                         isLocked = mode == EditorMode.Locked,
-                        fromName = wrapper.getProperObjectName().orEmpty(),
                         isTemplate = isObjectTemplate()
                     )
                 )
@@ -3170,10 +3168,11 @@ class EditorViewModel(
             ObjectType.Layout.BASIC,
             ObjectType.Layout.NOTE,
             ObjectType.Layout.TODO,
-            ObjectType.Layout.FILE,
-            ObjectType.Layout.IMAGE,
             ObjectType.Layout.BOOKMARK,
             ObjectType.Layout.PARTICIPANT -> {
+                proceedWithOpeningObject(target = target)
+            }
+            in SupportedLayouts.fileLayouts -> {
                 proceedWithOpeningObject(target = target)
             }
             ObjectType.Layout.PROFILE -> {

@@ -258,6 +258,6 @@ open class ObjectSearchViewModel(
     companion object {
         const val EMPTY_QUERY = ""
         const val DEBOUNCE_DURATION = 300L
-        const val SEARCH_LIMIT = 200
+        const val SEARCH_LIMIT = 50
     }
 }

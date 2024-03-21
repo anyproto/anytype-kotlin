@@ -970,7 +970,7 @@ class BlockDataRepository(
         return remote.downloadGalleryManifest(command)
     }
 
-    override suspend fun importExperience(command: Command.ImportExperience): Payload {
-        return remote.importExperience(command)
+    override suspend fun importExperience(command: Command.ImportExperience) {
+        remote.importExperience(command)
     }
 }

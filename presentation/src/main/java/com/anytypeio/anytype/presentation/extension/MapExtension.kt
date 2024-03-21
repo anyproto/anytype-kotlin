@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 
 const val MAX_SNIPPET_SIZE = 30
 
@@ -26,9 +27,19 @@ fun Map<Id, Block.Fields>.getProperObjectName(id: Id?): String? {
 }
 
 fun ObjectWrapper.Basic.getProperObjectName(): String? {
-    return if (layout == ObjectType.Layout.NOTE) {
-        snippet?.replace("\n", " ")?.take(MAX_SNIPPET_SIZE)
-    } else {
-        name
+    return when (layout) {
+        ObjectType.Layout.NOTE -> {
+            snippet?.replace("\n", " ")?.take(MAX_SNIPPET_SIZE)
+        }
+        in SupportedLayouts.fileLayouts -> {
+            if (fileExt.isNullOrBlank()) {
+                name
+            } else {
+                "$name.${fileExt}"
+            }
+        }
+        else -> {
+            name
+        }
     }
 }

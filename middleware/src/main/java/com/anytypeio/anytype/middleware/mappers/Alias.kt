@@ -70,3 +70,8 @@ typealias MNetworkMode = anytype.Rpc.Account.NetworkMode
 typealias MParticipantPermission = anytype.model.ParticipantPermissions
 
 typealias MManifestInfo = anytype.model.ManifestInfo
+
+typealias MProcess = anytype.Model.Process
+typealias MProcessType = anytype.Model.Process.Type
+typealias MProcessState = anytype.Model.Process.State
+typealias MProcessProgress = anytype.Model.Process.Progress

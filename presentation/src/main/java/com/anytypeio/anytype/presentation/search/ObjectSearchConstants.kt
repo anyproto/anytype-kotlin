@@ -90,7 +90,7 @@ object ObjectSearchConstants {
         DVFilter(
             relation = Relations.LAYOUT,
             condition = DVFilterCondition.IN,
-            value = SupportedLayouts.createObjectLayouts.map { it.code.toDouble() }
+            value = (SupportedLayouts.createObjectLayouts + SupportedLayouts.fileLayouts).map { it.code.toDouble() }
         ),
         DVFilter(
             relation = Relations.ID,

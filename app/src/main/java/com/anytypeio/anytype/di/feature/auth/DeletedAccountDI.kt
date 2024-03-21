@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.misc.AppActionManager
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
@@ -101,9 +102,9 @@ interface DeletedAccountDependencies : ComponentDependencies {
     fun authRepository(): AuthRepository
     fun userSettingsRepository(): UserSettingsRepository
     fun spaceManager(): SpaceManager
-
     fun relationsSubscriptionManager(): RelationsSubscriptionManager
     fun objectTypesSubscriptionManager(): ObjectTypesSubscriptionManager
     fun spaceDeletedStatusWatcher(): SpaceDeletedStatusWatcher
     fun awaitAccountStartManager(): AwaitAccountStartManager
+    fun userPermissionProvider(): UserPermissionProvider
 }

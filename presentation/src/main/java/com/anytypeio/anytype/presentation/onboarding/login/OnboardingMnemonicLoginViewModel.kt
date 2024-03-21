@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.auth.interactor.StartLoadingAccounts
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
@@ -49,7 +50,8 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
     private val crashReporter: CrashReporter,
     private val configStorage: ConfigStorage,
-    private val localeProvider: LocaleProvider
+    private val localeProvider: LocaleProvider,
+    private val userPermissionProvider: UserPermissionProvider
 ) : ViewModel() {
 
     private val jobs = mutableListOf<Job>()
@@ -247,6 +249,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         relationsSubscriptionManager.onStart()
         objectTypesSubscriptionManager.onStart()
         spaceDeletedStatusWatcher.onStart()
+        userPermissionProvider.start()
     }
 
     private fun navigateToDashboard() {
@@ -295,6 +298,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         private val crashReporter: CrashReporter,
         private val configStorage: ConfigStorage,
         private val localeProvider: LocaleProvider,
+        private val userPermissionProvider: UserPermissionProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -312,7 +316,8 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                 observeAccounts = observeAccounts,
                 spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
                 selectAccount = selectAccount,
-                localeProvider = localeProvider
+                localeProvider = localeProvider,
+                userPermissionProvider = userPermissionProvider
             ) as T
         }
     }

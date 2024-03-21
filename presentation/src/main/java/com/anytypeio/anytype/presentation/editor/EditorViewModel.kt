@@ -99,7 +99,6 @@ import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.getSpaceWithTechSpace
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -383,7 +382,7 @@ class EditorViewModel(
     /**
      * Space in which this document exists.
      */
-    lateinit var space: Id
+    lateinit var space: String
 
     /**
      * Current document
@@ -503,8 +502,7 @@ class EditorViewModel(
         downloadUnsplashImage(
             DownloadUnsplashImage.Params(
                 picture = action.img,
-                // TODO re-fact to use space id from arguments or target space id of this object
-                space = SpaceId(spaceManager.get())
+                space = SpaceId(space)
             )
         ).process(
             failure = {
@@ -1026,7 +1024,7 @@ class EditorViewModel(
                 .build(InterceptThreadStatus.Params(context))
                 .collect { status ->
                     val statusView = status.toView(
-                        networkId = spaceManager.getConfig()?.network,
+                        networkId = spaceManager.getConfig(space = SpaceId(space))?.network,
                         networkMode = networkMode
                     )
                     syncStatus.value = statusView
@@ -1047,7 +1045,7 @@ class EditorViewModel(
             val params = OpenPage.Params(
                 obj = id,
                 saveAsLastOpened = saveAsLastOpened,
-                space = SpaceId(spaceManager.get())
+                space = SpaceId(space)
             )
             openPage.async(params).fold(
                 onSuccess = { result ->
@@ -3133,7 +3131,7 @@ class EditorViewModel(
 
     private fun proceedWithOpeningDataViewBlock(dv: Content.DataView) {
         if (dv.targetObjectId.isNotEmpty()) {
-            val space = orchestrator.stores.details.current().let { details ->
+            val targetSpace = orchestrator.stores.details.current().let { details ->
                 val detail = details.details[dv.targetObjectId]
                 if (detail != null && detail.map.isNotEmpty()) {
                     val wrapper = ObjectWrapper.Basic(detail.map)
@@ -3144,7 +3142,7 @@ class EditorViewModel(
             }
             proceedWithOpeningDataViewObject(
                 target = dv.targetObjectId,
-                space = SpaceId(space)
+                space = SpaceId(targetSpace)
             )
             viewModelScope.sendAnalyticsOpenAsObject(
                 analytics = analytics,
@@ -3239,7 +3237,7 @@ class EditorViewModel(
                 typeId = TypeId(objectTypeView.id),
                 typeKey = TypeKey(objectTypeView.key),
                 template = objectTypeView.defaultTemplate,
-                space = spaceManager.get()
+                space = space
             )
             createBlockLinkWithObject.async(
                 params = params
@@ -4055,7 +4053,7 @@ class EditorViewModel(
                                 type = relation.type,
                                 filters = ObjectSearchConstants.setsByObjectTypeFilters(
                                     types = listOf(relation.type),
-                                    space = spaceManager.get()
+                                    space = space
                                 )
                             )
                             findObjectSetForType(params).process(
@@ -6020,7 +6018,11 @@ class EditorViewModel(
                 limit = ObjectSearchViewModel.SEARCH_LIMIT,
                 filters = ObjectSearchConstants.getFilterLinkTo(
                     ignore = context,
-                    spaces = spaceManager.getSpaceWithTechSpace(),
+                    spaces = buildList {
+                        add(space)
+                        val config = spaceManager.getConfig(SpaceId(space))
+                        if (config != null) add(config.techSpace)
+                    },
                 ),
                 sorts = ObjectSearchConstants.sortLinkTo,
                 fulltext = fullText,
@@ -6130,7 +6132,7 @@ class EditorViewModel(
                 sorts = emptyList(),
                 filters = ObjectSearchConstants.filterTypes(
                     spaces = buildList {
-                        add(spaceManager.get())
+                        add(space)
                     },
                     recommendedLayouts = SupportedLayouts.createObjectLayouts
                 ),

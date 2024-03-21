@@ -78,7 +78,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -122,7 +122,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -166,7 +166,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -254,7 +254,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         storeOfRelations.merge(objectRelations)
         stubGetObjectTypes(objectTypes)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -314,7 +314,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         storeOfRelations.merge(objectRelations)
         stubGetObjectTypes(objectTypes)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -364,7 +364,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         storeOfRelations.merge(objectRelations)
         stubGetObjectTypes(objectTypes)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -421,7 +421,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubGetObjectTypes(objectTypes)
 
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -459,7 +459,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         )
 
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -529,7 +529,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val vm = buildViewModel()
         storeOfRelations.merge(objectRelations)
         stubGetObjectTypes(objectTypes)
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -574,7 +574,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
         storeOfRelations.merge(objectRelations)
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -646,7 +646,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         storeOfRelations.merge(objectRelations)
         stubGetObjectTypes(objectTypes)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -696,7 +696,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         storeOfRelations.merge(objectRelations)
         stubGetObjectTypes(objectTypes)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -750,7 +750,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         storeOfRelations.merge(objectRelations)
         stubGetObjectTypes(objectTypes)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -800,7 +800,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         storeOfRelations.merge(objectRelations)
         stubGetObjectTypes(objectTypes)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -854,7 +854,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         storeOfRelations.merge(objectRelations)
         stubGetObjectTypes(objectTypes)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -904,7 +904,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         storeOfRelations.merge(objectRelations)
         stubGetObjectTypes(objectTypes)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -958,7 +958,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         storeOfRelations.merge(objectRelations)
         stubGetObjectTypes(objectTypes)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -1008,7 +1008,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         storeOfRelations.merge(objectRelations)
         stubGetObjectTypes(objectTypes)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -1076,7 +1076,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         storeOfRelations.merge(objectRelations)
         stubGetObjectTypes(objectTypes)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -1126,7 +1126,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         storeOfRelations.merge(objectRelations)
         stubGetObjectTypes(objectTypes)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -1194,7 +1194,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         storeOfRelations.merge(objectRelations)
         stubGetObjectTypes(objectTypes)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -1246,7 +1246,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         storeOfRelations.merge(objectRelations)
         stubGetObjectTypes(objectTypes)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -1301,7 +1301,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         storeOfRelations.merge(objectRelations)
         stubGetObjectTypes(objectTypes)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -1353,7 +1353,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         storeOfRelations.merge(objectRelations)
         stubGetObjectTypes(objectTypes)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -1401,7 +1401,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
         stubGetObjectTypes(objectTypes)
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -1449,7 +1449,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val vm = buildViewModel()
         stubGetObjectTypes(objectTypes)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -1496,7 +1496,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val vm = buildViewModel()
         stubGetObjectTypes(objectTypes)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -1544,7 +1544,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -1626,7 +1626,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -1695,7 +1695,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val vm = buildViewModel()
         stubGetObjectTypes(objectTypes)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -1748,7 +1748,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val vm = buildViewModel()
         stubGetObjectTypes(objectTypes)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -1806,7 +1806,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val vm = buildViewModel()
         stubGetObjectTypes(objectTypes)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -1848,7 +1848,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         val vm = buildViewModel()
         stubGetObjectTypes(objectTypes)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -1884,7 +1884,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubGetObjectTypes(listOf())
 
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -1922,7 +1922,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubGetObjectTypes(listOf())
 
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -1960,7 +1960,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubGetObjectTypes(listOf())
 
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -1998,7 +1998,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubGetObjectTypes(listOf())
 
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -2036,7 +2036,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubGetObjectTypes(listOf())
 
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -2073,7 +2073,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubOpenDocument(doc, customDetails)
 
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))

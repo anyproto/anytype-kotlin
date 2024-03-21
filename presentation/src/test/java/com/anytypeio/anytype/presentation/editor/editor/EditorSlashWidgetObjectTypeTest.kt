@@ -65,7 +65,7 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
         stubSpaceManager("")
 
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(a.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
@@ -125,7 +125,7 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
         stubSpaceManager(space = space)
 
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.apply {
             onBlockFocusChanged(paragraph.id, true)
             onSlashTextWatcherEvent(SlashEvent.Start(1, 0))

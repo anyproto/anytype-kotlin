@@ -218,7 +218,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
         val doc = listOf(page, header, title)
         setupInteractions(doc)
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val range = IntRange(start = 0, endInclusive = 0)
 
@@ -253,7 +253,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
         val doc = listOf(page, header, title, block)
         setupInteractions(doc)
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val range = IntRange(start = 0, endInclusive = 0)
 
@@ -303,7 +303,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
         val doc = listOf(page, header, title, block)
         setupInteractions(doc)
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val range = IntRange(start = 3, endInclusive = 3)
 
@@ -364,7 +364,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
         val doc = listOf(page, header, title, block)
         setupInteractions(doc)
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val range = IntRange(start = 7, endInclusive = 7)
 
@@ -426,7 +426,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
         val doc = listOf(page, header, title, block)
         setupInteractions(doc)
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val range = IntRange(start = 0, endInclusive = 0)
 
@@ -475,7 +475,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
         val doc = listOf(page, header, title, block)
         setupInteractions(doc)
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val range = IntRange(start = 3, endInclusive = 3)
 
@@ -535,7 +535,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
         val doc = listOf(page, header, title, block)
         setupInteractions(doc)
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val range = IntRange(start = 7, endInclusive = 7)
 
@@ -613,7 +613,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
             relations = listOf()
         )
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val range = IntRange(start = 0, endInclusive = 0)
 
@@ -664,7 +664,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
         val doc = listOf(page, header, title, description, featured, block)
         setupInteractions(doc)
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val range = IntRange(start = 3, endInclusive = 3)
 
@@ -727,7 +727,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
         val doc = listOf(page, header, title, description, featured, block)
         setupInteractions(doc)
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val range = IntRange(start = 6, endInclusive = 6)
 
@@ -778,7 +778,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
         val doc = listOf(page, header, title, description, block)
         setupInteractions(doc)
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val range = IntRange(start = 0, endInclusive = 0)
 
@@ -827,7 +827,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
         val doc = listOf(page, header, title, description, block)
         setupInteractions(doc)
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val range = IntRange(start = 3, endInclusive = 3)
 
@@ -888,7 +888,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
         val doc = listOf(page, header, title, description, block)
         setupInteractions(doc)
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val range = IntRange(start = 6, endInclusive = 6)
 
@@ -954,7 +954,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
             relations = listOf()
         )
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val range = IntRange(start = 0, endInclusive = 0)
 
@@ -1018,7 +1018,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
             relations = listOf()
         )
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val range = IntRange(start = 0, endInclusive = 0)
 
@@ -1069,7 +1069,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
         val doc = listOf(page, header, title, description, featured, block)
         setupInteractions(doc)
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val range = IntRange(start = 3, endInclusive = 3)
 
@@ -1132,7 +1132,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
         val doc = listOf(page, header, title, description, featured, block)
         setupInteractions(doc)
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val range = IntRange(start = 6, endInclusive = 6)
 
@@ -1197,7 +1197,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
             relations = listOf()
         )
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val range = IntRange(start = 0, endInclusive = 0)
 
@@ -1250,7 +1250,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
         val doc = listOf(page, header, title, description, block)
         setupInteractions(doc)
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val range = IntRange(start = 3, endInclusive = 3)
 
@@ -1312,7 +1312,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
         val doc = listOf(page, header, title, description, block)
         setupInteractions(doc)
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val range = IntRange(start = 6, endInclusive = 6)
 
@@ -1378,7 +1378,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
             relations = listOf()
         )
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val range = IntRange(start = 0, endInclusive = 0)
 
@@ -1452,7 +1452,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
             relations = listOf()
         )
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val range = IntRange(start = 3, endInclusive = 3)
 
@@ -1526,7 +1526,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
             relations = listOf()
         )
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val range = IntRange(start = 8, endInclusive = 8)
 
@@ -1602,7 +1602,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
             relations = listOf()
         )
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val range = IntRange(start = 0, endInclusive = 0)
 
@@ -1675,7 +1675,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
             relations = listOf()
         )
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val range = IntRange(start = 3, endInclusive = 3)
 
@@ -1748,7 +1748,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
             relations = listOf()
         )
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val range = IntRange(start = 8, endInclusive = 8)
 

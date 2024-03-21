@@ -231,6 +231,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
         val objectUnsupportedLayout = ObjectWrapper.Basic(
             mapOf(
                 Relations.ID to "objectUnsupportedLayout-${RandomString.make()}",
+                Relations.SPACE_ID to mockObjectSet.spaceId,
                 Relations.LAYOUT to unsupportedLayout.code.toDouble()
             )
         )

@@ -85,7 +85,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = title.id,
                 hasFocus = true
@@ -140,7 +140,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = title.id,
                 hasFocus = true
@@ -188,7 +188,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = title.id,
                 hasFocus = true
@@ -247,7 +247,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = title.id,
                 hasFocus = true
@@ -288,7 +288,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = title.id,
                 hasFocus = true
@@ -340,7 +340,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = title.id,
                 hasFocus = true
@@ -381,7 +381,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = title.id,
                 hasFocus = true
@@ -433,7 +433,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = title.id,
                 hasFocus = true

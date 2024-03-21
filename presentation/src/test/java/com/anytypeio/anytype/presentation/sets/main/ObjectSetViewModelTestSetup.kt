@@ -93,6 +93,7 @@ import org.mockito.kotlin.stub
 open class ObjectSetViewModelTestSetup {
 
     val root: Id = "context-${RandomString.make()}"
+    val defaultSpace = MockDataFactory.randomUuid()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule

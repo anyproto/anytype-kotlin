@@ -197,7 +197,6 @@ import com.anytypeio.anytype.presentation.editor.selection.updateTableBlockSelec
 import com.anytypeio.anytype.presentation.editor.selection.updateTableBlockTab
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateViewState
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
-import com.anytypeio.anytype.presentation.extension.getProperObjectName
 import com.anytypeio.anytype.presentation.extension.getUrlForFileBlock
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockActionEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockAlignEvent
@@ -1000,10 +999,11 @@ class EditorViewModel(
         }
     }
 
-    fun onStart(id: Id, saveAsLastOpened: Boolean = true) {
+    fun onStart(id: Id, space: Id, saveAsLastOpened: Boolean = true) {
         Timber.d("onStart, id:[$id]")
 
-        context = id
+        this.context = id
+        this.space = space
 
         stateData.postValue(ViewState.Loading)
 

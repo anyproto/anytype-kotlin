@@ -87,7 +87,7 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
         val vm = buildViewModel()
 
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
 
             fillTableRow.stub {
                 onBlocking {
@@ -1387,7 +1387,7 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
         val vm = buildViewModel()
 
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
 
             fillTableRow.stub {
                 onBlocking {

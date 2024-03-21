@@ -92,7 +92,7 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         val selection = IntRange(1, 1)
         vm.apply {
             onSelectionChanged(
@@ -196,7 +196,7 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         val selection = IntRange(0, 0)
 
         vm.apply {
@@ -311,7 +311,7 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         val selection = IntRange(0, 0)
 
         vm.apply {
@@ -404,7 +404,7 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         val selection = IntRange(1, 1)
         vm.apply {
             onSelectionChanged(
@@ -479,7 +479,7 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
         )
 
         val vm = buildViewModel()
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         val selection = IntRange(1, 1)
 
         //TESTING

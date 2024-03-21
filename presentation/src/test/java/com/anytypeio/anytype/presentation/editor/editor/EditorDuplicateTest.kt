@@ -73,7 +73,7 @@ class EditorDuplicateTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // Simulating long tap on "c" block, in order to enter multi-select mode.
 
@@ -150,7 +150,7 @@ class EditorDuplicateTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // Simulating long tap on "c" block, in order to enter multi-select mode.
 
@@ -298,7 +298,7 @@ class EditorDuplicateTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // Simulating long tap on "a" block, in order to enter in multi-select mode.
 

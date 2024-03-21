@@ -125,6 +125,7 @@ import org.mockito.kotlin.stub
 open class EditorPresentationTestSetup {
 
     val root: Id = MockDataFactory.randomString()
+    val defaultSpace: Id = MockDataFactory.randomUuid()
 
     @Mock
     lateinit var openPage: OpenPage

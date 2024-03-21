@@ -85,7 +85,7 @@ class EditorMenuTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val observer = vm.commands.test()
 
@@ -140,7 +140,7 @@ class EditorMenuTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val observer = vm.commands.test()
 
@@ -221,7 +221,7 @@ class EditorMenuTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val observer = vm.commands.test()
 

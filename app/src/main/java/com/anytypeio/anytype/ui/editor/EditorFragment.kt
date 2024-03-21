@@ -489,7 +489,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
             }
         }
-        vm.onStart(id = extractDocumentId(), saveAsLastOpened = saveAsLastOpened())
+        vm.onStart(id = extractDocumentId(), space = space, saveAsLastOpened = saveAsLastOpened())
         super.onStart()
     }
 

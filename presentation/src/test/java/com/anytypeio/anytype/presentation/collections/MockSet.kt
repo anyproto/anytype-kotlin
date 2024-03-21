@@ -174,8 +174,16 @@ class MockSet(context: String,
     )
 
     // RECORDS
-    val obj1 = StubObject(id = "object-${RandomString.make()}", name = "object1-name-${RandomString.make()}")
-    val obj2 = StubObject(id = "object-${RandomString.make()}", name = "object2-name-${RandomString.make()}")
+    val obj1 = StubObject(
+        id = "object-${RandomString.make()}",
+        name = "object1-name-${RandomString.make()}",
+        space = spaceId
+    )
+    val obj2 = StubObject(
+        id = "object-${RandomString.make()}",
+        name = "object2-name-${RandomString.make()}",
+        space = spaceId
+    )
 
     // SET OBJECT DETAILS
     val details = Block.Details(
@@ -183,6 +191,7 @@ class MockSet(context: String,
             root to Block.Fields(
                 mapOf(
                     Relations.ID to root,
+                    Relations.SPACE_ID to spaceId,
                     Relations.LAYOUT to ObjectType.Layout.SET.code.toDouble(),
                     Relations.SET_OF to listOf(setOf)
                 )
@@ -190,6 +199,7 @@ class MockSet(context: String,
             setOf to Block.Fields(
                 map = mapOf(
                     Relations.ID to setOf,
+                    Relations.SPACE_ID to spaceId,
                     Relations.UNIQUE_KEY to setOfKey,
                     Relations.TYPE to ObjectTypeIds.OBJECT_TYPE,
                     Relations.RECOMMENDED_LAYOUT to ObjectType.Layout.BASIC.code.toDouble(),
@@ -204,6 +214,7 @@ class MockSet(context: String,
             root to Block.Fields(
                 mapOf(
                     Relations.ID to root,
+                    Relations.SPACE_ID to spaceId,
                     Relations.LAYOUT to ObjectType.Layout.SET.code.toDouble(),
                     Relations.SET_OF to listOf<String>()
                 )
@@ -216,6 +227,7 @@ class MockSet(context: String,
             root to Block.Fields(
                 mapOf(
                     Relations.ID to root,
+                    Relations.SPACE_ID to spaceId,
                     Relations.LAYOUT to ObjectType.Layout.SET.code.toDouble(),
                     Relations.SET_OF to relationObject3.id
                 )
@@ -223,6 +235,7 @@ class MockSet(context: String,
             relationObject3.id to Block.Fields(
                 mapOf(
                     Relations.ID to relationObject3.id,
+                    Relations.SPACE_ID to spaceId,
                     Relations.RELATION_KEY to relationObject3.key,
                     Relations.LAYOUT to ObjectType.Layout.RELATION.code.toDouble()
                 )
@@ -235,6 +248,7 @@ class MockSet(context: String,
             root to Block.Fields(
                 mapOf(
                     Relations.ID to root,
+                    Relations.SPACE_ID to spaceId,
                     Relations.LAYOUT to ObjectType.Layout.SET.code.toDouble(),
                     Relations.SET_OF to relationSetBy.id
                 )
@@ -242,6 +256,7 @@ class MockSet(context: String,
             relationSetBy.id to Block.Fields(
                 mapOf(
                     Relations.ID to relationSetBy.id,
+                    Relations.SPACE_ID to spaceId,
                     Relations.RELATION_KEY to relationSetBy.key,
                     Relations.UNIQUE_KEY to relationSetBy.uniqueKey,
                     Relations.LAYOUT to ObjectType.Layout.RELATION.code.toDouble(),

@@ -370,6 +370,7 @@ class ObjectSetViewModel(
                             targets = listOf(config.profile),
                             keys = listOf(
                                 Relations.ID,
+                                Relations.SPACE_ID,
                                 Relations.NAME,
                                 Relations.ICON_EMOJI,
                                 Relations.ICON_IMAGE,
@@ -706,8 +707,8 @@ class ObjectSetViewModel(
                         )
                         DataViewViewState.Set.Default(
                             viewer = render,
-                            isCreateObjectAllowed = objectState.isCreateObjectAllowed(defType)
-                                    && (permission?.isOwnerOrEditor() == true),
+                            isCreateObjectAllowed = objectState.isCreateObjectAllowed(defType),
+//                                    && (permission?.isOwnerOrEditor() == true),
                             isEditingViewAllowed = permission?.isOwnerOrEditor() == true
                         )
                     }

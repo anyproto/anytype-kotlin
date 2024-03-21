@@ -22,10 +22,13 @@ class PaymentsViewModel(
 
     private val _tiers = mutableListOf<Tier>()
 
+    var activeTierName: MutableStateFlow<String?> = MutableStateFlow(null)
+
     init {
         Timber.d("PaymentsViewModel init")
 
         _tiers.addAll(gertTiers())
+        setupActiveTierName()
         viewState.value = PaymentsMainState.Default(_tiers)
     }
 
@@ -80,6 +83,10 @@ class PaymentsViewModel(
     fun onDismissWelcome() {
         Timber.d("onDismissWelcome")
         command.value = PaymentsNavigation.Dismiss
+    }
+
+    private fun setupActiveTierName() {
+        activeTierName.value = _tiers.firstOrNull { it.isCurrent }?.prettyName
     }
 
     private fun gertTiers(): List<Tier> {

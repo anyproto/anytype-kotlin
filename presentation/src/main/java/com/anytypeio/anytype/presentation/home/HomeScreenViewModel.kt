@@ -866,6 +866,7 @@ class HomeScreenViewModel(
 
     fun onBundledWidgetClicked(widget: Id) {
         viewModelScope.launch {
+            // TODO DROID-2341 get space from widget views for better consistency
             val space = spaceManager.get()
             when (widget) {
                 Subscriptions.SUBSCRIPTION_SETS -> {

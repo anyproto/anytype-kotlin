@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.templates
 
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
@@ -24,8 +25,13 @@ import kotlinx.coroutines.test.runTest
 import net.bytebuddy.utility.RandomString
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
+import org.mockito.junit.MockitoJUnit
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
 
@@ -59,6 +65,11 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
     @Before
     fun setup() {
         closable = MockitoAnnotations.openMocks(this)
+        getNetworkMode.stub {
+            onBlocking {
+                run(any())
+            } doReturn NetworkModeConfig()
+        }
         viewModel = givenViewModel()
     }
 

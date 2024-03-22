@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.presentation.collections.MockCollection
 import com.anytypeio.anytype.presentation.collections.MockSet
@@ -25,6 +26,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
 
@@ -42,7 +44,8 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
-        mockObjectSet = MockSet(context = root, setOfValue = setOfId, setOfKey = setOfKey, space = defaultSpace)
+        mockObjectSet =
+            MockSet(context = root, setOfValue = setOfId, setOfKey = setOfKey, space = defaultSpace)
         mockObjectCollection = MockCollection(context = root, space = defaultSpace)
         stubNetworkMode()
     }
@@ -71,14 +74,24 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
             dvFilters = mockObjectSet.filters,
             objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2)
         )
-        doReturn(Unit).`when`(createDataViewObject).async(
-            CreateDataViewObject.Params.SetByType(
-                type = TypeKey(setOfKey),
-                filters = mockObjectSet.filters,
-                template = null,
-                prefilled = mapOf(),
+        createDataViewObject.stub {
+            onBlocking {
+                async(
+                    CreateDataViewObject.Params.SetByType(
+                        type = TypeKey(setOfKey),
+                        filters = mockObjectSet.filters,
+                        template = null,
+                        prefilled = mapOf(),
+                    )
+                )
+            } doReturn Resultat.success(
+                CreateDataViewObject.Result(
+                    "",
+                    TypeKey(""),
+                    mapOf("spaceId" to "spaceId")
+                )
             )
-        )
+        }
 
         // TESTING
         proceedWithStartingViewModel()

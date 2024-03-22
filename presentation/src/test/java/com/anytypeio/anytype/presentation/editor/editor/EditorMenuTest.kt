@@ -11,6 +11,7 @@ import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory.profile
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -22,12 +23,15 @@ class EditorMenuTest : EditorPresentationTestSetup() {
     @get:Rule
     val rule = InstantTaskExecutorRule()
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        stubGetNetworkMode()
+        stubFileLimitEvents()
     }
 
     @Test

@@ -193,7 +193,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
             dvFilters = mockObjectSet.filters
         )
 
-        doReturn(Unit).`when`(closeBlock).async(mockObjectSet.root)
+        stubCloseBlock()
 
         // TESTING
         proceedWithStartingViewModel()

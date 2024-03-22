@@ -83,13 +83,18 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import net.bytebuddy.utility.RandomString
+import org.junit.Before
 import org.junit.Rule
 import org.mockito.Mock
+import org.mockito.MockitoAnnotations
+import org.mockito.junit.MockitoJUnit
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 
+@OptIn(ExperimentalCoroutinesApi::class)
 open class ObjectSetViewModelTestSetup {
 
     val root: Id = "context-${RandomString.make()}"
@@ -328,6 +333,22 @@ open class ObjectSetViewModelTestSetup {
         }
     }
 
+    fun stubAddObjectToCollection() {
+        addObjectToCollection.stub {
+            onBlocking {
+                async(any())
+            } doReturn Resultat.success(Payload("", emptyList()))
+        }
+    }
+
+    fun stubCloseBlock() {
+        closeBlock.stub {
+            onBlocking {
+                async(any())
+            } doReturn Resultat.success(Unit)
+        }
+    }
+
     suspend fun stubSpaceManager(space: Id) {
         repo.stub {
             onBlocking { getSpaceConfig(space) } doReturn spaceConfig
@@ -445,7 +466,7 @@ open class ObjectSetViewModelTestSetup {
                     CreateDataViewObject.Result(
                         objectId = objectId,
                         objectType = TypeKey(objectType),
-                        struct = null
+                        struct = mapOf<Id, Any?>("spaceId" to "spaceId")
                     )
                 )
             )
@@ -455,6 +476,20 @@ open class ObjectSetViewModelTestSetup {
     fun stubNetworkMode() {
         getNetworkMode.stub {
             onBlocking { run(Unit) } doReturn NetworkModeConfig()
+        }
+    }
+
+    fun stubObjectToCollection() {
+        objectToCollection.stub {
+            onBlocking { async(any()) } doReturn Resultat.success(Unit)
+        }
+    }
+
+    fun givenNetworkNodeMocked() {
+        getNetworkMode.stub {
+            onBlocking {
+                run(any())
+            } doReturn NetworkModeConfig()
         }
     }
 }

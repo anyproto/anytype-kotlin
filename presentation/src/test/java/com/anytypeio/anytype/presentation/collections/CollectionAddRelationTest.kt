@@ -50,6 +50,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
         MockitoAnnotations.openMocks(this)
         objectCollection = MockCollection(context = root, space = defaultSpace)
         viewModel = givenViewModel()
+        stubNetworkMode()
     }
 
     @After

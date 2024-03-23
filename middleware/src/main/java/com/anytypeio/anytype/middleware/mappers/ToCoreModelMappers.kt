@@ -3,6 +3,10 @@ package com.anytypeio.anytype.middleware.mappers
 import anytype.ResponseEvent
 import anytype.Rpc
 import anytype.model.Account
+import anytype.model.Export
+import anytype.model.Import
+import anytype.model.Import.ErrorCode.*
+import anytype.model.Notification.Status.*
 import anytype.model.Restrictions
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Block
@@ -22,11 +26,18 @@ import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.ExportFormat
 import com.anytypeio.anytype.core_models.Process
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ImportErrorCode
+import com.anytypeio.anytype.core_models.ImportType
 import com.anytypeio.anytype.core_models.ManifestInfo
 import com.anytypeio.anytype.core_models.NodeUsage
 import com.anytypeio.anytype.core_models.NodeUsageInfo
+import com.anytypeio.anytype.core_models.Notification
+import com.anytypeio.anytype.core_models.NotificationActionType
+import com.anytypeio.anytype.core_models.NotificationPayload
+import com.anytypeio.anytype.core_models.NotificationStatus
 import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
@@ -780,7 +791,7 @@ fun List<Rpc.Debug.TreeInfo>.toCoreModel(): String {
     return GsonBuilder().setPrettyPrinting().create().toJson(this)
 }
 
-fun Account.Info.config() : Config = Config(
+fun Account.Info.config(): Config = Config(
     home = homeObjectId,
     profile = profileObjectId,
     gateway = gatewayUrl,
@@ -826,7 +837,7 @@ fun MProcessType.toCoreModel(): Process.Type {
         MProcessType.Export -> Process.Type.EXPORT
         MProcessType.SaveFile -> Process.Type.SAVE_FILE
         MProcessType.RecoverAccount -> Process.Type.RECOVER_ACCOUNT
-        MProcessType.Migration ->  Process.Type.MIGRATION
+        MProcessType.Migration -> Process.Type.MIGRATION
     }
 }
 
@@ -845,5 +856,71 @@ fun MProcessProgress.toCoreModel(): Process.Progress {
         total = total,
         done = done,
         message = message
+    )
+}
+
+//region IMPORT, EXPORT
+fun MImportErrorCode.toCoreModel(): ImportErrorCode {
+    return when (this) {
+        MImportErrorCode.NULL -> ImportErrorCode.NULL
+        MImportErrorCode.UNKNOWN_ERROR -> ImportErrorCode.UNKNOWN_ERROR
+        MImportErrorCode.BAD_INPUT -> ImportErrorCode.BAD_INPUT
+        MImportErrorCode.INTERNAL_ERROR -> ImportErrorCode.INTERNAL_ERROR
+        MImportErrorCode.NO_OBJECTS_TO_IMPORT -> ImportErrorCode.NO_OBJECTS_TO_IMPORT
+        MImportErrorCode.IMPORT_IS_CANCELED -> ImportErrorCode.IMPORT_IS_CANCELED
+        MImportErrorCode.LIMIT_OF_ROWS_OR_RELATIONS_EXCEEDED -> ImportErrorCode.LIMIT_OF_ROWS_OR_RELATIONS_EXCEEDED
+        MImportErrorCode.FILE_LOAD_ERROR -> ImportErrorCode.FILE_LOAD_ERROR
+        MImportErrorCode.INSUFFICIENT_PERMISSIONS -> ImportErrorCode.INSUFFICIENT_PERMISSIONS
+    }
+}
+
+fun MImportType.toCoreModel(): ImportType {
+    return when (this) {
+        MImportType.Notion -> ImportType.NOTION
+        MImportType.Markdown -> ImportType.MARKDOWN
+        MImportType.External -> ImportType.EXTERNAL
+        MImportType.Pb -> ImportType.PB
+        MImportType.Html -> ImportType.HTML
+        MImportType.Txt -> ImportType.TXT
+        MImportType.Csv -> ImportType.CSV
+    }
+}
+
+fun MExportFormat.toCoreModel(): ExportFormat {
+    return when (this) {
+        MExportFormat.DOT -> ExportFormat.DOT
+        MExportFormat.Markdown -> ExportFormat.MARKDOWN
+        MExportFormat.Protobuf -> ExportFormat.PROTOBUF
+        MExportFormat.JSON -> ExportFormat.JSON
+        MExportFormat.SVG -> ExportFormat.SVG
+        MExportFormat.GRAPH_JSON -> ExportFormat.GRAPH_JSON
+    }
+}
+//endregion
+
+//region NOTIFICATIONS
+fun MNotificationStatus.toCoreModel(): NotificationStatus {
+    return when (this) {
+        MNotificationStatus.Created -> NotificationStatus.CREATED
+        MNotificationStatus.Shown -> NotificationStatus.SHOWN
+        MNotificationStatus.Read -> NotificationStatus.READ
+        MNotificationStatus.Replied -> NotificationStatus.REPLIED
+    }
+}
+
+fun MNotificationActionType.toCoreModel(): NotificationActionType {
+    return when (this) {
+        MNotificationActionType.CLOSE -> NotificationActionType.CLOSE
+    }
+}
+
+fun anytype.model.Notification.
+
+fun MNotification.toCoreModel(): Notification {
+    return Notification(
+        id = id,
+        status = status.toCoreModel(),
+        payload = this.,
+
     )
 }

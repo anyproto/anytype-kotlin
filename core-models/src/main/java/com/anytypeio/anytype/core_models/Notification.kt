@@ -1,14 +1,15 @@
 package com.anytypeio.anytype.core_models
 
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 
 data class Notification(
-    val id: String,
+    val id: Id,
     val createTime: Long,
     val status: Status,
     val isLocal: Boolean,
-    val payload: Payload,
-    val space: String,
+    val payload: NotificationPayload,
+    val space: SpaceId,
     val aclHeadId: String
 )
 
@@ -17,7 +18,7 @@ sealed class NotificationPayload {
         val processId: String,
         val errorCode: ImportErrorCode,
         val importType: ImportType,
-        val spaceId: String,
+        val spaceId: SpaceId,
         val name: String
     ) : NotificationPayload()
 
@@ -29,12 +30,12 @@ sealed class NotificationPayload {
     data class GalleryImport(
         val processId: String,
         val errorCode: ImportErrorCode,
-        val spaceId: String,
+        val spaceId: SpaceId,
         val name: String
     ) : NotificationPayload()
 
     data class RequestToJoin(
-        val spaceId: String,
+        val spaceId: SpaceId,
         val identity: String,
         val identityName: String,
         val identityIcon: String
@@ -43,12 +44,12 @@ sealed class NotificationPayload {
     object Test : NotificationPayload()
 
     data class ParticipantRequestApproved(
-        val spaceId: String,
+        val spaceId: SpaceId,
         val permissions: SpaceMemberPermissions
     ) : NotificationPayload()
 
     data class RequestToLeave(
-        val spaceId: String,
+        val spaceId: SpaceId,
         val identity: String,
         val identityName: String,
         val identityIcon: String
@@ -58,23 +59,23 @@ sealed class NotificationPayload {
         val identity: String,
         val identityName: String,
         val identityIcon: String,
-        val spaceId: String
+        val spaceId: SpaceId
     ) : NotificationPayload()
 
     data class ParticipantRequestDecline(
-        val spaceId: String
+        val spaceId: SpaceId
     ) : NotificationPayload()
 
     data class ParticipantPermissionsChange(
-        val spaceId: String,
+        val spaceId: SpaceId,
         val permissions: SpaceMemberPermissions
     ) : NotificationPayload()
 }
 
-enum class Status {
+enum class NotificationStatus {
     CREATED, SHOWN, READ, REPLIED
 }
 
-enum class ActionType {
+enum class NotificationActionType {
     CLOSE
 }

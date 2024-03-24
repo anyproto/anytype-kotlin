@@ -48,7 +48,7 @@
     <string name="about_meta_info_for_copy">Device: %1$s\nAndroid version: %2$d\nApp version: %3$s\nBuild number: %4$d\nLibrary version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDevice\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s</string>
     <string name="space">Простір</string>
     <string name="space_name">Назва простору</string>
-    <string name="personal_space">Personal Space</string>
+    <string name="personal_space">Налаштування</string>
     <string name="space_settings_apply_random_gradient">Apply random gradient</string>
     <string name="delete_space">Видалити простір </string>
     <string name="you_can_store">You can store up to %1$s of your files on our encrypted backup node for free. If you reach the limit, files will be stored only locally.</string>
@@ -85,7 +85,7 @@
     <string name="option_list_toggle_list">Toggle list</string>
     <string name="option_tool_task">Задача</string>
     <string name="option_tool_page">Page</string>
-    <string name="option_tool_link_to_object">Link to object</string>
+    <string name="option_tool_link_to_object">Зв\'язати з об\'єктом</string>
     <string name="option_tool_database">Database</string>
     <string name="option_tool_set">Набір</string>
     <string name="option_tool_contact">Contact</string>
@@ -275,7 +275,7 @@
     <string name="sync_status_synced">Синхронізовано</string>
     <string name="sync_status_failed">Not synced</string>
     <string name="sync_status_toast_unknown">Ініціалізація синхронізації</string>
-    <string name="sync_status_toast_offline">Anytype node is not connected</string>
+    <string name="sync_status_toast_offline">Вузол Anytype не під\'єднано</string>
     <string name="sync_status_toast_syncing">Завантаження даних на деякий вузол</string>
     <string name="sync_status_toast_synced">Backed up on Anytype Network</string>
     <string name="sync_status_toast_synced_staging">Backed up on Anytype Staging</string>
@@ -353,7 +353,7 @@
     <string name="unfavorite">Вилучити з обраного</string>
     <string name="delete_view">Delete View</string>
     <string name="select_tags">Select tags</string>
-    <string name="select_status">Select status</string>
+    <string name="select_status">Оберіть статус</string>
     <string name="select_objects">Select objects</string>
     <string name="no_value">No value</string>
     <string name="source">Source</string>
@@ -488,7 +488,7 @@
     <string name="undefined">Undefined</string>
     <string name="set_by_relation">Relation: %1$s</string>
     <string name="set_by_relations">Relations: %1$s</string>
-    <string name="set_by_type">Object Type: %1$s</string>
+    <string name="set_by_type">Type: %1$s</string>
     <string name="my_types">My types</string>
     <string name="my_relations">Мої відносини</string>
     <string name="type_added">Type \"%1$s\" added to your library</string>
@@ -995,7 +995,7 @@
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
     <string name="onboarding_soul_space_creation">Setting up the Personal space…</string>
-    <string name="onboarding_soul_creation_personal_space">Personal Space</string>
+    <string name="onboarding_soul_creation_personal_space">Налаштування</string>
     <string name="onboarding_type_recovery_phrase">Введіть вашу фразу відновлення</string>
     <string name="onboarding_login_or">АБО</string>
     <string name="onboarding_entering_void_title">Входимо до порожнечі</string>

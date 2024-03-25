@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.collections
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -21,10 +22,12 @@ import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubsc
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import net.bytebuddy.utility.RandomString
 
-class MockSet(context: String,
-              val setOfValue: String = "setOf-${RandomString.make()}",
-              val setOfKey: String = "setOfKey-${RandomString.make()}"
-    ) {
+class MockSet(
+    context: String,
+    val space: Id,
+    val setOfValue: String = "setOf-${RandomString.make()}",
+    val setOfKey: String = "setOfKey-${RandomString.make()}"
+) {
 
     val root = context
     val title =
@@ -36,7 +39,7 @@ class MockSet(context: String,
         children = listOf(title.id),
         fields = Block.Fields(mapOf(Relations.ICON_EMOJI to emoji))
     )
-    val spaceId = "space-${RandomString.make()}"
+    val spaceId = space
     val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(context)
     val setOf get() = setOfValue
 

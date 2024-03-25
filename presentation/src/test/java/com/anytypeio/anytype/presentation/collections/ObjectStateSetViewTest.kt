@@ -40,7 +40,7 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
-        mockObjectSet = MockSet(context = root)
+        mockObjectSet = MockSet(context = root, space = defaultSpace)
     }
 
     @After
@@ -405,7 +405,7 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
     fun `displaying set with templates present when opening object set of pages with templates`() = runTest {
         // SETUP
 
-        mockObjectSet = MockSet(context = root, setOfValue = ObjectTypeIds.PAGE)
+        mockObjectSet = MockSet(context = root, setOfValue = ObjectTypeIds.PAGE, space = defaultSpace)
         val pageTypeMap = mapOf(
             Relations.ID to ObjectTypeIds.PAGE,
             Relations.TYPE to ObjectTypeIds.OBJECT_TYPE,

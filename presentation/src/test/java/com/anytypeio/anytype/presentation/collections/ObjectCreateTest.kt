@@ -52,6 +52,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
 
             mockObjectSet = MockSet(
                 context = root,
+                space = defaultSpace,
                 setOfValue = setOfId,
                 setOfKey = setOfKey
             )
@@ -127,6 +128,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
 
             mockObjectSet = MockSet(
                 context = root,
+                space = defaultSpace,
                 setOfValue = setOfId,
                 setOfKey = setOfKey
             )
@@ -193,7 +195,11 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
 
             val relationKey = "relationKey-${RandomString.make()}"
             val relationUniqueKeys = "relationUniqueKeys-${RandomString.make()}"
-            mockObjectSet = MockSet(context = root, setOfValue = setByRelationValue)
+            mockObjectSet = MockSet(
+                context = root,
+                space = defaultSpace,
+                setOfValue = setByRelationValue
+            )
             val setByRelationMap = mapOf(
                 Relations.ID to setByRelationValue,
                 Relations.LAYOUT to ObjectType.Layout.RELATION.code.toDouble(),

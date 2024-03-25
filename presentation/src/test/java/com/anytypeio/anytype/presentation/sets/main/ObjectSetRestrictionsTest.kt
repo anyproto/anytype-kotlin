@@ -25,7 +25,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
-        mockObjectSet = MockSet(context = root)
+        mockObjectSet = MockSet(context = root, space = defaultSpace)
     }
 
     @After

@@ -32,7 +32,7 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
     fun setup() {
         closable = MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
-        mockObjectSet = MockSet(context = root, setOfValue = setOfId, setOfKey = setOfKey)
+        mockObjectSet = MockSet(context = root, setOfValue = setOfId, setOfKey = setOfKey, space = defaultSpace)
         stubNetworkMode()
     }
 

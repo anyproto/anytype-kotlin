@@ -74,7 +74,7 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
     fun `set by type should has this type for all views default object type ids`() = runTest {
 
         val setOfValue = MockDataFactory.randomUuid()
-        mockSetByType = MockSet(context = root, setOfValue = setOfValue)
+        mockSetByType = MockSet(context = root, setOfValue = setOfValue, space = defaultSpace)
 
         with(mockSetByType) {
             stubSpaceManager(spaceId)
@@ -150,7 +150,8 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
 
         mockSetByRelation = MockSet(
             context = root,
-            setOfValue = MockSet("").relationObject3.id
+            space = defaultSpace,
+            setOfValue = MockSet("", space = defaultSpace).relationObject3.id
         )
         with(mockSetByRelation) {
 

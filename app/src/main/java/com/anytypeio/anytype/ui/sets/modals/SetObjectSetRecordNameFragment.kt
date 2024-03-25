@@ -17,9 +17,9 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.ObjectSetRecordViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSetRecordViewModel.Command
 import com.anytypeio.anytype.ui.editor.EditorFragment
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 class SetObjectSetRecordNameFragment : SetObjectCreateRecordFragmentBase<FragmentSetObjectSetRecordNameBinding>() {
 
@@ -46,7 +46,7 @@ class SetObjectSetRecordNameFragment : SetObjectCreateRecordFragmentBase<Fragmen
                 is Command.OpenObject -> {
                     findNavController().navigate(
                         R.id.objectNavigation,
-                        bundleOf(EditorFragment.ID_KEY to command.ctx)
+                        bundleOf(EditorFragment.CTX_KEY to command.ctx)
                     )
                 }
             }
@@ -72,7 +72,7 @@ class SetObjectSetRecordNameFragment : SetObjectCreateRecordFragmentBase<Fragmen
     }
 
     override fun releaseDependencies() {
-        componentManager().objectSetRecordComponent.release(ctx)
+        componentManager().objectSetRecordComponent.release()
     }
 
     override fun inflateBinding(

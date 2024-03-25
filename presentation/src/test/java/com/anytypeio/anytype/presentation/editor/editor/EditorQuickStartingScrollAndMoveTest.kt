@@ -95,7 +95,7 @@ class EditorQuickStartingScrollAndMoveTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val controlPanelTestObserver = vm.controlPanelViewState.test()
         val viewStateTestObserver = vm.state.test()
@@ -210,7 +210,7 @@ class EditorQuickStartingScrollAndMoveTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val controlPanelTestObserver = vm.controlPanelViewState.test()
         val viewStateTestObserver = vm.state.test()

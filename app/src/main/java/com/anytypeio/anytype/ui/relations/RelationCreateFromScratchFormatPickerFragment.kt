@@ -85,19 +85,19 @@ class RelationCreateFromScratchFormatPickerFragment :
     override fun releaseDependencies() {
         when (flow) {
             FLOW_OBJECT -> {
-                componentManager().relationFormatPickerObjectComponent.release(ctx)
+                componentManager().relationFormatPickerObjectComponent.release()
             }
             FLOW_BLOCK -> {
-                componentManager().relationFormatPickerBlockComponent.release(ctx)
+                componentManager().relationFormatPickerBlockComponent.release()
             }
             FLOW_DV -> {
-                componentManager().relationFormatPickerDataViewComponent.release(ctx)
+                componentManager().relationFormatPickerDataViewComponent.release()
             }
             FLOW_LIBRARY -> {
-                componentManager().relationFormatPickerLibraryComponent.release(ctx)
+                componentManager().relationFormatPickerLibraryComponent.release()
             }
             FLOW_SET_OR_COLLECTION -> {
-                componentManager().relationFormatPickerSetOrCollectionComponent.release(ctx)
+                componentManager().relationFormatPickerSetOrCollectionComponent.release()
             }
         }
     }

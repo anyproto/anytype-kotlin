@@ -84,7 +84,7 @@ class CreateDataViewViewerFragment : BaseBottomSheetFragment<FragmentCreateDataV
     }
 
     override fun releaseDependencies() {
-        componentManager().createDataViewViewerComponent.release(ctx)
+        componentManager().createDataViewViewerComponent.release()
     }
 
     override fun inflateBinding(

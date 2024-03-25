@@ -60,7 +60,7 @@ class EditorMergeTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.onBlockFocusChanged(
             id = second.id,
@@ -175,7 +175,7 @@ class EditorMergeTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.onBlockFocusChanged(b.id, true)
 
@@ -282,7 +282,7 @@ class EditorMergeTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.onBlockFocusChanged(d.id, true)
 
@@ -345,7 +345,7 @@ class EditorMergeTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.onBlockFocusChanged(b.id, true)
 

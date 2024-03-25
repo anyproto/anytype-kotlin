@@ -42,8 +42,8 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
-        mockObjectSet = MockSet(context = root, setOfValue = setOfId, setOfKey = setOfKey)
-        mockObjectCollection = MockCollection(context = root)
+        mockObjectSet = MockSet(context = root, setOfValue = setOfId, setOfKey = setOfKey, space = defaultSpace)
+        mockObjectCollection = MockCollection(context = root, space = defaultSpace)
         stubNetworkMode()
     }
 
@@ -81,7 +81,7 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         // ASSERT DATA VIEW STATE
         viewModel.currentViewer.test {
@@ -134,7 +134,7 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         // ASSERT DATA VIEW STATE
         viewModel.currentViewer.test {
@@ -192,7 +192,7 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         // ASSERT DATA VIEW STATE
         viewModel.currentViewer.test {
@@ -228,7 +228,7 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         // ASSERT DATA VIEW STATE
         viewModel.currentViewer.test {
@@ -240,5 +240,9 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
 
             assertTrue(second.isCreateObjectAllowed)
         }
+    }
+
+    private fun proceedWithStartingViewModel() {
+        viewModel.onStart(ctx = root, space = defaultSpace)
     }
 }

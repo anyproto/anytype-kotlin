@@ -9,7 +9,6 @@ import com.anytypeio.anytype.core_models.EMPTY_QUERY
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Marketplace
-import com.anytypeio.anytype.core_models.Name
 import com.anytypeio.anytype.core_models.ObjectOrigin
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -72,28 +71,24 @@ class SelectObjectTypeViewModel(
 
     private val query = MutableSharedFlow<String>()
 
-    lateinit var space: Id
-
     private val defaultObjectTypePipeline = MutableSharedFlow<TypeKey>(1)
 
     private val pinned = MutableStateFlow<List<TypeId>>(emptyList())
 
     init {
         viewModelScope.launch {
-            space = spaceManager.get()
             getPinnedObjectTypes.flow(
-                GetPinnedObjectTypes.Params(SpaceId(space))
+                GetPinnedObjectTypes.Params(params.space)
             ).collect { pinned.value = it }
         }
         viewModelScope.launch {
-            space = spaceManager.get()
             query.onStart { emit(EMPTY_QUERY) }.flatMapLatest { query ->
                 val types = getObjectTypes.stream(
                     GetObjectTypes.Params(
                         sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                         filters = ObjectSearchConstants.filterTypes(
                             spaces = buildList {
-                                add(space)
+                                add(params.space.id)
                                 if (query.isNotEmpty()) {
                                     add(Marketplace.MARKETPLACE_SPACE_ID)
                                 }
@@ -123,7 +118,7 @@ class SelectObjectTypeViewModel(
                         .sortedBy { obj -> pinnedObjectTypesIds.indexOf(obj.id) }
 
                     val (allUserTypes, allLibraryTypes) = allTypes.partition { type ->
-                        type.getValue<Id>(Relations.SPACE_ID) == space
+                        type.getValue<Id>(Relations.SPACE_ID) == params.space.id
                     }
                     val filteredLibraryTypes = allLibraryTypes.filter { type ->
                         allUserTypes.none { it.uniqueKey == type.uniqueKey }
@@ -293,7 +288,7 @@ class SelectObjectTypeViewModel(
         viewModelScope.launch {
             setPinnedObjectTypes.async(
                 SetPinnedObjectTypes.Params(
-                    space = SpaceId(id = space),
+                    space = params.space,
                     types = pinned
                 )
             ).fold(
@@ -311,7 +306,7 @@ class SelectObjectTypeViewModel(
         viewModelScope.launch {
             setDefaultObjectType.async(
                 SetDefaultObjectType.Params(
-                    space = SpaceId(space),
+                    space = params.space,
                     type = TypeId(typeView.id)
                 )
             ).fold(
@@ -330,7 +325,7 @@ class SelectObjectTypeViewModel(
             if (typeView.isFromLibrary) {
                 val params = AddObjectToSpace.Params(
                     obj = typeView.id,
-                    space = space
+                    space = params.space.id
                 )
                 addObjectToSpace.async(params = params).fold(
                     onSuccess = { result ->
@@ -385,7 +380,7 @@ class SelectObjectTypeViewModel(
             val startTime = System.currentTimeMillis()
             createBookmarkObject(
                 CreateBookmarkObject.Params(
-                    space = space,
+                    space = params.space.id,
                     url = url,
                     details = mapOf(
                         Relations.ORIGIN to ObjectOrigin.CLIPBOARD.code.toDouble()
@@ -400,7 +395,12 @@ class SelectObjectTypeViewModel(
 //                        route = EventsDictionary.Routes.sharingExtension,
 //                        startTime = startTime
 //                    )
-                    navigation.emit(OpenObjectNavigation.OpenEditor(obj))
+                    navigation.emit(
+                        OpenObjectNavigation.OpenEditor(
+                            target = obj,
+                            space = params.space.id
+                        )
+                    )
                 },
                 failure = {
                     Timber.d(it, "Error while creating bookmark")
@@ -422,21 +422,26 @@ class SelectObjectTypeViewModel(
             createPrefilledNote.async(
                 CreatePrefilledNote.Params(
                     text = text,
-                    space = space,
+                    space = params.space.id,
                     details = mapOf(
                         Relations.ORIGIN to ObjectOrigin.CLIPBOARD.code.toDouble()
                     ),
                     customType = defaultObjectType ?: TypeKey(ObjectTypeUniqueKeys.NOTE)
                 )
             ).fold(
-                onSuccess = { result ->
+                onSuccess = { obj ->
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
                         objType = defaultObjectType?.key ?: ObjectTypeUniqueKeys.NOTE,
                         route = EventsDictionary.Routes.sharingExtension,
                         startTime = startTime
                     )
-                    navigation.emit(OpenObjectNavigation.OpenEditor(result))
+                    navigation.emit(
+                        OpenObjectNavigation.OpenEditor(
+                            target = obj,
+                            space = params.space.id
+                        )
+                    )
                 },
                 onFailure = {
                     Timber.d(it, "Error while creating note")
@@ -482,6 +487,7 @@ class SelectObjectTypeViewModel(
     }
 
     data class Params(
+        val space: SpaceId,
         val excludedTypeKeys: List<TypeKey>
     )
 }

@@ -2,16 +2,18 @@ package com.anytypeio.anytype.presentation.mapper
 
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.objects.toView
+import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 class ObjectWrapperExtensionsKtTest {
 
@@ -82,6 +84,7 @@ class ObjectWrapperExtensionsKtTest {
         val obj = ObjectWrapper.Basic(
             mapOf(
                 "id" to "Ef6",
+                Relations.SPACE_ID to MockDataFactory.randomUuid(),
                 "name" to "LmL7R",
                 "snippet" to "OMr2Y",
                 "layout" to ObjectType.Layout.NOTE.code.toDouble()
@@ -105,6 +108,7 @@ class ObjectWrapperExtensionsKtTest {
         val obj = ObjectWrapper.Basic(
             mapOf(
                 "id" to "Ef6",
+                Relations.SPACE_ID to MockDataFactory.randomUuid(),
                 "name" to "LmL7R",
                 "snippet" to "OMr2Y",
                 "layout" to ObjectType.Layout.BASIC.code.toDouble()
@@ -126,6 +130,7 @@ class ObjectWrapperExtensionsKtTest {
         val obj = ObjectWrapper.Basic(
             mapOf(
                 "id" to "Ef6",
+                Relations.SPACE_ID to MockDataFactory.randomUuid(),
                 "name" to "LmL7R",
                 "snippet" to "Anytype\nis\nnext-generation software that\n" +
                         "works like\nyour brain does. It solves everyday\n" +

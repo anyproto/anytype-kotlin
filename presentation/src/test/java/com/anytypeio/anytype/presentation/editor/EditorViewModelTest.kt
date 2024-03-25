@@ -394,7 +394,7 @@ open class EditorViewModelTest {
     private val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
     private val storeOfObjectTypes: StoreOfObjectTypes = DefaultStoreOfObjectTypes()
 
-    val spaceId = MockDataFactory.randomString()
+    val defaultSpace = MockDataFactory.randomString()
 
     @Before
     fun setup() {
@@ -404,7 +404,7 @@ open class EditorViewModelTest {
         spaceManager.stub {
             onBlocking {
                 get()
-            } doReturn spaceId
+            } doReturn defaultSpace
         }
     }
 
@@ -425,14 +425,14 @@ open class EditorViewModelTest {
         val param = OpenPage.Params(
             obj = root,
             saveAsLastOpened = true,
-            space = SpaceId(spaceId)
+            space = SpaceId(defaultSpace)
         )
 
         stubInterceptEvents()
         givenViewModel()
         stubOpenPage(context = root)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         runBlockingTest { verify(openPage, times(1)).async(param) }
     }
@@ -471,7 +471,7 @@ open class EditorViewModelTest {
 
         givenViewModel(builder)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val expected = ViewState.Success(
             blocks = listOf(
@@ -506,7 +506,7 @@ open class EditorViewModelTest {
 
         givenViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         verifyNoInteractions(closePage)
 
@@ -546,7 +546,7 @@ open class EditorViewModelTest {
         stubInterceptEvents()
         givenViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val testObserver = vm.navigation.test()
 
@@ -569,7 +569,7 @@ open class EditorViewModelTest {
         stubOpenPage(context = pageId)
         stubUpdateText()
 
-        vm.onStart(pageId)
+        vm.onStart(id = pageId, space = defaultSpace)
 
         val blockView = BlockView.Text.Paragraph(id = blockId, text = text)
         vm.onTextBlockTextChanged(blockView)
@@ -595,7 +595,7 @@ open class EditorViewModelTest {
         stubOpenPage(context = pageId)
         givenViewModel()
 
-        vm.onStart(pageId)
+        vm.onStart(id = pageId, space = defaultSpace)
 
         vm.onTextBlockTextChanged(
             BlockView.Text.Paragraph(
@@ -693,7 +693,7 @@ open class EditorViewModelTest {
 
         stubOpenPage()
         givenViewModel(builder)
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(200)
 
@@ -770,7 +770,7 @@ open class EditorViewModelTest {
 
         givenViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.onBlockFocusChanged(id = paragraph.id, hasFocus = true)
 
@@ -831,7 +831,7 @@ open class EditorViewModelTest {
         stubOpenPage()
         givenViewModel(builder)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 
@@ -875,7 +875,7 @@ open class EditorViewModelTest {
 
         val testObserver = vm.state.test()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         testObserver.assertValue(ViewState.Loading)
     }
@@ -934,7 +934,7 @@ open class EditorViewModelTest {
 
         givenViewModel(builder)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 
@@ -1084,7 +1084,7 @@ open class EditorViewModelTest {
         stubOpenPage()
         givenViewModel(builder)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 
@@ -1231,7 +1231,7 @@ open class EditorViewModelTest {
         stubOpenPage()
         givenViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 
@@ -1313,7 +1313,7 @@ open class EditorViewModelTest {
 
         val testObserver = vm.state.test()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         testObserver.assertValue(ViewState.Loading)
 
@@ -1410,7 +1410,7 @@ open class EditorViewModelTest {
 
         givenViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 
@@ -1501,7 +1501,7 @@ open class EditorViewModelTest {
 
         givenViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 
@@ -1563,7 +1563,7 @@ open class EditorViewModelTest {
         stubOpenPage()
         givenViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(1001)
 
@@ -1636,7 +1636,7 @@ open class EditorViewModelTest {
 
         givenViewModel(builder)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(500)
 
@@ -1730,7 +1730,7 @@ open class EditorViewModelTest {
         )
 
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(1001)
 
@@ -1798,7 +1798,7 @@ open class EditorViewModelTest {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 
@@ -1875,7 +1875,7 @@ open class EditorViewModelTest {
         givenViewModel(builder)
         stubUnlinkBlocks(root)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(pageOpenedDelay)
 
@@ -1993,7 +1993,7 @@ open class EditorViewModelTest {
         givenViewModel()
         stubUnlinkBlocks(root)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 
@@ -2051,7 +2051,7 @@ open class EditorViewModelTest {
         stubObserveEvents(events)
         givenViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 
@@ -2109,7 +2109,7 @@ open class EditorViewModelTest {
         stubCreateBlock(root)
         givenViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 
@@ -2164,7 +2164,7 @@ open class EditorViewModelTest {
 
         stubUpdateTextColor(root)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 
@@ -2236,7 +2236,7 @@ open class EditorViewModelTest {
         stubCreateBlock(root)
         givenViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 
@@ -2301,7 +2301,7 @@ open class EditorViewModelTest {
         stubUpdateTextStyle()
         givenViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 
@@ -2371,7 +2371,7 @@ open class EditorViewModelTest {
         stubUpdateText()
         stubSplitBlocks(root)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 
@@ -2473,7 +2473,7 @@ open class EditorViewModelTest {
         stubUpdateText()
         stubSplitBlocks(root)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 
@@ -2573,7 +2573,7 @@ open class EditorViewModelTest {
 
         givenSharedFile()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 
@@ -2630,7 +2630,7 @@ open class EditorViewModelTest {
 
         stubDownloadFile()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 
@@ -2700,7 +2700,7 @@ open class EditorViewModelTest {
             )
         }
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 
@@ -2765,7 +2765,7 @@ open class EditorViewModelTest {
             )
         }
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 
@@ -2819,7 +2819,7 @@ open class EditorViewModelTest {
         stubClosePage()
         givenViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(300)
 
@@ -2871,7 +2871,7 @@ open class EditorViewModelTest {
         givenViewModel()
         stubReplaceBlock(root)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 
@@ -2940,7 +2940,7 @@ open class EditorViewModelTest {
         stubReplaceBlock(root)
         givenViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 
@@ -3014,7 +3014,7 @@ open class EditorViewModelTest {
         stubUpdateText()
         stubReplaceBlock(root)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 
@@ -3072,7 +3072,7 @@ open class EditorViewModelTest {
         stubOpenPage()
         givenViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 
@@ -3167,7 +3167,7 @@ open class EditorViewModelTest {
         stubOpenPage()
         givenViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 
@@ -3338,7 +3338,7 @@ open class EditorViewModelTest {
         stubOpenPage()
         givenViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 
@@ -3438,7 +3438,7 @@ open class EditorViewModelTest {
         givenViewModel()
 
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
 
         val expected = listOf(
@@ -3513,7 +3513,7 @@ open class EditorViewModelTest {
         givenViewModel()
 
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
 
         val expected = listOf(
@@ -3583,7 +3583,7 @@ open class EditorViewModelTest {
         givenViewModel()
 
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
 
         val expected = listOf(
@@ -3687,7 +3687,7 @@ open class EditorViewModelTest {
                 async(
                     OpenPage.Params(
                         obj = context,
-                        space = SpaceId(spaceId),
+                        space = SpaceId(defaultSpace),
                         saveAsLastOpened = true
                     )
                 )
@@ -3968,7 +3968,7 @@ open class EditorViewModelTest {
         stubOpenPage()
         givenViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 
@@ -4071,7 +4071,7 @@ open class EditorViewModelTest {
         stubOpenPage()
         givenViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 
@@ -4178,7 +4178,7 @@ open class EditorViewModelTest {
         stubOpenPage()
         givenViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 
@@ -4319,7 +4319,7 @@ open class EditorViewModelTest {
         stubOpenPage()
         givenViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 

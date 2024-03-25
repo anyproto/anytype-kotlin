@@ -6,6 +6,7 @@ import com.anytypeio.anytype.test_utils.MockDataFactory
 
 fun StubObject(
     id: String = MockDataFactory.randomUuid(),
+    space: Id = MockDataFactory.randomUuid(),
     uniqueKey: String? = MockDataFactory.randomUuid(),
     name: String = MockDataFactory.randomString(),
     objectType: String = MockDataFactory.randomString(),
@@ -22,6 +23,7 @@ fun StubObject(
 ): ObjectWrapper.Basic = ObjectWrapper.Basic(
     map = mapOf(
         Relations.ID to id,
+        Relations.SPACE_ID to space,
         Relations.NAME to name,
         Relations.TYPE to objectType,
         Relations.LAYOUT to layout,

@@ -13,28 +13,29 @@ class NavigationRouter(
             when (command) {
                 is AppNavigation.Command.ExitFromMigrationScreen -> navigation.exitFromMigrationScreen()
                 is AppNavigation.Command.OpenSettings -> navigation.openSpaceSettings()
-                is AppNavigation.Command.OpenObject -> navigation.openDocument(command.id)
+                is AppNavigation.Command.OpenObject -> navigation.openDocument(
+                    target = command.target,
+                    space = command.space
+                )
                 is AppNavigation.Command.OpenModalTemplateSelect -> navigation.openModalTemplateSelect(
                     template = command.template,
                     templateTypeId = command.templateTypeId,
                     templateTypeKey = command.templateTypeKey
                 )
                 is AppNavigation.Command.OpenSetOrCollection -> navigation.openObjectSet(
-                    command.target,
-                    command.isPopUpToDashboard
+                    target = command.target,
+                    space = command.space,
+                    isPopUpToDashboard = command.isPopUpToDashboard
                 )
-                is AppNavigation.Command.LaunchObjectSet -> navigation.launchObjectSet(command.target)
-                is AppNavigation.Command.LaunchDocument -> navigation.launchDocument(command.id)
-                is AppNavigation.Command.LaunchObjectFromSplash -> navigation.launchObjectFromSplash(
-                    command.target
+                is AppNavigation.Command.LaunchObjectSet -> navigation.launchObjectSet(
+                    target = command.target,
+                    space = command.space
                 )
-
-                is AppNavigation.Command.LaunchObjectSetFromSplash -> navigation.launchObjectSetFromSplash(
-                    command.target
+                is AppNavigation.Command.LaunchDocument -> navigation.launchDocument(
+                    target = command.target,
+                    space = command.space
                 )
-
                 is AppNavigation.Command.OpenUserSettingsScreen -> navigation.openUserSettingsScreen()
-
                 is AppNavigation.Command.Exit -> navigation.exit()
                 is AppNavigation.Command.ExitToDesktop -> navigation.exitToDesktop()
                 is AppNavigation.Command.OpenDebugSettingsScreen -> navigation.openDebugSettings()
@@ -52,7 +53,7 @@ class NavigationRouter(
                     typeId = command.typeId
                 )
 
-                is AppNavigation.Command.OpenLibrary -> navigation.openLibrary()
+                is AppNavigation.Command.OpenLibrary -> navigation.openLibrary(command.space)
                 is AppNavigation.Command.MigrationErrorScreen -> navigation.migrationErrorScreen()
                 is AppNavigation.Command.OpenRemoteFilesManageScreen -> navigation.openRemoteFilesManageScreen(
                     command.subscription

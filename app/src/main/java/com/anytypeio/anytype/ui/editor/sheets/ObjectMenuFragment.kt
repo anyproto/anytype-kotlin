@@ -32,7 +32,7 @@ class ObjectMenuFragment : ObjectMenuBaseFragment() {
     }
 
     override fun releaseDependencies() {
-        componentManager().objectMenuComponent.release(ctx)
+        componentManager().objectMenuComponent.release()
     }
 
     companion object {

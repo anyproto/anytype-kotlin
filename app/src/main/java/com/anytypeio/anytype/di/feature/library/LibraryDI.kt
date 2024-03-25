@@ -53,6 +53,9 @@ interface LibraryComponent {
         @BindsInstance
         fun withContext(context: Context): Builder
 
+        @BindsInstance
+        fun withParams(params: LibraryViewModel.Params): Builder
+
         fun build(): LibraryComponent
     }
 

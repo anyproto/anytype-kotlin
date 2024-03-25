@@ -76,7 +76,7 @@ class EditorCheckboxTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.onCheckboxClicked(view)
 
@@ -136,7 +136,7 @@ class EditorCheckboxTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.onCheckboxClicked(view)
 

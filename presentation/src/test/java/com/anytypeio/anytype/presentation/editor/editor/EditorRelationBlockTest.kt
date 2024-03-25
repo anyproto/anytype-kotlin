@@ -102,7 +102,7 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
             relations = listOf(relation)
         )
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // TESTING
 
@@ -224,7 +224,7 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
 
             val vm = buildViewModel()
 
-            vm.onStart(root)
+            vm.onStart(id = root, space = defaultSpace)
 
             val expected =
                 listOf(
@@ -345,7 +345,7 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val expected = listOf(
             BlockView.Title.Basic(
@@ -428,7 +428,7 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
         val vm = buildViewModel()
         storeOfRelations.merge(listOf())
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val expected =
             listOf(

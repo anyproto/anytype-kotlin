@@ -757,7 +757,14 @@ class HomeScreenViewModel(
                     bundled = source
                 )
                 // TODO switch to bundled widgets id
-                navigate(Navigation.ExpandWidget(Subscription.Favorites))
+                viewModelScope.launch {
+                    navigation(
+                        Navigation.ExpandWidget(
+                            subscription = Subscription.Favorites,
+                            space = spaceManager.get()
+                        )
+                    )
+                }
             }
             is Widget.Source.Bundled.Sets -> {
                 viewModelScope.sendSelectHomeTabEvent(
@@ -765,7 +772,14 @@ class HomeScreenViewModel(
                     bundled = source
                 )
                 // TODO switch to bundled widgets id
-                navigate(Navigation.ExpandWidget(Subscription.Sets))
+                viewModelScope.launch {
+                    navigation(
+                        Navigation.ExpandWidget(
+                            subscription = Subscription.Sets,
+                            space = spaceManager.get()
+                        )
+                    )
+                }
             }
 
             is Widget.Source.Bundled.Recent -> {
@@ -774,7 +788,14 @@ class HomeScreenViewModel(
                     bundled = source
                 )
                 // TODO switch to bundled widgets id
-                navigate(Navigation.ExpandWidget(Subscription.Recent))
+                viewModelScope.launch {
+                    navigation(
+                        Navigation.ExpandWidget(
+                            subscription = Subscription.Recent,
+                            space = spaceManager.get()
+                        )
+                    )
+                }
             }
 
             is Widget.Source.Bundled.RecentLocal -> {
@@ -783,7 +804,14 @@ class HomeScreenViewModel(
                     bundled = source
                 )
                 // TODO switch to bundled widgets id
-                navigate(Navigation.ExpandWidget(Subscription.RecentLocal))
+                viewModelScope.launch {
+                    navigation(
+                        Navigation.ExpandWidget(
+                            subscription = Subscription.RecentLocal,
+                            space = spaceManager.get()
+                        )
+                    )
+                }
             }
 
             is Widget.Source.Bundled.Collections -> {
@@ -792,7 +820,14 @@ class HomeScreenViewModel(
                     bundled = source
                 )
                 // TODO switch to bundled widgets id
-                navigate(Navigation.ExpandWidget(Subscription.Collections))
+                viewModelScope.launch {
+                    navigation(
+                        Navigation.ExpandWidget(
+                            subscription = Subscription.Collections,
+                            space = spaceManager.get()
+                        )
+                    )
+                }
             }
 
             is Widget.Source.Default -> {
@@ -830,18 +865,42 @@ class HomeScreenViewModel(
     }
 
     fun onBundledWidgetClicked(widget: Id) {
-        when (widget) {
-            Subscriptions.SUBSCRIPTION_SETS -> {
-                navigate(Navigation.ExpandWidget(Subscription.Sets))
-            }
-            Subscriptions.SUBSCRIPTION_RECENT -> {
-                navigate(Navigation.ExpandWidget(Subscription.Recent))
-            }
-            Subscriptions.SUBSCRIPTION_ARCHIVED -> {
-                navigate(Navigation.ExpandWidget(Subscription.Bin))
-            }
-            Subscriptions.SUBSCRIPTION_FAVORITES -> {
-                navigate(Navigation.ExpandWidget(Subscription.Favorites))
+        viewModelScope.launch {
+            // TODO DROID-2341 get space from widget views for better consistency
+            val space = spaceManager.get()
+            when (widget) {
+                Subscriptions.SUBSCRIPTION_SETS -> {
+                    navigation(
+                        Navigation.ExpandWidget(
+                            subscription = Subscription.Sets,
+                            space = space
+                        )
+                    )
+                }
+                Subscriptions.SUBSCRIPTION_RECENT -> {
+                    navigation(
+                        Navigation.ExpandWidget(
+                            subscription = Subscription.Recent,
+                            space = space
+                        )
+                    )
+                }
+                Subscriptions.SUBSCRIPTION_ARCHIVED -> {
+                    navigation(
+                        Navigation.ExpandWidget(
+                            subscription = Subscription.Bin,
+                            space = space
+                        )
+                    )
+                }
+                Subscriptions.SUBSCRIPTION_FAVORITES -> {
+                    navigation(
+                        Navigation.ExpandWidget(
+                            subscription = Subscription.Favorites,
+                            space = space
+                        )
+                    )
+                }
             }
         }
     }
@@ -1103,10 +1162,20 @@ class HomeScreenViewModel(
     private fun proceedWithOpeningObject(obj: ObjectWrapper.Basic) {
         when(val navigation = obj.navigation()) {
             is OpenObjectNavigation.OpenDataView -> {
-                navigate(Navigation.OpenSet(navigation.target))
+                navigate(
+                    Navigation.OpenSet(
+                        ctx = navigation.target,
+                        space = navigation.target
+                    )
+                )
             }
             is OpenObjectNavigation.OpenEditor -> {
-                navigate(Navigation.OpenObject(navigation.target))
+                navigate(
+                    Navigation.OpenObject(
+                        ctx = navigation.target,
+                        space = navigation.space
+                    )
+                )
             }
             is OpenObjectNavigation.UnexpectedLayoutError -> {
                 sendToast("Unexpected layout: ${navigation.layout}")
@@ -1145,6 +1214,15 @@ class HomeScreenViewModel(
                         sendToast("Error while creating object. Please, try again later")
                     }
                 )
+            }
+        }
+    }
+
+    fun onCreateNewObjectLongClicked() {
+        viewModelScope.launch {
+            val space = spaceManager.get()
+            if (space.isNotEmpty()) {
+                commands.emit(Command.OpenObjectCreateDialog(SpaceId(space)))
             }
         }
     }
@@ -1421,10 +1499,20 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onLibraryClicked() {
+        viewModelScope.launch {
+            val space = spaceManager.get()
+            navigation(
+                Navigation.OpenLibrary(space)
+            )
+        }
+    }
+
     sealed class Navigation {
-        data class OpenObject(val ctx: Id) : Navigation()
-        data class OpenSet(val ctx: Id) : Navigation()
-        data class ExpandWidget(val subscription: Subscription) : Navigation()
+        data class OpenObject(val ctx: Id, val space: Id) : Navigation()
+        data class OpenSet(val ctx: Id, val space: Id) : Navigation()
+        data class ExpandWidget(val subscription: Subscription, val space: Id) : Navigation()
+        data class OpenLibrary(val space: Id) : Navigation()
     }
 
     class Factory @Inject constructor(
@@ -1541,6 +1629,8 @@ sealed class Command {
 
     data class OpenSpaceSettings(val spaceId: SpaceId) : Command()
 
+    data class OpenObjectCreateDialog(val space: SpaceId) : Command()
+
     data class SelectWidgetType(
         val ctx: Id,
         val source: Id,
@@ -1598,8 +1688,8 @@ typealias Widgets = List<Widget>?
 typealias Containers = List<WidgetContainer>?
 
 sealed class OpenObjectNavigation {
-    data class OpenEditor(val target: Id) : OpenObjectNavigation()
-    data class OpenDataView(val target: Id): OpenObjectNavigation()
+    data class OpenEditor(val target: Id, val space: Id) : OpenObjectNavigation()
+    data class OpenDataView(val target: Id, val space: Id): OpenObjectNavigation()
     data class UnexpectedLayoutError(val layout: ObjectType.Layout?): OpenObjectNavigation()
 }
 
@@ -1610,22 +1700,37 @@ fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
         ObjectType.Layout.TODO,
         ObjectType.Layout.BOOKMARK,
         ObjectType.Layout.PARTICIPANT -> {
-            OpenObjectNavigation.OpenEditor(id)
+            OpenObjectNavigation.OpenEditor(
+                target = id,
+                space = requireNotNull(spaceId)
+            )
         }
         in SupportedLayouts.fileLayouts -> {
-            OpenObjectNavigation.OpenEditor(id)
+            OpenObjectNavigation.OpenEditor(
+                target = id,
+                space = requireNotNull(spaceId)
+            )
         }
         ObjectType.Layout.PROFILE -> {
             val identityLink = getValue<Id>(Relations.IDENTITY_PROFILE_LINK)
             if (identityLink.isNullOrEmpty()) {
-                OpenObjectNavigation.OpenEditor(id)
+                OpenObjectNavigation.OpenEditor(
+                    target = id,
+                    space = requireNotNull(spaceId)
+                )
             } else {
-                OpenObjectNavigation.OpenEditor(identityLink)
+                OpenObjectNavigation.OpenEditor(
+                    target = identityLink,
+                    space = requireNotNull(spaceId)
+                )
             }
         }
         ObjectType.Layout.SET,
         ObjectType.Layout.COLLECTION -> {
-            OpenObjectNavigation.OpenDataView(id)
+            OpenObjectNavigation.OpenDataView(
+                target = id,
+                space = requireNotNull(spaceId)
+            )
         }
         else -> {
             OpenObjectNavigation.UnexpectedLayoutError(layout)

@@ -28,7 +28,7 @@ class TextBlockIconPickerFragment : IconPickerFragmentBase<TextBlockTarget>() {
     }
 
     override fun releaseDependencies() {
-        componentManager().textBlockIconPickerComponent.release(context)
+        componentManager().textBlockIconPickerComponent.release()
     }
 
     companion object {

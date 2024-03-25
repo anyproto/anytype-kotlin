@@ -89,23 +89,13 @@ class HomeScreenFragment : BaseComposeFragment() {
                         runCatching { navigation().openPageSearch() }
                     },
                     onLibraryClicked = {
-                        runCatching { navigation().openLibrary() }
+                        vm.onLibraryClicked()
                     },
                     onCreateNewObjectClicked = throttledClick(
                         onClick = { vm.onCreateNewObjectClicked() }
                     ),
                     onCreateNewObjectLongClicked = throttledClick(
-                        onClick = {
-                            val dialog = SelectObjectTypeFragment.new(
-                                flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT
-                            ).apply {
-                                onTypeSelected = {
-                                    vm.onCreateNewObjectClicked(it)
-                                    dismiss()
-                                }
-                            }
-                            dialog.show(childFragmentManager, "TEST")
-                        }
+                        onClick = { vm.onCreateNewObjectLongClicked() }
                     ),
                     onProfileClicked = throttledClick(
                         onClick = {
@@ -278,15 +268,45 @@ class HomeScreenFragment : BaseComposeFragment() {
                     Timber.e(e, "Error while opening space settings")
                 }
             }
+            is Command.OpenObjectCreateDialog -> {
+                val dialog = SelectObjectTypeFragment.new(
+                    flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT,
+                    space = command.space.id
+                ).apply {
+                    onTypeSelected = {
+                        vm.onCreateNewObjectClicked(it)
+                        dismiss()
+                    }
+                }
+                dialog.show(childFragmentManager, "object-create-dialog")
+            }
         }
     }
 
     private fun proceed(destination: Navigation) {
         Timber.d("New destination: $destination")
         when (destination) {
-            is Navigation.OpenObject -> navigation().openDocument(destination.ctx)
-            is Navigation.OpenSet -> navigation().openObjectSet(destination.ctx)
-            is Navigation.ExpandWidget -> navigation().launchCollections(destination.subscription)
+            is Navigation.OpenObject -> runCatching {
+                navigation().openDocument(
+                    target = destination.ctx,
+                    space = destination.space
+                )
+            }
+            is Navigation.OpenSet -> runCatching {
+                navigation().openObjectSet(
+                    target = destination.ctx,
+                    space = destination.space
+                )
+            }
+            is Navigation.ExpandWidget -> runCatching {
+                navigation().launchCollections(
+                    subscription = destination.subscription,
+                    space = destination.space
+                )
+            }
+            is Navigation.OpenLibrary -> runCatching {
+                navigation().openLibrary(destination.space)
+            }
         }
     }
 

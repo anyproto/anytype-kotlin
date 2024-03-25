@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import javax.inject.Inject
@@ -48,7 +49,8 @@ class DefaultUserPermissionProvider @Inject constructor(
     private val container: StorelessSubscriptionContainer,
     private val repo: AuthRepository,
     private val dispatchers: AppCoroutineDispatchers,
-    private val scope: CoroutineScope
+    private val scope: CoroutineScope,
+    private val logger: Logger
 ) : UserPermissionProvider {
 
     private val members = MutableStateFlow<List<ObjectWrapper.SpaceMember>>(emptyList())

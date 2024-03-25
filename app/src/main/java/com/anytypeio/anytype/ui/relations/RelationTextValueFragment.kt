@@ -216,13 +216,13 @@ open class RelationTextValueFragment :
     override fun releaseDependencies() {
         when (flow) {
             FLOW_DATAVIEW, FLOW_CHANGE_DATE -> {
-                componentManager().dataViewRelationTextValueComponent.release(ctx)
+                componentManager().dataViewRelationTextValueComponent.release()
             }
             FLOW_SET_OR_COLLECTION -> {
-                componentManager().setOrCollectionRelationTextValueComponent.release(ctx)
+                componentManager().setOrCollectionRelationTextValueComponent.release()
             }
             else -> {
-                componentManager().relationTextValueComponent.release(ctx)
+                componentManager().relationTextValueComponent.release()
             }
         }
     }

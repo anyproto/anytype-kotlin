@@ -10,13 +10,13 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlin.test.Test
+import kotlin.test.assertEquals
 import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.Before
 import org.junit.Rule
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
-import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class MentionExtTest {
 
@@ -36,16 +36,19 @@ class MentionExtTest {
 
         val mention1 = DefaultObjectView(
             id = MockDataFactory.randomUuid(),
+            space = MockDataFactory.randomUuid(),
             name = "abc"
         )
 
         val mention2 = DefaultObjectView(
             id = MockDataFactory.randomUuid(),
+            space = MockDataFactory.randomUuid(),
             name = "Cde"
         )
 
         val mention3 = DefaultObjectView(
             id = MockDataFactory.randomUuid(),
+            space = MockDataFactory.randomUuid(),
             name = "EfB"
         )
 
@@ -65,17 +68,20 @@ class MentionExtTest {
 
         val mention1 = DefaultObjectView(
             id = MockDataFactory.randomUuid(),
-            name = "abc"
+            name = "abc",
+            space = MockDataFactory.randomUuid(),
         )
 
         val mention2 = DefaultObjectView(
             id = MockDataFactory.randomUuid(),
-            name = "Cde"
+            name = "Cde",
+            space = MockDataFactory.randomUuid(),
         )
 
         val mention3 = DefaultObjectView(
             id = MockDataFactory.randomUuid(),
-            name = "EfB"
+            name = "EfB",
+            space = MockDataFactory.randomUuid(),
         )
 
         val mentions = listOf(mention1, mention2, mention3)
@@ -94,16 +100,19 @@ class MentionExtTest {
 
         val mention1 = DefaultObjectView(
             id = MockDataFactory.randomUuid(),
+            space = MockDataFactory.randomUuid(),
             name = "abc"
         )
 
         val mention2 = DefaultObjectView(
             id = MockDataFactory.randomUuid(),
+            space = MockDataFactory.randomUuid(),
             name = "Cde"
         )
 
         val mention3 = DefaultObjectView(
             id = MockDataFactory.randomUuid(),
+            space = MockDataFactory.randomUuid(),
             name = "EfB"
         )
 
@@ -123,16 +132,19 @@ class MentionExtTest {
 
         val mention1 = DefaultObjectView(
             id = MockDataFactory.randomUuid(),
+            space = MockDataFactory.randomUuid(),
             name = "abc"
         )
 
         val mention2 = DefaultObjectView(
             id = MockDataFactory.randomUuid(),
+            space = MockDataFactory.randomUuid(),
             name = "Cde"
         )
 
         val mention3 = DefaultObjectView(
             id = MockDataFactory.randomUuid(),
+            space = MockDataFactory.randomUuid(),
             name = "EfB"
         )
 

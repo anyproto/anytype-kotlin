@@ -107,7 +107,7 @@ class ObjectAppearanceSettingFragment :
     }
 
     override fun releaseDependencies() {
-        componentManager().objectAppearanceSettingComponent.release(ctx)
+        componentManager().objectAppearanceSettingComponent.release()
     }
 
     override fun inflateBinding(

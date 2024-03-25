@@ -76,8 +76,8 @@ class PickFilterConditionFragment :
 
     override fun releaseDependencies() {
         when (mode) {
-            MODE_CREATE -> componentManager().pickFilterConditionComponentCreate.release(ctx)
-            MODE_MODIFY -> componentManager().pickFilterConditionComponentModify.release(ctx)
+            MODE_CREATE -> componentManager().pickFilterConditionComponentCreate.release()
+            MODE_MODIFY -> componentManager().pickFilterConditionComponentModify.release()
             else -> throw RuntimeException("Wrong mode")
         }
     }

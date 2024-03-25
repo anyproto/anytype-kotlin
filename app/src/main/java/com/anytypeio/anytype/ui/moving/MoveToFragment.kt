@@ -54,6 +54,7 @@ class MoveToFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBind
 
     private val blocks get() = arg<List<Id>>(ARG_BLOCKS)
     private val ctx get() = arg<Id>(ARG_CTX)
+    private val space get() = arg<Id>(ARG_SPACE)
     private val restorePosition get() = argOrNull<Int>(ARG_RESTORE_POSITION)
     private val restoreBlock get() = argOrNull<Id>(ARG_RESTORE_BLOCK)
     private val title get() = argOrNull<String>(ARG_TITLE)
@@ -179,6 +180,7 @@ class MoveToFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBind
                     withParent<OnMoveToAction> {
                         onMoveTo(
                             target = command.view.id,
+                            space = space,
                             text = command.view.name,
                             icon = command.view.icon,
                             blocks = blocks,
@@ -266,6 +268,7 @@ class MoveToFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBind
     companion object {
         const val ARG_BLOCKS = "arg.move_to.blocks"
         const val ARG_CTX = "arg.move_to.ctx"
+        const val ARG_SPACE = "arg.move_to.space"
         const val ARG_RESTORE_POSITION = "arg.move_to.position"
         const val ARG_RESTORE_BLOCK = "arg.move_to.restore_block"
         const val ARG_TITLE = "arg.move_to.title"
@@ -273,6 +276,7 @@ class MoveToFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBind
 
         fun new(
             ctx: Id,
+            space: Id,
             blocks: List<Id>,
             restorePosition: Int?,
             restoreBlock: Id?,
@@ -280,6 +284,7 @@ class MoveToFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBind
         ) = MoveToFragment().apply {
             arguments = bundleOf(
                 ARG_CTX to ctx,
+                ARG_SPACE to space,
                 ARG_BLOCKS to blocks,
                 ARG_RESTORE_POSITION to restorePosition,
                 ARG_RESTORE_BLOCK to restoreBlock,
@@ -290,7 +295,14 @@ class MoveToFragment : BaseBottomSheetTextInputFragment<FragmentObjectSearchBind
 }
 
 interface OnMoveToAction {
-    fun onMoveTo(target: Id, blocks: List<Id>, text: String, icon: ObjectIcon, isDataView: Boolean)
+    fun onMoveTo(
+        target: Id,
+        space: Id,
+        blocks: List<Id>,
+        text: String,
+        icon: ObjectIcon,
+        isDataView: Boolean
+    )
     fun onMoveToClose(blocks: List<Id>, restorePosition: Int?, restoreBlock: Id?)
 }
 

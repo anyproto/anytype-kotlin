@@ -8,6 +8,7 @@ interface DefaultSearchItem
 
 data class DefaultObjectView(
     val id: Id,
+    val space: Id,
     val name: String,
     val type: String? = null,
     val typeName: String? = null,

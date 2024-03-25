@@ -54,7 +54,7 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        mockObjectCollection = MockCollection(context = root)
+        mockObjectCollection = MockCollection(context = root, space = defaultSpace)
         repo = mock(verboseLogging = true)
         dispatchers = AppCoroutineDispatchers(
             io = rule.dispatcher,
@@ -160,7 +160,7 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         // ASSERT DATA VIEW STATE
         viewModel.currentViewer.test {
@@ -190,5 +190,9 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
                 createObject(command)
             }
         }
+    }
+
+    private fun proceedWithStartingViewModel() {
+        viewModel.onStart(ctx = root, space = defaultSpace)
     }
 }

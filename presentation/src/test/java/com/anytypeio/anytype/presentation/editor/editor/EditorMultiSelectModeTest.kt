@@ -164,7 +164,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // TESTING
 
@@ -422,7 +422,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // TESTING
 
@@ -654,7 +654,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // TESTING
 
@@ -734,7 +734,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // TESTING
 
@@ -809,7 +809,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // Simulating long tap on "b" block, in order to enter multi-select mode.
 
@@ -884,7 +884,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // Selecting blocks "a", "b" and "c"
 
@@ -1025,7 +1025,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onClickListener(ListenerType.LongClick(target = a.id))
@@ -1098,7 +1098,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onClickListener(ListenerType.LongClick(target = a.id))
@@ -1146,7 +1146,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onClickListener(ListenerType.LongClick(target = a.id))
@@ -1195,7 +1195,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onClickListener(ListenerType.LongClick(target = a.id))
@@ -1243,7 +1243,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onClickListener(ListenerType.LongClick(target = a.id))
@@ -1323,7 +1323,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // TESTING
 
@@ -1374,7 +1374,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.onClickListener(ListenerType.LongClick(target = table.id))
 
@@ -1412,7 +1412,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.onClickListener(ListenerType.CellLongClick(tableId = table.id))
 

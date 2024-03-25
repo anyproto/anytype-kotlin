@@ -173,7 +173,7 @@ class ObjectSetSettingsFragment : BaseBottomSheetFragment<FragmentViewerRelation
     }
 
     override fun releaseDependencies() {
-        componentManager().objectsSetSettingsComponent.release(ctx)
+        componentManager().objectsSetSettingsComponent.release()
     }
 
     override fun inflateBinding(

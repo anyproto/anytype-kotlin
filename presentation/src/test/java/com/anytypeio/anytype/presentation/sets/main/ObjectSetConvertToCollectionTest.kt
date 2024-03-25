@@ -31,7 +31,7 @@ class ObjectSetConvertToCollectionTest : ObjectSetViewModelTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
-        mockObjectSet = MockSet(context = root)
+        mockObjectSet = MockSet(context = root, space = defaultSpace)
         stubGetDefaultPageType()
     }
 
@@ -43,7 +43,7 @@ class ObjectSetConvertToCollectionTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `should start collection subscription after changing from set to collection`() = runTest {
         // SETUP
-        stubSpaceManager(mockObjectSet.spaceId)
+        stubSpaceManager(defaultSpace)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -64,7 +64,7 @@ class ObjectSetConvertToCollectionTest : ObjectSetViewModelTestSetup() {
 
         // TESTING
 
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         val firstState = stateFlow.awaitItem()
         assertIs<ObjectState.Init>(firstState)
@@ -112,5 +112,9 @@ class ObjectSetConvertToCollectionTest : ObjectSetViewModelTestSetup() {
                 eq(mockObjectSet.root)
             )
         }
+    }
+
+    private fun proceedWithStartingViewModel() {
+        viewModel.onStart(ctx = root, space = defaultSpace)
     }
 }

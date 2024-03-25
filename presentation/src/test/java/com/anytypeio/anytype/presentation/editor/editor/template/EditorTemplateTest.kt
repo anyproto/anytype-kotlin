@@ -68,7 +68,7 @@ class EditorTemplateTest: EditorPresentationTestSetup() {
 
         assertFalse(vm.isObjectTemplate())
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         advanceUntilIdle()
 

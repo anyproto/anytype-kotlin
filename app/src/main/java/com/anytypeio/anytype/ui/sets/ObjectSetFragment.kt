@@ -67,6 +67,7 @@ import com.anytypeio.anytype.core_ui.widgets.dv.ViewersWidget
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_ui.widgets.toolbar.DataViewInfo
 import com.anytypeio.anytype.core_utils.OnSwipeListener
+import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.drawable
@@ -127,6 +128,7 @@ import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_T
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TEMPLATE_ID
 import com.bumptech.glide.Glide
 import javax.inject.Inject
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -223,7 +225,8 @@ open class ObjectSetFragment :
         )
     }
 
-    private val ctx: String get() = argString(CONTEXT_ID_KEY)
+    private val ctx: Id get() = argString(CONTEXT_ID_KEY)
+    private val space: Id get() = arg<String>(SPACE_ID_KEY)
 
     @Inject
     lateinit var factory: ObjectSetViewModelFactory
@@ -319,7 +322,8 @@ open class ObjectSetFragment :
                 .longClicks(withHaptic = true)
                 .onEach {
                     val dialog = SelectObjectTypeFragment.new(
-                        flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT
+                        flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT,
+                        space = space
                     ).apply {
                         onTypeSelected = {
                             vm.onAddNewDocumentClicked(it)
@@ -523,6 +527,13 @@ open class ObjectSetFragment :
         lifecycleScope.subscribe(vm.isCustomizeViewPanelVisible) { isCustomizeViewPanelVisible ->
             if (isCustomizeViewPanelVisible) showBottomPanel() else hideBottomPanel()
         }
+        lifecycleScope.subscribe(vm.permission.filterNotNull()) { permission ->
+            if (permission.isOwnerOrEditor()) {
+                binding.topToolbar.ivThreeDots.visible()
+            } else {
+                binding.topToolbar.ivThreeDots.invisible()
+            }
+        }
     }
 
     private fun setStatus(status: SyncStatusView?) {
@@ -606,6 +617,11 @@ open class ObjectSetFragment :
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
                 setupNewButtons(state.isCreateObjectAllowed)
+                if (state.isEditingViewAllowed) {
+                    customizeViewButton.visible()
+                } else {
+                    customizeViewButton.invisible()
+                }
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.viewer?.title)
                 setViewer(viewer = state.viewer)
@@ -729,6 +745,9 @@ open class ObjectSetFragment :
 
     private fun bindHeader(header: SetOrCollectionHeaderState.Default) {
         setupHeaderMargins(header)
+
+        title.isEnabled = !header.isReadOnlyMode
+
         if (title.text.toString() != header.title.text) {
             title.pauseTextWatchers {
                 title.setText(header.title.text)
@@ -1206,7 +1225,7 @@ open class ObjectSetFragment :
                     bindHeader(header)
                 }
                 is SetOrCollectionHeaderState.None -> {
-
+                    // Do nothing.
                 }
             }
         }
@@ -1245,7 +1264,7 @@ open class ObjectSetFragment :
             binding.bottomToolbar.bind(icon)
         }
 
-        vm.onStart(ctx)
+        vm.onStart(ctx = ctx, space = space)
     }
 
     override fun onStop() {
@@ -1374,10 +1393,16 @@ open class ObjectSetFragment :
 
     companion object {
         const val CONTEXT_ID_KEY = "arg.object_set.context"
+        const val SPACE_ID_KEY = "arg.object_set.space-id"
         val EMPTY_TAG = null
         const val BOTTOM_PANEL_ANIM_DURATION = 150L
         const val DEFAULT_ANIM_DURATION = 300L
         const val DRAWABLE_ALPHA_FULL = 255
         const val DRAWABLE_ALPHA_ZERO = 0
+
+        fun args(ctx: Id, space: Id) = bundleOf(
+            CONTEXT_ID_KEY to ctx,
+            SPACE_ID_KEY to space
+        )
     }
 }

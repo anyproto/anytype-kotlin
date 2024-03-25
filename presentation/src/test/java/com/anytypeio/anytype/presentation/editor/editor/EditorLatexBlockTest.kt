@@ -78,7 +78,7 @@ class EditorLatexBlockTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // TESTING
 
@@ -137,7 +137,7 @@ class EditorLatexBlockTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // TESTING
 

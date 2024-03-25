@@ -67,7 +67,7 @@
     <string name="deleted_account_danger_zone_msg">Når du ber om at kontoen din skal slettes, har du 30 dager på deg til å avbryte denne forespørselen. Etter 30 dager blir de krypterte kontodataene dine permanent fjernet fra sikkerhetskopinoden, og du vil ikke kunne logge deg på Anytype på nye enheter.</string>
     <string name="danger_zone">Fareområde</string>
     <string name="snackbar_template_add">Ny mal ble lagt til typen</string>
-    <string name="settings_membership">Membership</string>
+    <string name="settings_membership">Medlemskap</string>
     <string name="default_text_placeholder">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
     <string name="default_url_placeholder">https://humanparts.medium.com/how-i-overcame-cult-trauma-with-psychedelics-4342c03a074c</string>
     <string name="multi_select_turn_into">Endre til</string>
@@ -189,7 +189,7 @@
     <string name="error_while_loading_picture">Feil under lasting av bilde</string>
     <string name="block_with_a_picture">Blokk med et bilde</string>
     <string name="tap_here_to_insert_a_bookmark_url">Tap here to insert a bookmark url</string>
-    <string name="archive">Archive</string>
+    <string name="archive">Arkiv</string>
     <string name="add_block_option_icon">Add block option icon</string>
     <string name="bookmark_error_menu_button">Bookmark error menu button</string>
     <string name="bookmark_error">Noe gikk galt, vennligst prøv på nytt</string>
@@ -275,10 +275,10 @@
     <string name="sync_status_toast_unknown">Initialiserer synkronisering</string>
     <string name="sync_status_toast_offline">Anytype-noden er ikke tilkoblet</string>
     <string name="sync_status_toast_syncing">Laster ned eller laster opp data til en node</string>
-    <string name="sync_status_toast_synced">Backed up on Anytype Network</string>
-    <string name="sync_status_toast_synced_staging">Backed up on Anytype Staging</string>
+    <string name="sync_status_toast_synced">Sikkerhetskopiert på Anytype-nettverk</string>
+    <string name="sync_status_toast_synced_staging">Sikkerhetskopiert på Anytype Staging</string>
     <string name="sync_status_toast_synced_local">Kun lokalt</string>
-    <string name="sync_status_toast_synced_self_hosted">Backed up on Self-hosted Network</string>
+    <string name="sync_status_toast_synced_self_hosted">Sikkerhetskopiert på selvhostet nettverk</string>
     <string name="sync_status_toast_failed">Klarte ikke å synkronisere, prøver igjen…</string>
     <string name="sync_status_toast_incompatible">Versjonen er utdatert. Vennligst oppdater Anytype</string>
     <string name="relation_format_description">Beskrivelse</string>
@@ -826,6 +826,9 @@
     <string name="download_anytype_url">https://download.anytype.io</string>
     <string name="space_type_personal">Personlig</string>
     <string name="space_type_private">Private</string>
+    <string name="space_type_private_space">Privat rom</string>
+    <string name="space_type_shared">Delt</string>
+    <string name="space_type_shared_space">Delt rom</string>
     <string name="space_type_unknown">Ukjent</string>
     <string name="create_space_start_with">Start with</string>
     <string name="create_object_section_lists">Groups</string>
@@ -898,7 +901,7 @@
     <string name="slash_widget_actions_copy">Kopier</string>
     <string name="slash_widget_actions_paste">Lim inn</string>
     <string name="slash_widget_actions_link_to">Legg til lenke</string>
-    <string name="slash_widget_actions_link_to_subtitle">Create link to another object</string>
+    <string name="slash_widget_actions_link_to_subtitle">Opprett lenke til et annet objekt</string>
     <string name="slash_widget_actions_move">Flytt</string>
     <string name="slash_widget_actions_moveto">Flytt til</string>
     <string name="slash_widget_actions_clean_style">Clean style</string>
@@ -971,7 +974,7 @@
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
     <string name="onboarding_terms_and_policy_infix">" and "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
-    <string name="onboarding_join_button_text">Join</string>
+    <string name="onboarding_join_button_text">Bli med</string>
     <string name="onboarding_log_in_button_text">Logg inn</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
@@ -1049,13 +1052,13 @@
     <!--endregion-->
     <!--region ORIGIN RELATION VALUES -->
     <string name="relation_origin_none">Ingen</string>
-    <string name="relation_origin_clipboard">Clipboard</string>
+    <string name="relation_origin_clipboard">Utklippstavle</string>
     <string name="relation_origin_dnd">Drag &amp; Drop</string>
-    <string name="relation_origin_imported_object">Imported object</string>
-    <string name="relation_origin_web_clipper">Web clipper</string>
-    <string name="relation_origin_mobile_sharing_extension">Mobile sharing extension</string>
-    <string name="relation_origin_use_case">Use case</string>
-    <string name="relation_origin_library_installed">Library installed</string>
+    <string name="relation_origin_imported_object">Importert objekt</string>
+    <string name="relation_origin_web_clipper">Webklipper</string>
+    <string name="relation_origin_mobile_sharing_extension">Utvidelse for mobildeling</string>
+    <string name="relation_origin_use_case">Eksempel</string>
+    <string name="relation_origin_library_installed">Bibliotek installert</string>
     <string name="relation_origin_bookmark">Bokmerke</string>
     <!--endregion-->
     <plurals name="links_to_count">
@@ -1080,13 +1083,13 @@
     <string name="error_kanban_view_not_supported">Kanban view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
     <string name="error_calendar_view_not_supported">Calendar view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
     <string name="error_generic_view_not_supported">This view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
-    <string name="create_object_section_pinned">Pinned</string>
-    <string name="any_object_creation_menu_pin_on_top">Pin on top</string>
-    <string name="any_object_creation_menu_unpin">Unpin</string>
-    <string name="any_object_creation_menu_set_as_default">Set as default</string>
+    <string name="create_object_section_pinned">Festet</string>
+    <string name="any_object_creation_menu_pin_on_top">Fest på toppen</string>
+    <string name="any_object_creation_menu_unpin">Løsne</string>
+    <string name="any_object_creation_menu_set_as_default">Bruk som standard</string>
     <string name="any_object_creation_menu_move_left">Flytt til venstre</string>
     <string name="any_object_creation_menu_move_right">Flytt til høyre</string>
-    <string name="clipboard_panel_create_object_from_clipboard">Create object from clipboard</string>
+    <string name="clipboard_panel_create_object_from_clipboard">Opprett objekt fra utklippstavlen</string>
     <string name="block_media_error">Det har oppstått en feil, vennligst prøv igjen</string>
     <string name="relation_value_create_new">Create \"%1$s\"</string>
     <string name="option_widget_create">Opprett alternativ</string>
@@ -1134,8 +1137,8 @@
     <string name="multiplayer_members_and_requests">Medlemmer og forespørsler</string>
     <string name="multiplayer_unjoining_requested">Unjoining requested</string>
     <string name="multiplayer_joining_requested">Joining requested</string>
-    <string name="multiplayer_approve_request">Approve</string>
-    <string name="multiplayer_view_request">View request</string>
+    <string name="multiplayer_approve_request">Godkjenn</string>
+    <string name="multiplayer_view_request">Vis forespørsel</string>
     <string name="multiplayer_owner">Eier</string>
     <string name="multiplayer_can_edit">Kan redigere</string>
     <string name="multiplayer_can_read">Can read</string>
@@ -1144,5 +1147,92 @@
     <string name="multiplayer_space_request_reject">Avvis</string>
     <string name="multiplayer_space_join_request_header">%1$s requested to join %2$s space</string>
     <string name="multiplayer_remove_member">Remove member</string>
+    <string name="multiplayer_request_sent_toast">Forespørsel sendt</string>
+    <string name="multiplayer_space_stop_sharing">Stopp deling</string>
+    <string name="multiplayer_sharing">Deling</string>
+    <string name="multiplayer_share">Del</string>
+    <string name="multiplayer_manage">Administrer</string>
+    <string name="multiplayer_leave_space">Forlat rom</string>
+    <string name="multiplayer_generate_invite_link_description">Create invite link to share space and add new members</string>
+    <string name="multiplayer_generate_invite_link">Generer invitasjonslenke</string>
     <!--endregion-->
+    <!--region PAYMENTS -->
+    <string name="payments_header">Medlemskap</string>
+    <string name="payments_subheader">Joining Anytype network means contributing to its story</string>
+    <string name="payments_card_text_1">Co-create the Vision</string>
+    <string name="payments_card_description_1">As a valued member your voice matters! Engage in exclusive events, shape strategic choices, and influence our roadmap.</string>
+    <string name="payments_card_text_2">Unlock Member Benefits</string>
+    <string name="payments_card_description_2">Members enjoy higher backup storage &amp; sync limits, invitations for multiple guests to collaborate in shared spaces, and a unique identity on the Anytype Network.</string>
+    <string name="payments_card_text_3">Support Digital Independence</string>
+    <string name="payments_card_description_3">Your contribution supports our team and endorses our vision of a user-owned, secure, and collaborative digital network.</string>
+    <string name="payments_card_text_4">Invest in Connectivity</string>
+    <string name="payments_card_description_4">Our network\'s value exceeds the sum of its parts. Your membership sustains the infrastructure for its growth which underpins this network.</string>
+    <string name="payments_tier_explorer">Utforsker</string>
+    <string name="payments_tier_explorer_description">Dive into the network and enjoy the thrill of one-on-one collaboration</string>
+    <string name="payments_tier_builder">Builder</string>
+    <string name="payments_tier_builder_description">Unlock the magic of multi-party collaboration and enjoy top-notch support</string>
+    <string name="payments_tier_cocreator">Co-Creator</string>
+    <string name="payments_tier_cocreator_description">Support our adventure and unlock exclusive access and perks</string>
+    <string name="payments_tier_custom">Custom</string>
+    <string name="payments_tier_custom_description">Membership tailored to your specific needs and preferences</string>
+    <string name="payments_button_learn">Lær mer</string>
+    <string name="payments_button_contact">Kontakt</string>
+    <string name="payments_member_link">Detaljer om medlemskap</string>
+    <string name="payments_privacy_link">Personvernregler</string>
+    <string name="payments_terms_link">Vilkår og betingelser</string>
+    <string name="payments_let_us_link_start">Ønsker du å bruke Anytype for virksomhet, utdanning osv.?</string>
+    <string name="payments_let_us_link_end">Vennligst gi oss beskjed her.</string>
+    <string name="payments_current_label">Gjeldende</string>
+    <!-- Tier details -->
+    <string name="payments_tier_details_name_title">Velg ditt unike navn</string>
+    <string name="payments_tier_details_name_subtitle">Dette er ditt unike navn på Anytype-nettverket, som bekrefter medlemskapet ditt. Det fungerer som ditt personlige domene og kan ikke endres.</string>
+    <string name="payments_tier_details_name_hint">Meg selv</string>
+    <string name="payments_tier_details_name_domain">.any</string>
+    <string name="payments_tier_details_name_min">Minst 7 tegn</string>
+    <string name="payments_tier_details_name_error">Dette navnet er allerede tatt!</string>
+    <string name="payments_tier_details_name_success">Dette navnet er ledig!</string>
+    <string name="payments_tier_details_info_explorer">Dive into the network and enjoy the thrill of one-on-one collaboration</string>
+    <string-array name="payments_benefits_explorer">
+        <item>1 GB of network space</item>
+        <item>10 en-til-en rom</item>
+        <item>Up to 10 shared spaces in read-only mode</item>
+    </string-array>
+    <string name="payments_tier_details_info_builder">Unlock the magic of multi-party collaboration and enjoy top-notch support</string>
+    <string-array name="payments_benefits_builder">
+        <item>Unikt navn (fra 7 tegn)</item>
+        <item>128 GB of network space</item>
+        <item>10 Guest collaborator seats</item>
+        <item>Prioritert support</item>
+    </string-array>
+    <string name="payments_tier_details_info_cocreator">Support our adventure and unlock exclusive access and perks</string>
+    <string-array name="payments_benefits_cocreator">
+        <item>Unique name (from 5 characters)</item>
+        <item>256 GB of network space</item>
+        <item>25 Guest collaborator seats</item>
+        <item>Chat med teamet</item>
+        <item>Unique collectible</item>
+    </string-array>
+    <string name="payments_detials_button_pay">Betal med kort</string>
+    <string name="payments_detials_button_submit">Send inn</string>
+    <string name="payments_details_whats_included">Hva er inkludert</string>
+    <string name="payments_email_title">Få ditt gratis medlemskap</string>
+    <string name="payments_email_subtitle">We need your email to keep spam at bay and the fun in play!</string>
+    <string name="payments_email_checkbox_text">I\'d like to get updates on products and enjoy free perks!</string>
+    <string name="payments_email_hint">E-post</string>
+    <string name="payments_tier_current_title">Din nåværende status:</string>
+    <string name="payments_tier_current_valid">Gyldig til</string>
+    <string name="payments_tier_current_paid_by">Betalt med kort</string>
+    <string name="payments_tier_current_button">Administrer betaling</string>
+    <!-- Payments Code -->
+    <string name="payments_code_title">Skriv inn koden som er sendt til deg på e-post</string>
+    <string name="payments_code_resend">Send på nytt</string>
+    <string name="payments_code_resend_in">Send igjen om %1$n sek</string>
+    <!-- Payments Welcome -->
+    <string name="payments_welcome_title">Velkommen til nettverket,\n%1$s</string>
+    <string name="payments_welcome_subtitle">Big cheers for your curiosity!</string>
+    <string name="payments_welcome_button">Fortsett</string>
+    <!-- Gallery Experience -->
+    <string name="gallery_experience_made">Laget av</string>
+    <string name="gallery_experience_install">Installer</string>
+    <string name="gallery_experience_install_new">Installer til nytt rom</string>
 </resources>

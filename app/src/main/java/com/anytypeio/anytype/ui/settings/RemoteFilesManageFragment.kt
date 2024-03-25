@@ -71,10 +71,19 @@ class RemoteFilesManageFragment : BaseBottomSheetComposeFragment() {
 
     private fun execute(command: CollectionViewModel.Command) {
         when (command) {
-            is CollectionViewModel.Command.LaunchDocument -> launchDocument(command.id)
-            is CollectionViewModel.Command.LaunchObjectSet -> launchObjectSet(command.target)
+            is CollectionViewModel.Command.LaunchDocument -> launchDocument(
+                target = command.target,
+                space = command.space
+            )
+            is CollectionViewModel.Command.LaunchObjectSet -> launchObjectSet(
+                target = command.target,
+                space = command.space
+            )
             is CollectionViewModel.Command.ConfirmRemoveFromBin -> confirmRemoveFromBin(command)
-            is CollectionViewModel.Command.OpenCollection -> navigation.launchCollections(command.subscription)
+            is CollectionViewModel.Command.OpenCollection -> navigation.launchCollections(
+                subscription = command.subscription,
+                space = command.space
+            )
             is CollectionViewModel.Command.ToDesktop -> navigation.exitToDesktop()
             is CollectionViewModel.Command.ToSearch -> navigation.openPageSearch()
             is CollectionViewModel.Command.Exit -> exit()
@@ -94,12 +103,15 @@ class RemoteFilesManageFragment : BaseBottomSheetComposeFragment() {
         navigation.exit()
     }
 
-    private fun launchObjectSet(target: Id) {
-        navigation.launchObjectSet(target)
+    private fun launchObjectSet(target: Id, space: Id) {
+        navigation.launchObjectSet(
+            target = target,
+            space = space
+        )
     }
 
-    private fun launchDocument(id: Id) {
-        navigation.launchDocument(id)
+    private fun launchDocument(target: Id, space: Id) {
+        navigation.launchDocument(target = target, space = space)
     }
 
     override fun onStop() {

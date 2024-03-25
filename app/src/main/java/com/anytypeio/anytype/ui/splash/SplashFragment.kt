@@ -106,7 +106,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                 findNavController().navigate(R.id.action_splashScreen_to_widgets)
                 findNavController().navigate(
                     R.id.objectNavigation,
-                    bundleOf(EditorFragment.ID_KEY to command.id),
+                    bundleOf(EditorFragment.CTX_KEY to command.id),
                 )
             }
             is SplashViewModel.Command.NavigateToObjectSet -> {

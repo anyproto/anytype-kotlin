@@ -60,7 +60,7 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         advanceUntilIdle()
 
@@ -89,7 +89,7 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         advanceUntilIdle()
 
@@ -135,7 +135,7 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
         stubFileLimitEvents()
         stubSetInternalFlags()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         advanceUntilIdle()
 
@@ -175,7 +175,7 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
         stubFileLimitEvents()
         stubSetInternalFlags()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         advanceUntilIdle()
 
@@ -215,7 +215,7 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
 //        stubFileLimitEvents()
 //        stubSetInternalFlags()
 //
-//        vm.onStart(root)
+//        vm.onStart(id = root, space = defaultSpace)
 //
 //        advanceUntilIdle()
 //        vm.onObjectTypesWidgetDoneClicked()
@@ -267,7 +267,7 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
         stubFileLimitEvents()
         stubSetInternalFlags()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         advanceUntilIdle()
 

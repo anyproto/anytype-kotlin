@@ -24,7 +24,7 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
-        mockObjectSet = MockSet(context = root)
+        mockObjectSet = MockSet(context = root, space = defaultSpace)
     }
 
     @After
@@ -62,7 +62,7 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
             )
 
             // TESTING
-            viewModel.onStart(ctx = root)
+            proceedWithStartingViewModel()
 
             // ASSERT DATA VIEW STATE
             viewModel.currentViewer.test {
@@ -98,4 +98,8 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
                 }
             }
         }
+
+    private fun proceedWithStartingViewModel() {
+        viewModel.onStart(ctx = root, space = defaultSpace)
+    }
 }

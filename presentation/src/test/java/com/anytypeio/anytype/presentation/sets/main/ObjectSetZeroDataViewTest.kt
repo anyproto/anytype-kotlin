@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.sets.main
 
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import org.junit.Before
@@ -56,7 +57,7 @@ class ObjectSetZeroDataViewTest : ObjectSetViewModelTestSetup() {
             actual = vm.error.value
         )
 
-        vm.onStart(root)
+        proceedWithStartingViewModel(vm)
 
         assertEquals(
             expected = false,
@@ -93,7 +94,11 @@ class ObjectSetZeroDataViewTest : ObjectSetViewModelTestSetup() {
             actual = vm.error.value
         )
 
-        vm.onStart(root)
+        proceedWithStartingViewModel(vm)
         vm.onExpandViewerMenuClicked()
+    }
+
+    private fun proceedWithStartingViewModel(vm: ObjectSetViewModel) {
+        vm.onStart(ctx = root, space = defaultSpace)
     }
 }

@@ -36,7 +36,7 @@ class EditorBackButtonTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // TESTING
 

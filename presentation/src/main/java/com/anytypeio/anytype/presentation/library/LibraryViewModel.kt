@@ -11,10 +11,9 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.libraryView
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.allUniqueBy
 import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -58,6 +57,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class LibraryViewModel(
+    private val params: Params,
     private val myTypesDelegate: MyTypesDelegate,
     private val libraryTypesDelegate: LibraryTypesDelegate,
     private val myRelationsDelegate: MyRelationsDelegate,
@@ -482,6 +482,7 @@ class LibraryViewModel(
     }
 
     class Factory @Inject constructor(
+        private val params: Params,
         private val myTypesDelegate: MyTypesDelegate,
         private val libraryTypesDelegate: LibraryTypesDelegate,
         private val myRelationsDelegate: MyRelationsDelegate,
@@ -501,17 +502,18 @@ class LibraryViewModel(
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return LibraryViewModel(
-                myTypesDelegate,
-                libraryTypesDelegate,
-                myRelationsDelegate,
-                libraryRelationsDelegate,
-                addObjectToWorkspace,
-                removeObjectsFromWorkspace,
-                resourceManager,
-                setObjectDetails,
-                createObject,
-                analytics,
-                spaceManager,
+                params = params,
+                myTypesDelegate = myTypesDelegate,
+                libraryTypesDelegate = libraryTypesDelegate,
+                myRelationsDelegate = myRelationsDelegate,
+                libraryRelationsDelegate = libraryRelationsDelegate,
+                addObjectToWorkspace = addObjectToWorkspace,
+                removeObjectsFromWorkspace = removeObjectsFromWorkspace,
+                resourceManager = resourceManager,
+                setObjectDetails = setObjectDetails,
+                createObject = createObject,
+                analytics = analytics,
+                spaceManager = spaceManager,
                 storelessSubscriptionContainer = storelessSubscriptionContainer,
                 appCoroutineDispatchers = appCoroutineDispatchers,
                 urlBuilder = urlBuilder,
@@ -519,6 +521,8 @@ class LibraryViewModel(
             ) as T
         }
     }
+
+    class Params(val space: SpaceId)
 
     sealed class Navigation {
         class OpenTypeCreation(

@@ -32,7 +32,7 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
     fun setup() {
         closable = MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
-        mockObjectSet = MockSet(context = root, setOfValue = setOfId, setOfKey = setOfKey)
+        mockObjectSet = MockSet(context = root, setOfValue = setOfId, setOfKey = setOfKey, space = defaultSpace)
         stubNetworkMode()
     }
 
@@ -72,7 +72,7 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         // ASSERT DATA VIEW STATE
         viewModel.currentViewer.test {
@@ -99,5 +99,9 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
                 )
             }
         }
+    }
+
+    private fun proceedWithStartingViewModel() {
+        viewModel.onStart(ctx = root, space = defaultSpace)
     }
 }

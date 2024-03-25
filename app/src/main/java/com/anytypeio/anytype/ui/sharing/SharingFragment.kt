@@ -24,7 +24,6 @@ import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.sharing.AddToAnytypeViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.settings.typography
-import java.lang.IllegalStateException
 import javax.inject.Inject
 import kotlinx.coroutines.flow.map
 
@@ -120,7 +119,7 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
                                 findNavController().navigate(
                                     R.id.objectNavigation,
                                     bundleOf(
-                                        EditorFragment.ID_KEY to nav.target
+                                        EditorFragment.CTX_KEY to nav.target
                                     )
                                 )
                             }

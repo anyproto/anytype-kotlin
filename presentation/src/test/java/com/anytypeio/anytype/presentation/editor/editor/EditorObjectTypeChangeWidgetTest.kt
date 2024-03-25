@@ -107,7 +107,7 @@ class EditorObjectTypeChangeWidgetTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val objectTypesWidget = vm.typesWidgetState.value
 
@@ -174,7 +174,7 @@ class EditorObjectTypeChangeWidgetTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val objectTypesWidget = vm.typesWidgetState.value
 

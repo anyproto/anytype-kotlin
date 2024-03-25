@@ -39,7 +39,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
     fun setup() {
         closable = MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
-        mockObjectSet = MockSet(context = root)
+        mockObjectSet = MockSet(context = root, space = defaultSpace)
         stubNetworkMode()
     }
 
@@ -71,7 +71,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         // ASSERT DATA VIEW STATE
         viewModel.currentViewer.test {
@@ -135,7 +135,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         // ASSERT DATA VIEW STATE
         viewModel.currentViewer.test {
@@ -192,7 +192,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
         doReturn(Unit).`when`(closeBlock).async(mockObjectSet.root)
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         // ASSERT DATA VIEW STATE
         viewModel.currentViewer.test {
@@ -231,6 +231,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
         val objectUnsupportedLayout = ObjectWrapper.Basic(
             mapOf(
                 Relations.ID to "objectUnsupportedLayout-${RandomString.make()}",
+                Relations.SPACE_ID to mockObjectSet.spaceId,
                 Relations.LAYOUT to unsupportedLayout.code.toDouble()
             )
         )
@@ -247,7 +248,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         // ASSERT DATA VIEW STATE
         viewModel.currentViewer.test {
@@ -269,5 +270,9 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
             advanceUntilIdle()
             verifyNoInteractions(closeBlock)
         }
+    }
+
+    private fun proceedWithStartingViewModel() {
+        viewModel.onStart(ctx = root, space = defaultSpace)
     }
 }

@@ -175,6 +175,7 @@ abstract class RelationValueBaseViewModel(
                             items.add(
                                 RelationValueView.Object.NonExistent(
                                     id = id,
+                                    space = requireNotNull(wrapper.spaceId),
                                     removable = isRemovable
                                 )
                             )
@@ -182,6 +183,7 @@ abstract class RelationValueBaseViewModel(
                             items.add(
                                 RelationValueView.Object.Default(
                                     id = id,
+                                    space = requireNotNull(wrapper.spaceId),
                                     name = wrapper.getProperName(),
                                     typeName = objectType?.name,
                                     type = type,
@@ -222,7 +224,8 @@ abstract class RelationValueBaseViewModel(
                                 mime = wrapper.fileMimeType.orEmpty(),
                                 ext = wrapper.fileExt.orEmpty(),
                                 image = wrapper.iconImage,
-                                removable = isRemovable
+                                removable = isRemovable,
+                                space = requireNotNull(wrapper.spaceId)
                             )
                         )
                     }
@@ -470,6 +473,7 @@ abstract class RelationValueBaseViewModel(
     fun onObjectClicked(
         ctx: Id,
         id: Id,
+        space: Id,
         layout: ObjectType.Layout?,
         profileLinkIdentity: Id? = null
     ) {
@@ -483,19 +487,32 @@ abstract class RelationValueBaseViewModel(
                 ObjectType.Layout.BOOKMARK,
                 ObjectType.Layout.PARTICIPANT -> {
                     viewModelScope.launch {
-                        navigation.emit(AppNavigation.Command.OpenObject(id))
+                        navigation.emit(
+                            AppNavigation.Command.OpenObject(
+                                target = id,
+                                space = space
+                            )
+                        )
                     }
                 }
                 ObjectType.Layout.PROFILE -> {
                     viewModelScope.launch {
                         navigation.emit(
-                            AppNavigation.Command.OpenObject(profileLinkIdentity ?: id)
+                            AppNavigation.Command.OpenObject(
+                                target = profileLinkIdentity ?: id,
+                                space = space
+                            )
                         )
                     }
                 }
                 ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
                     viewModelScope.launch {
-                        navigation.emit(AppNavigation.Command.OpenSetOrCollection(id))
+                        navigation.emit(
+                            AppNavigation.Command.OpenSetOrCollection(
+                                target = id,
+                                space = space
+                            )
+                        )
                     }
                 }
                 else -> Timber.d("Unexpected layout: $layout").also {
@@ -507,16 +524,26 @@ abstract class RelationValueBaseViewModel(
         }
     }
 
-    fun onNonExistentObjectClicked(ctx: Id, target: Id) {
+    fun onNonExistentObjectClicked(ctx: Id, target: Id, space: Id) {
         // TODO consider closing object before navigation
         viewModelScope.launch {
-            navigation.emit(AppNavigation.Command.OpenObject(target))
+            navigation.emit(
+                AppNavigation.Command.OpenObject(
+                    target = target,
+                    space = space
+                )
+            )
         }
     }
 
-    fun onFileClicked(id: Id) {
+    fun onFileClicked(target: Id, space: Id) {
         viewModelScope.launch {
-            navigation.emit(AppNavigation.Command.OpenObject(id))
+            navigation.emit(
+                AppNavigation.Command.OpenObject(
+                    target = target,
+                    space = space
+                )
+            )
         }
     }
 

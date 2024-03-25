@@ -126,7 +126,7 @@ class EditorTemplateFragment : EditorFragment() {
         ): EditorTemplateFragment =
             EditorTemplateFragment().apply {
                 arguments = bundleOf(
-                    ID_KEY to id,
+                    CTX_KEY to id,
                     ARG_TARGET_TYPE_ID to targetTypeId,
                     ARG_TARGET_TYPE_KEY to targetTypeKey,
                     ARG_TEMPLATE_TYPE to type

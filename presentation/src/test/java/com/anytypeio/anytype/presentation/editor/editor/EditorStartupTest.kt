@@ -44,7 +44,7 @@ class EditorStartupTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.state.test().assertValue { state ->
             state is ViewState.Success && state.blocks.isEmpty()

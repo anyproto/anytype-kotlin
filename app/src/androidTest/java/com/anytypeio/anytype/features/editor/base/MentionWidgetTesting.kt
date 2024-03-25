@@ -38,7 +38,7 @@ class MentionWidgetTesting : EditorTestSetup() {
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
-    private val args = bundleOf(EditorFragment.ID_KEY to root)
+    private val args = bundleOf(EditorFragment.CTX_KEY to root)
 
     private val defaultDetails = Block.Details(
         mapOf(

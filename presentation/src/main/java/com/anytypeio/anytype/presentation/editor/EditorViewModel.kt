@@ -99,7 +99,6 @@ import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.getSpaceWithTechSpace
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -197,7 +196,6 @@ import com.anytypeio.anytype.presentation.editor.selection.updateTableBlockSelec
 import com.anytypeio.anytype.presentation.editor.selection.updateTableBlockTab
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateViewState
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
-import com.anytypeio.anytype.presentation.extension.getProperObjectName
 import com.anytypeio.anytype.presentation.extension.getUrlForFileBlock
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockActionEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockAlignEvent
@@ -378,8 +376,15 @@ class EditorViewModel(
 
     /**
      * Currently opened document id.
+     * TODO move to vm params
      */
     var context: String = EMPTY_CONTEXT
+
+    /**
+     * Space in which this document exists.
+     * TODO move to vm params
+     */
+    lateinit var space: String
 
     /**
      * Current document
@@ -420,11 +425,18 @@ class EditorViewModel(
                     is Action.SetUnsplashImage -> {
                         proceedWithSettingUnsplashImage(action)
                     }
-                    is Action.Duplicate -> proceedWithOpeningObject(action.id)
+                    is Action.Duplicate -> proceedWithOpeningObject(
+                        target = action.target
+                    )
                     Action.SearchOnPage -> onEnterSearchModeClicked()
                     Action.UndoRedo -> onUndoRedoActionClicked()
-                    is Action.OpenObject -> proceedWithOpeningObject(action.id)
-                    is Action.OpenCollection -> proceedWithOpeningDataViewObject(action.id)
+                    is Action.OpenObject -> proceedWithOpeningObject(
+                        target = action.target
+                    )
+                    is Action.OpenCollection -> proceedWithOpeningDataViewObject(
+                        target = action.target,
+                        space = SpaceId(action.space)
+                    )
                 }
             }
         }
@@ -492,8 +504,7 @@ class EditorViewModel(
         downloadUnsplashImage(
             DownloadUnsplashImage.Params(
                 picture = action.img,
-                // TODO re-fact to use space id from arguments or target space id of this object
-                space = SpaceId(spaceManager.get())
+                space = SpaceId(space)
             )
         ).process(
             failure = {
@@ -988,10 +999,11 @@ class EditorViewModel(
         }
     }
 
-    fun onStart(id: Id, saveAsLastOpened: Boolean = true) {
+    fun onStart(id: Id, space: Id, saveAsLastOpened: Boolean = true) {
         Timber.d("onStart, id:[$id]")
 
-        context = id
+        this.context = id
+        this.space = space
 
         stateData.postValue(ViewState.Loading)
 
@@ -1014,7 +1026,7 @@ class EditorViewModel(
                 .build(InterceptThreadStatus.Params(context))
                 .collect { status ->
                     val statusView = status.toView(
-                        networkId = spaceManager.getConfig()?.network,
+                        networkId = spaceManager.getConfig(space = SpaceId(space))?.network,
                         networkMode = networkMode
                     )
                     syncStatus.value = statusView
@@ -1035,7 +1047,7 @@ class EditorViewModel(
             val params = OpenPage.Params(
                 obj = id,
                 saveAsLastOpened = saveAsLastOpened,
-                space = SpaceId(spaceManager.get())
+                space = SpaceId(space)
             )
             openPage.async(params).fold(
                 onSuccess = { result ->
@@ -1500,7 +1512,7 @@ class EditorViewModel(
             handleEndlineEnterPressedEventForListItem(content, id)
         } else {
             proceedWithCreatingNewTextBlock(
-                id = id,
+                target = id,
                 style = Content.Text.Style.P
             )
         }
@@ -1702,7 +1714,7 @@ class EditorViewModel(
     }
 
     private fun proceedWithCreatingNewTextBlock(
-        id: String,
+        target: String,
         style: Content.Text.Style,
         position: Position = Position.BOTTOM
     ) {
@@ -1710,7 +1722,7 @@ class EditorViewModel(
             orchestrator.proxies.intents.send(
                 Intent.CRUD.Create(
                     context = context,
-                    target = id,
+                    target = target,
                     position = position,
                     prototype = Prototype.Text(style = style)
                 )
@@ -2261,7 +2273,7 @@ class EditorViewModel(
             }
         } else {
             proceedWithCreatingNewTextBlock(
-                id = target.id,
+                target = target.id,
                 style = style,
                 position = Position.BOTTOM
             )
@@ -3121,7 +3133,19 @@ class EditorViewModel(
 
     private fun proceedWithOpeningDataViewBlock(dv: Content.DataView) {
         if (dv.targetObjectId.isNotEmpty()) {
-            proceedWithOpeningDataViewObject(dv.targetObjectId)
+            val targetSpace = orchestrator.stores.details.current().let { details ->
+                val detail = details.details[dv.targetObjectId]
+                if (detail != null && detail.map.isNotEmpty()) {
+                    val wrapper = ObjectWrapper.Basic(detail.map)
+                    wrapper.spaceId ?: space
+                } else {
+                    space
+                }
+            }
+            proceedWithOpeningDataViewObject(
+                target = dv.targetObjectId,
+                space = SpaceId(targetSpace)
+            )
             viewModelScope.sendAnalyticsOpenAsObject(
                 analytics = analytics,
                 type = EventsDictionary.Type.dataView
@@ -3160,7 +3184,13 @@ class EditorViewModel(
                 }
             }
             ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
-                proceedWithOpeningDataViewObject(target = target)
+                val space = wrapper.spaceId
+                if (space != null) {
+                    proceedWithOpeningDataViewObject(
+                        target = target,
+                        space = SpaceId(checkNotNull(wrapper.spaceId))
+                    )
+                }
             }
             else -> {
                 sendToast("Cannot open object with layout: ${wrapper.layout}")
@@ -3209,7 +3239,7 @@ class EditorViewModel(
                 typeId = TypeId(objectTypeView.id),
                 typeKey = TypeKey(objectTypeView.key),
                 template = objectTypeView.defaultTemplate,
-                space = spaceManager.get()
+                space = space
             )
             createBlockLinkWithObject.async(
                 params = params
@@ -4025,7 +4055,7 @@ class EditorViewModel(
                                 type = relation.type,
                                 filters = ObjectSearchConstants.setsByObjectTypeFilters(
                                     types = listOf(relation.type),
-                                    space = spaceManager.get()
+                                    space = space
                                 )
                             )
                             findObjectSetForType(params).process(
@@ -4041,7 +4071,12 @@ class EditorViewModel(
                                             Command.OpenObjectTypeMenu(listOf(ObjectTypeMenuItem.ChangeType))
 
                                         is FindObjectSetForType.Response.Success ->
-                                            Command.OpenObjectTypeMenu(clicked.items(set = response.obj.id))
+                                            Command.OpenObjectTypeMenu(
+                                                clicked.items(
+                                                    set = response.obj.id,
+                                                    space = requireNotNull(response.obj.spaceId)
+                                                )
+                                            )
                                     }
                                     commands.postValue(EventWrapper(command))
                                 }
@@ -4235,7 +4270,7 @@ class EditorViewModel(
 
     private fun addNewBlockAtTheEnd() {
         proceedWithCreatingNewTextBlock(
-            id = "",
+            target = "",
             position = Position.INNER,
             style = Content.Text.Style.P
         )
@@ -4246,10 +4281,14 @@ class EditorViewModel(
             closePage.async(context).fold(
                 onFailure = {
                     Timber.e(it, "Error while closing object")
-                    navigate(EventWrapper(AppNavigation.Command.OpenObject(target)))
+                    navigate(EventWrapper(
+                        AppNavigation.Command.OpenObject(target = target, space = space))
+                    )
                 },
                 onSuccess = {
-                    navigate(EventWrapper(AppNavigation.Command.OpenObject(target)))
+                    navigate(EventWrapper(
+                        AppNavigation.Command.OpenObject(target = target, space = space))
+                    )
                 }
             )
         }
@@ -4270,10 +4309,24 @@ class EditorViewModel(
     private fun proceedWithOpeningObject(obj: ObjectWrapper.Basic) {
         when (val navigation = obj.navigation()) {
             is OpenObjectNavigation.OpenDataView -> {
-                navigate(EventWrapper(AppNavigation.Command.OpenSetOrCollection(navigation.target)))
+                navigate(
+                    EventWrapper(
+                        AppNavigation.Command.OpenSetOrCollection(
+                            target = navigation.target,
+                            space = navigation.space
+                        )
+                    )
+                )
             }
             is OpenObjectNavigation.OpenEditor -> {
-                navigate(EventWrapper(AppNavigation.Command.OpenObject(navigation.target)))
+                navigate(
+                    EventWrapper(
+                        AppNavigation.Command.OpenObject(
+                            target = navigation.target,
+                            space = navigation.space
+                        )
+                    )
+                )
             }
             is OpenObjectNavigation.UnexpectedLayoutError -> {
                 sendToast("Unexpected layout: ${navigation.layout}")
@@ -4281,7 +4334,11 @@ class EditorViewModel(
         }
     }
 
-    fun proceedWithOpeningDataViewObject(target: Id, isPopUpToDashboard: Boolean = false) {
+    fun proceedWithOpeningDataViewObject(
+        target: Id,
+        space: SpaceId,
+        isPopUpToDashboard: Boolean = false
+    ) {
         viewModelScope.launch {
             closePage.async(context).fold(
                 onFailure = {
@@ -4289,7 +4346,8 @@ class EditorViewModel(
                     navigate(
                         EventWrapper(
                             AppNavigation.Command.OpenSetOrCollection(
-                                target,
+                                target = target,
+                                space = space.id,
                                 isPopUpToDashboard
                             )
                         )
@@ -4299,7 +4357,8 @@ class EditorViewModel(
                     navigate(
                         EventWrapper(
                             AppNavigation.Command.OpenSetOrCollection(
-                                target,
+                                target = target,
+                                space = space.id,
                                 isPopUpToDashboard
                             )
                         )
@@ -4453,7 +4512,11 @@ class EditorViewModel(
         objectToSet.async(params).fold(
             onFailure = { error -> Timber.e(error, "Error convert object to set") },
             onSuccess = {
-                proceedWithOpeningDataViewObject(target = context, isPopUpToDashboard = true)
+                proceedWithOpeningDataViewObject(
+                    target = context,
+                    space = SpaceId(space),
+                    isPopUpToDashboard = true
+                )
                 viewModelScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
                     analytics = analytics,
                     startTime = startTime,
@@ -4471,7 +4534,11 @@ class EditorViewModel(
         objectToCollection.async(params).fold(
             onFailure = { error -> Timber.e(error, "Error convert object to collection") },
             onSuccess = {
-                proceedWithOpeningDataViewObject(target = context, isPopUpToDashboard = true)
+                proceedWithOpeningDataViewObject(
+                    target = context,
+                    space = SpaceId(space),
+                    isPopUpToDashboard = true
+                )
                 viewModelScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
                     analytics = analytics,
                     startTime = startTime,
@@ -4964,7 +5031,7 @@ class EditorViewModel(
                 sorts = sorts,
                 filters = ObjectSearchConstants.filterTypes(
                     spaces = buildList {
-                        add(spaceManager.get())
+                        add(space)
                     },
                     recommendedLayouts = SupportedLayouts.editorLayouts
                 ),
@@ -5347,6 +5414,7 @@ class EditorViewModel(
 
     fun proceedWithMoveToAction(
         target: Id,
+        space: Id,
         text: String,
         icon: ObjectIcon,
         blocks: List<Id>,
@@ -5373,6 +5441,7 @@ class EditorViewModel(
                         dispatch(
                             Command.OpenObjectSnackbar(
                                 id = target,
+                                space = space,
                                 fromText = "${blocks.size} block${if (blocks.size > 1) "s" else ""} ",
                                 toText = text,
                                 icon = icon,
@@ -5527,7 +5596,7 @@ class EditorViewModel(
             val page = blocks.first { it.id == context }
             val next = page.children.getOrElse(0) { "" }
             proceedWithCreatingNewTextBlock(
-                id = next,
+                target = next,
                 style = Content.Text.Style.P,
                 position = Position.TOP
             )
@@ -5652,7 +5721,7 @@ class EditorViewModel(
         val target = currentSelection().first()
         clearSelections()
         proceedWithCreatingNewTextBlock(
-            id = target,
+            target = target,
             style = Content.Text.Style.P
         )
     }
@@ -5951,7 +6020,11 @@ class EditorViewModel(
                 limit = ObjectSearchViewModel.SEARCH_LIMIT,
                 filters = ObjectSearchConstants.getFilterLinkTo(
                     ignore = context,
-                    spaces = spaceManager.getSpaceWithTechSpace(),
+                    spaces = buildList {
+                        add(space)
+                        val config = spaceManager.getConfig(SpaceId(space))
+                        if (config != null) add(config.techSpace)
+                    },
                 ),
                 sorts = ObjectSearchConstants.sortLinkTo,
                 fulltext = fullText,
@@ -6061,7 +6134,7 @@ class EditorViewModel(
                 sorts = emptyList(),
                 filters = ObjectSearchConstants.filterTypes(
                     spaces = buildList {
-                        add(spaceManager.get())
+                        add(space)
                     },
                     recommendedLayouts = SupportedLayouts.createObjectLayouts
                 ),
@@ -6168,11 +6241,16 @@ class EditorViewModel(
             createObjectSet(
                 CreateObjectSet.Params(
                     type = type,
-                    space = spaceManager.get()
+                    space = space
                 )
             ).process(
                 failure = { Timber.e(it, "Error while creating a set of type: $type") },
-                success = { response -> proceedWithOpeningDataViewObject(response.target) }
+                success = { response ->
+                    proceedWithOpeningDataViewObject(
+                        target = response.target,
+                        space = SpaceId(space)
+                    )
+                }
             )
         }
     }

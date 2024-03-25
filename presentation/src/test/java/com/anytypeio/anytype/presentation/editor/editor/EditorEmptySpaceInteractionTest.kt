@@ -87,7 +87,7 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // TESTING
 
@@ -140,7 +140,7 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // TESTING
 
@@ -189,7 +189,7 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root.id)
+        vm.onStart(id = root.id, space = defaultSpace)
 
         // TESTING
 
@@ -259,7 +259,7 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // Checking that no text block is focused
 
@@ -306,7 +306,7 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // TESTING
 
@@ -338,7 +338,7 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // TESTING
 
@@ -383,7 +383,7 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // TESTING
 

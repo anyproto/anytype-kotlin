@@ -155,7 +155,12 @@ class AddToAnytypeViewModel(
                 1 -> {
                     // No need to create a wrapper object, opening file object directly instead
                     if (targetSpaceId == spaceManager.get()) {
-                        navigation.emit(OpenObjectNavigation.OpenEditor(files.first()))
+                        navigation.emit(
+                            OpenObjectNavigation.OpenEditor(
+                                target = files.first(),
+                                space = targetSpaceId
+                            )
+                        )
                     } else {
                         with(commands) {
                             emit(Command.ObjectAddToSpaceToast(targetSpaceView.obj.name))
@@ -184,7 +189,12 @@ class AddToAnytypeViewModel(
                                 startTime = startTime
                             )
                             if (targetSpaceId == spaceManager.get()) {
-                                navigation.emit(OpenObjectNavigation.OpenEditor(result))
+                                navigation.emit(
+                                    OpenObjectNavigation.OpenEditor(
+                                        target = result,
+                                        space = targetSpaceId
+                                    )
+                                )
                             } else {
                                 with(commands) {
                                     emit(Command.ObjectAddToSpaceToast(targetSpaceView.obj.name))
@@ -227,7 +237,12 @@ class AddToAnytypeViewModel(
                             startTime = startTime
                         )
                         if (targetSpaceId == spaceManager.get()) {
-                            navigation.emit(OpenObjectNavigation.OpenEditor(obj))
+                            navigation.emit(
+                                OpenObjectNavigation.OpenEditor(
+                                    target = obj,
+                                    space = targetSpaceId
+                                )
+                            )
                         } else {
                             with(commands) {
                                 emit(Command.ObjectAddToSpaceToast(targetSpaceView.obj.name))
@@ -269,7 +284,12 @@ class AddToAnytypeViewModel(
                             startTime = startTime
                         )
                         if (targetSpaceId == spaceManager.get()) {
-                            navigation.emit(OpenObjectNavigation.OpenEditor(result))
+                            navigation.emit(
+                                OpenObjectNavigation.OpenEditor(
+                                    target = result,
+                                    space = targetSpaceId
+                                )
+                            )
                         } else {
                             with(commands) {
                                 emit(Command.ObjectAddToSpaceToast(targetSpaceView.obj.name))

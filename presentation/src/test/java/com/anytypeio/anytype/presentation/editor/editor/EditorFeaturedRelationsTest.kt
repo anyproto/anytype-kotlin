@@ -130,7 +130,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val expected = listOf(
             BlockView.Title.Basic(
@@ -250,7 +250,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val expected =
             listOf(
@@ -352,7 +352,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val expected =
             listOf(
@@ -455,7 +455,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
 
             val vm = buildViewModel()
 
-            vm.onStart(root)
+            vm.onStart(id = root, space = defaultSpace)
 
             val expected = listOf(
                 BlockView.Title.Basic(
@@ -576,7 +576,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
 
             val vm = buildViewModel()
 
-            vm.onStart(root)
+            vm.onStart(id = root, space = defaultSpace)
 
             val expected = listOf(
                 BlockView.Title.Basic(
@@ -706,7 +706,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
 
             val vm = buildViewModel()
 
-            vm.onStart(root)
+            vm.onStart(id = root, space = defaultSpace)
 
             val expected = listOf(
                 BlockView.Title.Basic(
@@ -830,7 +830,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val expected = listOf(
             BlockView.Title.Basic(
@@ -958,7 +958,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val expected = listOf(
             BlockView.Title.Basic(
@@ -1063,7 +1063,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val expected = listOf(
             BlockView.Title.Basic(

@@ -96,7 +96,7 @@ class EditorTextUpdateTest : EditorPresentationTestSetup() {
             text = "ABCD"
         )
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.onBlockFocusChanged(
             id = block.id, hasFocus = true
@@ -168,7 +168,7 @@ class EditorTextUpdateTest : EditorPresentationTestSetup() {
             text = "ABCD"
         )
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.onBlockFocusChanged(
             id = block.id, hasFocus = true
@@ -241,7 +241,7 @@ class EditorTextUpdateTest : EditorPresentationTestSetup() {
             text = "ABCD"
         )
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.onBlockFocusChanged(
             id = block.id, hasFocus = true
@@ -315,7 +315,7 @@ class EditorTextUpdateTest : EditorPresentationTestSetup() {
             text = "ABCD"
         )
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.onBlockFocusChanged(
             id = block.id, hasFocus = true

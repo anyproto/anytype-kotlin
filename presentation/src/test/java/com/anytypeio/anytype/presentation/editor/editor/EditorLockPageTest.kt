@@ -89,7 +89,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val expected = listOf(
             BlockView.Title.Basic(
@@ -154,7 +154,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val expected = listOf(
             BlockView.Title.Basic(
@@ -219,7 +219,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val expected = listOf(
             BlockView.Title.Basic(
@@ -286,7 +286,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // TESTING
 
@@ -325,7 +325,10 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
         // checking navigation command
 
         testObserver.assertValue { value ->
-            value is EventWrapper && value.peekContent() == AppNavigation.Command.OpenObject(target)
+            value is EventWrapper && value.peekContent() == AppNavigation.Command.OpenObject(
+                target = target,
+                space = defaultSpace
+            )
         }
     }
 
@@ -388,7 +391,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // TESTING
 
@@ -436,7 +439,10 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
         // checking navigation command
 
         testObserver.assertValue { value ->
-            value is EventWrapper && value.peekContent() == AppNavigation.Command.OpenObject(target)
+            value is EventWrapper && value.peekContent() == AppNavigation.Command.OpenObject(
+                target = target,
+                space = defaultSpace
+            )
         }
     }
 
@@ -494,7 +500,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // TESTING
 
@@ -603,7 +609,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // TESTING
 
@@ -709,7 +715,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // TESTING
 

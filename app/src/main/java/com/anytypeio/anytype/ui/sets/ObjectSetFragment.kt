@@ -1264,7 +1264,7 @@ open class ObjectSetFragment :
             binding.bottomToolbar.bind(icon)
         }
 
-        vm.onStart(ctx)
+        vm.onStart(ctx = ctx, space = space)
     }
 
     override fun onStop() {

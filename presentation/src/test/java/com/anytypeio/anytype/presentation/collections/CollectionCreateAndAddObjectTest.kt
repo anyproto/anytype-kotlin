@@ -160,7 +160,7 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         // ASSERT DATA VIEW STATE
         viewModel.currentViewer.test {
@@ -190,5 +190,9 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
                 createObject(command)
             }
         }
+    }
+
+    private fun proceedWithStartingViewModel() {
+        viewModel.onStart(ctx = root, space = defaultSpace)
     }
 }

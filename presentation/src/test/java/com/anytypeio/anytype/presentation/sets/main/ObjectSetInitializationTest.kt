@@ -43,10 +43,14 @@ class ObjectSetInitializationTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
         viewModel.proceedWithDataViewObjectCreate()
 
         // ASSERT
         verifyNoInteractions(createObject)
+    }
+
+    private fun proceedWithStartingViewModel() {
+        viewModel.onStart(ctx = root, space = defaultSpace)
     }
 }

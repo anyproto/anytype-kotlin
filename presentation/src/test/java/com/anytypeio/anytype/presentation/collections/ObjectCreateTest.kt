@@ -96,7 +96,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             doReturn(Resultat.success(Unit)).`when`(closeBlock).async(mockObjectSet.root)
 
             // TESTING
-            viewModel.onStart(ctx = root)
+            proceedWithStartingViewModel()
 
             advanceUntilIdle()
 
@@ -164,7 +164,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             doReturn(Resultat.success(Unit)).`when`(closeBlock).async(mockObjectSet.root)
 
             // TESTING
-            viewModel.onStart(ctx = root)
+            proceedWithStartingViewModel()
             val commandFlow = viewModel.commands.testIn(backgroundScope)
 
             advanceUntilIdle()
@@ -250,7 +250,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             doReturn(Resultat.success(Unit)).`when`(closeBlock).async(mockObjectSet.root)
 
             // TESTING
-            viewModel.onStart(ctx = root)
+            proceedWithStartingViewModel()
 
             advanceUntilIdle()
 
@@ -331,7 +331,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         doReturn(Resultat.success(Unit)).`when`(closeBlock).async(objectCollection.root)
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         advanceUntilIdle()
 
@@ -351,5 +351,9 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         }
 
         verifyNoInteractions(closeBlock)
+    }
+
+    private fun proceedWithStartingViewModel() {
+        viewModel.onStart(ctx = root, space = defaultSpace)
     }
 }

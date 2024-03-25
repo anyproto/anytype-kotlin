@@ -62,7 +62,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         val headerFlow = viewModel.header.testIn(backgroundScope)
         val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
@@ -97,7 +97,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
         val stateFlow = stateReducer.state.testIn(backgroundScope)
@@ -137,7 +137,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
         val stateFlow = stateReducer.state.testIn(backgroundScope)
@@ -176,7 +176,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
         val stateFlow = stateReducer.state.testIn(backgroundScope)
@@ -222,7 +222,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
         val stateFlow = stateReducer.state.testIn(backgroundScope)
@@ -276,7 +276,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
         val stateFlow = stateReducer.state.testIn(backgroundScope)
@@ -331,7 +331,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
         val stateFlow = stateReducer.state.testIn(backgroundScope)
@@ -387,7 +387,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
         val stateFlow = stateReducer.state.testIn(backgroundScope)
@@ -442,7 +442,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
         val stateFlow = stateReducer.state.testIn(backgroundScope)
@@ -498,7 +498,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         stubTemplatesForTemplatesContainer()
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
         val stateFlow = stateReducer.state.testIn(backgroundScope)
@@ -572,7 +572,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
         val stateFlow = stateReducer.state.testIn(backgroundScope)
@@ -639,7 +639,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
         val stateFlow = stateReducer.state.testIn(backgroundScope)
@@ -708,7 +708,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
         val stateFlow = stateReducer.state.testIn(backgroundScope)
@@ -773,7 +773,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
         val stateFlow = stateReducer.state.testIn(backgroundScope)
@@ -786,5 +786,9 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         val item = viewerFlow.awaitItem()
         assertIs<DataViewViewState.Collection.NoItems>(item)
         assertTrue(item.isCreateObjectAllowed)
+    }
+
+    private fun proceedWithStartingViewModel() {
+        viewModel.onStart(ctx = root, space = defaultSpace)
     }
 }

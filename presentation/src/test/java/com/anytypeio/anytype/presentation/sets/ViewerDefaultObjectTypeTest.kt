@@ -117,7 +117,7 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
             stubTemplatesForTemplatesContainer()
         }
 
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         advanceUntilIdle()
 
@@ -194,7 +194,7 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
             stubTemplatesForTemplatesContainer()
         }
 
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         advanceUntilIdle()
 
@@ -274,7 +274,7 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
             stubTemplatesForTemplatesContainer()
         }
 
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         advanceUntilIdle()
 
@@ -300,5 +300,9 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
             expected = 3,
             actual = result.items.size
         )
+    }
+
+    private fun proceedWithStartingViewModel() {
+        viewModel.onStart(ctx = root, space = defaultSpace)
     }
 }

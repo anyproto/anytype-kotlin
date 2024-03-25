@@ -64,7 +64,7 @@ class ObjectSetConvertToCollectionTest : ObjectSetViewModelTestSetup() {
 
         // TESTING
 
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         val firstState = stateFlow.awaitItem()
         assertIs<ObjectState.Init>(firstState)
@@ -112,5 +112,9 @@ class ObjectSetConvertToCollectionTest : ObjectSetViewModelTestSetup() {
                 eq(mockObjectSet.root)
             )
         }
+    }
+
+    private fun proceedWithStartingViewModel() {
+        viewModel.onStart(ctx = root, space = defaultSpace)
     }
 }

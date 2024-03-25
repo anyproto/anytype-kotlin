@@ -94,7 +94,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         val relationId4 = "rel-newRelationKey"
         val relationKey4 = "newRelationKey"
@@ -293,5 +293,9 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
 
             expectNoEvents()
         }
+    }
+
+    private fun proceedWithStartingViewModel() {
+        viewModel.onStart(ctx = root, space = defaultSpace)
     }
 }

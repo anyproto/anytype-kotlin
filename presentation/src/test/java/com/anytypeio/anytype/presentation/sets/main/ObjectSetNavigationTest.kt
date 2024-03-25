@@ -71,7 +71,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         // ASSERT DATA VIEW STATE
         viewModel.currentViewer.test {
@@ -135,7 +135,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         // ASSERT DATA VIEW STATE
         viewModel.currentViewer.test {
@@ -192,7 +192,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
         doReturn(Unit).`when`(closeBlock).async(mockObjectSet.root)
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         // ASSERT DATA VIEW STATE
         viewModel.currentViewer.test {
@@ -248,7 +248,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         // ASSERT DATA VIEW STATE
         viewModel.currentViewer.test {
@@ -270,5 +270,9 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
             advanceUntilIdle()
             verifyNoInteractions(closeBlock)
         }
+    }
+
+    private fun proceedWithStartingViewModel() {
+        viewModel.onStart(ctx = root, space = defaultSpace)
     }
 }

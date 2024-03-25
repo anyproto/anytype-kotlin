@@ -223,6 +223,7 @@ class ObjectSetViewModel(
     val isLoading = MutableStateFlow(false)
 
     private var context: Id = ""
+    private var space: Id = ""
 
     private val selectedTypeFlow: MutableStateFlow<ObjectWrapper.Type?> = MutableStateFlow(null)
 
@@ -417,9 +418,10 @@ class ObjectSetViewModel(
         )
     }
 
-    fun onStart(ctx: Id) {
+    fun onStart(ctx: Id, space: Id) {
         Timber.d("onStart, ctx:[$ctx]")
-        context = ctx
+        this.context = ctx
+        this.space = space
         subscribeToEvents(ctx = ctx)
         subscribeToThreadStatus(ctx = ctx)
         proceedWithOpeningCurrentObject(ctx = ctx)
@@ -440,7 +442,7 @@ class ObjectSetViewModel(
                 .build(InterceptThreadStatus.Params(ctx))
                 .collect {
                     val statusView = it.toView(
-                        networkId = spaceManager.getConfig()?.network,
+                        networkId = spaceManager.getConfig(SpaceId(space))?.network,
                         networkMode = networkMode
                     )
                     status.value = statusView

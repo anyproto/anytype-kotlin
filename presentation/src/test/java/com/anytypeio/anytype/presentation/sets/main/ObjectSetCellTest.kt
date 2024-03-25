@@ -62,7 +62,7 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
             )
 
             // TESTING
-            viewModel.onStart(ctx = root)
+            proceedWithStartingViewModel()
 
             // ASSERT DATA VIEW STATE
             viewModel.currentViewer.test {
@@ -98,4 +98,8 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
                 }
             }
         }
+
+    private fun proceedWithStartingViewModel() {
+        viewModel.onStart(ctx = root, space = defaultSpace)
+    }
 }

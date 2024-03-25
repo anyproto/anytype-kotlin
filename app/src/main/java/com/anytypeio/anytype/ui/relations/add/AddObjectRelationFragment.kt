@@ -181,13 +181,13 @@ class AddObjectRelationFragment : BaseDialogFragment<FragmentRelationObjectValue
     override fun releaseDependencies() {
         when (flow) {
             FLOW_OBJECT -> {
-                componentManager().addObjectRelationObjectValueComponent.release(ctx)
+                componentManager().addObjectRelationObjectValueComponent.release()
             }
             FLOW_OBJECT_SET -> {
-                componentManager().addObjectSetObjectRelationObjectValueComponent.release(ctx)
+                componentManager().addObjectSetObjectRelationObjectValueComponent.release()
             }
             FLOW_DATAVIEW -> {
-                componentManager().addDataViewRelationObjectValueComponent.release(ctx)
+                componentManager().addDataViewRelationObjectValueComponent.release()
             }
         }
     }

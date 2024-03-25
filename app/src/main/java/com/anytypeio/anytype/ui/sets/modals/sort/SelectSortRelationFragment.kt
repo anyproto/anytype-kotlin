@@ -102,7 +102,7 @@ class SelectSortRelationFragment : BaseBottomSheetTextInputFragment<FragmentSele
     }
 
     override fun releaseDependencies() {
-        componentManager().selectSortRelationComponent.release(ctx)
+        componentManager().selectSortRelationComponent.release()
     }
 
     override fun inflateBinding(

@@ -209,7 +209,7 @@ class ComponentManager(
             .build()
     }
 
-    val objectIconPickerComponent = DependentComponentMap { ctx ->
+    val objectIconPickerComponent = ComponentWithParams { ctx: Id ->
         editorComponent
             .get(ctx)
             .objectIconPickerComponent()
@@ -218,7 +218,7 @@ class ComponentManager(
             .build()
     }
 
-    val textBlockIconPickerComponent = DependentComponentMap { ctx ->
+    val textBlockIconPickerComponent = ComponentWithParams { ctx: Id ->
         editorComponent
             .get(ctx)
             .textBlockIconPickerComponent()
@@ -226,7 +226,7 @@ class ComponentManager(
             .build()
     }
 
-    val objectSetIconPickerComponent = DependentComponentMap { ctx ->
+    val objectSetIconPickerComponent = ComponentWithParams { ctx: Id ->
         objectSetComponent
             .get(ctx)
             .objectSetIconPickerComponent()
@@ -235,7 +235,7 @@ class ComponentManager(
             .build()
     }
 
-    val objectLayoutComponent = DependentComponentMap { ctx ->
+    val objectLayoutComponent = ComponentWithParams { ctx: Id ->
         editorComponent
             .get(ctx)
             .objectLayoutComponent()
@@ -243,7 +243,7 @@ class ComponentManager(
             .build()
     }
 
-    val objectAppearanceSettingComponent = DependentComponentMap { ctx ->
+    val objectAppearanceSettingComponent = ComponentWithParams { ctx: Id ->
         editorComponent
             .get(ctx)
             .objectAppearanceSettingComponent()
@@ -251,7 +251,7 @@ class ComponentManager(
             .build()
     }
 
-    val objectAppearanceIconComponent = DependentComponentMap { ctx ->
+    val objectAppearanceIconComponent = ComponentWithParams { ctx: Id ->
         editorComponent
             .get(ctx)
             .objectAppearanceIconComponent()
@@ -259,7 +259,7 @@ class ComponentManager(
             .build()
     }
 
-    val objectAppearancePreviewLayoutComponent = DependentComponentMap { ctx ->
+    val objectAppearancePreviewLayoutComponent = ComponentWithParams { ctx: Id ->
         editorComponent
             .get(ctx)
             .objectAppearancePreviewLayoutComponent()
@@ -267,14 +267,14 @@ class ComponentManager(
             .build()
     }
 
-    val objectAppearanceChooseDescriptionComponent = DependentComponentMap { ctx ->
+    val objectAppearanceChooseDescriptionComponent = ComponentWithParams { ctx: Id ->
         editorComponent
             .get(ctx)
             .objectAppearanceChooseDescription()
             .build()
     }
 
-    val setTextBlockValueComponent = DependentComponentMap { ctx ->
+    val setTextBlockValueComponent = ComponentWithParams { ctx: Id ->
         editorComponent
             .get(ctx)
             .setBlockTextValueComponent()
@@ -300,7 +300,7 @@ class ComponentManager(
             .build()
     }
 
-    val linkToObjectOrWebComponent = DependentComponentMap { id ->
+    val linkToObjectOrWebComponent = ComponentWithParams { id: Id ->
         editorComponent.get(id)
             .linkToObjectOrWebBuilder()
             .module(LinkToObjectOrWebModule)
@@ -326,7 +326,7 @@ class ComponentManager(
             .build()
     }
 
-    val objectRelationListComponent = DependentComponentMap { id ->
+    val objectRelationListComponent = ComponentWithParams { id: Id ->
         editorComponent
             .get(id)
             .objectRelationListComponent()
@@ -334,7 +334,7 @@ class ComponentManager(
             .build()
     }
 
-    val objectSetRelationListComponent = DependentComponentMap { id ->
+    val objectSetRelationListComponent = ComponentWithParams { id: Id ->
         objectSetComponent
             .get(id)
             .objectRelationListComponent()
@@ -342,7 +342,7 @@ class ComponentManager(
             .build()
     }
 
-    val setOrCollectionRelationTextValueComponent = DependentComponentMap { ctx ->
+    val setOrCollectionRelationTextValueComponent = ComponentWithParams { ctx: Id ->
         objectSetComponent
             .get(ctx)
             .relationTextValueComponent()
@@ -350,7 +350,7 @@ class ComponentManager(
             .build()
     }
 
-    val dataViewRelationTextValueComponent = DependentComponentMap { ctx ->
+    val dataViewRelationTextValueComponent = ComponentWithParams { ctx: Id ->
         objectSetComponent
             .get(ctx)
             .relationDataViewTextValueComponent()
@@ -358,7 +358,7 @@ class ComponentManager(
             .build()
     }
 
-    val relationTextValueComponent = DependentComponentMap { ctx ->
+    val relationTextValueComponent = ComponentWithParams { ctx: Id ->
         editorComponent
             .get(ctx)
             .relationTextValueComponent()
@@ -366,7 +366,7 @@ class ComponentManager(
             .build()
     }
 
-    val dataViewRelationDateValueComponent = DependentComponentMap { ctx ->
+    val dataViewRelationDateValueComponent = ComponentWithParams { ctx: Id ->
         objectSetComponent
             .get(ctx)
             .dataViewRelationDateValueComponent()
@@ -374,7 +374,7 @@ class ComponentManager(
             .build()
     }
 
-    val setOrCollectionRelationDateValueComponent = DependentComponentMap { ctx ->
+    val setOrCollectionRelationDateValueComponent = ComponentWithParams { ctx: Id ->
         objectSetComponent
             .get(ctx)
             .relationDateValueComponent()
@@ -382,7 +382,7 @@ class ComponentManager(
             .build()
     }
 
-    val objectRelationDateValueComponent = DependentComponentMap { ctx ->
+    val objectRelationDateValueComponent = ComponentWithParams { ctx: Id ->
         editorComponent
             .get(ctx)
             .editRelationDateComponent()
@@ -390,7 +390,7 @@ class ComponentManager(
             .build()
     }
 
-    val viewerFilterComponent = DependentComponentMap { ctx ->
+    val viewerFilterComponent = ComponentWithParams { ctx: Id ->
         objectSetComponent
             .get(ctx)
             .viewerFilterBySubComponent()
@@ -398,7 +398,7 @@ class ComponentManager(
             .build()
     }
 
-    val objectSetRecordComponent = DependentComponentMap { ctx ->
+    val objectSetRecordComponent = ComponentWithParams { ctx: Id ->
         objectSetComponent
             .get(ctx)
             .objectSetRecordComponent()
@@ -406,7 +406,7 @@ class ComponentManager(
             .build()
     }
 
-    val objectSetCreateBookmarkRecordComponent = DependentComponentMap { ctx ->
+    val objectSetCreateBookmarkRecordComponent = ComponentWithParams { ctx: Id ->
         objectSetComponent
             .get(ctx)
             .objectSetCreateBookmarkRecordComponent()
@@ -414,7 +414,7 @@ class ComponentManager(
             .build()
     }
 
-    val createDataViewViewerComponent = DependentComponentMap { ctx ->
+    val createDataViewViewerComponent = ComponentWithParams { ctx: Id ->
         objectSetComponent
             .get(ctx)
             .createDataViewViewerSubComponent()
@@ -422,7 +422,7 @@ class ComponentManager(
             .build()
     }
 
-    val editDataViewViewerComponent = DependentComponentMap { ctx ->
+    val editDataViewViewerComponent = ComponentWithParams { ctx: Id ->
         objectSetComponent
             .get(ctx)
             .editDataViewViewerComponent()
@@ -438,7 +438,7 @@ class ComponentManager(
             .build()
     }
 
-    val setOrCollectionRelationValueComponent = DependentComponentMap { ctx ->
+    val setOrCollectionRelationValueComponent = ComponentWithParams { ctx: Id ->
         objectSetComponent
             .get(ctx)
             .setOrCollectionRelationValueComponent()
@@ -446,7 +446,7 @@ class ComponentManager(
             .build()
     }
 
-    val addObjectSetObjectRelationValueComponent = DependentComponentMap { ctx ->
+    val addObjectSetObjectRelationValueComponent = ComponentWithParams { ctx: Id ->
         dataViewRelationValueComponent
             .get(ctx)
             .addObjectRelationValueComponent()
@@ -454,7 +454,7 @@ class ComponentManager(
             .build()
     }
 
-    val addDataViewObjectRelationValueComponent = DependentComponentMap { ctx ->
+    val addDataViewObjectRelationValueComponent = ComponentWithParams { ctx: Id ->
         dataViewRelationValueComponent
             .get(ctx)
             .addDataViewRelationOptionValueComponent()
@@ -470,7 +470,7 @@ class ComponentManager(
             .build()
     }
 
-    val addObjectObjectRelationValueComponent = DependentComponentMap { ctx ->
+    val addObjectObjectRelationValueComponent = ComponentWithParams { ctx: Id ->
         objectObjectRelationValueComponent
             .get(ctx)
             .addObjectRelationValueComponent()
@@ -478,7 +478,7 @@ class ComponentManager(
             .build()
     }
 
-    val addObjectSetObjectRelationObjectValueComponent = DependentComponentMap { ctx ->
+    val addObjectSetObjectRelationObjectValueComponent = ComponentWithParams { ctx: Id ->
         dataViewRelationValueComponent
             .get(ctx)
             .addObjectRelationObjectValueComponent()
@@ -486,7 +486,7 @@ class ComponentManager(
             .build()
     }
 
-    val addDataViewRelationObjectValueComponent = DependentComponentMap { ctx ->
+    val addDataViewRelationObjectValueComponent = ComponentWithParams { ctx: Id ->
         dataViewRelationValueComponent
             .get(ctx)
             .addDataViewRelationObjectValueComponent()
@@ -494,7 +494,7 @@ class ComponentManager(
             .build()
     }
 
-    val addObjectRelationObjectValueComponent = DependentComponentMap { ctx ->
+    val addObjectRelationObjectValueComponent = ComponentWithParams { ctx: Id ->
         objectObjectRelationValueComponent
             .get(ctx)
             .addObjectRelationObjectValueComponent()
@@ -502,7 +502,7 @@ class ComponentManager(
             .build()
     }
 
-    val relationFileValueComponent = DependentComponentMap { ctx ->
+    val relationFileValueComponent = ComponentWithParams { ctx: Id ->
         objectObjectRelationValueComponent
             .get(ctx)
             .addRelationFileValueAddComponent()
@@ -510,7 +510,7 @@ class ComponentManager(
             .build()
     }
 
-    val relationFileValueDVComponent = DependentComponentMap { ctx ->
+    val relationFileValueDVComponent = ComponentWithParams { ctx: Id ->
         dataViewRelationValueComponent
             .get(ctx)
             .addRelationFileValueAddComponent()
@@ -518,7 +518,7 @@ class ComponentManager(
             .build()
     }
 
-    val manageViewerComponent = DependentComponentMap { ctx ->
+    val manageViewerComponent = ComponentWithParams { ctx: Id ->
         objectSetComponent
             .get(ctx)
             .manageViewerComponent()
@@ -526,7 +526,7 @@ class ComponentManager(
             .build()
     }
 
-    val objectsSetSettingsComponent = DependentComponentMap { ctx ->
+    val objectsSetSettingsComponent = ComponentWithParams { ctx: Id ->
         objectSetComponent
             .get(ctx)
             .objectSetSettingsComponent()
@@ -534,7 +534,7 @@ class ComponentManager(
             .build()
     }
 
-    val viewerCardSizeSelectComponent = DependentComponentMap { ctx ->
+    val viewerCardSizeSelectComponent = ComponentWithParams { ctx: Id ->
         objectSetComponent
             .get(ctx)
             .viewerCardSizeSelectComponent()
@@ -542,7 +542,7 @@ class ComponentManager(
             .build()
     }
 
-    val viewerImagePreviewSelectComponent = DependentComponentMap { ctx ->
+    val viewerImagePreviewSelectComponent = ComponentWithParams { ctx: Id ->
         objectSetComponent
             .get(ctx)
             .viewerImagePreviewSelectComponent()
@@ -550,7 +550,7 @@ class ComponentManager(
             .build()
     }
 
-    val selectSortRelationComponent = DependentComponentMap { ctx ->
+    val selectSortRelationComponent = ComponentWithParams { ctx: Id ->
         objectSetComponent
             .get(ctx)
             .selectSortRelationComponent()
@@ -558,7 +558,7 @@ class ComponentManager(
             .build()
     }
 
-    val selectFilterRelationComponent = DependentComponentMap { ctx ->
+    val selectFilterRelationComponent = ComponentWithParams { ctx: Id ->
         objectSetComponent
             .get(ctx)
             .selectFilterRelationComponent()
@@ -574,7 +574,7 @@ class ComponentManager(
             .build()
     }
 
-    val pickFilterConditionComponentCreate = DependentComponentMap { ctx ->
+    val pickFilterConditionComponentCreate = ComponentWithParams { ctx: Id ->
         createFilterComponent
             .get(ctx)
             .createPickConditionComponent()
@@ -582,7 +582,7 @@ class ComponentManager(
             .build()
     }
 
-    val pickFilterConditionComponentModify = DependentComponentMap { ctx ->
+    val pickFilterConditionComponentModify = ComponentWithParams { ctx: Id ->
         modifyFilterComponent
             .get(ctx)
             .createPickConditionComponent()
@@ -598,7 +598,7 @@ class ComponentManager(
             .build()
     }
 
-    val viewerSortComponent = DependentComponentMap { ctx ->
+    val viewerSortComponent = ComponentWithParams { ctx: Id ->
         objectSetComponent
             .get(ctx)
             .viewerSortComponent()
@@ -606,7 +606,7 @@ class ComponentManager(
             .build()
     }
 
-    val modifyViewerSortComponent = DependentComponentMap { ctx ->
+    val modifyViewerSortComponent = ComponentWithParams { ctx: Id ->
         objectSetComponent
             .get(ctx)
             .modifyViewerSortComponent()
@@ -614,7 +614,7 @@ class ComponentManager(
             .build()
     }
 
-    val objectCoverComponent = DependentComponentMap { ctx ->
+    val objectCoverComponent = ComponentWithParams { ctx: Id ->
         editorComponent
             .get(ctx)
             .objectCoverComponent()
@@ -622,7 +622,7 @@ class ComponentManager(
             .build()
     }
 
-    val objectUnsplashComponent = DependentComponentMap { ctx ->
+    val objectUnsplashComponent = ComponentWithParams { ctx: Id ->
         editorComponent
             .get(ctx)
             .objectUnsplashComponent()
@@ -630,7 +630,7 @@ class ComponentManager(
             .build()
     }
 
-    val objectSetUnsplashComponent = DependentComponentMap { ctx ->
+    val objectSetUnsplashComponent = ComponentWithParams { ctx: Id ->
         objectSetComponent
             .get(ctx)
             .objectUnsplashComponent()
@@ -638,7 +638,7 @@ class ComponentManager(
             .build()
     }
 
-    val objectSetCoverComponent = DependentComponentMap { ctx ->
+    val objectSetCoverComponent = ComponentWithParams { ctx: Id ->
         objectSetComponent
             .get(ctx)
             .objectSetCoverComponent()
@@ -646,7 +646,7 @@ class ComponentManager(
             .build()
     }
 
-    val objectMenuComponent = DependentComponentMap { ctx ->
+    val objectMenuComponent = ComponentWithParams { ctx: Id ->
         editorComponent
             .get(ctx)
             .objectMenuComponent()
@@ -655,7 +655,7 @@ class ComponentManager(
             .build()
     }
 
-    val objectSetMenuComponent = DependentComponentMap { ctx ->
+    val objectSetMenuComponent = ComponentWithParams { ctx: Id ->
         objectSetComponent
             .get(ctx)
             .objectSetMenuComponent()
@@ -664,7 +664,7 @@ class ComponentManager(
             .build()
     }
 
-    val relationAddToObjectComponent = DependentComponentMap { ctx ->
+    val relationAddToObjectComponent = ComponentWithParams { ctx: Id ->
         editorComponent
             .get(ctx)
             .relationAddToObjectComponent()
@@ -672,7 +672,7 @@ class ComponentManager(
             .build()
     }
 
-    val relationAddToObjectSetComponent = DependentComponentMap { ctx ->
+    val relationAddToObjectSetComponent = ComponentWithParams { ctx: Id ->
         objectSetComponent
             .get(ctx)
             .relationAddToObjectComponent()
@@ -680,7 +680,7 @@ class ComponentManager(
             .build()
     }
 
-    val relationAddToDataViewComponent = DependentComponentMap { ctx ->
+    val relationAddToDataViewComponent = ComponentWithParams { ctx: Id ->
         objectSetComponent
             .get(ctx)
             .relationAddToDataViewComponent()
@@ -720,69 +720,70 @@ class ComponentManager(
             .build()
     }
 
-    val relationFormatPickerObjectComponent = DependentComponentMap { ctx ->
+    val relationFormatPickerObjectComponent = ComponentWithParams { ctx: Id ->
         relationCreateFromScratchForObjectComponent
             .get(ctx)
             .relationFormatPickerComponent()
             .build()
     }
 
-    val relationFormatPickerLibraryComponent = DependentComponentMap { ctx ->
-        relationCreationFromLibraryComponent.get()
+    val relationFormatPickerLibraryComponent = ComponentWithParams { ctx: Id ->
+        relationCreationFromLibraryComponent
+            .get()
             .relationFormatPickerComponent()
             .build()
     }
 
-    val relationFormatPickerBlockComponent = DependentComponentMap { ctx ->
+    val relationFormatPickerBlockComponent = ComponentWithParams { ctx: Id ->
         relationCreateFromScratchForObjectBlockComponent
             .get(ctx)
             .relationFormatPickerComponent()
             .build()
     }
 
-    val relationFormatPickerDataViewComponent = DependentComponentMap { ctx ->
+    val relationFormatPickerDataViewComponent = ComponentWithParams { ctx: Id ->
         relationCreateFromScratchForDataViewComponent
             .get(ctx)
             .relationFormatPickerComponent()
             .build()
     }
 
-    val relationFormatPickerSetOrCollectionComponent = DependentComponentMap { ctx ->
+    val relationFormatPickerSetOrCollectionComponent = ComponentWithParams { ctx: Id ->
         relationCreateFromScratchForObjectSetComponent
             .get(ctx)
             .relationFormatPickerComponent()
             .build()
     }
 
-    val limitObjectTypeObjectComponent = DependentComponentMap { ctx ->
+    val limitObjectTypeObjectComponent = ComponentWithParams { ctx: Id ->
         relationCreateFromScratchForObjectComponent.get(ctx)
             .limitObjectTypeComponent()
             .module(LimitObjectTypeModule)
             .build()
     }
 
-    val limitObjectTypeBlockComponent = DependentComponentMap { ctx ->
+    val limitObjectTypeBlockComponent = ComponentWithParams { ctx: Id ->
         relationCreateFromScratchForObjectBlockComponent.get(ctx)
             .limitObjectTypeComponent()
             .module(LimitObjectTypeModule)
             .build()
     }
 
-    val limitObjectTypeDataViewComponent = DependentComponentMap { ctx ->
+    val limitObjectTypeDataViewComponent = ComponentWithParams { ctx: Id ->
         relationCreateFromScratchForDataViewComponent.get(ctx)
             .limitObjectTypeComponent()
             .module(LimitObjectTypeModule)
             .build()
     }
 
-    val limitObjectTypeSetOrCollectionComponent = DependentComponentMap { ctx ->
+    val limitObjectTypeSetOrCollectionComponent = ComponentWithParams { ctx: Id ->
         relationCreateFromScratchForObjectSetComponent.get(ctx)
             .limitObjectTypeComponent()
             .module(LimitObjectTypeModule)
             .build()
     }
 
-    val limitObjectTypeLibraryComponent = DependentComponentMap { ctx ->
+    val limitObjectTypeLibraryComponent = ComponentWithParams { ctx: Id ->
         relationCreationFromLibraryComponent.get()
             .limitObjectTypeComponent()
             .module(LimitObjectTypeModule)

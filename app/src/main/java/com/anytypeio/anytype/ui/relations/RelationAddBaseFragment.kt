@@ -177,9 +177,9 @@ class RelationAddToObjectFragment : RelationAddBaseFragment() {
 
     override fun releaseDependencies() {
         if (isSetOrCollection) {
-            componentManager().relationAddToObjectSetComponent.release(ctx)
+            componentManager().relationAddToObjectSetComponent.release()
         } else {
-            componentManager().relationAddToObjectComponent.release(ctx)
+            componentManager().relationAddToObjectComponent.release()
         }
     }
 
@@ -235,7 +235,7 @@ class RelationAddToDataViewFragment : RelationAddBaseFragment() {
     }
 
     override fun releaseDependencies() {
-        componentManager().relationAddToDataViewComponent.release(ctx)
+        componentManager().relationAddToDataViewComponent.release()
     }
 
     companion object {
@@ -317,7 +317,7 @@ class RelationAddToObjectBlockFragment : RelationAddBaseFragment(),
     }
 
     override fun releaseDependencies() {
-        componentManager().relationAddToObjectComponent.release(ctx)
+        componentManager().relationAddToObjectComponent.release()
     }
 
     companion object {

@@ -22,7 +22,7 @@ class ObjectAppearanceChoosePreviewLayoutFragment :
     }
 
     override fun releaseDependencies() {
-        componentManager().objectAppearancePreviewLayoutComponent.release(ctx)
+        componentManager().objectAppearancePreviewLayoutComponent.release()
     }
 
     companion object {

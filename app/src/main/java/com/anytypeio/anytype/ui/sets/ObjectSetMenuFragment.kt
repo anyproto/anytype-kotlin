@@ -32,6 +32,6 @@ class ObjectSetMenuFragment : ObjectMenuBaseFragment() {
     }
 
     override fun releaseDependencies() {
-        componentManager().objectSetMenuComponent.release(ctx)
+        componentManager().objectSetMenuComponent.release()
     }
 }

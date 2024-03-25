@@ -72,7 +72,7 @@ class SetObjectSetRecordNameFragment : SetObjectCreateRecordFragmentBase<Fragmen
     }
 
     override fun releaseDependencies() {
-        componentManager().objectSetRecordComponent.release(ctx)
+        componentManager().objectSetRecordComponent.release()
     }
 
     override fun inflateBinding(

@@ -147,7 +147,7 @@ class ManageViewerFragment : BaseBottomSheetFragment<FragmentManageViewerBinding
     }
 
     override fun releaseDependencies() {
-        componentManager().manageViewerComponent.release(ctx)
+        componentManager().manageViewerComponent.release()
     }
 
     override fun inflateBinding(

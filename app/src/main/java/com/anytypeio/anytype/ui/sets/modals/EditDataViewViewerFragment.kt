@@ -145,7 +145,7 @@ EditDataViewViewerFragment : BaseBottomSheetFragment<FragmentEditDataViewViewerB
     }
 
     override fun releaseDependencies() {
-        componentManager().editDataViewViewerComponent.release(ctx)
+        componentManager().editDataViewViewerComponent.release()
     }
 
     override fun inflateBinding(

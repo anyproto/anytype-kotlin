@@ -133,9 +133,9 @@ class AddFileRelationFragment :
 
     override fun releaseDependencies() {
         if (flow == FLOW_DEFAULT) {
-            componentManager().relationFileValueComponent.release(ctx)
+            componentManager().relationFileValueComponent.release()
         } else {
-            componentManager().relationFileValueDVComponent.release(ctx)
+            componentManager().relationFileValueDVComponent.release()
         }
     }
 

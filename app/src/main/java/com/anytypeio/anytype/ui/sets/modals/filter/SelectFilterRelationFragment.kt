@@ -31,7 +31,7 @@ class SelectFilterRelationFragment : SearchRelationFragment() {
     }
 
     override fun releaseDependencies() {
-        componentManager().selectFilterRelationComponent.release(ctx)
+        componentManager().selectFilterRelationComponent.release()
     }
 
     companion object {

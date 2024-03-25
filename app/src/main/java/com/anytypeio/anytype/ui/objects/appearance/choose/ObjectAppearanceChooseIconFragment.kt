@@ -23,7 +23,7 @@ class ObjectAppearanceChooseIconFragment :
     }
 
     override fun releaseDependencies() {
-        componentManager().objectAppearanceIconComponent.release(ctx)
+        componentManager().objectAppearanceIconComponent.release()
     }
 
     companion object {

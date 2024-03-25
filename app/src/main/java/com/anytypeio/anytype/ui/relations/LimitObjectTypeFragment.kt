@@ -99,19 +99,19 @@ class LimitObjectTypeFragment : BaseBottomSheetFragment<FragmentObjectTypeChange
     override fun releaseDependencies() {
         when(flow) {
             FLOW_OBJECT -> {
-                componentManager().limitObjectTypeObjectComponent.release(ctx)
+                componentManager().limitObjectTypeObjectComponent.release()
             }
             FLOW_DV -> {
-                componentManager().limitObjectTypeDataViewComponent.release(ctx)
+                componentManager().limitObjectTypeDataViewComponent.release()
             }
             FLOW_BLOCK -> {
-                componentManager().limitObjectTypeBlockComponent.release(ctx)
+                componentManager().limitObjectTypeBlockComponent.release()
             }
             FLOW_LIBRARY -> {
-                componentManager().limitObjectTypeLibraryComponent.release(ctx)
+                componentManager().limitObjectTypeLibraryComponent.release()
             }
             FLOW_SET_OR_COLLECTION -> {
-                componentManager().limitObjectTypeSetOrCollectionComponent.release(ctx)
+                componentManager().limitObjectTypeSetOrCollectionComponent.release()
             }
         }
     }

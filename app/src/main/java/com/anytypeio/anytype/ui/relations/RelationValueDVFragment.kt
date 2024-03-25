@@ -189,7 +189,7 @@ open class RelationValueDVFragment : RelationValueBaseFragment<FragmentRelationV
 
     override fun releaseDependencies() {
         if (isIntrinsic) {
-            componentManager().setOrCollectionRelationValueComponent.release(ctx)
+            componentManager().setOrCollectionRelationValueComponent.release()
         } else {
             componentManager().dataViewRelationValueComponent.release(ctx)
         }

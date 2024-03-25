@@ -146,7 +146,7 @@ open class ViewerSortFragment : BaseBottomSheetFragment<FragmentViewerSortBindin
     }
 
     override fun releaseDependencies() {
-        componentManager().viewerSortComponent.release(ctx)
+        componentManager().viewerSortComponent.release()
     }
 
     override fun inflateBinding(

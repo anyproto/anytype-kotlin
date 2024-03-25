@@ -3,6 +3,7 @@ package com.anytypeio.anytype.middleware.mappers
 import anytype.ResponseEvent
 import anytype.Rpc
 import anytype.model.Account
+import anytype.model.ParticipantPermissions
 import anytype.model.Restrictions
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Block
@@ -24,9 +25,14 @@ import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Process
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ImportErrorCode
 import com.anytypeio.anytype.core_models.ManifestInfo
 import com.anytypeio.anytype.core_models.NodeUsage
 import com.anytypeio.anytype.core_models.NodeUsageInfo
+import com.anytypeio.anytype.core_models.Notification
+import com.anytypeio.anytype.core_models.NotificationActionType
+import com.anytypeio.anytype.core_models.NotificationPayload
+import com.anytypeio.anytype.core_models.NotificationStatus
 import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
@@ -36,6 +42,8 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.SpaceUsage
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
@@ -780,7 +788,7 @@ fun List<Rpc.Debug.TreeInfo>.toCoreModel(): String {
     return GsonBuilder().setPrettyPrinting().create().toJson(this)
 }
 
-fun Account.Info.config() : Config = Config(
+fun Account.Info.config(): Config = Config(
     home = homeObjectId,
     profile = profileObjectId,
     gateway = gatewayUrl,
@@ -826,7 +834,7 @@ fun MProcessType.toCoreModel(): Process.Type {
         MProcessType.Export -> Process.Type.EXPORT
         MProcessType.SaveFile -> Process.Type.SAVE_FILE
         MProcessType.RecoverAccount -> Process.Type.RECOVER_ACCOUNT
-        MProcessType.Migration ->  Process.Type.MIGRATION
+        MProcessType.Migration -> Process.Type.MIGRATION
     }
 }
 
@@ -847,3 +855,109 @@ fun MProcessProgress.toCoreModel(): Process.Progress {
         message = message
     )
 }
+
+//region IMPORT
+fun MImportErrorCode.toCoreModel(): ImportErrorCode {
+    return when (this) {
+        MImportErrorCode.NULL -> ImportErrorCode.NULL
+        MImportErrorCode.UNKNOWN_ERROR -> ImportErrorCode.UNKNOWN_ERROR
+        MImportErrorCode.BAD_INPUT -> ImportErrorCode.BAD_INPUT
+        MImportErrorCode.INTERNAL_ERROR -> ImportErrorCode.INTERNAL_ERROR
+        MImportErrorCode.NO_OBJECTS_TO_IMPORT -> ImportErrorCode.NO_OBJECTS_TO_IMPORT
+        MImportErrorCode.IMPORT_IS_CANCELED -> ImportErrorCode.IMPORT_IS_CANCELED
+        MImportErrorCode.LIMIT_OF_ROWS_OR_RELATIONS_EXCEEDED -> ImportErrorCode.LIMIT_OF_ROWS_OR_RELATIONS_EXCEEDED
+        MImportErrorCode.FILE_LOAD_ERROR -> ImportErrorCode.FILE_LOAD_ERROR
+        MImportErrorCode.INSUFFICIENT_PERMISSIONS -> ImportErrorCode.INSUFFICIENT_PERMISSIONS
+    }
+}
+//endregion
+
+//region NOTIFICATIONS
+fun MNotificationStatus.toCoreModel(): NotificationStatus {
+    return when (this) {
+        MNotificationStatus.Created -> NotificationStatus.CREATED
+        MNotificationStatus.Shown -> NotificationStatus.SHOWN
+        MNotificationStatus.Read -> NotificationStatus.READ
+        MNotificationStatus.Replied -> NotificationStatus.REPLIED
+    }
+}
+
+fun MNotificationActionType.toCoreModel(): NotificationActionType {
+    return when (this) {
+        MNotificationActionType.CLOSE -> NotificationActionType.CLOSE
+    }
+}
+
+fun MParticipantPermission.toCore(): SpaceMemberPermissions {
+    return when (this) {
+        ParticipantPermissions.Reader -> SpaceMemberPermissions.READER
+        ParticipantPermissions.Writer -> SpaceMemberPermissions.WRITER
+        ParticipantPermissions.Owner -> SpaceMemberPermissions.OWNER
+        ParticipantPermissions.NoPermissions -> SpaceMemberPermissions.NO_PERMISSIONS
+    }
+}
+
+fun MNotification.toCoreModel(): Notification {
+    return Notification(
+        id = id,
+        createTime = createTime,
+        status = status.toCoreModel(),
+        isLocal = isLocal,
+        space = SpaceId(space),
+        aclHeadId = aclHeadId,
+        payload = when {
+            participantPermissionsChange != null -> {
+                NotificationPayload.ParticipantPermissionsChange(
+                    spaceId = SpaceId(participantPermissionsChange!!.spaceId),
+                    permissions = participantPermissionsChange!!.permissions.toCore()
+                )
+            }
+            requestToJoin != null -> {
+                NotificationPayload.RequestToJoin(
+                    spaceId = SpaceId(requestToJoin!!.spaceId),
+                    identity = requestToJoin!!.identity,
+                    identityName = requestToJoin!!.identityName,
+                    identityIcon = requestToJoin!!.identityIcon
+                )
+            }
+            requestToLeave != null -> {
+                NotificationPayload.RequestToLeave(
+                    spaceId = SpaceId(requestToLeave!!.spaceId),
+                    identity = requestToLeave!!.identity,
+                    identityName = requestToLeave!!.identityName,
+                    identityIcon = requestToLeave!!.identityIcon
+                )
+            }
+            participantRequestApproved != null -> {
+                NotificationPayload.ParticipantRequestApproved(
+                    spaceId = SpaceId(participantRequestApproved!!.spaceId),
+                    permissions = participantRequestApproved!!.permissions.toCore()
+                )
+            }
+            participantRemove != null -> {
+                NotificationPayload.ParticipantRemove(
+                    identity = participantRemove!!.identity,
+                    identityName = participantRemove!!.identityName,
+                    identityIcon = participantRemove!!.identityIcon,
+                    spaceId = SpaceId(participantRemove!!.spaceId)
+                )
+            }
+            participantRequestDecline != null -> {
+                NotificationPayload.ParticipantRequestDecline(
+                    spaceId = SpaceId(participantRequestDecline!!.spaceId)
+                )
+            }
+            galleryImport != null -> {
+                NotificationPayload.GalleryImport(
+                    processId = galleryImport!!.processId,
+                    errorCode = galleryImport!!.errorCode.toCoreModel(),
+                    spaceId = SpaceId(galleryImport!!.spaceId),
+                    name = galleryImport!!.name
+                )
+            }
+            test != null -> NotificationPayload.Test
+            else -> NotificationPayload.Unsupported("Unsupported notification payload :${this.javaClass.simpleName}")
+        },
+    )
+}
+//endregion

@@ -75,3 +75,8 @@ typealias MProcess = anytype.Model.Process
 typealias MProcessType = anytype.Model.Process.Type
 typealias MProcessState = anytype.Model.Process.State
 typealias MProcessProgress = anytype.Model.Process.Progress
+
+typealias MNotification = anytype.model.Notification
+typealias MNotificationActionType = anytype.model.Notification.ActionType
+typealias MNotificationStatus = anytype.model.Notification.Status
+typealias MImportErrorCode = anytype.model.Import.ErrorCode

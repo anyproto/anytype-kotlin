@@ -8,13 +8,13 @@ import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Relations.SOURCE_OBJECT
+import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.ext.readableFileSize
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.library.LibraryView
 import com.anytypeio.anytype.presentation.linking.LinkToItemView
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
-import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
@@ -43,7 +43,8 @@ fun List<ObjectWrapper.Basic>.toView(
                 obj = obj,
                 layout = layout,
                 builder = urlBuilder
-            )
+            ),
+            space = requireNotNull(obj.spaceId)
         )
     }
 
@@ -85,7 +86,8 @@ fun ObjectWrapper.Basic.toView(
         ),
         lastModifiedDate = DateParser.parseInMillis(obj.lastModifiedDate) ?: 0L,
         lastOpenedDate = DateParser.parseInMillis(obj.lastOpenedDate) ?: 0L,
-        isFavorite = obj.isFavorite ?: false
+        isFavorite = obj.isFavorite ?: false,
+        space = requireNotNull(obj.spaceId)
     )
 }
 
@@ -234,6 +236,7 @@ fun List<ObjectWrapper.Basic>.toRelationObjectValueView(
             if (obj.isDeleted == null || obj.isDeleted == false) {
                 RelationValueView.Object.Default(
                     id = obj.id,
+                    space = requireNotNull(obj.spaceId),
                     name = obj.getProperName(),
                     typeName = getProperTypeName(
                         id = typeUrl,
@@ -253,6 +256,7 @@ fun List<ObjectWrapper.Basic>.toRelationObjectValueView(
             } else {
                 RelationValueView.Object.NonExistent(
                     id = obj.id,
+                    space = requireNotNull(obj.spaceId),
                     isSelected = false,
                     removable = false
                 )
@@ -271,6 +275,7 @@ fun List<ObjectWrapper.Basic>.toRelationFileValueView(
         if (obj.id !in ids) {
             RelationValueView.File(
                 id = obj.id,
+                space = requireNotNull(obj.spaceId),
                 name = obj.getProperName(),
                 ext = obj.getProperFileExt(),
                 mime = obj.getProperFileMime(),
@@ -308,7 +313,8 @@ fun ObjectWrapper.Basic.mapFileObjectToView(): CollectionView.ObjectView {
         name = getProperName(),
         description = sizeInBytes?.toLong()?.readableFileSize().orEmpty(),
         layout = layout,
-        icon = fileIcon
+        icon = fileIcon,
+        space = requireNotNull(spaceId)
     )
     return CollectionView.ObjectView(defaultObjectView)
 }

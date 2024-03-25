@@ -107,7 +107,7 @@ class EditorTitleTest : EditorPresentationTestSetup() {
             val commandTestObserver = vm.commands.test()
 
             vm.apply {
-                onStart(root)
+                onStart(id = root, space = defaultSpace)
                 onBlockFocusChanged(title.id, true)
                 onBlockToolbarBlockActionsClicked()
             }
@@ -149,7 +149,7 @@ class EditorTitleTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // TESTING
 
@@ -204,7 +204,7 @@ class EditorTitleTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         
         // TESTING
 
@@ -314,7 +314,7 @@ class EditorTitleTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // TESTING
 
@@ -431,7 +431,7 @@ class EditorTitleTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // TESTING
 

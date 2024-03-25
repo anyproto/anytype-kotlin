@@ -4,9 +4,7 @@ import app.cash.turbine.testIn
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
@@ -54,6 +52,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
 
             mockObjectSet = MockSet(
                 context = root,
+                space = defaultSpace,
                 setOfValue = setOfId,
                 setOfKey = setOfKey
             )
@@ -82,6 +81,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                 objectType = TypeKey(setOfKey),
                 struct = mapOf(
                     Relations.ID to newObjectId,
+                    Relations.SPACE_ID to defaultSpace,
                     Relations.UNIQUE_KEY to setOfKey,
                     Relations.LAYOUT to ObjectType.Layout.NOTE.code.toDouble(),
                 )
@@ -97,7 +97,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             doReturn(Resultat.success(Unit)).`when`(closeBlock).async(mockObjectSet.root)
 
             // TESTING
-            viewModel.onStart(ctx = root)
+            proceedWithStartingViewModel()
 
             advanceUntilIdle()
 
@@ -128,6 +128,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
 
             mockObjectSet = MockSet(
                 context = root,
+                space = defaultSpace,
                 setOfValue = setOfId,
                 setOfKey = setOfKey
             )
@@ -165,7 +166,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             doReturn(Resultat.success(Unit)).`when`(closeBlock).async(mockObjectSet.root)
 
             // TESTING
-            viewModel.onStart(ctx = root)
+            proceedWithStartingViewModel()
             val commandFlow = viewModel.commands.testIn(backgroundScope)
 
             advanceUntilIdle()
@@ -194,7 +195,11 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
 
             val relationKey = "relationKey-${RandomString.make()}"
             val relationUniqueKeys = "relationUniqueKeys-${RandomString.make()}"
-            mockObjectSet = MockSet(context = root, setOfValue = setByRelationValue)
+            mockObjectSet = MockSet(
+                context = root,
+                space = defaultSpace,
+                setOfValue = setByRelationValue
+            )
             val setByRelationMap = mapOf(
                 Relations.ID to setByRelationValue,
                 Relations.LAYOUT to ObjectType.Layout.RELATION.code.toDouble(),
@@ -251,7 +256,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             doReturn(Resultat.success(Unit)).`when`(closeBlock).async(mockObjectSet.root)
 
             // TESTING
-            viewModel.onStart(ctx = root)
+            proceedWithStartingViewModel()
 
             advanceUntilIdle()
 
@@ -276,7 +281,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `Should create new Object and not close Set when clicking on New button in Collection`() = runTest {
 
-        val objectCollection = MockCollection(context = root)
+        val objectCollection = MockCollection(context = root, space = defaultSpace)
 
         // SETUP
         stubSpaceManager(objectCollection.spaceId)
@@ -332,7 +337,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         doReturn(Resultat.success(Unit)).`when`(closeBlock).async(objectCollection.root)
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         advanceUntilIdle()
 
@@ -352,5 +357,9 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         }
 
         verifyNoInteractions(closeBlock)
+    }
+
+    private fun proceedWithStartingViewModel() {
+        viewModel.onStart(ctx = root, space = defaultSpace)
     }
 }

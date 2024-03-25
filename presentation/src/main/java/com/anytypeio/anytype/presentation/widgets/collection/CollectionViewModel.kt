@@ -426,10 +426,20 @@ class CollectionViewModel(
                 ObjectType.Layout.FILE,
                 ObjectType.Layout.IMAGE,
                 ObjectType.Layout.BOOKMARK -> {
-                    commands.emit(Command.LaunchDocument(id = target))
+                    commands.emit(
+                        Command.LaunchDocument(
+                            target = target,
+                            space = view.space
+                        )
+                    )
                 }
                 ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
-                    commands.emit(Command.LaunchObjectSet(target = target))
+                    commands.emit(
+                        Command.LaunchObjectSet(
+                            target = target,
+                            space = view.space
+                        )
+                    )
                 }
                 else -> {
                     Timber.e("Unexpected layout: ${view.layout}")
@@ -849,10 +859,20 @@ class CollectionViewModel(
     private suspend fun proceedWithOpeningObject(obj: ObjectWrapper.Basic) {
         when (val navigation = obj.navigation()) {
             is OpenObjectNavigation.OpenDataView -> {
-                commands.emit(Command.LaunchObjectSet(navigation.target))
+                commands.emit(
+                    Command.LaunchObjectSet(
+                        target = navigation.target,
+                        space = navigation.space
+                    )
+                )
             }
             is OpenObjectNavigation.OpenEditor -> {
-                commands.emit(Command.LaunchDocument(navigation.target))
+                commands.emit(
+                    Command.LaunchDocument(
+                        target = navigation.target,
+                        space = navigation.space
+                    )
+                )
             }
             is OpenObjectNavigation.UnexpectedLayoutError -> {
                 toasts.emit("Unexpected layout: ${navigation.layout}")
@@ -944,9 +964,9 @@ class CollectionViewModel(
 
     sealed class Command {
         data class ConfirmRemoveFromBin(val count: Int) : Command()
-        data class LaunchDocument(val id: Id) : Command()
-        data class OpenCollection(val subscription: Subscription) : Command()
-        data class LaunchObjectSet(val target: Id) : Command()
+        data class LaunchDocument(val target: Id, val space: Id) : Command()
+        data class OpenCollection(val subscription: Subscription, val space: Id) : Command()
+        data class LaunchObjectSet(val target: Id, val space: Id) : Command()
 
         object ToDesktop : Command()
         object ToSearch : Command()

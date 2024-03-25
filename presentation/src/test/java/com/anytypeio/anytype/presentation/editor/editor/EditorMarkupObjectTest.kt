@@ -5,7 +5,6 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectTypeIds.PAGE
 import com.anytypeio.anytype.core_models.ext.content
-import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -16,7 +15,6 @@ import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
 import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import net.lachlanmckee.timberjunit.TimberTestRule
@@ -92,7 +90,7 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
 
         //TESTING
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
@@ -239,7 +237,7 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
 
         //TESTING
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
@@ -411,7 +409,7 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
         )
         stubGetDefaultObjectType(type = newObjectType)
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true

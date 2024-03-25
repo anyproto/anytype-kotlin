@@ -8,14 +8,11 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.ext.content
-import com.anytypeio.anytype.core_models.primitives.TypeId
-import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
-import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionConst.MENTION_TITLE_EMPTY
@@ -44,7 +41,6 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyNoInteractions
 
 class EditorMentionTest : EditorPresentationTestSetup() {
@@ -176,7 +172,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -331,7 +327,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -478,7 +474,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -584,7 +580,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -686,7 +682,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         //TESTING
 
@@ -861,7 +857,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
 
         verifyNoInteractions(interceptEvents)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val actual = vm.state.value
         val expected = ViewState.Success(
@@ -1004,7 +1000,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
 
         verifyNoInteractions(interceptEvents)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val actual = vm.state.value
         val expected = ViewState.Success(
@@ -1116,7 +1112,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(

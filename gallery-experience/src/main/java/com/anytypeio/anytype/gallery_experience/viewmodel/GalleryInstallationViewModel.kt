@@ -22,6 +22,7 @@ import com.anytypeio.anytype.gallery_experience.models.GalleryInstallationState
 import com.anytypeio.anytype.gallery_experience.models.GallerySpaceView
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -43,6 +44,7 @@ class GalleryInstallationViewModel(
     val spacesViewState =
         MutableStateFlow(GalleryInstallationSpacesState(emptyList(), false))
     val command = MutableStateFlow<GalleryInstallationNavigation?>(null)
+    val errorState = MutableSharedFlow<String?>(replay = 0)
 
     private val MAX_SPACES = 10
 
@@ -61,12 +63,12 @@ class GalleryInstallationViewModel(
                         mainState.value = GalleryInstallationState.Success(manifestInfo)
                     } else {
                         Timber.e("DownloadGalleryManifest failed, manifestInfo is null")
-                        command.value = GalleryInstallationNavigation.Error
+                        errorState.emit("Download manifest error: manifestInfo is null")
                     }
                 },
                 onFailure = { error ->
                     Timber.e(error, "DownloadGalleryManifest failed")
-                    command.value = GalleryInstallationNavigation.Dismiss
+                    errorState.emit("Download manifest error: ${error.message}")
                 }
             )
         }
@@ -88,20 +90,21 @@ class GalleryInstallationViewModel(
                 },
                 onFailure = { error ->
                     Timber.e(error, "GetSpaceViews failed")
+                    errorState.emit("Get Spaces error: ${error.message}")
                 }
             )
         }
     }
 
     fun onNewSpaceClick() {
+        val state = (mainState.value as? GalleryInstallationState.Success) ?: return
         subscribeToEventProcessChannel()
         command.value = GalleryInstallationNavigation.Dismiss
-        val manifestInfo = (mainState.value as? GalleryInstallationState.Success)?.info ?: return
-        mainState.value =
-            (mainState.value as? GalleryInstallationState.Success)?.copy(isLoading = true) ?: return
+        val manifestInfo = state.info
+        mainState.value = state.copy(isLoading = true)
         val params = CreateSpace.Params(
             details = mapOf(
-                Relations.NAME to manifestInfo.name,
+                Relations.NAME to manifestInfo.title,
                 Relations.ICON_OPTION to spaceGradientProvider.randomId().toDouble()
             )
         )
@@ -112,10 +115,13 @@ class GalleryInstallationViewModel(
                     proceedWithInstallation(
                         spaceId = SpaceId(space),
                         isNewSpace = true,
-                        manifestInfo = manifestInfo
+                        manifestInfo = manifestInfo,
+                        state = state
                     )
                 },
                 onFailure = { error ->
+                    mainState.value = state.copy(isLoading = false)
+                    errorState.emit("Space creation error: ${error.message}")
                     Timber.e(error, "CreateSpace failed")
                 }
             )
@@ -123,12 +129,11 @@ class GalleryInstallationViewModel(
     }
 
     fun onSpaceClick(space: GallerySpaceView) {
+        val state = (mainState.value as? GalleryInstallationState.Success) ?: return
         subscribeToEventProcessChannel()
         Timber.d("onSpaceClick, space: $space")
         command.value = GalleryInstallationNavigation.Dismiss
-        mainState.value =
-            (mainState.value as? GalleryInstallationState.Success)?.copy(isLoading = true) ?: return
-        val manifestInfo = (mainState.value as? GalleryInstallationState.Success)?.info ?: return
+        mainState.value = state.copy(isLoading = true)
         val spaceId = space.obj.targetSpaceId
         if (spaceId == null) {
             Timber.e("onSpaceClick, spaceId is null")
@@ -137,7 +142,8 @@ class GalleryInstallationViewModel(
         proceedWithInstallation(
             spaceId = SpaceId(spaceId),
             isNewSpace = false,
-            manifestInfo = manifestInfo
+            manifestInfo = state.info,
+            state = state
         )
     }
 
@@ -146,6 +152,7 @@ class GalleryInstallationViewModel(
     }
 
     private fun proceedWithInstallation(
+        state: GalleryInstallationState.Success,
         spaceId: SpaceId,
         isNewSpace: Boolean,
         manifestInfo: ManifestInfo
@@ -161,10 +168,12 @@ class GalleryInstallationViewModel(
                 onSuccess = {
                     Timber.d("ObjectImportExperience success")
                     command.value = GalleryInstallationNavigation.Success
+                    mainState.value = state.copy(isLoading = false)
                 },
                 onFailure = { error ->
                     Timber.e(error, "ObjectImportExperience failed")
-                    command.value = GalleryInstallationNavigation.Error
+                    mainState.value = state.copy(isLoading = false)
+                    errorState.emit("Import experience error: ${error.message}")
                 }
             )
         }

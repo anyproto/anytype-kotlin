@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -127,6 +128,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
@@ -176,6 +178,8 @@ class ObjectSetViewModel(
 
     val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
 
+    val permission = MutableStateFlow<SpaceMemberPermissions?>(SpaceMemberPermissions.NO_PERMISSIONS)
+
     val status = MutableStateFlow<SyncStatusView?>(null)
     val error = MutableStateFlow<String?>(null)
 
@@ -220,6 +224,7 @@ class ObjectSetViewModel(
     val isLoading = MutableStateFlow(false)
 
     private var context: Id = ""
+    private var space = MutableStateFlow("")
 
     private val selectedTypeFlow: MutableStateFlow<ObjectWrapper.Type?> = MutableStateFlow(null)
 
@@ -230,7 +235,10 @@ class ObjectSetViewModel(
             stateReducer.state
                 .filterIsInstance<ObjectState.DataView>()
                 .distinctUntilChanged()
-                .collectLatest { state ->
+                .combine(permission) { state, permission ->
+                    state to permission
+                }
+                .collectLatest { (state, permission) ->
                     featured.value = state.featuredRelations(
                         ctx = context,
                         urlBuilder = urlBuilder,
@@ -239,7 +247,8 @@ class ObjectSetViewModel(
                     _header.value = state.header(
                         ctx = context,
                         urlBuilder = urlBuilder,
-                        coverImageHashProvider = coverImageHashProvider
+                        coverImageHashProvider = coverImageHashProvider,
+                        isReadOnlyMode = permission == SpaceMemberPermissions.NO_PERMISSIONS || permission == SpaceMemberPermissions.READER
                     )
                 }
         }
@@ -299,11 +308,18 @@ class ObjectSetViewModel(
                     is Action.SetUnsplashImage -> {
                         proceedWithSettingUnsplashImage(action)
                     }
-                    is Action.OpenObject -> proceedWithOpeningObject(action.id)
-                    is Action.OpenCollection -> proceedWithOpeningObjectCollection(action.id)
+                    is Action.OpenObject -> proceedWithOpeningObject(
+                        target = action.target,
+                        space = action.space
+                    )
+                    is Action.OpenCollection -> proceedWithOpeningObjectCollection(
+                        target = action.target,
+                        space = action.space
+                    )
                     is Action.Duplicate -> proceedWithNavigation(
-                        target = action.id,
-                        layout = ObjectType.Layout.SET
+                        target = action.target,
+                        layout = ObjectType.Layout.SET,
+                        space = action.space
                     )
                     else -> {}
                 }
@@ -347,8 +363,9 @@ class ObjectSetViewModel(
 
     private fun proceedWithObservingProfileIcon() {
         viewModelScope.launch {
-            spaceManager
-                .observe()
+            space
+                .filter { it.isNotEmpty() }
+                .mapNotNull { spaceManager.getConfig(SpaceId(it)) }
                 .flatMapLatest { config ->
                     storelessSubscriptionContainer.subscribe(
                         StoreSearchByIdsParams(
@@ -356,6 +373,7 @@ class ObjectSetViewModel(
                             targets = listOf(config.profile),
                             keys = listOf(
                                 Relations.ID,
+                                Relations.SPACE_ID,
                                 Relations.NAME,
                                 Relations.ICON_EMOJI,
                                 Relations.ICON_IMAGE,
@@ -380,7 +398,7 @@ class ObjectSetViewModel(
             DownloadUnsplashImage.Params(
                 picture = action.img,
                 // TODO re-fact to use space id from arguments or target space id of this object
-                space = SpaceId(spaceManager.get())
+                space = SpaceId(space.value)
             )
         ).process(
             failure = {
@@ -402,9 +420,10 @@ class ObjectSetViewModel(
         )
     }
 
-    fun onStart(ctx: Id) {
+    fun onStart(ctx: Id, space: Id) {
         Timber.d("onStart, ctx:[$ctx]")
-        context = ctx
+        this.context = ctx
+        this.space.value = space
         subscribeToEvents(ctx = ctx)
         subscribeToThreadStatus(ctx = ctx)
         proceedWithOpeningCurrentObject(ctx = ctx)
@@ -425,7 +444,7 @@ class ObjectSetViewModel(
                 .build(InterceptThreadStatus.Params(ctx))
                 .collect {
                     val statusView = it.toView(
-                        networkId = spaceManager.getConfig()?.network,
+                        networkId = spaceManager.getConfig(SpaceId(space.value))?.network,
                         networkMode = networkMode
                     )
                     status.value = statusView
@@ -438,24 +457,30 @@ class ObjectSetViewModel(
         Timber.d("subscribeToObjectState, ctx:[$context]")
         viewModelScope.launch {
             combine(
+                space.filter { it.isNotEmpty() },
                 stateReducer.state,
                 paginator.offset,
                 session.currentViewerId,
-            ) { state, offset, view ->
-                Triple(state, offset, view)
-            }.flatMapLatest { (state, offset, view) ->
-                when (state) {
+            ) { space, state, offset, view ->
+                Query(
+                    space = space,
+                    state = state,
+                    offset = offset,
+                    currentViewerId = view
+                )
+            }.flatMapLatest { query  ->
+                when (query.state) {
                     is ObjectState.DataView.Collection -> {
                         Timber.d("subscribeToObjectState, NEW COLLECTION STATE")
-                        if (state.isInitialized) {
+                        if (query.state.isInitialized) {
                             dataViewSubscription.startObjectCollectionSubscription(
                                 collection = context,
-                                state = state,
-                                currentViewerId = view,
-                                offset = offset,
+                                state = query.state,
+                                currentViewerId = query.currentViewerId,
+                                offset = query.offset,
                                 context = context,
-                                spaces = spaceManager.getSpaceWithTechSpace(),
-                                dataViewRelationLinks = state.dataViewContent.relationLinks
+                                spaces = spaceManager.getSpaceWithTechSpace(space = query.space),
+                                dataViewRelationLinks = query.state.dataViewContent.relationLinks
                             )
                         } else {
                             emptyFlow()
@@ -464,14 +489,14 @@ class ObjectSetViewModel(
 
                     is ObjectState.DataView.Set -> {
                         Timber.d("subscribeToObjectState, NEW SET STATE")
-                        if (state.isInitialized) {
+                        if (query.state.isInitialized) {
                             dataViewSubscription.startObjectSetSubscription(
-                                state = state,
-                                currentViewerId = view,
-                                offset = offset,
+                                state = query.state,
+                                currentViewerId = query.currentViewerId,
+                                offset = query.offset,
                                 context = context,
                                 spaces = spaceManager.getSpaceWithTechSpace(),
-                                dataViewRelationLinks = state.dataViewContent.relationLinks
+                                dataViewRelationLinks = query.state.dataViewContent.relationLinks
                             )
                         } else {
                             emptyFlow()
@@ -479,7 +504,7 @@ class ObjectSetViewModel(
                     }
 
                     else -> {
-                        Timber.d("subscribeToObjectState, NEW STATE, $state")
+                        Timber.d("subscribeToObjectState, NEW STATE, ${query.state}")
                         emptyFlow()
                     }
                 }
@@ -551,9 +576,10 @@ class ObjectSetViewModel(
             combine(
                 database.index,
                 stateReducer.state,
-                session.currentViewerId
-            ) { dataViewState, objectState, currentViewId ->
-                processViewState(dataViewState, objectState, currentViewId)
+                session.currentViewerId,
+                permission
+            ) { dataViewState, objectState, currentViewId, permission ->
+                processViewState(dataViewState, objectState, currentViewId, permission)
             }.distinctUntilChanged().collect { viewState ->
                 Timber.d("subscribeToDataViewViewer, newViewerState:[$viewState]")
                 _currentViewer.value = viewState
@@ -564,7 +590,8 @@ class ObjectSetViewModel(
     private suspend fun processViewState(
         dataViewState: DataViewState,
         objectState: ObjectState,
-        currentViewId: String?
+        currentViewId: String?,
+        permission: SpaceMemberPermissions?
     ): DataViewViewState {
         return when (objectState) {
             is ObjectState.DataView.Collection -> processCollectionState(
@@ -575,7 +602,8 @@ class ObjectSetViewModel(
             is ObjectState.DataView.Set -> processSetState(
                 dataViewState = dataViewState,
                 objectState = objectState,
-                currentViewId = currentViewId
+                currentViewId = currentViewId,
+                permission = permission
             )
             ObjectState.Init -> DataViewViewState.Init
             ObjectState.ErrorLayout -> DataViewViewState.Error(msg = "Wrong layout, couldn't open object")
@@ -636,6 +664,7 @@ class ObjectSetViewModel(
         dataViewState: DataViewState,
         objectState: ObjectState.DataView.Set,
         currentViewId: String?,
+        permission: SpaceMemberPermissions?
     ): DataViewViewState {
         if (!objectState.isInitialized) return DataViewViewState.Init
 
@@ -688,7 +717,9 @@ class ObjectSetViewModel(
                         )
                         DataViewViewState.Set.Default(
                             viewer = render,
-                            isCreateObjectAllowed = objectState.isCreateObjectAllowed(defType)
+                            isCreateObjectAllowed = objectState.isCreateObjectAllowed(defType),
+//                                    && (permission?.isOwnerOrEditor() == true),
+                            isEditingViewAllowed = permission?.isOwnerOrEditor() == true
                         )
                     }
                 }
@@ -921,6 +952,7 @@ class ObjectSetViewModel(
             proceedWithNavigation(
                 target = target,
                 layout = obj.layout,
+                space = requireNotNull(obj.spaceId),
                 identityProfileLink = obj.getSingleValue(Relations.IDENTITY_PROFILE_LINK)
             )
         }
@@ -938,6 +970,7 @@ class ObjectSetViewModel(
                 proceedWithNavigation(
                     target = target,
                     layout = obj.layout,
+                    space = requireNotNull(obj.spaceId),
                     identityProfileLink = obj.getSingleValue(Relations.IDENTITY_PROFILE_LINK)
                 )
             } else {
@@ -1176,7 +1209,8 @@ class ObjectSetViewModel(
         if (obj.layout == ObjectType.Layout.NOTE) {
             proceedWithOpeningObject(
                 target = response.objectId,
-                layout = obj.layout
+                layout = obj.layout,
+                space = requireNotNull(obj.spaceId)
             )
         } else {
             dispatch(
@@ -1340,7 +1374,11 @@ class ObjectSetViewModel(
 
     //region NAVIGATION
 
-    private suspend fun proceedWithOpeningObject(target: Id, layout: ObjectType.Layout? = null) {
+    private suspend fun proceedWithOpeningObject(
+        target: Id,
+        space: Id,
+        layout: ObjectType.Layout? = null
+    ) {
         Timber.d("proceedWithOpeningObject, target:[$target], layout:[$layout]")
         if (target == context) {
             toast("You are already here")
@@ -1348,11 +1386,10 @@ class ObjectSetViewModel(
             return
         }
         isCustomizeViewPanelVisible.value = false
-        val navigateCommand = when (layout) {
-            ObjectType.Layout.SET,
-            ObjectType.Layout.COLLECTION -> AppNavigation.Command.OpenSetOrCollection(target = target)
-            else -> AppNavigation.Command.OpenObject(id = target)
-        }
+        val navigateCommand = AppNavigation.Command.OpenObject(
+            target = target,
+            space = space
+        )
         closeBlock.async(context).fold(
             onSuccess = { navigate(EventWrapper(navigateCommand)) },
             onFailure = {
@@ -1380,7 +1417,10 @@ class ObjectSetViewModel(
         }
     }
 
-    private suspend fun proceedWithOpeningObjectCollection(target: Id) {
+    private suspend fun proceedWithOpeningObjectCollection(
+        target: Id,
+        space: Id
+    ) {
         if (target == context) {
             toast("You are already here")
             Timber.d("proceedWithOpeningObject, target == context")
@@ -1390,11 +1430,25 @@ class ObjectSetViewModel(
         jobs += viewModelScope.launch {
             closeBlock.async(context).fold(
                 onSuccess = {
-                    navigate(EventWrapper(AppNavigation.Command.OpenSetOrCollection(target = target)))
+                    navigate(
+                        EventWrapper(
+                            AppNavigation.Command.OpenSetOrCollection(
+                                target = target,
+                                space = space
+                            )
+                        )
+                    )
                 },
                 onFailure = {
                     Timber.e(it, "Error while closing object set: $context")
-                    navigate(EventWrapper(AppNavigation.Command.OpenSetOrCollection(target = target)))
+                    navigate(
+                        EventWrapper(
+                            AppNavigation.Command.OpenSetOrCollection(
+                                target = target,
+                                space = space
+                            )
+                        )
+                    )
                 }
             )
         }
@@ -1402,6 +1456,7 @@ class ObjectSetViewModel(
 
     private suspend fun proceedWithNavigation(
         target: Id,
+        space: Id,
         layout: ObjectType.Layout?,
         identityProfileLink: Id? = null
     ) {
@@ -1420,16 +1475,36 @@ class ObjectSetViewModel(
             ObjectType.Layout.AUDIO,
             ObjectType.Layout.PDF,
             ObjectType.Layout.BOOKMARK,
-            ObjectType.Layout.PARTICIPANT -> proceedWithOpeningObject(target)
-            ObjectType.Layout.PROFILE -> proceedWithOpeningObject(identityProfileLink ?: target)
+            ObjectType.Layout.PARTICIPANT -> proceedWithOpeningObject(
+                target = target,
+                space = space
+            )
+            ObjectType.Layout.PROFILE -> proceedWithOpeningObject(
+                target = identityProfileLink ?: target,
+                space = space
+            )
             ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
                 closeBlock.async(context).fold(
                     onSuccess = {
-                        navigate(EventWrapper(AppNavigation.Command.OpenSetOrCollection(target)))
+                        navigate(
+                            EventWrapper(
+                                AppNavigation.Command.OpenSetOrCollection(
+                                    target = target,
+                                    space = space
+                                )
+                            )
+                        )
                     },
                     onFailure = {
                         Timber.e(it, "Error while closing object set: $context")
-                        navigate(EventWrapper(AppNavigation.Command.OpenSetOrCollection(target)))
+                        navigate(
+                            EventWrapper(
+                                AppNavigation.Command.OpenSetOrCollection(
+                                    target = target,
+                                    space = space
+                                )
+                            )
+                        )
                     }
                 )
             }
@@ -1480,7 +1555,8 @@ class ObjectSetViewModel(
                 onSuccess = { result ->
                     proceedWithOpeningObject(
                         target = result.objectId,
-                        layout = result.obj.layout
+                        layout = result.obj.layout,
+                        space = requireNotNull(result.obj.spaceId)
                     )
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
@@ -1951,7 +2027,7 @@ class ObjectSetViewModel(
 
     private suspend fun fetchAndProcessObjectTypes(selectedType: Id, widgetState: TypeTemplatesWidgetUI.Data) {
         val filters = ObjectSearchConstants.filterTypes(
-            spaces = listOf(spaceManager.get()),
+            spaces = listOf(space.value),
             recommendedLayouts = SupportedLayouts.createObjectLayouts
         )
         val params = GetObjectTypes.Params(
@@ -2666,4 +2742,17 @@ class ObjectSetViewModel(
         const val DELAY_BEFORE_CREATING_TEMPLATE = 200L
         private const val SUBSCRIPTION_TEMPLATES_ID = "-SUBSCRIPTION_TEMPLATES_ID"
     }
+
+    // TODO will be used in the next pr
+    data class Params(
+        val ctx: Id,
+        val space: SpaceId
+    )
+
+    data class Query(
+        val space: Id,
+        val state: ObjectState,
+        val offset: Long,
+        val currentViewerId: Id?
+    )
 }

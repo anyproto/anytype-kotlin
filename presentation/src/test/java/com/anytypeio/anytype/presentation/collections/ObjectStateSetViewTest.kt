@@ -40,7 +40,7 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
-        mockObjectSet = MockSet(context = root)
+        mockObjectSet = MockSet(context = root, space = defaultSpace)
     }
 
     @After
@@ -71,7 +71,7 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         // ASSERT COLLECTION OBJECT STATE
         stateReducer.state.test {
@@ -106,7 +106,7 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         // ASSERT SET OBJECT STATE
         stateReducer.state.test {
@@ -135,7 +135,7 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
         val stateFlow = stateReducer.state.testIn(backgroundScope)
@@ -160,7 +160,7 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
         val stateFlow = stateReducer.state.testIn(backgroundScope)
@@ -194,7 +194,7 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
         val stateFlow = stateReducer.state.testIn(backgroundScope)
@@ -227,7 +227,7 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         // ASSERT STATES
         val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
@@ -304,7 +304,7 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         // ASSERT STATES
         val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
@@ -385,7 +385,7 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         // ASSERT STATES
         val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
@@ -405,7 +405,7 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
     fun `displaying set with templates present when opening object set of pages with templates`() = runTest {
         // SETUP
 
-        mockObjectSet = MockSet(context = root, setOfValue = ObjectTypeIds.PAGE)
+        mockObjectSet = MockSet(context = root, setOfValue = ObjectTypeIds.PAGE, space = defaultSpace)
         val pageTypeMap = mapOf(
             Relations.ID to ObjectTypeIds.PAGE,
             Relations.TYPE to ObjectTypeIds.OBJECT_TYPE,
@@ -434,7 +434,7 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         // ASSERT STATES
         val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
@@ -448,5 +448,9 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
         val item = viewerFlow.awaitItem()
         assertIs<DataViewViewState.Set.NoItems>(item)
         assertTrue(item.isCreateObjectAllowed)
+    }
+
+    private fun proceedWithStartingViewModel() {
+        viewModel.onStart(ctx = root, space = defaultSpace)
     }
 }

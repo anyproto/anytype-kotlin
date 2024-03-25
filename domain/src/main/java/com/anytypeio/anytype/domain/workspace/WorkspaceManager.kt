@@ -125,8 +125,18 @@ interface SpaceManager {
     }
 }
 
+@Deprecated("Do not use.")
 suspend fun SpaceManager.getSpaceWithTechSpace(): List<Id> {
     val config = getConfig()
+    return if (config != null) {
+        listOf(config.space, config.techSpace)
+    } else {
+        listOf(get())
+    }
+}
+
+suspend fun SpaceManager.getSpaceWithTechSpace(space: Id): List<Id> {
+    val config = getConfig(SpaceId(space))
     return if (config != null) {
         listOf(config.space, config.techSpace)
     } else {

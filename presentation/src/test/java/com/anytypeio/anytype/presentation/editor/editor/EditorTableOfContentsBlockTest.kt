@@ -230,7 +230,7 @@ class EditorTableOfContentsBlockTest : EditorPresentationTestSetup() {
         val vm = buildViewModel()
 
         //TESTING
-        vm.apply { onStart(root) }
+        vm.apply { onStart(id = root, space = defaultSpace) }
 
         val expected = ViewState.Success(
             blocks = listOf(
@@ -513,7 +513,7 @@ class EditorTableOfContentsBlockTest : EditorPresentationTestSetup() {
 
         //TESTING
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
         }
 
         val expectedBefore = ViewState.Success(
@@ -825,7 +825,7 @@ class EditorTableOfContentsBlockTest : EditorPresentationTestSetup() {
         val vm = buildViewModel()
 
         //TESTING
-        vm.apply { onStart(root) }
+        vm.apply { onStart(id = root, space = defaultSpace) }
 
         val expected = ViewState.Success(
             blocks = listOf(
@@ -1051,7 +1051,7 @@ class EditorTableOfContentsBlockTest : EditorPresentationTestSetup() {
         val vm = buildViewModel()
 
         //TESTING
-        vm.apply { onStart(root) }
+        vm.apply { onStart(id = root, space = defaultSpace) }
 
         val expected = ViewState.Success(
             blocks = listOf(

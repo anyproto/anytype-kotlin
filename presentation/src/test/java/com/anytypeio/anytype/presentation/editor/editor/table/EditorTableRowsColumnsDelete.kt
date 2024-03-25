@@ -58,7 +58,7 @@ class EditorTableRowsColumnsDelete : EditorPresentationTestSetup() {
         //TESTING Focus Cell[0] - Enter Table Mode - Click Tab ROW
         val vm = buildViewModel()
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
 
             onBlockFocusChanged(
                 id = cells[0].id,
@@ -150,7 +150,7 @@ class EditorTableRowsColumnsDelete : EditorPresentationTestSetup() {
         //TESTING Focus Cell[0] - Enter Table Mode - Click Tab COLUMN
         val vm = buildViewModel()
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
 
             onBlockFocusChanged(
                 id = cells[0].id,

@@ -92,7 +92,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
      */
     @Test
     fun `collection, view type and template are empty, page template empty`() = runTest {
-        val spaceId = RandomString.make()
+        val spaceId = defaultSpace
         val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
         val relationObject1 = StubRelationObject()
         val dvViewerRelation1 =
@@ -151,7 +151,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         stubCreateDataViewObject()
 
         //TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         advanceUntilIdle()
 
@@ -184,7 +184,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
      */
     @Test
     fun `set by relation, view type and template are empty, page template blank`() = runTest {
-        val spaceId = RandomString.make()
+        val spaceId = defaultSpace
         val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
         val relationObject1 = StubRelationObject()
         val dvViewerRelation1 =
@@ -243,7 +243,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         stubCreateDataViewObject()
 
         //TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         advanceUntilIdle()
 
@@ -276,7 +276,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
      */
     @Test
     fun `collection, view type and template are empty, page template custom`() = runTest {
-        val spaceId = RandomString.make()
+        val spaceId = defaultSpace
         val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
         val relationObject1 = StubRelationObject()
         val dvViewerRelation1 =
@@ -335,7 +335,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         stubCreateDataViewObject()
 
         //TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         advanceUntilIdle()
 
@@ -368,7 +368,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
      */
     @Test
     fun `collection, view type custom and template is empty`() = runTest {
-        val spaceId = RandomString.make()
+        val spaceId = defaultSpace
         val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
         val relationObject1 = StubRelationObject()
         val dvViewerRelation1 =
@@ -427,7 +427,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         stubCreateDataViewObject()
 
         //TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         advanceUntilIdle()
 
@@ -460,7 +460,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
      */
     @Test
     fun `collection, view type is custom and template is blank`() = runTest {
-        val spaceId = RandomString.make()
+        val spaceId = defaultSpace
         val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
         val relationObject1 = StubRelationObject()
         val dvViewerRelation1 =
@@ -519,7 +519,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         stubCreateDataViewObject()
 
         //TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         advanceUntilIdle()
 
@@ -552,7 +552,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
      */
     @Test
     fun `collection, view type is custom and template is not empty`() = runTest {
-        val spaceId = RandomString.make()
+        val spaceId = defaultSpace
         val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
         val relationObject1 = StubRelationObject()
         val dvViewerRelation1 =
@@ -611,7 +611,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         stubCreateDataViewObject()
 
         //TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         advanceUntilIdle()
 
@@ -634,5 +634,9 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
             )
             async(params)
         }
+    }
+
+    private fun proceedWithStartingViewModel() {
+        viewModel.onStart(ctx = root, space = defaultSpace)
     }
 }

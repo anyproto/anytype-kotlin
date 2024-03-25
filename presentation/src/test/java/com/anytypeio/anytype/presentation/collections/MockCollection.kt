@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relation
@@ -22,7 +23,10 @@ import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubsc
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import net.bytebuddy.utility.RandomString
 
-class MockCollection(context: String) {
+class MockCollection(
+    context: Id,
+    space: Id
+) {
     val root = context
     val title = StubTitle(id = "title-${RandomString.make()}", text = "title-name-${RandomString.make()}")
     val header = StubHeader(id = "header-${RandomString.make()}", children = listOf(title.id))
@@ -231,7 +235,7 @@ class MockCollection(context: String) {
         isCollection = true,
         objectOrder = emptyList()
     )
-    val spaceId = "space-${RandomString.make()}"
+    val spaceId = space
 
     val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(context)
 

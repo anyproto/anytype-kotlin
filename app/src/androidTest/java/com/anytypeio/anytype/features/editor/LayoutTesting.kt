@@ -37,7 +37,7 @@ class LayoutTesting : EditorTestSetup() {
 //    @get:Rule
 //    val coroutineTestRule = CoroutinesTestRule()
 
-    private val args = bundleOf(EditorFragment.ID_KEY to root)
+    private val args = bundleOf(EditorFragment.CTX_KEY to root)
 
     private val title = MockBlockFactory.text(
         content = MockBlockContentFactory.StubTextContent(

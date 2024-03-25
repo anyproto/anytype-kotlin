@@ -90,7 +90,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -175,7 +175,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -260,7 +260,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -316,7 +316,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val selection = IntRange(4, 4)
 
@@ -359,7 +359,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -397,7 +397,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -472,7 +472,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -559,7 +559,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -646,7 +646,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -704,7 +704,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val selection = IntRange(4, 4)
 
@@ -750,7 +750,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -788,7 +788,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(

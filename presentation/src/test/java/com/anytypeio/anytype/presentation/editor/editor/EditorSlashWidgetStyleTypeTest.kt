@@ -92,7 +92,7 @@ class EditorSlashWidgetStyleTypeTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val selection = IntRange(7, 7)
 
@@ -138,7 +138,7 @@ class EditorSlashWidgetStyleTypeTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onSelectionChanged(
@@ -226,7 +226,7 @@ class EditorSlashWidgetStyleTypeTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val selection = IntRange(7, 7)
 

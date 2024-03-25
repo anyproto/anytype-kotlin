@@ -15,7 +15,10 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
+import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.safeNavigate
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -53,6 +56,8 @@ class LibraryFragment : BaseComposeFragment() {
 
     private val vm by viewModels<LibraryViewModel> { factory }
 
+    private val space get() = arg<Id>(ARG_SPACE_ID_KEY)
+
     @OptIn(ExperimentalAnimationApi::class)
     @FlowPreview
     @ExperimentalPagerApi
@@ -73,7 +78,8 @@ class LibraryFragment : BaseComposeFragment() {
                         },
                         onCreateObjectLongClicked = {
                             val dialog = SelectObjectTypeFragment.new(
-                                flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT
+                                flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT,
+                                space = space
                             ).apply {
                                 onTypeSelected = {
                                     vm.onCreateObjectOfTypeClicked(it)
@@ -146,8 +152,9 @@ class LibraryFragment : BaseComposeFragment() {
                     findNavController().safeNavigate(
                         R.id.libraryFragment,
                         R.id.objectNavigation,
-                        bundleOf(
-                            EditorFragment.ID_KEY to it.id
+                        EditorFragment.args(
+                            ctx = it.id,
+                            space = space
                         )
                     )
                 }
@@ -204,11 +211,25 @@ class LibraryFragment : BaseComposeFragment() {
     }
 
     override fun injectDependencies() {
-        componentManager().libraryComponent.get(requireContext()).inject(this)
+        componentManager()
+            .libraryComponent
+            .get(
+                Pair(
+                    requireContext(),
+                    LibraryViewModel.Params(
+                        space = SpaceId(space)
+                    )
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {
         componentManager().libraryComponent.release()
     }
 
+    companion object {
+        const val ARG_SPACE_ID_KEY = "arg.library.space-id"
+        fun args(space: Id) = bundleOf(ARG_SPACE_ID_KEY to space)
+    }
 }

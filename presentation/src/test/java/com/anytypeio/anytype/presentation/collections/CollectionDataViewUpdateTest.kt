@@ -29,7 +29,7 @@ class CollectionDataViewUpdateTest : ObjectSetViewModelTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
-        objectCollection = MockCollection(context = root)
+        objectCollection = MockCollection(context = root, space = defaultSpace)
         stubGetDefaultPageType()
     }
 
@@ -65,7 +65,7 @@ class CollectionDataViewUpdateTest : ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         // ASSERT COLLECTION OBJECT STATE
         stateReducer.state.test {
@@ -121,5 +121,9 @@ class CollectionDataViewUpdateTest : ObjectSetViewModelTestSetup() {
                 actual = third.dataViewContent.viewers.first().sorts
             )
         }
+    }
+
+    private fun proceedWithStartingViewModel() {
+        viewModel.onStart(ctx = root, space = defaultSpace)
     }
 }

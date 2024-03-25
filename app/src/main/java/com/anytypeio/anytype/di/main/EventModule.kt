@@ -17,8 +17,11 @@ import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
 import com.anytypeio.anytype.data.auth.event.FileLimitsRemoteChannel
+import com.anytypeio.anytype.data.auth.event.NotificationsDateChannel
+import com.anytypeio.anytype.data.auth.event.NotificationsRemoteChannel
 import com.anytypeio.anytype.domain.workspace.EventProcessChannel
 import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
+import com.anytypeio.anytype.domain.workspace.NotificationsChannel
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.interactor.*
 import dagger.Binds
@@ -145,6 +148,24 @@ object EventModule {
     fun provideProcessDataChannel(
         channel: EventProcessRemoteChannel
     ): EventProcessChannel = EventProcessDateChannel(channel = channel)
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideNotificationsRemoteChannel(
+        proxy: EventProxy
+    ): NotificationsRemoteChannel = NotificationsMiddlewareChannel(
+        eventsProxy = proxy
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideNotificationsChannel(
+        channel: NotificationsRemoteChannel
+    ): NotificationsChannel = NotificationsDateChannel(
+        channel = channel
+    )
 
     @Module
     interface Bindings {

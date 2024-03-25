@@ -824,9 +824,9 @@
     <string name="download_anytype_url">https://download.anytype.io</string>
     <string name="space_type_personal">Pribadi</string>
     <string name="space_type_private">Pribadi</string>
-    <string name="space_type_private_space">Private space</string>
+    <string name="space_type_private_space">Ruang pribadi</string>
     <string name="space_type_shared">Berbagi</string>
-    <string name="space_type_shared_space">Shared space</string>
+    <string name="space_type_shared_space">Ruang terbagi</string>
     <string name="space_type_unknown">Tidak diketahui</string>
     <string name="create_space_start_with">Start with</string>
     <string name="create_object_section_lists">Grup</string>
@@ -1144,11 +1144,11 @@
     <string name="multiplayer_space_join_request_header">%1$s meminta bergabung ke ruang %2$s</string>
     <string name="multiplayer_remove_member">Hapus anggota</string>
     <string name="multiplayer_request_sent_toast">Permintaan terkirim</string>
-    <string name="multiplayer_space_stop_sharing">Stop sharing</string>
+    <string name="multiplayer_space_stop_sharing">Berhenti berbagi</string>
     <string name="multiplayer_sharing">Berbagi</string>
     <string name="multiplayer_share">Bagikan</string>
-    <string name="multiplayer_manage">Manage</string>
-    <string name="multiplayer_leave_space">Leave space</string>
+    <string name="multiplayer_manage">Kelola</string>
+    <string name="multiplayer_leave_space">Tinggalkan ruang</string>
     <string name="multiplayer_generate_invite_link_description">Buat tautan undangan untuk membagikan ruang dan menambah anggota baru</string>
     <string name="multiplayer_generate_invite_link">Buat tautan undangan</string>
     <!--endregion-->
@@ -1184,9 +1184,9 @@
     <string name="payments_tier_details_name_subtitle">This is your unique name on the Anytype network, confirming your Membership. It acts as your personal domain and cannot be changed.</string>
     <string name="payments_tier_details_name_hint">Aku sendiri</string>
     <string name="payments_tier_details_name_domain">.any</string>
-    <string name="payments_tier_details_name_min">Min 7 characters</string>
-    <string name="payments_tier_details_name_error">This name is already taken!</string>
-    <string name="payments_tier_details_name_success">This name is up for grabs!</string>
+    <string name="payments_tier_details_name_min">Minimal 7 karakter</string>
+    <string name="payments_tier_details_name_error">Nama ini sudah dipakai!</string>
+    <string name="payments_tier_details_name_success">Nama ini masih bisa dipakai!</string>
     <string name="payments_tier_details_info_explorer">Masuki dalam jaringan dan nikmati keseruan kolaborasi one-on-one</string>
     <string-array name="payments_benefits_explorer">
         <item>Ruang jaringan 1 GB</item>
@@ -1216,19 +1216,19 @@
     <string name="payments_email_checkbox_text">Saya ingin mendapatkan pembaruan pada produk-produk dan menikmati manfaat gratis!</string>
     <string name="payments_email_hint">Surel</string>
     <string name="payments_tier_current_title">Statusmu saat ini:</string>
-    <string name="payments_tier_current_valid">Valid until</string>
+    <string name="payments_tier_current_valid">Berlaku hingga</string>
     <string name="payments_tier_current_paid_by">Paid by Card</string>
     <string name="payments_tier_current_button">Manage payment</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Masukkan kode yang dikirim ke surelmu</string>
     <string name="payments_code_resend">Kirim ulang</string>
-    <string name="payments_code_resend_in">Resend in %1$n sec</string>
+    <string name="payments_code_resend_in">Kirim ulang dalam %1$n detik</string>
     <!-- Payments Welcome -->
     <string name="payments_welcome_title">Welcome to the network,\n%1$s</string>
     <string name="payments_welcome_subtitle">Big cheers for your curiosity!</string>
     <string name="payments_welcome_button">Continue</string>
     <!-- Gallery Experience -->
-    <string name="gallery_experience_made">Made by</string>
+    <string name="gallery_experience_made">Dibuat oleh</string>
     <string name="gallery_experience_install">Pasang</string>
     <string name="gallery_experience_install_new">Pasang ke ruang baru</string>
 </resources>

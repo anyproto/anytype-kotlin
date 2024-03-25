@@ -225,7 +225,7 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `collection should has proper views default object type ids`() = runTest {
 
-        mockCollection = MockCollection(context = root)
+        mockCollection = MockCollection(context = root, space = defaultSpace)
         with(mockCollection) {
             stubSpaceManager(spaceId)
             stubStoreOfRelations(this)

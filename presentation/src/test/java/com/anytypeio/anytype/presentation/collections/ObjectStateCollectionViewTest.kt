@@ -40,7 +40,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
-        mockObjectCollection = MockCollection(context = root)
+        mockObjectCollection = MockCollection(context = root, space = defaultSpace)
         stubGetDefaultPageType()
         stubNetworkMode()
     }

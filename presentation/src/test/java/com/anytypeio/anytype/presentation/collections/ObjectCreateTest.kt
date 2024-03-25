@@ -275,7 +275,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `Should create new Object and not close Set when clicking on New button in Collection`() = runTest {
 
-        val objectCollection = MockCollection(context = root)
+        val objectCollection = MockCollection(context = root, space = defaultSpace)
 
         // SETUP
         stubSpaceManager(objectCollection.spaceId)

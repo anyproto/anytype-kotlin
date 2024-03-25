@@ -29,7 +29,7 @@ class CollectionDataViewUpdateTest : ObjectSetViewModelTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
-        objectCollection = MockCollection(context = root)
+        objectCollection = MockCollection(context = root, space = defaultSpace)
         stubGetDefaultPageType()
     }
 

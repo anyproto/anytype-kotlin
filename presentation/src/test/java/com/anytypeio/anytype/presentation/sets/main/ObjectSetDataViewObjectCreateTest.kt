@@ -43,7 +43,7 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
         MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
         mockObjectSet = MockSet(context = root, setOfValue = setOfId, setOfKey = setOfKey)
-        mockObjectCollection = MockCollection(context = root)
+        mockObjectCollection = MockCollection(context = root, space = defaultSpace)
         stubNetworkMode()
     }
 

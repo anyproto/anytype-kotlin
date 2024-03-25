@@ -54,7 +54,7 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        mockObjectCollection = MockCollection(context = root)
+        mockObjectCollection = MockCollection(context = root, space = defaultSpace)
         repo = mock(verboseLogging = true)
         dispatchers = AppCoroutineDispatchers(
             io = rule.dispatcher,

@@ -128,6 +128,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
@@ -223,7 +224,7 @@ class ObjectSetViewModel(
     val isLoading = MutableStateFlow(false)
 
     private var context: Id = ""
-    private var space: Id = ""
+    private var space = MutableStateFlow("")
 
     private val selectedTypeFlow: MutableStateFlow<ObjectWrapper.Type?> = MutableStateFlow(null)
 
@@ -362,8 +363,9 @@ class ObjectSetViewModel(
 
     private fun proceedWithObservingProfileIcon() {
         viewModelScope.launch {
-            spaceManager
-                .observe()
+            space
+                .filter { it.isNotEmpty() }
+                .mapNotNull { spaceManager.getConfig(SpaceId(it)) }
                 .flatMapLatest { config ->
                     storelessSubscriptionContainer.subscribe(
                         StoreSearchByIdsParams(
@@ -396,7 +398,7 @@ class ObjectSetViewModel(
             DownloadUnsplashImage.Params(
                 picture = action.img,
                 // TODO re-fact to use space id from arguments or target space id of this object
-                space = SpaceId(spaceManager.get())
+                space = SpaceId(space.value)
             )
         ).process(
             failure = {
@@ -421,7 +423,7 @@ class ObjectSetViewModel(
     fun onStart(ctx: Id, space: Id) {
         Timber.d("onStart, ctx:[$ctx]")
         this.context = ctx
-        this.space = space
+        this.space.value = space
         subscribeToEvents(ctx = ctx)
         subscribeToThreadStatus(ctx = ctx)
         proceedWithOpeningCurrentObject(ctx = ctx)
@@ -442,7 +444,7 @@ class ObjectSetViewModel(
                 .build(InterceptThreadStatus.Params(ctx))
                 .collect {
                     val statusView = it.toView(
-                        networkId = spaceManager.getConfig(SpaceId(space))?.network,
+                        networkId = spaceManager.getConfig(SpaceId(space.value))?.network,
                         networkMode = networkMode
                     )
                     status.value = statusView
@@ -455,24 +457,30 @@ class ObjectSetViewModel(
         Timber.d("subscribeToObjectState, ctx:[$context]")
         viewModelScope.launch {
             combine(
+                space.filter { it.isNotEmpty() },
                 stateReducer.state,
                 paginator.offset,
                 session.currentViewerId,
-            ) { state, offset, view ->
-                Triple(state, offset, view)
-            }.flatMapLatest { (state, offset, view) ->
-                when (state) {
+            ) { space, state, offset, view ->
+                Query(
+                    space = space,
+                    state = state,
+                    offset = offset,
+                    currentViewerId = view
+                )
+            }.flatMapLatest { query  ->
+                when (query.state) {
                     is ObjectState.DataView.Collection -> {
                         Timber.d("subscribeToObjectState, NEW COLLECTION STATE")
-                        if (state.isInitialized) {
+                        if (query.state.isInitialized) {
                             dataViewSubscription.startObjectCollectionSubscription(
                                 collection = context,
-                                state = state,
-                                currentViewerId = view,
-                                offset = offset,
+                                state = query.state,
+                                currentViewerId = query.currentViewerId,
+                                offset = query.offset,
                                 context = context,
-                                spaces = spaceManager.getSpaceWithTechSpace(),
-                                dataViewRelationLinks = state.dataViewContent.relationLinks
+                                spaces = spaceManager.getSpaceWithTechSpace(space = query.space),
+                                dataViewRelationLinks = query.state.dataViewContent.relationLinks
                             )
                         } else {
                             emptyFlow()
@@ -481,14 +489,14 @@ class ObjectSetViewModel(
 
                     is ObjectState.DataView.Set -> {
                         Timber.d("subscribeToObjectState, NEW SET STATE")
-                        if (state.isInitialized) {
+                        if (query.state.isInitialized) {
                             dataViewSubscription.startObjectSetSubscription(
-                                state = state,
-                                currentViewerId = view,
-                                offset = offset,
+                                state = query.state,
+                                currentViewerId = query.currentViewerId,
+                                offset = query.offset,
                                 context = context,
                                 spaces = spaceManager.getSpaceWithTechSpace(),
-                                dataViewRelationLinks = state.dataViewContent.relationLinks
+                                dataViewRelationLinks = query.state.dataViewContent.relationLinks
                             )
                         } else {
                             emptyFlow()
@@ -496,7 +504,7 @@ class ObjectSetViewModel(
                     }
 
                     else -> {
-                        Timber.d("subscribeToObjectState, NEW STATE, $state")
+                        Timber.d("subscribeToObjectState, NEW STATE, ${query.state}")
                         emptyFlow()
                     }
                 }
@@ -2019,7 +2027,7 @@ class ObjectSetViewModel(
 
     private suspend fun fetchAndProcessObjectTypes(selectedType: Id, widgetState: TypeTemplatesWidgetUI.Data) {
         val filters = ObjectSearchConstants.filterTypes(
-            spaces = listOf(spaceManager.get()),
+            spaces = listOf(space.value),
             recommendedLayouts = SupportedLayouts.createObjectLayouts
         )
         val params = GetObjectTypes.Params(
@@ -2735,8 +2743,16 @@ class ObjectSetViewModel(
         private const val SUBSCRIPTION_TEMPLATES_ID = "-SUBSCRIPTION_TEMPLATES_ID"
     }
 
+    // TODO will be used in the next pr
     data class Params(
         val ctx: Id,
         val space: SpaceId
+    )
+
+    data class Query(
+        val space: Id,
+        val state: ObjectState,
+        val offset: Long,
+        val currentViewerId: Id?
     )
 }

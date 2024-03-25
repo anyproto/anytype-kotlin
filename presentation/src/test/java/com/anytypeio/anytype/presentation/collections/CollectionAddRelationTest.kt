@@ -48,7 +48,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        objectCollection = MockCollection(context = root)
+        objectCollection = MockCollection(context = root, space = defaultSpace)
         viewModel = givenViewModel()
     }
 
@@ -62,7 +62,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `should add new relation to data view`() = runTest {
         // SETUP
-        stubSpaceManager(objectCollection.spaceId)
+        stubSpaceManager(space = objectCollection.spaceId)
         stubStoreOfRelations(objectCollection)
         stubSubscriptionResults(
             subscription = objectCollection.subscriptionId,

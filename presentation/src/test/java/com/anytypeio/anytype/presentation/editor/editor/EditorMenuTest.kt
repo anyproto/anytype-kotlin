@@ -58,8 +58,6 @@ class EditorMenuTest : EditorPresentationTestSetup() {
 
         // SETUP
 
-        val space = MockDataFactory.randomUuid()
-
         val doc = page(root)
 
         val details = Block.Details(
@@ -67,7 +65,7 @@ class EditorMenuTest : EditorPresentationTestSetup() {
                 root to Block.Fields(
                     mapOf(
                         Relations.ID to root,
-                        Relations.SPACE_ID to space
+                        Relations.SPACE_ID to defaultSpace
                     )
                 )
             )
@@ -77,9 +75,9 @@ class EditorMenuTest : EditorPresentationTestSetup() {
         stubOpenDocument(
             document = doc,
             details = details,
-            spaceId = SpaceId(space)
+            spaceId = SpaceId(defaultSpace)
         )
-        stubSpaceManager(space = space)
+        stubSpaceManager(space = defaultSpace)
 
         val vm = buildViewModel()
 
@@ -99,7 +97,7 @@ class EditorMenuTest : EditorPresentationTestSetup() {
                 isFavorite = false,
                 isLocked = false,
                 isTemplate = false,
-                space = space,
+                space = defaultSpace,
                 ctx = root
             )
         }
@@ -110,7 +108,7 @@ class EditorMenuTest : EditorPresentationTestSetup() {
 
         // SETUP
 
-        val space = MockDataFactory.randomUuid()
+        val space = defaultSpace
 
         val details = Block.Details(
             mapOf(
@@ -188,7 +186,7 @@ class EditorMenuTest : EditorPresentationTestSetup() {
 
         // SETUP
 
-        val space = MockDataFactory.randomUuid()
+        val space = defaultSpace
 
         val doc = page(root)
 

@@ -34,7 +34,7 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
-    val space = ""
+    val space = defaultSpace
 
     @Before
     fun setup() {
@@ -62,7 +62,7 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
         stubSearchObjects(listOf(type1, type2, type3))
         stubCreateBlockLinkWithObject(root, a.id)
         stubOpenDocument(doc)
-        stubSpaceManager("")
+        stubSpaceManager(defaultSpace)
 
         val vm = buildViewModel()
         vm.onStart(id = root, space = defaultSpace)

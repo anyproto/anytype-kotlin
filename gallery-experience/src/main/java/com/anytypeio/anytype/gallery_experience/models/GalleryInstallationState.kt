@@ -19,7 +19,6 @@ sealed class GalleryInstallationNavigation(val route: String) {
     object Main : GalleryInstallationNavigation("main")
     object Spaces : GalleryInstallationNavigation("spaces")
     object Success : GalleryInstallationNavigation("success")
-    object Error : GalleryInstallationNavigation("error")
     object Dismiss : GalleryInstallationNavigation("")
     object Exit : GalleryInstallationNavigation("exit")
 }

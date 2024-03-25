@@ -39,8 +39,6 @@ sealed class NotificationPayload {
         val identityIcon: String
     ) : NotificationPayload()
 
-    object Test : NotificationPayload()
-
     data class ParticipantRequestApproved(
         val spaceId: SpaceId,
         val permissions: SpaceMemberPermissions
@@ -70,6 +68,8 @@ sealed class NotificationPayload {
     ) : NotificationPayload()
 
     data class Unsupported(val type: String) : NotificationPayload()
+
+    object Test : NotificationPayload()
 }
 
 enum class NotificationStatus {

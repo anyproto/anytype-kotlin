@@ -80,5 +80,3 @@ typealias MNotification = anytype.model.Notification
 typealias MNotificationActionType = anytype.model.Notification.ActionType
 typealias MNotificationStatus = anytype.model.Notification.Status
 typealias MImportErrorCode = anytype.model.Import.ErrorCode
-typealias MImportType = anytype.model.Import.Type
-typealias MExportFormat = anytype.model.Export.Format

@@ -3,10 +3,7 @@ package com.anytypeio.anytype.middleware.mappers
 import anytype.ResponseEvent
 import anytype.Rpc
 import anytype.model.Account
-import anytype.model.Export
-import anytype.model.Import
-import anytype.model.Import.ErrorCode.*
-import anytype.model.Notification.Status.*
+import anytype.model.ParticipantPermissions
 import anytype.model.Restrictions
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Block
@@ -26,11 +23,9 @@ import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Event
-import com.anytypeio.anytype.core_models.ExportFormat
 import com.anytypeio.anytype.core_models.Process
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ImportErrorCode
-import com.anytypeio.anytype.core_models.ImportType
 import com.anytypeio.anytype.core_models.ManifestInfo
 import com.anytypeio.anytype.core_models.NodeUsage
 import com.anytypeio.anytype.core_models.NodeUsageInfo
@@ -47,6 +42,8 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.SpaceUsage
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
@@ -859,7 +856,7 @@ fun MProcessProgress.toCoreModel(): Process.Progress {
     )
 }
 
-//region IMPORT, EXPORT
+//region IMPORT
 fun MImportErrorCode.toCoreModel(): ImportErrorCode {
     return when (this) {
         MImportErrorCode.NULL -> ImportErrorCode.NULL
@@ -871,29 +868,6 @@ fun MImportErrorCode.toCoreModel(): ImportErrorCode {
         MImportErrorCode.LIMIT_OF_ROWS_OR_RELATIONS_EXCEEDED -> ImportErrorCode.LIMIT_OF_ROWS_OR_RELATIONS_EXCEEDED
         MImportErrorCode.FILE_LOAD_ERROR -> ImportErrorCode.FILE_LOAD_ERROR
         MImportErrorCode.INSUFFICIENT_PERMISSIONS -> ImportErrorCode.INSUFFICIENT_PERMISSIONS
-    }
-}
-
-fun MImportType.toCoreModel(): ImportType {
-    return when (this) {
-        MImportType.Notion -> ImportType.NOTION
-        MImportType.Markdown -> ImportType.MARKDOWN
-        MImportType.External -> ImportType.EXTERNAL
-        MImportType.Pb -> ImportType.PB
-        MImportType.Html -> ImportType.HTML
-        MImportType.Txt -> ImportType.TXT
-        MImportType.Csv -> ImportType.CSV
-    }
-}
-
-fun MExportFormat.toCoreModel(): ExportFormat {
-    return when (this) {
-        MExportFormat.DOT -> ExportFormat.DOT
-        MExportFormat.Markdown -> ExportFormat.MARKDOWN
-        MExportFormat.Protobuf -> ExportFormat.PROTOBUF
-        MExportFormat.JSON -> ExportFormat.JSON
-        MExportFormat.SVG -> ExportFormat.SVG
-        MExportFormat.GRAPH_JSON -> ExportFormat.GRAPH_JSON
     }
 }
 //endregion
@@ -914,13 +888,76 @@ fun MNotificationActionType.toCoreModel(): NotificationActionType {
     }
 }
 
-fun anytype.model.Notification.
+fun MParticipantPermission.toCore(): SpaceMemberPermissions {
+    return when (this) {
+        ParticipantPermissions.Reader -> SpaceMemberPermissions.READER
+        ParticipantPermissions.Writer -> SpaceMemberPermissions.WRITER
+        ParticipantPermissions.Owner -> SpaceMemberPermissions.OWNER
+        ParticipantPermissions.NoPermissions -> SpaceMemberPermissions.NO_PERMISSIONS
+    }
+}
 
 fun MNotification.toCoreModel(): Notification {
     return Notification(
         id = id,
+        createTime = createTime,
         status = status.toCoreModel(),
-        payload = this.,
-
+        isLocal = isLocal,
+        space = SpaceId(space),
+        aclHeadId = aclHeadId,
+        payload = when {
+            participantPermissionsChange != null -> {
+                NotificationPayload.ParticipantPermissionsChange(
+                    spaceId = SpaceId(participantPermissionsChange!!.spaceId),
+                    permissions = participantPermissionsChange!!.permissions.toCore()
+                )
+            }
+            requestToJoin != null -> {
+                NotificationPayload.RequestToJoin(
+                    spaceId = SpaceId(requestToJoin!!.spaceId),
+                    identity = requestToJoin!!.identity,
+                    identityName = requestToJoin!!.identityName,
+                    identityIcon = requestToJoin!!.identityIcon
+                )
+            }
+            requestToLeave != null -> {
+                NotificationPayload.RequestToLeave(
+                    spaceId = SpaceId(requestToLeave!!.spaceId),
+                    identity = requestToLeave!!.identity,
+                    identityName = requestToLeave!!.identityName,
+                    identityIcon = requestToLeave!!.identityIcon
+                )
+            }
+            participantRequestApproved != null -> {
+                NotificationPayload.ParticipantRequestApproved(
+                    spaceId = SpaceId(participantRequestApproved!!.spaceId),
+                    permissions = participantRequestApproved!!.permissions.toCore()
+                )
+            }
+            participantRemove != null -> {
+                NotificationPayload.ParticipantRemove(
+                    identity = participantRemove!!.identity,
+                    identityName = participantRemove!!.identityName,
+                    identityIcon = participantRemove!!.identityIcon,
+                    spaceId = SpaceId(participantRemove!!.spaceId)
+                )
+            }
+            participantRequestDecline != null -> {
+                NotificationPayload.ParticipantRequestDecline(
+                    spaceId = SpaceId(participantRequestDecline!!.spaceId)
+                )
+            }
+            galleryImport != null -> {
+                NotificationPayload.GalleryImport(
+                    processId = galleryImport!!.processId,
+                    errorCode = galleryImport!!.errorCode.toCoreModel(),
+                    spaceId = SpaceId(galleryImport!!.spaceId),
+                    name = galleryImport!!.name
+                )
+            }
+            test != null -> NotificationPayload.Test
+            else -> NotificationPayload.Unsupported("Unsupported notification payload :${this.javaClass.simpleName}")
+        },
     )
 }
+//endregion

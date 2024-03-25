@@ -6,7 +6,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 data class Notification(
     val id: Id,
     val createTime: Long,
-    val status: Status,
+    val status: NotificationStatus,
     val isLocal: Boolean,
     val payload: NotificationPayload,
     val space: SpaceId,
@@ -14,19 +14,6 @@ data class Notification(
 )
 
 sealed class NotificationPayload {
-    data class Import(
-        val processId: String,
-        val errorCode: ImportErrorCode,
-        val importType: ImportType,
-        val spaceId: SpaceId,
-        val name: String
-    ) : NotificationPayload()
-
-    data class Export(
-        val errorCode: ImportErrorCode,
-        val exportType: ExportFormat
-    ) : NotificationPayload()
-
     data class GalleryImport(
         val processId: String,
         val errorCode: ImportErrorCode,
@@ -70,6 +57,8 @@ sealed class NotificationPayload {
         val spaceId: SpaceId,
         val permissions: SpaceMemberPermissions
     ) : NotificationPayload()
+
+    data class Unsupported(val type: String) : NotificationPayload()
 }
 
 enum class NotificationStatus {

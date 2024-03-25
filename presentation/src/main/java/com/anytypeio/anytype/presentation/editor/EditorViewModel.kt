@@ -1512,7 +1512,7 @@ class EditorViewModel(
             handleEndlineEnterPressedEventForListItem(content, id)
         } else {
             proceedWithCreatingNewTextBlock(
-                id = id,
+                target = id,
                 style = Content.Text.Style.P
             )
         }
@@ -1714,7 +1714,7 @@ class EditorViewModel(
     }
 
     private fun proceedWithCreatingNewTextBlock(
-        id: String,
+        target: String,
         style: Content.Text.Style,
         position: Position = Position.BOTTOM
     ) {
@@ -1722,7 +1722,7 @@ class EditorViewModel(
             orchestrator.proxies.intents.send(
                 Intent.CRUD.Create(
                     context = context,
-                    target = id,
+                    target = target,
                     position = position,
                     prototype = Prototype.Text(style = style)
                 )
@@ -2273,7 +2273,7 @@ class EditorViewModel(
             }
         } else {
             proceedWithCreatingNewTextBlock(
-                id = target.id,
+                target = target.id,
                 style = style,
                 position = Position.BOTTOM
             )
@@ -4270,7 +4270,7 @@ class EditorViewModel(
 
     private fun addNewBlockAtTheEnd() {
         proceedWithCreatingNewTextBlock(
-            id = "",
+            target = "",
             position = Position.INNER,
             style = Content.Text.Style.P
         )
@@ -5596,7 +5596,7 @@ class EditorViewModel(
             val page = blocks.first { it.id == context }
             val next = page.children.getOrElse(0) { "" }
             proceedWithCreatingNewTextBlock(
-                id = next,
+                target = next,
                 style = Content.Text.Style.P,
                 position = Position.TOP
             )
@@ -5721,7 +5721,7 @@ class EditorViewModel(
         val target = currentSelection().first()
         clearSelections()
         proceedWithCreatingNewTextBlock(
-            id = target,
+            target = target,
             style = Content.Text.Style.P
         )
     }

@@ -11,7 +11,18 @@ data class Notification(
     val payload: NotificationPayload,
     val space: SpaceId,
     val aclHeadId: String
-)
+) {
+
+    sealed class Event {
+        data class Update(
+            val notification: Notification?
+        ) : Event()
+
+        data class Send(
+            val notification: Notification?
+        ) : Event()
+    }
+}
 
 sealed class NotificationPayload {
     data class GalleryImport(

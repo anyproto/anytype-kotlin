@@ -84,7 +84,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onSelectionChanged(
@@ -143,7 +143,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onSelectionChanged(
@@ -297,7 +297,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val selection = IntRange(7, 7)
 
@@ -394,7 +394,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val selection = IntRange(7, 7)
 
@@ -465,7 +465,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onSelectionChanged(
@@ -554,7 +554,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val selection = IntRange(11, 11)
 
@@ -635,7 +635,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val selection = IntRange(7, 7)
 
@@ -704,7 +704,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onSelectionChanged(
@@ -787,7 +787,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val selection = IntRange(5, 5)
 
@@ -868,7 +868,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val selection = IntRange(7, 7)
 
@@ -937,7 +937,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onSelectionChanged(
@@ -1026,7 +1026,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val selection = IntRange(15, 15)
 
@@ -1107,7 +1107,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val selection = IntRange(7, 7)
 

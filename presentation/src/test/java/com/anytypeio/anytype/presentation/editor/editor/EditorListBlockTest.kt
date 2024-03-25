@@ -90,7 +90,7 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.onBlockFocusChanged(
             id = child,
@@ -159,7 +159,7 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.onBlockFocusChanged(
             id = child,
@@ -228,7 +228,7 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.onBlockFocusChanged(
             id = child,
@@ -293,7 +293,7 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.onBlockFocusChanged(
             id = child,
@@ -369,7 +369,7 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.onBlockFocusChanged(
             id = child,
@@ -496,7 +496,7 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.onBlockFocusChanged(
             id = child,
@@ -642,7 +642,7 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.onBlockFocusChanged(
             id = child,
@@ -769,7 +769,7 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.onBlockFocusChanged(
             id = child,

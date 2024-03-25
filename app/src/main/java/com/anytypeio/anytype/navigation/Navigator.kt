@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.navigation
 
-import android.os.Bundle
 import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
@@ -12,6 +11,7 @@ import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.editor.EditorModalFragment
+import com.anytypeio.anytype.ui.library.LibraryFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.RemoteFilesManageFragment
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.TYPE_TEMPLATE_EDIT
@@ -32,12 +32,13 @@ class Navigator : AppNavigation {
         }
     }
 
-    override fun openDocument(id: String) {
+    override fun openDocument(target: Id, space: Id) {
         navController?.navigate(
             R.id.objectNavigation,
-            Bundle().apply {
-                putString(EditorFragment.ID_KEY, id)
-            }
+            EditorFragment.args(
+                ctx = target,
+                space = space
+            )
         )
     }
 
@@ -73,10 +74,13 @@ class Navigator : AppNavigation {
         )
     }
 
-    override fun launchDocument(id: String) {
+    override fun launchDocument(target: String, space: Id) {
         navController?.navigate(
             R.id.objectNavigation,
-            bundleOf(EditorFragment.ID_KEY to id),
+            EditorFragment.args(
+                ctx = target,
+                space = space
+            ),
             navOptions {
                 launchSingleTop = true
                 popUpTo(R.id.pageSearchFragment) {
@@ -86,37 +90,29 @@ class Navigator : AppNavigation {
         )
     }
 
-    override fun launchCollections(subscription: Subscription) {
+    override fun launchCollections(subscription: Subscription, space: Id) {
         navController?.navigate(
             R.id.homeScreenWidgets,
-            bundleOf(CollectionFragment.SUBSCRIPTION_KEY to subscription.id)
+            CollectionFragment.args(
+                subscription = subscription.id,
+                space = space
+            )
         )
     }
 
-    override fun launchObjectSet(id: Id) {
+    override fun launchObjectSet(target: Id, space: Id) {
         navController?.navigate(
             R.id.dataViewNavigation,
-            bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to id),
+            ObjectSetFragment.args(
+                ctx = target,
+                space = space
+            ),
             navOptions {
                 launchSingleTop = true
                 popUpTo(R.id.pageSearchFragment) {
                     inclusive = true
                 }
             }
-        )
-    }
-
-    override fun launchObjectFromSplash(id: Id) {
-        navController?.navigate(
-            R.id.action_splashScreen_to_objectScreen,
-            bundleOf(EditorFragment.ID_KEY to id),
-        )
-    }
-
-    override fun launchObjectSetFromSplash(id: Id) {
-        navController?.navigate(
-            R.id.action_splashScreen_to_objectSetScreen,
-            bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to id),
         )
     }
 
@@ -149,18 +145,25 @@ class Navigator : AppNavigation {
     override fun exitToDesktopAndOpenPage(pageId: String) {
         navController?.navigate(
             R.id.homeScreen,
-            bundleOf(EditorFragment.ID_KEY to pageId),
+            bundleOf(EditorFragment.CTX_KEY to pageId),
             navOptions {
                 launchSingleTop = true
             }
         )
     }
 
-    override fun openObjectSet(target: String, isPopUpToDashboard: Boolean) {
+    override fun openObjectSet(
+        target: Id,
+        space: Id,
+        isPopUpToDashboard: Boolean
+    ) {
         if (isPopUpToDashboard) {
             navController?.navigate(
                 R.id.dataViewNavigation,
-                bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to target),
+                ObjectSetFragment.args(
+                    ctx = target,
+                    space = space
+                ),
                 navOptions {
                     popUpTo(R.id.main_navigation) { inclusive = true }
                 }
@@ -168,7 +171,10 @@ class Navigator : AppNavigation {
         } else {
             navController?.navigate(
                 R.id.dataViewNavigation,
-                bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to target)
+                ObjectSetFragment.args(
+                    ctx = target,
+                    space = space
+                )
             )
         }
     }
@@ -215,8 +221,11 @@ class Navigator : AppNavigation {
         })
     }
 
-    override fun openLibrary() {
-        navController?.navigate(R.id.libraryFragment)
+    override fun openLibrary(space: Id) {
+        navController?.navigate(
+            R.id.libraryFragment,
+            LibraryFragment.args(space)
+        )
     }
 
     override fun openRemoteFilesManageScreen(subscription: Id) {

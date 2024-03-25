@@ -74,7 +74,7 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
     fun `set by type should has this type for all views default object type ids`() = runTest {
 
         val setOfValue = MockDataFactory.randomUuid()
-        mockSetByType = MockSet(context = root, setOfValue = setOfValue)
+        mockSetByType = MockSet(context = root, setOfValue = setOfValue, space = defaultSpace)
 
         with(mockSetByType) {
             stubSpaceManager(spaceId)
@@ -117,7 +117,7 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
             stubTemplatesForTemplatesContainer()
         }
 
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         advanceUntilIdle()
 
@@ -150,7 +150,8 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
 
         mockSetByRelation = MockSet(
             context = root,
-            setOfValue = MockSet("").relationObject3.id
+            space = defaultSpace,
+            setOfValue = MockSet("", space = defaultSpace).relationObject3.id
         )
         with(mockSetByRelation) {
 
@@ -194,7 +195,7 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
             stubTemplatesForTemplatesContainer()
         }
 
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         advanceUntilIdle()
 
@@ -225,7 +226,7 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `collection should has proper views default object type ids`() = runTest {
 
-        mockCollection = MockCollection(context = root)
+        mockCollection = MockCollection(context = root, space = defaultSpace)
         with(mockCollection) {
             stubSpaceManager(spaceId)
             stubStoreOfRelations(this)
@@ -274,7 +275,7 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
             stubTemplatesForTemplatesContainer()
         }
 
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         advanceUntilIdle()
 
@@ -300,5 +301,9 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
             expected = 3,
             actual = result.items.size
         )
+    }
+
+    private fun proceedWithStartingViewModel() {
+        viewModel.onStart(ctx = root, space = defaultSpace)
     }
 }

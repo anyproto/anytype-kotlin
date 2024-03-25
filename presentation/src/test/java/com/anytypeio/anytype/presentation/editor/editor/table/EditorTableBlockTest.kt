@@ -74,7 +74,7 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onClickListener(
@@ -150,7 +150,7 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
         stubOpenDocument(document)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onClickListener(
@@ -224,7 +224,7 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
         //TESTING
         val vm = buildViewModel()
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
 
             onBlockFocusChanged(
                 id = cells[0].id,
@@ -281,7 +281,7 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
         //TESTING
         val vm = buildViewModel()
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
 
             onBlockFocusChanged(
                 id = cells[0].id,
@@ -401,7 +401,7 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
         //TESTING
         val vm = buildViewModel()
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
 
             onBlockFocusChanged(
                 id = cells[0].id,
@@ -490,7 +490,7 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
         //TESTING
         val vm = buildViewModel()
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
 
             onBlockFocusChanged(
                 id = cells[0].id,
@@ -592,7 +592,7 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
         //TESTING Focus Cell[0] - Enter Table Mode - Click Cell[13] - Click Cell[11] - Click Tab COLUMN
         val vm = buildViewModel()
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
 
             onBlockFocusChanged(
                 id = cells[0].id,
@@ -704,7 +704,7 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
 
         //TESTING Click Cell[15] - Click Cell[0] - Click Cell[2]
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
 
             onClickListener(
                 clicked = ListenerType.TableTextCell(
@@ -879,7 +879,7 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
 
         //TESTING Click Cell[12] - Click Cell[10]
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
 
             onClickListener(
                 clicked = ListenerType.TableTextCell(
@@ -1039,7 +1039,7 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
         //TESTING Focus Cell[0] - Enter Table Mode - Click Tab COLUMN
         val vm = buildViewModel()
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
 
             onBlockFocusChanged(
                 id = cells[0].id,
@@ -1363,7 +1363,7 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
         // - main toolbar for cells is visible
         val vm = buildViewModel()
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
 
             onBlockFocusChanged(
                 id = cells[0].id,

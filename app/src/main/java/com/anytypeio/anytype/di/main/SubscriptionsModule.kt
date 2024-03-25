@@ -117,11 +117,13 @@ object SubscriptionsModule {
         dispatchers: AppCoroutineDispatchers,
         @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
         container: StorelessSubscriptionContainer,
-        repo: AuthRepository
+        repo: AuthRepository,
+        logger: Logger
     ) : UserPermissionProvider = DefaultUserPermissionProvider(
         dispatchers = dispatchers,
         scope = scope,
         container = container,
-        repo = repo
+        repo = repo,
+        logger = logger
     )
 }

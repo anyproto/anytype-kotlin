@@ -50,7 +50,7 @@ class EditorBlockActionsTest : EditorPresentationTestSetup() {
 
             val vm = buildViewModel()
 
-            vm.onStart(root)
+            vm.onStart(id = root, space = defaultSpace)
 
 
             // Simulating long tap on link block, in order to enter multi-select mode.
@@ -92,7 +92,7 @@ class EditorBlockActionsTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // Simulating long tap on "divider" block, in order to enter multi-select mode.
 
@@ -134,7 +134,7 @@ class EditorBlockActionsTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // Simulating long tap on "p1" block, in order to enter multi-select mode.
 
@@ -183,7 +183,7 @@ class EditorBlockActionsTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // Simulating long tap on "p1" block, in order to enter multi-select mode.
 

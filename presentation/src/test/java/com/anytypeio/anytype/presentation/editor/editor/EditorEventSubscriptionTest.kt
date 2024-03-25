@@ -62,13 +62,13 @@ class EditorEventSubscriptionTest : EditorPresentationTestSetup() {
 
         verifyNoInteractions(interceptEvents)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         verify(interceptEvents, times(1)).build(params)
 
         vm.onStop()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         verify(interceptEvents, times(2)).build(params)
     }

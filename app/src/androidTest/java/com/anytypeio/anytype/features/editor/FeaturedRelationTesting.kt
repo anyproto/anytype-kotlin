@@ -32,7 +32,7 @@ class FeaturedRelationTesting : EditorTestSetup() {
     @get:Rule
     val animationsRule = DisableAnimationsRule()
 
-    private val args = bundleOf(EditorFragment.ID_KEY to root)
+    private val args = bundleOf(EditorFragment.CTX_KEY to root)
 
     private val title = MockBlockFactory.text(
         content = MockBlockContentFactory.StubTextContent(

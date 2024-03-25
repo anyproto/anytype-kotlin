@@ -55,7 +55,11 @@ abstract class ObjectMenuBaseFragment :
 
     private val actionAdapter by lazy {
         ObjectActionAdapter { action ->
-            vm.onActionClicked(ctx, action)
+            vm.onActionClicked(
+                ctx = ctx,
+                space = space,
+                action = action
+            )
         }
     }
 
@@ -74,13 +78,13 @@ abstract class ObjectMenuBaseFragment :
     }
 
     override fun onStart() {
-        click(binding.objectDiagnostics) { vm.onDiagnosticsClicked(ctx) }
+        click(binding.objectDiagnostics) { vm.onDiagnosticsClicked(ctx = ctx) }
         click(binding.optionHistory) { vm.onHistoryClicked() }
-        click(binding.optionLayout) { vm.onLayoutClicked(ctx) }
-        click(binding.optionIcon) { vm.onIconClicked(ctx) }
+        click(binding.optionLayout) { vm.onLayoutClicked(ctx = ctx, space = space) }
+        click(binding.optionIcon) { vm.onIconClicked(ctx = ctx, space = space) }
         click(binding.optionRelations) { vm.onRelationsClicked() }
-        click(binding.optionCover) { vm.onCoverClicked(ctx) }
-        click(binding.debugGoroutines) { vm.onDiagnosticsGoroutinesClicked(ctx) }
+        click(binding.optionCover) { vm.onCoverClicked(ctx = ctx, space = space) }
+        click(binding.debugGoroutines) { vm.onDiagnosticsGoroutinesClicked(ctx = ctx) }
 
         proceed(vm.actions) { actionAdapter.submitList(it) }
         proceed(vm.toasts) { toast(it) }
@@ -249,9 +253,15 @@ abstract class ObjectMenuBaseFragment :
                     anchor = binding.anchor
                 ) {
                     if (command.isCollection) {
-                        vm.proceedWithOpeningCollection(command.id)
+                        vm.proceedWithOpeningCollection(
+                            target = command.id,
+                            space = command.space
+                        )
                     } else {
-                        vm.proceedWithOpeningPage(command.id)
+                        vm.proceedWithOpeningPage(
+                            target = command.id,
+                            space = command.space
+                        )
                     }
                 }
         }, 300L)
@@ -260,22 +270,34 @@ abstract class ObjectMenuBaseFragment :
 
     override fun onMoveTo(
         target: Id,
+        space: Id,
         blocks: List<Id>,
         text: String,
         icon: ObjectIcon,
         isDataView: Boolean
     ) {
-        vm.onLinkedMyselfTo(myself = ctx, addTo = target, fromName)
+        vm.onLinkedMyselfTo(
+            myself = ctx,
+            addTo = target,
+            fromName = fromName,
+            space = space
+        )
     }
 
-    override fun backLink(id: Id, name: String, layout: ObjectType.Layout?, icon: ObjectIcon) {
+    override fun backLink(
+        id: Id,
+        name: String,
+        layout: ObjectType.Layout?,
+        icon: ObjectIcon
+    ) {
         vm.onBackLinkOrAddToObjectAction(
             ctx = ctx,
             backLinkId = id,
             backLinkName = name,
             backLinkLayout = layout,
             backLinkIcon = icon,
-            fromName = fromName.orEmpty()
+            fromName = fromName.orEmpty(),
+            space = space
         )
     }
 

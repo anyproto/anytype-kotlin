@@ -152,7 +152,7 @@ class BlockReadModeTest : EditorViewModelTest() {
         stubOpenPage()
         givenViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 
@@ -210,7 +210,7 @@ class BlockReadModeTest : EditorViewModelTest() {
         stubOpenPage()
         givenViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 
@@ -244,7 +244,7 @@ class BlockReadModeTest : EditorViewModelTest() {
         stubOpenPage()
         givenViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 
@@ -304,7 +304,7 @@ class BlockReadModeTest : EditorViewModelTest() {
         stubOpenPage()
         givenViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 
@@ -341,7 +341,7 @@ class BlockReadModeTest : EditorViewModelTest() {
         stubOpenPage()
         givenViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         coroutineTestRule.advanceTime(100)
 

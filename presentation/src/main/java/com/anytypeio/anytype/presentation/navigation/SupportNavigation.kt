@@ -23,4 +23,7 @@ open class NavigationViewModel<Navigation> : BaseViewModel() {
     fun navigate(destination: Navigation) = viewModelScope.launch {
         _navigation.emit(destination)
     }
+    suspend fun navigation(destination: Navigation) {
+        _navigation.emit(destination)
+    }
 }

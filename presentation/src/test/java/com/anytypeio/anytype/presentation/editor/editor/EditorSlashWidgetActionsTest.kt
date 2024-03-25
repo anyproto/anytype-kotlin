@@ -67,7 +67,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -104,7 +104,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -143,7 +143,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onSlashTextWatcherEvent(
@@ -178,7 +178,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -223,7 +223,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -261,7 +261,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -297,7 +297,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -336,7 +336,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -372,7 +372,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -418,7 +418,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -452,7 +452,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -496,7 +496,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -541,7 +541,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = doc)
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -612,7 +612,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
         stubSearchObjects()
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(

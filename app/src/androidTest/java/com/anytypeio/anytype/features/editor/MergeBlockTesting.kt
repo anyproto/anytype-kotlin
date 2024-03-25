@@ -58,7 +58,7 @@ class MergeBlockTesting : EditorTestSetup() {
 
         // SETUP
 
-        val args = bundleOf(EditorFragment.ID_KEY to root)
+        val args = bundleOf(EditorFragment.CTX_KEY to root)
 
         val style = Block.Content.Text.Style.P
 
@@ -72,7 +72,7 @@ class MergeBlockTesting : EditorTestSetup() {
 
         // SETUP
 
-        val args = bundleOf(EditorFragment.ID_KEY to root)
+        val args = bundleOf(EditorFragment.CTX_KEY to root)
 
         val style = Block.Content.Text.Style.H1
 
@@ -86,7 +86,7 @@ class MergeBlockTesting : EditorTestSetup() {
 
         // SETUP
 
-        val args = bundleOf(EditorFragment.ID_KEY to root)
+        val args = bundleOf(EditorFragment.CTX_KEY to root)
 
         val style = Block.Content.Text.Style.H2
 
@@ -100,7 +100,7 @@ class MergeBlockTesting : EditorTestSetup() {
 
         // SETUP
 
-        val args = bundleOf(EditorFragment.ID_KEY to root)
+        val args = bundleOf(EditorFragment.CTX_KEY to root)
 
         val style = Block.Content.Text.Style.H3
 
@@ -114,7 +114,7 @@ class MergeBlockTesting : EditorTestSetup() {
 
         // SETUP
 
-        val args = bundleOf(EditorFragment.ID_KEY to root)
+        val args = bundleOf(EditorFragment.CTX_KEY to root)
 
         val style = Block.Content.Text.Style.QUOTE
 
@@ -128,7 +128,7 @@ class MergeBlockTesting : EditorTestSetup() {
 
         // SETUP
 
-        val args = bundleOf(EditorFragment.ID_KEY to root)
+        val args = bundleOf(EditorFragment.CTX_KEY to root)
 
         val style = Block.Content.Text.Style.CHECKBOX
 
@@ -142,7 +142,7 @@ class MergeBlockTesting : EditorTestSetup() {
 
         // SETUP
 
-        val args = bundleOf(EditorFragment.ID_KEY to root)
+        val args = bundleOf(EditorFragment.CTX_KEY to root)
 
         val style = Block.Content.Text.Style.BULLET
 
@@ -156,7 +156,7 @@ class MergeBlockTesting : EditorTestSetup() {
 
         // SETUP
 
-        val args = bundleOf(EditorFragment.ID_KEY to root)
+        val args = bundleOf(EditorFragment.CTX_KEY to root)
 
         val style = Block.Content.Text.Style.NUMBERED
 
@@ -170,7 +170,7 @@ class MergeBlockTesting : EditorTestSetup() {
 
         // SETUP
 
-        val args = bundleOf(EditorFragment.ID_KEY to root)
+        val args = bundleOf(EditorFragment.CTX_KEY to root)
 
         val style = Block.Content.Text.Style.TOGGLE
 

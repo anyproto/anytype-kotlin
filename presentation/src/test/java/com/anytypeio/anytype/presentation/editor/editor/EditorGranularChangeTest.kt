@@ -144,7 +144,7 @@ class EditorGranularChangeTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // Checking that checkbox is not checked
 

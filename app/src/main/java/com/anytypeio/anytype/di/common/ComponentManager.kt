@@ -4,7 +4,6 @@ import android.content.Context
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.di.feature.AddDataViewRelationObjectValueModule
 import com.anytypeio.anytype.di.feature.AddDataViewRelationOptionValueModule
 import com.anytypeio.anytype.di.feature.AddFileRelationModule
@@ -108,6 +107,7 @@ import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeModule
 import com.anytypeio.anytype.di.main.MainComponent
 import com.anytypeio.anytype.gallery_experience.viewmodel.GalleryInstallationViewModel
+import com.anytypeio.anytype.presentation.library.LibraryViewModel
 import com.anytypeio.anytype.presentation.multiplayer.RequestJoinSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.SpaceJoinRequestViewModel
@@ -832,9 +832,10 @@ class ComponentManager(
             .create(findComponentDependencies())
     }
 
-    val libraryComponent = ComponentWithParams { ctx: Context ->
+    val libraryComponent = ComponentWithParams { (ctx, params) : Pair<Context, LibraryViewModel.Params> ->
         DaggerLibraryComponent.builder()
             .withContext(ctx)
+            .withParams(params)
             .withDependencies(findComponentDependencies())
             .build()
     }
@@ -944,11 +945,11 @@ class ComponentManager(
             .build()
     }
 
-    val selectObjectTypeComponent = ComponentWithParams { excludedTypeKeys: List<TypeKey> ->
+    val selectObjectTypeComponent = ComponentWithParams { params: SelectObjectTypeViewModel.Params ->
         DaggerSelectObjectTypeComponent
             .factory()
             .create(
-                params = SelectObjectTypeViewModel.Params(excludedTypeKeys),
+                params = params,
                 dependencies = findComponentDependencies()
             )
     }

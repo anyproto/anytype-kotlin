@@ -68,7 +68,7 @@ class EditorStyleBackgroundToolbarTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.onClickListener(ListenerType.LongClick(target = paragraph.id))
         vm.onMultiSelectAction(ActionItemType.Style)
@@ -108,9 +108,9 @@ class EditorStyleBackgroundToolbarTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         with(vm) {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(blockId, true)
             onBlockToolbarStyleClicked()
             onBlockFocusChanged(blockId, false)
@@ -171,7 +171,7 @@ class EditorStyleBackgroundToolbarTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.onClickListener(ListenerType.LongClick(target = block1.id))
         vm.onTextInputClicked(target = block2.id)
@@ -216,7 +216,7 @@ class EditorStyleBackgroundToolbarTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.onClickListener(ListenerType.LongClick(target = codeId))
         vm.onMultiSelectAction(ActionItemType.Style)
@@ -258,9 +258,9 @@ class EditorStyleBackgroundToolbarTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         with(vm) {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(blockId, true)
             onBlockToolbarStyleClicked()
             onBlockFocusChanged(blockId, false)

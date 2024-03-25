@@ -140,7 +140,7 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val expected = listOf(
             BlockView.FeaturedRelation(
@@ -259,7 +259,7 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
         val vm = buildViewModel()
         storeOfRelations.merge(objectRelations)
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val expected = listOf(
             BlockView.FeaturedRelation(

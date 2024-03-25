@@ -63,7 +63,7 @@ class EditorCreateBlockTest : EditorPresentationTestSetup() {
 
             // TESTING
 
-            vm.onStart(root)
+            vm.onStart(id  = root, space = defaultSpace)
             vm.onBlockFocusChanged(id = a.id, hasFocus = true)
             vm.onSelectionChanged(
                 id = a.id,

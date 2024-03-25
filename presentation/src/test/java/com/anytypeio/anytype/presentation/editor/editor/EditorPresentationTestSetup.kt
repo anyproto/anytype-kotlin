@@ -495,7 +495,7 @@ open class EditorPresentationTestSetup {
         relations: List<Relation> = emptyList(),
         objectRestrictions: List<ObjectRestriction> = emptyList(),
         relationLinks: List<RelationLink> = emptyList(),
-        spaceId: SpaceId = SpaceId("")
+        spaceId: SpaceId = SpaceId(defaultSpace)
     ) {
         openPage.stub {
             onBlocking { async(

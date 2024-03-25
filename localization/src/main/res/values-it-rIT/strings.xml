@@ -1172,7 +1172,7 @@
     <string name="payments_tier_explorer_description">Immergiti nella rete e goditi l\'emozione della collaborazione uno-a-uno</string>
     <string name="payments_tier_builder">Builder</string>
     <string name="payments_tier_builder_description">Sblocca la magia della collaborazione multi-parte e goditi un supporto di prim\'ordine</string>
-    <string name="payments_tier_cocreator">Co-Creator</string>
+    <string name="payments_tier_cocreator">Co-Creatore</string>
     <string name="payments_tier_cocreator_description">Supporta la nostra avventura e sblocca accessi esclusivi e vantaggi</string>
     <string name="payments_tier_custom">Personalizzato</string>
     <string name="payments_tier_custom_description">Iscrizione su misura in base alle tue specifiche esigenze e preferenze</string>
@@ -1190,7 +1190,7 @@
     <string name="payments_tier_details_name_hint">Me stesso/a</string>
     <string name="payments_tier_details_name_domain">.any</string>
     <string name="payments_tier_details_name_min">Min 7 characters</string>
-    <string name="payments_tier_details_name_error">This name is already taken!</string>
+    <string name="payments_tier_details_name_error">Questo nome è già stato preso!</string>
     <string name="payments_tier_details_name_success">This name is up for grabs!</string>
     <string name="payments_tier_details_info_explorer">Immergiti nella rete e goditi l\'emozione della collaborazione uno-a-uno</string>
     <string-array name="payments_benefits_explorer">
@@ -1221,7 +1221,7 @@
     <string name="payments_email_checkbox_text">Vorrei ottenere aggiornamenti sui prodotti e godere di vantaggi gratuiti!</string>
     <string name="payments_email_hint">E-mail</string>
     <string name="payments_tier_current_title">Il tuo stato attuale:</string>
-    <string name="payments_tier_current_valid">Valid until</string>
+    <string name="payments_tier_current_valid">Valido fino al</string>
     <string name="payments_tier_current_paid_by">Paid by Card</string>
     <string name="payments_tier_current_button">Manage payment</string>
     <!-- Payments Code -->
@@ -1233,7 +1233,7 @@
     <string name="payments_welcome_subtitle">Grande applausi per la tua curiosità!</string>
     <string name="payments_welcome_button">Continue</string>
     <!-- Gallery Experience -->
-    <string name="gallery_experience_made">Made by</string>
+    <string name="gallery_experience_made">Realizzato da</string>
     <string name="gallery_experience_install">Installa</string>
     <string name="gallery_experience_install_new">Installa in un nuovo spazio</string>
 </resources>

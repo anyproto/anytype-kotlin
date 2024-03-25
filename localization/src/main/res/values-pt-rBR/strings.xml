@@ -67,7 +67,7 @@
     <string name="deleted_account_danger_zone_msg">Após solicitar a exclusão da sua conta, você tem 30 dias para cancelar esta solicitação. Após 30 dias, os dados criptografados da sua conta são removidos permanentemente do nosso nó de backup e você não conseguirá fazer login no Anytype em novos dispositivos.</string>
     <string name="danger_zone">Zona de perigo</string>
     <string name="snackbar_template_add">O novo modelo foi adicionado ao tipo</string>
-    <string name="settings_membership">Membership</string>
+    <string name="settings_membership">Associação</string>
     <string name="default_text_placeholder">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
     <string name="default_url_placeholder">https://humanparts.medium.com/how-i-overcame-cult-trauma-with-psychedelics-4342c03a074c</string>
     <string name="multi_select_turn_into">Transformar em</string>
@@ -189,7 +189,7 @@
     <string name="error_while_loading_picture">Falha durante o carregamento da imagem.</string>
     <string name="block_with_a_picture">Bloco com imagem</string>
     <string name="tap_here_to_insert_a_bookmark_url">Toque aqui para inserir um URL de favorito</string>
-    <string name="archive">Arquivo</string>
+    <string name="archive">Arquivar</string>
     <string name="add_block_option_icon">Add block option icon</string>
     <string name="bookmark_error_menu_button">Bookmark error menu button</string>
     <string name="bookmark_error">Algo deu errado, tente novamente</string>
@@ -826,6 +826,9 @@
     <string name="download_anytype_url">https://download.anytype.io</string>
     <string name="space_type_personal">Pessoal</string>
     <string name="space_type_private">Privado</string>
+    <string name="space_type_private_space">Private space</string>
+    <string name="space_type_shared">Compartilhado</string>
+    <string name="space_type_shared_space">Shared space</string>
     <string name="space_type_unknown">Desconhecido</string>
     <string name="create_space_start_with">Comece com</string>
     <string name="create_object_section_lists">Groups</string>
@@ -971,7 +974,7 @@
     <string name="onboarding_terms_and_policy_terms">Termos\u00A0de\u00A0Uso</string>
     <string name="onboarding_terms_and_policy_infix">" e "</string>
     <string name="onboarding_terms_and_policy_privacy">Política\u00A0de\u00A0Privacidade</string>
-    <string name="onboarding_join_button_text">Join</string>
+    <string name="onboarding_join_button_text">Junte-se</string>
     <string name="onboarding_log_in_button_text">Entrar</string>
     <string name="onboarding_invite_code_title">Insira seu código de convite</string>
     <string name="onboarding_invite_code_description">Se você não tem um, basta acessar anytype.io\ne entre na lista de espera.</string>
@@ -1121,13 +1124,13 @@
     <string name="widget_types_hide">Ocultar tipos</string>
     <!--endregion-->
     <!--region MULTIPLAYER -->
-    <string name="multiplayer_share_invite_link">Compartilhar link de convite</string>
+    <string name="multiplayer_share_invite_link">Share invite link</string>
     <string name="multiplayer_share_invite_link_description">Envie este link para convidar outras pessoas. Após a aprovação do acesso, você poderá atribuir direitos de acesso</string>
     <string name="multiplayer_invite_link">Link de convite</string>
-    <string name="multiplayer_join_a_space">Join a space</string>
+    <string name="multiplayer_join_a_space">Juntar-se a um espaço</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Comentário privado para o proprietário do espaço</string>
-    <string name="multiplayer_request_to_join_explanation">Once the space owner approves your request, you\'ll join the space with the access rights owner determined.</string>
-    <string name="multiplayer_space_request_to_join">Request to join</string>
+    <string name="multiplayer_request_to_join_explanation">Quando o dono do espaço aprovar sua solicitação, você se juntará ao espaço com as permissões que o dono determinar.</string>
+    <string name="multiplayer_space_request_to_join">Solicitar o acesso</string>
     <string name="multiplayer_space_request_to_join_msg">Você foi convidado para se juntar ao espaço %1$s, criado por %2$s. Envie uma solicitação para que o proprietário do espaço permita seu acesso.</string>
     <string name="multiplayer_tap_to_write_request_to_join_comment">Toque para escrever seu comentário</string>
     <string name="multiplayer_share_space">Compartilhar espaço</string>
@@ -1135,14 +1138,101 @@
     <string name="multiplayer_unjoining_requested">Desvinculação solicitada</string>
     <string name="multiplayer_joining_requested">Participação solicitada</string>
     <string name="multiplayer_approve_request">Aprovar</string>
-    <string name="multiplayer_view_request">Ver solicitação</string>
+    <string name="multiplayer_view_request">View request</string>
     <string name="multiplayer_owner">Proprietário</string>
     <string name="multiplayer_can_edit">Pode editar</string>
     <string name="multiplayer_can_read">Pode ler</string>
     <string name="multiplayer_space_add_viewer">Adicionar leitor</string>
     <string name="multiplayer_space_add_editor">Adicionar editor</string>
-    <string name="multiplayer_space_request_reject">Reject</string>
+    <string name="multiplayer_space_request_reject">Negar</string>
     <string name="multiplayer_space_join_request_header">%1$s pediu para se juntar ao espaço %2$s</string>
     <string name="multiplayer_remove_member">Remover membro</string>
+    <string name="multiplayer_request_sent_toast">Solicitação enviada</string>
+    <string name="multiplayer_space_stop_sharing">Stop sharing</string>
+    <string name="multiplayer_sharing">Sharing</string>
+    <string name="multiplayer_share">Compartilhar</string>
+    <string name="multiplayer_manage">Manage</string>
+    <string name="multiplayer_leave_space">Leave space</string>
+    <string name="multiplayer_generate_invite_link_description">Create invite link to share space and add new members</string>
+    <string name="multiplayer_generate_invite_link">Generate invite link</string>
     <!--endregion-->
+    <!--region PAYMENTS -->
+    <string name="payments_header">Associação</string>
+    <string name="payments_subheader">Juntar-se a rede Anytype representa contribuir para essa história</string>
+    <string name="payments_card_text_1">Co-create the Vision</string>
+    <string name="payments_card_description_1">As a valued member your voice matters! Engage in exclusive events, shape strategic choices, and influence our roadmap.</string>
+    <string name="payments_card_text_2">Unlock Member Benefits</string>
+    <string name="payments_card_description_2">Members enjoy higher backup storage &amp; sync limits, invitations for multiple guests to collaborate in shared spaces, and a unique identity on the Anytype Network.</string>
+    <string name="payments_card_text_3">Support Digital Independence</string>
+    <string name="payments_card_description_3">Your contribution supports our team and endorses our vision of a user-owned, secure, and collaborative digital network.</string>
+    <string name="payments_card_text_4">Investir em Conectividade</string>
+    <string name="payments_card_description_4">Our network\'s value exceeds the sum of its parts. Your membership sustains the infrastructure for its growth which underpins this network.</string>
+    <string name="payments_tier_explorer">Navegador</string>
+    <string name="payments_tier_explorer_description">Mergulhe na rede e aproveite a emoção da colaboração individual</string>
+    <string name="payments_tier_builder">Criador</string>
+    <string name="payments_tier_builder_description">Desbloqueie a magia da colaboração entre várias partes e aproveite o suporte de alto nível</string>
+    <string name="payments_tier_cocreator">Co-Criador</string>
+    <string name="payments_tier_cocreator_description">Apoie nossa aventura e desbloqueie vantagens e acessos exclusivos</string>
+    <string name="payments_tier_custom">Personalizado</string>
+    <string name="payments_tier_custom_description">Associação feita para suas necessidades e preferências</string>
+    <string name="payments_button_learn">Saiba mais</string>
+    <string name="payments_button_contact">Contato</string>
+    <string name="payments_member_link">Detalhes dos níveis de Associação</string>
+    <string name="payments_privacy_link">Política de Privacidade</string>
+    <string name="payments_terms_link">Termos e Condições</string>
+    <string name="payments_let_us_link_start">Você gostaria de usar o Anytype para negócios, educação, etc.?</string>
+    <string name="payments_let_us_link_end">Por favor, deixe-nos saber aqui.</string>
+    <string name="payments_current_label">Atual</string>
+    <!-- Tier details -->
+    <string name="payments_tier_details_name_title">Escolha seu nome único</string>
+    <string name="payments_tier_details_name_subtitle">This is your unique name on the Anytype network, confirming your Membership. It acts as your personal domain and cannot be changed.</string>
+    <string name="payments_tier_details_name_hint">Eu mesmo</string>
+    <string name="payments_tier_details_name_domain">.any</string>
+    <string name="payments_tier_details_name_min">Min 7 characters</string>
+    <string name="payments_tier_details_name_error">This name is already taken!</string>
+    <string name="payments_tier_details_name_success">This name is up for grabs!</string>
+    <string name="payments_tier_details_info_explorer">Mergulhe na rede e aproveite a emoção da colaboração individual</string>
+    <string-array name="payments_benefits_explorer">
+        <item>1 GB de espaço de rede</item>
+        <item>10 Espaços individuais</item>
+        <item>Até 10 Espaços compartilhados em modo somente leitura</item>
+    </string-array>
+    <string name="payments_tier_details_info_builder">Desbloqueie a magia da colaboração entre várias partes e aproveite o suporte de alto nível</string>
+    <string-array name="payments_benefits_builder">
+        <item>Nome único (a partir de 7 caracteres)</item>
+        <item>128 GB de espaço de rede</item>
+        <item>10 Assentos de Colaboradores Convidados</item>
+        <item>Suporte prioritário</item>
+    </string-array>
+    <string name="payments_tier_details_info_cocreator">Apoie nossa aventura e desbloqueie vantagens e acessos exclusivos</string>
+    <string-array name="payments_benefits_cocreator">
+        <item>Nome único (a partir de 5 caracteres)</item>
+        <item>256 GB de espaço de rede</item>
+        <item>25 Assentos de Colaboradores Convidados</item>
+        <item>Conversas com o time</item>
+        <item>Colecionável único</item>
+    </string-array>
+    <string name="payments_detials_button_pay">Pagar com Cartão</string>
+    <string name="payments_detials_button_submit">Enviar</string>
+    <string name="payments_details_whats_included">O que está incluído</string>
+    <string name="payments_email_title">Tenha sua conta gratuita</string>
+    <string name="payments_email_subtitle">Precisamos do seu email para manter o spam longe e a diversão em jogo!</string>
+    <string name="payments_email_checkbox_text">Gostaria de receber atualizações sobre produtos e desfrutar de vantagens gratuitas!</string>
+    <string name="payments_email_hint">E-mail</string>
+    <string name="payments_tier_current_title">Seu status atual:</string>
+    <string name="payments_tier_current_valid">Valid until</string>
+    <string name="payments_tier_current_paid_by">Paid by Card</string>
+    <string name="payments_tier_current_button">Manage payment</string>
+    <!-- Payments Code -->
+    <string name="payments_code_title">Digite o código enviado para seu email</string>
+    <string name="payments_code_resend">Reenviar</string>
+    <string name="payments_code_resend_in">Resend in %1$n sec</string>
+    <!-- Payments Welcome -->
+    <string name="payments_welcome_title">Welcome to the network,\n%1$s</string>
+    <string name="payments_welcome_subtitle">Um grande aplauso por sua curiosidade!</string>
+    <string name="payments_welcome_button">Continue</string>
+    <!-- Gallery Experience -->
+    <string name="gallery_experience_made">Made by</string>
+    <string name="gallery_experience_install">Instalar</string>
+    <string name="gallery_experience_install_new">Instalar no novo espaço</string>
 </resources>

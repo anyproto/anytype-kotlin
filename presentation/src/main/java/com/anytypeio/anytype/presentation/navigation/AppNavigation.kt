@@ -38,7 +38,6 @@ interface AppNavigation {
     fun exitToDesktop()
     fun openDebugSettings()
     fun openPageSearch()
-    fun exitToDesktopAndOpenPage(pageId: String)
     fun openUpdateAppScreen()
     fun openRemoteFilesManageScreen(subscription: Id)
 
@@ -72,7 +71,6 @@ interface AppNavigation {
         object MigrationErrorScreen: Command()
         object OpenDebugSettingsScreen : Command()
 
-        data class ExitToDesktopAndOpenPage(val pageId: String) : Command()
         object OpenPageSearch : Command()
 
         data class OpenSetOrCollection(

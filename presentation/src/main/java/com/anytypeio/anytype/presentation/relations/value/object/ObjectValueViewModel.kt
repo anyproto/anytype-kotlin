@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.isDataView
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.base.fold
@@ -388,6 +389,7 @@ class ObjectValueViewModel(
 
     data class ViewModelParams(
         val ctx: Id,
+        val space: SpaceId,
         val objectId: Id,
         val relationKey: Key,
         val isLocked: Boolean,

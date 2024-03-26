@@ -107,6 +107,7 @@ import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.showActionableSnackBar
 import com.anytypeio.anytype.databinding.FragmentEditorBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.ext.extractMarks
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
@@ -1168,12 +1169,13 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     findNavController().safeNavigate(
                         R.id.pageScreen,
                         R.id.nav_relations,
-                        bundleOf(
-                            TagOrStatusValueFragment.CTX_KEY to command.ctx,
-                            TagOrStatusValueFragment.OBJECT_ID_KEY to command.target,
-                            TagOrStatusValueFragment.RELATION_KEY to command.relationKey,
-                            TagOrStatusValueFragment.IS_LOCKED_KEY to command.isReadOnlyValue,
-                            TagOrStatusValueFragment.RELATION_CONTEXT_KEY to RelationContext.OBJECT
+                        TagOrStatusValueFragment.args(
+                            ctx = command.ctx,
+                            space = command.space,
+                            obj = command.target,
+                            relation = command.relationKey,
+                            isLocked = command.isReadOnlyValue,
+                            context = RelationContext.OBJECT
                         )
                     )
                 }
@@ -1181,12 +1183,13 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     findNavController().safeNavigate(
                         R.id.pageScreen,
                         R.id.objectValueScreen,
-                        bundleOf(
-                            ObjectValueFragment.CTX_KEY to command.ctx,
-                            ObjectValueFragment.OBJECT_ID_KEY to command.target,
-                            ObjectValueFragment.RELATION_KEY to command.relationKey,
-                            ObjectValueFragment.IS_LOCKED_KEY to command.isReadOnlyValue,
-                            ObjectValueFragment.RELATION_CONTEXT_KEY to RelationContext.OBJECT
+                        ObjectValueFragment.args(
+                            ctx = command.ctx,
+                            space = command.space,
+                            obj = command.target,
+                            relation = command.relationKey,
+                            isLocked = command.isReadOnlyValue,
+                            relationContext = RelationContext.OBJECT
                         )
                     )
                 }
@@ -1979,14 +1982,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
     }
 
-    override fun injectDependencies() {
-        componentManager().editorComponent.get(extractDocumentId()).inject(this)
-    }
-
-    override fun releaseDependencies() {
-        componentManager().editorComponent.release(extractDocumentId())
-    }
-
     private fun getEditorSettings() {
     }
 
@@ -2176,12 +2171,28 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         inflater, container, false
     )
 
+    override fun injectDependencies() {
+        componentManager().editorComponent
+            .get(
+                key = ctx,
+                param = DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
+    }
+
+    override fun releaseDependencies() {
+        componentManager().editorComponent.release(ctx)
+    }
+
     companion object {
 
         fun args(ctx: Id, space: Id) = bundleOf(CTX_KEY to ctx, SPACE_ID_KEY to space)
 
-        const val CTX_KEY = "args.editor.ctx-id"
-        const val SPACE_ID_KEY = "args.editor.space-id"
+        private const val CTX_KEY = "args.editor.ctx-id"
+        private const val SPACE_ID_KEY = "args.editor.space-id"
 
         const val DEFAULT_ANIM_DURATION = 150L
         const val DEFAULT_DELAY_BLOCK_ACTION_TOOLBAR = 100L

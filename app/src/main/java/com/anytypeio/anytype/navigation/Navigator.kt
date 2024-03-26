@@ -142,16 +142,6 @@ class Navigator : AppNavigation {
         navController?.navigate(R.id.pageSearchFragment)
     }
 
-    override fun exitToDesktopAndOpenPage(pageId: String) {
-        navController?.navigate(
-            R.id.homeScreen,
-            bundleOf(EditorFragment.CTX_KEY to pageId),
-            navOptions {
-                launchSingleTop = true
-            }
-        )
-    }
-
     override fun openObjectSet(
         target: Id,
         space: Id,

@@ -5,6 +5,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.feature.cover.UnsplashSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationAddToDataViewSubComponent
@@ -724,3 +725,9 @@ object ObjectSetModule {
         dispatcher = dispatcher
     )
 }
+
+data class DefaultComponentParam(
+    val ctx: Id,
+    val space: SpaceId
+)
+

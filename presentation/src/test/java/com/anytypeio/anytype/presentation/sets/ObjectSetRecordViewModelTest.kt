@@ -61,7 +61,8 @@ class ObjectSetRecordViewModelTest {
 
         vm.onActionDone(
             target = obj.id,
-            input = input
+            input = input,
+            space = requireNotNull(obj.spaceId)
         )
 
         verifyBlocking(setObjectDetails, times(1)) {
@@ -91,11 +92,13 @@ class ObjectSetRecordViewModelTest {
         vm.commands.test {
             vm.onButtonClicked(
                 target = obj.id,
-                input = input
+                input = input,
+                space = requireNotNull(obj.spaceId)
             )
             assertEquals(
                 expected = ObjectSetRecordViewModel.Command.OpenObject(
-                    ctx = obj.id
+                    ctx = obj.id,
+                    space = requireNotNull(obj.spaceId)
                 ),
                 actual = awaitItem()
             )
@@ -128,11 +131,13 @@ class ObjectSetRecordViewModelTest {
         vm.commands.test {
             vm.onButtonClicked(
                 target = obj.id,
-                input = emptyInput
+                input = emptyInput,
+                space = requireNotNull(obj.spaceId)
             )
             assertEquals(
                 expected = ObjectSetRecordViewModel.Command.OpenObject(
-                    ctx = obj.id
+                    ctx = obj.id,
+                    space = requireNotNull(obj.spaceId)
                 ),
                 actual = awaitItem()
             )

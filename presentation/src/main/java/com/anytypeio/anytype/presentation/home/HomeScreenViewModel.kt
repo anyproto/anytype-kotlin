@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Notification
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectView
@@ -57,6 +58,7 @@ import com.anytypeio.anytype.domain.widgets.GetWidgetSession
 import com.anytypeio.anytype.domain.widgets.SaveWidgetSession
 import com.anytypeio.anytype.domain.widgets.SetWidgetActiveView
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
+import com.anytypeio.anytype.domain.workspace.NotificationsChannel
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.extension.sendAddWidgetEvent
@@ -163,7 +165,8 @@ class HomeScreenViewModel(
     private val getSpaceView: GetSpaceView,
     private val searchObjects: SearchObjects,
     private val getPinnedObjectTypes: GetPinnedObjectTypes,
-    private val userPermissionProvider: UserPermissionProvider
+    private val userPermissionProvider: UserPermissionProvider,
+    private val notificationsChannel: NotificationsChannel
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -1550,7 +1553,8 @@ class HomeScreenViewModel(
         private val getSpaceView: GetSpaceView,
         private val searchObjects: SearchObjects,
         private val getPinnedObjectTypes: GetPinnedObjectTypes,
-        private val userPermissionProvider: UserPermissionProvider
+        private val userPermissionProvider: UserPermissionProvider,
+        private val notificationsChannel: NotificationsChannel
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -1588,7 +1592,8 @@ class HomeScreenViewModel(
             getSpaceView = getSpaceView,
             searchObjects = searchObjects,
             getPinnedObjectTypes = getPinnedObjectTypes,
-            userPermissionProvider = userPermissionProvider
+            userPermissionProvider = userPermissionProvider,
+            notificationsChannel = notificationsChannel
         ) as T
     }
 

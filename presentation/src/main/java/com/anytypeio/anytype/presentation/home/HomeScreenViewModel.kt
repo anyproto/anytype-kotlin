@@ -205,6 +205,8 @@ class HomeScreenViewModel(
 
     val hasEditAccess = userPermissions.map { it?.isOwnerOrEditor() == true }
 
+    val notifications : MutableStateFlow<Notification?> = MutableStateFlow(null)
+
     private val widgetObjectPipeline = spaceManager
         .observe()
         .onEach { currentConfig ->
@@ -251,6 +253,18 @@ class HomeScreenViewModel(
         proceedWithRenderingPipeline()
         proceedWithObservingDispatches()
         proceedWithSettingUpShortcuts()
+        notificationsChannel.observe().onEach { events ->
+            events.forEach { event ->
+                when (event) {
+                    is Notification.Event.Send -> {
+                        Timber.d("Notification sent: ${event.notification}")
+                    }
+                    is Notification.Event.Update -> {
+                        Timber.d("Notification updated: ${event.notification}")
+                    }
+                }
+            }
+        }.launchIn(viewModelScope)
     }
 
     private fun proceedWithUserPermissions() {

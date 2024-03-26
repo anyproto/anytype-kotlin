@@ -950,7 +950,8 @@ open class ObjectSetFragment :
                     ctx = ctx,
                     objectId = command.recordId,
                     flow = RelationTextValueFragment.FLOW_DATAVIEW,
-                    relationKey = command.relationKey
+                    relationKey = command.relationKey,
+                    space = command.space
                 )
                 fr.showChildFragment(EMPTY_TAG)
             }
@@ -959,7 +960,8 @@ open class ObjectSetFragment :
                     ctx = ctx,
                     objectId = ctx,
                     flow = RelationTextValueFragment.FLOW_SET_OR_COLLECTION,
-                    relationKey = command.relation
+                    relationKey = command.relation,
+                    space = command.space
                 )
                 fr.showChildFragment(EMPTY_TAG)
             }

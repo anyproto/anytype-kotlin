@@ -1041,7 +1041,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         ctx = command.ctx,
                         relationKey = command.relationKey,
                         objectId = command.target,
-                        isLocked = command.isReadOnlyValue
+                        isLocked = command.isReadOnlyValue,
+                        space = command.space
                     )
                     fr.showChildFragment()
                 }
@@ -1161,7 +1162,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     val fr = SetBlockTextValueFragment.new(
                         ctx = command.ctx,
                         block = command.block,
-                        table = command.table
+                        table = command.table,
+                        space = space
                     ).apply {
                         onDismissListener = {
                             vm.onSetBlockTextValueScreenDismiss()

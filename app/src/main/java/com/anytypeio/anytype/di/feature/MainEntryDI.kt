@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.di.feature
 
+import android.content.Context
+import com.android.billingclient.api.BillingClient
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.account.AccountStatusChannel
@@ -28,6 +30,7 @@ import com.anytypeio.anytype.presentation.main.MainViewModelFactory
 import com.anytypeio.anytype.ui.main.MainActivity
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicatorImpl
+import dagger.BindsInstance
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
@@ -40,6 +43,8 @@ interface MainEntrySubComponent {
     @Subcomponent.Builder
     interface Builder {
         fun build(): MainEntrySubComponent
+        @BindsInstance
+        fun activity(activity: MainActivity): Builder
         fun module(module: MainEntryModule): Builder
     }
 
@@ -170,4 +175,17 @@ object MainEntryModule {
     fun provideCheckAuthStatus(
         repo: AuthRepository
     ): CheckAuthorizationStatus = CheckAuthorizationStatus(repo)
+
+    @PerScreen
+    @Provides
+    fun provideBillingService(
+        context: Context,
+        activity: MainActivity
+    ): BillingClient {
+        return BillingClient
+            .newBuilder(context)
+            .setListener(activity)
+            .enablePendingPurchases()
+            .build()
+    }
 }

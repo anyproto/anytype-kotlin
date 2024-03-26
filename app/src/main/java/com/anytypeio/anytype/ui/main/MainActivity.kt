@@ -16,6 +16,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
+import com.android.billingclient.api.BillingClient
+import com.android.billingclient.api.BillingResult
+import com.android.billingclient.api.Purchase
+import com.android.billingclient.api.PurchasesUpdatedListener
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.app.DefaultAppActionManager
@@ -51,7 +55,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 
-class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Provider {
+class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Provider, PurchasesUpdatedListener {
 
     var deepLink: String? = null
 
@@ -76,6 +80,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
 
     @Inject
     lateinit var featureToggles: FeatureToggles
+
+    @Inject
+    lateinit var billingClient: BillingClient
 
     val container: FragmentContainerView get() = findViewById(R.id.fragment)
 
@@ -317,12 +324,18 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     override fun nav(): AppNavigation = navigator
 
     fun inject() {
-        componentManager().mainEntryComponent.get().inject(this)
+        componentManager().mainEntryComponent(this).get().inject(this)
     }
 
     fun release() {
-        componentManager().mainEntryComponent.release()
+        componentManager().mainEntryComponent(this).release()
     }
+
+    //region Billing
+    override fun onPurchasesUpdated(p0: BillingResult, p1: MutableList<Purchase>?) {
+
+    }
+    //endregion
 
     companion object {
         const val AUTO_UPDATE_URL = "https://fra1.digitaloceanspaces.com/anytype-release/latest-android.json"

@@ -74,7 +74,7 @@ class ObjectLayoutFragment : BaseBottomSheetFragment<FragmentObjectLayoutBinding
     }
 
     override fun releaseDependencies() {
-        componentManager().objectLayoutComponent.release(ctx)
+        componentManager().objectLayoutComponent.release()
     }
 
     override fun inflateBinding(

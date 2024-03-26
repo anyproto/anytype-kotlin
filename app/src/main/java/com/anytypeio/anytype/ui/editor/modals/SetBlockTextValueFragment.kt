@@ -144,7 +144,7 @@ class SetBlockTextValueFragment :
     }
 
     override fun releaseDependencies() {
-        componentManager().setTextBlockValueComponent.release(ctx)
+        componentManager().setTextBlockValueComponent.release()
     }
 
     override fun inflateBinding(

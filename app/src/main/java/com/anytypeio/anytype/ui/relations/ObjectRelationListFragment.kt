@@ -266,9 +266,9 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
 
     override fun releaseDependencies() {
         if (isSetFlow) {
-            componentManager().objectSetRelationListComponent.release(ctx)
+            componentManager().objectSetRelationListComponent.release()
         } else {
-            componentManager().objectRelationListComponent.release(ctx)
+            componentManager().objectRelationListComponent.release()
         }
     }
 

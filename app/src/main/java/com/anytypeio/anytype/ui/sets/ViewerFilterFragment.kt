@@ -150,7 +150,7 @@ open class ViewerFilterFragment : BaseBottomSheetFragment<FragmentFilterBinding>
     }
 
     override fun releaseDependencies() {
-        componentManager().viewerFilterComponent.release(ctx)
+        componentManager().viewerFilterComponent.release()
     }
 
     override fun inflateBinding(

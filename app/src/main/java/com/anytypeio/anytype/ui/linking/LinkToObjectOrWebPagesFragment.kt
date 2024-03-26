@@ -246,7 +246,7 @@ class LinkToObjectOrWebPagesFragment :
     }
 
     override fun releaseDependencies() {
-        componentManager().linkToObjectOrWebComponent.release(ctx)
+        componentManager().linkToObjectOrWebComponent.release()
     }
 
     override fun inflateBinding(

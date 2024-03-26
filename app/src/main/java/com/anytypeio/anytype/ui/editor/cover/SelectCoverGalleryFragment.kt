@@ -196,7 +196,7 @@ class SelectCoverObjectFragment : SelectCoverGalleryFragment() {
     }
 
     override fun releaseDependencies() {
-        componentManager().objectCoverComponent.release(ctx)
+        componentManager().objectCoverComponent.release()
     }
 
     companion object {
@@ -221,7 +221,7 @@ class SelectCoverObjectSetFragment : SelectCoverGalleryFragment() {
     }
 
     override fun releaseDependencies() {
-        componentManager().objectSetCoverComponent.release(ctx)
+        componentManager().objectSetCoverComponent.release()
     }
 
     override fun onUnsplashClicked() {

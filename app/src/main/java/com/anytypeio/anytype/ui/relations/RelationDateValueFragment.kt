@@ -112,13 +112,13 @@ open class RelationDateValueFragment : BaseBottomSheetComposeFragment() {
     override fun releaseDependencies() {
         when (flow) {
             FLOW_DV -> {
-                componentManager().dataViewRelationDateValueComponent.release(ctx)
+                componentManager().dataViewRelationDateValueComponent.release()
             }
             FLOW_SET_OR_COLLECTION -> {
-                componentManager().setOrCollectionRelationDateValueComponent.release(ctx)
+                componentManager().setOrCollectionRelationDateValueComponent.release()
             }
             else -> {
-                componentManager().objectRelationDateValueComponent.release(ctx)
+                componentManager().objectRelationDateValueComponent.release()
             }
         }
     }

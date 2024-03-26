@@ -993,6 +993,7 @@ open class ObjectSetFragment :
             is ObjectSetCommand.Modal.EditGridDateCell -> {
                 val fr = RelationDateValueFragment.new(
                     ctx = ctx,
+                    space = command.space,
                     objectId = command.objectId,
                     flow = RelationDateValueFragment.FLOW_DV,
                     relationKey = command.relationKey

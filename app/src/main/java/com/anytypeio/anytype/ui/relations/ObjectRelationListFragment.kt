@@ -134,6 +134,7 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
             is Command.EditDateRelationValue -> {
                 val fr = RelationDateValueFragment.new(
                     ctx = ctx,
+                    space = space,
                     relationKey = command.relationKey,
                     objectId = command.target,
                     flow = if (isSetFlow) {

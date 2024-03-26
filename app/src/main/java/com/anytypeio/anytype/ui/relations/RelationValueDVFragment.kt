@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.tools.DefaultDividerItemDecoration
 import com.anytypeio.anytype.core_utils.ext.argOrNull
@@ -22,6 +23,7 @@ import com.anytypeio.anytype.core_utils.ext.drawable
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.databinding.FragmentRelationValueBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel
 import com.anytypeio.anytype.presentation.sets.RelationValueDVViewModel
@@ -180,10 +182,20 @@ open class RelationValueDVFragment : RelationValueBaseFragment<FragmentRelationV
     )
 
     override fun injectDependencies() {
+        val param = DefaultComponentParam(
+            ctx = ctx,
+            space = SpaceId(space)
+        )
         if (isIntrinsic) {
-            componentManager().setOrCollectionRelationValueComponent.get(ctx).inject(this)
+            componentManager()
+                .setOrCollectionRelationValueComponent
+                .get(param)
+                .inject(this)
         } else {
-            componentManager().dataViewRelationValueComponent.get(ctx).inject(this)
+            componentManager()
+                .dataViewRelationValueComponent
+                .get(key = ctx, param = param)
+                .inject(this)
         }
     }
 

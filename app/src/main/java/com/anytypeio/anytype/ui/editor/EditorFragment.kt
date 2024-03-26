@@ -1006,8 +1006,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     ObjectRelationListFragment
                         .new(
                             ctx = command.ctx,
+                            space = space,
                             target = command.target,
-                            mode = ObjectRelationListFragment.MODE_ADD
+                            mode = ObjectRelationListFragment.MODE_ADD,
                         )
                         .showChildFragment()
                 }
@@ -1018,6 +1019,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         R.id.objectRelationListScreen,
                         bundleOf(
                             ObjectRelationListFragment.ARG_CTX to command.ctx,
+                            ObjectRelationListFragment.ARG_SPACE to space,
                             ObjectRelationListFragment.ARG_TARGET to command.target,
                             ObjectRelationListFragment.ARG_LOCKED to command.isLocked,
                             ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST,
@@ -1119,7 +1121,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     hideSoftInput()
                     val fr = RelationAddToObjectBlockFragment.newInstance(
                         ctx = command.ctx,
-                        target = command.target
+                        target = command.target,
+                        space = space
                     )
                     fr.showChildFragment()
                 }

@@ -1130,7 +1130,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         blockId = command.target,
                         rangeStart = command.range.first,
                         rangeEnd = command.range.last,
-                        isWholeBlockMarkup = command.isWholeBlockMarkup
+                        isWholeBlockMarkup = command.isWholeBlockMarkup,
+                        space = space
                     )
                     fr.showChildFragment()
                 }
@@ -1149,7 +1150,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is Command.OpenObjectAppearanceSettingScreen -> {
                     val fr = ObjectAppearanceSettingFragment.new(
                         ctx = command.ctx,
-                        block = command.block
+                        block = command.block,
+                        space = space
                     )
                     fr.showChildFragment()
                 }

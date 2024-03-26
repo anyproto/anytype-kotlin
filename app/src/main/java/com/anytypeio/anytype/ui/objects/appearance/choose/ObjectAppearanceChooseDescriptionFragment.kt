@@ -4,7 +4,9 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.objects.appearance.choose.ObjectAppearanceChooseDescriptionViewModel
 import com.anytypeio.anytype.presentation.objects.appearance.choose.ObjectAppearanceChooseSettingsView
 import javax.inject.Inject
@@ -18,7 +20,10 @@ class ObjectAppearanceChooseDescriptionFragment :
     override val title: Int = R.string.description
 
     override fun injectDependencies() {
-        componentManager().objectAppearanceChooseDescriptionComponent.get(ctx).inject(this)
+        componentManager()
+            .objectAppearanceChooseDescriptionComponent
+            .get(params = DefaultComponentParam(ctx = ctx, space = SpaceId(space)))
+            .inject(this)
     }
 
     override fun releaseDependencies() {

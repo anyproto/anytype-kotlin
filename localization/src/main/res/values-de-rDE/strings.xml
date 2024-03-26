@@ -1223,6 +1223,7 @@
     <string name="payments_tier_current_valid">Gültig bis</string>
     <string name="payments_tier_current_paid_by">Mit Karte bezahlt</string>
     <string name="payments_tier_current_button">Zahlung verwalten</string>
+    <string name="payments_tier_current_change_email_button">Change e-mail</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Gib den an deine E-Mail-Adresse gesendeten Code ein</string>
     <string name="payments_code_resend">Erneut senden</string>

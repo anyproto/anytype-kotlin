@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.relations.DocumentRelationAdapter
 import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -29,6 +30,7 @@ import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentRelationListBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.relations.ObjectRelationListViewModelFactory
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel.Command
@@ -53,6 +55,7 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
     private lateinit var clearSearchText: View
 
     private val ctx: String get() = argString(ARG_CTX)
+    private val space: String get() = argString(ARG_SPACE)
     private val target: String? get() = argStringOrNull(ARG_TARGET)
     private val mode: Int get() = argInt(ARG_MODE)
     private val isLocked: Boolean get() = arg(ARG_LOCKED)
@@ -122,7 +125,8 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
                     flow = if (isSetFlow)
                         RelationTextValueFragment.FLOW_DATAVIEW
                     else
-                        RelationTextValueFragment.FLOW_DEFAULT
+                        RelationTextValueFragment.FLOW_DEFAULT,
+                    space = space
                 )
                 fr.showChildFragment()
             }
@@ -145,12 +149,13 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
                 findNavController().safeNavigate(
                     R.id.objectRelationListScreen,
                     R.id.objectValueScreen,
-                    bundleOf(
-                        ObjectValueFragment.CTX_KEY to command.ctx,
-                        ObjectValueFragment.OBJECT_ID_KEY to command.target,
-                        ObjectValueFragment.RELATION_KEY to command.relationKey,
-                        ObjectValueFragment.IS_LOCKED_KEY to command.isLocked,
-                        ObjectValueFragment.RELATION_CONTEXT_KEY to relationContext
+                    ObjectValueFragment.args(
+                        ctx = command.ctx,
+                        space = space,
+                        obj = command.target,
+                        relation = command.relationKey,
+                        isLocked = command.isLocked,
+                        relationContext = relationContext
                     )
                 )
             }
@@ -165,12 +170,13 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
             }
             is Command.EditTagOrStatusRelationValue -> {
                 val relationContext = if (isSetFlow) RelationContext.OBJECT_SET else RelationContext.OBJECT
-                val bundle = bundleOf(
-                    TagOrStatusValueFragment.CTX_KEY to command.ctx,
-                    TagOrStatusValueFragment.OBJECT_ID_KEY to command.target,
-                    TagOrStatusValueFragment.RELATION_KEY to command.relationKey,
-                    TagOrStatusValueFragment.IS_LOCKED_KEY to command.isLocked,
-                    TagOrStatusValueFragment.RELATION_CONTEXT_KEY to relationContext
+                val bundle = TagOrStatusValueFragment.args(
+                    ctx = command.ctx,
+                    space = space,
+                    obj = command.target,
+                    relation = command.relationKey,
+                    isLocked = command.isLocked,
+                    context = relationContext
                 )
                 findNavController().safeNavigate(R.id.objectRelationListScreen, R.id.nav_relations, bundle)
             }
@@ -257,10 +263,14 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
     }
 
     override fun injectDependencies() {
+        val param = DefaultComponentParam(
+            ctx = ctx,
+            space = SpaceId(space)
+        )
         if (isSetFlow) {
-            componentManager().objectSetRelationListComponent.get(ctx).inject(this)
+            componentManager().objectSetRelationListComponent.get(param).inject(this)
         } else {
-            componentManager().objectRelationListComponent.get(ctx).inject(this)
+            componentManager().objectRelationListComponent.get(param).inject(this)
         }
     }
 
@@ -286,7 +296,8 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
      */
     companion object {
         fun new(
-            ctx: String,
+            ctx: Id,
+            space: Id,
             target: String?,
             mode: Int,
             locked: Boolean = false,
@@ -294,6 +305,7 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
         ) = ObjectRelationListFragment().apply {
             arguments = bundleOf(
                 ARG_CTX to ctx,
+                ARG_SPACE to space,
                 ARG_TARGET to target,
                 ARG_MODE to mode,
                 ARG_LOCKED to locked,
@@ -302,6 +314,7 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
         }
 
         const val ARG_CTX = "arg.document-relation.ctx"
+        const val ARG_SPACE = "arg.document-relation.space"
         const val ARG_MODE = "arg.document-relation.mode"
         const val ARG_TARGET = "arg.document-relation.target"
         const val ARG_LOCKED = "arg.document-relation.locked"

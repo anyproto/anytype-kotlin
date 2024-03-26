@@ -1052,6 +1052,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     hideKeyboard()
                     val fr = RelationDateValueFragment.new(
                         ctx = command.ctx,
+                        space = command.space,
                         objectId = command.target,
                         relationKey = command.relationKey,
                         isLocked = command.isReadOnlyValue

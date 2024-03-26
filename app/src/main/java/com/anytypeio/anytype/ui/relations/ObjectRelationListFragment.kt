@@ -105,6 +105,7 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
             if (!isLocked) {
                 RelationAddToObjectFragment.new(
                     ctx = ctx,
+                    space = space,
                     isSetOrCollection = isSetFlow
                 ).showChildFragment()
             } else {

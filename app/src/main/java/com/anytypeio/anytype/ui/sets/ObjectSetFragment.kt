@@ -1028,7 +1028,8 @@ open class ObjectSetFragment :
                 val fr = ObjectSetSettingsFragment.new(
                     ctx = command.ctx,
                     dv = command.dv,
-                    viewer = command.viewer
+                    viewer = command.viewer,
+                    space = space
                 )
                 fr.showChildFragment(EMPTY_TAG)
             }

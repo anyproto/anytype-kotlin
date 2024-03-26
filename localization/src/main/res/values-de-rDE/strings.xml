@@ -1151,7 +1151,7 @@
     <string name="multiplayer_space_stop_sharing">Stop sharing</string>
     <string name="multiplayer_sharing">Sharing</string>
     <string name="multiplayer_share">Teilen</string>
-    <string name="multiplayer_manage">Manage</string>
+    <string name="multiplayer_manage">Verwalten</string>
     <string name="multiplayer_leave_space">Leave space</string>
     <string name="multiplayer_generate_invite_link_description">Create invite link to share space and add new members</string>
     <string name="multiplayer_generate_invite_link">Einladungslink generieren</string>
@@ -1161,10 +1161,10 @@
     <string name="payments_subheader">Dem Anytype-Netzwerk beizutreten bedeutet, einen Beitrag zu seiner Geschichte zu leisten</string>
     <string name="payments_card_text_1">Co-create the Vision</string>
     <string name="payments_card_description_1">As a valued member your voice matters! Engage in exclusive events, shape strategic choices, and influence our roadmap.</string>
-    <string name="payments_card_text_2">Unlock Member Benefits</string>
+    <string name="payments_card_text_2">Mitgliedsvorteile freischalten</string>
     <string name="payments_card_description_2">Members enjoy higher backup storage &amp; sync limits, invitations for multiple guests to collaborate in shared spaces, and a unique identity on the Anytype Network.</string>
-    <string name="payments_card_text_3">Support Digital Independence</string>
-    <string name="payments_card_description_3">Your contribution supports our team and endorses our vision of a user-owned, secure, and collaborative digital network.</string>
+    <string name="payments_card_text_3">Digitale Unabhängigkeit unterstützen</string>
+    <string name="payments_card_description_3">Mit deinem Beitrag unterstützt du unser unabhängiges Team und befürwortest unsere Vision︎ eines nutzergeführten, sicheren und gemeinschaftlichen digitalen Netzwerks.</string>
     <string name="payments_card_text_4">In Konnektivität investieren</string>
     <string name="payments_card_description_4">Our network\'s value exceeds the sum of its parts. Your membership sustains the infrastructure for its growth which underpins this network.</string>
     <string name="payments_tier_explorer">Entdecker</string>
@@ -1188,9 +1188,9 @@
     <string name="payments_tier_details_name_subtitle">This is your unique name on the Anytype network, confirming your Membership. It acts as your personal domain and cannot be changed.</string>
     <string name="payments_tier_details_name_hint">Myself</string>
     <string name="payments_tier_details_name_domain">.any</string>
-    <string name="payments_tier_details_name_min">Min 7 characters</string>
-    <string name="payments_tier_details_name_error">This name is already taken!</string>
-    <string name="payments_tier_details_name_success">This name is up for grabs!</string>
+    <string name="payments_tier_details_name_min">Mindestens 7 Zeichen</string>
+    <string name="payments_tier_details_name_error">Dieser Name ist bereits vergeben!</string>
+    <string name="payments_tier_details_name_success">Dieser Name ist noch zu vergeben!</string>
     <string name="payments_tier_details_info_explorer">Tauche in das Netzwerk ein und genieße den Nervenkitzel der persönlichen Zusammenarbeit</string>
     <string-array name="payments_benefits_explorer">
         <item>1 GB Netzwerkspeicher</item>
@@ -1220,19 +1220,19 @@
     <string name="payments_email_checkbox_text">Ich möchte über Neuigkeiten zu Produkten informiert werden und kostenlose Vergünstigungen erhalten!</string>
     <string name="payments_email_hint">E-Mail</string>
     <string name="payments_tier_current_title">Dein aktueller Status:</string>
-    <string name="payments_tier_current_valid">Valid until</string>
-    <string name="payments_tier_current_paid_by">Paid by Card</string>
-    <string name="payments_tier_current_button">Manage payment</string>
+    <string name="payments_tier_current_valid">Gültig bis</string>
+    <string name="payments_tier_current_paid_by">Mit Karte bezahlt</string>
+    <string name="payments_tier_current_button">Zahlung verwalten</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Gib den an deine E-Mail-Adresse gesendeten Code ein</string>
     <string name="payments_code_resend">Erneut senden</string>
-    <string name="payments_code_resend_in">Resend in %1$n sec</string>
+    <string name="payments_code_resend_in">Erneut senden in %1$n Sek.</string>
     <!-- Payments Welcome -->
-    <string name="payments_welcome_title">Welcome to the network,\n%1$s</string>
+    <string name="payments_welcome_title">Willkommen im Netzwerk,\n%1$s</string>
     <string name="payments_welcome_subtitle">Ein Hoch auf deine Neugierde!</string>
-    <string name="payments_welcome_button">Continue</string>
+    <string name="payments_welcome_button">Fortfahren</string>
     <!-- Gallery Experience -->
-    <string name="gallery_experience_made">Made by</string>
+    <string name="gallery_experience_made">Erstellt von</string>
     <string name="gallery_experience_install">Installieren</string>
     <string name="gallery_experience_install_new">In neuen Space installieren</string>
 </resources>

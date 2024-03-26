@@ -59,4 +59,5 @@ message ObjectStoreChecksums {
     string bundledTemplates = 8;
     int32 bundledObjects = 9; // anytypeProfile and maybe some others in the feature
     int32 filestoreKeysForceReindexCounter = 10;
+    bool areOldFilesRemoved = 12;
 }

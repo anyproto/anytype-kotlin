@@ -20,7 +20,7 @@ class FindObjectSetForType(
             limit = 1,
             filters = params.filters,
             sorts = emptyList(),
-            keys = listOf(Relations.ID),
+            keys = listOf(Relations.ID, Relations.SPACE_ID),
             fulltext = "",
             offset = 0
         )

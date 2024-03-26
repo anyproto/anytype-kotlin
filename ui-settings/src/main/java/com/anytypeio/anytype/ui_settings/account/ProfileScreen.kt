@@ -52,6 +52,7 @@ import com.anytypeio.anytype.core_ui.foundation.Arrow
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Option
+import com.anytypeio.anytype.core_ui.foundation.OptionMembership
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
@@ -74,7 +75,8 @@ fun ProfileSettingsScreen(
     onAppearanceClicked: () -> Unit,
     onDataManagementClicked: () -> Unit,
     onAboutClicked: () -> Unit,
-    onMembershipClicked: () -> Unit
+    onMembershipClicked: () -> Unit,
+    activeTierName: String?
 ) {
     LazyColumn(
         modifier = Modifier
@@ -123,10 +125,11 @@ fun ProfileSettingsScreen(
             Divider(paddingStart = 60.dp)
         }
         item {
-            Option(
+            OptionMembership(
                 image = R.drawable.ic_membership,
                 text = stringResource(R.string.settings_membership),
-                onClick = onMembershipClicked
+                onClick = onMembershipClicked,
+                activeTierName = activeTierName
             )
         }
         item {

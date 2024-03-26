@@ -314,9 +314,19 @@ class ObjectValueViewModel(
         viewModelScope.launch {
             val layout = item.view.layout
             if (layout.isDataView()) {
-                commands.emit(Command.OpenSet(item.view.id))
+                commands.emit(
+                    Command.OpenSet(
+                        id = item.view.id,
+                        space = item.view.space
+                    )
+                )
             } else {
-                commands.emit(Command.OpenObject(item.view.id))
+                commands.emit(
+                    Command.OpenObject(
+                        id = item.view.id,
+                        space = item.view.space
+                    )
+                )
             }
         }
     }
@@ -387,8 +397,8 @@ class ObjectValueViewModel(
     sealed class Command {
         object Dismiss : Command()
         object Expand : Command()
-        data class OpenObject(val id: Id) : Command()
-        data class OpenSet(val id: Id) : Command()
+        data class OpenObject(val id: Id, val space: Id) : Command()
+        data class OpenSet(val id: Id, val space: Id) : Command()
         data class DeleteObject(val id: Id) : Command()
     }
 }

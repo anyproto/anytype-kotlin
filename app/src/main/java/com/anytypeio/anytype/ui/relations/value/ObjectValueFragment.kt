@@ -77,14 +77,20 @@ class ObjectValueFragment : BaseBottomSheetComposeFragment() {
         is ObjectValueViewModel.Command.OpenObject -> {
             findNavController().navigate(
                 R.id.objectNavigation,
-                bundleOf(EditorFragment.CTX_KEY to command.id)
+                EditorFragment.args(
+                    ctx = command.id,
+                    space = command.space
+                )
             )
             dismiss()
         }
         is ObjectValueViewModel.Command.OpenSet -> {
             findNavController().navigate(
                 R.id.dataViewNavigation,
-                bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to command.id)
+                ObjectSetFragment.args(
+                    ctx = command.id,
+                    space = command.space
+                )
             )
             dismiss()
         }

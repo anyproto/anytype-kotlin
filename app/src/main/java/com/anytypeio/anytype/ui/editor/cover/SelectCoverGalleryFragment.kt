@@ -92,8 +92,9 @@ abstract class SelectCoverGalleryFragment :
             .onEach {
                 findNavController().navigate(
                     R.id.objectCoverUnsplashScreen,
-                    bundleOf(
-                        UnsplashBaseFragment.CTX_KEY to ctx
+                    UnsplashBaseFragment.args(
+                        ctx = ctx,
+                        space = space
                     )
                 )
             }
@@ -189,8 +190,9 @@ class SelectCoverObjectFragment : SelectCoverGalleryFragment() {
     override fun onUnsplashClicked() {
         findNavController().navigate(
             R.id.objectCoverUnsplashScreen,
-            bundleOf(
-                UnsplashBaseFragment.CTX_KEY to ctx
+            UnsplashBaseFragment.args(
+                ctx = ctx,
+                space = space
             )
         )
     }
@@ -216,8 +218,12 @@ class SelectCoverObjectFragment : SelectCoverGalleryFragment() {
             arguments = bundleOf(CTX_KEY to ctx, SPACE_KEY to space)
         }
 
-        const val CTX_KEY = "arg.object-cover-gallery.ctx"
-        const val SPACE_KEY = "arg.object-cover-gallery.space"
+        fun args(ctx: Id, space: Id) = bundleOf(
+            CTX_KEY to ctx, SPACE_KEY to space
+        )
+
+        protected const val CTX_KEY = "arg.object-cover-gallery.ctx"
+        protected const val SPACE_KEY = "arg.object-cover-gallery.space"
     }
 }
 
@@ -249,8 +255,9 @@ class SelectCoverObjectSetFragment : SelectCoverGalleryFragment() {
     override fun onUnsplashClicked() {
         findNavController().navigate(
             R.id.objectCoverUnsplashScreen,
-            bundleOf(
-                UnsplashBaseFragment.CTX_KEY to ctx
+            UnsplashBaseFragment.args(
+                ctx = ctx,
+                space = space
             )
         )
     }

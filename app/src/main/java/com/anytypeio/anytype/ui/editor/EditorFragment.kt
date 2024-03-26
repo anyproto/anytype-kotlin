@@ -959,11 +959,17 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     findNavController().safeNavigate(
                         R.id.pageScreen,
                         R.id.action_pageScreen_to_objectCoverScreen,
-                        bundleOf(SelectCoverObjectFragment.CTX_KEY to command.ctx)
+                        SelectCoverObjectFragment.args(
+                            ctx = command.ctx,
+                            space = space
+                        )
                     )
                 }
                 is Command.OpenObjectLayout -> {
-                    val fr = ObjectLayoutFragment.new(command.ctx).apply {
+                    val fr = ObjectLayoutFragment.new(
+                        ctx = command.ctx,
+                        space = space
+                    ).apply {
                         onDismissListener = { vm.onLayoutDialogDismissed() }
                     }
                     fr.showChildFragment()

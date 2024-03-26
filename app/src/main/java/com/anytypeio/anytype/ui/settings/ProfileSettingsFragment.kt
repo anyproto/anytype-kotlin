@@ -34,6 +34,8 @@ import com.anytypeio.anytype.ui.auth.account.DeleteAccountWarning
 import com.anytypeio.anytype.ui.profile.KeychainPhraseDialog
 import com.anytypeio.anytype.ui_settings.account.ProfileSettingsScreen
 import com.anytypeio.anytype.ui_settings.account.ProfileSettingsViewModel
+import com.anytypeio.anytype.viewmodel.PaymentsViewModel
+import com.anytypeio.anytype.viewmodel.PaymentsViewModelFactory
 import javax.inject.Inject
 import timber.log.Timber
 
@@ -45,9 +47,13 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
     lateinit var factory: ProfileSettingsViewModel.Factory
 
     @Inject
+    lateinit var factoryPayments: PaymentsViewModelFactory
+
+    @Inject
     lateinit var toggles: FeatureToggles
 
     private val vm by viewModels<ProfileSettingsViewModel> { factory }
+    private val viewModelPayments by viewModels<PaymentsViewModel> { factoryPayments }
 
     private val onKeychainPhraseClicked = {
         val bundle =
@@ -113,7 +119,8 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
                             onClick = {
                                 findNavController().navigate(R.id.paymentsScreen)
                             }
-                        )
+                        ),
+                        activeTierName = viewModelPayments.activeTierName.collectAsStateWithLifecycle().value,
                     )
                 }
             }

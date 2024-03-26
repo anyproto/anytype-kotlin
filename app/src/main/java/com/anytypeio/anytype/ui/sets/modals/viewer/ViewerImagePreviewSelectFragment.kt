@@ -58,7 +58,7 @@ class ViewerImagePreviewSelectFragment : BaseBottomSheetFragment<FragmentViewerI
     }
 
     override fun releaseDependencies() {
-        componentManager().viewerImagePreviewSelectComponent.release(ctx)
+        componentManager().viewerImagePreviewSelectComponent.release()
     }
 
     override fun inflateBinding(

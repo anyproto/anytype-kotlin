@@ -53,9 +53,9 @@ open class AddOptionsRelationDVFragment : BaseAddOptionsRelationFragment() {
 
     override fun releaseDependencies() {
         if (isIntrinsic) {
-            componentManager().addObjectSetObjectRelationValueComponent.release(ctx)
+            componentManager().addObjectSetObjectRelationValueComponent.release()
         } else {
-            componentManager().addDataViewObjectRelationValueComponent.release(ctx)
+            componentManager().addDataViewObjectRelationValueComponent.release()
         }
     }
 

@@ -125,6 +125,7 @@ import org.mockito.kotlin.stub
 open class EditorPresentationTestSetup {
 
     val root: Id = MockDataFactory.randomString()
+    val defaultSpace: Id = MockDataFactory.randomUuid()
 
     @Mock
     lateinit var openPage: OpenPage
@@ -494,7 +495,7 @@ open class EditorPresentationTestSetup {
         relations: List<Relation> = emptyList(),
         objectRestrictions: List<ObjectRestriction> = emptyList(),
         relationLinks: List<RelationLink> = emptyList(),
-        spaceId: SpaceId = SpaceId("")
+        spaceId: SpaceId = SpaceId(defaultSpace)
     ) {
         openPage.stub {
             onBlocking { async(

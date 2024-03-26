@@ -112,7 +112,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -189,7 +189,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -245,7 +245,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -348,7 +348,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onClickListener(
@@ -417,7 +417,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -488,7 +488,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -550,7 +550,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
             onBlockFocusChanged(
@@ -623,7 +623,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         // TESTING
 
@@ -718,7 +718,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val toasts = mutableListOf<String>()
 
@@ -849,7 +849,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.apply {
 

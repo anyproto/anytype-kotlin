@@ -34,7 +34,7 @@ class ObjectSetIconPickerFragment : IconPickerFragmentBase<Id>() {
     }
 
     override fun releaseDependencies() {
-        componentManager().objectSetIconPickerComponent.release(context)
+        componentManager().objectSetIconPickerComponent.release()
     }
 }
 

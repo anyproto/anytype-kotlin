@@ -22,7 +22,7 @@ open class ObjectIconPickerFragment : IconPickerFragmentBase<Id>() {
     }
 
     override fun releaseDependencies() {
-        componentManager().objectIconPickerComponent.release(context)
+        componentManager().objectIconPickerComponent.release()
     }
 
     companion object {

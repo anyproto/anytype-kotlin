@@ -173,7 +173,7 @@ class ObjectMenuViewModel(
         }
     }
 
-    override fun onIconClicked(ctx: Id) {
+    override fun onIconClicked(ctx: Id, space: Id) {
         viewModelScope.launch {
             if (objectRestrictions.contains(ObjectRestriction.DETAILS)) {
                 _toasts.emit(NOT_ALLOWED)
@@ -191,7 +191,7 @@ class ObjectMenuViewModel(
         }
     }
 
-    override fun onCoverClicked(ctx: Id) {
+    override fun onCoverClicked(ctx: Id, space: Id) {
         viewModelScope.launch {
             if (objectRestrictions.contains(ObjectRestriction.DETAILS)) {
                 _toasts.emit(NOT_ALLOWED)
@@ -209,7 +209,7 @@ class ObjectMenuViewModel(
         }
     }
 
-    override fun onLayoutClicked(ctx: Id) {
+    override fun onLayoutClicked(ctx: Id, space: Id) {
         viewModelScope.launch {
             if (objectRestrictions.contains(ObjectRestriction.LAYOUT_CHANGE)) {
                 _toasts.emit(NOT_ALLOWED)
@@ -237,13 +237,17 @@ class ObjectMenuViewModel(
         }
     }
 
-    override fun onActionClicked(ctx: Id, action: ObjectAction) {
+    override fun onActionClicked(ctx: Id, space: Id, action: ObjectAction) {
         when (action) {
             ObjectAction.DELETE -> {
                 proceedWithUpdatingArchivedStatus(ctx = ctx, isArchived = true)
             }
             ObjectAction.DUPLICATE -> {
-                proceedWithDuplication(ctx = ctx, details = storage.details.current().details)
+                proceedWithDuplication(
+                    ctx = ctx,
+                    space = space,
+                    details = storage.details.current().details
+                )
             }
             ObjectAction.RESTORE -> {
                 proceedWithUpdatingArchivedStatus(ctx = ctx, isArchived = false)

@@ -158,7 +158,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         stubCreateDataViewObject()
 
         //TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         advanceUntilIdle()
 
@@ -248,7 +248,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         stubCreateDataViewObject()
 
         //TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         advanceUntilIdle()
 
@@ -338,7 +338,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         stubCreateDataViewObject()
 
         //TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         advanceUntilIdle()
 
@@ -439,7 +439,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             stubCreateDataViewObject()
 
             //TESTING
-            viewModel.onStart(ctx = root)
+            proceedWithStartingViewModel()
 
             advanceUntilIdle()
 
@@ -540,7 +540,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             stubCreateDataViewObject()
 
             //TESTING
-            viewModel.onStart(ctx = root)
+            proceedWithStartingViewModel()
 
             advanceUntilIdle()
 
@@ -641,7 +641,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             stubCreateDataViewObject()
 
             //TESTING
-            viewModel.onStart(ctx = root)
+            proceedWithStartingViewModel()
 
             advanceUntilIdle()
 
@@ -742,7 +742,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             stubCreateDataViewObject()
 
             //TESTING
-            viewModel.onStart(ctx = root)
+            proceedWithStartingViewModel()
 
             advanceUntilIdle()
 
@@ -843,7 +843,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             stubCreateDataViewObject()
 
             //TESTING
-            viewModel.onStart(ctx = root)
+            proceedWithStartingViewModel()
 
             advanceUntilIdle()
 
@@ -867,4 +867,8 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 async(params)
             }
         }
+
+    private fun proceedWithStartingViewModel() {
+        viewModel.onStart(ctx = root, space = defaultSpace)
+    }
 }

@@ -115,12 +115,14 @@ abstract class  RelationValueBaseFragment<T: ViewBinding> : BaseBottomSheetFragm
                         ctx = ctx,
                         id = o.id,
                         layout = o.layout,
-                        profileLinkIdentity = o.profileLinkIdentity
+                        profileLinkIdentity = o.profileLinkIdentity,
+                        space = o.space
                     )
                 } else {
                     vm.onNonExistentObjectClicked(
                         ctx = ctx,
-                        target = o.id
+                        target = o.id,
+                        space = o.space
                     )
                 }
             },
@@ -132,7 +134,7 @@ abstract class  RelationValueBaseFragment<T: ViewBinding> : BaseBottomSheetFragm
                     objectId = obj
                 )
             },
-            onFileClicked = { o -> vm.onFileClicked(o.id) },
+            onFileClicked = { o -> vm.onFileClicked(target = o.id, space = o.space) },
             onRemoveFileClicked = { file ->
                 vm.onRemoveFileFromObjectClicked(
                     ctx = ctx,
@@ -199,7 +201,10 @@ abstract class  RelationValueBaseFragment<T: ViewBinding> : BaseBottomSheetFragm
             is AppNavigation.Command.OpenObject -> {
                 findNavController().navigate(
                     R.id.objectNavigation,
-                    bundleOf(EditorFragment.ID_KEY to command.id)
+                    EditorFragment.args(
+                        ctx = command.target,
+                        space = command.space
+                    )
                 )
             }
             else -> toast("Unexpected nav command: $command")

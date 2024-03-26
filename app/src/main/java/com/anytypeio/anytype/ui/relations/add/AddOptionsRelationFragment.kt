@@ -45,7 +45,7 @@ class AddOptionsRelationFragment : BaseAddOptionsRelationFragment() {
     }
 
     override fun releaseDependencies() {
-        componentManager().addObjectObjectRelationValueComponent.release(ctx)
+        componentManager().addObjectObjectRelationValueComponent.release()
     }
 
     companion object {

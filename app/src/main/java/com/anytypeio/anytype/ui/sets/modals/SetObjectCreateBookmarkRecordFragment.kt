@@ -34,7 +34,7 @@ class SetObjectCreateBookmarkRecordFragment :
     }
 
     override fun releaseDependencies() {
-        componentManager().objectSetCreateBookmarkRecordComponent.release(ctx)
+        componentManager().objectSetCreateBookmarkRecordComponent.release()
     }
 
     override fun onButtonClicked() {

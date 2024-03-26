@@ -132,7 +132,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         stubCreateDataViewObject()
 
         //TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         advanceUntilIdle()
 
@@ -221,7 +221,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         stubCreateDataViewObject()
 
         //TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         advanceUntilIdle()
 
@@ -310,7 +310,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         stubCreateDataViewObject()
 
         //TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         advanceUntilIdle()
 
@@ -413,7 +413,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             stubCreateDataViewObject()
 
             //TESTING
-            viewModel.onStart(ctx = root)
+            proceedWithStartingViewModel()
 
             advanceUntilIdle()
 
@@ -502,7 +502,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         stubCreateDataViewObject()
 
         //TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         advanceUntilIdle()
 
@@ -591,7 +591,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         stubCreateDataViewObject()
 
         //TESTING
-        viewModel.onStart(ctx = root)
+        proceedWithStartingViewModel()
 
         advanceUntilIdle()
 
@@ -614,5 +614,9 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             )
             async(params)
         }
+    }
+
+    private fun proceedWithStartingViewModel() {
+        viewModel.onStart(ctx = root, space = defaultSpace)
     }
 }

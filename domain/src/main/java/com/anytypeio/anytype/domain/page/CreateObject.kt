@@ -72,6 +72,9 @@ class CreateObject @Inject constructor(
         )
     }
 
+    /**
+     * DROID-2341 TODO provide custom space to params?
+     */
     data class Param(
         val type: TypeKey? = null,
         val template: Id? = null,

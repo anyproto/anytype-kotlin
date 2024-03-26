@@ -124,7 +124,7 @@ class ObjectUnsplashFragment : UnsplashBaseFragment() {
     }
 
     override fun releaseDependencies() {
-        componentManager().objectUnsplashComponent.release(ctx)
+        componentManager().objectUnsplashComponent.release()
     }
 
     override fun onCompleted() {
@@ -149,6 +149,6 @@ class ObjectSetUnsplashFragment : UnsplashBaseFragment() {
     }
 
     override fun releaseDependencies() {
-        componentManager().objectSetUnsplashComponent.release(ctx)
+        componentManager().objectSetUnsplashComponent.release()
     }
 }

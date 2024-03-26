@@ -97,7 +97,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val testViewStateObserver = vm.state.test()
 
@@ -150,7 +150,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val testViewStateObserver = vm.state.test()
         val testFocusObserver = vm.focus.test()
@@ -189,7 +189,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         val testViewStateObserver = vm.state.test()
         val testFocusObserver = vm.focus.test()
@@ -250,7 +250,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         vm.state.test().apply {
             assertValue { value ->
@@ -319,7 +319,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
 
         // TESTING
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
         vm.onSelectionChanged(
             id = paragraph.id,
             selection = IntRange(0, 0)
@@ -361,7 +361,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
 
         // TESTING Click on text block
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = first.id,
                 hasFocus = true
@@ -413,7 +413,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
 
         // TESTING Click on title block
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = title.id,
                 hasFocus = true
@@ -480,7 +480,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
 
         // TESTING Click on cell block
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = cells[0].id,
                 hasFocus = true

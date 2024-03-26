@@ -62,7 +62,7 @@ class EditorErrorMessageTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         runBlockingTest {
 

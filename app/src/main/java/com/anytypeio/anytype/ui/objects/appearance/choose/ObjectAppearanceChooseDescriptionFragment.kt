@@ -22,7 +22,7 @@ class ObjectAppearanceChooseDescriptionFragment :
     }
 
     override fun releaseDependencies() {
-        componentManager().objectAppearanceChooseDescriptionComponent.release(ctx)
+        componentManager().objectAppearanceChooseDescriptionComponent.release()
     }
 
     companion object {

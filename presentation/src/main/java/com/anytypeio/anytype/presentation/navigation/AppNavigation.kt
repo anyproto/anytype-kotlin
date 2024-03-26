@@ -10,8 +10,12 @@ interface AppNavigation {
 
     fun openSpaceSettings()
 
-    fun openObjectSet(target: String, isPopUpToDashboard: Boolean = false)
-    fun openDocument(id: String)
+    fun openObjectSet(
+        target: Id,
+        space: Id,
+        isPopUpToDashboard: Boolean = false
+    )
+    fun openDocument(target: Id, space: Id)
     fun openModalTemplateSelect(
         template: Id,
         templateTypeId: Id,
@@ -23,11 +27,9 @@ interface AppNavigation {
         templateTypeKey: Key
     )
 
-    fun launchDocument(id: String)
-    fun launchCollections(subscription: Subscription)
-    fun launchObjectFromSplash(id: Id)
-    fun launchObjectSetFromSplash(id: Id)
-    fun launchObjectSet(id: Id)
+    fun launchDocument(target: String, space: Id)
+    fun launchCollections(subscription: Subscription, space: Id)
+    fun launchObjectSet(target: Id, space: Id)
 
     fun openKeychainScreen()
     fun openUserSettingsScreen()
@@ -42,7 +44,7 @@ interface AppNavigation {
 
     fun deletedAccountScreen(deadline: Long)
 
-    fun openLibrary()
+    fun openLibrary(space: Id)
 
     fun logout()
 
@@ -57,11 +59,8 @@ interface AppNavigation {
 
         object ExitFromMigrationScreen : Command()
 
-        data class OpenObject(val id: String) : Command()
-
-        data class LaunchDocument(val id: String) : Command()
-        data class LaunchObjectFromSplash(val target: Id) : Command()
-        data class LaunchObjectSetFromSplash(val target: Id) : Command()
+        data class OpenObject(val target: Id, val space: Id) : Command()
+        data class LaunchDocument(val target: Id, val space: Id) : Command()
         data class OpenModalTemplateSelect(
             val template: Id,
             val templateTypeId: Id,
@@ -76,10 +75,13 @@ interface AppNavigation {
         data class ExitToDesktopAndOpenPage(val pageId: String) : Command()
         object OpenPageSearch : Command()
 
-        data class OpenSetOrCollection(val target: String, val isPopUpToDashboard: Boolean = false) :
-            Command()
+        data class OpenSetOrCollection(
+            val target: Id,
+            val space: Id,
+            val isPopUpToDashboard: Boolean = false
+        ) : Command()
 
-        data class LaunchObjectSet(val target: Id) : Command()
+        data class LaunchObjectSet(val target: Id, val space: Id) : Command()
 
         object OpenUpdateAppScreen : Command()
 
@@ -87,7 +89,7 @@ interface AppNavigation {
 
         data class OpenTemplates(val typeId: Id) : Command()
 
-        object OpenLibrary: Command()
+        data class OpenLibrary(val space: Id): Command()
 
         data class OpenRemoteFilesManageScreen(val subscription: Id) : Command()
     }

@@ -53,6 +53,7 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.addTextFromSelectedStart
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
@@ -186,7 +187,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
     private val keyboardDelayJobs = mutableListOf<Job>()
 
-    protected val ctx get() = arg<Id>(ID_KEY)
+    protected val ctx get() = arg<Id>(CTX_KEY)
+    protected val space get() = arg<Id>(SPACE_ID_KEY)
 
     private val screen: Point by lazy { screen() }
 
@@ -487,7 +489,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
             }
         }
-        vm.onStart(id = extractDocumentId(), saveAsLastOpened = saveAsLastOpened())
+        vm.onStart(id = extractDocumentId(), space = space, saveAsLastOpened = saveAsLastOpened())
         super.onStart()
     }
 
@@ -616,7 +618,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .longClicks(withHaptic = true)
             .onEach {
                 val dialog = SelectObjectTypeFragment.new(
-                    flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT
+                    flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT,
+                    space = space
                 ).apply {
                     onTypeSelected = {
                         vm.onAddNewDocumentClicked(it)
@@ -1053,7 +1056,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     val dialog = SelectObjectTypeFragment.newInstance(
                         excludedTypeKeys = command.excludedTypes,
                         onTypeSelected = vm::onObjectTypeChanged,
-                        flow = SelectObjectTypeFragment.FLOW_CHANGE_TYPE
+                        flow = SelectObjectTypeFragment.FLOW_CHANGE_TYPE,
+                        space = space
                     )
                     dialog.show(childFragmentManager, null)
                 }
@@ -1063,6 +1067,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         delay(DEFAULT_ANIM_DURATION)
                         val fr = MoveToFragment.new(
                             ctx = ctx,
+                            space = space,
                             blocks = command.blocks,
                             restorePosition = command.restorePosition,
                             restoreBlock = command.restoreBlock
@@ -1078,7 +1083,10 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         middleString = R.string.snack_move_to
                     ) {
                         if (command.isDataView) {
-                            vm.proceedWithOpeningDataViewObject(command.id)
+                            vm.proceedWithOpeningDataViewObject(
+                                target = command.id,
+                                space = SpaceId(command.space)
+                            )
                         } else {
                             vm.proceedWithOpeningObject(command.id)
                         }
@@ -1953,7 +1961,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
     private fun extractDocumentId(): String {
         return requireArguments()
-            .getString(ID_KEY)
+            .getString(CTX_KEY)
             ?: throw IllegalStateException("Document id missing")
     }
 
@@ -2058,6 +2066,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
     override fun onMoveTo(
         target: Id,
+        space: Id,
         blocks: List<Id>,
         text: String,
         icon: ObjectIcon,
@@ -2068,7 +2077,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             text = text,
             icon = icon,
             blocks = blocks,
-            isDataView = isDataView
+            isDataView = isDataView,
+            space = space
         )
     }
 
@@ -2168,11 +2178,10 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
     companion object {
 
-        fun newInstance(id: String): EditorFragment = EditorFragment().apply {
-            arguments = bundleOf(ID_KEY to id)
-        }
+        fun args(ctx: Id, space: Id) = bundleOf(CTX_KEY to ctx, SPACE_ID_KEY to space)
 
-        const val ID_KEY = "id"
+        const val CTX_KEY = "args.editor.ctx-id"
+        const val SPACE_ID_KEY = "args.editor.space-id"
 
         const val DEFAULT_ANIM_DURATION = 150L
         const val DEFAULT_DELAY_BLOCK_ACTION_TOOLBAR = 100L

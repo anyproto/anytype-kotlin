@@ -95,7 +95,7 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
         )
 
         // TESTING
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         assertEquals(
             expected = state,
@@ -158,7 +158,7 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
         )
 
         // TESTING
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         assertEquals(
             expected = state,
@@ -221,7 +221,7 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
         )
 
         // TESTING
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         assertEquals(
             expected = state,
@@ -284,7 +284,7 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
         )
 
         // TESTING
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         assertEquals(
             expected = state,
@@ -346,7 +346,7 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
         )
 
         // TESTING
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         assertEquals(
             expected = state,
@@ -400,7 +400,7 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
         )
 
         // TESTING
-        vm.onStart(root)
+        vm.onStart(id = root, space = defaultSpace)
 
         assertEquals(
             expected = state,
@@ -477,7 +477,7 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
             )
 
             // TESTING
-            vm.onStart(root)
+            vm.onStart(id = root, space = defaultSpace)
 
             coroutineTestRule.advanceTime(DELAY)
 

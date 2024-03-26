@@ -69,7 +69,7 @@ class ViewerCardSizeSelectFragment : BaseBottomSheetFragment<FragmentViewerCardS
     }
 
     override fun releaseDependencies() {
-        componentManager().viewerCardSizeSelectComponent.release(ctx)
+        componentManager().viewerCardSizeSelectComponent.release()
     }
 
     override fun inflateBinding(

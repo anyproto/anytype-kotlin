@@ -132,7 +132,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = child.id,
                 hasFocus = true
@@ -251,7 +251,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = child2.id,
                 hasFocus = true
@@ -384,7 +384,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = child2.id,
                 hasFocus = true
@@ -488,7 +488,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = paragraph.id,
                 hasFocus = true
@@ -587,7 +587,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = paragraph.id,
                 hasFocus = true
@@ -658,7 +658,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = checkbox.id,
                 hasFocus = true
@@ -703,7 +703,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = bulleted.id,
                 hasFocus = true
@@ -748,7 +748,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = numbered.id,
                 hasFocus = true
@@ -793,7 +793,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = toggle.id,
                 hasFocus = true
@@ -838,7 +838,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = quote.id,
                 hasFocus = true
@@ -889,7 +889,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = checkbox.id,
                 hasFocus = true
@@ -973,7 +973,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = bulleted.id,
                 hasFocus = true
@@ -1056,7 +1056,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = quote.id,
                 hasFocus = true
@@ -1139,7 +1139,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = toggle.id,
                 hasFocus = true
@@ -1222,7 +1222,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = numbered.id,
                 hasFocus = true
@@ -1339,7 +1339,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = paragraph.id,
                 hasFocus = true
@@ -1412,7 +1412,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = paragraph.id,
                 hasFocus = true
@@ -1473,7 +1473,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = paragraph.id,
                 hasFocus = true
@@ -1562,7 +1562,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.apply {
-            onStart(root)
+            onStart(id = root, space = defaultSpace)
             onBlockFocusChanged(
                 id = paragraph.id,
                 hasFocus = true

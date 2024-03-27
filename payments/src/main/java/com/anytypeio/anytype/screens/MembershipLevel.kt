@@ -65,7 +65,12 @@ import com.anytypeio.anytype.viewmodel.TierId
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TierScreen(state: PaymentsTierState, onDismiss: () -> Unit, actionPay: (TierId) -> Unit) {
+fun TierScreen(
+    state: PaymentsTierState,
+    onDismiss: () -> Unit,
+    actionPay: (TierId) -> Unit,
+    actionSubmitEmail: (TierId, String) -> Unit
+) {
     if (state is PaymentsTierState.Visible) {
         val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
         ModalBottomSheet(
@@ -75,14 +80,18 @@ fun TierScreen(state: PaymentsTierState, onDismiss: () -> Unit, actionPay: (Tier
             dragHandle = null,
             onDismissRequest = { onDismiss() },
             content = {
-                MembershipLevels(tier = state.tier, actionPay = { actionPay(state.tier.id) })
+                MembershipLevels(
+                    tier = state.tier,
+                    actionPay = { actionPay(state.tier.id) },
+                    actionSubmitEmail = { email -> actionSubmitEmail(state.tier.id, email) }
+                )
             }
         )
     }
 }
 
 @Composable
-fun MembershipLevels(tier: Tier, actionPay: () -> Unit) {
+fun MembershipLevels(tier: Tier, actionPay: () -> Unit, actionSubmitEmail: (String) -> Unit) {
 
     Box(
         modifier = Modifier
@@ -153,12 +162,16 @@ fun MembershipLevels(tier: Tier, actionPay: () -> Unit) {
                 }
                 Spacer(modifier = Modifier.height(30.dp))
                 if (tier is Tier.Explorer) {
-                    SubmitEmail(tier = tier, updateEmail = { email ->
-                        //viewModel.updateEmail(email)
-                    })
+                    if (tier.isCurrent) {
+                        StatusSubscribedExplorer(tier)
+                    } else {
+                        SubmitEmail(tier = tier, updateEmail = { email ->
+                            actionSubmitEmail(email)
+                        })
+                    }
                 }
                 if (tier is Tier.Builder) {
-                    if (tier.isCurrent)  {
+                    if (tier.isCurrent) {
                         StatusSubscribed(tier, {})
                     } else {
                         NamePickerAndButton(
@@ -386,6 +399,70 @@ private fun StatusSubscribed(tier: Tier, actionManage: () -> Unit) {
 }
 
 @Composable
+private fun StatusSubscribedExplorer(tier: Tier) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .background(
+                shape = RoundedCornerShape(16.dp),
+                color = colorResource(id = R.color.background_primary)
+            )
+            .padding(start = 20.dp, end = 20.dp)
+    ) {
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 26.dp),
+            text = stringResource(id = R.string.payments_tier_current_title),
+            color = colorResource(id = R.color.text_primary),
+            style = BodyBold,
+            textAlign = TextAlign.Start
+        )
+
+        Spacer(modifier = Modifier.height(14.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .background(
+                    shape = RoundedCornerShape(12.dp),
+                    color = colorResource(id = R.color.payments_tier_current_background)
+                )
+        ) {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 34.dp),
+                text = stringResource(id = R.string.payments_tier_current_valid),
+                color = colorResource(id = R.color.text_primary),
+                style = Relations2,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp, bottom = 56.dp),
+                text = tier.validUntil,
+                color = colorResource(id = R.color.text_primary),
+                style = HeadlineTitle,
+                textAlign = TextAlign.Center
+            )
+        }
+        Spacer(modifier = Modifier.height(20.dp))
+        ButtonSecondary(
+            enabled = true,
+            text = stringResource(id = R.string.payments_tier_current_change_email_button),
+            onClick = {  },
+            size = ButtonSize.LargeSecondary,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
+        )
+    }
+}
+
+@Composable
 private fun Price(price: String, interval: String) {
     Row() {
         Text(
@@ -566,13 +643,13 @@ private fun ButtonPay(enabled: Boolean, actionPay: () -> Unit) {
 @Composable
 fun MyLevel() {
     MembershipLevels(
-        tier = Tier.Builder(
+        tier = Tier.Explorer(
             id = TierId("121"),
             isCurrent = true,
             price = "$99",
-            interval = "per year",
             validUntil = "12/12/2025",
         ),
-        actionPay = {}
+        actionPay = {},
+        actionSubmitEmail = {}
     )
 }

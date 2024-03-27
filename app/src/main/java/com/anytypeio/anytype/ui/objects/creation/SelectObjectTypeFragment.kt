@@ -160,8 +160,9 @@ class SelectObjectTypeFragment : BaseBottomSheetComposeFragment() {
                             dismiss()
                             findNavController().navigate(
                                 R.id.objectNavigation,
-                                bundleOf(
-                                    EditorFragment.CTX_KEY to nav.target
+                                EditorFragment.args(
+                                    ctx = nav.target,
+                                    space = nav.space
                                 )
                             )
                         }

@@ -17,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_ui.widgets.toolbar.adapter.ObjectLinksAdapter
 import com.anytypeio.anytype.core_utils.clipboard.parseUrlFromClipboard
@@ -24,6 +25,7 @@ import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentLinkToObjectOrWebBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.linking.LinkToObjectOrWebViewModel
 import com.anytypeio.anytype.presentation.linking.LinkToObjectOrWebViewModelFactory
 import com.anytypeio.anytype.ui.editor.OnFragmentInteractionListener
@@ -45,6 +47,7 @@ class LinkToObjectOrWebPagesFragment :
     private val filterInputField: EditText get() = binding.searchView.root.findViewById(R.id.filterInputField)
 
     private val ctx get() = arg<Id>(CTX_KEY)
+    private val space get() = arg<Id>(SPACE_KEY)
     private val blockId get() = arg<String>(BLOCK_KEY)
     private val rangeStart get() = arg<Int>(RANGE_START_KEY)
     private val rangeEnd get() = arg<Int>(RANGE_END_KEY)
@@ -242,11 +245,17 @@ class LinkToObjectOrWebPagesFragment :
     }
 
     override fun injectDependencies() {
-        componentManager().linkToObjectOrWebComponent.get(ctx).inject(this)
+        componentManager()
+            .linkToObjectOrWebComponent
+            .get(params = DefaultComponentParam(
+                ctx = ctx,
+                space = SpaceId(space)
+            ))
+            .inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().linkToObjectOrWebComponent.release(ctx)
+        componentManager().linkToObjectOrWebComponent.release()
     }
 
     override fun inflateBinding(
@@ -258,6 +267,7 @@ class LinkToObjectOrWebPagesFragment :
 
     companion object {
         const val CTX_KEY = "arg.link-to.ctx"
+        const val SPACE_KEY = "arg.link-to.space"
         const val BLOCK_KEY = "arg.link-to.block.id"
         const val RANGE_START_KEY = "arg.link-to.start"
         const val RANGE_END_KEY = "arg.link-to.end"
@@ -265,6 +275,7 @@ class LinkToObjectOrWebPagesFragment :
 
         fun newInstance(
             ctx: Id,
+            space: Id,
             blockId: Id,
             rangeStart: Int,
             rangeEnd: Int,
@@ -273,6 +284,7 @@ class LinkToObjectOrWebPagesFragment :
             LinkToObjectOrWebPagesFragment().apply {
                 arguments = bundleOf(
                     CTX_KEY to ctx,
+                    SPACE_KEY to space,
                     BLOCK_KEY to blockId,
                     RANGE_START_KEY to rangeStart,
                     RANGE_END_KEY to rangeEnd,

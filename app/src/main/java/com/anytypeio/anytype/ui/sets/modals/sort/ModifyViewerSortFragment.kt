@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.text
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -20,6 +21,7 @@ import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentModifyViewerSortBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.sets.sort.ModifyViewerSortViewModel
 import kotlinx.coroutines.flow.filterNotNull
 import javax.inject.Inject
@@ -27,6 +29,7 @@ import javax.inject.Inject
 class ModifyViewerSortFragment : BaseBottomSheetFragment<FragmentModifyViewerSortBinding>() {
 
     private val ctx: Id get() = arg(CTX_KEY)
+    private val space: Id get() = arg(SPACE_ID_KEY)
     private val sortId: Id get() = arg(SORT_ID_KEY)
     private val relationKey: Key get() = arg(RELATION_KEY)
     private val viewer: Id get() = arg(VIEWER_ID_KEY)
@@ -80,11 +83,19 @@ class ModifyViewerSortFragment : BaseBottomSheetFragment<FragmentModifyViewerSor
     }
 
     override fun injectDependencies() {
-        componentManager().modifyViewerSortComponent.get(ctx).inject(this)
+        componentManager()
+            .modifyViewerSortComponent
+            .get(
+                params = DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().modifyViewerSortComponent.release(ctx)
+        componentManager().modifyViewerSortComponent.release()
     }
 
     override fun inflateBinding(
@@ -95,13 +106,14 @@ class ModifyViewerSortFragment : BaseBottomSheetFragment<FragmentModifyViewerSor
     )
 
     companion object {
-        fun new(ctx: Id, viewer: Id, sortId: Id, relation: Key): ModifyViewerSortFragment =
+        fun new(ctx: Id, space: Id, viewer: Id, sortId: Id, relation: Key): ModifyViewerSortFragment =
             ModifyViewerSortFragment().apply {
                 arguments =
-                    bundleOf(CTX_KEY to ctx, SORT_ID_KEY to sortId, RELATION_KEY to relation, VIEWER_ID_KEY to viewer)
+                    bundleOf(CTX_KEY to ctx, SPACE_ID_KEY to space, SORT_ID_KEY to sortId, RELATION_KEY to relation, VIEWER_ID_KEY to viewer)
             }
 
         private const val CTX_KEY = "arg.modify-viewer-sort.ctx"
+        private const val SPACE_ID_KEY = "arg.modify-viewer-sort.space-id"
         private const val SORT_ID_KEY = "arg.modify-viewer-sort.sort-id"
         private const val RELATION_KEY = "arg.modify-viewer-sort.relation"
         private const val VIEWER_ID_KEY = "arg.modify-viewer-sort.viewer-id"

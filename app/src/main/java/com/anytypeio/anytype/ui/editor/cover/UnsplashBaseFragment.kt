@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -15,6 +16,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.cover.UnsplashImageAdapter
 import com.anytypeio.anytype.core_ui.features.editor.modal.DocCoverGalleryAdapter
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -25,6 +28,7 @@ import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetTextInputFragment
 import com.anytypeio.anytype.databinding.FragmentUnsplashBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.editor.cover.UnsplashViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,6 +36,7 @@ import javax.inject.Inject
 abstract class UnsplashBaseFragment : BaseBottomSheetTextInputFragment<FragmentUnsplashBinding>() {
 
     val ctx get() = arg<String>(CTX_KEY)
+    val space get() = arg<String>(SPACE_KEY)
 
     override val textInput: EditText get() = binding.searchToolbar.binding.filterInputField
 
@@ -114,17 +119,34 @@ abstract class UnsplashBaseFragment : BaseBottomSheetTextInputFragment<FragmentU
     )
 
     companion object {
-        const val CTX_KEY = "arg.object.cover.unsplash.ctx"
+        private const val CTX_KEY = "arg.object.cover.unsplash.ctx"
+        private const val SPACE_KEY = "arg.object.cover.unsplash.space"
+
+        fun args(
+            ctx: Id,
+            space: Id
+        ) = bundleOf(
+            CTX_KEY to ctx,
+            SPACE_KEY to space
+        )
     }
 }
 
 class ObjectUnsplashFragment : UnsplashBaseFragment() {
     override fun injectDependencies() {
-        componentManager().objectUnsplashComponent.get(ctx).inject(this)
+        componentManager()
+            .objectUnsplashComponent
+            .get(
+                params = DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().objectUnsplashComponent.release(ctx)
+        componentManager().objectUnsplashComponent.release()
     }
 
     override fun onCompleted() {
@@ -145,10 +167,18 @@ class ObjectSetUnsplashFragment : UnsplashBaseFragment() {
     }
 
     override fun injectDependencies() {
-        componentManager().objectSetUnsplashComponent.get(ctx).inject(this)
+        componentManager()
+            .objectSetUnsplashComponent
+            .get(
+                params = DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().objectSetUnsplashComponent.release(ctx)
+        componentManager().objectSetUnsplashComponent.release()
     }
 }

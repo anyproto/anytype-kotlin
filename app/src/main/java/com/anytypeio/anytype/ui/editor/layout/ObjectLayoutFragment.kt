@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.objects.ObjectLayoutAdapter
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.drawable
@@ -19,6 +20,7 @@ import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentObjectLayoutBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.editor.layout.ObjectLayoutViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectLayoutView
 import javax.inject.Inject
@@ -26,6 +28,7 @@ import javax.inject.Inject
 class ObjectLayoutFragment : BaseBottomSheetFragment<FragmentObjectLayoutBinding>() {
 
     private val ctx: String get() = argString(CONTEXT_ID_KEY)
+    private val space: String get() = argString(SPACE_KEY)
 
     @Inject
     lateinit var factory: ObjectLayoutViewModel.Factory
@@ -70,11 +73,19 @@ class ObjectLayoutFragment : BaseBottomSheetFragment<FragmentObjectLayoutBinding
     }
 
     override fun injectDependencies() {
-        componentManager().objectLayoutComponent.get(ctx).inject(this)
+        componentManager()
+            .objectLayoutComponent
+            .get(
+                params = DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().objectLayoutComponent.release(ctx)
+        componentManager().objectLayoutComponent.release()
     }
 
     override fun inflateBinding(
@@ -85,12 +96,14 @@ class ObjectLayoutFragment : BaseBottomSheetFragment<FragmentObjectLayoutBinding
     )
 
     companion object {
-        fun new(ctx: Id): ObjectLayoutFragment = ObjectLayoutFragment().apply {
+        fun new(ctx: Id, space: Id): ObjectLayoutFragment = ObjectLayoutFragment().apply {
             arguments = bundleOf(
-                CONTEXT_ID_KEY to ctx
+                CONTEXT_ID_KEY to ctx,
+                SPACE_KEY to space
             )
         }
 
         const val CONTEXT_ID_KEY = "arg.object-layout.ctx"
+        const val SPACE_KEY = "arg.object-layout.ctx"
     }
 }

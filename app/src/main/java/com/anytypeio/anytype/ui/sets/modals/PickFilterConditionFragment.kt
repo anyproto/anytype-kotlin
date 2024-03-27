@@ -7,16 +7,19 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.features.sets.PickFilterConditionAdapter
 import com.anytypeio.anytype.core_ui.layout.DividerVerticalItemDecoration
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argInt
+import com.anytypeio.anytype.core_utils.ext.hasSpan
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentSelectFilterConditionBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.sets.filter.PickFilterConditionViewModel
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.ui.sets.modals.filter.UpdateConditionActionReceiver
@@ -28,6 +31,7 @@ class PickFilterConditionFragment :
     BaseBottomSheetFragment<FragmentSelectFilterConditionBinding>() {
 
     private val ctx: String get() = arg(CTX_KEY)
+    private val space: String get() = arg(SPACE_ID_KEY)
     private val mode: Int get() = argInt(ARG_MODE)
     private val type: Viewer.Filter.Type get() = requireArguments().getParcelable(TYPE_KEY)!!
     private val index: Int get() = argInt(INDEX_KEY)
@@ -65,10 +69,14 @@ class PickFilterConditionFragment :
     }
 
     override fun injectDependencies() {
+        val param = DefaultComponentParam(
+            ctx = ctx,
+            space = SpaceId(space)
+        )
         when (mode) {
-            MODE_CREATE -> componentManager().pickFilterConditionComponentCreate.get(ctx)
+            MODE_CREATE -> componentManager().pickFilterConditionComponentCreate.get(param)
                 .inject(this)
-            MODE_MODIFY -> componentManager().pickFilterConditionComponentModify.get(ctx)
+            MODE_MODIFY -> componentManager().pickFilterConditionComponentModify.get(param)
                 .inject(this)
             else -> throw RuntimeException("Wrong mode")
         }
@@ -76,8 +84,8 @@ class PickFilterConditionFragment :
 
     override fun releaseDependencies() {
         when (mode) {
-            MODE_CREATE -> componentManager().pickFilterConditionComponentCreate.release(ctx)
-            MODE_MODIFY -> componentManager().pickFilterConditionComponentModify.release(ctx)
+            MODE_CREATE -> componentManager().pickFilterConditionComponentCreate.release()
+            MODE_MODIFY -> componentManager().pickFilterConditionComponentModify.release()
             else -> throw RuntimeException("Wrong mode")
         }
     }
@@ -95,18 +103,21 @@ class PickFilterConditionFragment :
         const val MODE_MODIFY = 2
 
         private const val CTX_KEY = "arg.create-filter-relation.ctx"
+        private const val SPACE_ID_KEY = "arg.create-filter-relation.space-id"
         private const val ARG_MODE = "arg.create-filter-relation.mode"
         private const val TYPE_KEY = "arg.create-filter-relation.type"
         private const val INDEX_KEY = "arg.create-filter-relation.index"
 
         fun new(
             ctx: Id,
+            space: Id,
             mode: Int,
             type: Viewer.Filter.Type,
             index: Int
         ) = PickFilterConditionFragment().apply {
             arguments = bundleOf(
                 CTX_KEY to ctx,
+                SPACE_ID_KEY to space,
                 ARG_MODE to mode,
                 TYPE_KEY to type,
                 INDEX_KEY to index

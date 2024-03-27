@@ -6,10 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentViewerCardSizeSelectBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerCardSizeSelectViewModel
 import javax.inject.Inject
 
@@ -20,6 +22,7 @@ class ViewerCardSizeSelectFragment : BaseBottomSheetFragment<FragmentViewerCardS
     private val vm: ViewerCardSizeSelectViewModel by viewModels { factory }
 
     private val ctx get() = arg<String>(CTX_KEY)
+    private val space get() = arg<String>(SPACE_ID_KEY)
     private val viewer get() = arg<String>(VIEWER_KEY)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -65,11 +68,19 @@ class ViewerCardSizeSelectFragment : BaseBottomSheetFragment<FragmentViewerCardS
     }
 
     override fun injectDependencies() {
-        componentManager().viewerCardSizeSelectComponent.get(ctx).inject(this)
+        componentManager()
+            .viewerCardSizeSelectComponent
+            .get(
+                params = DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().viewerCardSizeSelectComponent.release(ctx)
+        componentManager().viewerCardSizeSelectComponent.release()
     }
 
     override fun inflateBinding(
@@ -81,6 +92,7 @@ class ViewerCardSizeSelectFragment : BaseBottomSheetFragment<FragmentViewerCardS
 
     companion object {
         const val CTX_KEY = "arg.viewer-card-size-select.ctx"
+        const val SPACE_ID_KEY = "arg.viewer-card-size-select.space-id"
         const val VIEWER_KEY = "arg.viewer-card-size-select.viewer"
     }
 }

@@ -5,6 +5,8 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.primitives.Space
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.feature.cover.UnsplashSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationAddToDataViewSubComponent
@@ -37,6 +39,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
@@ -84,6 +87,7 @@ import com.anytypeio.anytype.presentation.relations.providers.SetOrCollectionRel
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetPaginator
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
+import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModelFactory
 import com.anytypeio.anytype.presentation.sets.state.DefaultObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -101,6 +105,7 @@ import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
 import com.anytypeio.anytype.providers.DefaultUriFileProvider
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import dagger.Binds
+import dagger.BindsInstance
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
@@ -114,6 +119,8 @@ interface ObjectSetSubComponent {
 
     @Subcomponent.Builder
     interface Builder {
+        @BindsInstance
+        fun withParams(param: ObjectSetViewModel.Params) : Builder
         fun module(module: ObjectSetModule): Builder
         fun build(): ObjectSetSubComponent
     }
@@ -212,6 +219,7 @@ object ObjectSetModule {
     @Provides
     @PerScreen
     fun provideObjectSetViewModelFactory(
+        params: ObjectSetViewModel.Params,
         openObjectSet: OpenObjectSet,
         closeBlock: CloseBlock,
         setObjectDetails: UpdateDetail,
@@ -250,8 +258,10 @@ object ObjectSetModule {
         storelessSubscriptionContainer: StorelessSubscriptionContainer,
         dispatchers: AppCoroutineDispatchers,
         getNetworkMode: GetNetworkMode,
-        dateProvider: DateProvider
+        dateProvider: DateProvider,
+        permissions: UserPermissionProvider
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
+        params = params,
         openObjectSet = openObjectSet,
         closeBlock = closeBlock,
         setObjectDetails = setObjectDetails,
@@ -290,7 +300,8 @@ object ObjectSetModule {
         storelessSubscriptionContainer = storelessSubscriptionContainer,
         dispatchers = dispatchers,
         getNetworkMode = getNetworkMode,
-        dateProvider = dateProvider
+        dateProvider = dateProvider,
+        permissions = permissions
     )
 
     @JvmStatic
@@ -724,3 +735,9 @@ object ObjectSetModule {
         dispatcher = dispatcher
     )
 }
+
+data class DefaultComponentParam(
+    val ctx: Id,
+    val space: Space
+)
+

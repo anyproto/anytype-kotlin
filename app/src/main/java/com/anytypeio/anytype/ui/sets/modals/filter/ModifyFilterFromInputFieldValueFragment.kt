@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.relationIcon
 import com.anytypeio.anytype.core_ui.extensions.setInputTypeBaseOnFormat
 import com.anytypeio.anytype.core_ui.reactive.clicks
@@ -19,6 +20,7 @@ import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentCreateOrUpdateFilterInputFieldValueBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.extension.getTextValue
 import com.anytypeio.anytype.presentation.sets.filter.FilterViewModel
 import com.anytypeio.anytype.presentation.sets.model.Viewer
@@ -31,6 +33,7 @@ open class ModifyFilterFromInputFieldValueFragment :
     UpdateConditionActionReceiver {
 
     private val ctx: String get() = arg(CTX_KEY)
+    private val space: String get() = arg(SPACE_ID_KEY)
     private val relation: String get() = arg(RELATION_KEY)
     private val index: Int get() = arg(IDX_KEY)
     private val viewer: String get() = arg(VIEWER_KEY)
@@ -80,6 +83,7 @@ open class ModifyFilterFromInputFieldValueFragment :
             is FilterViewModel.Commands.OpenConditionPicker -> {
                 PickFilterConditionFragment.new(
                     ctx = ctx,
+                    space = space,
                     mode = PickFilterConditionFragment.MODE_MODIFY,
                     type = commands.type,
                     index = commands.index
@@ -115,7 +119,16 @@ open class ModifyFilterFromInputFieldValueFragment :
     }
 
     override fun injectDependencies() {
-        componentManager().modifyFilterComponent.get(ctx).inject(this)
+        componentManager()
+            .modifyFilterComponent
+            .get(
+                key = ctx,
+                param = DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {
@@ -130,10 +143,11 @@ open class ModifyFilterFromInputFieldValueFragment :
     )
 
     companion object {
-        fun new(ctx: Id, relation: Id, index: Int, viewer: Id) =
+        fun new(ctx: Id, space: Id, relation: Id, index: Int, viewer: Id) =
             ModifyFilterFromInputFieldValueFragment().apply {
                 arguments = bundleOf(
                     CTX_KEY to ctx,
+                    SPACE_ID_KEY to space,
                     RELATION_KEY to relation,
                     IDX_KEY to index,
                     VIEWER_KEY to viewer
@@ -141,6 +155,7 @@ open class ModifyFilterFromInputFieldValueFragment :
             }
 
         const val CTX_KEY = "arg.modify-filter-relation.ctx"
+        const val SPACE_ID_KEY = "arg.modify-filter-relation.space-id"
         const val RELATION_KEY = "arg.modify-filter-relation.relation"
         const val IDX_KEY = "arg.modify-filter-relation.index"
         private const val VIEWER_KEY = "arg.modify-filter-relation.viewer"

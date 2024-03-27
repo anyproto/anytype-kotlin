@@ -7,17 +7,21 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentCreateDataViewViewerBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.sets.CreateDataViewViewerViewModel
 import javax.inject.Inject
 
 class CreateDataViewViewerFragment : BaseBottomSheetFragment<FragmentCreateDataViewViewerBinding>() {
 
     val ctx get() = arg<String>(CTX_KEY)
+    val space get() = arg<String>(SPACE_ID_KEY)
     val target get() = arg<String>(TARGET_KEY)
 
     @Inject
@@ -80,11 +84,19 @@ class CreateDataViewViewerFragment : BaseBottomSheetFragment<FragmentCreateDataV
     }
 
     override fun injectDependencies() {
-        componentManager().createDataViewViewerComponent.get(ctx).inject(this)
+        componentManager()
+            .createDataViewViewerComponent
+            .get(
+                params = DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().createDataViewViewerComponent.release(ctx)
+        componentManager().createDataViewViewerComponent.release()
     }
 
     override fun inflateBinding(
@@ -95,13 +107,20 @@ class CreateDataViewViewerFragment : BaseBottomSheetFragment<FragmentCreateDataV
     )
 
     companion object {
-        fun new(ctx: String, target: String) = CreateDataViewViewerFragment().apply {
+        fun new(
+            ctx: Id,
+            space: Id,
+            target: Id
+        ) = CreateDataViewViewerFragment().apply {
             arguments = bundleOf(
-                CTX_KEY to ctx, TARGET_KEY to target
+                CTX_KEY to ctx,
+                SPACE_ID_KEY to space,
+                TARGET_KEY to target
             )
         }
 
         private const val CTX_KEY = "arg.create-data-view-viewer.context"
+        private const val SPACE_ID_KEY = "arg.create-data-view-viewer.space"
         private const val TARGET_KEY = "arg.create-data-view-viewer.target"
     }
 }

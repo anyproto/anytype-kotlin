@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerModifyOrderAdapter
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerRelationsAdapter
@@ -27,6 +28,7 @@ import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.core_utils.ui.OnStartDragListener
 import com.anytypeio.anytype.databinding.FragmentViewerRelationsListBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.relations.ObjectSetSettingsViewModel
 import com.anytypeio.anytype.ui.relations.RelationAddToDataViewFragment
 import javax.inject.Inject
@@ -39,6 +41,7 @@ class ObjectSetSettingsFragment : BaseBottomSheetFragment<FragmentViewerRelation
     private val vm: ObjectSetSettingsViewModel by viewModels { factory }
 
     private val ctx get() = arg<String>(CTX_KEY)
+    private val space get() = arg<String>(SPACE_KEY)
     private val viewer get() = arg<String>(VIEWER_KEY)
     private val dv get() = arg<String>(DV_KEY)
 
@@ -106,7 +109,8 @@ class ObjectSetSettingsFragment : BaseBottomSheetFragment<FragmentViewerRelation
                 RelationAddToDataViewFragment.new(
                     ctx = ctx,
                     dv = dv,
-                    viewer = viewer
+                    viewer = viewer,
+                    space = space
                 ).showChildFragment()
             }
         }
@@ -169,11 +173,19 @@ class ObjectSetSettingsFragment : BaseBottomSheetFragment<FragmentViewerRelation
     }
 
     override fun injectDependencies() {
-        componentManager().objectsSetSettingsComponent.get(ctx).inject(this)
+        componentManager()
+            .objectsSetSettingsComponent
+            .get(
+                params = DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().objectsSetSettingsComponent.release(ctx)
+        componentManager().objectsSetSettingsComponent.release()
     }
 
     override fun inflateBinding(
@@ -184,11 +196,22 @@ class ObjectSetSettingsFragment : BaseBottomSheetFragment<FragmentViewerRelation
     )
 
     companion object {
-        fun new(ctx: Id, dv: Id, viewer: Id) = ObjectSetSettingsFragment().apply {
-            arguments = bundleOf(CTX_KEY to ctx, DV_KEY to dv, VIEWER_KEY to viewer)
+        fun new(
+            ctx: Id,
+            space: Id,
+            dv: Id,
+            viewer: Id
+        ) = ObjectSetSettingsFragment().apply {
+            arguments = bundleOf(
+                CTX_KEY to ctx,
+                SPACE_KEY to space,
+                DV_KEY to dv,
+                VIEWER_KEY to viewer
+            )
         }
 
         private const val CTX_KEY = "arg.viewer-relation-list.ctx"
+        private const val SPACE_KEY = "arg.viewer-relation-list.space"
         private const val DV_KEY = "arg.viewer-relation-list.dv"
         private const val VIEWER_KEY = "arg.viewer-relation-list.viewer"
     }

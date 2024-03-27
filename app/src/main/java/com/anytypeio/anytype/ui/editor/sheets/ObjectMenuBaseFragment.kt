@@ -165,14 +165,18 @@ abstract class ObjectMenuBaseFragment :
         navigation().openModalTemplateEdit(
             template = command.templateId,
             templateTypeId = command.typeId,
-            templateTypeKey = command.typeKey
+            templateTypeKey = command.typeKey,
+            space = command.space
         )
     }
 
     private fun openObjectCover() {
         findNavController().navigate(
             R.id.objectCoverScreen,
-            bundleOf(SelectCoverObjectFragment.CTX_KEY to ctx)
+            SelectCoverObjectFragment.args(
+                ctx = ctx,
+                space = space
+            )
         )
     }
 
@@ -187,7 +191,7 @@ abstract class ObjectMenuBaseFragment :
     }
 
     private fun openObjectLayout() {
-        val fr = ObjectLayoutFragment.new(ctx)
+        val fr = ObjectLayoutFragment.new(ctx = ctx, space = space)
         fr.showChildFragment()
     }
 

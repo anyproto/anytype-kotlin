@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.relationIcon
 import com.anytypeio.anytype.core_ui.features.sets.CreateFilterAdapter
 import com.anytypeio.anytype.core_ui.reactive.clicks
@@ -28,6 +29,7 @@ import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
 import com.anytypeio.anytype.databinding.FragmentCreateOrUpdateFilterBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.sets.filter.FilterViewModel
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
@@ -47,6 +49,7 @@ open class CreateFilterFromSelectedValueFragment :
     RelationTextValueFragment.TextValueEditReceiver {
 
     private val ctx: String get() = arg(CTX_KEY)
+    private val space: String get() = arg(SPACE_ID_KEY)
     private val relation: String get() = arg(RELATION_KEY)
     private val viewer: String get() = arg(VIEWER_KEY)
 
@@ -161,7 +164,8 @@ open class CreateFilterFromSelectedValueFragment :
                     ctx = ctx,
                     mode = PickFilterConditionFragment.MODE_CREATE,
                     type = commands.type,
-                    index = commands.index
+                    index = commands.index,
+                    space = space
                 ).showChildFragment()
             }
             FilterViewModel.Commands.ShowCount -> binding.btnBottomAction.showNumber()
@@ -177,7 +181,8 @@ open class CreateFilterFromSelectedValueFragment :
                 helper.handleOpenNumberPicker(
                     fragment = this,
                     command = commands,
-                    ctx = ctx
+                    ctx = ctx,
+                    space = space
                 )
             }
             is FilterViewModel.Commands.Toast -> {
@@ -205,7 +210,16 @@ open class CreateFilterFromSelectedValueFragment :
     }
 
     override fun injectDependencies() {
-        componentManager().createFilterComponent.get(ctx).inject(this)
+        componentManager()
+            .createFilterComponent
+            .get(
+                key = ctx,
+                param = DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {
@@ -220,11 +234,17 @@ open class CreateFilterFromSelectedValueFragment :
     )
 
     companion object {
-        fun new(ctx: Id, relation: Id, viewer: Id): CreateFilterFromSelectedValueFragment = CreateFilterFromSelectedValueFragment().apply {
-            arguments = bundleOf(CTX_KEY to ctx, RELATION_KEY to relation, VIEWER_KEY to viewer)
+        fun new(ctx: Id, space: Id, relation: Id, viewer: Id): CreateFilterFromSelectedValueFragment = CreateFilterFromSelectedValueFragment().apply {
+            arguments = bundleOf(
+                CTX_KEY to ctx,
+                SPACE_ID_KEY to space,
+                RELATION_KEY to relation,
+                VIEWER_KEY to viewer
+            )
         }
 
         const val CTX_KEY = "arg.create-filter-relation.ctx"
+        const val SPACE_ID_KEY = "arg.create-filter-relation.space-id"
         const val RELATION_KEY = "arg.create-filter-relation.relation"
         private const val VIEWER_KEY = "arg.create-filter-relation.viewer"
     }

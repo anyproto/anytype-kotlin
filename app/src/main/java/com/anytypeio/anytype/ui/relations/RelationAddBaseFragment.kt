@@ -18,6 +18,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.relations.RelationAddAdapter
 import com.anytypeio.anytype.core_ui.features.relations.RelationAddHeaderAdapter
 import com.anytypeio.anytype.core_ui.reactive.focusChanges
@@ -33,6 +34,7 @@ import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetTextInputFragment
 import com.anytypeio.anytype.databinding.FragmentRelationAddBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.relations.RelationAddToDataViewViewModel
 import com.anytypeio.anytype.presentation.relations.RelationAddToObjectViewModel
 import com.anytypeio.anytype.presentation.relations.RelationAddViewModelBase
@@ -49,7 +51,8 @@ abstract class RelationAddBaseFragment :
 
     override val textInput: EditText get() = binding.searchBar.root.findViewById(R.id.filterInputField)
 
-    abstract val ctx: String
+    abstract val ctx: Id
+    abstract val space: Id
 
     private lateinit var searchRelationInput: EditText
     lateinit var clearSearchText: View
@@ -137,12 +140,14 @@ abstract class RelationAddBaseFragment :
 
     companion object {
         const val CTX_KEY = "arg.relation-add.ctx"
+        const val SPACE_KEY = "arg.relation-add.space"
     }
 }
 
 class RelationAddToObjectFragment : RelationAddBaseFragment() {
 
     override val ctx get() = arg<Id>(CTX_KEY)
+    override val space get() = arg<Id>(SPACE_KEY)
     private val isSetOrCollection get() = arg<Boolean>(IS_SET_OR_COLLECTION_KEY)
 
     @Inject
@@ -168,18 +173,22 @@ class RelationAddToObjectFragment : RelationAddBaseFragment() {
     }
 
     override fun injectDependencies() {
+        val param = DefaultComponentParam(
+            ctx = ctx,
+            space = SpaceId(space)
+        )
         if (isSetOrCollection) {
-            componentManager().relationAddToObjectSetComponent.get(ctx).inject(this)
+            componentManager().relationAddToObjectSetComponent.get(param).inject(this)
         } else {
-            componentManager().relationAddToObjectComponent.get(ctx).inject(this)
+            componentManager().relationAddToObjectComponent.get(param).inject(this)
         }
     }
 
     override fun releaseDependencies() {
         if (isSetOrCollection) {
-            componentManager().relationAddToObjectSetComponent.release(ctx)
+            componentManager().relationAddToObjectSetComponent.release()
         } else {
-            componentManager().relationAddToObjectComponent.release(ctx)
+            componentManager().relationAddToObjectComponent.release()
         }
     }
 
@@ -189,6 +198,7 @@ class RelationAddToObjectFragment : RelationAddBaseFragment() {
 
         fun new(
             ctx: Id,
+            space: Id,
             isSetOrCollection: Boolean = true
         ) = RelationAddToObjectFragment().apply {
             arguments = bundleOf(
@@ -203,6 +213,7 @@ class RelationAddToDataViewFragment : RelationAddBaseFragment() {
 
     private val dv get() = arg<Id>(DV_KEY)
     override val ctx get() = arg<Id>(CTX_KEY)
+    override val space get() = arg<Id>(SPACE_KEY)
     private val viewer get() = arg<Id>(VIEWER_KEY)
 
     @Inject
@@ -231,18 +242,27 @@ class RelationAddToDataViewFragment : RelationAddBaseFragment() {
     }
 
     override fun injectDependencies() {
-        componentManager().relationAddToDataViewComponent.get(ctx).inject(this)
+        componentManager()
+            .relationAddToDataViewComponent
+            .get(
+                params = DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().relationAddToDataViewComponent.release(ctx)
+        componentManager().relationAddToDataViewComponent.release()
     }
 
     companion object {
-        fun new(ctx: Id, dv: Id, viewer: Id): RelationAddToDataViewFragment =
+        fun new(ctx: Id, space: Id, dv: Id, viewer: Id): RelationAddToDataViewFragment =
             RelationAddToDataViewFragment().apply {
                 arguments = bundleOf(
                     CTX_KEY to ctx,
+                    SPACE_KEY to space,
                     DV_KEY to dv,
                     VIEWER_KEY to viewer
                 )
@@ -257,6 +277,7 @@ class RelationAddToObjectBlockFragment : RelationAddBaseFragment(),
     OnCreateFromScratchRelationListener {
 
     override val ctx get() = arg<Id>(CTX_KEY)
+    override val space get() = arg<Id>(SPACE_KEY)
     private val target get() = arg<Id>(TARGET_KEY)
 
     @Inject
@@ -313,11 +334,19 @@ class RelationAddToObjectBlockFragment : RelationAddBaseFragment(),
     }
 
     override fun injectDependencies() {
-        componentManager().relationAddToObjectComponent.get(ctx).inject(this)
+        componentManager()
+            .relationAddToObjectComponent
+            .get(
+                params = DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().relationAddToObjectComponent.release(ctx)
+        componentManager().relationAddToObjectComponent.release()
     }
 
     companion object {
@@ -325,9 +354,14 @@ class RelationAddToObjectBlockFragment : RelationAddBaseFragment(),
 
         fun newInstance(
             ctx: Id,
+            space: Id,
             target: Id
         ): RelationAddToObjectBlockFragment = RelationAddToObjectBlockFragment().apply {
-            arguments = bundleOf(CTX_KEY to ctx, TARGET_KEY to target)
+            arguments = bundleOf(
+                CTX_KEY to ctx,
+                SPACE_KEY to space,
+                TARGET_KEY to target
+            )
         }
     }
 }

@@ -44,6 +44,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.getLabelText
 import com.anytypeio.anytype.core_ui.extensions.getToastMsg
 import com.anytypeio.anytype.core_ui.extensions.setEmojiOrNull
@@ -84,6 +85,7 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.databinding.FragmentObjectSetBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
@@ -948,7 +950,8 @@ open class ObjectSetFragment :
                     ctx = ctx,
                     objectId = command.recordId,
                     flow = RelationTextValueFragment.FLOW_DATAVIEW,
-                    relationKey = command.relationKey
+                    relationKey = command.relationKey,
+                    space = command.space
                 )
                 fr.showChildFragment(EMPTY_TAG)
             }
@@ -957,7 +960,8 @@ open class ObjectSetFragment :
                     ctx = ctx,
                     objectId = ctx,
                     flow = RelationTextValueFragment.FLOW_SET_OR_COLLECTION,
-                    relationKey = command.relation
+                    relationKey = command.relation,
+                    space = command.space
                 )
                 fr.showChildFragment(EMPTY_TAG)
             }
@@ -965,28 +969,31 @@ open class ObjectSetFragment :
                 findNavController().safeNavigate(
                     R.id.objectSetScreen,
                     R.id.objectValueScreen,
-                    bundleOf(
-                        ObjectValueFragment.CTX_KEY to command.ctx,
-                        ObjectValueFragment.OBJECT_ID_KEY to command.ctx,
-                        ObjectValueFragment.RELATION_KEY to command.relation,
-                        ObjectValueFragment.IS_LOCKED_KEY to false,
-                        ObjectValueFragment.RELATION_CONTEXT_KEY to RelationContext.OBJECT_SET
+                    ObjectValueFragment.args(
+                        ctx = command.ctx,
+                        obj = command.ctx,
+                        relation = command.relation,
+                        space = command.space,
+                        isLocked = false,
+                        relationContext = RelationContext.OBJECT_SET
                     )
                 )
             }
             is ObjectSetCommand.Modal.EditTagOrStatusRelationValue -> {
-                val bundle = bundleOf(
-                    TagOrStatusValueFragment.CTX_KEY to command.ctx,
-                    TagOrStatusValueFragment.OBJECT_ID_KEY to command.ctx,
-                    TagOrStatusValueFragment.RELATION_KEY to command.relation,
-                    TagOrStatusValueFragment.IS_LOCKED_KEY to false,
-                    TagOrStatusValueFragment.RELATION_CONTEXT_KEY to RelationContext.OBJECT_SET
+                val bundle = TagOrStatusValueFragment.args(
+                    ctx = command.ctx,
+                    obj = command.ctx,
+                    relation = command.relation,
+                    space = command.space,
+                    isLocked = false,
+                    context = RelationContext.OBJECT_SET
                 )
                 findNavController().safeNavigate(R.id.objectSetScreen, R.id.nav_relations, bundle)
             }
             is ObjectSetCommand.Modal.EditGridDateCell -> {
                 val fr = RelationDateValueFragment.new(
                     ctx = ctx,
+                    space = command.space,
                     objectId = command.objectId,
                     flow = RelationDateValueFragment.FLOW_DV,
                     relationKey = command.relationKey
@@ -997,22 +1004,24 @@ open class ObjectSetFragment :
                 findNavController().safeNavigate(
                     R.id.objectSetScreen,
                     R.id.objectValueScreen,
-                    bundleOf(
-                        ObjectValueFragment.CTX_KEY to command.ctx,
-                        ObjectValueFragment.OBJECT_ID_KEY to command.target,
-                        ObjectValueFragment.RELATION_KEY to command.relationKey,
-                        ObjectValueFragment.IS_LOCKED_KEY to false,
-                        ObjectValueFragment.RELATION_CONTEXT_KEY to RelationContext.DATA_VIEW
+                    ObjectValueFragment.args(
+                        ctx = command.ctx,
+                        space = command.space,
+                        obj = command.target,
+                        relation = command.relationKey,
+                        isLocked = false,
+                        relationContext = RelationContext.DATA_VIEW
                     )
                 )
             }
             is ObjectSetCommand.Modal.EditTagOrStatusCell -> {
-                val bundle = bundleOf(
-                    TagOrStatusValueFragment.CTX_KEY to command.ctx,
-                    TagOrStatusValueFragment.OBJECT_ID_KEY to command.target,
-                    TagOrStatusValueFragment.RELATION_KEY to command.relationKey,
-                    TagOrStatusValueFragment.IS_LOCKED_KEY to false,
-                    TagOrStatusValueFragment.RELATION_CONTEXT_KEY to RelationContext.DATA_VIEW
+                val bundle = TagOrStatusValueFragment.args(
+                    ctx = command.ctx,
+                    space = command.space,
+                    obj = command.target,
+                    relation = command.relationKey,
+                    isLocked = false,
+                    context = RelationContext.DATA_VIEW
                 )
                 findNavController().safeNavigate(R.id.objectSetScreen, R.id.nav_relations, bundle)
             }
@@ -1020,7 +1029,8 @@ open class ObjectSetFragment :
                 val fr = ObjectSetSettingsFragment.new(
                     ctx = command.ctx,
                     dv = command.dv,
-                    viewer = command.viewer
+                    viewer = command.viewer,
+                    space = space
                 )
                 fr.showChildFragment(EMPTY_TAG)
             }
@@ -1028,9 +1038,10 @@ open class ObjectSetFragment :
                 findNavController().safeNavigate(
                     R.id.objectSetScreen,
                     R.id.setNameForNewRecordScreen,
-                    bundleOf(
-                        SetObjectCreateRecordFragmentBase.CONTEXT_KEY to command.ctx,
-                        SetObjectCreateRecordFragmentBase.TARGET_KEY to command.target
+                    SetObjectCreateRecordFragmentBase.args(
+                        ctx = command.ctx,
+                        target = command.target,
+                        space = command.space
                     )
                 )
             }
@@ -1081,11 +1092,12 @@ open class ObjectSetFragment :
                 val fr = ViewerFilterFragment.new(
                     ctx = command.ctx,
                     viewer = command.viewer,
+                    space = space
                 )
                 fr.showChildFragment(EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.ModifyViewerSorts -> {
-                val fr = ViewerSortFragment.new(ctx = ctx, viewer = command.viewer)
+                val fr = ViewerSortFragment.new(ctx = ctx, space = space, viewer = command.viewer)
                 fr.showChildFragment(EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.OpenCoverActionMenu -> {
@@ -1099,7 +1111,11 @@ open class ObjectSetFragment :
                 findNavController().safeNavigate(
                     R.id.objectSetScreen,
                     R.id.setUrlForNewBookmark,
-                    bundleOf(SetObjectCreateRecordFragmentBase.CONTEXT_KEY to command.ctx))
+                    SetObjectCreateRecordFragmentBase.args(
+                        ctx = command.ctx,
+                        space = command.space
+                    )
+                )
             }
             is ObjectSetCommand.Modal.OpenDataViewSelectQueryScreen -> {
                 val fr = DataViewSelectSourceFragment.newInstance(
@@ -1114,19 +1130,25 @@ open class ObjectSetFragment :
             is ObjectSetCommand.Modal.CreateViewer -> {
                 val fr = CreateDataViewViewerFragment.new(
                     ctx = command.ctx,
-                    target = command.target
+                    target = command.target,
+                    space = space
                 )
                 fr.showChildFragment(EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.EditDataViewViewer -> {
                 val fr = EditDataViewViewerFragment.new(
                     ctx = command.ctx,
-                    viewer = command.viewer
+                    viewer = command.viewer,
+                    space = space
                 )
                 fr.showChildFragment(EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.ManageViewer -> {
-                val fr = ManageViewerFragment.new(ctx = command.ctx, dv = command.dataview)
+                val fr = ManageViewerFragment.new(
+                    ctx = command.ctx,
+                    space = space,
+                    dv = command.dataview
+                )
                 fr.showChildFragment(EMPTY_TAG)
             }
 
@@ -1341,14 +1363,6 @@ open class ObjectSetFragment :
         vm.onObjectSetQueryPicked(query = id)
     }
 
-    override fun injectDependencies() {
-        componentManager().objectSetComponent.get(ctx).inject(this)
-    }
-
-    override fun releaseDependencies() {
-        componentManager().objectSetComponent.release(ctx)
-    }
-
     override fun inflateBinding(
         inflater: LayoutInflater,
         container: ViewGroup?
@@ -1390,6 +1404,23 @@ open class ObjectSetFragment :
             }
         })
     }
+
+    override fun injectDependencies() {
+        componentManager().objectSetComponent
+            .get(
+                key = ctx,
+                param = DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
+    }
+
+    override fun releaseDependencies() {
+        componentManager().objectSetComponent.release(ctx)
+    }
+
 
     companion object {
         const val CONTEXT_ID_KEY = "arg.object_set.context"

@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationLink
+import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -118,8 +119,10 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import org.mockito.Mock
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.notNull
 import org.mockito.kotlin.stub
 
 open class EditorPresentationTestSetup {
@@ -498,13 +501,15 @@ open class EditorPresentationTestSetup {
         spaceId: SpaceId = SpaceId(defaultSpace)
     ) {
         openPage.stub {
-            onBlocking { async(
-                OpenPage.Params(
-                    obj = root,
-                    saveAsLastOpened = true,
-                    space = spaceId
+            onBlocking {
+                async(
+                    OpenPage.Params(
+                        obj = root,
+                        saveAsLastOpened = true,
+                        space = spaceId
+                    )
                 )
-            ) } doReturn Resultat.success(
+            } doReturn Resultat.success(
                 Result.Success(
                     Payload(
                         context = root,
@@ -582,11 +587,13 @@ open class EditorPresentationTestSetup {
     }
 
     fun stubUnlinkBlocks(
-        params: UnlinkBlocks.Params = any(),
+        params: UnlinkBlocks.Params? = null,
         events: List<Event> = emptyList()
     ) {
         unlinkBlocks.stub {
-            onBlocking { invoke(params) } doReturn Either.Right(
+            onBlocking {
+                if (params == null) invoke(any()) else invoke(params)
+            } doReturn Either.Right(
                 Payload(
                     context = root,
                     events = events
@@ -642,6 +649,26 @@ open class EditorPresentationTestSetup {
             onBlocking { invoke(any()) } doReturn Either.Right(Unit)
         }
     }
+
+    fun stubCopy() {
+        copy.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(Unit)
+        }
+    }
+
+    fun stubPaste() {
+        paste.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(
+                Response.Clipboard.Paste(
+                    0,
+                    true,
+                    emptyList(),
+                    Payload("", emptyList())
+                )
+            )
+        }
+    }
+
 
     fun stubReplaceBlock() {
         replaceBlock.stub {

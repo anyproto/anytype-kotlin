@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.relations.RelationFileValueAdapter
 import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -23,6 +24,7 @@ import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentRelationValueFileAddBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.relations.add.AddFileRelationViewModel
 import com.anytypeio.anytype.presentation.relations.add.FileValueAddCommand
 import com.anytypeio.anytype.presentation.relations.add.FileValueAddView
@@ -36,6 +38,7 @@ class AddFileRelationFragment :
     val vm: AddFileRelationViewModel by viewModels { factory }
 
     private val ctx get() = argString(CONTEXT_ID)
+    private val space get() = argString(SPACE_ID_KEY)
     private val objectId get() = argString(OBJECT_ID)
     private val relationKey get() = argString(RELATION_KEY)
     private val flow get() = arg<Int>(FLOW_KEY)
@@ -124,18 +127,22 @@ class AddFileRelationFragment :
     }
 
     override fun injectDependencies() {
+        val param = DefaultComponentParam(
+            space = SpaceId(space),
+            ctx = ctx
+        )
         if (flow == FLOW_DEFAULT) {
-            componentManager().relationFileValueComponent.get(ctx).inject(this)
+            componentManager().relationFileValueComponent.get(param).inject(this)
         } else {
-            componentManager().relationFileValueDVComponent.get(ctx).inject(this)
+            componentManager().relationFileValueDVComponent.get(param).inject(this)
         }
     }
 
     override fun releaseDependencies() {
         if (flow == FLOW_DEFAULT) {
-            componentManager().relationFileValueComponent.release(ctx)
+            componentManager().relationFileValueComponent.release()
         } else {
-            componentManager().relationFileValueDVComponent.release(ctx)
+            componentManager().relationFileValueDVComponent.release()
         }
     }
 
@@ -150,12 +157,14 @@ class AddFileRelationFragment :
 
         fun new(
             ctx: Id,
+            space: Id,
             objectId: Id,
             relationKey: Key,
             flow: Int = FLOW_DEFAULT
         ) = AddFileRelationFragment().apply {
             arguments = bundleOf(
                 CONTEXT_ID to ctx,
+                SPACE_ID_KEY to space,
                 OBJECT_ID to objectId,
                 RELATION_KEY to relationKey,
                 FLOW_KEY to flow
@@ -163,6 +172,7 @@ class AddFileRelationFragment :
         }
 
         const val CONTEXT_ID = "arg.relation.add.file.context"
+        const val SPACE_ID_KEY = "arg.relation.add.file.space-id"
         const val RELATION_KEY = "arg.relation.add.file.relation.key"
         const val OBJECT_ID = "arg.relation.add.file.object.id"
         const val FLOW_KEY = "arg.relation.add.file.flow"

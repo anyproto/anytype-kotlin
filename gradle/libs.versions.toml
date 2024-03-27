@@ -1,33 +1,33 @@
 [versions]
-middlewareVersion = "v0.32.2"
-kotlinVersion = '1.8.22'
+middlewareVersion = "v0.33.0-rc2"
+kotlinVersion = '1.9.22'
 
 androidxCoreVersion = "1.12.0"
 
-androidxComposeVersion = '1.5.0'
-composeKotlinCompilerVersion = '1.4.8'
-composeMaterial3Version = '1.2.0'
-composeMaterialVersion = '1.5.0'
+androidxComposeVersion = '1.6.3'
+composeKotlinCompilerVersion = '1.5.10'
+composeMaterial3Version = '1.2.1'
+composeMaterialVersion = '1.6.3'
 composeConstraintLayoutVersion = '1.0.1'
 
-dokkaVersion = '1.8.20'
+dokkaVersion = '1.9.20'
 
-activityComposeVersion = '1.8.1'
-composeReorderableVersion = '0.9.6'
+activityComposeVersion = '1.8.2'
+composeReorderableVersion = 'e9ef693f63'
 accompanistVersion = "0.34.0"
 appcompatVersion = '1.6.1'
-androidXAnnotationVersion = '1.7.0'
+androidXAnnotationVersion = '1.7.1'
 fragmentVersion = "1.6.2"
 exoplayerVersion = "2.19.1"
-wireVersion = "4.5.2"
+wireVersion = "4.9.8"
 glideVersion = "4.14.2"
-mockitoKotlinVersion = "5.1.0"
+mockitoKotlinVersion = "5.2.1"
 junitVersion = '4.13.2'
-androidJunitVersion = "1.1.4"
+androidJunitVersion = "1.1.5"
 runnerVersion = "1.5.0"
-mockitoAndroidVersion = '4.10.0'
-kotlinCoroutinesVersion = '1.6.4'
-coroutineTestingVersion = '1.6.4'
+mockitoAndroidVersion = '5.11.0'
+kotlinCoroutinesVersion = '1.8.0'
+coroutineTestingVersion = '1.8.0'
 androidxTestCoreVersion = '1.5.0'
 androidxCoreTestingVersion = '2.2.0'
 androidxSecurityCryptoVersion = '1.0.0'
@@ -37,37 +37,37 @@ recyclerviewVersion = '1.3.2'
 cardviewVersion = '1.0.0'
 emojiCompatVersion = '1.1.0'
 viewPager2Version = '1.0.0'
-lifecycleVersion = '2.6.2'
-lifecycleRuntimeComposeVersion = '2.7.0-rc01'
-navigationVersion = '2.7.5'
-navigationComposeVersion = '2.7.5'
+lifecycleVersion = '2.7.0'
+lifecycleRuntimeComposeVersion = '2.7.0'
+navigationVersion = '2.7.7'
+navigationComposeVersion = '2.7.7'
 shimmerLayoutVersion = '0.5.0'
 photoViewVersion = '2.3.0'
-daggerVersion = '2.45'
+daggerVersion = '2.51'
 javaxAnnotationsVersion = '1.0'
 javaxInjectVersion = '1'
-gsonVersion = '2.10'
+gsonVersion = '2.10.1'
 betterLinkMethodVersion = '2.2.0'
-picktVersion = '2.0.2'
-zxingVersion = '4.1.0'
+picktVersion = '2.0.5'
+zxingVersion = '4.3.0'
 urlcleanerVersion = '0.4.0'
 katexVersion = '1.0.2'
-robolectricLatestVersion = '4.10.3'
+robolectricLatestVersion = '4.11.1'
 kluentVersion = '1.14'
 timberJunitVersion = '1.0.1'
-turbineVersion = '0.12.1'
-liveDataTestingVersion = '1.2.0'
+turbineVersion = '1.1.0'
+liveDataTestingVersion = '1.3.0'
 espressoVersion = '3.5.1'
 disableAnimationVersion = '2.0.0'
 leakCanaryVersion = '2.12'
 timberVersion = '5.0.1'
 protobufJavaVersion = '3.9.2'
 protocVersion = '3.9.0'
-roomVersion = '2.5.2'
+roomVersion = '2.6.1'
 dataStoreVersion = '1.0.0'
-amplitudeVersion = '2.36.1'
-coilComposeVersion = '2.2.2'
-sentryVersion = '6.0.0'
+amplitudeVersion = '3.35.1'
+coilComposeVersion = '2.6.0'
+sentryVersion = '7.6.0'
 
 [libraries]
 middleware = { module = "io.anyproto:anytype-heart-android", version.ref = "middlewareVersion" }
@@ -85,12 +85,12 @@ composeAccompanistPermissions = { module = "com.google.accompanist:accompanist-p
 composeAccompanistPagerIndicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanistVersion" }
 composeAccompanistThemeAdapter = { module = "com.google.accompanist:accompanist-themeadapter-material", version.ref = "accompanistVersion" }
 composeAccompanistNavigation = { module = "com.google.accompanist:accompanist-navigation-material", version.ref = "accompanistVersion" }
-composeReorderable = { module = "org.burnoutcrew.composereorderable:reorderable", version.ref = "composeReorderableVersion" }
+composeReorderable = { module = "com.github.fat-fellow.ComposeReorderable:reorderable", version.ref = "composeReorderableVersion" }
 composeConstraintLayout = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "composeConstraintLayoutVersion" }
-kotlinxSerializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.4.1" }
+kotlinxSerializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.6.3" }
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompatVersion" }
 androidAnnotations = { module = "androidx.annotation:annotation", version.ref = "androidXAnnotationVersion" }
-design = { module = "com.google.android.material:material", version = "1.7.0" }
+design = { module = "com.google.android.material:material", version = "1.11.0" }
 fragment = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentVersion" }
 fragmentTesting = { module = "androidx.fragment:fragment-testing", version.ref = "fragmentVersion" }
 exoPlayerCore = { module = "com.google.android.exoplayer:exoplayer-core", version.ref = "exoplayerVersion" }
@@ -168,12 +168,12 @@ appUpdater = { module = "com.github.PLPsiSoft:AndroidAppUpdater", version = "991
 [bundles]
 
 [plugins]
-application = { id = "com.android.application", version = "8.2.0" }
-library = { id = "com.android.library", version = "8.2.0" }
+application = { id = "com.android.application", version = "8.3.1" }
+library = { id = "com.android.library", version = "8.3.1" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinVersion" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokkaVersion" }
 kserialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinVersion" }
-wire = { id = "com.squareup.wire", version = "4.4.3" }
-firebaseDistribution = { id = "com.google.firebase.appdistribution", version = "4.0.1" }
+wire = { id = "com.squareup.wire", version = "4.9.8" }
+firebaseDistribution = { id = "com.google.firebase.appdistribution", version = "4.2.0" }
 kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlinVersion" }
-gms = { id = "com.google.gms.google-services", version = "4.4.0" }
+gms = { id = "com.google.gms.google-services", version = "4.4.1" }

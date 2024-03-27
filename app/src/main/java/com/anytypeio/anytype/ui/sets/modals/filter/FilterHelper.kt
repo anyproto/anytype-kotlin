@@ -2,6 +2,8 @@ package com.anytypeio.anytype.ui.sets.modals.filter
 
 import androidx.fragment.app.Fragment
 import com.anytypeio.anytype.core_models.DVFilterQuickOption
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_utils.ext.hasSpan
 import com.anytypeio.anytype.presentation.relations.toName
 import com.anytypeio.anytype.presentation.sets.filter.FilterViewModel
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
@@ -10,7 +12,8 @@ class FilterHelper {
     fun handleOpenNumberPicker(
         fragment: Fragment,
         command: FilterViewModel.Commands.OpenNumberPicker,
-        ctx: String,
+        ctx: Id,
+        space: Id,
     ) {
         fragment.arguments?.apply {
             putSerializable(KEY_OPTION, command.option)
@@ -18,6 +21,7 @@ class FilterHelper {
 
         RelationTextValueFragment.new(
             ctx = ctx,
+            space = space,
             name = command.option.toName(),
             value = command.value
         ).show(fragment.childFragmentManager, null)

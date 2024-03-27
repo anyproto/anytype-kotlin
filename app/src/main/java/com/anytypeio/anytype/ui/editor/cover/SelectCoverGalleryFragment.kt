@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.editor.modal.DocCoverGalleryAdapter
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.GetImageContract
@@ -26,6 +27,7 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentDocCoverGalleryBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.other.MediaPermissionHelper
 import com.anytypeio.anytype.presentation.editor.cover.SelectCoverObjectSetViewModel
 import com.anytypeio.anytype.presentation.editor.cover.SelectCoverObjectViewModel
@@ -39,6 +41,7 @@ abstract class SelectCoverGalleryFragment :
     BaseBottomSheetFragment<FragmentDocCoverGalleryBinding>() {
 
     abstract val ctx: String
+    abstract val space: Id
     abstract val vm: SelectCoverViewModel
 
     private val docCoverGalleryAdapter by lazy {
@@ -89,8 +92,9 @@ abstract class SelectCoverGalleryFragment :
             .onEach {
                 findNavController().navigate(
                     R.id.objectCoverUnsplashScreen,
-                    bundleOf(
-                        UnsplashBaseFragment.CTX_KEY to ctx
+                    UnsplashBaseFragment.args(
+                        ctx = ctx,
+                        space = space
                     )
                 )
             }
@@ -177,6 +181,7 @@ abstract class SelectCoverGalleryFragment :
 class SelectCoverObjectFragment : SelectCoverGalleryFragment() {
 
     override val ctx get() = arg<String>(CTX_KEY)
+    override val space get() = arg<String>(SPACE_KEY)
 
     @Inject
     lateinit var factory: SelectCoverObjectViewModel.Factory
@@ -185,59 +190,84 @@ class SelectCoverObjectFragment : SelectCoverGalleryFragment() {
     override fun onUnsplashClicked() {
         findNavController().navigate(
             R.id.objectCoverUnsplashScreen,
-            bundleOf(
-                UnsplashBaseFragment.CTX_KEY to ctx
+            UnsplashBaseFragment.args(
+                ctx = ctx,
+                space = space
             )
         )
     }
 
     override fun injectDependencies() {
-        componentManager().objectCoverComponent.get(ctx).inject(this)
+        componentManager()
+            .objectCoverComponent
+            .get(
+                params = DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().objectCoverComponent.release(ctx)
+        componentManager().objectCoverComponent.release()
     }
 
     companion object {
-        fun new(ctx: Id) = SelectCoverObjectFragment().apply {
-            arguments = bundleOf(CTX_KEY to ctx)
+        fun new(ctx: Id, space: Id) = SelectCoverObjectFragment().apply {
+            arguments = bundleOf(CTX_KEY to ctx, SPACE_KEY to space)
         }
 
-        const val CTX_KEY = "arg.object-cover-gallery.ctx"
+        fun args(ctx: Id, space: Id) = bundleOf(
+            CTX_KEY to ctx, SPACE_KEY to space
+        )
+
+        protected const val CTX_KEY = "arg.object-cover-gallery.ctx"
+        protected const val SPACE_KEY = "arg.object-cover-gallery.space"
     }
 }
 
 class SelectCoverObjectSetFragment : SelectCoverGalleryFragment() {
 
     override val ctx get() = arg<String>(CTX_KEY)
+    override val space: Id get() = arg(SPACE_KEY)
 
     @Inject
     lateinit var factory: SelectCoverObjectSetViewModel.Factory
     override val vm by viewModels<SelectCoverObjectSetViewModel> { factory }
 
     override fun injectDependencies() {
-        componentManager().objectSetCoverComponent.get(ctx).inject(this)
+        componentManager()
+            .objectSetCoverComponent
+            .get(
+                params = DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().objectSetCoverComponent.release(ctx)
+        componentManager().objectSetCoverComponent.release()
     }
 
     override fun onUnsplashClicked() {
         findNavController().navigate(
             R.id.objectCoverUnsplashScreen,
-            bundleOf(
-                UnsplashBaseFragment.CTX_KEY to ctx
+            UnsplashBaseFragment.args(
+                ctx = ctx,
+                space = space
             )
         )
     }
 
     companion object {
-        fun new(ctx: Id) = SelectCoverObjectSetFragment().apply {
-            arguments = bundleOf(CTX_KEY to ctx)
+        fun new(ctx: Id, space: Id) = SelectCoverObjectSetFragment().apply {
+            arguments = bundleOf(CTX_KEY to ctx, SPACE_KEY to space)
         }
 
         const val CTX_KEY = "arg.object-set-cover-gallery.ctx"
+        const val SPACE_KEY = "arg.object-set-cover-gallery.space"
     }
 }

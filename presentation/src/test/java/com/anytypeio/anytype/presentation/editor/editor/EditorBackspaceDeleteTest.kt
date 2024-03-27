@@ -32,6 +32,7 @@ import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
 import kotlin.test.assertEquals
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -46,6 +47,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
     @get:Rule
     val rule = InstantTaskExecutorRule()
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
@@ -57,6 +59,10 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         stubSpaceManager()
+        stubGetNetworkMode()
+        stubFileLimitEvents()
+        stubInterceptEvents()
+        stubClosePage()
     }
 
     @Test
@@ -697,6 +703,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
 
         stubOpenDocument(document = document)
         stubUpdateTextStyle()
+        stubGetObjectTypes(emptyList())
 
         val vm = buildViewModel()
 
@@ -832,6 +839,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
 
         stubOpenDocument(document = document)
         stubUpdateTextStyle()
+        stubGetObjectTypes(emptyList())
 
         val vm = buildViewModel()
 
@@ -1133,6 +1141,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         stubOpenDocument(document = document)
         stubUpdateText()
         stubUpdateTextStyle()
+        stubGetObjectTypes(emptyList())
 
         val vm = buildViewModel()
 

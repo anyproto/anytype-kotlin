@@ -7157,7 +7157,8 @@ class EditorViewModel(
                         ctx = context,
                         target = context,
                         relationKey = relation.key,
-                        isReadOnlyValue = isReadOnlyValue(restrictions)
+                        isReadOnlyValue = isReadOnlyValue(restrictions),
+                        space = requireNotNull(relation.spaceId)
                     )
                 )
             }
@@ -7180,7 +7181,8 @@ class EditorViewModel(
                         ctx = context,
                         target = context,
                         relationKey = relation.key,
-                        isReadOnlyValue = isReadOnlyValue(restrictions)
+                        isReadOnlyValue = isReadOnlyValue(restrictions),
+                        space = requireNotNull(relation.spaceId)
                     )
                 )
             }
@@ -7190,7 +7192,8 @@ class EditorViewModel(
                         ctx = context,
                         target = context,
                         relationKey = relation.key,
-                        isReadOnlyValue = isReadOnlyValue(restrictions)
+                        isReadOnlyValue = isReadOnlyValue(restrictions),
+                        space = requireNotNull(relation.spaceId)
                     )
                 )
             }
@@ -7200,7 +7203,8 @@ class EditorViewModel(
                         ctx = context,
                         target = context,
                         relationKey = relation.key,
-                        isReadOnlyValue = isReadOnlyValue(restrictions)
+                        isReadOnlyValue = isReadOnlyValue(restrictions),
+                        space = requireNotNull(relation.spaceId)
                     )
                 )
             }

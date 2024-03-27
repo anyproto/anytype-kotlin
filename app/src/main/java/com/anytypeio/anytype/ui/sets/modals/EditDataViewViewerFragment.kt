@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.menu.DataViewEditViewPopupMenu
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.textChanges
@@ -22,6 +23,7 @@ import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentEditDataViewViewerBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.sets.EditDataViewViewerViewModel
 import javax.inject.Inject
 
@@ -29,6 +31,7 @@ class
 EditDataViewViewerFragment : BaseBottomSheetFragment<FragmentEditDataViewViewerBinding>() {
 
     private val ctx: Id get() = arg(CTX_KEY)
+    private val space: Id get() = arg(SPACE_ID_KEY)
     private val viewer: Id get() = arg(VIEWER_KEY)
 
     @Inject
@@ -141,11 +144,19 @@ EditDataViewViewerFragment : BaseBottomSheetFragment<FragmentEditDataViewViewerB
     }
 
     override fun injectDependencies() {
-        componentManager().editDataViewViewerComponent.get(ctx).inject(this)
+        componentManager()
+            .editDataViewViewerComponent
+            .get(
+                params = DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().editDataViewViewerComponent.release(ctx)
+        componentManager().editDataViewViewerComponent.release()
     }
 
     override fun inflateBinding(
@@ -157,14 +168,17 @@ EditDataViewViewerFragment : BaseBottomSheetFragment<FragmentEditDataViewViewerB
 
     companion object {
         const val CTX_KEY = "arg.edit-data-view-viewer.ctx"
+        const val SPACE_ID_KEY = "arg.edit-data-view-viewer.space-id"
         const val VIEWER_KEY = "arg.edit-data-view-viewer.viewer"
 
         fun new(
             ctx: Id,
+            space: Id,
             viewer: Id
         ): EditDataViewViewerFragment = EditDataViewViewerFragment().apply {
             arguments = bundleOf(
                 CTX_KEY to ctx,
+                SPACE_ID_KEY to space,
                 VIEWER_KEY to viewer
             )
         }

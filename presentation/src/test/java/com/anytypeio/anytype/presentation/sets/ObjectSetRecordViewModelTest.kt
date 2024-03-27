@@ -31,8 +31,12 @@ class ObjectSetRecordViewModelTest {
     lateinit var setObjectDetails: UpdateDetail
 
     private val ctx: Id = MockDataFactory.randomUuid()
+    private val defaultSpace = MockDataFactory.randomUuid()
     private val obj = ObjectWrapper.Basic(
-        mapOf(Relations.ID to MockDataFactory.randomUuid())
+        mapOf(
+            Relations.ID to MockDataFactory.randomUuid(),
+            Relations.SPACE_ID to defaultSpace
+        )
     )
 
     @Before
@@ -61,7 +65,8 @@ class ObjectSetRecordViewModelTest {
 
         vm.onActionDone(
             target = obj.id,
-            input = input
+            input = input,
+            space = requireNotNull(obj.spaceId)
         )
 
         verifyBlocking(setObjectDetails, times(1)) {
@@ -91,11 +96,13 @@ class ObjectSetRecordViewModelTest {
         vm.commands.test {
             vm.onButtonClicked(
                 target = obj.id,
-                input = input
+                input = input,
+                space = requireNotNull(obj.spaceId)
             )
             assertEquals(
                 expected = ObjectSetRecordViewModel.Command.OpenObject(
-                    ctx = obj.id
+                    ctx = obj.id,
+                    space = requireNotNull(obj.spaceId)
                 ),
                 actual = awaitItem()
             )
@@ -128,11 +135,13 @@ class ObjectSetRecordViewModelTest {
         vm.commands.test {
             vm.onButtonClicked(
                 target = obj.id,
-                input = emptyInput
+                input = emptyInput,
+                space = requireNotNull(obj.spaceId)
             )
             assertEquals(
                 expected = ObjectSetRecordViewModel.Command.OpenObject(
-                    ctx = obj.id
+                    ctx = obj.id,
+                    space = requireNotNull(obj.spaceId)
                 ),
                 actual = awaitItem()
             )

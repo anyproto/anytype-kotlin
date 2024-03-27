@@ -3,9 +3,11 @@ package com.anytypeio.anytype.ui.sets.modals.filter
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.sets.SearchRelationViewModel
 import com.anytypeio.anytype.presentation.sets.SelectFilterRelationViewModel
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
@@ -15,6 +17,7 @@ import javax.inject.Inject
 class SelectFilterRelationFragment : SearchRelationFragment() {
 
     override val ctx: String get() = arg(CTX_KEY)
+    val space: String get() = arg(SPACE_ID_KEY)
     override val viewer: String get() = arg(VIEWER_ID_KEY)
 
     @Inject
@@ -27,19 +30,28 @@ class SelectFilterRelationFragment : SearchRelationFragment() {
     }
 
     override fun injectDependencies() {
-        componentManager().selectFilterRelationComponent.get(ctx).inject(this)
+        componentManager()
+            .selectFilterRelationComponent
+            .get(
+                params = DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().selectFilterRelationComponent.release(ctx)
+        componentManager().selectFilterRelationComponent.release()
     }
 
     companion object {
-        fun new(ctx: Id, viewerId: Id): SelectFilterRelationFragment = SelectFilterRelationFragment().apply {
-            arguments = bundleOf(CTX_KEY to ctx, VIEWER_ID_KEY to viewerId)
+        fun new(ctx: Id, space: Id, viewerId: Id): SelectFilterRelationFragment = SelectFilterRelationFragment().apply {
+            arguments = bundleOf(CTX_KEY to ctx, SPACE_ID_KEY to space, VIEWER_ID_KEY to viewerId)
         }
 
         const val CTX_KEY = "arg.select-filter-relation.ctx"
+        const val SPACE_ID_KEY = "arg.select-filter-relation.space-id"
         const val VIEWER_ID_KEY = "arg.select-filter-relation.viewer"
     }
 }

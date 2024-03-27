@@ -9,12 +9,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.relations.RelationFormatAdapter
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.drawable
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentRelationCreateFromScratchFormatPickerBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.relations.model.CreateFromScratchState
 import com.anytypeio.anytype.presentation.relations.model.RelationView
 import com.anytypeio.anytype.presentation.relations.model.StateHolder
@@ -24,6 +26,7 @@ class RelationCreateFromScratchFormatPickerFragment :
     BaseBottomSheetFragment<FragmentRelationCreateFromScratchFormatPickerBinding>() {
 
     private val ctx get() = arg<Id>(CTX_KEY)
+    private val space get() = arg<Id>(SPACE_KEY)
     private val flow get() = arg<Id>(FLOW_TYPE)
 
     @Inject
@@ -63,21 +66,25 @@ class RelationCreateFromScratchFormatPickerFragment :
     }
 
     override fun injectDependencies() {
+        val param = DefaultComponentParam(
+            ctx = ctx,
+            space = SpaceId(space)
+        )
         when (flow) {
             FLOW_OBJECT -> {
-                componentManager().relationFormatPickerObjectComponent.get(ctx).inject(this)
+                componentManager().relationFormatPickerObjectComponent.get(param).inject(this)
             }
             FLOW_BLOCK -> {
-                componentManager().relationFormatPickerBlockComponent.get(ctx).inject(this)
+                componentManager().relationFormatPickerBlockComponent.get(param).inject(this)
             }
             FLOW_DV -> {
-                componentManager().relationFormatPickerDataViewComponent.get(ctx).inject(this)
+                componentManager().relationFormatPickerDataViewComponent.get(param).inject(this)
             }
             FLOW_LIBRARY -> {
                 componentManager().relationFormatPickerLibraryComponent.get(ctx).inject(this)
             }
             FLOW_SET_OR_COLLECTION -> {
-                componentManager().relationFormatPickerSetOrCollectionComponent.get(ctx).inject(this)
+                componentManager().relationFormatPickerSetOrCollectionComponent.get(param).inject(this)
             }
         }
     }
@@ -85,19 +92,19 @@ class RelationCreateFromScratchFormatPickerFragment :
     override fun releaseDependencies() {
         when (flow) {
             FLOW_OBJECT -> {
-                componentManager().relationFormatPickerObjectComponent.release(ctx)
+                componentManager().relationFormatPickerObjectComponent.release()
             }
             FLOW_BLOCK -> {
-                componentManager().relationFormatPickerBlockComponent.release(ctx)
+                componentManager().relationFormatPickerBlockComponent.release()
             }
             FLOW_DV -> {
-                componentManager().relationFormatPickerDataViewComponent.release(ctx)
+                componentManager().relationFormatPickerDataViewComponent.release()
             }
             FLOW_LIBRARY -> {
-                componentManager().relationFormatPickerLibraryComponent.release(ctx)
+                componentManager().relationFormatPickerLibraryComponent.release()
             }
             FLOW_SET_OR_COLLECTION -> {
-                componentManager().relationFormatPickerSetOrCollectionComponent.release(ctx)
+                componentManager().relationFormatPickerSetOrCollectionComponent.release()
             }
         }
     }
@@ -112,6 +119,7 @@ class RelationCreateFromScratchFormatPickerFragment :
 
     companion object {
         const val CTX_KEY = "arg.relation-format-picker.ctx"
+        const val SPACE_KEY = "arg.relation-format-picker.space"
         const val FLOW_TYPE = "arg.relation-format-picker.flow"
         val excludedFormats = listOf(
             Relation.Format.SHORT_TEXT,

@@ -20,3 +20,5 @@ value class RelationId(val id: String)
 
 @JvmInline
 value class RelationKey(val key: String)
+
+typealias Space = SpaceId

@@ -19,12 +19,14 @@ interface AppNavigation {
     fun openModalTemplateSelect(
         template: Id,
         templateTypeId: Id,
-        templateTypeKey: Key
+        templateTypeKey: Key,
+        space: Id
     )
     fun openModalTemplateEdit(
         template: Id,
         templateTypeId: Id,
-        templateTypeKey: Key
+        templateTypeKey: Key,
+        space: Id
     )
 
     fun launchDocument(target: String, space: Id)
@@ -38,7 +40,6 @@ interface AppNavigation {
     fun exitToDesktop()
     fun openDebugSettings()
     fun openPageSearch()
-    fun exitToDesktopAndOpenPage(pageId: String)
     fun openUpdateAppScreen()
     fun openRemoteFilesManageScreen(subscription: Id)
 
@@ -64,7 +65,8 @@ interface AppNavigation {
         data class OpenModalTemplateSelect(
             val template: Id,
             val templateTypeId: Id,
-            val templateTypeKey: Key
+            val templateTypeKey: Key,
+            val space: Id
         ) : Command()
 
         object OpenSettings : Command()
@@ -72,7 +74,6 @@ interface AppNavigation {
         object MigrationErrorScreen: Command()
         object OpenDebugSettingsScreen : Command()
 
-        data class ExitToDesktopAndOpenPage(val pageId: String) : Command()
         object OpenPageSearch : Command()
 
         data class OpenSetOrCollection(

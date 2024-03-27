@@ -11,9 +11,12 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.databinding.FragmentSetObjectSetRecordNameBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.sets.ObjectSetRecordViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSetRecordViewModel.Command
 import com.anytypeio.anytype.ui.editor.EditorFragment
@@ -46,7 +49,10 @@ class SetObjectSetRecordNameFragment : SetObjectCreateRecordFragmentBase<Fragmen
                 is Command.OpenObject -> {
                     findNavController().navigate(
                         R.id.objectNavigation,
-                        bundleOf(EditorFragment.CTX_KEY to command.ctx)
+                        EditorFragment.args(
+                            ctx = command.ctx,
+                            space = command.space
+                        )
                     )
                 }
             }
@@ -56,23 +62,17 @@ class SetObjectSetRecordNameFragment : SetObjectCreateRecordFragmentBase<Fragmen
     override fun onButtonClicked() {
         vm.onButtonClicked(
             target = target,
-            input = textInputField.text.toString()
+            input = textInputField.text.toString(),
+            space = space
         )
     }
 
     override fun onKeyboardActionDone() {
         vm.onActionDone(
             target = target,
-            input = textInputField.text.toString()
+            input = textInputField.text.toString(),
+            space = space
         )
-    }
-
-    override fun injectDependencies() {
-        componentManager().objectSetRecordComponent.get(ctx).inject(this)
-    }
-
-    override fun releaseDependencies() {
-        componentManager().objectSetRecordComponent.release(ctx)
     }
 
     override fun inflateBinding(
@@ -81,4 +81,32 @@ class SetObjectSetRecordNameFragment : SetObjectCreateRecordFragmentBase<Fragmen
     ): FragmentSetObjectSetRecordNameBinding = FragmentSetObjectSetRecordNameBinding.inflate(
         inflater, container, false
     )
+
+    override fun injectDependencies() {
+        componentManager()
+            .objectSetRecordComponent.get(
+                DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
+    }
+
+    override fun releaseDependencies() {
+        componentManager().objectSetRecordComponent.release()
+    }
+
+    companion object {
+        private const val ARG_CTX_KEY = "arg.set-object-record-name.ctx"
+        private const val ARG_SPACE_KEY = "arg.set-object-record-name.space"
+
+        fun args(
+            ctx: Id,
+            space: Id
+        ) = bundleOf(
+            ARG_CTX_KEY to ctx,
+            ARG_SPACE_KEY to space
+        )
+    }
 }

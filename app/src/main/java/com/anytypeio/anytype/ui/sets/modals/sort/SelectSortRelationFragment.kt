@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.sets.SearchRelationAdapter
 import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -22,12 +23,14 @@ import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetTextInputFragment
 import com.anytypeio.anytype.databinding.FragmentSelectSortOrFilterRelationBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.sets.SelectSortRelationViewModel
 import javax.inject.Inject
 
 class SelectSortRelationFragment : BaseBottomSheetTextInputFragment<FragmentSelectSortOrFilterRelationBinding>() {
 
     private val ctx: String get() = arg(CTX_KEY)
+    private val space: String get() = arg(SPACE_ID_KEY)
     private val viewer: String get() = arg(VIEWER_ID_KEY)
 
     private val searchRelationAdapter by lazy {
@@ -98,11 +101,19 @@ class SelectSortRelationFragment : BaseBottomSheetTextInputFragment<FragmentSele
     }
 
     override fun injectDependencies() {
-        componentManager().selectSortRelationComponent.get(ctx).inject(this)
+        componentManager()
+            .selectSortRelationComponent
+            .get(
+                params = DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().selectSortRelationComponent.release(ctx)
+        componentManager().selectSortRelationComponent.release()
     }
 
     override fun inflateBinding(
@@ -115,11 +126,12 @@ class SelectSortRelationFragment : BaseBottomSheetTextInputFragment<FragmentSele
 
     companion object {
 
-        fun new(ctx: Id, viewerId: Id): SelectSortRelationFragment = SelectSortRelationFragment().apply {
-            arguments = bundleOf(CTX_KEY to ctx, VIEWER_ID_KEY to viewerId)
+        fun new(ctx: Id, space: Id, viewerId: Id): SelectSortRelationFragment = SelectSortRelationFragment().apply {
+            arguments = bundleOf(CTX_KEY to ctx, SPACE_ID_KEY to space, VIEWER_ID_KEY to viewerId)
         }
 
         const val CTX_KEY = "arg.select-sort-relation.ctx"
+        const val SPACE_ID_KEY = "arg.select-sort-relation.space-id"
         const val VIEWER_ID_KEY = "arg.select-sort-relation.viewer"
     }
 }

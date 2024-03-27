@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.sets.ManageViewerDoneAdapter
 import com.anytypeio.anytype.core_ui.features.sets.ManageViewerEditAdapter
 import com.anytypeio.anytype.core_ui.reactive.clicks
@@ -21,6 +22,7 @@ import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.core_utils.ui.OnStartDragListener
 import com.anytypeio.anytype.databinding.FragmentManageViewerBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.sets.ManageViewerViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -50,6 +52,7 @@ class ManageViewerFragment : BaseBottomSheetFragment<FragmentManageViewerBinding
     }
 
     private val ctx: Id get() = arg(CTX_KEY)
+    private val space: Id get() = arg(SPACE_ID_KEY)
     private val dv: Id get() = arg(DATA_VIEW_KEY)
 
     @Inject
@@ -128,6 +131,7 @@ class ManageViewerFragment : BaseBottomSheetFragment<FragmentManageViewerBinding
             is ManageViewerViewModel.Command.OpenEditScreen -> {
                 val dialog = EditDataViewViewerFragment.new(
                     ctx = ctx,
+                    space = space,
                     viewer = command.id
                 )
                 dialog.show(parentFragmentManager, null)
@@ -135,7 +139,8 @@ class ManageViewerFragment : BaseBottomSheetFragment<FragmentManageViewerBinding
             ManageViewerViewModel.Command.OpenCreateScreen -> {
                 val dialog = CreateDataViewViewerFragment.new(
                     ctx = ctx,
-                    target = dv
+                    target = dv,
+                    space = space
                 )
                 dialog.show(parentFragmentManager, null)
             }
@@ -143,11 +148,19 @@ class ManageViewerFragment : BaseBottomSheetFragment<FragmentManageViewerBinding
     }
 
     override fun injectDependencies() {
-        componentManager().manageViewerComponent.get(ctx).inject(this)
+        componentManager()
+            .manageViewerComponent
+            .get(
+                params = DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().manageViewerComponent.release(ctx)
+        componentManager().manageViewerComponent.release()
     }
 
     override fun inflateBinding(
@@ -158,11 +171,20 @@ class ManageViewerFragment : BaseBottomSheetFragment<FragmentManageViewerBinding
     )
 
     companion object {
-        fun new(ctx: Id, dv: Id): ManageViewerFragment = ManageViewerFragment().apply {
-            arguments = bundleOf(CTX_KEY to ctx, DATA_VIEW_KEY to dv)
+        fun new(
+            ctx: Id,
+            space: Id,
+            dv: Id
+        ): ManageViewerFragment = ManageViewerFragment().apply {
+            arguments = bundleOf(
+                CTX_KEY to ctx,
+                SPACE_ID_KEY to space,
+                DATA_VIEW_KEY to dv
+            )
         }
 
         const val CTX_KEY = "arg.manage-data-view-viewer.ctx"
+        const val SPACE_ID_KEY = "arg.manage-data-view-viewer.space-id"
         const val DATA_VIEW_KEY = "arg.manage-data-view-viewer.dataview"
     }
 }

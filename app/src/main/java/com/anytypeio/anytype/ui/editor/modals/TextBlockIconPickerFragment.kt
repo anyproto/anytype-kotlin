@@ -3,8 +3,10 @@ package com.anytypeio.anytype.ui.editor.modals
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.domain.icon.TextBlockTarget
 import com.anytypeio.anytype.presentation.picker.IconPickerViewModel
 import com.anytypeio.anytype.presentation.editor.picker.TextBlockIconPickerViewModelFactory
@@ -24,11 +26,19 @@ class TextBlockIconPickerFragment : IconPickerFragmentBase<TextBlockTarget>() {
     }
 
     override fun injectDependencies() {
-        componentManager().textBlockIconPickerComponent.get(context).inject(this)
+        componentManager()
+            .textBlockIconPickerComponent
+            .get(
+                params = DefaultComponentParam(
+                    ctx = context,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().textBlockIconPickerComponent.release(context)
+        componentManager().textBlockIconPickerComponent.release()
     }
 
     companion object {

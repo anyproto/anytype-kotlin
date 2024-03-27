@@ -4,8 +4,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.objects.menu.ObjectSetMenuViewModel
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment
 import javax.inject.Inject
@@ -28,10 +30,18 @@ class ObjectSetMenuFragment : ObjectMenuBaseFragment() {
     }
 
     override fun injectDependencies() {
-        componentManager().objectSetMenuComponent.get(ctx).inject(this)
+        componentManager()
+            .objectSetMenuComponent
+            .get(
+                params = DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().objectSetMenuComponent.release(ctx)
+        componentManager().objectSetMenuComponent.release()
     }
 }

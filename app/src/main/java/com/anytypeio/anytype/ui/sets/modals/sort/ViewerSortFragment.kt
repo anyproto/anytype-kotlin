@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.features.sets.ViewerSortAdapter
 import com.anytypeio.anytype.core_ui.layout.DividerVerticalItemDecoration
@@ -24,6 +25,7 @@ import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentViewerSortBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.sets.sort.ViewerSortViewModel
 import com.anytypeio.anytype.presentation.sets.sort.ViewerSortViewModel.ScreenState
 import javax.inject.Inject
@@ -31,6 +33,7 @@ import javax.inject.Inject
 open class ViewerSortFragment : BaseBottomSheetFragment<FragmentViewerSortBinding>() {
 
     private val ctx: String get() = arg(CTX_KEY)
+    private val space: String get() = arg(SPACE_ID_KEY)
     private val viewer: String get() = arg(VIEWER_ID_KEY)
 
     @Inject
@@ -58,12 +61,18 @@ open class ViewerSortFragment : BaseBottomSheetFragment<FragmentViewerSortBindin
     private lateinit var dividerItemEdit: RecyclerView.ItemDecoration
 
     private fun navigateToSelectSort() {
-        val fr = SelectSortRelationFragment.new(ctx = ctx, viewerId = viewer)
+        val fr = SelectSortRelationFragment.new(ctx = ctx, space = space, viewerId = viewer)
         fr.show(parentFragmentManager, null)
     }
 
     private fun navigateToChangeSort(sortId: Id, relation: Key) {
-        val fr = ModifyViewerSortFragment.new(ctx = ctx, viewer = viewer, sortId = sortId, relation = relation)
+        val fr = ModifyViewerSortFragment.new(
+            ctx = ctx,
+            space = space,
+            viewer = viewer,
+            sortId = sortId,
+            relation = relation
+        )
         fr.show(parentFragmentManager, null)
     }
 
@@ -142,11 +151,19 @@ open class ViewerSortFragment : BaseBottomSheetFragment<FragmentViewerSortBindin
     }
 
     override fun injectDependencies() {
-        componentManager().viewerSortComponent.get(ctx).inject(this)
+        componentManager()
+            .viewerSortComponent
+            .get(
+                params = DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().viewerSortComponent.release(ctx)
+        componentManager().viewerSortComponent.release()
     }
 
     override fun inflateBinding(
@@ -157,11 +174,16 @@ open class ViewerSortFragment : BaseBottomSheetFragment<FragmentViewerSortBindin
     )
 
     companion object {
-        fun new(ctx: Id, viewer: Id): ViewerSortFragment = ViewerSortFragment().apply {
-            arguments = bundleOf(CTX_KEY to ctx, VIEWER_ID_KEY to viewer)
+        fun new(ctx: Id, space: Id, viewer: Id): ViewerSortFragment = ViewerSortFragment().apply {
+            arguments = bundleOf(
+                CTX_KEY to ctx,
+                SPACE_ID_KEY to space,
+                VIEWER_ID_KEY to viewer
+            )
         }
 
         const val CTX_KEY = "arg.viewer-sort.ctx"
+        const val SPACE_ID_KEY = "arg.viewer-sort.space"
         const val VIEWER_ID_KEY = "arg.viewer-sort.viewer"
     }
 }

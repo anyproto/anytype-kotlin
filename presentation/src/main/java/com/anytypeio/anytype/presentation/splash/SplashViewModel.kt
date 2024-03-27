@@ -177,10 +177,22 @@ class SplashViewModel(
                         startTime = startTime,
                         view = EventsDictionary.View.viewHome,
                     )
+                    val target = result.objectId
+                    val space = requireNotNull(result.obj.spaceId)
                     if (type == COLLECTION || type == SET) {
-                        commands.emit(Command.NavigateToObjectSet(result.objectId))
+                        commands.emit(
+                            Command.NavigateToObjectSet(
+                                id = target,
+                                space = space
+                            )
+                        )
                     } else {
-                        commands.emit(Command.NavigateToObject(result.objectId))
+                        commands.emit(
+                            Command.NavigateToObject(
+                                id = target,
+                                space = space
+                            )
+                        )
                     }
                 }
             )
@@ -211,11 +223,22 @@ class SplashViewModel(
                         is GetLastOpenedObject.Response.Success -> {
                             if (SupportedLayouts.layouts.contains(response.obj.layout)) {
                                 val id = response.obj.id
+                                val space = requireNotNull(response.obj.spaceId)
                                 when (response.obj.layout) {
                                     ObjectType.Layout.SET, ObjectType.Layout.COLLECTION ->
-                                        commands.emit(Command.NavigateToObjectSet(id))
+                                        commands.emit(
+                                            Command.NavigateToObjectSet(
+                                                id = id,
+                                                space = space
+                                            )
+                                        )
                                     else ->
-                                        commands.emit(Command.NavigateToObject(id))
+                                        commands.emit(
+                                            Command.NavigateToObject(
+                                                id = id,
+                                                space = space
+                                            )
+                                        )
                                 }
                             } else {
                                 proceedWithDashboardNavigation()
@@ -266,8 +289,8 @@ class SplashViewModel(
         object NavigateToAuthStart : Command()
         object NavigateToMigration: Command()
         object CheckAppStartIntent : Command()
-        data class NavigateToObject(val id: Id) : Command()
-        data class NavigateToObjectSet(val id: Id) : Command()
+        data class NavigateToObject(val id: Id, val space: Id) : Command()
+        data class NavigateToObjectSet(val id: Id, val space: Id) : Command()
     }
 
     companion object {

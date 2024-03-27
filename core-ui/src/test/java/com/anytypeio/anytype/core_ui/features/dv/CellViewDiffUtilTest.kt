@@ -16,6 +16,7 @@ class CellViewDiffUtilTest {
             id = MockDataFactory.randomString(),
             relationKey = MockDataFactory.randomString(),
             number = MockDataFactory.randomString(),
+            space = MockDataFactory.randomUuid()
         )
 
         val newCell = oldCell.copy(
@@ -39,6 +40,7 @@ class CellViewDiffUtilTest {
             id = MockDataFactory.randomString(),
             relationKey = MockDataFactory.randomString(),
             number = MockDataFactory.randomString(),
+            space = MockDataFactory.randomUuid()
         )
 
         val newCell = oldCell.copy()
@@ -59,7 +61,8 @@ class CellViewDiffUtilTest {
         val oldCell = CellView.Description(
             id = MockDataFactory.randomString(),
             relationKey = MockDataFactory.randomString(),
-            text = MockDataFactory.randomString()
+            text = MockDataFactory.randomString(),
+            space = MockDataFactory.randomUuid()
         )
 
         val newCell = oldCell.copy(
@@ -82,7 +85,8 @@ class CellViewDiffUtilTest {
         val oldCell = CellView.Description(
             id = MockDataFactory.randomString(),
             relationKey = MockDataFactory.randomString(),
-            text = MockDataFactory.randomString()
+            text = MockDataFactory.randomString(),
+            space = MockDataFactory.randomUuid()
         )
 
         val newCell = oldCell.copy()
@@ -104,7 +108,8 @@ class CellViewDiffUtilTest {
             id = MockDataFactory.randomString(),
             relationKey = MockDataFactory.randomString(),
             timeInSecs = MockDataFactory.randomLong(),
-            dateFormat = MockDataFactory.randomString()
+            dateFormat = MockDataFactory.randomString(),
+            space = MockDataFactory.randomUuid()
         )
 
         val newCell = oldCell.copy(
@@ -127,7 +132,8 @@ class CellViewDiffUtilTest {
         val oldCell = CellView.Date(
             id = MockDataFactory.randomString(),
             relationKey = MockDataFactory.randomString(),
-            dateFormat = MockDataFactory.randomString()
+            dateFormat = MockDataFactory.randomString(),
+            space = MockDataFactory.randomUuid()
         )
 
         val newCell = oldCell.copy()

@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
@@ -883,7 +884,8 @@ class ObjectSetViewModel(
                         ObjectSetCommand.Modal.EditGridTextCell(
                             ctx = context,
                             relationKey = cell.relationKey,
-                            recordId = cell.id
+                            recordId = cell.id,
+                            space = cell.space
                         )
                     )
                 }
@@ -892,7 +894,8 @@ class ObjectSetViewModel(
                         ObjectSetCommand.Modal.EditGridDateCell(
                             ctx = context,
                             objectId = cell.id,
-                            relationKey = cell.relationKey
+                            relationKey = cell.relationKey,
+                            space = cell.space
                         )
                     )
                 }
@@ -901,7 +904,8 @@ class ObjectSetViewModel(
                         ObjectSetCommand.Modal.EditTagOrStatusCell(
                             ctx = context,
                             target = cell.id,
-                            relationKey = cell.relationKey
+                            relationKey = cell.relationKey,
+                            space = cell.space
                         )
                     )
                 }
@@ -911,7 +915,8 @@ class ObjectSetViewModel(
                             ObjectSetCommand.Modal.EditObjectCell(
                                 ctx = context,
                                 target = cell.id,
-                                relationKey = cell.relationKey
+                                relationKey = cell.relationKey,
+                                space = cell.space
                             )
                         )
                     } else {
@@ -1072,7 +1077,11 @@ class ObjectSetViewModel(
                             }
                             if (uniqueKey == ObjectTypeIds.BOOKMARK) {
                                 dispatch(
-                                    ObjectSetCommand.Modal.CreateBookmark(ctx = context)
+                                    ObjectSetCommand.Modal
+                                        .CreateBookmark(
+                                            ctx = context,
+                                            space = requireNotNull(wrapper.spaceId)
+                                        )
                                 )
                             } else {
                                 val validTemplateId = templateChosenBy ?: defaultTemplate
@@ -1095,7 +1104,10 @@ class ObjectSetViewModel(
                         ObjectType.Layout.RELATION -> {
                             if (objectTypeUniqueKey == ObjectTypeIds.BOOKMARK) {
                                 dispatch(
-                                    ObjectSetCommand.Modal.CreateBookmark(ctx = context)
+                                    ObjectSetCommand.Modal.CreateBookmark(
+                                        ctx = context,
+                                        space = requireNotNull(wrapper.spaceId)
+                                    )
                                 )
                             } else {
                                 val validTemplateId = templateChosenBy ?: defaultTemplate
@@ -1165,7 +1177,10 @@ class ObjectSetViewModel(
         )
         if (type.key == ObjectTypeIds.BOOKMARK) {
             dispatch(
-                ObjectSetCommand.Modal.CreateBookmark(ctx = context)
+                ObjectSetCommand.Modal.CreateBookmark(
+                    ctx = context,
+                    space = space.value
+                )
             )
         } else {
             proceedWithCreatingDataViewObject(createObjectParams) { result ->
@@ -1216,7 +1231,8 @@ class ObjectSetViewModel(
             dispatch(
                 ObjectSetCommand.Modal.SetNameForCreatedObject(
                     ctx = context,
-                    target = response.objectId
+                    target = response.objectId,
+                    space = requireNotNull(obj.spaceId)
                 )
             )
         }
@@ -1403,6 +1419,7 @@ class ObjectSetViewModel(
         isCustomizeViewPanelVisible.value = false
         val event = AppNavigation.Command.OpenModalTemplateSelect(
             template = target,
+            space = space.value,
             templateTypeId = targetTypeId,
             templateTypeKey = targetTypeKey
         )
@@ -1691,7 +1708,8 @@ class ObjectSetViewModel(
                     _commands.emit(
                         ObjectSetCommand.Modal.EditIntrinsicTextRelation(
                             ctx = ctx,
-                            relation = relation.key
+                            relation = relation.key,
+                            space = requireNotNull(relation.spaceId)
                         )
                     )
                 }
@@ -1708,7 +1726,8 @@ class ObjectSetViewModel(
                         ObjectSetCommand.Modal.EditGridDateCell(
                             ctx = context,
                             objectId = context,
-                            relationKey = relation.key
+                            relationKey = relation.key,
+                            space = space.value
                         )
                     )
                 }
@@ -1717,7 +1736,8 @@ class ObjectSetViewModel(
                     _commands.emit(
                         ObjectSetCommand.Modal.EditTagOrStatusRelationValue(
                             ctx = context,
-                            relation = relation.key
+                            relation = relation.key,
+                            space = requireNotNull(relation.spaceId)
                         )
                     )
                 }
@@ -1726,7 +1746,8 @@ class ObjectSetViewModel(
                     _commands.emit(
                         ObjectSetCommand.Modal.EditObjectRelationValue(
                             ctx = context,
-                            relation = relation.key
+                            relation = relation.key,
+                            space = requireNotNull(relation.spaceId)
                         )
                     )
                 }

@@ -13,6 +13,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.relations.DatePickerContent
 import com.anytypeio.anytype.core_ui.views.Title3
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -22,6 +23,7 @@ import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.sets.DateValueCommand
 import com.anytypeio.anytype.presentation.sets.RelationDateValueViewModel
 import com.anytypeio.anytype.ui.sets.modals.DatePickerFragment
@@ -34,6 +36,7 @@ open class RelationDateValueFragment : BaseBottomSheetComposeFragment() {
     val vm: RelationDateValueViewModel by viewModels { factory }
 
     private val ctx get() = argString(CONTEXT_ID)
+    private val space get() = argString(SPACE_KEY)
     private val objectId get() = argString(OBJECT_ID)
     private val relationKey get() = argString(RELATION_KEY)
     private val flow get() = arg<Int>(FLOW_KEY)
@@ -96,15 +99,19 @@ open class RelationDateValueFragment : BaseBottomSheetComposeFragment() {
     }
 
     override fun injectDependencies() {
+        val param = DefaultComponentParam(
+            ctx = ctx,
+            space = SpaceId(space)
+        )
         when (flow) {
             FLOW_DV -> {
-                componentManager().dataViewRelationDateValueComponent.get(ctx).inject(this)
+                componentManager().dataViewRelationDateValueComponent.get(param).inject(this)
             }
             FLOW_SET_OR_COLLECTION -> {
-                componentManager().setOrCollectionRelationDateValueComponent.get(ctx).inject(this)
+                componentManager().setOrCollectionRelationDateValueComponent.get(param).inject(this)
             }
             else -> {
-                componentManager().objectRelationDateValueComponent.get(ctx).inject(this)
+                componentManager().objectRelationDateValueComponent.get(param).inject(this)
             }
         }
     }
@@ -127,6 +134,7 @@ open class RelationDateValueFragment : BaseBottomSheetComposeFragment() {
 
         fun new(
             ctx: Id,
+            space: Id,
             relationKey: Key,
             objectId: Id,
             flow: Int = FLOW_DEFAULT,
@@ -134,6 +142,7 @@ open class RelationDateValueFragment : BaseBottomSheetComposeFragment() {
         ) = RelationDateValueFragment().apply {
             arguments = bundleOf(
                 CONTEXT_ID to ctx,
+                SPACE_KEY to space,
                 RELATION_KEY to relationKey,
                 OBJECT_ID to objectId,
                 FLOW_KEY to flow,
@@ -142,6 +151,7 @@ open class RelationDateValueFragment : BaseBottomSheetComposeFragment() {
         }
 
         const val CONTEXT_ID = "arg.relation.date.context"
+        const val SPACE_KEY = "arg.relation.date.space"
         const val RELATION_KEY = "arg.relation.date.relation.key"
         const val OBJECT_ID = "arg.relation.date.object.id"
         const val LOCKED_KEY = "arg.relation.date.object.locked"

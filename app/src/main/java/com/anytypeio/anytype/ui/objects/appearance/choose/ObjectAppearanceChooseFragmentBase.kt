@@ -25,6 +25,7 @@ abstract class ObjectAppearanceChooseFragmentBase
     BaseBottomSheetFragment<FragmentObjAppearanceBaseBinding>() {
 
     protected val ctx: String get() = argString(CONTEXT_ID_KEY)
+    protected val space: String get() = argString(SPACE_KEY)
     protected val block: String get() = argString(BLOCK_ID_KEY)
 
     protected abstract val vm: T
@@ -86,6 +87,7 @@ abstract class ObjectAppearanceChooseFragmentBase
 
     companion object {
         const val CONTEXT_ID_KEY = "arg.object.ctx"
+        const val SPACE_KEY = "arg.object.space"
         const val BLOCK_ID_KEY = "arg.object.block"
     }
 }

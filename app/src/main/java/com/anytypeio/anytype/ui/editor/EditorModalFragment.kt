@@ -14,6 +14,7 @@ import com.anytypeio.anytype.ui.templates.EditorTemplateFragment
 
 class EditorModalFragment : BaseBottomSheetFragment<MyFragmentContainerBinding>() {
 
+    private val space get() = arg<Id>(ARG_SPACE_ID)
     private val template get() = arg<Id>(ARG_TEMPLATE_ID)
     private val templateTypeId get() = arg<Id>(ARG_TEMPLATE_TYPE_ID)
     private val templateTypeKey get() = arg<Id>(ARG_TEMPLATE_TYPE_KEY)
@@ -24,6 +25,7 @@ class EditorModalFragment : BaseBottomSheetFragment<MyFragmentContainerBinding>(
         setStyle(STYLE_NORMAL, R.style.AppBottomSecondarySheetDialogTheme)
         val editorFragment = EditorTemplateFragment.newInstance(
             id = template,
+            space = space,
             targetTypeId = templateTypeId,
             targetTypeKey = templateTypeKey,
             type = screenType
@@ -57,6 +59,7 @@ class EditorModalFragment : BaseBottomSheetFragment<MyFragmentContainerBinding>(
 
     companion object {
         const val ARG_TEMPLATE_ID = "arg_template_id"
+        const val ARG_SPACE_ID = "arg_space_id"
         const val ARG_TEMPLATE_TYPE_ID = "arg_template_object_type"
         const val ARG_TEMPLATE_TYPE_KEY = "arg_template_object_type_key"
         const val ARG_SCREEN_TYPE = "arg_screen_type"

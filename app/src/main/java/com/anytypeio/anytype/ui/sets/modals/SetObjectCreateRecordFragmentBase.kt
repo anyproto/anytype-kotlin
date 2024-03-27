@@ -5,10 +5,12 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import androidx.annotation.CallSuper
+import androidx.core.os.bundleOf
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewbinding.ViewBinding
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.reactive.editorActionEvents
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.hideKeyboard
@@ -30,7 +32,8 @@ abstract class SetObjectCreateRecordFragmentBase<T: ViewBinding> :
     abstract fun onButtonClicked()
     abstract fun onKeyboardActionDone()
 
-    protected val ctx: String get() = argString(CONTEXT_KEY)
+    protected val ctx: String get() = argString(CTX_KEY)
+    protected val space: String get() = argString(SPACE_KEY)
 
     private val handler: (Int) -> Boolean = { action ->
         action == EditorInfo.IME_ACTION_DONE
@@ -73,7 +76,26 @@ abstract class SetObjectCreateRecordFragmentBase<T: ViewBinding> :
     }
 
     companion object {
-        const val CONTEXT_KEY = "arg.object-set-record.context"
+        private const val CTX_KEY = "arg.object-set-record.context"
+        private const val SPACE_KEY = "arg.object-set-record.space"
         const val TARGET_KEY = "arg.object-set-record.target"
+
+        fun args(
+            ctx: Id,
+            target: Id,
+            space: Id,
+        ) = bundleOf(
+            CTX_KEY to ctx,
+            TARGET_KEY to target,
+            SPACE_KEY to space
+        )
+
+        fun args(
+            ctx: Id,
+            space: Id,
+        ) = bundleOf(
+            CTX_KEY to ctx,
+            SPACE_KEY to space
+        )
     }
 }

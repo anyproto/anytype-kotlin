@@ -77,7 +77,8 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
                     cell = CellView.Description(
                         id = mockObjectSet.obj1.id,
                         relationKey = mockObjectSet.relationObject2.key,
-                        text = ""
+                        text = "",
+                        space = mockObjectSet.space
                     )
                 )
 
@@ -86,7 +87,8 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
                     cell = CellView.Description(
                         id = mockObjectSet.obj1.id,
                         relationKey = mockObjectSet.relationObject1.key,
-                        text = ""
+                        text = "",
+                        space = mockObjectSet.space
                     )
                 )
 

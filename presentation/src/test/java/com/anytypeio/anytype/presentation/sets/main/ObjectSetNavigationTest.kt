@@ -86,7 +86,8 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
                 cell = CellView.Tag(
                     id = mockObjectSet.obj1.id,
                     relationKey = mockObjectSet.relationObject3.key,
-                    tags = listOf()
+                    tags = listOf(),
+                    space = mockObjectSet.space
                 )
             )
 
@@ -113,12 +114,14 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
         val object3 = ObjectWrapper.Basic(
             mapOf(
                 Relations.ID to MockDataFactory.randomUuid(),
+                Relations.SPACE_ID to mockObjectSet.spaceId,
                 mockObjectSet.relationObject4.key to targetObjectId
             )
         )
         val targetObject = ObjectWrapper.Basic(
             mapOf(
                 Relations.ID to targetObjectId,
+                Relations.SPACE_ID to mockObjectSet.spaceId,
                 Relations.LAYOUT to SupportedLayouts.layouts.random().code.toDouble()
             )
         )
@@ -154,9 +157,10 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
                         ObjectView.Default(
                             id = targetObjectId,
                             name = "",
-                            icon = ObjectIcon.None
+                            icon = ObjectIcon.None,
                         )
-                    )
+                    ),
+                    space = mockObjectSet.space
                 )
             )
 

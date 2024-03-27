@@ -278,6 +278,7 @@ import timber.log.Timber
 import com.anytypeio.anytype.presentation.editor.Editor.Mode as EditorMode
 
 class EditorViewModel(
+    private val params: Params,
     private val openPage: OpenPage,
     private val closePage: CloseBlock,
     private val createBlockLinkWithObject: CreateBlockLinkWithObject,
@@ -7274,6 +7275,11 @@ class EditorViewModel(
     private fun isReadOnlyValue(objRestrictions: List<ObjectRestriction>): Boolean {
         return mode == EditorMode.Locked || objRestrictions.contains(ObjectRestriction.DETAILS)
     }
+
+    data class Params(
+        val ctx: Id,
+        val space: SpaceId
+    )
 }
 
 private const val NO_POSITION = -1

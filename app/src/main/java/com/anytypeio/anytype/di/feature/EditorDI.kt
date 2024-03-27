@@ -104,6 +104,7 @@ import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.DocumentExternalEventReducer
 import com.anytypeio.anytype.presentation.editor.Editor
+import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModelFactory
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.Interactor
@@ -133,6 +134,7 @@ import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
 import com.anytypeio.anytype.providers.DefaultUriFileProvider
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import dagger.Binds
+import dagger.BindsInstance
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
@@ -151,6 +153,8 @@ interface EditorSubComponent {
 
     @Subcomponent.Builder
     interface Builder {
+        @BindsInstance
+        fun withParams(params: EditorViewModel.Params): Builder
         fun session(module: EditorSessionModule): Builder
         fun usecase(module: EditorUseCaseModule): Builder
         fun build(): EditorSubComponent
@@ -243,6 +247,7 @@ object EditorSessionModule {
     @JvmStatic
     @Provides
     fun providePageViewModelFactory(
+        params: EditorViewModel.Params,
         openPage: OpenPage,
         closePage: CloseBlock,
         interceptEvents: InterceptEvents,
@@ -285,6 +290,7 @@ object EditorSessionModule {
         dispatchers: AppCoroutineDispatchers,
         getNetworkMode: GetNetworkMode
     ): EditorViewModelFactory = EditorViewModelFactory(
+        params = params,
         openPage = openPage,
         closeObject = closePage,
         createBlockLinkWithObject = createBlockLinkWithObject,

@@ -50,6 +50,7 @@ import com.anytypeio.anytype.presentation.util.Dispatcher
 import javax.inject.Inject
 
 open class EditorViewModelFactory @Inject constructor(
+    private val params: EditorViewModel.Params,
     private val openPage: OpenPage,
     private val closeObject: CloseBlock,
     private val createObjectSet: CreateObjectSet,
@@ -96,6 +97,7 @@ open class EditorViewModelFactory @Inject constructor(
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return EditorViewModel(
+            params = params,
             openPage = openPage,
             closePage = closeObject,
             createBlockLinkWithObject = createBlockLinkWithObject,

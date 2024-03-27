@@ -31,8 +31,12 @@ class ObjectSetRecordViewModelTest {
     lateinit var setObjectDetails: UpdateDetail
 
     private val ctx: Id = MockDataFactory.randomUuid()
+    private val defaultSpace = MockDataFactory.randomUuid()
     private val obj = ObjectWrapper.Basic(
-        mapOf(Relations.ID to MockDataFactory.randomUuid())
+        mapOf(
+            Relations.ID to MockDataFactory.randomUuid(),
+            Relations.SPACE_ID to defaultSpace
+        )
     )
 
     @Before

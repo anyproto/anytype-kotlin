@@ -34,6 +34,7 @@ class ObjectSetConvertToCollectionTest : ObjectSetViewModelTestSetup() {
         viewModel = givenViewModel()
         mockObjectSet = MockSet(context = root, space = defaultSpace)
         stubGetDefaultPageType()
+        stubObservePermissions()
     }
 
     @After

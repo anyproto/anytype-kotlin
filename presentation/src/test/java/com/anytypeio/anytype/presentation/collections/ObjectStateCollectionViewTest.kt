@@ -45,6 +45,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         mockObjectCollection = MockCollection(context = root, space = defaultSpace)
         stubGetDefaultPageType()
         stubNetworkMode()
+        stubObservePermissions()
     }
 
     @After

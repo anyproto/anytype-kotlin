@@ -39,6 +39,7 @@ import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
@@ -136,6 +137,7 @@ import kotlinx.coroutines.withTimeout
 import timber.log.Timber
 
 class ObjectSetViewModel(
+    private val params: Params,
     private val database: ObjectSetDatabase,
     private val openObjectSet: OpenObjectSet,
     private val closeBlock: CloseBlock,
@@ -174,7 +176,8 @@ class ObjectSetViewModel(
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val dispatchers: AppCoroutineDispatchers,
     private val getNetworkMode: GetNetworkMode,
-    private val dateProvider: DateProvider
+    private val dateProvider: DateProvider,
+    private val permissions: UserPermissionProvider
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>, ViewerDelegate by viewerDelegate {
 
     val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
@@ -225,13 +228,16 @@ class ObjectSetViewModel(
     val isLoading = MutableStateFlow(false)
 
     private var context: Id = ""
-    private var space = MutableStateFlow("")
 
     private val selectedTypeFlow: MutableStateFlow<ObjectWrapper.Type?> = MutableStateFlow(null)
 
     init {
         Timber.d("ObjectSetViewModel, init")
+
+        proceedWIthObservingPermissions()
+
         proceedWithObservingProfileIcon()
+
         viewModelScope.launch {
             stateReducer.state
                 .filterIsInstance<ObjectState.DataView>()
@@ -241,12 +247,12 @@ class ObjectSetViewModel(
                 }
                 .collectLatest { (state, permission) ->
                     featured.value = state.featuredRelations(
-                        ctx = context,
+                        ctx = params.ctx,
                         urlBuilder = urlBuilder,
                         relations = storeOfRelations.getAll()
                     )
                     _header.value = state.header(
-                        ctx = context,
+                        ctx = params.ctx,
                         urlBuilder = urlBuilder,
                         coverImageHashProvider = coverImageHashProvider,
                         isReadOnlyMode = permission == SpaceMemberPermissions.NO_PERMISSIONS || permission == SpaceMemberPermissions.READER
@@ -287,7 +293,7 @@ class ObjectSetViewModel(
                 .distinctUntilChanged()
                 .map {
                     UpdateText.Params(
-                        context = context,
+                        context = params.ctx,
                         target = it.target,
                         text = it.text,
                         marks = emptyList()
@@ -362,33 +368,40 @@ class ObjectSetViewModel(
         subscribeToSelectedType()
     }
 
+    private fun proceedWIthObservingPermissions() {
+        viewModelScope.launch {
+            permissions
+                .observe(params.space)
+                .collect {
+                    permission.value = it
+                }
+        }
+    }
+
     private fun proceedWithObservingProfileIcon() {
         viewModelScope.launch {
-            space
-                .filter { it.isNotEmpty() }
-                .mapNotNull { spaceManager.getConfig(SpaceId(it)) }
-                .flatMapLatest { config ->
-                    storelessSubscriptionContainer.subscribe(
-                        StoreSearchByIdsParams(
-                            subscription = HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
-                            targets = listOf(config.profile),
-                            keys = listOf(
-                                Relations.ID,
-                                Relations.SPACE_ID,
-                                Relations.NAME,
-                                Relations.ICON_EMOJI,
-                                Relations.ICON_IMAGE,
-                                Relations.ICON_OPTION
-                            )
+            val config = spaceManager.getConfig(params.space)
+            if (config != null) {
+                storelessSubscriptionContainer.subscribe(
+                    StoreSearchByIdsParams(
+                        subscription = HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
+                        targets = listOf(config.profile),
+                        keys = listOf(
+                            Relations.ID,
+                            Relations.SPACE_ID,
+                            Relations.NAME,
+                            Relations.ICON_EMOJI,
+                            Relations.ICON_IMAGE,
+                            Relations.ICON_OPTION
                         )
-                    ).map { result ->
-                        val obj = result.firstOrNull()
-                        obj?.profileIcon(urlBuilder) ?: ProfileIconView.Placeholder(null)
-                    }
-                }
-                .catch { Timber.e(it, "Error while observing space icon") }
-                .flowOn(dispatchers.io)
-                .collect { icon.value = it }
+                    )
+                ).map { result ->
+                    val obj = result.firstOrNull()
+                    obj?.profileIcon(urlBuilder) ?: ProfileIconView.Placeholder(null)
+                }.catch {
+                    Timber.e(it, "Error while observing space icon")
+                }.flowOn(dispatchers.io).collect { icon.value = it }
+            }
         }
     }
 
@@ -398,8 +411,7 @@ class ObjectSetViewModel(
         downloadUnsplashImage(
             DownloadUnsplashImage.Params(
                 picture = action.img,
-                // TODO re-fact to use space id from arguments or target space id of this object
-                space = SpaceId(space.value)
+                space = params.space
             )
         ).process(
             failure = {
@@ -424,7 +436,6 @@ class ObjectSetViewModel(
     fun onStart(ctx: Id, space: Id) {
         Timber.d("onStart, ctx:[$ctx]")
         this.context = ctx
-        this.space.value = space
         subscribeToEvents(ctx = ctx)
         subscribeToThreadStatus(ctx = ctx)
         proceedWithOpeningCurrentObject(ctx = ctx)
@@ -445,7 +456,7 @@ class ObjectSetViewModel(
                 .build(InterceptThreadStatus.Params(ctx))
                 .collect {
                     val statusView = it.toView(
-                        networkId = spaceManager.getConfig(SpaceId(space.value))?.network,
+                        networkId = spaceManager.getConfig(params.space)?.network,
                         networkMode = networkMode
                     )
                     status.value = statusView
@@ -458,13 +469,11 @@ class ObjectSetViewModel(
         Timber.d("subscribeToObjectState, ctx:[$context]")
         viewModelScope.launch {
             combine(
-                space.filter { it.isNotEmpty() },
                 stateReducer.state,
                 paginator.offset,
                 session.currentViewerId,
-            ) { space, state, offset, view ->
+            ) { state, offset, view ->
                 Query(
-                    space = space,
                     state = state,
                     offset = offset,
                     currentViewerId = view
@@ -475,12 +484,12 @@ class ObjectSetViewModel(
                         Timber.d("subscribeToObjectState, NEW COLLECTION STATE")
                         if (query.state.isInitialized) {
                             dataViewSubscription.startObjectCollectionSubscription(
-                                collection = context,
+                                collection = params.ctx,
                                 state = query.state,
                                 currentViewerId = query.currentViewerId,
                                 offset = query.offset,
-                                context = context,
-                                spaces = spaceManager.getSpaceWithTechSpace(space = query.space),
+                                context = params.ctx,
+                                spaces = spaceManager.getSpaceWithTechSpace(space = params.space.id),
                                 dataViewRelationLinks = query.state.dataViewContent.relationLinks
                             )
                         } else {
@@ -496,7 +505,7 @@ class ObjectSetViewModel(
                                 currentViewerId = query.currentViewerId,
                                 offset = query.offset,
                                 context = context,
-                                spaces = spaceManager.getSpaceWithTechSpace(),
+                                spaces = spaceManager.getSpaceWithTechSpace(params.space.id),
                                 dataViewRelationLinks = query.state.dataViewContent.relationLinks
                             )
                         } else {
@@ -531,8 +540,7 @@ class ObjectSetViewModel(
             openObjectSet(
                 OpenObjectSet.Params(
                     obj = ctx,
-                    // TODO resolve space id
-                    space = SpaceId(spaceManager.get())
+                    space = params.space
                 )
             ).process(
                 success = { result ->
@@ -1178,8 +1186,8 @@ class ObjectSetViewModel(
         if (type.key == ObjectTypeIds.BOOKMARK) {
             dispatch(
                 ObjectSetCommand.Modal.CreateBookmark(
-                    ctx = context,
-                    space = space.value
+                    ctx = params.ctx,
+                    space = params.space.id
                 )
             )
         } else {
@@ -1419,7 +1427,7 @@ class ObjectSetViewModel(
         isCustomizeViewPanelVisible.value = false
         val event = AppNavigation.Command.OpenModalTemplateSelect(
             template = target,
-            space = space.value,
+            space = params.space.id,
             templateTypeId = targetTypeId,
             templateTypeKey = targetTypeKey
         )
@@ -1727,7 +1735,7 @@ class ObjectSetViewModel(
                             ctx = context,
                             objectId = context,
                             relationKey = relation.key,
-                            space = space.value
+                            space = params.space.id
                         )
                     )
                 }
@@ -2048,7 +2056,7 @@ class ObjectSetViewModel(
 
     private suspend fun fetchAndProcessObjectTypes(selectedType: Id, widgetState: TypeTemplatesWidgetUI.Data) {
         val filters = ObjectSearchConstants.filterTypes(
-            spaces = listOf(space.value),
+            spaces = listOf(params.space.id),
             recommendedLayouts = SupportedLayouts.createObjectLayouts
         )
         val params = GetObjectTypes.Params(
@@ -2764,14 +2772,12 @@ class ObjectSetViewModel(
         private const val SUBSCRIPTION_TEMPLATES_ID = "-SUBSCRIPTION_TEMPLATES_ID"
     }
 
-    // TODO will be used in the next pr
     data class Params(
         val ctx: Id,
         val space: SpaceId
     )
 
     data class Query(
-        val space: Id,
         val state: ObjectState,
         val offset: Long,
         val currentViewerId: Id?

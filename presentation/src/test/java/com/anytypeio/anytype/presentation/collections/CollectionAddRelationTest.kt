@@ -51,6 +51,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
         objectCollection = MockCollection(context = root, space = defaultSpace)
         viewModel = givenViewModel()
         stubNetworkMode()
+        stubObservePermissions()
     }
 
     @After

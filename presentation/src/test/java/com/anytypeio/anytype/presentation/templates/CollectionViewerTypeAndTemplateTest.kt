@@ -82,6 +82,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         givenNetworkNodeMocked()
         viewModel = givenViewModel()
         stubAddObjectToCollection()
+        stubObservePermissions()
     }
 
     @After

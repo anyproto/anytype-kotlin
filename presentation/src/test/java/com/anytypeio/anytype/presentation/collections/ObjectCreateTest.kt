@@ -37,6 +37,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         viewModel = givenViewModel()
         stubNetworkMode()
         stubCreateDataViewObject()
+        stubObservePermissions()
     }
 
     @After

@@ -45,7 +45,8 @@ class Navigator : AppNavigation {
     override fun openModalTemplateSelect(
         template: Id,
         templateTypeId: Id,
-        templateTypeKey: Key
+        templateTypeKey: Key,
+        space: Id,
     ) {
         navController?.navigate(
             R.id.nav_editor_modal,
@@ -53,7 +54,8 @@ class Navigator : AppNavigation {
                 EditorModalFragment.ARG_TEMPLATE_ID to template,
                 EditorModalFragment.ARG_TEMPLATE_TYPE_ID to templateTypeId,
                 EditorModalFragment.ARG_TEMPLATE_TYPE_KEY to templateTypeKey,
-                EditorModalFragment.ARG_SCREEN_TYPE to TYPE_TEMPLATE_SELECT
+                EditorModalFragment.ARG_SCREEN_TYPE to TYPE_TEMPLATE_SELECT,
+                EditorModalFragment.ARG_SPACE_ID to space
             )
         )
     }
@@ -61,7 +63,8 @@ class Navigator : AppNavigation {
     override fun openModalTemplateEdit(
         template: Id,
         templateTypeId: Id,
-        templateTypeKey: Key
+        templateTypeKey: Key,
+        space: Id,
     ) {
         navController?.navigate(
             R.id.nav_editor_modal,
@@ -69,7 +72,8 @@ class Navigator : AppNavigation {
                 EditorModalFragment.ARG_TEMPLATE_ID to template,
                 EditorModalFragment.ARG_TEMPLATE_TYPE_ID to templateTypeId,
                 EditorModalFragment.ARG_TEMPLATE_TYPE_KEY to templateTypeKey,
-                EditorModalFragment.ARG_SCREEN_TYPE to TYPE_TEMPLATE_EDIT
+                EditorModalFragment.ARG_SCREEN_TYPE to TYPE_TEMPLATE_EDIT,
+                EditorModalFragment.ARG_SPACE_ID to space
             )
         )
     }
@@ -140,16 +144,6 @@ class Navigator : AppNavigation {
 
     override fun openPageSearch() {
         navController?.navigate(R.id.pageSearchFragment)
-    }
-
-    override fun exitToDesktopAndOpenPage(pageId: String) {
-        navController?.navigate(
-            R.id.homeScreen,
-            bundleOf(EditorFragment.CTX_KEY to pageId),
-            navOptions {
-                launchSingleTop = true
-            }
-        )
     }
 
     override fun openObjectSet(

@@ -15,12 +15,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.tools.DefaultDividerItemDecoration
 import com.anytypeio.anytype.core_utils.ext.drawable
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.databinding.FragmentRelationValueBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.sets.RelationValueBaseViewModel
 import com.anytypeio.anytype.presentation.sets.RelationValueViewModel
@@ -127,7 +129,8 @@ class RelationValueFragment : RelationValueBaseFragment<FragmentRelationValueBin
             ctx = ctx,
             relationKey = relationKey,
             objectId = target,
-            flow = AddFileRelationFragment.FLOW_DEFAULT
+            flow = AddFileRelationFragment.FLOW_DEFAULT,
+            space = space
         )
         fr.show(childFragmentManager, null)
     }
@@ -135,6 +138,7 @@ class RelationValueFragment : RelationValueBaseFragment<FragmentRelationValueBin
     private fun showAddStatusOrTagScreen() {
         val fr = AddOptionsRelationFragment.new(
             ctx = ctx,
+            space = space,
             objectId = target,
             relationKey = relationKey
         )
@@ -144,6 +148,7 @@ class RelationValueFragment : RelationValueBaseFragment<FragmentRelationValueBin
     private fun showAddObjectScreen() {
         val fr = AddObjectRelationFragment.new(
             ctx = ctx,
+            space = space,
             relationKey = relationKey,
             objectId = target,
             types = types,
@@ -172,7 +177,16 @@ class RelationValueFragment : RelationValueBaseFragment<FragmentRelationValueBin
     )
 
     override fun injectDependencies() {
-        componentManager().objectObjectRelationValueComponent.get(ctx).inject(this)
+        componentManager()
+            .objectObjectRelationValueComponent
+            .get(
+                key = ctx,
+                param = DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {
@@ -182,6 +196,7 @@ class RelationValueFragment : RelationValueBaseFragment<FragmentRelationValueBin
     companion object {
         fun new(
             ctx: Id,
+            space: Id,
             target: Id,
             relationKey: Key,
             targetObjectTypes: List<Id>,
@@ -189,6 +204,7 @@ class RelationValueFragment : RelationValueBaseFragment<FragmentRelationValueBin
         ) = RelationValueFragment().apply {
             arguments = bundleOf(
                 CTX_KEY to ctx,
+                SPACE_KEY to space,
                 TARGET_KEY to target,
                 RELATION_KEY to relationKey,
                 TARGET_TYPES_KEY to targetObjectTypes,

@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.objects
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -33,7 +34,8 @@ class CreateObjectViewModel(private val createObject: CreateObject) : ViewModel(
                     createObjectStatus.emit(
                         State.Success(
                             id = result.objectId,
-                            layout = result.obj.layout
+                            layout = result.obj.layout,
+                            space = requireNotNull(result.obj.spaceId)
                         )
                     )
                 }
@@ -51,7 +53,7 @@ class CreateObjectViewModel(private val createObject: CreateObject) : ViewModel(
     }
 
     sealed class State {
-        data class Success(val id: String, val layout: ObjectType.Layout?) : State()
+        data class Success(val id: String, val layout: ObjectType.Layout?, val space: Id) : State()
         data class Error(val msg: String) : State()
     }
 

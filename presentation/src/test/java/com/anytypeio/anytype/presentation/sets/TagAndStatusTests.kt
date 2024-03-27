@@ -26,6 +26,8 @@ import kotlin.test.assertEquals
 
 class TagAndStatusTests {
 
+    private val defaultSpace = MockDataFactory.randomUuid()
+
     @Mock
     lateinit var gateway: Gateway
 
@@ -51,21 +53,25 @@ class TagAndStatusTests {
         val selOptions = listOf(
             StubRelationOptionObject(
                 id = MockDataFactory.randomUuid(),
+                space = defaultSpace,
                 text = "Tag1",
                 color = "000"
             ),
             StubRelationOptionObject(
                 id = MockDataFactory.randomUuid(),
+                space = defaultSpace,
                 text = "Tag2",
                 color = "111"
             ),
             StubRelationOptionObject(
                 id = MockDataFactory.randomUuid(),
+                space = defaultSpace,
                 text = "Tag3",
                 color = "222"
             ),
             StubRelationOptionObject(
                 id = MockDataFactory.randomUuid(),
+                space = defaultSpace,
                 text = "Tag4",
                 color = "333"
             )
@@ -74,6 +80,7 @@ class TagAndStatusTests {
         val recordId = MockDataFactory.randomUuid()
         val records = mapOf<String, Any?>(
             ObjectSetConfig.ID_KEY to recordId,
+            Relations.SPACE_ID to defaultSpace,
             ObjectSetConfig.TYPE_KEY to "Type111",
             viewerRelations[0].key to "Title4",
             viewerRelations[1].key to listOf(selOptions[1].id, selOptions[2].id)
@@ -83,6 +90,7 @@ class TagAndStatusTests {
             ObjectWrapper.Relation(
                 mapOf(
                     Relations.RELATION_KEY to viewerRelations[0].key,
+                    Relations.SPACE_ID to defaultSpace,
                     Relations.NAME to "name",
                     Relations.RELATION_FORMAT to Relation.Format.LONG_TEXT.code.toDouble(),
                     Relations.IS_READ_ONLY to true,
@@ -93,6 +101,7 @@ class TagAndStatusTests {
             ObjectWrapper.Relation(
                 mapOf(
                     Relations.RELATION_KEY to viewerRelations[1].key,
+                    Relations.SPACE_ID to defaultSpace,
                     Relations.NAME to "Tags",
                     Relations.RELATION_FORMAT to RelationFormat.TAG.code.toDouble(),
                     Relations.IS_READ_ONLY to true,
@@ -135,7 +144,8 @@ class TagAndStatusTests {
                 CellView.Description(
                     id = recordId,
                     relationKey = viewerRelations[0].key,
-                    text = "Title4"
+                    text = "Title4",
+                    space = defaultSpace
                 ),
                 CellView.Tag(
                     id = recordId,
@@ -151,7 +161,8 @@ class TagAndStatusTests {
                             tag = selOptions[2].name.orEmpty(),
                             color = selOptions[2].color
                         )
-                    )
+                    ),
+                    space = defaultSpace
                 )
             )
         )
@@ -179,21 +190,25 @@ class TagAndStatusTests {
         val selOptions = listOf(
             StubRelationOptionObject(
                 id = MockDataFactory.randomUuid(),
+                space = defaultSpace,
                 text = "Status1",
                 color = "000"
             ),
             StubRelationOptionObject(
                 id = MockDataFactory.randomUuid(),
+                space = defaultSpace,
                 text = "Status2",
                 color = "111"
             ),
             StubRelationOptionObject(
                 id = MockDataFactory.randomUuid(),
+                space = defaultSpace,
                 text = "Status3",
                 color = "222"
             ),
             StubRelationOptionObject(
                 id = MockDataFactory.randomUuid(),
+                space = defaultSpace,
                 text = "Status4",
                 color = "333"
             )
@@ -202,6 +217,7 @@ class TagAndStatusTests {
         val recordId = MockDataFactory.randomUuid()
         val records = mapOf<String, Any?>(
             ObjectSetConfig.ID_KEY to recordId,
+            Relations.SPACE_ID to defaultSpace,
             ObjectSetConfig.TYPE_KEY to "Type111",
             viewerRelations[0].key to "Title4",
             viewerRelations[1].key to listOf(selOptions[2].id)
@@ -211,6 +227,7 @@ class TagAndStatusTests {
             ObjectWrapper.Relation(
                 mapOf(
                     Relations.RELATION_KEY to viewerRelations[0].key,
+                    Relations.SPACE_ID to defaultSpace,
                     Relations.NAME to "name",
                     Relations.RELATION_FORMAT to Relation.Format.LONG_TEXT.code.toDouble(),
                     Relations.IS_READ_ONLY to true,
@@ -221,6 +238,7 @@ class TagAndStatusTests {
             ObjectWrapper.Relation(
                 mapOf(
                     Relations.RELATION_KEY to viewerRelations[1].key,
+                    Relations.SPACE_ID to defaultSpace,
                     Relations.NAME to "Status",
                     Relations.RELATION_FORMAT to Relation.Format.STATUS.code.toDouble(),
                     Relations.IS_READ_ONLY to true,
@@ -263,7 +281,8 @@ class TagAndStatusTests {
                 CellView.Description(
                     id = recordId,
                     relationKey = viewerRelations[0].key,
-                    text = "Title4"
+                    text = "Title4",
+                    space = defaultSpace
                 ),
                 CellView.Status(
                     id = recordId,
@@ -274,7 +293,8 @@ class TagAndStatusTests {
                             status = selOptions[2].name.orEmpty(),
                             color = selOptions[2].color
                         )
-                    )
+                    ),
+                    space = defaultSpace
                 )
             )
         )

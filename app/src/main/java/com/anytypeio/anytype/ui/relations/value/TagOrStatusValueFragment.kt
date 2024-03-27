@@ -10,11 +10,15 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.relations.TagOrStatusValueScreen
 import com.anytypeio.anytype.core_utils.ext.argBoolean
 import com.anytypeio.anytype.core_utils.ext.argString
@@ -36,6 +40,7 @@ class TagOrStatusValueFragment : BaseBottomSheetComposeFragment() {
     private val vm by viewModels<TagOrStatusValueViewModel> { factory }
 
     private val ctx get() = argString(CTX_KEY)
+    private val space get() = argString(SPACE_KEY)
     private val relationKey get() = argString(RELATION_KEY)
     private val objectId get() = argString(OBJECT_ID_KEY)
     private val isLocked get() = argBoolean(IS_LOCKED_KEY)
@@ -84,7 +89,8 @@ class TagOrStatusValueFragment : BaseBottomSheetComposeFragment() {
                     optionId = command.optionId,
                     color = command.color,
                     text = command.text,
-                    relationContext = relationContext
+                    relationContext = relationContext,
+                    space = space
                 )
                 findNavController().navigate(R.id.optionScreen, arg)
             }
@@ -112,7 +118,8 @@ class TagOrStatusValueFragment : BaseBottomSheetComposeFragment() {
             objectId = objectId,
             relationKey = relationKey,
             isLocked = isLocked,
-            relationContext = relationContext
+            relationContext = relationContext,
+            space = SpaceId(space)
         )
         inject(params)
     }
@@ -145,10 +152,27 @@ class TagOrStatusValueFragment : BaseBottomSheetComposeFragment() {
     }
 
     companion object {
-        const val CTX_KEY = "arg.tag-status.ctx"
-        const val RELATION_KEY = "arg.tag-status.relation.key"
-        const val OBJECT_ID_KEY = "arg.tag-status.object"
-        const val IS_LOCKED_KEY = "arg.tag-status.is-locked"
-        const val RELATION_CONTEXT_KEY = "arg.tag-status.relation-context"
+        private const val CTX_KEY = "arg.tag-status.ctx"
+        private const val SPACE_KEY = "arg.tag-status.space"
+        private const val RELATION_KEY = "arg.tag-status.relation.key"
+        private const val OBJECT_ID_KEY = "arg.tag-status.object"
+        private const val IS_LOCKED_KEY = "arg.tag-status.is-locked"
+        private const val RELATION_CONTEXT_KEY = "arg.tag-status.relation-context"
+
+        fun args(
+            ctx: Id,
+            space: Id,
+            obj: Id,
+            relation: Key,
+            isLocked: Boolean,
+            context: RelationContext
+        ) = bundleOf(
+            CTX_KEY to ctx,
+            SPACE_KEY to space,
+            RELATION_KEY to relation,
+            OBJECT_ID_KEY to obj,
+            IS_LOCKED_KEY to isLocked,
+            RELATION_CONTEXT_KEY to context
+        )
     }
 }

@@ -44,31 +44,35 @@ sealed class ObjectSetCommand {
 
         data class EditGridTextCell(
             val ctx: Id,
+            val space: Id,
             val relationKey: Id,
             val recordId: Id
         ) : Modal()
 
         data class EditGridDateCell(
             val ctx: Id,
+            val space: Id,
             val relationKey: Key,
             val objectId: Id
         ) : Modal()
 
         data class EditObjectCell(
             val ctx: Id,
+            val space: Id,
             val target: Id,
             val relationKey: Key
         ) : Modal()
 
         data class EditTagOrStatusCell(
             val ctx: Id,
+            val space: Id,
             val target: Id,
             val relationKey: Key
         ) : Modal()
 
-        data class SetNameForCreatedObject(val ctx: Id, val target: Id) : Modal()
+        data class SetNameForCreatedObject(val ctx: Id, val space: Id, val target: Id) : Modal()
 
-        data class CreateBookmark(val ctx: Id) : Modal()
+        data class CreateBookmark(val ctx: Id, val space: Id) : Modal()
 
         data class OpenIconActionMenu(
             val target: Id,
@@ -87,16 +91,19 @@ sealed class ObjectSetCommand {
 
         data class EditIntrinsicTextRelation(
             val ctx: Id,
+            val space: Id,
             val relation: Key
         ) : Modal()
 
         data class EditObjectRelationValue(
             val ctx: Id,
+            val space: Id,
             val relation: Key
         ) : Modal()
 
         data class EditTagOrStatusRelationValue(
             val ctx: Id,
+            val space: Id,
             val relation: Key
         ) : Modal()
 

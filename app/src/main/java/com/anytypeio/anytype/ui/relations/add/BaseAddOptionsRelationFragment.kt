@@ -38,6 +38,7 @@ abstract class BaseAddOptionsRelationFragment : BaseBottomSheetFragment<AddOptio
     }
 
     val ctx get() = argString(CTX_KEY)
+    val space get() = argString(SPACE_ID_KEY)
     val relationKey get() = argString(RELATION_KEY)
     val target get() = argString(TARGET_KEY)
     val flow get() = arg<Int>(FLOW_KEY)
@@ -195,6 +196,7 @@ abstract class BaseAddOptionsRelationFragment : BaseBottomSheetFragment<AddOptio
 
     companion object {
         const val CTX_KEY = "arg.add-object-relation-value.ctx"
+        const val SPACE_ID_KEY = "arg.add-object-relation-value.space-id"
         const val RELATION_KEY = "arg.add-object-relation-value.relation.key"
         const val TARGET_KEY = "arg.add-object-relation-value.target"
         const val FLOW_KEY = "arg.add-object-relation-value.flow"

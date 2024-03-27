@@ -41,9 +41,10 @@ class RelationCreateFromLibraryFragment : RelationCreateFromScratchBaseFragment(
     override fun onLimitObjectTypeClicked() {
         findNavController().navigate(
             R.id.limitObjectTypeScreen,
-            bundleOf(
-                LimitObjectTypeFragment.CTX_KEY to ctx,
-                LimitObjectTypeFragment.FLOW_TYPE to LimitObjectTypeFragment.FLOW_LIBRARY
+            LimitObjectTypeFragment.args(
+                ctx = ctx,
+                space = space,
+                flow = LimitObjectTypeFragment.FLOW_LIBRARY
             )
         )
     }

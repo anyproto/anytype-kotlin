@@ -16,7 +16,7 @@ class ObjectSetRecordViewModel(
 
     val commands = MutableSharedFlow<Command>(replay = 0)
 
-    override fun onActionDone(target: Id, input: String) {
+    override fun onActionDone(target: Id, space: Id, input: String) {
         viewModelScope.launch {
             setObjectDetails(
                 UpdateDetail.Params(
@@ -31,10 +31,15 @@ class ObjectSetRecordViewModel(
         }
     }
 
-    override fun onButtonClicked(target: Id, input: String) {
+    override fun onButtonClicked(target: Id, space: Id, input: String) {
         viewModelScope.launch {
             if (input.isEmpty()) {
-                commands.emit(Command.OpenObject(target))
+                commands.emit(
+                    Command.OpenObject(
+                        ctx = target,
+                        space = space
+                    )
+                )
             } else {
                 setObjectDetails(
                     UpdateDetail.Params(
@@ -45,10 +50,20 @@ class ObjectSetRecordViewModel(
                 ).process(
                     failure = {
                         Timber.e(it, "Error while updating data view record")
-                        commands.emit(Command.OpenObject(target))
+                        commands.emit(
+                            Command.OpenObject(
+                                ctx = target,
+                                space = space
+                            )
+                        )
                     },
                     success = {
-                        commands.emit(Command.OpenObject(target))
+                        commands.emit(
+                            Command.OpenObject(
+                                ctx = target,
+                                space = space
+                            )
+                        )
                     }
                 )
             }
@@ -75,6 +90,6 @@ class ObjectSetRecordViewModel(
     }
 
     sealed class Command {
-        data class OpenObject(val ctx: Id) : Command()
+        data class OpenObject(val ctx: Id, val space: Id) : Command()
     }
 }

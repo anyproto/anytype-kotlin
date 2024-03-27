@@ -131,11 +131,11 @@ class ObjectSetCreateBookmarkRecordViewModel(
         )
     }
 
-    override fun onButtonClicked(target: Id, input: String) {
+    override fun onButtonClicked(target: Id, space: Id, input: String) {
         // Do nothing.
     }
 
-    override fun onActionDone(target: Id, input: String) {
+    override fun onActionDone(target: Id, space: Id, input: String) {
         // Do nothing
     }
 

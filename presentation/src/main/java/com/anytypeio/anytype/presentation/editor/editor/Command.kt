@@ -93,6 +93,7 @@ sealed class Command {
             abstract val isReadOnlyValue: Boolean
             data class Default(
                 val ctx: Id,
+                val space: Id,
                 val target: Id,
                 val relationKey: Key,
                 val targetObjectTypes: List<Id>,
@@ -101,6 +102,7 @@ sealed class Command {
 
             data class Text(
                 val ctx: Id,
+                val space: Id,
                 val target: Id,
                 val relationKey: Key,
                 override val isReadOnlyValue: Boolean = false
@@ -108,6 +110,7 @@ sealed class Command {
 
             data class Date(
                 val ctx: Id,
+                val space: Id,
                 val target: Id,
                 val relationKey: Key,
                 override val isReadOnlyValue: Boolean = false
@@ -115,6 +118,7 @@ sealed class Command {
 
             data class TagOrStatus(
                 val ctx: Id,
+                val space: Id,
                 val target: Id,
                 val relationKey: Key,
                 override val isReadOnlyValue: Boolean = false
@@ -122,6 +126,7 @@ sealed class Command {
 
             data class ObjectValue(
                 val ctx: Id,
+                val space: Id,
                 val target: Id,
                 val relationKey: Key,
                 override val isReadOnlyValue: Boolean = false

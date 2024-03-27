@@ -1,6 +1,10 @@
 package com.anytypeio.anytype.ui.relations.value
 
 import androidx.fragment.app.viewModels
+import com.anytypeio.anytype.core_models.primitives.Id
+import com.anytypeio.anytype.core_models.primitives.Key
+import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argBoolean
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
@@ -13,6 +17,7 @@ import javax.inject.Inject
 class AttachmentValueFragment : BaseBottomSheetComposeFragment() {
 
     private val ctx get() = argString(CTX_KEY)
+    private val space get() = arg<String>(SPACE_ID_KEY)
     private val relationKey get() = argString(RELATION_KEY)
     private val objectId get() = argString(OBJECT_ID_KEY)
     private val isLocked get() = argBoolean(IS_LOCKED_KEY)
@@ -28,7 +33,8 @@ class AttachmentValueFragment : BaseBottomSheetComposeFragment() {
             objectId = objectId,
             relationKey = relationKey,
             isLocked = isLocked,
-            relationContext = relationContext
+            relationContext = relationContext,
+            space = SpaceId(space)
         )
         inject(params)
     }
@@ -53,9 +59,21 @@ class AttachmentValueFragment : BaseBottomSheetComposeFragment() {
 
     companion object {
         const val CTX_KEY = "arg.relation.attachment.ctx"
+        const val SPACE_ID_KEY = "arg.relation.attachment.space"
         const val RELATION_KEY = "arg.relation.attachment.relation.key"
         const val OBJECT_ID_KEY = "arg.relation.attachment.object"
         const val IS_LOCKED_KEY = "arg.relation.attachment.is-locked"
         const val RELATION_CONTEXT_KEY = "arg.relation.attachment.relation-context"
+
+        fun args(
+            ctx: Id,
+            space: Id,
+            relation: Key,
+            obj: Id,
+            isLocked: Boolean,
+            relationContext: RelationContext
+        ) {
+          // TODO provide args
+        }
     }
 }

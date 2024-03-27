@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
 import com.anytypeio.anytype.core_ui.features.editor.DragAndDropAdapterDelegate
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
@@ -27,6 +28,7 @@ import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetImeOffsetFragment
 import com.anytypeio.anytype.databinding.FragmentSetBlockTextValueBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.objects.block.SetBlockTextValueViewModel
 import com.anytypeio.anytype.ui.editor.OnFragmentInteractionListener
 import java.util.*
@@ -140,7 +142,15 @@ class SetBlockTextValueFragment :
     }
 
     override fun injectDependencies() {
-        componentManager().setTextBlockValueComponent.get(ctx).inject(this)
+        componentManager()
+            .setTextBlockValueComponent
+            .get(
+                params = DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {
@@ -174,18 +184,26 @@ class SetBlockTextValueFragment :
     override fun onDrag(v: View?, event: DragEvent?) = false
 
     private val ctx: String get() = argString(CTX_KEY)
+    private val space: String get() = argString(SPACE_KEY)
     private val block: String get() = argString(BLOCK_ID_KEY)
     private val table: String get() = argString(TABLE_ID_KEY)
 
     companion object {
         const val CTX_KEY = "arg.editor.block.text.value.ctx"
+        const val SPACE_KEY = "arg.editor.block.text.value.space"
         const val TABLE_ID_KEY = "arg.editor.block.text.value.table.id"
         const val BLOCK_ID_KEY = "arg.editor.block.text.value.block.id"
         const val DEFAULT_IME_ACTION = EditorInfo.IME_ACTION_DONE
 
-        fun new(ctx: Id, table: Id, block: Id) = SetBlockTextValueFragment().apply {
+        fun new(
+            ctx: Id,
+            space: Id,
+            table: Id,
+            block: Id
+        ) = SetBlockTextValueFragment().apply {
             arguments = bundleOf(
                 CTX_KEY to ctx,
+                SPACE_KEY to space,
                 TABLE_ID_KEY to table,
                 BLOCK_ID_KEY to block
             )

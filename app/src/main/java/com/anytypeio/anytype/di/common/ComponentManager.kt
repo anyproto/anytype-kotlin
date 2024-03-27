@@ -202,7 +202,7 @@ class ComponentManager(
         DaggerTemplateSelectComponent.factory().create(findComponentDependencies())
     }
 
-    val editorComponent = TypedComponentMap { param: DefaultComponentParam ->
+    val editorComponent = ComponentMapWithParam { param: DefaultComponentParam ->
         main
             .editorComponentBuilder()
             .session(EditorSessionModule)
@@ -322,7 +322,7 @@ class ComponentManager(
             .build()
     }
 
-    val objectSetComponent = TypedComponentMap { param: DefaultComponentParam ->
+    val objectSetComponent = ComponentMapWithParam { param: DefaultComponentParam ->
         main.objectSetComponentBuilder()
             .module(ObjectSetModule)
             .build()
@@ -1223,7 +1223,7 @@ class ComponentManager(
         }
     }
 
-    class TypedComponentMap<out T, in PARAMETER>(private val builder: (PARAMETER) -> T) {
+    class ComponentMapWithParam<out T, in PARAMETER>(private val builder: (PARAMETER) -> T) {
 
         private val map = mutableMapOf<String, T>()
 

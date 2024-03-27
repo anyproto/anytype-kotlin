@@ -632,7 +632,10 @@ class ObjectSetViewModel(
             DataViewState.Init -> {
                 _dvViews.value = emptyList()
                 if (dvViewer == null) {
-                    DataViewViewState.Collection.NoView
+                    DataViewViewState.Collection.NoView(
+                        isCreateObjectAllowed = permission?.isOwnerOrEditor() == true,
+                        isEditingViewAllowed = permission?.isOwnerOrEditor() == true
+                    )
                 } else {
                     DataViewViewState.Init
                 }
@@ -649,7 +652,10 @@ class ObjectSetViewModel(
                 val viewer = renderViewer(objectState, dataViewState, dvViewer, relations)
 
                 when {
-                    viewer == null -> DataViewViewState.Collection.NoView
+                    viewer == null -> DataViewViewState.Collection.NoView(
+                        isCreateObjectAllowed = permission?.isOwnerOrEditor() == true,
+                        isEditingViewAllowed = permission?.isOwnerOrEditor() == true
+                    )
                     viewer.isEmpty() -> {
                         val isCreateObjectAllowed = objectState.isCreateObjectAllowed() && permission?.isOwnerOrEditor() == true
                         DataViewViewState.Collection.NoItems(
@@ -687,8 +693,14 @@ class ObjectSetViewModel(
             DataViewState.Init -> {
                 _dvViews.value = emptyList()
                 when {
-                    setOfValue.isEmpty() || query.isEmpty() -> DataViewViewState.Set.NoQuery
-                    viewer == null -> DataViewViewState.Set.NoView
+                    setOfValue.isEmpty() || query.isEmpty() -> DataViewViewState.Set.NoQuery(
+                        isCreateObjectAllowed = permission?.isOwnerOrEditor() == true,
+                        isEditingViewAllowed = permission?.isOwnerOrEditor() == true
+                    )
+                    viewer == null -> DataViewViewState.Set.NoView(
+                        isCreateObjectAllowed = permission?.isOwnerOrEditor() == true,
+                        isEditingViewAllowed = permission?.isOwnerOrEditor() == true
+                    )
                     else -> DataViewViewState.Init
                 }
             }
@@ -711,8 +723,14 @@ class ObjectSetViewModel(
                 )
 
                 when {
-                    query.isEmpty() || setOfValue.isEmpty() -> DataViewViewState.Set.NoQuery
-                    render == null -> DataViewViewState.Set.NoView
+                    query.isEmpty() || setOfValue.isEmpty() -> DataViewViewState.Set.NoQuery(
+                        isCreateObjectAllowed = permission?.isOwnerOrEditor() == true,
+                        isEditingViewAllowed = permission?.isOwnerOrEditor() == true
+                    )
+                    render == null -> DataViewViewState.Set.NoView(
+                        isCreateObjectAllowed = permission?.isOwnerOrEditor() == true,
+                        isEditingViewAllowed = permission?.isOwnerOrEditor() == true
+                    )
                     render.isEmpty() -> {
                         val (defType, _) = objectState.getActiveViewTypeAndTemplate(
                             context, viewer, storeOfObjectTypes

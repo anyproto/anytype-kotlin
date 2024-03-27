@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.SubscriptionEvent
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Result
@@ -61,6 +62,7 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetPaginator
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
+import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModelFactory
 import com.anytypeio.anytype.presentation.sets.state.DefaultObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
@@ -91,7 +93,7 @@ abstract class TestObjectSetSetup {
     private lateinit var downloadUnsplashImage: DownloadUnsplashImage
     private lateinit var setDataViewQuery: SetDataViewQuery
 
-    private val workspaceId: Id = MockDataFactory.randomString()
+    private val defaultSpace: Id = MockDataFactory.randomString()
 
     lateinit var urlBuilder: UrlBuilder
 
@@ -295,7 +297,11 @@ abstract class TestObjectSetSetup {
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             dispatchers = appCoroutineDispatchers,
             getNetworkMode = getNetworkMode,
-            dateProvider = dateProvider
+            dateProvider = dateProvider,
+            params = ObjectSetViewModel.Params(
+                ctx = ctx,
+                space = SpaceId(defaultSpace)
+            )
         )
     }
 

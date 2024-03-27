@@ -3950,7 +3950,11 @@ open class EditorViewModelTest {
             templatesContainer = templatesContainer,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             dispatchers = dispatchers,
-            getNetworkMode = getNetworkMode
+            getNetworkMode = getNetworkMode,
+            params = EditorViewModel.Params(
+                ctx = root,
+                space = SpaceId(defaultSpace)
+            )
         )
     }
 

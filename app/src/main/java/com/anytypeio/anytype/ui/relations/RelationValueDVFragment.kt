@@ -134,6 +134,7 @@ open class RelationValueDVFragment : RelationValueBaseFragment<FragmentRelationV
         }
         val fr = AddObjectRelationFragment.new(
             ctx = ctx,
+            space = space,
             relationKey = relationKey,
             objectId = target,
             types = types,
@@ -145,6 +146,7 @@ open class RelationValueDVFragment : RelationValueBaseFragment<FragmentRelationV
     private fun showAddStatusOrTagScreen() {
         val fr = AddOptionsRelationDVFragment.new(
             ctx = ctx,
+            space = space,
             target = target,
             relationKey = relationKey,
             isIntrinsic = isIntrinsic
@@ -157,7 +159,8 @@ open class RelationValueDVFragment : RelationValueBaseFragment<FragmentRelationV
             ctx = ctx,
             objectId = target,
             flow = AddFileRelationFragment.FLOW_DATAVIEW,
-            relationKey = relationKey
+            relationKey = relationKey,
+            space = space
         )
         fr.show(childFragmentManager, null)
     }

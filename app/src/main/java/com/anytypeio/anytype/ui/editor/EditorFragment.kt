@@ -1033,7 +1033,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         target = command.target,
                         relationKey = command.relationKey,
                         targetObjectTypes = command.targetObjectTypes,
-                        isLocked = command.isReadOnlyValue
+                        isLocked = command.isReadOnlyValue,
+                        space = command.space
                     )
                     fr.showChildFragment()
                 }

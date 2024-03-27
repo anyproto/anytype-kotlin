@@ -134,6 +134,7 @@ open class ViewerFilterFragment : BaseBottomSheetFragment<FragmentFilterBinding>
             is ViewerFilterCommand.Modal.UpdateInputValueFilter -> {
                 val fr = ModifyFilterFromInputFieldValueFragment.new(
                     ctx = ctx,
+                    space = space,
                     relation = command.relation,
                     index = command.filterIndex,
                     viewer = viewer
@@ -143,6 +144,7 @@ open class ViewerFilterFragment : BaseBottomSheetFragment<FragmentFilterBinding>
             is ViewerFilterCommand.Modal.UpdateSelectValueFilter -> {
                 val fr = ModifyFilterFromSelectedValueFragment.new(
                     ctx = ctx,
+                    space = space,
                     relation = command.relation,
                     index = command.filterIndex,
                     viewer = viewer

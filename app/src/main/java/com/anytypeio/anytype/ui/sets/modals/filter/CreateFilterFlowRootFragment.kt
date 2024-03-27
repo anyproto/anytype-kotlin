@@ -70,7 +70,7 @@ class CreateFilterFlowRootFragment :
     }
 
     private fun transitToSelection() {
-        val fr = SelectFilterRelationFragment.new(ctx = ctx, viewerId = viewer)
+        val fr = SelectFilterRelationFragment.new(ctx = ctx, space = space, viewerId = viewer)
         childFragmentManager
             .beginTransaction()
             .add(R.id.container, fr)

@@ -86,6 +86,7 @@ import com.anytypeio.anytype.presentation.relations.providers.SetOrCollectionRel
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetPaginator
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
+import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModelFactory
 import com.anytypeio.anytype.presentation.sets.state.DefaultObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -103,6 +104,7 @@ import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
 import com.anytypeio.anytype.providers.DefaultUriFileProvider
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import dagger.Binds
+import dagger.BindsInstance
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
@@ -116,6 +118,8 @@ interface ObjectSetSubComponent {
 
     @Subcomponent.Builder
     interface Builder {
+        @BindsInstance
+        fun withParams(param: ObjectSetViewModel.Params) : Builder
         fun module(module: ObjectSetModule): Builder
         fun build(): ObjectSetSubComponent
     }
@@ -214,6 +218,7 @@ object ObjectSetModule {
     @Provides
     @PerScreen
     fun provideObjectSetViewModelFactory(
+        params: ObjectSetViewModel.Params,
         openObjectSet: OpenObjectSet,
         closeBlock: CloseBlock,
         setObjectDetails: UpdateDetail,
@@ -254,6 +259,7 @@ object ObjectSetModule {
         getNetworkMode: GetNetworkMode,
         dateProvider: DateProvider
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
+        params = params,
         openObjectSet = openObjectSet,
         closeBlock = closeBlock,
         setObjectDetails = setObjectDetails,

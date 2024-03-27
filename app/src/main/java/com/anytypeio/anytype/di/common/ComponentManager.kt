@@ -117,6 +117,7 @@ import com.anytypeio.anytype.presentation.relations.option.CreateOrEditOptionVie
 import com.anytypeio.anytype.presentation.relations.value.attachment.AttachmentValueViewModel
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueViewModel
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagOrStatusValueViewModel
+import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
 import com.anytypeio.anytype.ui.relations.RelationEditParameters
 import com.anytypeio.anytype.ui.types.edit.TypeEditParameters
@@ -325,6 +326,12 @@ class ComponentManager(
     val objectSetComponent = ComponentMapWithParam { param: DefaultComponentParam ->
         main.objectSetComponentBuilder()
             .module(ObjectSetModule)
+            .withParams(
+                ObjectSetViewModel.Params(
+                    ctx = param.ctx,
+                    space = param.space
+                )
+            )
             .build()
     }
 

@@ -42,6 +42,7 @@ import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.Dispatcher
 
 class ObjectSetViewModelFactory(
+    private val params: ObjectSetViewModel.Params,
     private val openObjectSet: OpenObjectSet,
     private val closeBlock: CloseBlock,
     private val setObjectDetails: UpdateDetail,
@@ -85,6 +86,7 @@ class ObjectSetViewModelFactory(
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return ObjectSetViewModel(
+            params = params,
             openObjectSet = openObjectSet,
             closeBlock = closeBlock,
             setObjectDetails = setObjectDetails,

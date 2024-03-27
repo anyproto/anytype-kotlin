@@ -1224,6 +1224,7 @@
     <string name="payments_tier_current_valid">Valido fino al</string>
     <string name="payments_tier_current_paid_by">Paid by Card</string>
     <string name="payments_tier_current_button">Manage payment</string>
+    <string name="payments_tier_current_change_email_button">Change e-mail</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Inserisci il codice inviato alla tua email</string>
     <string name="payments_code_resend">Invia di nuovo</string>

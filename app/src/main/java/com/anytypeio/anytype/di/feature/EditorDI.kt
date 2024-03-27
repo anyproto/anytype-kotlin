@@ -5,6 +5,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.di.feature.cover.UnsplashSubComponent
@@ -55,6 +56,7 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
@@ -248,6 +250,7 @@ object EditorSessionModule {
     @Provides
     fun providePageViewModelFactory(
         params: EditorViewModel.Params,
+        permissions: UserPermissionProvider,
         openPage: OpenPage,
         closePage: CloseBlock,
         interceptEvents: InterceptEvents,
@@ -291,6 +294,7 @@ object EditorSessionModule {
         getNetworkMode: GetNetworkMode
     ): EditorViewModelFactory = EditorViewModelFactory(
         params = params,
+        permissions = permissions,
         openPage = openPage,
         closeObject = closePage,
         createBlockLinkWithObject = createBlockLinkWithObject,

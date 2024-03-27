@@ -117,6 +117,7 @@ class RelationStatusValueFragment :
     private fun showAddStatusOrTagScreen() {
         val fr = AddOptionsRelationFragment.new(
             ctx = ctx,
+            space = space,
             objectId = target,
             relationKey = relationKey
         )

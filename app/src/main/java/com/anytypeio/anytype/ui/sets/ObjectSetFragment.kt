@@ -1092,6 +1092,7 @@ open class ObjectSetFragment :
                 val fr = ViewerFilterFragment.new(
                     ctx = command.ctx,
                     viewer = command.viewer,
+                    space = space
                 )
                 fr.showChildFragment(EMPTY_TAG)
             }
@@ -1129,19 +1130,25 @@ open class ObjectSetFragment :
             is ObjectSetCommand.Modal.CreateViewer -> {
                 val fr = CreateDataViewViewerFragment.new(
                     ctx = command.ctx,
-                    target = command.target
+                    target = command.target,
+                    space = space
                 )
                 fr.showChildFragment(EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.EditDataViewViewer -> {
                 val fr = EditDataViewViewerFragment.new(
                     ctx = command.ctx,
-                    viewer = command.viewer
+                    viewer = command.viewer,
+                    space = space
                 )
                 fr.showChildFragment(EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.ManageViewer -> {
-                val fr = ManageViewerFragment.new(ctx = command.ctx, dv = command.dataview)
+                val fr = ManageViewerFragment.new(
+                    ctx = command.ctx,
+                    space = space,
+                    dv = command.dataview
+                )
                 fr.showChildFragment(EMPTY_TAG)
             }
 

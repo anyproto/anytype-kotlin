@@ -20,6 +20,8 @@ dependencies {
     implementation libs.room
     implementation libs.roomKtx
     implementation libs.dataStore
+    implementation libs.playBilling
+    implementation project(':domain')
 
     kapt libs.annotations
 

@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.di.common
 
 import android.content.Context
+import com.android.billingclient.api.PurchasesUpdatedListener
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -1078,8 +1079,8 @@ class ComponentManager(
             .build()
     }
 
-    val paymentsComponent = Component {
-        DaggerPaymentsComponent.factory().create(findComponentDependencies())
+    val paymentsComponent = ComponentWithParams { listener: PurchasesUpdatedListener ->
+        DaggerPaymentsComponent.factory().create(listener, findComponentDependencies())
     }
 
     val galleryInstallationsComponent =

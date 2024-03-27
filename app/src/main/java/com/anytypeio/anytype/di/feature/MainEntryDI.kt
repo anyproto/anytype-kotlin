@@ -1,7 +1,5 @@
 package com.anytypeio.anytype.di.feature
 
-import android.content.Context
-import com.android.billingclient.api.BillingClient
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.account.AccountStatusChannel
@@ -175,17 +173,4 @@ object MainEntryModule {
     fun provideCheckAuthStatus(
         repo: AuthRepository
     ): CheckAuthorizationStatus = CheckAuthorizationStatus(repo)
-
-    @PerScreen
-    @Provides
-    fun provideBillingService(
-        context: Context,
-        activity: MainActivity
-    ): BillingClient {
-        return BillingClient
-            .newBuilder(context)
-            .setListener(activity)
-            .enablePendingPurchases()
-            .build()
-    }
 }

@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.provider.OpenableColumns
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
@@ -17,9 +18,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
 import com.android.billingclient.api.BillingClient
+import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
+import com.android.billingclient.api.QueryProductDetailsParams
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.app.DefaultAppActionManager
@@ -51,11 +54,13 @@ import com.github.javiersantos.appupdater.enums.UpdateFrom
 import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
-class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Provider, PurchasesUpdatedListener {
+class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Provider {
 
     var deepLink: String? = null
 
@@ -81,8 +86,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     @Inject
     lateinit var featureToggles: FeatureToggles
 
-    @Inject
-    lateinit var billingClient: BillingClient
+
 
     val container: FragmentContainerView get() = findViewById(R.id.fragment)
 
@@ -331,11 +335,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         componentManager().mainEntryComponent(this).release()
     }
 
-    //region Billing
-    override fun onPurchasesUpdated(p0: BillingResult, p1: MutableList<Purchase>?) {
 
-    }
-    //endregion
 
     companion object {
         const val AUTO_UPDATE_URL = "https://fra1.digitaloceanspaces.com/anytype-release/latest-android.json"

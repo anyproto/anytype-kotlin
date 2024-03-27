@@ -93,13 +93,7 @@ ext.getBuildVersionName = {
     def versionMajor = getProperty('version.versionMajor').toInteger()
     def versionMinor = getProperty('version.versionMinor').toInteger()
     def versionPatch = getProperty('version.versionPatch').toInteger()
-    def isDatedVersionNameEnabled = getProperty('version.useDatedVersionName').toBoolean()
-    if (isDatedVersionNameEnabled) {
-        def date = getCurrentDate()
-        return "${versionMajor}.${versionMinor}.${versionPatch}-${date}"
-    } else {
-        return "${versionMajor}.${versionMinor}.${versionPatch}"
-    }
+    return "${versionMajor}.${versionMinor}.${versionPatch}"
 }
 
 ext.getBuildVersionCode = {

@@ -26,6 +26,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
         MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
         mockObjectSet = MockSet(context = root, space = defaultSpace)
+        givenNetworkNodeMocked()
     }
 
     @After

@@ -31,6 +31,7 @@ class CollectionDataViewUpdateTest : ObjectSetViewModelTestSetup() {
         viewModel = givenViewModel()
         objectCollection = MockCollection(context = root, space = defaultSpace)
         stubGetDefaultPageType()
+        stubNetworkMode()
     }
 
     @After

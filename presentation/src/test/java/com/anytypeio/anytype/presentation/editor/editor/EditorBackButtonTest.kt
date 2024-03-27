@@ -6,6 +6,7 @@ import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -18,6 +19,7 @@ class EditorBackButtonTest : EditorPresentationTestSetup() {
     @get:Rule
     val rule = InstantTaskExecutorRule()
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
@@ -25,6 +27,10 @@ class EditorBackButtonTest : EditorPresentationTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         stubSpaceManager()
+        stubClosePage()
+        stubGetNetworkMode()
+        stubFileLimitEvents()
+        stubInterceptEvents()
     }
 
     @Test

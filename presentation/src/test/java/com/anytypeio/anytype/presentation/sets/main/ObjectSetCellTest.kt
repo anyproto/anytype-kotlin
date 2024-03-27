@@ -38,6 +38,7 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
             // SETUP
             stubSpaceManager(mockObjectSet.spaceId)
             stubInterceptEvents()
+            stubNetworkMode()
             stubInterceptThreadStatus()
             stubOpenObject(
                 doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),

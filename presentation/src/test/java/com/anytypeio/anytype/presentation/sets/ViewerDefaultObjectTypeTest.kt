@@ -62,6 +62,7 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
     fun setup() {
         closable = MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
+        stubNetworkMode()
     }
 
     @After

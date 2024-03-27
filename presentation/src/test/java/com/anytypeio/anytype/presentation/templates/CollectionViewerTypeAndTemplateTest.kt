@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.templates
 
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
@@ -29,6 +30,9 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
 
@@ -75,7 +79,9 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
     @Before
     fun setup() {
         closable = MockitoAnnotations.openMocks(this)
+        givenNetworkNodeMocked()
         viewModel = givenViewModel()
+        stubAddObjectToCollection()
     }
 
     @After

@@ -18,6 +18,7 @@ import com.jraska.livedata.test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -32,23 +33,23 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
     @get:Rule
     val rule = InstantTaskExecutorRule()
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
-
-//    @get:Rule
-//    val timberTestRule: TimberTestRule = TimberTestRule.builder()
-//        .minPriority(Log.DEBUG)
-//        .showThread(true)
-//        .showTimestamp(false)
-//        .onlyLogWhenTestFails(true)
-//        .build()
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
         stubSpaceManager()
+        stubGetNetworkMode()
+        stubFileLimitEvents()
+        stubUpdateText()
+        stubDuplicateBlock("", emptyList())
+        stubCopy()
+        stubPaste()
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @After
     fun after() {
         coroutineTestRule.advanceTime(TEXT_CHANGES_DEBOUNCE_DURATION)
@@ -65,6 +66,8 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
         stubUpdateText()
         stubSearchObjects()
         stubOpenDocument(document = doc)
+        stubUnlinkBlocks()
+
         val vm = buildViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
@@ -102,6 +105,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
         stubUpdateText()
         stubSearchObjects()
         stubOpenDocument(document = doc)
+        stubUnlinkBlocks()
         val vm = buildViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
@@ -259,6 +263,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubOpenDocument(document = doc)
+
         val vm = buildViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
@@ -295,6 +300,8 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
         stubUpdateText()
         stubSearchObjects()
         stubOpenDocument(document = doc)
+        stubCopy()
+
         val vm = buildViewModel()
 
         vm.onStart(id = root, space = defaultSpace)

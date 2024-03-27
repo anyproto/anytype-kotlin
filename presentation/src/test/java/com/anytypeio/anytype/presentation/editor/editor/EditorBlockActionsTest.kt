@@ -30,6 +30,9 @@ class EditorBlockActionsTest : EditorPresentationTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         stubSpaceManager()
+        stubFileLimitEvents()
+        stubGetNetworkMode()
+        stubInterceptEvents()
     }
 
     @Test

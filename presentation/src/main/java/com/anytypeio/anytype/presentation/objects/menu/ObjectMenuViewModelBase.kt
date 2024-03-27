@@ -438,6 +438,7 @@ abstract class ObjectMenuViewModelBase(
         ) : Command()
         data class OpenTemplate(
             val templateId: Id,
+            val space: Id,
             val typeId: Id,
             val typeKey: Key,
             val typeName: String

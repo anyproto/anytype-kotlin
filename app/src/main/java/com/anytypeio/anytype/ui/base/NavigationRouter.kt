@@ -20,7 +20,8 @@ class NavigationRouter(
                 is AppNavigation.Command.OpenModalTemplateSelect -> navigation.openModalTemplateSelect(
                     template = command.template,
                     templateTypeId = command.templateTypeId,
-                    templateTypeKey = command.templateTypeKey
+                    templateTypeKey = command.templateTypeKey,
+                    space = command.space
                 )
                 is AppNavigation.Command.OpenSetOrCollection -> navigation.openObjectSet(
                     target = command.target,

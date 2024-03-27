@@ -7,12 +7,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.sets.viewer.ViewerCoverAdapter
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentViewerImagePreviewSelectBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerImagePreviewSelectViewModel
 import javax.inject.Inject
 
@@ -23,6 +25,7 @@ class ViewerImagePreviewSelectFragment : BaseBottomSheetFragment<FragmentViewerI
     private val vm: ViewerImagePreviewSelectViewModel by viewModels { factory }
 
     private val ctx get() = arg<String>(CTX_KEY)
+    private val space get() = arg<String>(SPACE_ID_KEY)
     private val viewer get() = arg<String>(VIEWER_KEY)
 
     private val viewerCoverAdapter by lazy {
@@ -54,7 +57,15 @@ class ViewerImagePreviewSelectFragment : BaseBottomSheetFragment<FragmentViewerI
     }
 
     override fun injectDependencies() {
-        componentManager().viewerImagePreviewSelectComponent.get(ctx).inject(this)
+        componentManager()
+            .viewerImagePreviewSelectComponent
+            .get(
+                params = DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {
@@ -70,6 +81,7 @@ class ViewerImagePreviewSelectFragment : BaseBottomSheetFragment<FragmentViewerI
 
     companion object {
         const val CTX_KEY = "arg.viewer-cover-select.ctx"
+        const val SPACE_ID_KEY = "arg.viewer-cover-select.space"
         const val VIEWER_KEY = "arg.viewer-cover-select.viewer"
     }
 }

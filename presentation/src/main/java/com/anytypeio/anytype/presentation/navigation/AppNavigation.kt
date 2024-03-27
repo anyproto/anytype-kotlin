@@ -19,12 +19,14 @@ interface AppNavigation {
     fun openModalTemplateSelect(
         template: Id,
         templateTypeId: Id,
-        templateTypeKey: Key
+        templateTypeKey: Key,
+        space: Id
     )
     fun openModalTemplateEdit(
         template: Id,
         templateTypeId: Id,
-        templateTypeKey: Key
+        templateTypeKey: Key,
+        space: Id
     )
 
     fun launchDocument(target: String, space: Id)
@@ -63,7 +65,8 @@ interface AppNavigation {
         data class OpenModalTemplateSelect(
             val template: Id,
             val templateTypeId: Id,
-            val templateTypeKey: Key
+            val templateTypeKey: Key,
+            val space: Id
         ) : Command()
 
         object OpenSettings : Command()

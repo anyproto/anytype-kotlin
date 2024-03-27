@@ -1419,6 +1419,7 @@ class ObjectSetViewModel(
         isCustomizeViewPanelVisible.value = false
         val event = AppNavigation.Command.OpenModalTemplateSelect(
             template = target,
+            space = space.value,
             templateTypeId = targetTypeId,
             templateTypeKey = targetTypeKey
         )

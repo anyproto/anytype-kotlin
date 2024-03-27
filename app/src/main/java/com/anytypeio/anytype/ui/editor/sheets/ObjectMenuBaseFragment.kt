@@ -165,7 +165,8 @@ abstract class ObjectMenuBaseFragment :
         navigation().openModalTemplateEdit(
             template = command.templateId,
             templateTypeId = command.typeId,
-            templateTypeKey = command.typeKey
+            templateTypeKey = command.typeKey,
+            space = command.space
         )
     }
 

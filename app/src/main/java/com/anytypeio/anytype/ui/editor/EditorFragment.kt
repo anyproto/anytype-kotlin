@@ -2206,8 +2206,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
         fun args(ctx: Id, space: Id) = bundleOf(CTX_KEY to ctx, SPACE_ID_KEY to space)
 
-        private const val CTX_KEY = "args.editor.ctx-id"
-        private const val SPACE_ID_KEY = "args.editor.space-id"
+        const val CTX_KEY = "args.editor.ctx-id"
+        const val SPACE_ID_KEY = "args.editor.space-id"
 
         const val DEFAULT_ANIM_DURATION = 150L
         const val DEFAULT_DELAY_BLOCK_ACTION_TOOLBAR = 100L

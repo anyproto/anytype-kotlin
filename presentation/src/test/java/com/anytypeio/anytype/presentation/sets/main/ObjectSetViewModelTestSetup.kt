@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.StubConfig
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
@@ -282,7 +283,11 @@ open class ObjectSetViewModelTestSetup {
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             dispatchers = dispatchers,
             getNetworkMode = getNetworkMode,
-            dateProvider = DateProviderImpl()
+            dateProvider = DateProviderImpl(),
+            params = ObjectSetViewModel.Params(
+                ctx = root,
+                space = SpaceId(defaultSpace)
+            )
         )
     }
 

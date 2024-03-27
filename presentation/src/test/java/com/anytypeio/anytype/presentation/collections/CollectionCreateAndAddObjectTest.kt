@@ -119,7 +119,11 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             dispatchers = dispatchers,
             getNetworkMode = getNetworkMode,
-            dateProvider = dateProvider
+            dateProvider = dateProvider,
+            params = ObjectSetViewModel.Params(
+                ctx = root,
+                space = SpaceId(defaultSpace)
+            )
         )
         stubNetworkMode()
     }

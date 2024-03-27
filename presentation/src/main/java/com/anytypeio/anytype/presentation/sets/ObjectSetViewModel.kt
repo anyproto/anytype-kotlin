@@ -489,7 +489,7 @@ class ObjectSetViewModel(
                                 currentViewerId = query.currentViewerId,
                                 offset = query.offset,
                                 context = context,
-                                spaces = spaceManager.getSpaceWithTechSpace(),
+                                spaces = spaceManager.getSpaceWithTechSpace(params.space.id),
                                 dataViewRelationLinks = query.state.dataViewContent.relationLinks
                             )
                         } else {
@@ -524,8 +524,7 @@ class ObjectSetViewModel(
             openObjectSet(
                 OpenObjectSet.Params(
                     obj = ctx,
-                    // TODO resolve space id
-                    space = SpaceId(spaceManager.get())
+                    space = params.space
                 )
             ).process(
                 success = { result ->

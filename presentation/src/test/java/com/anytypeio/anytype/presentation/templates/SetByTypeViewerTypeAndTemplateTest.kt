@@ -88,7 +88,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
      */
     @Test
     fun `set by type, type default template is empty, views settings are empty`() = runTest {
-        val spaceId = RandomString.make()
+        val spaceId = defaultSpace
         val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
         val relationObject1 = StubRelationObject()
         val dvViewerRelation1 =
@@ -177,7 +177,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
      */
     @Test
     fun `set by type, type default template is blank, views settings are empty`() = runTest {
-        val spaceId = RandomString.make()
+        val spaceId = defaultSpace
         val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
         val relationObject1 = StubRelationObject()
         val dvViewerRelation1 =
@@ -266,7 +266,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
      */
     @Test
     fun `set by type, type default template is not blank, views settings are empty`() = runTest {
-        val spaceId = RandomString.make()
+        val spaceId = defaultSpace
         val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
         val relationObject1 = StubRelationObject()
         val dvViewerRelation1 =
@@ -358,7 +358,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `set by type, type default template is not blank, views settings has different type and template`() =
         runTest {
-            val spaceId = RandomString.make()
+            val spaceId = defaultSpace
             val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
             val relationObject1 = StubRelationObject()
             val dvViewerRelation1 =
@@ -458,7 +458,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
      */
     @Test
     fun `set by type, type default template is not blank, view template is different`() = runTest {
-        val spaceId = RandomString.make()
+        val spaceId = defaultSpace
         val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
         val relationObject1 = StubRelationObject()
         val dvViewerRelation1 =
@@ -547,7 +547,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
      */
     @Test
     fun `set by type, type default template is not blank, view template is blank`() = runTest {
-        val spaceId = RandomString.make()
+        val spaceId = defaultSpace
         val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
         val relationObject1 = StubRelationObject()
         val dvViewerRelation1 =

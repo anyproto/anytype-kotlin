@@ -7,8 +7,17 @@ sealed class DataViewViewState {
 
     sealed class Collection : DataViewViewState() {
         object NoView : Collection()
-        data class NoItems(val title: String, val isCreateObjectAllowed: Boolean) : Collection()
-        data class Default(val viewer: Viewer?, val isCreateObjectAllowed: Boolean) : Collection()
+        data class NoItems(
+            val title: String,
+            val isCreateObjectAllowed: Boolean = true,
+            val isEditingViewAllowed: Boolean = true
+        ) : Collection()
+
+        data class Default(
+            val viewer: Viewer?,
+            val isCreateObjectAllowed: Boolean = true,
+            val isEditingViewAllowed: Boolean = true
+        ) : Collection()
     }
 
     sealed class Set : DataViewViewState() {
@@ -16,11 +25,12 @@ sealed class DataViewViewState {
         object NoView : Set()
         data class NoItems(
             val title: String,
-            val isCreateObjectAllowed: Boolean
+            val isCreateObjectAllowed: Boolean = true,
+            val isEditingViewAllowed: Boolean = true
         ) : Set()
         data class Default(
             val viewer: Viewer?,
-            val isCreateObjectAllowed: Boolean,
+            val isCreateObjectAllowed: Boolean = true,
             val isEditingViewAllowed: Boolean = true
         ) : Set()
     }

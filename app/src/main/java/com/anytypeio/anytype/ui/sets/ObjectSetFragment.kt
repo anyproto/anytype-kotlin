@@ -568,6 +568,11 @@ open class ObjectSetFragment :
                 viewerTitle.isEnabled = true
                 setupNewButtons(state.isCreateObjectAllowed)
                 customizeViewButton.isEnabled = true
+                if (state.isEditingViewAllowed) {
+                    customizeViewButton.visible()
+                } else {
+                    customizeViewButton.invisible()
+                }
                 setCurrentViewerName(state.title)
                 dataViewInfo.show(DataViewInfo.TYPE.COLLECTION_NO_ITEMS)
                 setViewer(viewer = null)
@@ -581,6 +586,11 @@ open class ObjectSetFragment :
                 viewerTitle.isEnabled = true
                 setupNewButtons(state.isCreateObjectAllowed)
                 customizeViewButton.isEnabled = true
+                if (state.isEditingViewAllowed) {
+                    customizeViewButton.visible()
+                } else {
+                    customizeViewButton.invisible()
+                }
                 setCurrentViewerName(state.viewer?.title)
                 dataViewInfo.hide()
                 setViewer(viewer = state.viewer)
@@ -607,6 +617,11 @@ open class ObjectSetFragment :
                 viewerTitle.isEnabled = true
                 setupNewButtons(state.isCreateObjectAllowed)
                 customizeViewButton.isEnabled = true
+                if (state.isEditingViewAllowed) {
+                    customizeViewButton.visible()
+                } else {
+                    customizeViewButton.invisible()
+                }
                 setCurrentViewerName(state.title)
                 dataViewInfo.show(type = DataViewInfo.TYPE.SET_NO_ITEMS)
                 setViewer(viewer = null)

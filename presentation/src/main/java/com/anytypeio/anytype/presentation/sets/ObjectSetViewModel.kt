@@ -18,8 +18,6 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
-import com.anytypeio.anytype.core_models.getSingleValue
-import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -131,7 +129,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
@@ -139,6 +136,7 @@ import timber.log.Timber
 
 class ObjectSetViewModel(
     private val params: Params,
+    private val permissions: UserPermissionProvider,
     private val database: ObjectSetDatabase,
     private val openObjectSet: OpenObjectSet,
     private val closeBlock: CloseBlock,
@@ -177,8 +175,7 @@ class ObjectSetViewModel(
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val dispatchers: AppCoroutineDispatchers,
     private val getNetworkMode: GetNetworkMode,
-    private val dateProvider: DateProvider,
-    private val permissions: UserPermissionProvider
+    private val dateProvider: DateProvider
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>, ViewerDelegate by viewerDelegate {
 
     val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
@@ -607,7 +604,8 @@ class ObjectSetViewModel(
             is ObjectState.DataView.Collection -> processCollectionState(
                 dataViewState = dataViewState,
                 objectState = objectState,
-                currentViewId = currentViewId
+                currentViewId = currentViewId,
+                permission = permission
             )
             is ObjectState.DataView.Set -> processSetState(
                 dataViewState = dataViewState,
@@ -624,6 +622,7 @@ class ObjectSetViewModel(
         dataViewState: DataViewState,
         objectState: ObjectState.DataView.Collection,
         currentViewId: String?,
+        permission: SpaceMemberPermissions?
     ): DataViewViewState {
         if (!objectState.isInitialized) return DataViewViewState.Init
 
@@ -652,17 +651,19 @@ class ObjectSetViewModel(
                 when {
                     viewer == null -> DataViewViewState.Collection.NoView
                     viewer.isEmpty() -> {
-                        val isCreateObjectAllowed = objectState.isCreateObjectAllowed()
+                        val isCreateObjectAllowed = objectState.isCreateObjectAllowed() && permission?.isOwnerOrEditor() == true
                         DataViewViewState.Collection.NoItems(
                             title = viewer.title,
-                            isCreateObjectAllowed = isCreateObjectAllowed
+                            isCreateObjectAllowed = isCreateObjectAllowed,
+                            isEditingViewAllowed = permission?.isOwnerOrEditor() == true
                         )
                     }
                     else -> {
-                        val isCreateObjectAllowed = objectState.isCreateObjectAllowed()
+                        val isCreateObjectAllowed = objectState.isCreateObjectAllowed() && permission?.isOwnerOrEditor() == true
                         DataViewViewState.Collection.Default(
                             viewer = viewer,
-                            isCreateObjectAllowed = isCreateObjectAllowed
+                            isCreateObjectAllowed = isCreateObjectAllowed,
+                            isEditingViewAllowed = permission?.isOwnerOrEditor() == true
                         )
                     }
                 }
@@ -718,7 +719,8 @@ class ObjectSetViewModel(
                         )
                         DataViewViewState.Set.NoItems(
                             title = render.title,
-                            isCreateObjectAllowed = objectState.isCreateObjectAllowed(defType)
+                            isCreateObjectAllowed = objectState.isCreateObjectAllowed(defType) && (permission?.isOwnerOrEditor() == true),
+                            isEditingViewAllowed = permission?.isOwnerOrEditor() == true
                         )
                     }
                     else -> {
@@ -727,8 +729,7 @@ class ObjectSetViewModel(
                         )
                         DataViewViewState.Set.Default(
                             viewer = render,
-                            isCreateObjectAllowed = objectState.isCreateObjectAllowed(defType),
-//                                    && (permission?.isOwnerOrEditor() == true),
+                            isCreateObjectAllowed = objectState.isCreateObjectAllowed(defType) && (permission?.isOwnerOrEditor() == true),
                             isEditingViewAllowed = permission?.isOwnerOrEditor() == true
                         )
                     }

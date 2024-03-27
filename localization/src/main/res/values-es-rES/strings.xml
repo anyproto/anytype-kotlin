@@ -30,7 +30,7 @@
     <string name="account_default_name">U</string>
     <string name="settings">Ajustes</string>
     <string name="have_you_back_up_your_recovery_phrase">¿Ha realizado una copia de seguridad de su frase de recuperación?</string>
-    <string name="you_will_need_to_sign_in">La necesitarás para iniciar sesión. Manténgala en un lugar seguro. Si la pierdes, ya no podrás acceder a tu cuenta.</string>
+    <string name="you_will_need_to_sign_in">La necesitarás para iniciar sesión. Mantenla en un lugar seguro. Si la pierdes, ya no podrás acceder a tu cuenta.</string>
     <string name="about_help_and_community">Ayuda y Comunidad</string>
     <string name="about_what_is_new">Novedades</string>
     <string name="about_anytype_community">Comunidad Anytype</string>
@@ -1124,7 +1124,7 @@
     <string name="widget_types_hide">Ocultar tipos</string>
     <!--endregion-->
     <!--region MULTIPLAYER -->
-    <string name="multiplayer_share_invite_link">Share invite link</string>
+    <string name="multiplayer_share_invite_link">Compartir enlace de invitación</string>
     <string name="multiplayer_share_invite_link_description">Envía este enlace a otros. Se le asignarán los derechos de acceso después de su aprobación</string>
     <string name="multiplayer_invite_link">Enlace de invitación</string>
     <string name="multiplayer_join_a_space">Unirse a un espacio</string>
@@ -1138,7 +1138,7 @@
     <string name="multiplayer_unjoining_requested">Ha solicitado salir</string>
     <string name="multiplayer_joining_requested">Ha solicitado unirse </string>
     <string name="multiplayer_approve_request">Aprobar</string>
-    <string name="multiplayer_view_request">View request</string>
+    <string name="multiplayer_view_request">Ver solicitud</string>
     <string name="multiplayer_owner">Propietario</string>
     <string name="multiplayer_can_edit">Puede editar</string>
     <string name="multiplayer_can_read">Puede(n) leer</string>
@@ -1149,12 +1149,12 @@
     <string name="multiplayer_remove_member">Eliminar miembro</string>
     <string name="multiplayer_request_sent_toast">Solicitud enviada</string>
     <string name="multiplayer_space_stop_sharing">Dejar de compartir</string>
-    <string name="multiplayer_sharing">Sharing</string>
+    <string name="multiplayer_sharing">Compartir</string>
     <string name="multiplayer_share">Compartir</string>
     <string name="multiplayer_manage">Organizar</string>
     <string name="multiplayer_leave_space">Abandonar espacio</string>
-    <string name="multiplayer_generate_invite_link_description">Create invite link to share space and add new members</string>
-    <string name="multiplayer_generate_invite_link">Generate invite link</string>
+    <string name="multiplayer_generate_invite_link_description">Crear enlace de invitación para compartir espacio y añadir nuevos miembros</string>
+    <string name="multiplayer_generate_invite_link">Generar enlace de invitación</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Membresía</string>

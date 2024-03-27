@@ -71,6 +71,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             } doReturn NetworkModeConfig()
         }
         viewModel = givenViewModel()
+        stubObservePermissions()
     }
 
     @After

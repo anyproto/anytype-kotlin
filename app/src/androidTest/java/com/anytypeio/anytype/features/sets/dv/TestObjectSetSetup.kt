@@ -31,6 +31,7 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
@@ -99,6 +100,9 @@ abstract class TestObjectSetSetup {
 
     @Mock
     lateinit var coverImageHashProvider: CoverImageHashProvider
+
+    @Mock
+    lateinit var permissions: UserPermissionProvider
 
     @Mock
     lateinit var repo: BlockRepository
@@ -301,7 +305,8 @@ abstract class TestObjectSetSetup {
             params = ObjectSetViewModel.Params(
                 ctx = ctx,
                 space = SpaceId(defaultSpace)
-            )
+            ),
+            permissions = permissions
         )
     }
 

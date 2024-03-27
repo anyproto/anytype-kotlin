@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.StubConfig
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -35,6 +36,7 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
@@ -84,14 +86,10 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import net.bytebuddy.utility.RandomString
-import org.junit.Before
 import org.junit.Rule
 import org.mockito.Mock
-import org.mockito.MockitoAnnotations
-import org.mockito.junit.MockitoJUnit
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 
@@ -199,6 +197,9 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var getNetworkMode: GetNetworkMode
 
+    @Mock
+    lateinit var permissions: UserPermissionProvider
+
     lateinit var spaceConfig: Config
 
     var stateReducer = DefaultObjectStateReducer()
@@ -287,7 +288,8 @@ open class ObjectSetViewModelTestSetup {
             params = ObjectSetViewModel.Params(
                 ctx = root,
                 space = SpaceId(defaultSpace)
-            )
+            ),
+            permissions = permissions
         )
     }
 
@@ -481,6 +483,25 @@ open class ObjectSetViewModelTestSetup {
     fun stubNetworkMode() {
         getNetworkMode.stub {
             onBlocking { run(Unit) } doReturn NetworkModeConfig()
+        }
+    }
+
+    fun stubGetSpaceConfig() {
+        spaceManager.stub {
+            onBlocking {
+                getConfig(SpaceId(defaultSpace))
+            } doReturn null
+        }
+
+    }
+
+    fun stubObservePermissions(
+        permission: SpaceMemberPermissions = SpaceMemberPermissions.OWNER
+    ) {
+        permissions.stub {
+            on {
+                observe(SpaceId(defaultSpace))
+            } doReturn flowOf(permission)
         }
     }
 

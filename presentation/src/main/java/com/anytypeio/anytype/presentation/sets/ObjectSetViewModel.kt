@@ -39,6 +39,7 @@ import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
@@ -175,7 +176,8 @@ class ObjectSetViewModel(
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val dispatchers: AppCoroutineDispatchers,
     private val getNetworkMode: GetNetworkMode,
-    private val dateProvider: DateProvider
+    private val dateProvider: DateProvider,
+    private val permissions: UserPermissionProvider
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>, ViewerDelegate by viewerDelegate {
 
     val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
@@ -231,7 +233,11 @@ class ObjectSetViewModel(
 
     init {
         Timber.d("ObjectSetViewModel, init")
+
+        proceedWIthObservingPermissions()
+
         proceedWithObservingProfileIcon()
+
         viewModelScope.launch {
             stateReducer.state
                 .filterIsInstance<ObjectState.DataView>()
@@ -360,6 +366,16 @@ class ObjectSetViewModel(
         }
 
         subscribeToSelectedType()
+    }
+
+    private fun proceedWIthObservingPermissions() {
+        viewModelScope.launch {
+            permissions
+                .observe(params.space)
+                .collect {
+                    permission.value = it
+                }
+        }
     }
 
     private fun proceedWithObservingProfileIcon() {

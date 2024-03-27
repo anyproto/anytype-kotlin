@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
@@ -43,6 +44,7 @@ import com.anytypeio.anytype.presentation.util.Dispatcher
 
 class ObjectSetViewModelFactory(
     private val params: ObjectSetViewModel.Params,
+    private val permissions: UserPermissionProvider,
     private val openObjectSet: OpenObjectSet,
     private val closeBlock: CloseBlock,
     private val setObjectDetails: UpdateDetail,
@@ -87,6 +89,7 @@ class ObjectSetViewModelFactory(
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return ObjectSetViewModel(
             params = params,
+            permissions = permissions,
             openObjectSet = openObjectSet,
             closeBlock = closeBlock,
             setObjectDetails = setObjectDetails,

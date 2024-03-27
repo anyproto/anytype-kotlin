@@ -25,6 +25,7 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
         MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
         mockObjectSet = MockSet(context = root, space = defaultSpace)
+        stubObservePermissions()
     }
 
     @After

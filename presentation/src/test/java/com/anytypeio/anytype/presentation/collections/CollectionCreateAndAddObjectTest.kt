@@ -123,9 +123,11 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
             params = ObjectSetViewModel.Params(
                 ctx = root,
                 space = SpaceId(defaultSpace)
-            )
+            ),
+            permissions = permissions
         )
         stubNetworkMode()
+        stubObservePermissions()
     }
 
     @After

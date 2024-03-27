@@ -48,6 +48,7 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
             MockSet(context = root, setOfValue = setOfId, setOfKey = setOfKey, space = defaultSpace)
         mockObjectCollection = MockCollection(context = root, space = defaultSpace)
         stubNetworkMode()
+        stubObservePermissions()
     }
 
     @After

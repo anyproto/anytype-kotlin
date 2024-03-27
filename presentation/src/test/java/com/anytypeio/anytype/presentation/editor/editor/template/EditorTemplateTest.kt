@@ -26,6 +26,7 @@ class EditorTemplateTest: EditorPresentationTestSetup() {
     @get:Rule
     val rule = InstantTaskExecutorRule()
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
@@ -33,6 +34,8 @@ class EditorTemplateTest: EditorPresentationTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         stubSpaceManager()
+        stubGetNetworkMode()
+        stubFileLimitEvents()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

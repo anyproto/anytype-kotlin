@@ -12,6 +12,7 @@ import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.After
 import org.junit.Before
@@ -32,6 +33,7 @@ class EditorObjectTypeChangeWidgetTest : EditorPresentationTestSetup() {
     @get:Rule
     val rule = InstantTaskExecutorRule()
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
@@ -39,8 +41,11 @@ class EditorObjectTypeChangeWidgetTest : EditorPresentationTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         stubSpaceManager()
+        stubGetNetworkMode()
+        stubFileLimitEvents()
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @After
     fun after() {
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)

@@ -36,7 +36,6 @@ class AndroidApplication : Application(), HasComponentDependencies {
 
     @Inject
     override lateinit var dependencies: ComponentDependenciesProvider
-        protected set
 
     private val main: MainComponent by lazy {
         DaggerMainComponent

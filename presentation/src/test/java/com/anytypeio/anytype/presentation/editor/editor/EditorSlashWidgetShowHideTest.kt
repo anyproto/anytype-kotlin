@@ -5,20 +5,22 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
-import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
+import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 class EditorSlashWidgetShowHideTest : EditorPresentationTestSetup() {
 
     @get:Rule
     val rule = InstantTaskExecutorRule()
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
@@ -33,6 +35,9 @@ class EditorSlashWidgetShowHideTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        stubSpaceManager()
+        stubGetNetworkMode()
+        stubFileLimitEvents()
     }
 
     @Test

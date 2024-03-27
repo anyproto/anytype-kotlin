@@ -11,6 +11,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -25,6 +26,7 @@ class EditorCreateBlockTest : EditorPresentationTestSetup() {
     @get:Rule
     val rule = InstantTaskExecutorRule()
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
@@ -33,6 +35,7 @@ class EditorCreateBlockTest : EditorPresentationTestSetup() {
         MockitoAnnotations.openMocks(this)
         stubSpaceManager()
         stubGetNetworkMode()
+        stubFileLimitEvents()
     }
 
     val title = StubTitle()

@@ -27,6 +27,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -42,6 +43,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
     @get:Rule
     val rule = InstantTaskExecutorRule()
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
@@ -49,6 +51,8 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         stubSpaceManager()
+        stubGetNetworkMode()
+        stubFileLimitEvents()
     }
 
     /**
@@ -2071,6 +2075,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubSearchObjects()
         stubOpenDocument(doc, customDetails)
+        stubGetObjectTypes(listOf())
 
         val vm = buildViewModel()
         vm.onStart(id = root, space = defaultSpace)

@@ -12,6 +12,7 @@ import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -26,6 +27,7 @@ class EditorMergeTest : EditorPresentationTestSetup() {
     @get:Rule
     val rule = InstantTaskExecutorRule()
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
@@ -33,6 +35,8 @@ class EditorMergeTest : EditorPresentationTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         stubSpaceManager()
+        stubGetNetworkMode()
+        stubFileLimitEvents()
     }
 
     @Test
@@ -306,6 +310,7 @@ class EditorMergeTest : EditorPresentationTestSetup() {
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `should not merge text block with the previous block if this previous block is not a text block`() {
 
@@ -342,6 +347,7 @@ class EditorMergeTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubUpdateText()
         stubMergeBlocks(root)
+        stubUnlinkBlocks()
 
         val vm = buildViewModel()
 

@@ -381,11 +381,6 @@ class EditorViewModel(
      */
     var context: String = EMPTY_CONTEXT
 
-    /**
-     * Space in which this document exists.
-     * TODO move to vm params
-     */
-    lateinit var space: String
 
     /**
      * Current document
@@ -505,7 +500,7 @@ class EditorViewModel(
         downloadUnsplashImage(
             DownloadUnsplashImage.Params(
                 picture = action.img,
-                space = SpaceId(space)
+                space = params.space
             )
         ).process(
             failure = {
@@ -1004,7 +999,6 @@ class EditorViewModel(
         Timber.d("onStart, id:[$id]")
 
         this.context = id
-        this.space = space
 
         stateData.postValue(ViewState.Loading)
 
@@ -1027,7 +1021,7 @@ class EditorViewModel(
                 .build(InterceptThreadStatus.Params(context))
                 .collect { status ->
                     val statusView = status.toView(
-                        networkId = spaceManager.getConfig(space = SpaceId(space))?.network,
+                        networkId = spaceManager.getConfig(space = params.space)?.network,
                         networkMode = networkMode
                     )
                     syncStatus.value = statusView
@@ -3138,9 +3132,9 @@ class EditorViewModel(
                 val detail = details.details[dv.targetObjectId]
                 if (detail != null && detail.map.isNotEmpty()) {
                     val wrapper = ObjectWrapper.Basic(detail.map)
-                    wrapper.spaceId ?: space
+                    wrapper.spaceId ?: params.space.id
                 } else {
-                    space
+                    params.space.id
                 }
             }
             proceedWithOpeningDataViewObject(
@@ -3240,7 +3234,7 @@ class EditorViewModel(
                 typeId = TypeId(objectTypeView.id),
                 typeKey = TypeKey(objectTypeView.key),
                 template = objectTypeView.defaultTemplate,
-                space = space
+                space = params.space.id
             )
             createBlockLinkWithObject.async(
                 params = params
@@ -3271,10 +3265,9 @@ class EditorViewModel(
 
     fun onProceedWithApplyingTemplateByObjectId(template: Id?) {
         Timber.d("onProceedWithApplyingTemplateByObjectId, template:[$template]")
-        val ctx = context
         viewModelScope.launch {
             val params = ApplyTemplate.Params(
-                ctx = ctx,
+                ctx = params.ctx,
                 template = template,
             )
             applyTemplate.async(params = params).fold(
@@ -4056,7 +4049,7 @@ class EditorViewModel(
                                 type = relation.type,
                                 filters = ObjectSearchConstants.setsByObjectTypeFilters(
                                     types = listOf(relation.type),
-                                    space = space
+                                    space = this@EditorViewModel.params.space.id
                                 )
                             )
                             findObjectSetForType(params).process(
@@ -4283,12 +4276,12 @@ class EditorViewModel(
                 onFailure = {
                     Timber.e(it, "Error while closing object")
                     navigate(EventWrapper(
-                        AppNavigation.Command.OpenObject(target = target, space = space))
+                        AppNavigation.Command.OpenObject(target = target, space = params.space.id))
                     )
                 },
                 onSuccess = {
                     navigate(EventWrapper(
-                        AppNavigation.Command.OpenObject(target = target, space = space))
+                        AppNavigation.Command.OpenObject(target = target, space = params.space.id))
                     )
                 }
             )
@@ -4474,13 +4467,13 @@ class EditorViewModel(
             }
 
             TypesWidgetItem.Collapse -> {
-                _typesWidgetState.value = _typesWidgetState.value.copy(expaned = false)
+                _typesWidgetState.value = _typesWidgetState.value.copy(expanded = false)
             }
             TypesWidgetItem.Done -> {
                 _typesWidgetState.value = _typesWidgetState.value.copy(visible = false)
             }
             TypesWidgetItem.Expand -> {
-                _typesWidgetState.value = _typesWidgetState.value.copy(expaned = true)
+                _typesWidgetState.value = _typesWidgetState.value.copy(expanded = true)
             }
         }
     }
@@ -4506,16 +4499,17 @@ class EditorViewModel(
 
     private suspend fun proceedWithConvertingToSet() {
         val startTime = System.currentTimeMillis()
-        val params = ConvertObjectToSet.Params(
-            ctx = context,
-            sources = emptyList()
-        )
-        objectToSet.async(params).fold(
+        objectToSet.async(
+            ConvertObjectToSet.Params(
+                ctx = context,
+                sources = emptyList()
+            )
+        ).fold(
             onFailure = { error -> Timber.e(error, "Error convert object to set") },
             onSuccess = {
                 proceedWithOpeningDataViewObject(
-                    target = context,
-                    space = SpaceId(space),
+                    target = params.ctx,
+                    space = params.space,
                     isPopUpToDashboard = true
                 )
                 viewModelScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
@@ -4531,13 +4525,14 @@ class EditorViewModel(
 
     private suspend fun proceedWithConvertingToCollection() {
         val startTime = System.currentTimeMillis()
-        val params = ConvertObjectToCollection.Params(ctx = context)
-        objectToCollection.async(params).fold(
+        objectToCollection.async(
+            ConvertObjectToCollection.Params(ctx = context)
+        ).fold(
             onFailure = { error -> Timber.e(error, "Error convert object to collection") },
             onSuccess = {
                 proceedWithOpeningDataViewObject(
-                    target = context,
-                    space = SpaceId(space),
+                    target = params.ctx,
+                    space = params.space,
                     isPopUpToDashboard = true
                 )
                 viewModelScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
@@ -5001,7 +4996,7 @@ class EditorViewModel(
         }
 
         val intent = Intent.Text.UpdateText(
-            context = context,
+            context = params.ctx,
             target = targetId,
             text = text,
             marks = marks
@@ -5032,7 +5027,7 @@ class EditorViewModel(
                 sorts = sorts,
                 filters = ObjectSearchConstants.filterTypes(
                     spaces = buildList {
-                        add(space)
+                        add(params.space.id)
                     },
                     recommendedLayouts = SupportedLayouts.editorLayouts
                 ),
@@ -6022,8 +6017,8 @@ class EditorViewModel(
                 filters = ObjectSearchConstants.getFilterLinkTo(
                     ignore = context,
                     spaces = buildList {
-                        add(space)
-                        val config = spaceManager.getConfig(SpaceId(space))
+                        add(params.space.id)
+                        val config = spaceManager.getConfig(params.space)
                         if (config != null) add(config.techSpace)
                     },
                 ),
@@ -6100,7 +6095,7 @@ class EditorViewModel(
     data class TypesWidgetState(
         val items: List<TypesWidgetItem>,
         val visible: Boolean,
-        val expaned: Boolean = false
+        val expanded: Boolean = false
     )
 
     sealed class TypesWidgetItem {
@@ -6120,7 +6115,7 @@ class EditorViewModel(
         if (visible) {
             proceedWithGettingObjectTypesForTypesWidget()
         }
-        _typesWidgetState.value = _typesWidgetState.value.copy(visible = visible, expaned = false)
+        _typesWidgetState.value = _typesWidgetState.value.copy(visible = visible, expanded = false)
     }
 
     private fun onTypesWidgetSearchClicked() {
@@ -6135,7 +6130,7 @@ class EditorViewModel(
                 sorts = emptyList(),
                 filters = ObjectSearchConstants.filterTypes(
                     spaces = buildList {
-                        add(space)
+                        add(params.space.id)
                     },
                     recommendedLayouts = SupportedLayouts.createObjectLayouts
                 ),
@@ -6186,11 +6181,12 @@ class EditorViewModel(
         val internalFlags = getInternalFlagsFromDetails()
         val containsTypeFlag = internalFlags.contains(InternalFlags.ShouldSelectType)
         viewModelScope.launch {
-            val params = SetObjectType.Params(
-                context = context,
-                objectTypeKey = objType.uniqueKey
-            )
-            setObjectType.async(params).fold(
+            setObjectType.async(
+                SetObjectType.Params(
+                    context = params.ctx,
+                    objectTypeKey = objType.uniqueKey
+                )
+            ).fold(
                 onFailure = { Timber.e(it, "Error while updating object type: [${objType.uniqueKey}]") },
                 onSuccess = { response ->
                     Timber.d("proceedWithObjectTypeChange success, key:[${objType.uniqueKey}]")
@@ -6242,14 +6238,14 @@ class EditorViewModel(
             createObjectSet(
                 CreateObjectSet.Params(
                     type = type,
-                    space = space
+                    space = params.space.id
                 )
             ).process(
                 failure = { Timber.e(it, "Error while creating a set of type: $type") },
                 success = { response ->
                     proceedWithOpeningDataViewObject(
                         target = response.target,
-                        space = SpaceId(space)
+                        space = params.space
                     )
                 }
             )

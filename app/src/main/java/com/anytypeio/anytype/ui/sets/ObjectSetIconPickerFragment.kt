@@ -4,9 +4,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.argBoolean
 import com.anytypeio.anytype.core_utils.ext.setVisible
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.picker.IconPickerViewModel
 import com.anytypeio.anytype.presentation.editor.picker.ObjectSetIconPickerViewModelFactory
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
@@ -30,7 +32,15 @@ class ObjectSetIconPickerFragment : IconPickerFragmentBase<Id>() {
     }
 
     override fun injectDependencies() {
-        componentManager().objectSetIconPickerComponent.get(context).inject(this)
+        componentManager()
+            .objectSetIconPickerComponent
+            .get(
+                params = DefaultComponentParam(
+                    ctx = context,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {

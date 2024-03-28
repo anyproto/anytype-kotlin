@@ -82,6 +82,7 @@ import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -92,6 +93,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.BDDMockito.given
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
@@ -200,7 +202,6 @@ class HomeScreenViewModelTest {
     @Mock
     lateinit var getPinnedObjectTypes: GetPinnedObjectTypes
 
-    @Mock
     lateinit var userPermissionProvider: UserPermissionProvider
 
     private val objectPayloadDispatcher = Dispatcher.Default<Payload>()
@@ -210,6 +211,7 @@ class HomeScreenViewModelTest {
 
     lateinit var vm: HomeScreenViewModel
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private val appCoroutineDispatchers = AppCoroutineDispatchers(
         io = coroutineTestRule.dispatcher,
         main = coroutineTestRule.dispatcher,
@@ -233,6 +235,8 @@ class HomeScreenViewModelTest {
         MockitoAnnotations.openMocks(this)
         urlBuilder = UrlBuilder(gateway)
         stubSpaceManager()
+        userPermissionProvider = UserPermissionProviderStub()
+        stubGetPinnedObjectTypes()
     }
 
     @Test
@@ -1193,16 +1197,7 @@ class HomeScreenViewModelTest {
             )
         )
 
-        deleteWidget.stub {
-            onBlocking {
-                stream(
-                    DeleteWidget.Params(
-                        ctx = WIDGET_OBJECT_ID,
-                        targets = listOf(widgetBlock.id)
-                    )
-                )
-            } doReturn flowOf(Resultat.Success(givenPayload))
-        }
+        stubDeleteWidget(widgetBlock, givenPayload)
 
         val vm = buildViewModel()
 
@@ -1295,6 +1290,7 @@ class HomeScreenViewModelTest {
         stubGetWidgetSession()
         stubSpaceManager()
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
+        stubDeleteWidget(widgetBlock, givenPayload)
 
         val vm = buildViewModel()
 
@@ -1503,6 +1499,12 @@ class HomeScreenViewModelTest {
         stubWidgetActiveView(favoriteWidgetBlock)
         stubSpaceManager()
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
+        given(objectWatcher.watch(any())).willReturn(flowOf())
+        given(storelessSubscriptionContainer.subscribe(any<StoreSearchParams>())).willReturn(flowOf())
+        given(storelessSubscriptionContainer.subscribe(any<StoreSearchByIdsParams>())).willReturn(
+            flowOf()
+        )
+        stubCloseObject()
 
         val vm = buildViewModel()
 
@@ -2490,7 +2492,8 @@ class HomeScreenViewModelTest {
             filters = buildList {
                 addAll(
                     ObjectSearchConstants.defaultDataViewFilters(
-                        spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace))
+                        spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace)
+                    )
                 )
                 add(
                     DVFilter(
@@ -2827,12 +2830,38 @@ class HomeScreenViewModelTest {
         }
     }
 
+    private fun stubGetPinnedObjectTypes() {
+        getPinnedObjectTypes.stub {
+            onBlocking {
+                flow(any())
+            } doReturn flowOf()
+        }
+    }
+
+    private fun stubDeleteWidget(
+        widgetBlock: Block,
+        givenPayload: Payload
+    ) {
+        deleteWidget.stub {
+            onBlocking {
+                stream(
+                    DeleteWidget.Params(
+                        ctx = WIDGET_OBJECT_ID,
+                        targets = listOf(widgetBlock.id)
+                    )
+                )
+            } doReturn flowOf(Resultat.Success(givenPayload))
+        }
+    }
+
     private fun stubUserPermission(
         permission: SpaceMemberPermissions = SpaceMemberPermissions.OWNER
     ) {
-       userPermissionProvider.stub {
-           on { observe(space = SpaceId(defaultSpaceConfig.space)) } doReturn flowOf(permission)
-       }
+        (userPermissionProvider as UserPermissionProviderStub).stubObserve(
+            SpaceId(
+                defaultSpaceConfig.space
+            ), permission
+        )
     }
 
     private fun buildViewModel() = HomeScreenViewModel(

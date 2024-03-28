@@ -3,7 +3,9 @@ package com.anytypeio.anytype.ui.editor.modals
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.editor.picker.ObjectIconPickerViewModelFactory
 import com.anytypeio.anytype.presentation.picker.IconPickerViewModel
 import javax.inject.Inject
@@ -18,7 +20,15 @@ open class ObjectIconPickerFragment : IconPickerFragmentBase<Id>() {
         get() = context
 
     override fun injectDependencies() {
-        componentManager().objectIconPickerComponent.get(context).inject(this)
+        componentManager()
+            .objectIconPickerComponent
+            .get(
+                params = DefaultComponentParam(
+                    ctx = target,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {

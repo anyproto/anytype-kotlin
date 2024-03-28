@@ -42,13 +42,19 @@ class CreateObjectFragment : BaseFragment<FragmentCreateObjectBinding>(R.layout.
                     if (layout == ObjectType.Layout.COLLECTION || layout == ObjectType.Layout.SET) {
                         findNavController().navigate(
                             R.id.dataViewNavigation,
-                            bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to state.id),
+                            ObjectSetFragment.args(
+                                ctx = state.id,
+                                space = state.space
+                            ),
                             navOptions
                         )
                     } else {
                         findNavController().navigate(
                             R.id.objectNavigation,
-                            bundleOf(EditorFragment.CTX_KEY to state.id),
+                            EditorFragment.args(
+                                ctx = state.id,
+                                space = state.space
+                            ),
                             navOptions
                         )
                     }

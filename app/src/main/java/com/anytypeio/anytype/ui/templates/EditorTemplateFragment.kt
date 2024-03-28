@@ -120,6 +120,7 @@ class EditorTemplateFragment : EditorFragment() {
     companion object {
         fun newInstance(
             id: String,
+            space: Id,
             targetTypeId: Id,
             targetTypeKey: Id,
             type: Int
@@ -127,6 +128,7 @@ class EditorTemplateFragment : EditorFragment() {
             EditorTemplateFragment().apply {
                 arguments = bundleOf(
                     CTX_KEY to id,
+                    SPACE_ID_KEY to space,
                     ARG_TARGET_TYPE_ID to targetTypeId,
                     ARG_TARGET_TYPE_KEY to targetTypeKey,
                     ARG_TEMPLATE_TYPE to type

@@ -106,14 +106,20 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                 findNavController().navigate(R.id.action_splashScreen_to_widgets)
                 findNavController().navigate(
                     R.id.objectNavigation,
-                    bundleOf(EditorFragment.CTX_KEY to command.id),
+                    EditorFragment.args(
+                        ctx = command.id,
+                        space = command.space
+                    )
                 )
             }
             is SplashViewModel.Command.NavigateToObjectSet -> {
                 findNavController().navigate(R.id.action_splashScreen_to_widgets)
                 findNavController().navigate(
                     R.id.dataViewNavigation,
-                    bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to command.id),
+                    ObjectSetFragment.args(
+                        ctx = command.id,
+                        space = command.space
+                    )
                 )
             }
             is SplashViewModel.Command.NavigateToAuthStart -> {

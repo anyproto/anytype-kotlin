@@ -20,7 +20,8 @@ class NavigationRouter(
                 is AppNavigation.Command.OpenModalTemplateSelect -> navigation.openModalTemplateSelect(
                     template = command.template,
                     templateTypeId = command.templateTypeId,
-                    templateTypeKey = command.templateTypeKey
+                    templateTypeKey = command.templateTypeKey,
+                    space = command.space
                 )
                 is AppNavigation.Command.OpenSetOrCollection -> navigation.openObjectSet(
                     target = command.target,
@@ -39,26 +40,19 @@ class NavigationRouter(
                 is AppNavigation.Command.Exit -> navigation.exit()
                 is AppNavigation.Command.ExitToDesktop -> navigation.exitToDesktop()
                 is AppNavigation.Command.OpenDebugSettingsScreen -> navigation.openDebugSettings()
-                is AppNavigation.Command.ExitToDesktopAndOpenPage -> navigation.exitToDesktopAndOpenPage(
-                    command.pageId
-                )
-
                 is AppNavigation.Command.OpenPageSearch -> navigation.openPageSearch()
                 is AppNavigation.Command.OpenUpdateAppScreen -> navigation.openUpdateAppScreen()
                 is AppNavigation.Command.DeletedAccountScreen -> navigation.deletedAccountScreen(
                     command.deadline
                 )
-
                 is AppNavigation.Command.OpenTemplates -> navigation.openTemplatesModal(
                     typeId = command.typeId
                 )
-
                 is AppNavigation.Command.OpenLibrary -> navigation.openLibrary(command.space)
                 is AppNavigation.Command.MigrationErrorScreen -> navigation.migrationErrorScreen()
                 is AppNavigation.Command.OpenRemoteFilesManageScreen -> navigation.openRemoteFilesManageScreen(
                     command.subscription
                 )
-
                 else -> Timber.d("Nav command ignored: $command")
             }
         } catch (e: Exception) {

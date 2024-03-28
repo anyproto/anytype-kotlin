@@ -27,7 +27,8 @@ class TemplateSelectAdapter(
                 id = templateView.id,
                 targetTypeId = templateView.typeId,
                 targetTypeKey = templateView.typeKey,
-                type = EditorTemplateFragment.TYPE_TEMPLATE_MULTIPLE
+                type = EditorTemplateFragment.TYPE_TEMPLATE_MULTIPLE,
+                space = templateView.space
             )
         }
     }

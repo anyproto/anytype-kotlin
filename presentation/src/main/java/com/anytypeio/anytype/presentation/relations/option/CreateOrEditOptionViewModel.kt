@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
@@ -185,6 +186,7 @@ class CreateOrEditOptionViewModel(
 
     data class ViewModelParams(
         val ctx: Id,
+        val space: SpaceId,
         val relationKey: Key,
         val objectId: Id,
         val optionId: Id?,

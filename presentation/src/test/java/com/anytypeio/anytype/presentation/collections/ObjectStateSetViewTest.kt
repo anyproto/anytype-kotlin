@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.collections
 
 import app.cash.turbine.test
 import app.cash.turbine.testIn
+import app.cash.turbine.turbineScope
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
@@ -41,6 +42,8 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
         MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
         mockObjectSet = MockSet(context = root, space = defaultSpace)
+        stubNetworkMode()
+        stubObservePermissions()
     }
 
     @After
@@ -50,404 +53,418 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
 
     @Test
     fun `displaying error state when object with layout other than set or collection`() = runTest {
-        // SETUP
-        stubSpaceManager(mockObjectSet.spaceId)
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
+        turbineScope {
+            // SETUP
+            stubSpaceManager(mockObjectSet.spaceId)
+            stubInterceptEvents()
+            stubInterceptThreadStatus()
 
-        val objectDetails = Block.Details(
-            details = mapOf(
-                root to Block.Fields(
-                    mapOf(
-                        Relations.ID to root,
-                        Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble()
+            val objectDetails = Block.Details(
+                details = mapOf(
+                    root to Block.Fields(
+                        mapOf(
+                            Relations.ID to root,
+                            Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble()
+                        )
                     )
                 )
             )
-        )
-        stubOpenObject(
-            doc = listOf(mockObjectSet.header, mockObjectSet.title),
-            details = objectDetails
-        )
+            stubOpenObject(
+                doc = listOf(mockObjectSet.header, mockObjectSet.title),
+                details = objectDetails
+            )
 
-        // TESTING
-        proceedWithStartingViewModel()
+            // TESTING
+            proceedWithStartingViewModel()
 
-        // ASSERT COLLECTION OBJECT STATE
-        stateReducer.state.test {
-            val first = awaitItem()
-            assertIs<ObjectState.Init>(first)
-            expectNoEvents()
-        }
+            // ASSERT COLLECTION OBJECT STATE
+            stateReducer.state.test {
+                val first = awaitItem()
+                assertIs<ObjectState.Init>(first)
+                expectNoEvents()
+            }
 
-        // ASSERT DATA VIEW STATE
-        viewModel.currentViewer.test {
-            val first = awaitItem()
-            assertIs<DataViewViewState.Init>(first)
+            // ASSERT DATA VIEW STATE
+            viewModel.currentViewer.test {
+                val first = awaitItem()
+                assertIs<DataViewViewState.Init>(first)
 
-            val second = awaitItem()
-            assertIs<DataViewViewState.Error>(second)
+                val second = awaitItem()
+                assertIs<DataViewViewState.Error>(second)
 
-            assertEquals(expected = "Wrong layout, couldn't open object", actual = second.msg)
-            expectNoEvents()
+                assertEquals(expected = "Wrong layout, couldn't open object", actual = second.msg)
+                expectNoEvents()
+            }
         }
     }
 
     @Test
     fun `displaying set init state when object with SET layout and no DataView`() = runTest {
-        // SETUP
-        stubSpaceManager(mockObjectSet.spaceId)
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
+        turbineScope {
+            // SETUP
+            stubSpaceManager(mockObjectSet.spaceId)
+            stubInterceptEvents()
+            stubInterceptThreadStatus()
 
-        stubOpenObject(
-            doc = listOf(mockObjectSet.header, mockObjectSet.title),
-            details = mockObjectSet.details
-        )
+            stubOpenObject(
+                doc = listOf(mockObjectSet.header, mockObjectSet.title),
+                details = mockObjectSet.details
+            )
 
-        // TESTING
-        proceedWithStartingViewModel()
+            // TESTING
+            proceedWithStartingViewModel()
 
-        // ASSERT SET OBJECT STATE
-        stateReducer.state.test {
-            val first = awaitItem()
-            assertIs<ObjectState.Init>(first)
-            expectNoEvents()
-        }
+            // ASSERT SET OBJECT STATE
+            stateReducer.state.test {
+                val first = awaitItem()
+                assertIs<ObjectState.Init>(first)
+                expectNoEvents()
+            }
 
-        // ASSERT DATA VIEW STATE
-        viewModel.currentViewer.test {
-            val first = awaitItem()
-            assertIs<DataViewViewState.Init>(first)
-            expectNoEvents()
+            // ASSERT DATA VIEW STATE
+            viewModel.currentViewer.test {
+                val first = awaitItem()
+                assertIs<DataViewViewState.Init>(first)
+                expectNoEvents()
+            }
         }
     }
 
     @Test
     fun `displaying set no query state when object with DataView and empty setOf`() = runTest {
-        // SETUP
-        stubSpaceManager(mockObjectSet.spaceId)
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
-        stubOpenObject(
-            doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
-            details = mockObjectSet.detailsEmptySetOf
-        )
-
-        // TESTING
-        proceedWithStartingViewModel()
-
-        val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
-        val stateFlow = stateReducer.state.testIn(backgroundScope)
-
-        // ASSERT STATES
-        assertIs<ObjectState.Init>(stateFlow.awaitItem())
-        assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
-
-        assertIs<ObjectState.DataView.Set>(stateFlow.awaitItem())
-        assertIs<DataViewViewState.Set.NoQuery>(viewerFlow.awaitItem())
-    }
-
-    @Test
-    fun `displaying set no view state when object with DataView and nullable view`() = runTest {
-        // SETUP
-        stubSpaceManager(mockObjectSet.spaceId)
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
-        stubOpenObject(
-            doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataViewNoViews),
-            details = mockObjectSet.details
-        )
-
-        // TESTING
-        proceedWithStartingViewModel()
-
-        val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
-        val stateFlow = stateReducer.state.testIn(backgroundScope)
-
-        // ASSERT STATES
-        assertIs<ObjectState.Init>(stateFlow.awaitItem())
-        assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
-
-        assertIs<ObjectState.DataView.Set>(stateFlow.awaitItem())
-        assertIs<DataViewViewState.Set.NoView>(viewerFlow.awaitItem())
-    }
-
-    @Test
-    fun `displaying set with items state when object set with two records`() = runTest {
-        // SETUP
-        stubSpaceManager(mockObjectSet.spaceId)
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
-        stubOpenObject(
-            doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
-            details = mockObjectSet.details
-        )
-        stubSubscriptionResults(
-            subscription = mockObjectSet.subscriptionId,
-            spaceId = mockObjectSet.spaceId,
-            storeOfRelations = storeOfRelations,
-            keys = mockObjectSet.dvKeys,
-            sources = listOf(mockObjectSet.setOf),
-            objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2),
-            dvFilters = mockObjectSet.filters
-        )
-
-        // TESTING
-        proceedWithStartingViewModel()
-
-        val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
-        val stateFlow = stateReducer.state.testIn(backgroundScope)
-
-        // ASSERT STATES
-        assertIs<ObjectState.Init>(stateFlow.awaitItem())
-        assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
-
-        assertIs<ObjectState.DataView.Set>(stateFlow.awaitItem())
-        assertIs<DataViewViewState.Set.Default>(viewerFlow.awaitItem())
-    }
-
-    @Test
-    fun `displaying set with no items when opening object set with no records`() = runTest {
-        // SETUP
-        stubSpaceManager(mockObjectSet.spaceId)
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
-        stubOpenObject(
-            doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
-            details = mockObjectSet.details
-        )
-        stubSubscriptionResults(
-            subscription = mockObjectSet.subscriptionId,
-            spaceId = mockObjectSet.spaceId,
-            storeOfRelations = storeOfRelations,
-            keys = mockObjectSet.dvKeys,
-            sources = listOf(mockObjectSet.setOf),
-            dvFilters = mockObjectSet.filters
-        )
-
-        // TESTING
-        proceedWithStartingViewModel()
-
-        // ASSERT STATES
-        val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
-        val stateFlow = stateReducer.state.testIn(backgroundScope)
-
-        // ASSERT STATES
-        assertIs<ObjectState.Init>(stateFlow.awaitItem())
-        assertIs<ObjectState.DataView.Set>(stateFlow.awaitItem())
-        assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
-        assertIs<DataViewViewState.Set.NoItems>(viewerFlow.awaitItem())
-    }
-
-    @Test
-    fun `Displaying Object Sets with Non-Deleted Types Only`() = runTest {
-        // SETUP
-        stubSpaceManager(mockObjectSet.spaceId)
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
-
-        val typeDeleted1 = ObjectWrapper.Type(
-            mapOf(
-                Relations.ID to RandomString.make(),
-                Relations.IS_DELETED to true
+        turbineScope {
+            // SETUP
+            stubSpaceManager(mockObjectSet.spaceId)
+            stubInterceptEvents()
+            stubInterceptThreadStatus()
+            stubOpenObject(
+                doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
+                details = mockObjectSet.detailsEmptySetOf
             )
-        )
-        val type2 = ObjectWrapper.Type(
-            mapOf(
-                Relations.ID to RandomString.make(),
-                Relations.TYPE to ObjectTypeIds.OBJECT_TYPE
-            )
-        )
-        val typeDeleted3 = ObjectWrapper.Type(
-            mapOf(
-                Relations.ID to RandomString.make(),
-            )
-        )
 
-        val detailsDeletedSetOf = Block.Details(
-            details = mapOf(
-                root to Block.Fields(
-                    mapOf(
-                        Relations.ID to root,
-                        Relations.LAYOUT to ObjectType.Layout.SET.code.toDouble(),
-                        Relations.SET_OF to listOf(typeDeleted1.id, type2.id, typeDeleted3.id)
-                    )
-                ),
-                typeDeleted1.id to Block.Fields(
-                    mapOf(
-                        Relations.ID to typeDeleted1.id,
-                        Relations.IS_DELETED to true
-                    )
-                ),
-                type2.id to Block.Fields(
-                    mapOf(
-                        Relations.ID to type2.id,
-                        Relations.TYPE to ObjectTypeIds.OBJECT_TYPE
-                    )
-                )
-            )
-        )
+            // TESTING
+            proceedWithStartingViewModel()
 
-        stubOpenObject(
-            doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
-            details = detailsDeletedSetOf
-        )
-        stubSubscriptionResults(
-            subscription = mockObjectSet.subscriptionId,
-            spaceId = mockObjectSet.spaceId,
-            storeOfRelations = storeOfRelations,
-            keys = mockObjectSet.dvKeys,
-            sources = listOf(type2.id),
-            objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2),
-            dvFilters = mockObjectSet.filters
-        )
+            val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
+            val stateFlow = stateReducer.state.testIn(backgroundScope)
 
-        // TESTING
-        proceedWithStartingViewModel()
+            // ASSERT STATES
+            assertIs<ObjectState.Init>(stateFlow.awaitItem())
+            assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
 
-        // ASSERT STATES
-        val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
-        val stateFlow = stateReducer.state.testIn(backgroundScope)
-
-        assertIs<ObjectState.Init>(stateFlow.awaitItem())
-        assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
-
-        assertIs<ObjectState.DataView.Set>(stateFlow.awaitItem())
-        assertIs<DataViewViewState.Set.Default>(viewerFlow.awaitItem())
-
-        stateFlow.ensureAllEventsConsumed()
-        viewerFlow.ensureAllEventsConsumed()
-
-        advanceUntilIdle()
-        verifyBlocking(repo, times(1)) {
-            searchObjectsWithSubscription(
-                eq(mockObjectSet.subscriptionId),
-                eq(listOf()),
-                eq(
-                    mockObjectSet.filters + ObjectSearchConstants.defaultDataViewFilters(
-                        spaces = listOf(spaceConfig.space, spaceConfig.techSpace)
-                    )
-                ),
-                eq(ObjectSearchConstants.defaultDataViewKeys + mockObjectSet.dvKeys),
-                eq(listOf(type2.id)),
-                eq(0L),
-                eq(ObjectSetConfig.DEFAULT_LIMIT),
-                eq(null),
-                eq(null),
-                eq(null),
-                eq(null),
-                eq(null)
-            )
+            assertIs<ObjectState.DataView.Set>(stateFlow.awaitItem())
+            assertIs<DataViewViewState.Set.NoQuery>(viewerFlow.awaitItem())
         }
     }
 
     @Test
-    fun `Displaying Object Set with No Query State When All Types are Deleted`() = runTest {
-        // SETUP
-        stubSpaceManager(mockObjectSet.spaceId)
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
-
-        val typeDeleted1 = ObjectWrapper.Type(
-            mapOf(
-                Relations.ID to RandomString.make(),
-                Relations.IS_DELETED to true
-            )
-        )
-        val typeDeleted3 = ObjectWrapper.Type(
-            mapOf(
-                Relations.ID to RandomString.make(),
-            )
-        )
-
-        val detailsDeletedSetOf = Block.Details(
-            details = mapOf(
-                root to Block.Fields(
-                    mapOf(
-                        Relations.ID to root,
-                        Relations.LAYOUT to ObjectType.Layout.SET.code.toDouble(),
-                        Relations.SET_OF to listOf(typeDeleted1.id, typeDeleted3.id)
-                    )
+    fun `displaying set no view state when object with DataView and nullable view`() = runTest {
+        turbineScope {
+            // SETUP
+            stubSpaceManager(mockObjectSet.spaceId)
+            stubInterceptEvents()
+            stubInterceptThreadStatus()
+            stubOpenObject(
+                doc = listOf(
+                    mockObjectSet.header,
+                    mockObjectSet.title,
+                    mockObjectSet.dataViewNoViews
                 ),
-                typeDeleted1.id to Block.Fields(
-                    mapOf(
-                        Relations.ID to typeDeleted1.id,
-                        Relations.IS_DELETED to true
+                details = mockObjectSet.details
+            )
+
+            // TESTING
+            proceedWithStartingViewModel()
+
+            val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
+            val stateFlow = stateReducer.state.testIn(backgroundScope)
+
+            // ASSERT STATES
+            assertIs<ObjectState.Init>(stateFlow.awaitItem())
+            assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
+
+            assertIs<ObjectState.DataView.Set>(stateFlow.awaitItem())
+            assertIs<DataViewViewState.Set.NoView>(viewerFlow.awaitItem())
+        }
+
+        @Test
+        fun `displaying set with items state when object set with two records`() = runTest {
+            // SETUP
+            stubSpaceManager(mockObjectSet.spaceId)
+            stubInterceptEvents()
+            stubInterceptThreadStatus()
+            stubOpenObject(
+                doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
+                details = mockObjectSet.details
+            )
+            stubSubscriptionResults(
+                subscription = mockObjectSet.subscriptionId,
+                spaceId = mockObjectSet.spaceId,
+                storeOfRelations = storeOfRelations,
+                keys = mockObjectSet.dvKeys,
+                sources = listOf(mockObjectSet.setOf),
+                objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2),
+                dvFilters = mockObjectSet.filters
+            )
+
+            // TESTING
+            proceedWithStartingViewModel()
+
+            val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
+            val stateFlow = stateReducer.state.testIn(backgroundScope)
+
+            // ASSERT STATES
+            assertIs<ObjectState.Init>(stateFlow.awaitItem())
+            assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
+
+            assertIs<ObjectState.DataView.Set>(stateFlow.awaitItem())
+            assertIs<DataViewViewState.Set.Default>(viewerFlow.awaitItem())
+        }
+
+        @Test
+        fun `displaying set with no items when opening object set with no records`() = runTest {
+            // SETUP
+            stubSpaceManager(mockObjectSet.spaceId)
+            stubInterceptEvents()
+            stubInterceptThreadStatus()
+            stubOpenObject(
+                doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
+                details = mockObjectSet.details
+            )
+            stubSubscriptionResults(
+                subscription = mockObjectSet.subscriptionId,
+                spaceId = mockObjectSet.spaceId,
+                storeOfRelations = storeOfRelations,
+                keys = mockObjectSet.dvKeys,
+                sources = listOf(mockObjectSet.setOf),
+                dvFilters = mockObjectSet.filters
+            )
+
+            // TESTING
+            proceedWithStartingViewModel()
+
+            // ASSERT STATES
+            val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
+            val stateFlow = stateReducer.state.testIn(backgroundScope)
+
+            // ASSERT STATES
+            assertIs<ObjectState.Init>(stateFlow.awaitItem())
+            assertIs<ObjectState.DataView.Set>(stateFlow.awaitItem())
+            assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
+            assertIs<DataViewViewState.Set.NoItems>(viewerFlow.awaitItem())
+        }
+
+        @Test
+        fun `Displaying Object Sets with Non-Deleted Types Only`() = runTest {
+            // SETUP
+            stubSpaceManager(mockObjectSet.spaceId)
+            stubInterceptEvents()
+            stubInterceptThreadStatus()
+
+            val typeDeleted1 = ObjectWrapper.Type(
+                mapOf(
+                    Relations.ID to RandomString.make(),
+                    Relations.IS_DELETED to true
+                )
+            )
+            val type2 = ObjectWrapper.Type(
+                mapOf(
+                    Relations.ID to RandomString.make(),
+                    Relations.TYPE to ObjectTypeIds.OBJECT_TYPE
+                )
+            )
+            val typeDeleted3 = ObjectWrapper.Type(
+                mapOf(
+                    Relations.ID to RandomString.make(),
+                )
+            )
+
+            val detailsDeletedSetOf = Block.Details(
+                details = mapOf(
+                    root to Block.Fields(
+                        mapOf(
+                            Relations.ID to root,
+                            Relations.LAYOUT to ObjectType.Layout.SET.code.toDouble(),
+                            Relations.SET_OF to listOf(typeDeleted1.id, type2.id, typeDeleted3.id)
+                        )
+                    ),
+                    typeDeleted1.id to Block.Fields(
+                        mapOf(
+                            Relations.ID to typeDeleted1.id,
+                            Relations.IS_DELETED to true
+                        )
+                    ),
+                    type2.id to Block.Fields(
+                        mapOf(
+                            Relations.ID to type2.id,
+                            Relations.TYPE to ObjectTypeIds.OBJECT_TYPE
+                        )
                     )
                 )
             )
-        )
 
-        stubOpenObject(
-            doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
-            details = detailsDeletedSetOf
-        )
+            stubOpenObject(
+                doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
+                details = detailsDeletedSetOf
+            )
+            stubSubscriptionResults(
+                subscription = mockObjectSet.subscriptionId,
+                spaceId = mockObjectSet.spaceId,
+                storeOfRelations = storeOfRelations,
+                keys = mockObjectSet.dvKeys,
+                sources = listOf(type2.id),
+                objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2),
+                dvFilters = mockObjectSet.filters
+            )
 
-        // TESTING
-        proceedWithStartingViewModel()
+            // TESTING
+            proceedWithStartingViewModel()
 
-        // ASSERT STATES
-        val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
-        val stateFlow = stateReducer.state.testIn(backgroundScope)
+            // ASSERT STATES
+            val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
+            val stateFlow = stateReducer.state.testIn(backgroundScope)
 
-        assertIs<ObjectState.Init>(stateFlow.awaitItem())
-        assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
+            assertIs<ObjectState.Init>(stateFlow.awaitItem())
+            assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
 
-        assertIs<ObjectState.DataView.Set>(stateFlow.awaitItem())
-        assertIs<DataViewViewState.Set.NoQuery>(viewerFlow.awaitItem())
+            assertIs<ObjectState.DataView.Set>(stateFlow.awaitItem())
+            assertIs<DataViewViewState.Set.Default>(viewerFlow.awaitItem())
 
-        stateFlow.ensureAllEventsConsumed()
-        viewerFlow.ensureAllEventsConsumed()
-    }
+            stateFlow.ensureAllEventsConsumed()
+            viewerFlow.ensureAllEventsConsumed()
 
-    @Test
-    fun `displaying set with templates present when opening object set of pages with templates`() = runTest {
-        // SETUP
+            advanceUntilIdle()
+            verifyBlocking(repo, times(1)) {
+                searchObjectsWithSubscription(
+                    eq(mockObjectSet.subscriptionId),
+                    eq(listOf()),
+                    eq(
+                        mockObjectSet.filters + ObjectSearchConstants.defaultDataViewFilters(
+                            spaces = listOf(spaceConfig.space, spaceConfig.techSpace)
+                        )
+                    ),
+                    eq(ObjectSearchConstants.defaultDataViewKeys + mockObjectSet.dvKeys),
+                    eq(listOf(type2.id)),
+                    eq(0L),
+                    eq(ObjectSetConfig.DEFAULT_LIMIT),
+                    eq(null),
+                    eq(null),
+                    eq(null),
+                    eq(null),
+                    eq(null)
+                )
+            }
+        }
 
-        mockObjectSet = MockSet(context = root, setOfValue = ObjectTypeIds.PAGE, space = defaultSpace)
-        val pageTypeMap = mapOf(
-            Relations.ID to ObjectTypeIds.PAGE,
-            Relations.TYPE to ObjectTypeIds.OBJECT_TYPE,
-            Relations.RECOMMENDED_LAYOUT to ObjectType.Layout.BASIC.code.toDouble(),
-            Relations.NAME to MockDataFactory.randomString()
-        )
-        stubSpaceManager(mockObjectSet.spaceId)
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
-        stubOpenObject(
-            doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
-            details = mockObjectSet.details
-        )
-        stubSubscriptionResults(
-            subscription = mockObjectSet.subscriptionId,
-            spaceId = mockObjectSet.spaceId,
-            storeOfRelations = storeOfRelations,
-            keys = mockObjectSet.dvKeys,
-            sources = listOf(ObjectTypeIds.PAGE),
-            dvFilters = mockObjectSet.filters
-        )
-        stubStoreOfObjectTypes(ObjectTypeIds.PAGE, pageTypeMap)
-        stubTemplatesForTemplatesContainer(
-            type = ObjectTypeIds.PAGE,
-            templates = listOf(StubObject(objectType = ObjectTypeIds.PAGE))
-        )
+        @Test
+        fun `Displaying Object Set with No Query State When All Types are Deleted`() = runTest {
+            // SETUP
+            stubSpaceManager(mockObjectSet.spaceId)
+            stubInterceptEvents()
+            stubInterceptThreadStatus()
 
-        // TESTING
-        proceedWithStartingViewModel()
+            val typeDeleted1 = ObjectWrapper.Type(
+                mapOf(
+                    Relations.ID to RandomString.make(),
+                    Relations.IS_DELETED to true
+                )
+            )
+            val typeDeleted3 = ObjectWrapper.Type(
+                mapOf(
+                    Relations.ID to RandomString.make(),
+                )
+            )
 
-        // ASSERT STATES
-        val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
-        val stateFlow = stateReducer.state.testIn(backgroundScope)
+            val detailsDeletedSetOf = Block.Details(
+                details = mapOf(
+                    root to Block.Fields(
+                        mapOf(
+                            Relations.ID to root,
+                            Relations.LAYOUT to ObjectType.Layout.SET.code.toDouble(),
+                            Relations.SET_OF to listOf(typeDeleted1.id, typeDeleted3.id)
+                        )
+                    ),
+                    typeDeleted1.id to Block.Fields(
+                        mapOf(
+                            Relations.ID to typeDeleted1.id,
+                            Relations.IS_DELETED to true
+                        )
+                    )
+                )
+            )
 
-        // ASSERT STATES
-        assertIs<ObjectState.Init>(stateFlow.awaitItem())
-        assertIs<ObjectState.DataView.Set>(stateFlow.awaitItem())
-        assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
+            stubOpenObject(
+                doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
+                details = detailsDeletedSetOf
+            )
 
-        val item = viewerFlow.awaitItem()
-        assertIs<DataViewViewState.Set.NoItems>(item)
-        assertTrue(item.isCreateObjectAllowed)
+            // TESTING
+            proceedWithStartingViewModel()
+
+            // ASSERT STATES
+            val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
+            val stateFlow = stateReducer.state.testIn(backgroundScope)
+
+            assertIs<ObjectState.Init>(stateFlow.awaitItem())
+            assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
+
+            assertIs<ObjectState.DataView.Set>(stateFlow.awaitItem())
+            assertIs<DataViewViewState.Set.NoQuery>(viewerFlow.awaitItem())
+
+            stateFlow.ensureAllEventsConsumed()
+            viewerFlow.ensureAllEventsConsumed()
+        }
+
+        @Test
+        fun `displaying set with templates present when opening object set of pages with templates`() =
+            runTest {
+                // SETUP
+
+                mockObjectSet =
+                    MockSet(context = root, setOfValue = ObjectTypeIds.PAGE, space = defaultSpace)
+                val pageTypeMap = mapOf(
+                    Relations.ID to ObjectTypeIds.PAGE,
+                    Relations.TYPE to ObjectTypeIds.OBJECT_TYPE,
+                    Relations.RECOMMENDED_LAYOUT to ObjectType.Layout.BASIC.code.toDouble(),
+                    Relations.NAME to MockDataFactory.randomString()
+                )
+                stubSpaceManager(mockObjectSet.spaceId)
+                stubInterceptEvents()
+                stubInterceptThreadStatus()
+                stubOpenObject(
+                    doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
+                    details = mockObjectSet.details
+                )
+                stubSubscriptionResults(
+                    subscription = mockObjectSet.subscriptionId,
+                    spaceId = mockObjectSet.spaceId,
+                    storeOfRelations = storeOfRelations,
+                    keys = mockObjectSet.dvKeys,
+                    sources = listOf(ObjectTypeIds.PAGE),
+                    dvFilters = mockObjectSet.filters
+                )
+                stubStoreOfObjectTypes(ObjectTypeIds.PAGE, pageTypeMap)
+                stubTemplatesForTemplatesContainer(
+                    type = ObjectTypeIds.PAGE,
+                    templates = listOf(StubObject(objectType = ObjectTypeIds.PAGE))
+                )
+
+                // TESTING
+                proceedWithStartingViewModel()
+
+                // ASSERT STATES
+                val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
+                val stateFlow = stateReducer.state.testIn(backgroundScope)
+
+                // ASSERT STATES
+                assertIs<ObjectState.Init>(stateFlow.awaitItem())
+                assertIs<ObjectState.DataView.Set>(stateFlow.awaitItem())
+                assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
+
+                val item = viewerFlow.awaitItem()
+                assertIs<DataViewViewState.Set.NoItems>(item)
+                assertTrue(item.isCreateObjectAllowed)
+            }
     }
 
     private fun proceedWithStartingViewModel() {

@@ -1223,6 +1223,7 @@
     <string name="payments_tier_current_valid">Gyldig til</string>
     <string name="payments_tier_current_paid_by">Betalt med kort</string>
     <string name="payments_tier_current_button">Administrer betaling</string>
+    <string name="payments_tier_current_change_email_button">Change e-mail</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Skriv inn koden som er sendt til deg på e-post</string>
     <string name="payments_code_resend">Send på nytt</string>

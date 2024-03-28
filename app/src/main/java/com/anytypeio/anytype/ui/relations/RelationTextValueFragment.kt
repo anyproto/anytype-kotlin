@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.relations.RelationActionAdapter
 import com.anytypeio.anytype.core_ui.features.relations.RelationTextValueAdapter
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -28,9 +29,11 @@ import com.anytypeio.anytype.core_utils.intents.proceedWithAction
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetImeOffsetFragment
 import com.anytypeio.anytype.databinding.FragmentRelationTextValueBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.sets.RelationTextValueView
 import com.anytypeio.anytype.presentation.sets.RelationTextValueViewModel
 import com.anytypeio.anytype.presentation.sets.RelationValueAction
+import com.google.android.material.R.id.spacer
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import javax.inject.Inject
 import timber.log.Timber
@@ -45,6 +48,7 @@ open class RelationTextValueFragment :
     private val vm: RelationTextValueViewModel by viewModels { factory }
 
     private val ctx get() = arg<String>(CONTEXT_ID)
+    private val space get() = arg<String>(SPACE_KEY)
     private val relationKey get() = arg<Key>(RELATION_KEY)
     private val objectId get() = arg<String>(OBJECT_ID)
     private val flow get() = arg<Int>(FLOW_KEY)
@@ -194,20 +198,24 @@ open class RelationTextValueFragment :
     }
 
     override fun injectDependencies() {
+        val param = DefaultComponentParam(
+            ctx = ctx,
+            space = SpaceId(space)
+        )
         when (flow) {
             FLOW_DATAVIEW, FLOW_CHANGE_DATE -> {
                 componentManager().dataViewRelationTextValueComponent
-                    .get(ctx)
+                    .get(param)
                     .inject(this)
             }
             FLOW_SET_OR_COLLECTION -> {
                 componentManager().setOrCollectionRelationTextValueComponent
-                    .get(ctx)
+                    .get(param)
                     .inject(this)
             }
             else -> {
                 componentManager().relationTextValueComponent
-                    .get(ctx)
+                    .get(param)
                     .inject(this)
             }
         }
@@ -236,6 +244,7 @@ open class RelationTextValueFragment :
     companion object {
         fun new(
             ctx: Id,
+            space: Id,
             relationKey: Key,
             objectId: Id,
             flow: Int = FLOW_DEFAULT,
@@ -243,6 +252,7 @@ open class RelationTextValueFragment :
         ) = RelationTextValueFragment().apply {
             arguments = bundleOf(
                 CONTEXT_ID to ctx,
+                SPACE_KEY to space,
                 RELATION_KEY to relationKey,
                 OBJECT_ID to objectId,
                 FLOW_KEY to flow,
@@ -251,8 +261,17 @@ open class RelationTextValueFragment :
         }
 
         fun new(
-            ctx: Id, name: String = "", value: Long? = null
-        ) = new(ctx = ctx, relationKey = "", objectId = "", flow = FLOW_CHANGE_DATE).apply {
+            ctx: Id,
+            space: Id,
+            name: String = "",
+            value: Long? = null
+        ) = new(
+            ctx = ctx,
+            space = space,
+            relationKey = "",
+            objectId = "",
+            flow = FLOW_CHANGE_DATE
+        ).apply {
             arguments?.apply {
                 putString(KEY_NAME, name)
                 value?.let { putLong(KEY_VALUE, it) }
@@ -260,6 +279,7 @@ open class RelationTextValueFragment :
         }
 
         const val CONTEXT_ID = "arg.edit-relation-value.context"
+        const val SPACE_KEY = "arg.edit-relation-value.space"
         const val RELATION_KEY = "arg.edit-relation-value.relation.key"
         const val OBJECT_ID = "arg.edit-relation-value.object.id"
         const val FLOW_KEY = "arg.edit-relation-value.flow"

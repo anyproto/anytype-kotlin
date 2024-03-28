@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.presentation.collections
 
-import app.cash.turbine.testIn
+import app.cash.turbine.turbineScope
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -36,6 +36,8 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
         stubNetworkMode()
+        stubCreateDataViewObject()
+        stubObservePermissions()
     }
 
     @After
@@ -122,61 +124,41 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `Should create and open Not-Note Object when clicking on New button in Set by Type`() =
         runTest {
+            turbineScope {
+                val setOfId = "setOf-id-${RandomString.make()}"
+                val setOfKey = ObjectTypeIds.PAGE
 
-            val setOfId = "setOf-id-${RandomString.make()}"
-            val setOfKey = ObjectTypeIds.PAGE
-
-            mockObjectSet = MockSet(
-                context = root,
-                space = defaultSpace,
-                setOfValue = setOfId,
-                setOfKey = setOfKey
-            )
-
-            // SETUP
-            stubSpaceManager(mockObjectSet.spaceId)
-            stubInterceptEvents()
-            stubInterceptThreadStatus()
-            stubOpenObject(
-                doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
-                details = mockObjectSet.details
-            )
-            stubSubscriptionResults(
-                subscription = mockObjectSet.subscriptionId,
-                spaceId = mockObjectSet.spaceId,
-                storeOfRelations = storeOfRelations,
-                keys = mockObjectSet.dvKeys,
-                sources = listOf(mockObjectSet.setOf),
-                dvFilters = mockObjectSet.filters,
-                objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2)
-            )
-            val newObjectId = "objNewPage-${RandomString.make()}"
-            val result = CreateDataViewObject.Result(
-                objectId = newObjectId,
-                objectType = TypeKey(ObjectTypeIds.PAGE)
-            )
-            doReturn(Resultat.success(result)).`when`(createDataViewObject).async(
-                CreateDataViewObject.Params.SetByType(
-                    type = TypeKey(setOfKey),
-                    filters = mockObjectSet.filters,
-                    template = null,
-                    prefilled = emptyMap()
+                mockObjectSet = MockSet(
+                    context = root,
+                    space = defaultSpace,
+                    setOfValue = setOfId,
+                    setOfKey = setOfKey
                 )
-            )
-            doReturn(Resultat.success(Unit)).`when`(closeBlock).async(mockObjectSet.root)
 
-            // TESTING
-            proceedWithStartingViewModel()
-            val commandFlow = viewModel.commands.testIn(backgroundScope)
-
-            advanceUntilIdle()
-
-            viewModel.proceedWithDataViewObjectCreate()
-
-            advanceUntilIdle()
-
-            verifyBlocking(createDataViewObject, times(1)) {
-                async(
+                // SETUP
+                stubSpaceManager(mockObjectSet.spaceId)
+                stubInterceptEvents()
+                stubInterceptThreadStatus()
+                stubOpenObject(
+                    doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
+                    details = mockObjectSet.details
+                )
+                stubSubscriptionResults(
+                    subscription = mockObjectSet.subscriptionId,
+                    spaceId = mockObjectSet.spaceId,
+                    storeOfRelations = storeOfRelations,
+                    keys = mockObjectSet.dvKeys,
+                    sources = listOf(mockObjectSet.setOf),
+                    dvFilters = mockObjectSet.filters,
+                    objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2)
+                )
+                val newObjectId = "objNewPage-${RandomString.make()}"
+                val result = CreateDataViewObject.Result(
+                    objectId = newObjectId,
+                    objectType = TypeKey(ObjectTypeIds.PAGE),
+                    struct = mapOf("spaceId" to "spaceId")
+                )
+                doReturn(Resultat.success(result)).`when`(createDataViewObject).async(
                     CreateDataViewObject.Params.SetByType(
                         type = TypeKey(setOfKey),
                         filters = mockObjectSet.filters,
@@ -184,6 +166,29 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                         prefilled = emptyMap()
                     )
                 )
+                doReturn(Resultat.success(Unit)).`when`(closeBlock).async(mockObjectSet.root)
+
+                // TESTING
+                proceedWithStartingViewModel()
+                val commandFlow = viewModel.commands.testIn(backgroundScope)
+
+                advanceUntilIdle()
+
+                viewModel.proceedWithDataViewObjectCreate()
+
+                advanceUntilIdle()
+
+                verifyBlocking(createDataViewObject, times(1)) {
+                    async(
+                        CreateDataViewObject.Params.SetByType(
+                            type = TypeKey(setOfKey),
+                            filters = mockObjectSet.filters,
+                            template = null,
+                            prefilled = emptyMap()
+                        )
+                    )
+                }
+                commandFlow.cancelAndIgnoreRemainingEvents()
             }
         }
 
@@ -225,6 +230,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             stubSpaceManager(mockObjectSet.spaceId)
             stubInterceptEvents()
             stubInterceptThreadStatus()
+            stubCreateDataViewObject()
             stubOpenObject(
                 doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
                 details = mockObjectSet.detailsSetByRelation(relationSetBy)
@@ -279,85 +285,87 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         }
 
     @Test
-    fun `Should create new Object and not close Set when clicking on New button in Collection`() = runTest {
+    fun `Should create new Object and not close Set when clicking on New button in Collection`() =
+        runTest {
 
-        val objectCollection = MockCollection(context = root, space = defaultSpace)
+            val objectCollection = MockCollection(context = root, space = defaultSpace)
 
-        // SETUP
-        stubSpaceManager(objectCollection.spaceId)
-        stubStoreOfRelations(objectCollection)
-        stubSubscriptionResults(
-            subscription = objectCollection.subscriptionId,
-            collection = root,
-            spaceId = objectCollection.spaceId,
-            storeOfRelations = storeOfRelations,
-            keys = objectCollection.dvKeys,
-            objects = listOf(objectCollection.obj1, objectCollection.obj2),
-            dvSorts = objectCollection.sorts
-        )
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
-        stubOpenObject(
-            doc = listOf(
-                objectCollection.header,
-                objectCollection.title,
-                objectCollection.dataView
-            ),
-            details = objectCollection.details
-        )
-
-        val pageTypeId = ObjectState.VIEW_DEFAULT_OBJECT_TYPE
-        val pageTypeMap = mapOf(
-            Relations.ID to MockDataFactory.randomString(),
-            Relations.UNIQUE_KEY to pageTypeId,
-            Relations.TYPE to ObjectTypeIds.OBJECT_TYPE,
-            Relations.RECOMMENDED_LAYOUT to ObjectType.Layout.BASIC.code.toDouble(),
-            Relations.LAYOUT to ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
-            Relations.NAME to MockDataFactory.randomString(),
-            Relations.DEFAULT_TEMPLATE_ID to null
-        )
-        with(storeOfObjectTypes) {
-            set(pageTypeId, pageTypeMap)
-        }
-
-        val newObjectId = "objNew-${RandomString.make()}"
-        val result = CreateDataViewObject.Result(
-            objectId = newObjectId,
-            objectType = TypeKey(pageTypeId),
-            struct = null
-        )
-        doReturn(Resultat.success(result)).`when`(createDataViewObject).async(
-            CreateDataViewObject.Params.Collection(
-                template = null,
-                type = TypeKey(pageTypeId),
-                filters = emptyList(),
-                prefilled = emptyMap()
+            // SETUP
+            stubSpaceManager(objectCollection.spaceId)
+            stubStoreOfRelations(objectCollection)
+            stubSubscriptionResults(
+                subscription = objectCollection.subscriptionId,
+                collection = root,
+                spaceId = objectCollection.spaceId,
+                storeOfRelations = storeOfRelations,
+                keys = objectCollection.dvKeys,
+                objects = listOf(objectCollection.obj1, objectCollection.obj2),
+                dvSorts = objectCollection.sorts
             )
-        )
-        doReturn(Resultat.success(Unit)).`when`(closeBlock).async(objectCollection.root)
+            stubInterceptEvents()
+            stubInterceptThreadStatus()
+            stubAddObjectToCollection()
+            stubOpenObject(
+                doc = listOf(
+                    objectCollection.header,
+                    objectCollection.title,
+                    objectCollection.dataView
+                ),
+                details = objectCollection.details
+            )
 
-        // TESTING
-        proceedWithStartingViewModel()
+            val pageTypeId = ObjectState.VIEW_DEFAULT_OBJECT_TYPE
+            val pageTypeMap = mapOf(
+                Relations.ID to MockDataFactory.randomString(),
+                Relations.UNIQUE_KEY to pageTypeId,
+                Relations.TYPE to ObjectTypeIds.OBJECT_TYPE,
+                Relations.RECOMMENDED_LAYOUT to ObjectType.Layout.BASIC.code.toDouble(),
+                Relations.LAYOUT to ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
+                Relations.NAME to MockDataFactory.randomString(),
+                Relations.DEFAULT_TEMPLATE_ID to null
+            )
+            with(storeOfObjectTypes) {
+                set(pageTypeId, pageTypeMap)
+            }
 
-        advanceUntilIdle()
-
-        viewModel.proceedWithDataViewObjectCreate()
-
-        advanceUntilIdle()
-
-        verifyBlocking(createDataViewObject, times(1)) {
-            async(
+            val newObjectId = "objNew-${RandomString.make()}"
+            val result = CreateDataViewObject.Result(
+                objectId = newObjectId,
+                objectType = TypeKey(pageTypeId),
+                struct = mapOf("spaceId" to "spaceId")
+            )
+            doReturn(Resultat.success(result)).`when`(createDataViewObject).async(
                 CreateDataViewObject.Params.Collection(
-                    type = TypeKey(pageTypeId),
                     template = null,
+                    type = TypeKey(pageTypeId),
                     filters = emptyList(),
                     prefilled = emptyMap()
                 )
             )
-        }
+            doReturn(Resultat.success(Unit)).`when`(closeBlock).async(objectCollection.root)
 
-        verifyNoInteractions(closeBlock)
-    }
+            // TESTING
+            proceedWithStartingViewModel()
+
+            advanceUntilIdle()
+
+            viewModel.proceedWithDataViewObjectCreate()
+
+            advanceUntilIdle()
+
+            verifyBlocking(createDataViewObject, times(1)) {
+                async(
+                    CreateDataViewObject.Params.Collection(
+                        type = TypeKey(pageTypeId),
+                        template = null,
+                        filters = emptyList(),
+                        prefilled = emptyMap()
+                    )
+                )
+            }
+
+            verifyNoInteractions(closeBlock)
+        }
 
     private fun proceedWithStartingViewModel() {
         viewModel.onStart(ctx = root, space = defaultSpace)

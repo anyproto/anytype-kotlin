@@ -4,6 +4,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -34,6 +35,7 @@ class AttachmentValueViewModel(
 
     data class ViewModelParams(
         val ctx: Id,
+        val space: SpaceId,
         val objectId: Id,
         val relationKey: Key,
         val isLocked: Boolean,

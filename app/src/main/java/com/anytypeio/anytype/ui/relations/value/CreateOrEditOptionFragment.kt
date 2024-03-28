@@ -15,7 +15,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.relations.CreateOrEditOptionScreen
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.argStringOrNull
@@ -35,6 +37,7 @@ class CreateOrEditOptionFragment : BaseBottomSheetComposeFragment() {
     private val vm by viewModels<CreateOrEditOptionViewModel> { factory }
 
     private val ctx get() = argString(CTX_KEY)
+    private val space get() = argString(SPACE_KEY)
     private val objectId get() = argString(OBJECT_ID_KEY)
     private val relationKey get() = argString(RELATION_KEY)
     private val optionId get() = argStringOrNull(OPTION_ID_KEY)
@@ -92,7 +95,8 @@ class CreateOrEditOptionFragment : BaseBottomSheetComposeFragment() {
             optionId = optionId,
             color = color,
             name = text,
-            objectId = objectId
+            objectId = objectId,
+            space = SpaceId(space)
         )
         inject(params)
     }
@@ -121,6 +125,7 @@ class CreateOrEditOptionFragment : BaseBottomSheetComposeFragment() {
 
     companion object {
         const val CTX_KEY = "arg.option.ctx"
+        const val SPACE_KEY = "arg.option.space"
         const val OBJECT_ID_KEY = "arg.option.object_id"
         const val RELATION_KEY = "arg.option.relation_key"
         const val OPTION_ID_KEY = "arg.option.option_id"
@@ -130,6 +135,7 @@ class CreateOrEditOptionFragment : BaseBottomSheetComposeFragment() {
 
         fun args(
             ctx: String,
+            space: Id,
             objectId: String,
             relationKey: Key,
             optionId: String?,
@@ -138,6 +144,7 @@ class CreateOrEditOptionFragment : BaseBottomSheetComposeFragment() {
             relationContext: RelationContext
         ) = bundleOf(
             CTX_KEY to ctx,
+            SPACE_KEY to space,
             OBJECT_ID_KEY to objectId,
             RELATION_KEY to relationKey,
             OPTION_ID_KEY to optionId,

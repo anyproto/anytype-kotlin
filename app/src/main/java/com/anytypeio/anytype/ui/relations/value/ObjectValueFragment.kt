@@ -16,6 +16,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.relations.RelationObjectValueScreen
 import com.anytypeio.anytype.core_utils.ext.argBoolean
 import com.anytypeio.anytype.core_utils.ext.argString
@@ -38,6 +41,7 @@ class ObjectValueFragment : BaseBottomSheetComposeFragment() {
     private val vm by viewModels<ObjectValueViewModel> { factory }
 
     private val ctx get() = argString(CTX_KEY)
+    private val space get() = argString(SPACE_KEY)
     private val relationKey get() = argString(RELATION_KEY)
     private val objectId get() = argString(OBJECT_ID_KEY)
     private val isLocked get() = argBoolean(IS_LOCKED_KEY)
@@ -77,14 +81,20 @@ class ObjectValueFragment : BaseBottomSheetComposeFragment() {
         is ObjectValueViewModel.Command.OpenObject -> {
             findNavController().navigate(
                 R.id.objectNavigation,
-                bundleOf(EditorFragment.CTX_KEY to command.id)
+                EditorFragment.args(
+                    ctx = command.id,
+                    space = command.space
+                )
             )
             dismiss()
         }
         is ObjectValueViewModel.Command.OpenSet -> {
             findNavController().navigate(
                 R.id.dataViewNavigation,
-                bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to command.id)
+                ObjectSetFragment.args(
+                    ctx = command.id,
+                    space = command.space
+                )
             )
             dismiss()
         }
@@ -111,7 +121,8 @@ class ObjectValueFragment : BaseBottomSheetComposeFragment() {
             objectId = objectId,
             relationKey = relationKey,
             isLocked = isLocked,
-            relationContext = relationContext
+            relationContext = relationContext,
+            space = SpaceId(space)
         )
         inject(params)
     }
@@ -140,10 +151,28 @@ class ObjectValueFragment : BaseBottomSheetComposeFragment() {
     }
 
     companion object {
-        const val CTX_KEY = "arg.relation.object.ctx"
-        const val RELATION_KEY = "arg.relation.object.relation.key"
-        const val OBJECT_ID_KEY = "arg.relation.object.object"
-        const val IS_LOCKED_KEY = "arg.relation.object.is-locked"
-        const val RELATION_CONTEXT_KEY = "arg.relation.object.relation-context"
+
+        private const val CTX_KEY = "arg.relation.object.ctx"
+        private const val SPACE_KEY = "arg.relation.object.space"
+        private const val RELATION_KEY = "arg.relation.object.relation.key"
+        private const val OBJECT_ID_KEY = "arg.relation.object.object"
+        private const val IS_LOCKED_KEY = "arg.relation.object.is-locked"
+        private const val RELATION_CONTEXT_KEY = "arg.relation.object.relation-context"
+
+        fun args(
+            ctx: Id,
+            space: Id,
+            obj: Id,
+            relation: Key,
+            isLocked: Boolean,
+            relationContext: RelationContext
+        ) = bundleOf(
+            CTX_KEY to ctx,
+            SPACE_KEY to space,
+            OBJECT_ID_KEY to obj,
+            RELATION_KEY to relation,
+            IS_LOCKED_KEY to isLocked,
+            RELATION_CONTEXT_KEY to relationContext
+        )
     }
 }

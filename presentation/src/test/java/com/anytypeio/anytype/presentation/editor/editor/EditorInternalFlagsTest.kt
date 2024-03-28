@@ -35,6 +35,8 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         stubSpaceManager()
+        stubGetNetworkMode()
+        stubFileLimitEvents()
     }
 
     @Test
@@ -44,6 +46,7 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
         val page = StubSmartBlock(id = root, children = listOf(header.id))
         val document = listOf(page, header, title)
         stubInterceptEvents()
+        stubGetObjectTypes(emptyList())
 
         val detailsList = Block.Details(
             details = mapOf(

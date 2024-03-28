@@ -80,7 +80,8 @@ class TemplateSelectViewModel(
                     id = it.id,
                     layout = it.layout ?: ObjectType.Layout.BASIC,
                     typeId = objType.id,
-                    typeKey = objType.uniqueKey
+                    typeKey = objType.uniqueKey,
+                    space = requireNotNull(it.spaceId)
                 )
             })
         }

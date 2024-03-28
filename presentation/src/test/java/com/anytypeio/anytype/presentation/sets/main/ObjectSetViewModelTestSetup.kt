@@ -14,6 +14,8 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.StubConfig
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
@@ -34,6 +36,7 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
@@ -90,6 +93,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 
+@OptIn(ExperimentalCoroutinesApi::class)
 open class ObjectSetViewModelTestSetup {
 
     val root: Id = "context-${RandomString.make()}"
@@ -193,6 +197,9 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var getNetworkMode: GetNetworkMode
 
+    @Mock
+    lateinit var permissions: UserPermissionProvider
+
     lateinit var spaceConfig: Config
 
     var stateReducer = DefaultObjectStateReducer()
@@ -277,7 +284,12 @@ open class ObjectSetViewModelTestSetup {
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             dispatchers = dispatchers,
             getNetworkMode = getNetworkMode,
-            dateProvider = DateProviderImpl()
+            dateProvider = DateProviderImpl(),
+            params = ObjectSetViewModel.Params(
+                ctx = root,
+                space = SpaceId(defaultSpace)
+            ),
+            permissions = permissions
         )
     }
 
@@ -325,6 +337,22 @@ open class ObjectSetViewModelTestSetup {
                     )
                 )
             )
+        }
+    }
+
+    fun stubAddObjectToCollection() {
+        addObjectToCollection.stub {
+            onBlocking {
+                async(any())
+            } doReturn Resultat.success(Payload("", emptyList()))
+        }
+    }
+
+    fun stubCloseBlock() {
+        closeBlock.stub {
+            onBlocking {
+                async(any())
+            } doReturn Resultat.success(Unit)
         }
     }
 
@@ -445,7 +473,7 @@ open class ObjectSetViewModelTestSetup {
                     CreateDataViewObject.Result(
                         objectId = objectId,
                         objectType = TypeKey(objectType),
-                        struct = null
+                        struct = mapOf<Id, Any?>("spaceId" to "spaceId")
                     )
                 )
             )
@@ -455,6 +483,39 @@ open class ObjectSetViewModelTestSetup {
     fun stubNetworkMode() {
         getNetworkMode.stub {
             onBlocking { run(Unit) } doReturn NetworkModeConfig()
+        }
+    }
+
+    fun stubGetSpaceConfig() {
+        spaceManager.stub {
+            onBlocking {
+                getConfig(SpaceId(defaultSpace))
+            } doReturn null
+        }
+
+    }
+
+    fun stubObservePermissions(
+        permission: SpaceMemberPermissions = SpaceMemberPermissions.OWNER
+    ) {
+        permissions.stub {
+            on {
+                observe(SpaceId(defaultSpace))
+            } doReturn flowOf(permission)
+        }
+    }
+
+    fun stubObjectToCollection() {
+        objectToCollection.stub {
+            onBlocking { async(any()) } doReturn Resultat.success(Unit)
+        }
+    }
+
+    fun givenNetworkNodeMocked() {
+        getNetworkMode.stub {
+            onBlocking {
+                run(any())
+            } doReturn NetworkModeConfig()
         }
     }
 }

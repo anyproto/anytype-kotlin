@@ -4,9 +4,11 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuViewModel
 import javax.inject.Inject
 
@@ -28,7 +30,15 @@ class ObjectMenuFragment : ObjectMenuBaseFragment() {
     }
 
     override fun injectDependencies() {
-        componentManager().objectMenuComponent.get(ctx).inject(this)
+        componentManager()
+            .objectMenuComponent
+            .get(
+                params = DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {

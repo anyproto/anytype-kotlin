@@ -25,6 +25,7 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
         MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
         mockObjectSet = MockSet(context = root, space = defaultSpace)
+        stubObservePermissions()
     }
 
     @After
@@ -38,6 +39,7 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
             // SETUP
             stubSpaceManager(mockObjectSet.spaceId)
             stubInterceptEvents()
+            stubNetworkMode()
             stubInterceptThreadStatus()
             stubOpenObject(
                 doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
@@ -77,7 +79,8 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
                     cell = CellView.Description(
                         id = mockObjectSet.obj1.id,
                         relationKey = mockObjectSet.relationObject2.key,
-                        text = ""
+                        text = "",
+                        space = mockObjectSet.space
                     )
                 )
 
@@ -86,7 +89,8 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
                     cell = CellView.Description(
                         id = mockObjectSet.obj1.id,
                         relationKey = mockObjectSet.relationObject1.key,
-                        text = ""
+                        text = "",
+                        space = mockObjectSet.space
                     )
                 )
 

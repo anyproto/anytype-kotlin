@@ -34,11 +34,13 @@ fun StubRelationObject(
 
 fun StubRelationOptionObject(
     id: String = MockDataFactory.randomUuid(),
+    space: Id = MockDataFactory.randomUuid(),
     text: String = MockDataFactory.randomString(),
     color: String = MockDataFactory.randomString()
 ): ObjectWrapper.Option = ObjectWrapper.Option(
         mapOf(
             Relations.ID to id,
+            Relations.SPACE_ID to space,
             Relations.NAME to text,
             Relations.RELATION_OPTION_COLOR to color,
         )

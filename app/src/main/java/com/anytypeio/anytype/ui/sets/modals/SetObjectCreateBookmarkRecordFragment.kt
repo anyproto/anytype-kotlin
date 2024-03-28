@@ -9,9 +9,11 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.viewModels
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.databinding.FragmentSetObjectCreateBookmarkRecordBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.sets.ObjectSetCreateBookmarkRecordViewModel
 import javax.inject.Inject
 
@@ -27,15 +29,6 @@ class SetObjectCreateBookmarkRecordFragment :
     @Inject
     lateinit var factory: ObjectSetCreateBookmarkRecordViewModel.Factory
     override val vm: ObjectSetCreateBookmarkRecordViewModel by viewModels { factory }
-
-
-    override fun injectDependencies() {
-        componentManager().objectSetCreateBookmarkRecordComponent.get(ctx).inject(this)
-    }
-
-    override fun releaseDependencies() {
-        componentManager().objectSetCreateBookmarkRecordComponent.release()
-    }
 
     override fun onButtonClicked() {
         vm.onButtonClicked(input = textInputField.text.toString())
@@ -64,5 +57,21 @@ class SetObjectCreateBookmarkRecordFragment :
                 context.imm().showSoftInput(this, InputMethodManager.SHOW_FORCED)
             }
         }
+    }
+
+    override fun injectDependencies() {
+        componentManager()
+            .objectSetCreateBookmarkRecordComponent
+            .get(
+                DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
+    }
+
+    override fun releaseDependencies() {
+        componentManager().objectSetCreateBookmarkRecordComponent.release()
     }
 }

@@ -41,6 +41,7 @@ abstract class  RelationValueBaseFragment<T: ViewBinding> : BaseBottomSheetFragm
     AddObjectRelationFragment.ObjectValueAddReceiver {
 
     protected val ctx get() = argString(CTX_KEY)
+    protected val space get() = argString(SPACE_KEY)
     protected val relationKey get() = argString(RELATION_KEY)
     protected val target get() = argString(TARGET_KEY)
     protected val dv get() = argString(DV_KEY)
@@ -317,6 +318,7 @@ abstract class  RelationValueBaseFragment<T: ViewBinding> : BaseBottomSheetFragm
 
     companion object {
         const val CTX_KEY = "arg.edit-cell-tag.ctx"
+        const val SPACE_KEY = "arg.edit-cell-tag.space"
         const val IS_LOCKED_KEY = "arg.edit-cell-tag.locked"
         const val RELATION_KEY = "arg.edit-cell-tag.relation.key"
         const val TARGET_KEY = "arg.edit-cell-tag.target"

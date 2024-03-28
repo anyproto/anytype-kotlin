@@ -38,7 +38,7 @@ class NotificationsFragment : BaseBottomSheetComposeFragment() {
             ) {
                 NotificationsScreen(
                     state = vm.state.collectAsStateWithLifecycle().value,
-                    onActionButtonClick = vm::onSpaceClick,
+                    onActionButtonClick = vm::onNavigateToSpaceClicked,
                     onErrorButtonClick = vm::onErrorButtonClick
                 )
             }

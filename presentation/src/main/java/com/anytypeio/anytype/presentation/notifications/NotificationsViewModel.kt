@@ -54,7 +54,7 @@ class NotificationsViewModel(
         command.value = Command.Dismiss
     }
 
-    fun onSpaceClick(spaceId: SpaceId) {
+    fun onNavigateToSpaceClicked(spaceId: SpaceId) {
         viewModelScope.launch {
             Timber.d("Setting space: $spaceId")
             analytics.sendEvent(eventName = EventsDictionary.switchSpace)

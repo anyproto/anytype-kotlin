@@ -549,7 +549,7 @@ open class ObjectSetFragment :
 
     private fun setupDataViewViewState(state: DataViewViewState) {
         when (state) {
-            DataViewViewState.Collection.NoView, DataViewViewState.Set.NoView -> {
+            is DataViewViewState.Collection.NoView, DataViewViewState.Set.NoView -> {
                 topToolbarThreeDotsButton.visible()
                 topToolbarStatusContainer.visible()
                 initView.gone()

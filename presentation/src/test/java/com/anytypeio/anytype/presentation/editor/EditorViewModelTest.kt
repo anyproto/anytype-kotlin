@@ -62,6 +62,7 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
@@ -361,6 +362,9 @@ open class EditorViewModelTest {
 
     @Mock
     lateinit var storelessSubscriptionContainer: StorelessSubscriptionContainer
+
+    @Mock
+    lateinit var permissions: UserPermissionProvider
 
     lateinit var vm: EditorViewModel
 
@@ -3950,7 +3954,12 @@ open class EditorViewModelTest {
             templatesContainer = templatesContainer,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             dispatchers = dispatchers,
-            getNetworkMode = getNetworkMode
+            getNetworkMode = getNetworkMode,
+            params = EditorViewModel.Params(
+                ctx = root,
+                space = SpaceId(defaultSpace)
+            ),
+            permissions = permissions
         )
     }
 

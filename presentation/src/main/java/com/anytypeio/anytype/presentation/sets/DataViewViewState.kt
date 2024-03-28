@@ -6,22 +6,52 @@ import com.anytypeio.anytype.presentation.sets.model.Viewer
 sealed class DataViewViewState {
 
     sealed class Collection : DataViewViewState() {
-        object NoView : Collection()
-        data class NoItems(val title: String, val isCreateObjectAllowed: Boolean) : Collection()
-        data class Default(val viewer: Viewer?, val isCreateObjectAllowed: Boolean) : Collection()
+
+        abstract val isCreateObjectAllowed: Boolean
+        abstract val isEditingViewAllowed: Boolean
+
+        data class NoView(
+            override val isCreateObjectAllowed: Boolean = true,
+            override val isEditingViewAllowed: Boolean = true
+        ) : Collection()
+        data class NoItems(
+            val title: String,
+            override val isCreateObjectAllowed: Boolean = true,
+            override val isEditingViewAllowed: Boolean = true
+        ) : Collection()
+
+        data class Default(
+            val viewer: Viewer?,
+            override val isCreateObjectAllowed: Boolean = true,
+            override val isEditingViewAllowed: Boolean = true
+        ) : Collection()
     }
 
     sealed class Set : DataViewViewState() {
-        object NoQuery : Set()
-        object NoView : Set()
+
+        abstract val isCreateObjectAllowed: Boolean
+        abstract val isEditingViewAllowed: Boolean
+
+        data class NoQuery(
+            override val isCreateObjectAllowed: Boolean = true,
+            override val isEditingViewAllowed: Boolean = true
+        ) : Set()
+
+        data class NoView(
+            override val isCreateObjectAllowed: Boolean = true,
+            override val isEditingViewAllowed: Boolean = true
+        ) : Set()
+
         data class NoItems(
             val title: String,
-            val isCreateObjectAllowed: Boolean
+            override val isCreateObjectAllowed: Boolean = true,
+            override val isEditingViewAllowed: Boolean = true
         ) : Set()
+
         data class Default(
             val viewer: Viewer?,
-            val isCreateObjectAllowed: Boolean,
-            val isEditingViewAllowed: Boolean = true
+            override val isCreateObjectAllowed: Boolean = true,
+            override val isEditingViewAllowed: Boolean = true
         ) : Set()
     }
 

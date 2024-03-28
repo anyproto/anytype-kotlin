@@ -1450,6 +1450,7 @@
     <string name="gallery_experience_install">Install</string>
     <string name="gallery_experience_install_new">Install to new space</string>
     <string name="gallery_experience_alert_title_success">Experience was installed</string>
+    <string name="gallery_experience_alert_subtitle_success">\"%1$s\" was installed to a new space. You can now open and start using it.</string>
     <string name="gallery_experience_alert_title_error">Oops!</string>
     <string name="gallery_experience_alert_button_space">Open space</string>
     <string name="gallery_experience_alert_button_error">Close</string>

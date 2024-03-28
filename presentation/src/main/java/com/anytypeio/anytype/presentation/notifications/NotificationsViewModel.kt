@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.notifications
 
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.ImportErrorCode
 import com.anytypeio.anytype.core_models.NotificationPayload
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -21,9 +22,18 @@ class NotificationsViewModel(
                 when (notification?.payload) {
                     is NotificationPayload.GalleryImport -> {
                         val payload = notification.payload as NotificationPayload.GalleryImport
-                        val spaceId = payload.spaceId
-                        val spaceName = payload.name
-                        state.value = NotificationsScreenState.GalleryInstalled(spaceId, spaceName)
+                        if (payload.errorCode != ImportErrorCode.NULL) {
+                            state.value = NotificationsScreenState.GalleryInstalledError(
+                                errorCode = payload.errorCode
+                            )
+                            return@collect
+                        } else {
+                            val spaceId = payload.spaceId
+                            state.value = NotificationsScreenState.GalleryInstalled(
+                                spaceId = spaceId,
+                                galleryName = payload.name
+                            )
+                        }
                     }
                     else -> {}
                 }
@@ -34,5 +44,11 @@ class NotificationsViewModel(
 
 sealed class NotificationsScreenState {
     object Hidden : NotificationsScreenState()
-    data class GalleryInstalled(val spaceId: SpaceId, val spaceName: String) : NotificationsScreenState()
+    data class GalleryInstalled(
+        val spaceId: SpaceId,
+        val galleryName: String
+    ) : NotificationsScreenState()
+    data class GalleryInstalledError(
+        val errorCode: ImportErrorCode
+    ) : NotificationsScreenState()
 }

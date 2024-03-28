@@ -32,7 +32,11 @@ import com.anytypeio.anytype.presentation.notifications.NotificationsScreenState
 
 
 @Composable
-fun NotificationsScreen(state: NotificationsScreenState,) {
+fun NotificationsScreen(
+    state: NotificationsScreenState,
+    onActionButtonClick: (SpaceId) -> Unit,
+    onErrorButtonClick: () -> Unit
+) {
     when (state) {
         is NotificationsScreenState.GalleryInstalled -> {
             NotificationGalleryInstall(
@@ -41,11 +45,15 @@ fun NotificationsScreen(state: NotificationsScreenState,) {
                     icon = R.drawable.ic_alert_install_gallery
                 ),
                 title = stringResource(id = R.string.gallery_experience_alert_title_success),
-                subtitle = stringResource(id = R.string.gallery_experience_alert_subtitle_success, state.galleryName),
+                subtitle = stringResource(
+                    id = R.string.gallery_experience_alert_subtitle_success,
+                    state.galleryName
+                ),
                 actionButtonText = stringResource(id = R.string.gallery_experience_alert_button_space),
-                onButtonClick = {}
+                onButtonClick = { onActionButtonClick(state.spaceId) }
             )
         }
+
         is NotificationsScreenState.GalleryInstalledError -> {
             NotificationGalleryInstallError(
                 icon = AlertConfig.Icon(
@@ -55,9 +63,10 @@ fun NotificationsScreen(state: NotificationsScreenState,) {
                 title = stringResource(id = R.string.gallery_experience_alert_title_error),
                 subtitle = ImportErrorText(state.errorCode),
                 actionButtonText = stringResource(id = R.string.gallery_experience_alert_button_error),
-                onButtonClick = {}
+                onButtonClick = onErrorButtonClick
             )
         }
+
         NotificationsScreenState.Hidden -> {}
     }
 }
@@ -181,7 +190,9 @@ fun NotificationsScreenPreview() {
         state = NotificationsScreenState.GalleryInstalled(
             spaceId = SpaceId("spaceId"),
             galleryName = "Strategic Writing"
-        )
+        ),
+        onActionButtonClick = {},
+        onErrorButtonClick = {}
     )
 }
 
@@ -189,6 +200,8 @@ fun NotificationsScreenPreview() {
 @Composable
 fun NotificationsScreenPreviewError() {
     NotificationsScreen(
-        state = NotificationsScreenState.GalleryInstalledError(IMPORT_IS_CANCELED)
+        state = NotificationsScreenState.GalleryInstalledError(IMPORT_IS_CANCELED),
+        onActionButtonClick = {},
+        onErrorButtonClick = {}
     )
 }

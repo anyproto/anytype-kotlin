@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Either
@@ -59,6 +60,7 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
@@ -96,6 +98,7 @@ import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.DocumentExternalEventReducer
 import com.anytypeio.anytype.presentation.editor.Editor
+import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModelFactory
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.Interactor
@@ -289,12 +292,15 @@ open class EditorTestSetup {
     @Mock
     lateinit var getNetworkMode: GetNetworkMode
 
+    @Mock
+    lateinit var permissions: UserPermissionProvider
+
     lateinit var interceptFileLimitEvents: InterceptFileLimitEvents
 
     lateinit var addRelationToObject: AddRelationToObject
 
     val root: String = "rootId123"
-    val workspaceId = MockDataFactory.randomString()
+    val defaultSpace = MockDataFactory.randomString()
 
     private val urlBuilder by lazy {
         UrlBuilder(
@@ -394,7 +400,7 @@ open class EditorTestSetup {
 
         workspaceManager = WorkspaceManager.DefaultWorkspaceManager()
         runBlocking {
-            workspaceManager.setCurrentWorkspace(workspaceId)
+            workspaceManager.setCurrentWorkspace(defaultSpace)
         }
 
         interceptFileLimitEvents = InterceptFileLimitEvents(fileLimitsEventChannel, dispatchers)
@@ -490,7 +496,12 @@ open class EditorTestSetup {
             templatesContainer = templatesContainer,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             dispatchers = appCoroutineDispatchers,
-            getNetworkMode = getNetworkMode
+            getNetworkMode = getNetworkMode,
+            params = EditorViewModel.Params(
+                ctx = root,
+                space = SpaceId(defaultSpace)
+            ),
+            permissions = permissions
         )
     }
 
@@ -574,7 +585,7 @@ open class EditorTestSetup {
             onBlocking {
                 searchObjects(
                     filters = ObjectSearchConstants.filterTypes(
-                        spaces = listOf(workspaceId)
+                        spaces = listOf(defaultSpace)
                     ),
                     keys = ObjectSearchConstants.defaultKeysObjectType,
                     sorts = emptyList(),

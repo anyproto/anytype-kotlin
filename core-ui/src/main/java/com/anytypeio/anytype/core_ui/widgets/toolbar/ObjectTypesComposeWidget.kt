@@ -58,7 +58,7 @@ fun MyChooseTypeHorizontalWidget() {
                 )
             )
         ),
-        expaned = true
+        expanded = true
     )
     ChooseTypeHorizontalWidget(state = state, onTypeClicked = {})
 }
@@ -80,7 +80,7 @@ fun MyChooseTypeHorizontalWidgetCollapsed() {
                 )
             )
         ),
-        expaned = false
+        expanded = false
     )
     ChooseTypeHorizontalWidget(state = state, onTypeClicked = {})
 }
@@ -91,7 +91,7 @@ fun ChooseTypeHorizontalWidget(
     onTypeClicked: (TypesWidgetItem) -> Unit
 ) {
     if (state.visible) {
-        if (state.expaned) {
+        if (state.expanded) {
             ChooseTypeHorizontalWidgetExpanded(state = state, action = onTypeClicked)
         } else {
             ChooseTypeHorizontalWidgetCollapsed(state = state, action = onTypeClicked)
@@ -201,7 +201,7 @@ private fun ChooseTypeHeader(
     state: EditorViewModel.TypesWidgetState,
     action: (TypesWidgetItem) -> Unit
 ) {
-    val (title, icon) = if (state.expaned) {
+    val (title, icon) = if (state.expanded) {
         Pair(
             stringResource(id = R.string.widget_types_hide),
             painterResource(id = R.drawable.ic_list_arrow_18)
@@ -223,7 +223,7 @@ private fun ChooseTypeHeader(
             modifier = Modifier
                 .fillMaxHeight()
                 .noRippleThrottledClickable {
-                    if (state.expaned) {
+                    if (state.expanded) {
                         action(TypesWidgetItem.Collapse)
                     } else {
                         action(TypesWidgetItem.Expand)

@@ -1149,13 +1149,13 @@
     <string name="multiplayer_share">分享</string>
     <string name="multiplayer_manage">管理</string>
     <string name="multiplayer_leave_space">离开空间</string>
-    <string name="multiplayer_generate_invite_link_description">Create invite link to share space and add new members</string>
+    <string name="multiplayer_generate_invite_link_description">创建邀请链接以共享空间并添加新成员</string>
     <string name="multiplayer_generate_invite_link">生成邀请链接</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">会员</string>
     <string name="payments_subheader">加入 Anytype Network 意味着一起书写它的故事</string>
-    <string name="payments_card_text_1">Co-create the Vision</string>
+    <string name="payments_card_text_1">共创愿景</string>
     <string name="payments_card_description_1">As a valued member your voice matters! Engage in exclusive events, shape strategic choices, and influence our roadmap.</string>
     <string name="payments_card_text_2">Unlock Member Benefits</string>
     <string name="payments_card_description_2">Members enjoy higher backup storage &amp; sync limits, invitations for multiple guests to collaborate in shared spaces, and a unique identity on the Anytype Network.</string>
@@ -1184,8 +1184,8 @@
     <string name="payments_tier_details_name_subtitle">This is your unique name on the Anytype network, confirming your Membership. It acts as your personal domain and cannot be changed.</string>
     <string name="payments_tier_details_name_hint">Myself</string>
     <string name="payments_tier_details_name_domain">.any</string>
-    <string name="payments_tier_details_name_min">Min 7 characters</string>
-    <string name="payments_tier_details_name_error">This name is already taken!</string>
+    <string name="payments_tier_details_name_min">最少 7 个字符</string>
+    <string name="payments_tier_details_name_error">此名称已被占用</string>
     <string name="payments_tier_details_name_success">This name is up for grabs!</string>
     <string name="payments_tier_details_info_explorer">Dive into the network and enjoy the thrill of one-on-one collaboration</string>
     <string-array name="payments_benefits_explorer">

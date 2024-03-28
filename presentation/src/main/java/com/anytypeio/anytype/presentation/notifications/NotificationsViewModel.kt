@@ -5,6 +5,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.ImportErrorCode
+import com.anytypeio.anytype.core_models.Notification
 import com.anytypeio.anytype.core_models.NotificationPayload
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
@@ -27,25 +28,26 @@ class NotificationsViewModel(
 
     init {
         viewModelScope.launch {
-            notificationsProvider.observe().collect { notification ->
-                when (notification?.payload) {
-                    is NotificationPayload.GalleryImport -> {
-                        val payload = notification.payload as NotificationPayload.GalleryImport
-                        if (payload.errorCode != ImportErrorCode.NULL) {
-                            state.value = NotificationsScreenState.GalleryInstalledError(
-                                errorCode = payload.errorCode
-                            )
-                            return@collect
-                        } else {
-                            val spaceId = payload.spaceId
-                            state.value = NotificationsScreenState.GalleryInstalled(
-                                spaceId = spaceId,
-                                galleryName = payload.name
-                            )
-                        }
-                    }
-                    else -> {}
+            notificationsProvider.observe().collect { notifications ->
+                notifications.forEach { event ->
+                    handleNotification(event)
                 }
+            }
+        }
+    }
+
+    private fun handleNotification(event: Notification.Event) {
+        val payload = event.notification?.payload
+        if (payload is NotificationPayload.GalleryImport) {
+            if (payload.errorCode != ImportErrorCode.NULL) {
+                state.value = NotificationsScreenState.GalleryInstalledError(
+                    errorCode = payload.errorCode
+                )
+            } else {
+                state.value = NotificationsScreenState.GalleryInstalled(
+                    spaceId = payload.spaceId,
+                    galleryName = payload.name
+                )
             }
         }
     }

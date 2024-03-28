@@ -7,6 +7,7 @@ import com.anytypeio.anytype.analytics.base.updateUserProperties
 import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Notification
 import com.anytypeio.anytype.core_models.NotificationPayload
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
@@ -55,7 +56,6 @@ class MainViewModel(
     val toasts = MutableSharedFlow<String>(replay = 0)
 
     init {
-        notificationsProvider.start()
         viewModelScope.launch {
             restoreWallpaper.flow().collect {
                 // Do nothing, just run pipeline.
@@ -86,12 +86,18 @@ class MainViewModel(
             }
         }
         viewModelScope.launch {
-            notificationsProvider.observe().collect { notification ->
-                when (notification?.payload) {
-                    is NotificationPayload.GalleryImport -> commands.emit(Command.Notifications)
-                    else -> {}
+            notificationsProvider.observe().collect { notifications ->
+                notifications.forEach { event ->
+                    handleNotification(event)
                 }
             }
+        }
+    }
+
+    private suspend fun handleNotification(event: Notification.Event) {
+        val payload = event.notification?.payload
+        if (payload is NotificationPayload.GalleryImport) {
+            commands.emit(Command.Notifications)
         }
     }
 
@@ -119,7 +125,6 @@ class MainViewModel(
         objectTypesSubscriptionManager.onStop()
         spaceDeletedStatusWatcher.onStop()
         userPermissionProvider.stop()
-        notificationsProvider.stop()
     }
 
     fun onRestore() {
@@ -139,7 +144,6 @@ class MainViewModel(
                     objectTypesSubscriptionManager.onStart()
                     spaceDeletedStatusWatcher.onStart()
                     userPermissionProvider.start()
-                    notificationsProvider.start()
                     val analyticsID = configStorage.getOrNull()?.analytics
                     if (analyticsID != null) {
                         updateUserProperties(

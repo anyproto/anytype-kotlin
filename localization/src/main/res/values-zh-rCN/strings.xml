@@ -363,7 +363,7 @@
     <string name="enter_text">输入文本</string>
     <string name="enter_number">输入号码</string>
     <string name="enter_date">输入日期</string>
-    <string name="enter_url">Enter URL</string>
+    <string name="enter_url">输入 URL</string>
     <string name="enter_email">输入电子邮件地址</string>
     <string name="enter_phone">输入电话号码</string>
     <string name="scroll_to_select_position">滚动以选择新位置</string>
@@ -1120,7 +1120,7 @@
     <string name="widget_types_hide">隐藏类型</string>
     <!--endregion-->
     <!--region MULTIPLAYER -->
-    <string name="multiplayer_share_invite_link">Share invite link</string>
+    <string name="multiplayer_share_invite_link">分享邀请链接</string>
     <string name="multiplayer_share_invite_link_description">发送此链接来邀请他人。在他们的请求批准时分配访问权限。</string>
     <string name="multiplayer_invite_link">邀请链接</string>
     <string name="multiplayer_join_a_space">加入空间</string>
@@ -1133,24 +1133,24 @@
     <string name="multiplayer_members_and_requests">成员和请求</string>
     <string name="multiplayer_unjoining_requested">Unjoining requested</string>
     <string name="multiplayer_joining_requested">Joining requested</string>
-    <string name="multiplayer_approve_request">Approve</string>
-    <string name="multiplayer_view_request">View request</string>
+    <string name="multiplayer_approve_request">接受</string>
+    <string name="multiplayer_view_request">查看请求</string>
     <string name="multiplayer_owner">所有者</string>
     <string name="multiplayer_can_edit">可编辑</string>
     <string name="multiplayer_can_read">Can read</string>
     <string name="multiplayer_space_add_viewer">Add viewer</string>
     <string name="multiplayer_space_add_editor">Add editor</string>
-    <string name="multiplayer_space_request_reject">Reject</string>
+    <string name="multiplayer_space_request_reject">拒绝</string>
     <string name="multiplayer_space_join_request_header">%1$s requested to join %2$s space</string>
     <string name="multiplayer_remove_member">Remove member</string>
     <string name="multiplayer_request_sent_toast">已发送申请</string>
     <string name="multiplayer_space_stop_sharing">Stop sharing</string>
-    <string name="multiplayer_sharing">Sharing</string>
+    <string name="multiplayer_sharing">分享</string>
     <string name="multiplayer_share">分享</string>
     <string name="multiplayer_manage">Manage</string>
     <string name="multiplayer_leave_space">Leave space</string>
     <string name="multiplayer_generate_invite_link_description">Create invite link to share space and add new members</string>
-    <string name="multiplayer_generate_invite_link">Generate invite link</string>
+    <string name="multiplayer_generate_invite_link">生成邀请链接</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Membership</string>
@@ -1211,7 +1211,7 @@
     <string name="payments_detials_button_pay">Pay by Card</string>
     <string name="payments_detials_button_submit">Submit</string>
     <string name="payments_details_whats_included">What’s included</string>
-    <string name="payments_email_title">Get your free membership</string>
+    <string name="payments_email_title">获得您的免费会员资格</string>
     <string name="payments_email_subtitle">We need your email to keep spam at bay and the fun in play!</string>
     <string name="payments_email_checkbox_text">I\'d like to get updates on products and enjoy free perks!</string>
     <string name="payments_email_hint">E-mail</string>

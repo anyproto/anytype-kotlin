@@ -549,7 +549,7 @@ open class ObjectSetFragment :
 
     private fun setupDataViewViewState(state: DataViewViewState) {
         when (state) {
-            is DataViewViewState.Collection.NoView, DataViewViewState.Set.NoView -> {
+            is DataViewViewState.Collection.NoView -> {
                 topToolbarThreeDotsButton.visible()
                 topToolbarStatusContainer.visible()
                 initView.gone()
@@ -558,6 +558,29 @@ open class ObjectSetFragment :
                 dataViewInfo.hide()
                 toast(getString(R.string.set_collection_view_not_present))
                 setViewer(viewer = null)
+                if (state.isEditingViewAllowed) {
+                    customizeViewButton.visible()
+                } else {
+                    customizeViewButton.invisible()
+                }
+                setupNewButtons(state.isCreateObjectAllowed)
+
+            }
+            is DataViewViewState.Set.NoView -> {
+                topToolbarThreeDotsButton.visible()
+                topToolbarStatusContainer.visible()
+                initView.gone()
+                header.visible()
+                dataViewHeader.gone()
+                dataViewInfo.hide()
+                toast(getString(R.string.set_collection_view_not_present))
+                setViewer(viewer = null)
+                if (state.isEditingViewAllowed) {
+                    customizeViewButton.visible()
+                } else {
+                    customizeViewButton.invisible()
+                }
+                setupNewButtons(state.isCreateObjectAllowed)
             }
             is DataViewViewState.Collection.NoItems -> {
                 topToolbarThreeDotsButton.visible()
@@ -566,13 +589,13 @@ open class ObjectSetFragment :
                 header.visible()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                setupNewButtons(state.isCreateObjectAllowed)
                 customizeViewButton.isEnabled = true
                 if (state.isEditingViewAllowed) {
                     customizeViewButton.visible()
                 } else {
                     customizeViewButton.invisible()
                 }
+                setupNewButtons(state.isCreateObjectAllowed)
                 setCurrentViewerName(state.title)
                 dataViewInfo.show(DataViewInfo.TYPE.COLLECTION_NO_ITEMS)
                 setViewer(viewer = null)
@@ -584,18 +607,18 @@ open class ObjectSetFragment :
                 initView.gone()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                setupNewButtons(state.isCreateObjectAllowed)
                 customizeViewButton.isEnabled = true
                 if (state.isEditingViewAllowed) {
                     customizeViewButton.visible()
                 } else {
                     customizeViewButton.invisible()
                 }
+                setupNewButtons(state.isCreateObjectAllowed)
                 setCurrentViewerName(state.viewer?.title)
                 dataViewInfo.hide()
                 setViewer(viewer = state.viewer)
             }
-            DataViewViewState.Set.NoQuery -> {
+            is DataViewViewState.Set.NoQuery -> {
                 topToolbarThreeDotsButton.visible()
                 topToolbarStatusContainer.visible()
                 initView.gone()
@@ -604,6 +627,12 @@ open class ObjectSetFragment :
                 viewerTitle.isEnabled = false
                 addNewButton.isEnabled = false
                 customizeViewButton.isEnabled = false
+                if (state.isEditingViewAllowed) {
+                    customizeViewButton.visible()
+                } else {
+                    customizeViewButton.invisible()
+                }
+                setupNewButtons(state.isCreateObjectAllowed)
                 setCurrentViewerName(getString(R.string.viewer_default_title))
                 dataViewInfo.show(type = DataViewInfo.TYPE.SET_NO_QUERY)
                 setViewer(viewer = null)

@@ -6,6 +6,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
@@ -19,6 +20,7 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
@@ -50,6 +52,8 @@ import com.anytypeio.anytype.presentation.util.Dispatcher
 import javax.inject.Inject
 
 open class EditorViewModelFactory @Inject constructor(
+    private val params: EditorViewModel.Params,
+    private val permissions: UserPermissionProvider,
     private val openPage: OpenPage,
     private val closeObject: CloseBlock,
     private val createObjectSet: CreateObjectSet,
@@ -96,6 +100,8 @@ open class EditorViewModelFactory @Inject constructor(
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return EditorViewModel(
+            params = params,
+            permissions = permissions,
             openPage = openPage,
             closePage = closeObject,
             createBlockLinkWithObject = createBlockLinkWithObject,

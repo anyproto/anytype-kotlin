@@ -21,6 +21,31 @@ import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
+import com.anytypeio.anytype.presentation.notifications.NotificationsScreenState
+
+
+@Composable
+fun NotificationsScreen(state: NotificationsScreenState) {
+    when (state) {
+        is NotificationsScreenState.GalleryInstalled -> {
+            NotificationGalleryInstall(
+                icon = AlertConfig.Icon(
+                    gradient = GRADIENT_TYPE_GREEN,
+                    icon = R.drawable.ic_alert_install_gallery
+                ),
+                title = "Gallery Installed",
+                subtitle = "You can now add images from your gallery to your Anytype notes.",
+                actionButtonText = "Got it",
+                onButtonClick = {}
+            )
+        }
+        NotificationsScreenState.Hidden -> {
+
+        }
+    }
+}
+
+
 
 @Composable
 private fun NotificationGalleryInstall(

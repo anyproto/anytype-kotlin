@@ -7,6 +7,7 @@ import com.anytypeio.anytype.analytics.base.updateUserProperties
 import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.NotificationPayload
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
@@ -24,6 +25,7 @@ import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
+import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
 import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,7 +46,8 @@ class MainViewModel(
     private val configStorage: ConfigStorage,
     private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
     private val localeProvider: LocaleProvider,
-    private val userPermissionProvider: UserPermissionProvider
+    private val userPermissionProvider: UserPermissionProvider,
+    private val notificationsProvider: NotificationsProvider
 ) : ViewModel() {
 
     val wallpaper = MutableStateFlow<Wallpaper>(Wallpaper.Default)
@@ -52,6 +55,7 @@ class MainViewModel(
     val toasts = MutableSharedFlow<String>(replay = 0)
 
     init {
+        notificationsProvider.start()
         viewModelScope.launch {
             restoreWallpaper.flow().collect {
                 // Do nothing, just run pipeline.
@@ -81,6 +85,14 @@ class MainViewModel(
                 }
             }
         }
+        viewModelScope.launch {
+            notificationsProvider.observe().collect { notification ->
+                when (notification?.payload) {
+                    is NotificationPayload.GalleryImport -> commands.emit(Command.Notifications)
+                    else -> {}
+                }
+            }
+        }
     }
 
     private fun proceedWithLogoutDueToAccountDeletion() {
@@ -107,6 +119,7 @@ class MainViewModel(
         objectTypesSubscriptionManager.onStop()
         spaceDeletedStatusWatcher.onStop()
         userPermissionProvider.stop()
+        notificationsProvider.stop()
     }
 
     fun onRestore() {
@@ -126,6 +139,7 @@ class MainViewModel(
                     objectTypesSubscriptionManager.onStart()
                     spaceDeletedStatusWatcher.onStart()
                     userPermissionProvider.start()
+                    notificationsProvider.start()
                     val analyticsID = configStorage.getOrNull()?.analytics
                     if (analyticsID != null) {
                         updateUserProperties(
@@ -230,5 +244,6 @@ class MainViewModel(
             data class File(val uri: String): Sharing()
             data class Files(val uris: List<String>): Sharing()
         }
+        object Notifications : Command()
     }
 }

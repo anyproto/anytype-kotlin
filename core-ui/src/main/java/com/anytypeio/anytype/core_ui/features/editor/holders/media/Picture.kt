@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.media
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.FrameLayout
+import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockPictureBinding
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableCardViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
@@ -60,7 +61,11 @@ class Picture(val binding: ItemBlockPictureBinding) : Media(binding.root), Decor
 
     fun bind(item: BlockView.Media.Picture, clicked: (ListenerType) -> Unit) {
         super.bind(item, clicked)
-        Glide.with(image).load(item.url).listener(listener).into(image)
+        Glide
+            .with(image)
+            .load(item.url)
+            .listener(listener)
+            .into(image)
     }
 
     override fun onMediaBlockClicked(item: BlockView.Media, clicked: (ListenerType) -> Unit) {

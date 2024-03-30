@@ -14,12 +14,13 @@ data class Notification(
 ) {
 
     sealed class Event {
+        abstract val notification: Notification?
         data class Update(
-            val notification: Notification?
+            override val notification: Notification?
         ) : Event()
 
         data class Send(
-            val notification: Notification?
+            override val notification: Notification?
         ) : Event()
     }
 }

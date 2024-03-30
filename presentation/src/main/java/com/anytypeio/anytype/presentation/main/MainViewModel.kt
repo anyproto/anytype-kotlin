@@ -7,6 +7,8 @@ import com.anytypeio.anytype.analytics.base.updateUserProperties
 import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Notification
+import com.anytypeio.anytype.core_models.NotificationPayload
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
@@ -24,6 +26,7 @@ import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
+import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
 import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,7 +47,8 @@ class MainViewModel(
     private val configStorage: ConfigStorage,
     private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
     private val localeProvider: LocaleProvider,
-    private val userPermissionProvider: UserPermissionProvider
+    private val userPermissionProvider: UserPermissionProvider,
+    private val notificationsProvider: NotificationsProvider
 ) : ViewModel() {
 
     val wallpaper = MutableStateFlow<Wallpaper>(Wallpaper.Default)
@@ -80,6 +84,20 @@ class MainViewModel(
                     }
                 }
             }
+        }
+        viewModelScope.launch {
+            notificationsProvider.observe().collect { notifications ->
+                notifications.forEach { event ->
+                    handleNotification(event)
+                }
+            }
+        }
+    }
+
+    private suspend fun handleNotification(event: Notification.Event) {
+        val payload = event.notification?.payload
+        if (payload is NotificationPayload.GalleryImport) {
+            commands.emit(Command.Notifications)
         }
     }
 
@@ -230,5 +248,6 @@ class MainViewModel(
             data class File(val uri: String): Sharing()
             data class Files(val uris: List<String>): Sharing()
         }
+        object Notifications : Command()
     }
 }

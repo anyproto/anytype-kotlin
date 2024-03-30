@@ -32,6 +32,7 @@ import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.templates.GetTemplates
+import com.anytypeio.anytype.domain.workspace.NotificationsChannel
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
@@ -267,4 +268,5 @@ interface HomeScreenDependencies : ComponentDependencies {
     fun logger(): Logger
     fun spaceManager(): SpaceManager
     fun userPermissionProvider(): UserPermissionProvider
+    fun notificationChannel(): NotificationsChannel
 }

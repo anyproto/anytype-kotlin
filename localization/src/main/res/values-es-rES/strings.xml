@@ -1233,21 +1233,21 @@
     <string name="payments_welcome_subtitle">¡Enhorabuena por tu curiosidad!</string>
     <string name="payments_welcome_button">Siguiente</string>
     <!-- Notifications -->
-    <string name="notifications_alert_error_unknown">An unknown error has occurred. Please try again later.</string>
-    <string name="notifications_alert_error_bad_input">Invalid input detected. Please check your data and try again.</string>
-    <string name="notifications_alert_error_internal">An internal error has occurred. Our team has been notified.</string>
-    <string name="notifications_alert_error_no_objects_to_import">No items found to import. Please select valid objects for import.</string>
-    <string name="notifications_alert_error_import_canceled">The import process has been canceled by the user.</string>
-    <string name="notifications_alert_error_limit_exceeded">The import limit for rows or relations has been exceeded. Please reduce the amount and try again.</string>
-    <string name="notifications_alert_error_file_load">There was an error loading the file. Please check the file and try again.</string>
-    <string name="notifications_alert_error_insufficient_permissions">You do not have the necessary permissions to perform this action. Please check your permissions and try again.</string>
+    <string name="notifications_alert_error_unknown">Ha ocurrido un error desconocido. Por favor, inténtalo más tarde.</string>
+    <string name="notifications_alert_error_bad_input">Se ha detectado una entrada no válida. Por favor, comprueba tus datos e inténtalo de nuevo.</string>
+    <string name="notifications_alert_error_internal">Se ha producido un error interno. El equipo de soporte ha sido notificado.</string>
+    <string name="notifications_alert_error_no_objects_to_import">No se encontraron elementos para importar. Por favor, seleccione objetos válidos para importar.</string>
+    <string name="notifications_alert_error_import_canceled">El proceso de importación ha sido cancelado por el usuario.</string>
+    <string name="notifications_alert_error_limit_exceeded">Se ha superado el límite de importación de filas o relaciones. Por favor, reduzca la cantidad e inténtelo de nuevo.</string>
+    <string name="notifications_alert_error_file_load">Se ha producido un error al cargar el archivo. Por favor, comprueba el archivo e inténtalo de nuevo.</string>
+    <string name="notifications_alert_error_insufficient_permissions">No tienes los permisos necesarios para realizar esta acción. Por favor, comprueba tus permisos e inténtalo de nuevo.</string>
     <!-- Gallery Experience -->
     <string name="gallery_experience_made">Creada por</string>
     <string name="gallery_experience_install">Instalar</string>
     <string name="gallery_experience_install_new">Instalar en un nuevo espacio</string>
-    <string name="gallery_experience_alert_title_success">Experience was installed</string>
-    <string name="gallery_experience_alert_subtitle_success">\"%1$s\" was installed to a new space. You can now open and start using it.</string>
+    <string name="gallery_experience_alert_title_success">Se ha instalado la experiencia</string>
+    <string name="gallery_experience_alert_subtitle_success">\"%1$s\" se ha instalado con éxito en un nuevo espacio. Ahora puedes abrirla y empezar a usarla.</string>
     <string name="gallery_experience_alert_title_error">¡Ups!</string>
-    <string name="gallery_experience_alert_button_space">Open space</string>
+    <string name="gallery_experience_alert_button_space">Abrir espacio</string>
     <string name="gallery_experience_alert_button_error">Cerrar</string>
 </resources>

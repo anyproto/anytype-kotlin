@@ -25,17 +25,8 @@ interface NotificationsProvider {
 
         @OptIn(ExperimentalCoroutinesApi::class)
         override fun observe(): Flow<List<Notification.Event>> {
-            return combine(
-                awaitAccountStartManager.isStarted(),
-                notificationsChannel.observe()
-            ) { isStarted, events ->
-                isStarted to events
-            }.flatMapLatest { (isStarted, events) ->
-                if (isStarted) {
-                    flowOf(events)
-                } else {
-                    emptyFlow()
-                }
+            return awaitAccountStartManager.isStarted().flatMapLatest { isStarted ->
+                if (isStarted) notificationsChannel.observe() else emptyFlow()
             }
         }
     }

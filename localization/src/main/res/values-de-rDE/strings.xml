@@ -1166,7 +1166,7 @@
     <string name="payments_card_text_3">Digitale Unabhängigkeit unterstützen</string>
     <string name="payments_card_description_3">Mit deinem Beitrag unterstützt du unser unabhängiges Team und befürwortest unsere Vision︎ eines nutzergeführten, sicheren und gemeinschaftlichen digitalen Netzwerks.</string>
     <string name="payments_card_text_4">In Konnektivität investieren</string>
-    <string name="payments_card_description_4">Our network\'s value exceeds the sum of its parts. Your membership sustains the infrastructure for its growth which underpins this network.</string>
+    <string name="payments_card_description_4">Der Wert unseres Netzwerks ist größer als die Summe seiner Teile. Durch deine Mitgliedschaft wird die Infrastruktur für sein Wachstum aufrechterhalten, die dieses Netzwerk trägt.</string>
     <string name="payments_tier_explorer">Entdecker</string>
     <string name="payments_tier_explorer_description">Tauche in das Netzwerk ein und genieße den Nervenkitzel der persönlichen Zusammenarbeit</string>
     <string name="payments_tier_builder">Erbauer</string>
@@ -1185,7 +1185,7 @@
     <string name="payments_current_label">Aktuell</string>
     <!-- Tier details -->
     <string name="payments_tier_details_name_title">Wähle deinen einzigartigen Namen</string>
-    <string name="payments_tier_details_name_subtitle">This is your unique name on the Anytype network, confirming your Membership. It acts as your personal domain and cannot be changed.</string>
+    <string name="payments_tier_details_name_subtitle">Dies ist dein eindeutiger Name im Anytype-Netzwerk, der deine Mitgliedschaft bestätigt. Er dient als deine persönliche Domain und kann nicht geändert werden.</string>
     <string name="payments_tier_details_name_hint">Myself</string>
     <string name="payments_tier_details_name_domain">.any</string>
     <string name="payments_tier_details_name_min">Mindestens 7 Zeichen</string>
@@ -1223,7 +1223,7 @@
     <string name="payments_tier_current_valid">Gültig bis</string>
     <string name="payments_tier_current_paid_by">Mit Karte bezahlt</string>
     <string name="payments_tier_current_button">Zahlung verwalten</string>
-    <string name="payments_tier_current_change_email_button">Change e-mail</string>
+    <string name="payments_tier_current_change_email_button">E-Mail-Adresse ändern</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Gib den an deine E-Mail-Adresse gesendeten Code ein</string>
     <string name="payments_code_resend">Erneut senden</string>
@@ -1233,14 +1233,14 @@
     <string name="payments_welcome_subtitle">Ein Hoch auf deine Neugierde!</string>
     <string name="payments_welcome_button">Fortfahren</string>
     <!-- Notifications -->
-    <string name="notifications_alert_error_unknown">An unknown error has occurred. Please try again later.</string>
-    <string name="notifications_alert_error_bad_input">Invalid input detected. Please check your data and try again.</string>
-    <string name="notifications_alert_error_internal">An internal error has occurred. Our team has been notified.</string>
-    <string name="notifications_alert_error_no_objects_to_import">No items found to import. Please select valid objects for import.</string>
-    <string name="notifications_alert_error_import_canceled">The import process has been canceled by the user.</string>
-    <string name="notifications_alert_error_limit_exceeded">The import limit for rows or relations has been exceeded. Please reduce the amount and try again.</string>
-    <string name="notifications_alert_error_file_load">There was an error loading the file. Please check the file and try again.</string>
-    <string name="notifications_alert_error_insufficient_permissions">You do not have the necessary permissions to perform this action. Please check your permissions and try again.</string>
+    <string name="notifications_alert_error_unknown">Es ist ein unbekannter Fehler aufgetreten. Bitte versuche es später noch einmal.</string>
+    <string name="notifications_alert_error_bad_input">Ungültige Eingabe erkannt. Bitte überprüfe deine Daten und versuche es erneut.</string>
+    <string name="notifications_alert_error_internal">Es ist ein interner Fehler aufgetreten. Unser Team wurde benachrichtigt.</string>
+    <string name="notifications_alert_error_no_objects_to_import">Keine Objekte zum Importieren gefunden. Bitte wähle gültige Objekte für den Import aus.</string>
+    <string name="notifications_alert_error_import_canceled">Der Importvorgang wurde vom Benutzer abgebrochen.</string>
+    <string name="notifications_alert_error_limit_exceeded">Das Importlimit für Zeilen oder Beziehungen wurde überschritten. Bitte reduziere die Anzahl und versuche es erneut.</string>
+    <string name="notifications_alert_error_file_load">Es ist ein Fehler beim Laden der Datei aufgetreten. Bitte überprüfe die Datei und versuche es erneut.</string>
+    <string name="notifications_alert_error_insufficient_permissions">Du hast nicht die notwendigen Berechtigungen zum Durchführen dieser Aktion. Bitte überprüfe deine Berechtigungen und versuche es erneut.</string>
     <!-- Gallery Experience -->
     <string name="gallery_experience_made">Erstellt von</string>
     <string name="gallery_experience_install">Installieren</string>

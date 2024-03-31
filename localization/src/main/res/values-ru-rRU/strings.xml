@@ -1157,11 +1157,11 @@
     <string name="multiplayer_remove_member">Remove member</string>
     <string name="multiplayer_request_sent_toast">Запрос отправлен</string>
     <string name="multiplayer_space_stop_sharing">Stop sharing</string>
-    <string name="multiplayer_sharing">Sharing</string>
+    <string name="multiplayer_sharing">Совместное использование</string>
     <string name="multiplayer_share">Поделиться</string>
     <string name="multiplayer_manage">Manage</string>
     <string name="multiplayer_leave_space">Leave space</string>
-    <string name="multiplayer_generate_invite_link_description">Create invite link to share space and add new members</string>
+    <string name="multiplayer_generate_invite_link_description">Создать ссылку-приглашение для совместного использования и добавления новых участников</string>
     <string name="multiplayer_generate_invite_link">Создать ссылку на приглашение</string>
     <!--endregion-->
     <!--region PAYMENTS -->

@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -28,10 +29,10 @@ class NotificationsViewModel(
 
     init {
         viewModelScope.launch {
-            notificationsProvider.observe().collect { notifications ->
-                notifications.forEach { event ->
-                    handleNotification(event)
-                }
+            val notification = notificationsProvider.events.value
+            Timber.d("Received notifications in NotificationsViewModel: $notification")
+            if (notification.isNotEmpty()) {
+                handleNotification(notification.first())
             }
         }
     }

@@ -826,9 +826,9 @@
     <string name="download_anytype_url">https://download.anytype.io</string>
     <string name="space_type_personal">Persoonlijk</string>
     <string name="space_type_private">Persoonlijk</string>
-    <string name="space_type_private_space">Private space</string>
+    <string name="space_type_private_space">Privé ruimte</string>
     <string name="space_type_shared">Gedeeld</string>
-    <string name="space_type_shared_space">Shared space</string>
+    <string name="space_type_shared_space">Gedeelde ruimte</string>
     <string name="space_type_unknown">Onbekend</string>
     <string name="create_space_start_with">Begin met</string>
     <string name="create_object_section_lists">Lijsten</string>
@@ -1148,25 +1148,25 @@
     <string name="multiplayer_space_join_request_header">%1$s heeft verzocht om deel te nemen aan de ruimte %2$s</string>
     <string name="multiplayer_remove_member">Verwijder lid</string>
     <string name="multiplayer_request_sent_toast">Verzoek verzonden</string>
-    <string name="multiplayer_space_stop_sharing">Stop sharing</string>
+    <string name="multiplayer_space_stop_sharing">Stop met delen</string>
     <string name="multiplayer_sharing">Sharing</string>
     <string name="multiplayer_share">Deel</string>
-    <string name="multiplayer_manage">Manage</string>
-    <string name="multiplayer_leave_space">Leave space</string>
+    <string name="multiplayer_manage">Beheer</string>
+    <string name="multiplayer_leave_space">Verlaat ruimte</string>
     <string name="multiplayer_generate_invite_link_description">Create invite link to share space and add new members</string>
     <string name="multiplayer_generate_invite_link">Generate invite link</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Lidmaatschap</string>
     <string name="payments_subheader">Deelnemen aan het Anytype netwerk betekent bijdragen aan het verhaal</string>
-    <string name="payments_card_text_1">Co-create the Vision</string>
-    <string name="payments_card_description_1">As a valued member your voice matters! Engage in exclusive events, shape strategic choices, and influence our roadmap.</string>
-    <string name="payments_card_text_2">Unlock Member Benefits</string>
-    <string name="payments_card_description_2">Members enjoy higher backup storage &amp; sync limits, invitations for multiple guests to collaborate in shared spaces, and a unique identity on the Anytype Network.</string>
-    <string name="payments_card_text_3">Support Digital Independence</string>
-    <string name="payments_card_description_3">Your contribution supports our team and endorses our vision of a user-owned, secure, and collaborative digital network.</string>
+    <string name="payments_card_text_1">Maak samen de visie</string>
+    <string name="payments_card_description_1">Als een gewaardeerd lid doet jouw mening er te! Neem deel aan exclusieve evenementen, vorm strategische keuzes en beïnvloed onze routekaart.</string>
+    <string name="payments_card_text_2">Ontgrendel ledenvoordelen</string>
+    <string name="payments_card_description_2">Leden genieten van meer backup opslagcapaciteit &amp; synchronisatie limieten, uitnodigingen voor meerdere gasten om samen te werken in gedeelde ruimten, en een unieke identiteit op het Anytype Network.</string>
+    <string name="payments_card_text_3">Ondersteun digitale onafhankelijkheid </string>
+    <string name="payments_card_description_3">Jouw bijdrage steunt ons team en ondersteunt onze visie op een gebruiker-geëigende , veilige en gezamenlijke digitale omgeving.</string>
     <string name="payments_card_text_4">Investeer in verbinding</string>
-    <string name="payments_card_description_4">Our network\'s value exceeds the sum of its parts. Your membership sustains the infrastructure for its growth which underpins this network.</string>
+    <string name="payments_card_description_4">De waarde van ons netwerk overschrijdt de som van zijn onderdelen. Jouw lidmaatschap houdt de infrastructuur in stand voor de groei die aan dit netwerk ten grondslag ligt.</string>
     <string name="payments_tier_explorer">Verkenner</string>
     <string name="payments_tier_explorer_description">Duik in het netwerk en geniet van de spanning van één-op-één samenwerking</string>
     <string name="payments_tier_builder">Bouwer</string>
@@ -1185,12 +1185,12 @@
     <string name="payments_current_label">Huidige</string>
     <!-- Tier details -->
     <string name="payments_tier_details_name_title">Kies jouw unieke naam</string>
-    <string name="payments_tier_details_name_subtitle">This is your unique name on the Anytype network, confirming your Membership. It acts as your personal domain and cannot be changed.</string>
+    <string name="payments_tier_details_name_subtitle">Dit is jouw unieke naam op het Anyty-netwerk, en bevestigt jouw lidmaatschap. Het fungeert als jouw persoonlijke domein en kan niet worden gewijzigd.</string>
     <string name="payments_tier_details_name_hint">Mijzelf</string>
     <string name="payments_tier_details_name_domain">.any</string>
-    <string name="payments_tier_details_name_min">Min 7 characters</string>
-    <string name="payments_tier_details_name_error">This name is already taken!</string>
-    <string name="payments_tier_details_name_success">This name is up for grabs!</string>
+    <string name="payments_tier_details_name_min">Minimaal 7 tekens</string>
+    <string name="payments_tier_details_name_error">Deze naam is al in gebruik!</string>
+    <string name="payments_tier_details_name_success">Deze naam is beschikbaar!</string>
     <string name="payments_tier_details_info_explorer">Duik in het netwerk en geniet van de spanning van één-op-één samenwerking</string>
     <string-array name="payments_benefits_explorer">
         <item>1 GB aan netwerkruimte</item>
@@ -1220,34 +1220,34 @@
     <string name="payments_email_checkbox_text">Ik zou graag updates over producten willen ontvangen en genieten van gratis voordelen!</string>
     <string name="payments_email_hint">E-mailadres</string>
     <string name="payments_tier_current_title">Je huidige status:</string>
-    <string name="payments_tier_current_valid">Valid until</string>
-    <string name="payments_tier_current_paid_by">Paid by Card</string>
-    <string name="payments_tier_current_button">Manage payment</string>
-    <string name="payments_tier_current_change_email_button">Change e-mail</string>
+    <string name="payments_tier_current_valid">Geldig tot</string>
+    <string name="payments_tier_current_paid_by">Betaald met kaart</string>
+    <string name="payments_tier_current_button">Beheer betaling</string>
+    <string name="payments_tier_current_change_email_button">Wijzig e-mailadres</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Voer de code in die naar jouw e-mailadres is verstuurd</string>
     <string name="payments_code_resend">Verstuur opnieuw</string>
-    <string name="payments_code_resend_in">Resend in %1$n sec</string>
+    <string name="payments_code_resend_in">Verstuur opnieuw over %1$n seconden</string>
     <!-- Payments Welcome -->
-    <string name="payments_welcome_title">Welcome to the network,\n%1$s</string>
+    <string name="payments_welcome_title">Welkom bij het netwerk, \n%1$s</string>
     <string name="payments_welcome_subtitle">Hulde voor jouw nieuwsgierigheid!</string>
-    <string name="payments_welcome_button">Continue</string>
+    <string name="payments_welcome_button">Ga verder</string>
     <!-- Notifications -->
-    <string name="notifications_alert_error_unknown">An unknown error has occurred. Please try again later.</string>
-    <string name="notifications_alert_error_bad_input">Invalid input detected. Please check your data and try again.</string>
-    <string name="notifications_alert_error_internal">An internal error has occurred. Our team has been notified.</string>
-    <string name="notifications_alert_error_no_objects_to_import">No items found to import. Please select valid objects for import.</string>
-    <string name="notifications_alert_error_import_canceled">The import process has been canceled by the user.</string>
-    <string name="notifications_alert_error_limit_exceeded">The import limit for rows or relations has been exceeded. Please reduce the amount and try again.</string>
-    <string name="notifications_alert_error_file_load">There was an error loading the file. Please check the file and try again.</string>
-    <string name="notifications_alert_error_insufficient_permissions">You do not have the necessary permissions to perform this action. Please check your permissions and try again.</string>
+    <string name="notifications_alert_error_unknown">Er heeft zich een onbekende fout voorgedaan. Probeer het later opnieuw.</string>
+    <string name="notifications_alert_error_bad_input">Ongeldige invoer gedetecteerd. Controleer jouw gegevens en probeer het opnieuw.</string>
+    <string name="notifications_alert_error_internal">Er is een interne fout opgetreden. Ons team is op de hoogte gebracht.</string>
+    <string name="notifications_alert_error_no_objects_to_import">Geen items gevonden om te importeren. Selecteer geldige objecten om te importeren.</string>
+    <string name="notifications_alert_error_import_canceled">Het importeerproces is geannuleerd door de gebruiker.</string>
+    <string name="notifications_alert_error_limit_exceeded">De importeerlimiet voor rijen of relaties is overschreden. Verminder het aantal en probeer het opnieuw.</string>
+    <string name="notifications_alert_error_file_load">Er is een fout opgetreden bij het laden van het bestand. Controleer het bestand en probeer het opnieuw.</string>
+    <string name="notifications_alert_error_insufficient_permissions">Je hebt niet de benodigde rechten om deze actie uit te voeren. Controleer jouw machtigingen en probeer het opnieuw.</string>
     <!-- Gallery Experience -->
-    <string name="gallery_experience_made">Made by</string>
+    <string name="gallery_experience_made">Gemaakt door</string>
     <string name="gallery_experience_install">Installeer</string>
     <string name="gallery_experience_install_new">Installeer in nieuwe ruimte</string>
-    <string name="gallery_experience_alert_title_success">Experience was installed</string>
-    <string name="gallery_experience_alert_subtitle_success">\"%1$s\" was installed to a new space. You can now open and start using it.</string>
+    <string name="gallery_experience_alert_title_success">Experience werd geïnstalleerd</string>
+    <string name="gallery_experience_alert_subtitle_success">\"%1$s\" werd geïnstalleerd in een nieuwe ruimte. Je kunt het nu openen en gebruiken.</string>
     <string name="gallery_experience_alert_title_error">Oeps!</string>
-    <string name="gallery_experience_alert_button_space">Open space</string>
+    <string name="gallery_experience_alert_button_space">Open ruimte</string>
     <string name="gallery_experience_alert_button_error">Sluit</string>
 </resources>

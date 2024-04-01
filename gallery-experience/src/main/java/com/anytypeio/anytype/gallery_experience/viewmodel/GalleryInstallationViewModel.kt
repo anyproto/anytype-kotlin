@@ -171,16 +171,18 @@ class GalleryInstallationViewModel(
             title = manifestInfo.title,
             isNewSpace = isNewSpace
         )
-        importExperience.async(params).fold(
-            onSuccess = {
-                Timber.d("ObjectImportExperience success")
-                command.emit(GalleryInstallationNavigation.Dismiss)
-            },
-            onFailure = { error ->
-                Timber.e(error, "ObjectImportExperience failed")
-                command.emit(GalleryInstallationNavigation.Dismiss)
-            }
-        )
+        importExperience.stream(params).collect { result ->
+            result.fold(
+                onLoading = {
+                    //We immediately close the screen after sending the importExperience command,
+                    // as either an error or success will be returned in the form of
+                    // a Notification Event, which should be handled in the MainViewModel.
+                    command.emit(GalleryInstallationNavigation.Dismiss)
+                },
+                onSuccess = { Timber.d("ObjectImportExperience success") },
+                onFailure = { error -> Timber.e(error, "ObjectImportExperience failed") }
+            )
+        }
     }
 
     private fun subscribeToEventProcessChannel() {

@@ -18,6 +18,7 @@ import com.anytypeio.anytype.core_models.StubParagraph
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.ext.parseThemeTextColor
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
@@ -413,6 +414,7 @@ open class EditorViewModelTest {
         stubNetworkMode()
         stubObserveEvents()
         stubInterceptEvents()
+        stubUserPermission()
         spaceManager.stub {
             onBlocking {
                 get()
@@ -546,7 +548,7 @@ open class EditorViewModelTest {
     }
 
     @Test
-    fun `should emit an approprtiate navigation command when the page is closed`() {
+    fun `should emit an appropriate navigation command when the page is closed`() {
         stubInterceptEvents()
         stubClosePage()
         givenViewModel()
@@ -888,7 +890,6 @@ open class EditorViewModelTest {
     @Test
     fun `should apply two different markup actions`() {
 
-        val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
 
         val paragraph = Block(
@@ -944,7 +945,6 @@ open class EditorViewModelTest {
         coroutineTestRule.advanceTime(100)
 
         val firstTimeRange = 0..3
-        val firstTimeMarkup = StylingEvent.Markup.Bold
 
         vm.onBlockFocusChanged(
             hasFocus = true,
@@ -992,7 +992,6 @@ open class EditorViewModelTest {
         }
 
         val secondTimeRange = 0..5
-        val secondTimeMarkup = StylingEvent.Markup.Italic
 
         vm.onSelectionChanged(
             id = paragraph.id,
@@ -1042,7 +1041,6 @@ open class EditorViewModelTest {
     @Test
     fun `should apply two markup actions of the same markup type`() {
 
-        val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
 
         val paragraph = Block(
@@ -1094,7 +1092,6 @@ open class EditorViewModelTest {
         coroutineTestRule.advanceTime(100)
 
         val firstTimeRange = 0..3
-        val firstTimeMarkup = StylingEvent.Markup.Bold
 
         vm.onBlockFocusChanged(
             hasFocus = true,
@@ -1149,7 +1146,6 @@ open class EditorViewModelTest {
         )
 
         val secondTimeRange = 0..5
-        val secondTimeMarkup = StylingEvent.Markup.Bold
 
         vm.onSelectionChanged(
             id = paragraph.id,
@@ -3692,7 +3688,7 @@ open class EditorViewModelTest {
     }
 
     fun stubOpenPage(
-        context: Id = MockDataFactory.randomString(),
+        context: Id = root,
         events: List<Event> = emptyList()
     ) {
         openPage.stub {
@@ -4396,5 +4392,16 @@ open class EditorViewModelTest {
         verifyNoMoreInteractions(updateText)
 
         coroutineTestRule.advanceTime(200)
+    }
+
+    fun stubUserPermission(
+        space: SpaceId = SpaceId(defaultSpace),
+        permission: SpaceMemberPermissions = SpaceMemberPermissions.OWNER
+    ) {
+        permissions.stub {
+            on {
+                observe(space = space)
+            } doReturn flowOf(permission)
+        }
     }
 }

@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Response
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -826,9 +827,20 @@ open class EditorPresentationTestSetup {
         }
     }
 
-    fun stubSpaceManager(space: String = "") {
+    fun stubSpaceManager(space: String = defaultSpace) {
         spaceManager.stub {
             onBlocking { get() } doReturn space
+        }
+    }
+
+    fun stubUserPermission(
+        space: SpaceId = SpaceId(defaultSpace),
+        permission: SpaceMemberPermissions = SpaceMemberPermissions.OWNER
+    ) {
+        permissions.stub {
+            on {
+                observe(space = space)
+            } doReturn flowOf(permission)
         }
     }
 }

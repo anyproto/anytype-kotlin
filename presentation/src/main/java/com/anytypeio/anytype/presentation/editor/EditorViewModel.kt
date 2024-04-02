@@ -266,6 +266,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
@@ -407,7 +408,15 @@ class EditorViewModel(
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
     override val commands = MutableLiveData<EventWrapper<Command>>()
 
+    val permission = MutableStateFlow<SpaceMemberPermissions?>(null)
+
     init {
+        viewModelScope.launch {
+            permissions.observe(space = params.space).collect {
+                permission.value = it
+            }
+        }
+
         proceedWithObservingProfileIcon()
         startHandlingTextChanges()
         startProcessingFocusChanges()
@@ -743,10 +752,11 @@ class EditorViewModel(
             .stream()
             .filter { it.isNotEmpty() }
             .onEach { document -> refreshStyleToolbar(document) }
+            .combine(permission) { doc, permission -> doc to permission }
             .withLatestFrom(
                 orchestrator.stores.focus.stream(),
                 orchestrator.stores.details.stream()
-            ) { models, focus, details ->
+            ) { (models, permission), focus, details ->
                 val root = models.first { it.id == context }
                 if (mode == EditorMode.Locked) {
                     if (root.fields.isLocked != true) {
@@ -759,6 +769,14 @@ class EditorViewModel(
                         sendToast("Your object is locked")
                     }
                 }
+                if (permission?.isOwnerOrEditor() == true) {
+                    if (mode == EditorMode.Read)
+                        mode = EditorMode.Edit
+                } else {
+                    if (mode == EditorMode.Edit)
+                        mode = EditorMode.Read
+                }
+
                 footers.value = getFooterState(root, details)
                 val flags = mutableListOf<BlockViewRenderer.RenderFlag>()
                 Timber.d("Rendering starting...")
@@ -1719,7 +1737,7 @@ class EditorViewModel(
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.CRUD.Create(
-                    context = context,
+                    context = params.ctx,
                     target = target,
                     position = position,
                     prototype = Prototype.Text(style = style)
@@ -4337,7 +4355,7 @@ class EditorViewModel(
         isPopUpToDashboard: Boolean = false
     ) {
         viewModelScope.launch {
-            closePage.async(context).fold(
+            closePage.async(params.ctx).fold(
                 onFailure = {
                     Timber.e(it, "Error while closing object")
                     navigate(
@@ -4604,10 +4622,7 @@ class EditorViewModel(
 
     fun onStop() {
         Timber.d("onStop, ")
-        jobs.apply {
-            forEach { it.cancel() }
-            clear()
-        }
+        jobs.cancel()
         if (copyFileToCache.isActive()) {
             copyFileToCache.cancel()
         }

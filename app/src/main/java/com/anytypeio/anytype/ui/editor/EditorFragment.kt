@@ -169,6 +169,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
@@ -826,6 +827,15 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             // TODO
         }.launchIn(lifecycleScope)
 
+        vm.permission.onEach { permission ->
+            if (permission?.isOwnerOrEditor() == true) {
+                binding.topToolbar.setIsReadOnly(false)
+                binding.bottomToolbar.setIsReadOnly(false)
+            } else {
+                binding.topToolbar.setIsReadOnly(true)
+                binding.bottomToolbar.setIsReadOnly(true)
+            }
+        }.launchIn(lifecycleScope)
 
 
         with(lifecycleScope) {

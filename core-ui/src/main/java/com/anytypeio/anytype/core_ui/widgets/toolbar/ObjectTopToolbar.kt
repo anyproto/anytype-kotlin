@@ -13,6 +13,8 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.WidgetObjectTopToolbarBinding
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
+import com.anytypeio.anytype.core_utils.ext.invisible
+import com.anytypeio.anytype.core_utils.ext.visible
 
 class ObjectTopToolbar @JvmOverloads constructor(
     context: Context,
@@ -89,6 +91,14 @@ class ObjectTopToolbar @JvmOverloads constructor(
             R.string.this_type_has_templates,
             count
         )
+    }
+
+    fun setIsReadOnly(isReadOnly: Boolean) {
+        if (isReadOnly) {
+            binding.ivThreeDots.invisible()
+        } else {
+            binding.ivThreeDots.invisible()
+        }
     }
 
     companion object {

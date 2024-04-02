@@ -60,6 +60,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         MockitoAnnotations.openMocks(this)
         proceedWithDefaultBeforeTestStubbing()
         stubInterceptEvents()
+        stubInterceptThreadStatus()
         stubClosePage()
     }
 
@@ -147,6 +148,9 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         }
 
         vm.focus.test().assertValue(parent.id)
+
+        coroutineTestRule.advanceUntilIdle()
+
         vm.state.test().assertValue(
             ViewState.Success(
                 listOf(
@@ -264,6 +268,8 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
                 id = child2.id
             )
         }
+
+        coroutineTestRule.advanceUntilIdle()
 
         vm.focus.test().assertValue(child1.id)
         vm.state.test().assertValue(
@@ -399,6 +405,9 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         }
 
         vm.focus.test().assertValue(child1.id)
+
+        coroutineTestRule.advanceUntilIdle()
+
         vm.state.test().assertValue(
             ViewState.Success(
                 listOf(
@@ -503,6 +512,9 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         }
 
         vm.focus.test().assertValue(paragraph.id)
+
+        coroutineTestRule.advanceUntilIdle()
+
         vm.state.test().assertValue(
             ViewState.Success(
                 listOf(
@@ -604,6 +616,9 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         }
 
         vm.focus.test().assertValue(paragraph.id)
+
+        coroutineTestRule.advanceUntilIdle()
+
         vm.state.test().assertValue(
             ViewState.Success(
                 listOf(
@@ -1558,6 +1573,8 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
             relations = emptyList()
         )
         stubUpdateText()
+        stubInterceptThreadStatus()
+        stubInterceptEvents()
         stubGetTemplates()
         stubUpdateTextStyle()
         stubMergeBlocks(root)
@@ -1584,6 +1601,8 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
                 marks = paragraph.content.asText().marks
             )
         }
+
+        coroutineTestRule.advanceUntilIdle()
 
         assertEquals(3, vm.views.size)
 

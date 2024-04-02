@@ -87,6 +87,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         proceedWithDefaultBeforeTestStubbing()
+        stubInterceptThreadStatus()
+        stubInterceptEvents()
     }
 
     @Test
@@ -196,6 +198,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                 mentionTrigger = mentionTrigger
             )
         }
+
+        coroutineTestRule.advanceUntilIdle()
 
         vm.state.test().apply {
             assertValue(
@@ -498,6 +502,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
 
             advanceUntilIdle()
         }
+
+        coroutineTestRule.advanceUntilIdle()
 
         vm.state.test().apply {
             assertValue(
@@ -1136,6 +1142,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                 mentionTrigger = mentionTrigger
             )
         }
+
+        coroutineTestRule.advanceUntilIdle()
 
         vm.state.test().apply {
             assertValue(

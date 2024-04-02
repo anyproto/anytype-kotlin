@@ -147,11 +147,14 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
 
     @Test
     fun `should not remove type flag on show object event without type flag in details`() = runTest {
+
         val title = StubTitle()
         val header = StubHeader(children = listOf(title.id))
         val page = StubSmartBlock(id = root, children = listOf(header.id))
         val document = listOf(page, header, title)
+
         stubInterceptEvents()
+        stubInterceptThreadStatus()
 
         val detailsList = Block.Details(
             details = mapOf(

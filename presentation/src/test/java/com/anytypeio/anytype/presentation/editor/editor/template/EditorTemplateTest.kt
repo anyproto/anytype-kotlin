@@ -34,11 +34,14 @@ class EditorTemplateTest: EditorPresentationTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         proceedWithDefaultBeforeTestStubbing()
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `should isObjectTemplate true  when opening template object`() = runTest {
+
         val title = StubTitle()
         val header = StubHeader(children = listOf(title.id))
         val page = StubSmartBlock(id = root, children = listOf(header.id))
@@ -66,12 +69,13 @@ class EditorTemplateTest: EditorPresentationTestSetup() {
             )
         )
 
-        stubInterceptThreadStatus()
-        stubInterceptEvents()
+
+
         stubOpenDocument(
             document = document,
             details = detailsList
         )
+
 
         val vm = buildViewModel()
 

@@ -170,6 +170,8 @@ class EditorDuplicateTest : EditorPresentationTestSetup() {
 
         // Selecting "a" block and "b" block.
 
+        coroutineTestRule.advanceUntilIdle()
+
         vm.state.test().assertValue(
             ViewState.Success(
                 listOf(

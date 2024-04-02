@@ -56,6 +56,8 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         proceedWithDefaultBeforeTestStubbing()
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
     }
 
     private var tableId = MockDataFactory.randomUuid()

@@ -394,6 +394,8 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
         stubCreateBlock(root = root)
         stubSearchObjects()
         stubCopy()
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
         stubOpenDocument(
             document = doc,
             details = customDetails

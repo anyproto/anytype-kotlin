@@ -140,15 +140,7 @@ fun Markup.toSpannable(
 }
 
 private fun isRangeValid(mark: Markup.Mark): Boolean {
-    if (mark.from > mark.to)
-        return false
-    if (mark.from < 0)
-        return false
-    if (mark.from == mark.to)
-        return false
-    if (mark.to < 0)
-        return false
-    return true
+    return mark.from >= 0 && mark.to >= 0 && mark.from < mark.to
 }
 
 fun Editable.setMarkup(

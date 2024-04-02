@@ -1085,6 +1085,7 @@ open class EditorViewModelTest {
 
         stubObserveEvents(events)
         stubOpenPage()
+        stubUserPermission()
         givenViewModel(builder)
 
         vm.onStart(id = root, space = defaultSpace)

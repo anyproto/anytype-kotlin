@@ -50,9 +50,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        stubGetNetworkMode()
-        stubSpaceManager()
-        stubFileLimitEvents()
+        proceedWithDefaultBeforeTestStubbing()
     }
 
     @Test

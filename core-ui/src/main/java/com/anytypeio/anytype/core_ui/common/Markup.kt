@@ -31,6 +31,7 @@ fun Markup.toSpannable(
     underlineHeight: Float
 ) = SpannableStringBuilder(body).apply {
     marks.forEach { mark ->
+        if (!isRangeValid(mark)) return@forEach
         when (mark) {
             is Markup.Mark.Italic -> setSpan(
                 Span.Italic(),
@@ -138,6 +139,10 @@ fun Markup.toSpannable(
     }
 }
 
+private fun isRangeValid(mark: Markup.Mark): Boolean {
+    return mark.from >= 0 && mark.to >= 0 && mark.from < mark.to
+}
+
 fun Editable.setMarkup(
     markup: Markup,
     context: Context,
@@ -153,6 +158,7 @@ fun Editable.setMarkup(
 ) {
     removeSpans<Span>()
     markup.marks.forEach { mark ->
+        if (!isRangeValid(mark)) return@forEach
         when (mark) {
             is Markup.Mark.Italic -> setSpan(
                 Span.Italic(),
@@ -274,18 +280,20 @@ fun Editable.setMentionSpan(
     mentionInitialsSize: Float,
     textColor: Int
 ): Editable = this.apply {
-    proceedWithSettingMentionSpan(
-        onImageReady = onImageReady,
-        mark = mark,
-        context = context,
-        click = click,
-        mentionImageSize = mentionImageSize,
-        mentionImagePadding = mentionImagePadding,
-        mentionCheckedIcon = mentionCheckedIcon,
-        mentionUncheckedIcon = mentionUncheckedIcon,
-        mentionInitialsSize = mentionInitialsSize,
-        textColor = textColor
-    )
+    if (isRangeValid(mark)) {
+        proceedWithSettingMentionSpan(
+            onImageReady = onImageReady,
+            mark = mark,
+            context = context,
+            click = click,
+            mentionImageSize = mentionImageSize,
+            mentionImagePadding = mentionImagePadding,
+            mentionCheckedIcon = mentionCheckedIcon,
+            mentionUncheckedIcon = mentionUncheckedIcon,
+            mentionInitialsSize = mentionInitialsSize,
+            textColor = textColor
+        )
+    }
 }
 
 fun Editable.proceedWithSettingMentionSpan(
@@ -300,7 +308,7 @@ fun Editable.proceedWithSettingMentionSpan(
     mentionInitialsSize: Float,
     textColor: Int
 ) {
-
+    if (!isRangeValid(mark)) return
     when (mark) {
         is Markup.Mark.Mention.Deleted -> {
             val placeholder = context.drawable(R.drawable.ic_non_existent_object)

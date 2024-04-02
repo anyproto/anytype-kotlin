@@ -1230,7 +1230,7 @@
     <string name="payments_code_resend_in">Erneut senden in %1$n Sek.</string>
     <!-- Payments Welcome -->
     <string name="payments_welcome_title">Willkommen im Netzwerk,\n%1$s</string>
-    <string name="payments_welcome_subtitle">Ein Hoch auf deine Neugierde!</string>
+    <string name="payments_welcome_subtitle">Big cheers for your curiosity!</string>
     <string name="payments_welcome_button">Fortfahren</string>
     <!-- Notifications -->
     <string name="notifications_alert_error_unknown">Es ist ein unbekannter Fehler aufgetreten. Bitte versuche es später noch einmal.</string>

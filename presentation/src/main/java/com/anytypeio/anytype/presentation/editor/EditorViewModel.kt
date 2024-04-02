@@ -641,8 +641,7 @@ class EditorViewModel(
                 orchestrator.stores.textSelection
                     .stream()
                     .distinctUntilChanged()
-            )
-            { a, b -> Pair(a, b) }
+            ) { a, b -> a to b }
             .onEach { (action, textSelection) ->
                 val range = textSelection.selection
                 if (textSelection.isNotEmpty && range != null && range.first != range.last) {
@@ -721,7 +720,7 @@ class EditorViewModel(
 
         proceedWithUpdatingText(
             intent = Intent.Text.UpdateText(
-                context = context,
+                context = params.ctx,
                 target = new.id,
                 text = new.content<Content.Text>().text,
                 marks = new.content<Content.Text>().marks

@@ -1224,7 +1224,7 @@
     <string name="payments_tier_current_valid">Valido fino al</string>
     <string name="payments_tier_current_paid_by">Paid by Card</string>
     <string name="payments_tier_current_button">Manage payment</string>
-    <string name="payments_tier_current_change_email_button">Change e-mail</string>
+    <string name="payments_tier_current_change_email_button">Cambia email</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Inserisci il codice inviato alla tua email</string>
     <string name="payments_code_resend">Invia di nuovo</string>
@@ -1233,8 +1233,22 @@
     <string name="payments_welcome_title">Welcome to the network,\n%1$s</string>
     <string name="payments_welcome_subtitle">Grande applausi per la tua curiosità!</string>
     <string name="payments_welcome_button">Continue</string>
+    <!-- Notifications -->
+    <string name="notifications_alert_error_unknown">An unknown error has occurred. Please try again later.</string>
+    <string name="notifications_alert_error_bad_input">Invalid input detected. Please check your data and try again.</string>
+    <string name="notifications_alert_error_internal">An internal error has occurred. Our team has been notified.</string>
+    <string name="notifications_alert_error_no_objects_to_import">No items found to import. Please select valid objects for import.</string>
+    <string name="notifications_alert_error_import_canceled">The import process has been canceled by the user.</string>
+    <string name="notifications_alert_error_limit_exceeded">The import limit for rows or relations has been exceeded. Please reduce the amount and try again.</string>
+    <string name="notifications_alert_error_file_load">There was an error loading the file. Please check the file and try again.</string>
+    <string name="notifications_alert_error_insufficient_permissions">You do not have the necessary permissions to perform this action. Please check your permissions and try again.</string>
     <!-- Gallery Experience -->
     <string name="gallery_experience_made">Realizzato da</string>
     <string name="gallery_experience_install">Installa</string>
     <string name="gallery_experience_install_new">Installa in un nuovo spazio</string>
+    <string name="gallery_experience_alert_title_success">Experience was installed</string>
+    <string name="gallery_experience_alert_subtitle_success">\"%1$s\" was installed to a new space. You can now open and start using it.</string>
+    <string name="gallery_experience_alert_title_error">Ops!</string>
+    <string name="gallery_experience_alert_button_space">Open space</string>
+    <string name="gallery_experience_alert_button_error">Chiudi</string>
 </resources>

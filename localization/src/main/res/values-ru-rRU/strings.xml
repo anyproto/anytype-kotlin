@@ -67,7 +67,7 @@
     <string name="deleted_account_danger_zone_msg">Нам жаль, что вы уходите. После того, как вы запросите удаление вашего аккаунта, у вас есть 30 дней, чтобы отменить этот запрос. После 30 дней данные вашей учетной записи удаляются из резервной копии без возможности восстановления, вы не сможете войти в Anytype на новых устройствах.</string>
     <string name="danger_zone">Осторожно!</string>
     <string name="snackbar_template_add">Новый шаблон добавлен к типу</string>
-    <string name="settings_membership">Membership</string>
+    <string name="settings_membership">Членство</string>
     <string name="default_text_placeholder">Важно заботиться о больном, чтобы за ним следили, но это произойдет в такое время, когда будет много работы и боли. Если говорить до мельчайших подробностей, то никто не должен заниматься никакой работой, если не получит от нее какой-либо пользы. Не сердись на боль, на выговор, на удовольствие он хочет быть волоском от боли в надежде, что не будет размножения. Если они не ослеплены похотью, они не выйдут; виноваты те, кто оставляет свои обязанности и смягчает свои сердца, то есть свои труды.</string>
     <string name="default_url_placeholder">https://humanparts.medium.com/how-i-overcame-cult-trauma-with-psychedelics-4342c03a074c</string>
     <string name="multi_select_turn_into">Превратить в</string>
@@ -173,8 +173,8 @@
     <string name="hint_upload_file">Загрузить файл</string>
     <string name="hint_upload_audio">Загрузить аудио</string>
     <string name="hint_add_a_web_bookmark">Добавить закладку</string>
-    <string name="hint_bullet">Маркированный список</string>
-    <string name="hint_numbered_list">Нумерованный список</string>
+    <string name="hint_bullet">Элемент маркированного списка</string>
+    <string name="hint_numbered_list">Элемент маркированного списка</string>
     <string name="hint_toggle">Переключить блокировку</string>
     <string name="hint_paste_link">Вставить ссылку</string>
     <string name="empty_tap_to_create_new_block">Пусто. Нажмите, чтобы создать новый блок</string>
@@ -1092,7 +1092,7 @@
     <string name="error_calendar_view_not_supported">Calendar view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
     <string name="error_generic_view_not_supported">This view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
     <string name="create_object_section_pinned">Закреплённые</string>
-    <string name="any_object_creation_menu_pin_on_top">Закрепить</string>
+    <string name="any_object_creation_menu_pin_on_top">Закрепить сверху</string>
     <string name="any_object_creation_menu_unpin">Открепить</string>
     <string name="any_object_creation_menu_set_as_default">Установить по умолчанию</string>
     <string name="any_object_creation_menu_move_left">Сдвинуть влево</string>
@@ -1157,23 +1157,23 @@
     <string name="multiplayer_remove_member">Remove member</string>
     <string name="multiplayer_request_sent_toast">Запрос отправлен</string>
     <string name="multiplayer_space_stop_sharing">Stop sharing</string>
-    <string name="multiplayer_sharing">Sharing</string>
+    <string name="multiplayer_sharing">Совместное использование</string>
     <string name="multiplayer_share">Поделиться</string>
     <string name="multiplayer_manage">Manage</string>
     <string name="multiplayer_leave_space">Leave space</string>
-    <string name="multiplayer_generate_invite_link_description">Create invite link to share space and add new members</string>
+    <string name="multiplayer_generate_invite_link_description">Создать ссылку-приглашение для совместного использования и добавления новых участников</string>
     <string name="multiplayer_generate_invite_link">Создать ссылку на приглашение</string>
     <!--endregion-->
     <!--region PAYMENTS -->
-    <string name="payments_header">Membership</string>
-    <string name="payments_subheader">Joining Anytype network means contributing to its story</string>
+    <string name="payments_header">Членство</string>
+    <string name="payments_subheader">Присоединение к сети Anytype означает внесение вклада в её историю</string>
     <string name="payments_card_text_1">Co-create the Vision</string>
     <string name="payments_card_description_1">As a valued member your voice matters! Engage in exclusive events, shape strategic choices, and influence our roadmap.</string>
     <string name="payments_card_text_2">Unlock Member Benefits</string>
     <string name="payments_card_description_2">Members enjoy higher backup storage &amp; sync limits, invitations for multiple guests to collaborate in shared spaces, and a unique identity on the Anytype Network.</string>
     <string name="payments_card_text_3">Support Digital Independence</string>
     <string name="payments_card_description_3">Your contribution supports our team and endorses our vision of a user-owned, secure, and collaborative digital network.</string>
-    <string name="payments_card_text_4">Invest in Connectivity</string>
+    <string name="payments_card_text_4">Инвестировать в Соединение</string>
     <string name="payments_card_description_4">Our network\'s value exceeds the sum of its parts. Your membership sustains the infrastructure for its growth which underpins this network.</string>
     <string name="payments_tier_explorer">Explorer</string>
     <string name="payments_tier_explorer_description">Dive into the network and enjoy the thrill of one-on-one collaboration</string>
@@ -1183,18 +1183,18 @@
     <string name="payments_tier_cocreator_description">Support our adventure and unlock exclusive access and perks</string>
     <string name="payments_tier_custom">Custom</string>
     <string name="payments_tier_custom_description">Членство в соответствии с вашими конкретными потребностями и предпочтениями</string>
-    <string name="payments_button_learn">Learn more</string>
+    <string name="payments_button_learn">Узнать больше</string>
     <string name="payments_button_contact">Контакт</string>
-    <string name="payments_member_link">Membership levels details</string>
+    <string name="payments_member_link">Детали уровней членства </string>
     <string name="payments_privacy_link">Политика конфиденциальности</string>
     <string name="payments_terms_link">Условия и положения</string>
-    <string name="payments_let_us_link_start">Would you like to use Anytype for business, education, etc.?</string>
+    <string name="payments_let_us_link_start">Вы хотели бы использовать Anytype для бизнеса, образования и т.д.?</string>
     <string name="payments_let_us_link_end">Пожалуйста, дайте нам знать об этом здесь.</string>
-    <string name="payments_current_label">Current</string>
+    <string name="payments_current_label">Текущий</string>
     <!-- Tier details -->
     <string name="payments_tier_details_name_title">Выберите ваше уникальное имя</string>
     <string name="payments_tier_details_name_subtitle">This is your unique name on the Anytype network, confirming your Membership. It acts as your personal domain and cannot be changed.</string>
-    <string name="payments_tier_details_name_hint">Myself</string>
+    <string name="payments_tier_details_name_hint">Меня</string>
     <string name="payments_tier_details_name_domain">.any</string>
     <string name="payments_tier_details_name_min">Min 7 characters</string>
     <string name="payments_tier_details_name_error">This name is already taken!</string>
@@ -1221,10 +1221,10 @@
         <item>Unique collectible</item>
     </string-array>
     <string name="payments_detials_button_pay">Оплатить картой</string>
-    <string name="payments_detials_button_submit">Submit</string>
-    <string name="payments_details_whats_included">What’s included</string>
-    <string name="payments_email_title">Get your free membership</string>
-    <string name="payments_email_subtitle">We need your email to keep spam at bay and the fun in play!</string>
+    <string name="payments_detials_button_submit">Отправить</string>
+    <string name="payments_details_whats_included">Что включено</string>
+    <string name="payments_email_title">Получите ваше бесплатное членство</string>
+    <string name="payments_email_subtitle">Нам нужна ваша электронная почта чтобы держать спам вдали а веселье вблизи!</string>
     <string name="payments_email_checkbox_text">Я бы хотел получать новости о продуктах и пользоваться бесплатными преимуществами!</string>
     <string name="payments_email_hint">E-mail</string>
     <string name="payments_tier_current_title">Ваш текущий статус:</string>
@@ -1234,14 +1234,28 @@
     <string name="payments_tier_current_change_email_button">Change e-mail</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Введите код, отправленный на вашу электронную почту</string>
-    <string name="payments_code_resend">Resend</string>
+    <string name="payments_code_resend">Отправить ещё раз</string>
     <string name="payments_code_resend_in">Resend in %1$n sec</string>
     <!-- Payments Welcome -->
     <string name="payments_welcome_title">Welcome to the network,\n%1$s</string>
     <string name="payments_welcome_subtitle">Большое спасибо за ваше любопытство!</string>
     <string name="payments_welcome_button">Continue</string>
+    <!-- Notifications -->
+    <string name="notifications_alert_error_unknown">An unknown error has occurred. Please try again later.</string>
+    <string name="notifications_alert_error_bad_input">Invalid input detected. Please check your data and try again.</string>
+    <string name="notifications_alert_error_internal">An internal error has occurred. Our team has been notified.</string>
+    <string name="notifications_alert_error_no_objects_to_import">No items found to import. Please select valid objects for import.</string>
+    <string name="notifications_alert_error_import_canceled">The import process has been canceled by the user.</string>
+    <string name="notifications_alert_error_limit_exceeded">The import limit for rows or relations has been exceeded. Please reduce the amount and try again.</string>
+    <string name="notifications_alert_error_file_load">There was an error loading the file. Please check the file and try again.</string>
+    <string name="notifications_alert_error_insufficient_permissions">You do not have the necessary permissions to perform this action. Please check your permissions and try again.</string>
     <!-- Gallery Experience -->
-    <string name="gallery_experience_made">Made by</string>
+    <string name="gallery_experience_made">Создано</string>
     <string name="gallery_experience_install">Установить</string>
     <string name="gallery_experience_install_new">Установить в новое пространство</string>
+    <string name="gallery_experience_alert_title_success">Опыт был установлен</string>
+    <string name="gallery_experience_alert_subtitle_success">\"%1$s\" был установлен в новое пространство. Теперь вы можете открыть его и начать использовать.</string>
+    <string name="gallery_experience_alert_title_error">Ой!</string>
+    <string name="gallery_experience_alert_button_space">Открыть пространство.</string>
+    <string name="gallery_experience_alert_button_error">Закрыть</string>
 </resources>

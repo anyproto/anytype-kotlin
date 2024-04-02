@@ -98,7 +98,7 @@ class MainViewModel(
     private suspend fun handleNotification(event: Notification.Event) {
         val payload = event.notification?.payload
         if (payload is NotificationPayload.GalleryImport) {
-            delay(200)
+            delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
             commands.emit(Command.Notifications)
         }
     }
@@ -251,5 +251,9 @@ class MainViewModel(
             data class Files(val uris: List<String>): Sharing()
         }
         object Notifications : Command()
+    }
+
+    companion object {
+        const val DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN = 200L
     }
 }

@@ -9,22 +9,29 @@ import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.workspace.NotificationsChannel
 import kotlin.time.Duration
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.*
+import kotlinx.coroutines.test.setMain
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.whenever
 
 class NotificationsProviderTest {
 
-    private val dispatchers = mock<AppCoroutineDispatchers>()
-    private val scope = mock<CoroutineScope>()
+    val dispatcher = StandardTestDispatcher()
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val dispatchers = AppCoroutineDispatchers(
+        io = dispatcher,
+        main = dispatcher,
+        computation = dispatcher
+    ).also { Dispatchers.setMain(dispatcher) }
+    private val scope = TestScope()
     private val notificationsChannel = mock<NotificationsChannel>()
     private val awaitAccountStartManager = AwaitAccountStartManager.Default
     private val notificationsProvider = NotificationsProvider.Default(
@@ -59,10 +66,10 @@ class NotificationsProviderTest {
         awaitAccountStartManager.setIsStarted(true)
 
         // Act
-        val result = notificationsProvider.observe().first()
-
-        // Assert
-        assertEquals(eventList, result)
+        notificationsProvider.events.test {
+            assertEquals(emptyList<Notification.Event>(), awaitItem())
+            assertEquals(eventList, awaitItem())
+        }
     }
 
     @Test
@@ -73,44 +80,25 @@ class NotificationsProviderTest {
         awaitAccountStartManager.setIsStarted(true) // Start and then stop
         awaitAccountStartManager.setIsStarted(false)
 
-        notificationsProvider.observe().test(timeout = Duration.parse("2s")) { expectNoEvents() }
+        // Act & Assert
+        notificationsProvider.events.test(timeout = Duration.parse("2s")) {
+            assertEquals(emptyList<Notification.Event>(), awaitItem())
+            expectNoEvents()
+        }
     }
 
     @Test
     fun `observe should emit the same event as sent by the channel when account is started`() =
-        runBlocking {
+        runTest {
             // Arrange
             val eventFlow = flowOf(listOf(testEvent))
             whenever(notificationsChannel.observe()).thenReturn(eventFlow)
             awaitAccountStartManager.setIsStarted(true)
 
-            // Act
-            val result = notificationsProvider.observe().first()
-
-            // Assert
-            assertEquals(listOf(testEvent), result)
-        }
-
-    @Test
-    fun `observe should not emit any events after the account is stopped`() = runTest {
-        // Arrange
-        whenever(notificationsChannel.observe()).thenReturn(flowOf(listOf(testEvent)))
-        awaitAccountStartManager.setIsStarted(true) // Start first
-        awaitAccountStartManager.setIsStarted(false) // Then stop
-
-        val collectedEvents = mutableListOf<List<Notification.Event>>()
-
-        // Act
-        val job = launch {
-            notificationsProvider.observe().collect { events ->
-                collectedEvents.add(events)
+            // Act & Assert
+            notificationsProvider.events.test(timeout = Duration.parse("2s")) {
+                assertEquals(emptyList<Notification.Event>(), awaitItem())
+                assertEquals(listOf(testEvent), awaitItem())
             }
         }
-        delay(100) // Short delay to allow any emissions to be collected
-
-        // Assert
-        assertTrue(collectedEvents.isEmpty()) // Verify no events were collected
-
-        job.cancel()
-    }
 }

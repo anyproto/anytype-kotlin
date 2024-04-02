@@ -28,10 +28,10 @@ class NotificationsViewModel(
 
     init {
         viewModelScope.launch {
-            notificationsProvider.observe().collect { notifications ->
-                notifications.forEach { event ->
-                    handleNotification(event)
-                }
+            val notification = notificationsProvider.events.value
+            Timber.d("Received notifications in NotificationsViewModel: $notification")
+            if (notification.isNotEmpty()) {
+                handleNotification(notification.first())
             }
         }
     }
@@ -65,9 +65,10 @@ class NotificationsViewModel(
                     saveCurrentSpace.async(SaveCurrentSpace.Params(spaceId)).fold(
                         onFailure = {
                             Timber.e(it, "Error while saving current space in user settings")
+                            command.value = Command.Dismiss
                         },
                         onSuccess = {
-                            command.value = Command.NavigateToSpace(spaceId)
+                            command.value = Command.Dismiss
                         }
                     )
                 },

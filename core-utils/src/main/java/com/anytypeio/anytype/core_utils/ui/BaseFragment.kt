@@ -110,7 +110,7 @@ abstract class BaseFragment<T : ViewBinding>(
                         // Do nothing.
                     },
                     onFailure = {
-                        Timber.e(it, "Error while navifation")
+                        Timber.e(it, "Error while navigation")
                     }
                 )
             }

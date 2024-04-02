@@ -99,6 +99,6 @@ class EditorCreateBlockTest : EditorPresentationTestSetup() {
                 )
             )
 
-            coroutineTestRule.advanceTime(300L)
+            coroutineTestRule.advanceUntilIdle()
         }
 }

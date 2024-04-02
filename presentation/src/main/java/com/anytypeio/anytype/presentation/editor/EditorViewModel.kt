@@ -411,12 +411,6 @@ class EditorViewModel(
     val permission = MutableStateFlow<SpaceMemberPermissions?>(null)
 
     init {
-        viewModelScope.launch {
-            permissions.observe(space = params.space).collect {
-                permission.value = it
-            }
-        }
-
         proceedWithObservingProfileIcon()
         startHandlingTextChanges()
         startProcessingFocusChanges()
@@ -448,34 +442,40 @@ class EditorViewModel(
                 }
             }
         }
+
+        viewModelScope.launch {
+            permissions.observe(space = params.space).collect {
+                permission.value = it
+            }
+        }
     }
 
     private fun proceedWithObservingProfileIcon() {
-//        viewModelScope.launch {
-//            spaceManager
-//                .observe()
-//                .flatMapLatest { config ->
-//                    storelessSubscriptionContainer.subscribe(
-//                        StoreSearchByIdsParams(
-//                            subscription = HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
-//                            targets = listOf(config.profile),
-//                            keys = listOf(
-//                                Relations.ID,
-//                                Relations.NAME,
-//                                Relations.ICON_EMOJI,
-//                                Relations.ICON_IMAGE,
-//                                Relations.ICON_OPTION
-//                            )
-//                        )
-//                    ).map { result ->
-//                        val obj = result.firstOrNull()
-//                        obj?.profileIcon(urlBuilder) ?: ProfileIconView.Placeholder(null)
-//                    }
-//                }
-//                .catch { Timber.e(it, "Error while observing space icon") }
-//                .flowOn(dispatchers.io)
-//                .collect { icon.value = it }
-//        }
+        viewModelScope.launch {
+            spaceManager
+                .observe()
+                .flatMapLatest { config ->
+                    storelessSubscriptionContainer.subscribe(
+                        StoreSearchByIdsParams(
+                            subscription = HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
+                            targets = listOf(config.profile),
+                            keys = listOf(
+                                Relations.ID,
+                                Relations.NAME,
+                                Relations.ICON_EMOJI,
+                                Relations.ICON_IMAGE,
+                                Relations.ICON_OPTION
+                            )
+                        )
+                    ).map { result ->
+                        val obj = result.firstOrNull()
+                        obj?.profileIcon(urlBuilder) ?: ProfileIconView.Placeholder(null)
+                    }
+                }
+                .catch { Timber.e(it, "Error while observing space icon") }
+                .flowOn(dispatchers.io)
+                .collect { icon.value = it }
+        }
     }
 
     override fun onPickedDocImageFromDevice(ctx: Id, path: String) {

@@ -7254,6 +7254,7 @@ class EditorViewModel(
 
     private fun proceedWithCheckingInternalFlagShouldSelectType(flags: List<InternalFlags>) {
         val containsFlag = flags.any { it == InternalFlags.ShouldSelectType }
+        val isUserEditor = permission.value?.isOwnerOrEditor() == false
         when {
             isTypesWidgetVisible -> {
                 if (!containsFlag) {
@@ -7262,7 +7263,7 @@ class EditorViewModel(
             }
             containsFlag -> {
                 val restrictions = orchestrator.stores.objectRestrictions.current()
-                if (restrictions.none { it == ObjectRestriction.TYPE_CHANGE }) {
+                if (restrictions.none { it == ObjectRestriction.TYPE_CHANGE } && isUserEditor) {
                     setTypesWidgetVisibility(true)
                 }
             }
@@ -7270,7 +7271,8 @@ class EditorViewModel(
     }
 
     private fun proceedWithCheckingInternalFlagShouldSelectTemplate(flags: List<InternalFlags>) {
-        if (flags.contains(InternalFlags.ShouldSelectTemplate)) {
+        val isUserEditor = permission.value?.isOwnerOrEditor() == false
+        if (flags.contains(InternalFlags.ShouldSelectTemplate) && isUserEditor) {
             Timber.d("Object has internal flag: ShouldSelectTemplate. Show templates toolbar")
             proceedWithShowTemplatesToolbar()
         } else {

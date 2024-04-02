@@ -178,18 +178,22 @@ class SelectObjectTypeFragment : BaseBottomSheetComposeFragment() {
 
     override fun onResume() {
         super.onResume()
-        with(clipboard()) {
-            val clip = primaryClip
-            if (hasPrimaryClip() && clip != null) {
-                if (clip.itemCount == 1) {
-                    val item =clip.getItemAt(0)
-                    val text = item.text.toString()
-                    if (URLUtil.isValidUrl(text))
-                        vm.onClipboardUrlTypeDetected(text)
-                    else
-                        vm.onClipboardTextTypeDetected(text)
+        runCatching {
+            with(clipboard()) {
+                val clip = primaryClip
+                if (hasPrimaryClip() && clip != null) {
+                    if (clip.itemCount == 1) {
+                        val item =clip.getItemAt(0)
+                        val text = item.text.toString()
+                        if (URLUtil.isValidUrl(text))
+                            vm.onClipboardUrlTypeDetected(text)
+                        else
+                            vm.onClipboardTextTypeDetected(text)
+                    }
                 }
             }
+        }.onFailure {
+            Timber.e(it, "Error while processing clipboard")
         }
     }
 

@@ -839,6 +839,9 @@ open class EditorPresentationTestSetup {
             on {
                 observe(space = space)
             } doReturn flowOf(permission)
+            on {
+                get(space)
+            } doReturn permission
         }
     }
 

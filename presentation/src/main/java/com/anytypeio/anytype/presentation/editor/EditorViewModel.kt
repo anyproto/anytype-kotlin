@@ -269,6 +269,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -276,6 +277,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.skip
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import com.anytypeio.anytype.presentation.editor.Editor.Mode as EditorMode
@@ -408,9 +410,10 @@ class EditorViewModel(
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
     override val commands = MutableLiveData<EventWrapper<Command>>()
 
-    val permission = MutableStateFlow<SpaceMemberPermissions?>(null)
+    val permission = MutableStateFlow(permissions.get(params.space))
 
     init {
+        proceedWithObservingPermissions()
         proceedWithObservingProfileIcon()
         startHandlingTextChanges()
         startProcessingFocusChanges()
@@ -442,7 +445,9 @@ class EditorViewModel(
                 }
             }
         }
+    }
 
+    private fun proceedWithObservingPermissions() {
         viewModelScope.launch {
             permissions.observe(space = params.space).collect {
                 permission.value = it

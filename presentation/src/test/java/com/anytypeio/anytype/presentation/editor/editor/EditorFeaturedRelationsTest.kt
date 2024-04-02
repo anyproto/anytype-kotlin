@@ -178,10 +178,17 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
             )
         )
 
-        assertEquals(
-            expected = ViewState.Success(expected),
-            actual = vm.state.value
-        )
+        val test = vm.state.test()
+
+        val first = test.awaitValue()
+        val second = test.awaitValue()
+
+        second.assertValue(ViewState.Success(expected))
+
+//        assertEquals(
+//            expected = ViewState.Success(expected),
+//            actual = second
+//        )
     }
 
     @Test

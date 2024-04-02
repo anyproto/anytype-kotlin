@@ -1032,6 +1032,8 @@ open class EditorViewModelTest {
             )
         )
 
+        coroutineTestRule.advanceUntilIdle()
+
         vm.state.test().apply {
             assertHasValue()
             assertValue(secondTimeExpected)
@@ -1183,6 +1185,8 @@ open class EditorViewModelTest {
             )
         )
 
+        coroutineTestRule.advanceUntilIdle()
+
         vm.state.test().apply {
             assertHasValue()
             assertValue(secondTimeExpected)
@@ -1190,9 +1194,8 @@ open class EditorViewModelTest {
     }
 
     @Test
-    fun `should dispatch texts changes and markup even if only markup is changed`() {
+    fun `should dispatch texts changes and markup even if only markup is changed`() = runTest {
 
-        val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
 
         val paragraph = StubParagraph(
@@ -1238,7 +1241,6 @@ open class EditorViewModelTest {
         coroutineTestRule.advanceTime(100)
 
         val range = 0..3
-        val markup = StylingEvent.Markup.Bold
 
         vm.onBlockFocusChanged(
             hasFocus = true,
@@ -1259,18 +1261,16 @@ open class EditorViewModelTest {
             )
         )
 
-        runBlockingTest {
-            verify(updateText, times(1)).invoke(
-                params = eq(
-                    UpdateText.Params(
-                        target = paragraph.id,
-                        marks = marks,
-                        context = page.id,
-                        text = paragraph.content.asText().text
-                    )
+        verify(updateText, times(1)).invoke(
+            params = eq(
+                UpdateText.Params(
+                    target = paragraph.id,
+                    marks = marks,
+                    context = page.id,
+                    text = paragraph.content.asText().text
                 )
             )
-        }
+        )
     }
 
     @Test

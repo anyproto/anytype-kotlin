@@ -449,9 +449,11 @@ class EditorViewModel(
 
     private fun proceedWithObservingPermissions() {
         viewModelScope.launch {
-            permissions.observe(space = params.space).collect {
-                permission.value = it
-            }
+            permissions
+                .observe(space = params.space)
+                .collect {
+                    permission.value = it
+                }
         }
     }
 

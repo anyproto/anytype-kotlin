@@ -93,6 +93,33 @@ message Rpc {
     }
 
     message Space {
+        message LeaveApprove {
+            message Request {
+                string spaceId = 1;
+                repeated string identities = 2;
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        NO_SUCH_SPACE = 101;
+                        SPACE_IS_DELETED = 102;
+                        REQUEST_FAILED = 103;
+                        NO_APPROVE_REQUESTS = 104;
+                    }
+                }
+            }
+        }
+
         message InviteGenerate {
             message Request {
                 string spaceId = 1;
@@ -557,6 +584,7 @@ message Rpc {
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
 
+                        APP_TOKEN_NOT_FOUND_IN_THE_CURRENT_ACCOUNT = 101; // means the client logged into another account or the account directory has been cleaned
                     }
                 }
             }
@@ -633,6 +661,7 @@ message Rpc {
                         FAILED_TO_STOP_RUNNING_NODE = 104;
                         FAILED_TO_WRITE_CONFIG = 105;
                         FAILED_TO_CREATE_LOCAL_REPO = 106;
+                        ACCOUNT_CREATION_IS_CANCELED = 107;
 
                         CONFIG_FILE_NOT_FOUND = 200;
                         CONFIG_FILE_INVALID = 201;
@@ -758,6 +787,7 @@ message Rpc {
                         ANOTHER_ANYTYPE_PROCESS_IS_RUNNING = 108;
                         FAILED_TO_FETCH_REMOTE_NODE_HAS_INCOMPATIBLE_PROTO_VERSION = 110;
                         ACCOUNT_IS_DELETED = 111;
+                        ACCOUNT_LOAD_IS_CANCELED = 112;
 
                         CONFIG_FILE_NOT_FOUND = 200;
                         CONFIG_FILE_INVALID = 201;
@@ -6355,6 +6385,445 @@ message Rpc {
             }
         }
     }
+
+    /** 
+    * A Membership is a bundle of several "Features"
+    * every user should have one and only one tier 
+    * users can not have N tiers (no combining)
+    */
+    message Membership {
+        /**
+        * Get the current status of the membership
+        * including the tier, status, dates, etc
+        * WARNING: this can be cached by Anytype heart
+        */
+        message GetStatus {
+            message Request {
+                // pass true to force the cache update
+                // by default this is false
+                bool noCache = 1;
+            }
+
+            message Response {
+                Error error = 1;
+
+                anytype.model.Membership data = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        NOT_LOGGED_IN = 3;
+                        PAYMENT_NODE_ERROR = 4;
+                        CACHE_ERROR = 5;
+
+                        MEMBERSHIP_NOT_FOUND = 6;
+                        MEMBERSHIP_WRONG_STATE = 7;
+                    }
+                }
+            }
+        }
+
+        /**
+        * Check if the requested name is valid for the requested tier
+        * before requesting a payment link and paying
+        */
+        message IsNameValid {
+            message Request {
+                uint32 requestedTier = 1;
+
+                // full name including .any suffix
+                string requestedAnyName = 2;
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        TOO_SHORT = 3;
+                        TOO_LONG = 4;
+                        HAS_INVALID_CHARS = 5;
+                        TIER_FEATURES_NO_NAME = 6;
+                        // if everything is fine - "name is already taken" check should be done in the NS
+                        // see IsNameAvailable()
+                        TIER_NOT_FOUND = 7;
+
+                        NOT_LOGGED_IN = 8;
+                        PAYMENT_NODE_ERROR = 9;
+                        CACHE_ERROR = 10;
+                    }
+                }
+            }
+        }
+
+        /**
+        * Generate a link to the payment provider
+        * where user can pay for the membership
+        */
+        message GetPaymentUrl {
+            message Request {
+                uint32 requestedTier = 1;
+                
+                anytype.model.Membership.PaymentMethod paymentMethod = 2;
+
+                // if empty - then no name requested
+                // if non-empty - PP node will register that name on behalf of the user
+                string requestedAnyName = 3;
+            }
+
+            message Response {
+                Error error = 1;
+
+                // will feature current billing ID
+                // stripe.com/?client_reference_id=1234
+                string paymentUrl = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        NOT_LOGGED_IN = 3;
+                        PAYMENT_NODE_ERROR = 4;
+                        CACHE_ERROR = 5;
+                        
+                        TIER_NOT_FOUND = 6;
+                        TIER_INVALID = 7;
+                        PAYMENT_METHOD_INVALID = 8;
+                        BAD_ANYNAME = 9;
+                        MEMBERSHIP_ALREADY_EXISTS = 10;
+                    }
+                }
+            }
+        }
+
+        /** 
+        * Generate a link to the portal where user can:
+        * a) change his billing details
+        * b) see payment info, invoices, etc
+        * c) cancel membership
+        */
+        message GetPortalLinkUrl {
+            message Request {
+                
+            }
+
+            message Response {
+                Error error = 1;
+
+                string portalUrl = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        NOT_LOGGED_IN = 3;
+                        PAYMENT_NODE_ERROR = 4;
+                        CACHE_ERROR = 5;
+                    }
+                }
+            }
+        }
+
+        message Finalize {
+            message Request {
+                // if empty - then no name requested
+                // if non-empty - PP node will register that name on behalf of the user
+                string requestedAnyName = 1;
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        NOT_LOGGED_IN = 3;
+                        PAYMENT_NODE_ERROR = 4;
+                        CACHE_ERROR = 5;
+
+                        MEMBERSHIP_NOT_FOUND = 6;
+                        MEMBERSHIP_WRONG_STATE = 7;
+
+                        BAD_ANYNAME = 8;
+                    }
+                }
+            }
+        }
+
+        /**
+        * Send an e-mail with verification code to the user
+        * can be called multiple times but with some timeout (N seconds) between calls
+        */ 
+        message GetVerificationEmail {
+            message Request {
+                string email = 1;
+
+                bool subscribeToNewsletter = 2;
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        NOT_LOGGED_IN = 3;
+                        PAYMENT_NODE_ERROR = 4;
+                        CACHE_ERROR = 5;
+
+                        EMAIL_WRONG_FORMAT = 6;
+                        EMAIL_ALREADY_VERIFIED = 7;
+                        EMAIL_ALREDY_SENT = 8;
+                        EMAIL_FAILED_TO_SEND = 9;
+                        
+                        MEMBERSHIP_ALREADY_EXISTS = 10;                        
+                    }
+                }
+            }
+        }
+
+        /**
+        * Verify the e-mail address of the user 
+        * need a correct code that was sent to the user when calling GetVerificationEmail
+        */
+        message VerifyEmailCode {
+            message Request {
+                string code = 1;
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        NOT_LOGGED_IN = 3;
+                        PAYMENT_NODE_ERROR = 4;
+                        CACHE_ERROR = 5;
+
+                        EMAIL_ALREADY_VERIFIED = 6;
+                        CODE_EXPIRED = 7;
+                        CODE_WRONG = 8;
+
+                        MEMBERSHIP_NOT_FOUND = 9;
+                        MEMBERSHIP_ALREADY_ACTIVE = 10;
+                    }
+                }
+            }
+        }
+
+        /**
+        * Tiers can change on the backend so if you want to show users the latest data
+        * you can call this method to get the latest tiers
+        */
+        message Tiers {
+            message Get {
+                message Request {
+                    // pass true to force the cache update
+                    // by default this is false
+                    bool noCache = 1;
+
+                    string locale = 2;
+                }
+    
+                message Response {
+                    Error error = 1;
+                    repeated anytype.model.MembershipTierData tiers = 2;
+
+                    message Error {
+                        Code code = 1;
+                        string description = 2;
+
+                        enum Code {
+                            NULL = 0;
+                            UNKNOWN_ERROR = 1;
+                            BAD_INPUT = 2;
+
+                            NOT_LOGGED_IN = 3;
+                            PAYMENT_NODE_ERROR = 4;
+                            CACHE_ERROR = 5;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    message NameService {
+        message ResolveName {
+            message Request {
+                // including ".any" suffix
+                string fullName = 1;
+            }
+
+            message Response {
+                Error error = 1;
+
+                bool available = 2;
+  
+                // EOA -> SCW -> name
+                // This field is non-empty only if name is "already registered"
+                string ownerScwEthAddress = 3;
+                
+                // This field is non-empty only if name is "already registered"
+                string ownerEthAddress = 4;
+
+                // A content hash attached to this name
+                // This field is non-empty only if name is "already registered"
+                string ownerAnyAddress = 5;
+
+                // A SpaceId attached to this name
+                // This field is non-empty only if name is "already registered"
+                string spaceId = 6;
+
+                // A timestamp when this name expires
+                int64 nameExpires = 7;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
+
+        message ResolveAnyId {
+            message Request {
+                string anyId = 1;
+            }
+
+            message Response {
+                Error error = 1;
+
+                bool found = 2;
+                
+                // including ".any" suffix
+                string fullName = 3;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
+        
+        message ResolveSpaceId {
+            message Request {
+                string spaceId = 1;
+            }
+
+            message Response {
+                Error error = 1;
+
+                bool found = 2;
+                
+                // including ".any" suffix
+                string fullName = 3;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
+
+        message UserAccount {
+            message Get {
+                message Request {
+                    
+                }
+
+                message Response {
+                    Error error = 1;
+
+                    // this will use ReverseResolve to get current name
+                    // user can buy many names, but
+                    // only 1 name can be set as "current": ETH address <-> name
+                    string anyNameAttached = 2;
+
+                    // Number of names that the user can reserve
+                    uint64 namesCountLeft = 3;
+
+                    // Number of operations: update name, add new data, etc
+                    uint64 operationsCountLeft = 4;
+
+                    // TODO: all operations list
+
+                    message Error {
+                        Code code = 1;
+                        string description = 2;
+
+                        enum Code {
+                            NULL = 0;
+                            UNKNOWN_ERROR = 1;
+                            BAD_INPUT = 2;
+                            NOT_LOGGED_IN = 3;
+                            BAD_NAME_RESOLVE = 4;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     message Broadcast {
         message PayloadEvent {
             message Request {
@@ -6379,6 +6848,8 @@ message Rpc {
         }
     }
 }
+
+
 
 message Empty {
 

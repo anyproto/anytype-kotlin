@@ -100,6 +100,8 @@ message Event {
             Notification.Update notificationUpdate = 115;
 
             Payload.Broadcast payloadBroadcast = 116;
+
+            Membership.Update membershipUpdate = 117;
         }
     }
 
@@ -1031,6 +1033,12 @@ message Event {
 
         message LocalUsage {
             uint64 localBytesUsage = 1;
+        }
+    }
+
+    message Membership {
+        message Update {
+            anytype.model.Membership data = 1;
         }
     }
 

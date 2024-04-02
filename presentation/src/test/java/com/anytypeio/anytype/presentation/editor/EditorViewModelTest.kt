@@ -2067,9 +2067,8 @@ open class EditorViewModelTest {
     }
 
     @Test
-    fun `should proceed with creating a new block on end-line-enter-press event`() {
+    fun `should proceed with creating a new block on end-line-enter-press event`() = runTest {
 
-        val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
 
         val page = listOf(
@@ -2121,18 +2120,16 @@ open class EditorViewModelTest {
             text = page.last().content<Block.Content.Text>().text
         )
 
-        runBlockingTest {
-            verify(createBlock, times(1)).async(
-                params = eq(
-                    CreateBlock.Params(
-                        context = root,
-                        target = child,
-                        position = Position.BOTTOM,
-                        prototype = Block.Prototype.Text(style = Block.Content.Text.Style.P)
-                    )
+        verify(createBlock, times(1)).async(
+            params = eq(
+                CreateBlock.Params(
+                    context = root,
+                    target = child,
+                    position = Position.BOTTOM,
+                    prototype = Block.Prototype.Text(style = Block.Content.Text.Style.P)
                 )
             )
-        }
+        )
     }
 
     @Test
@@ -2193,10 +2190,9 @@ open class EditorViewModelTest {
     }
 
     @Test
-    fun `should start creating a new paragraph on endline-enter-pressed event inside a quote block`() {
+    fun `should start creating a new paragraph on endline-enter-pressed event inside a quote block`() = runTest {
 
         val style = Block.Content.Text.Style.QUOTE
-        val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
 
         val page = listOf(
@@ -2234,7 +2230,7 @@ open class EditorViewModelTest {
         }
 
         stubObserveEvents(flow)
-        stubOpenPage()
+        stubOpenPage(context = root)
         stubCreateBlock(root)
         givenViewModel()
 
@@ -2253,20 +2249,18 @@ open class EditorViewModelTest {
             marks = emptyList()
         )
 
-        runBlockingTest {
-            verify(createBlock, times(1)).async(
-                params = eq(
-                    CreateBlock.Params(
-                        context = root,
-                        target = child,
-                        prototype = Block.Prototype.Text(
-                            style = Block.Content.Text.Style.P
-                        ),
-                        position = Position.BOTTOM
-                    )
+        verify(createBlock, times(1)).async(
+            params = eq(
+                CreateBlock.Params(
+                    context = root,
+                    target = child,
+                    prototype = Block.Prototype.Text(
+                        style = Block.Content.Text.Style.P
+                    ),
+                    position = Position.BOTTOM
                 )
             )
-        }
+        )
     }
 
     @Test
@@ -4177,8 +4171,6 @@ open class EditorViewModelTest {
     @Test
     fun `should be zero selected blocks after done click`() {
         // SETUP
-
-        val root = MockDataFactory.randomUuid()
 
         val paragraphs = listOf(StubParagraph(), StubParagraph(), StubParagraph())
 

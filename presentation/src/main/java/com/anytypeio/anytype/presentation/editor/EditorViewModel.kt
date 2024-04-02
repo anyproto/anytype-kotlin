@@ -451,31 +451,31 @@ class EditorViewModel(
     }
 
     private fun proceedWithObservingProfileIcon() {
-        viewModelScope.launch {
-            spaceManager
-                .observe()
-                .flatMapLatest { config ->
-                    storelessSubscriptionContainer.subscribe(
-                        StoreSearchByIdsParams(
-                            subscription = HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
-                            targets = listOf(config.profile),
-                            keys = listOf(
-                                Relations.ID,
-                                Relations.NAME,
-                                Relations.ICON_EMOJI,
-                                Relations.ICON_IMAGE,
-                                Relations.ICON_OPTION
-                            )
-                        )
-                    ).map { result ->
-                        val obj = result.firstOrNull()
-                        obj?.profileIcon(urlBuilder) ?: ProfileIconView.Placeholder(null)
-                    }
-                }
-                .catch { Timber.e(it, "Error while observing space icon") }
-                .flowOn(dispatchers.io)
-                .collect { icon.value = it }
-        }
+//        viewModelScope.launch {
+//            spaceManager
+//                .observe()
+//                .flatMapLatest { config ->
+//                    storelessSubscriptionContainer.subscribe(
+//                        StoreSearchByIdsParams(
+//                            subscription = HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
+//                            targets = listOf(config.profile),
+//                            keys = listOf(
+//                                Relations.ID,
+//                                Relations.NAME,
+//                                Relations.ICON_EMOJI,
+//                                Relations.ICON_IMAGE,
+//                                Relations.ICON_OPTION
+//                            )
+//                        )
+//                    ).map { result ->
+//                        val obj = result.firstOrNull()
+//                        obj?.profileIcon(urlBuilder) ?: ProfileIconView.Placeholder(null)
+//                    }
+//                }
+//                .catch { Timber.e(it, "Error while observing space icon") }
+//                .flowOn(dispatchers.io)
+//                .collect { icon.value = it }
+//        }
     }
 
     override fun onPickedDocImageFromDevice(ctx: Id, path: String) {
@@ -7254,7 +7254,7 @@ class EditorViewModel(
 
     private fun proceedWithCheckingInternalFlagShouldSelectType(flags: List<InternalFlags>) {
         val containsFlag = flags.any { it == InternalFlags.ShouldSelectType }
-        val isUserEditor = permission.value?.isOwnerOrEditor() == false
+        val isUserEditor = permission.value?.isOwnerOrEditor() == true
         when {
             isTypesWidgetVisible -> {
                 if (!containsFlag) {
@@ -7271,7 +7271,7 @@ class EditorViewModel(
     }
 
     private fun proceedWithCheckingInternalFlagShouldSelectTemplate(flags: List<InternalFlags>) {
-        val isUserEditor = permission.value?.isOwnerOrEditor() == false
+        val isUserEditor = permission.value?.isOwnerOrEditor() == true
         if (flags.contains(InternalFlags.ShouldSelectTemplate) && isUserEditor) {
             Timber.d("Object has internal flag: ShouldSelectTemplate. Show templates toolbar")
             proceedWithShowTemplatesToolbar()

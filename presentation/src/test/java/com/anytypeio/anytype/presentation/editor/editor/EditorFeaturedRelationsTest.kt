@@ -48,9 +48,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        stubSpaceManager()
-        stubFileLimitEvents()
-        stubGetNetworkMode()
+        proceedWithDefaultBeforeTestStubbing()
     }
 
     @After
@@ -884,7 +882,6 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
         )
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `should render backlinks and links as featured relations`() = runTest {
 

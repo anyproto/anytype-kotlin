@@ -22,9 +22,7 @@ class EditorStartupTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        stubSpaceManager()
-        stubGetNetworkMode()
-        stubFileLimitEvents()
+        proceedWithDefaultBeforeTestStubbing()
     }
 
     @Test
@@ -34,7 +32,7 @@ class EditorStartupTest : EditorPresentationTestSetup() {
 
         val doc = listOf(
             Block(
-                id = "some id",
+                id = root,
                 fields = Block.Fields(emptyMap()),
                 content = Block.Content.Smart,
                 children = emptyList()

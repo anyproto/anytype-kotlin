@@ -121,10 +121,8 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import org.mockito.Mock
 import org.mockito.kotlin.any
-import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.notNull
 import org.mockito.kotlin.stub
 
 open class EditorPresentationTestSetup {
@@ -842,5 +840,12 @@ open class EditorPresentationTestSetup {
                 observe(space = space)
             } doReturn flowOf(permission)
         }
+    }
+
+    fun proceedWithDefaultBeforeTestStubbing() {
+        stubSpaceManager()
+        stubUserPermission()
+        stubGetNetworkMode()
+        stubFileLimitEvents()
     }
 }

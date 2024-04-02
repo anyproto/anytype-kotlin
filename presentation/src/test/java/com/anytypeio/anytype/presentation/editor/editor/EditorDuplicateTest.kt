@@ -46,9 +46,7 @@ class EditorDuplicateTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        stubSpaceManager()
-        stubGetNetworkMode()
-        stubFileLimitEvents()
+        proceedWithDefaultBeforeTestStubbing()
         stubDuplicateBlock("", emptyList())
     }
 

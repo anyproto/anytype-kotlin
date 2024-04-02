@@ -13,7 +13,6 @@ import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -66,9 +65,10 @@ class NotificationsViewModel(
                     saveCurrentSpace.async(SaveCurrentSpace.Params(spaceId)).fold(
                         onFailure = {
                             Timber.e(it, "Error while saving current space in user settings")
+                            command.value = Command.Dismiss
                         },
                         onSuccess = {
-                            command.value = Command.NavigateToSpace(spaceId)
+                            command.value = Command.Dismiss
                         }
                     )
                 },

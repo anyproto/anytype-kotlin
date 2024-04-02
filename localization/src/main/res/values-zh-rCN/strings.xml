@@ -1226,7 +1226,7 @@
     <string name="payments_code_resend_in">在 %1$n 秒内重新发送</string>
     <!-- Payments Welcome -->
     <string name="payments_welcome_title">欢迎来到网络，\n%1$s</string>
-    <string name="payments_welcome_subtitle">为你的好奇心干杯大的！</string>
+    <string name="payments_welcome_subtitle">Big cheers for your curiosity!</string>
     <string name="payments_welcome_button">继续</string>
     <!-- Notifications -->
     <string name="notifications_alert_error_unknown">An unknown error has occurred. Please try again later.</string>

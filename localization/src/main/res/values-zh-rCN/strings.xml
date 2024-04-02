@@ -1161,12 +1161,12 @@
     <string name="payments_card_description_2">Members enjoy higher backup storage &amp; sync limits, invitations for multiple guests to collaborate in shared spaces, and a unique identity on the Anytype Network.</string>
     <string name="payments_card_text_3">Support Digital Independence</string>
     <string name="payments_card_description_3">Your contribution supports our team and endorses our vision of a user-owned, secure, and collaborative digital network.</string>
-    <string name="payments_card_text_4">Invest in Connectivity</string>
+    <string name="payments_card_text_4">对连接的投资</string>
     <string name="payments_card_description_4">Our network\'s value exceeds the sum of its parts. Your membership sustains the infrastructure for its growth which underpins this network.</string>
     <string name="payments_tier_explorer">探索者</string>
     <string name="payments_tier_explorer_description">Dive into the network and enjoy the thrill of one-on-one collaboration</string>
     <string name="payments_tier_builder">建造者</string>
-    <string name="payments_tier_builder_description">Unlock the magic of multi-party collaboration and enjoy top-notch support</string>
+    <string name="payments_tier_builder_description">解锁多方协作的魔法以及享受顶级支持</string>
     <string name="payments_tier_cocreator">共创者</string>
     <string name="payments_tier_cocreator_description">Support our adventure and unlock exclusive access and perks</string>
     <string name="payments_tier_custom">自定义</string>
@@ -1182,7 +1182,7 @@
     <!-- Tier details -->
     <string name="payments_tier_details_name_title">选择您独有的名字</string>
     <string name="payments_tier_details_name_subtitle">This is your unique name on the Anytype network, confirming your Membership. It acts as your personal domain and cannot be changed.</string>
-    <string name="payments_tier_details_name_hint">Myself</string>
+    <string name="payments_tier_details_name_hint">我自己</string>
     <string name="payments_tier_details_name_domain">.any</string>
     <string name="payments_tier_details_name_min">最少 7 个字符</string>
     <string name="payments_tier_details_name_error">此名称已被占用</string>
@@ -1190,30 +1190,30 @@
     <string name="payments_tier_details_info_explorer">Dive into the network and enjoy the thrill of one-on-one collaboration</string>
     <string-array name="payments_benefits_explorer">
         <item>1 GB 网络空间</item>
-        <item>10 one-to-one spaces</item>
+        <item>10 个仅单人编辑空间</item>
         <item>最多 10 个在只读模式下的共享空间</item>
     </string-array>
-    <string name="payments_tier_details_info_builder">Unlock the magic of multi-party collaboration and enjoy top-notch support</string>
+    <string name="payments_tier_details_info_builder">解锁多方协作的魔法以及享受顶级支持</string>
     <string-array name="payments_benefits_builder">
-        <item>Unique name (from 7 characters)</item>
+        <item>唯一名字（大于 7 个字）</item>
         <item>128 GB 网络空间</item>
         <item>10 个访客协作位置</item>
         <item>优先支持</item>
     </string-array>
     <string name="payments_tier_details_info_cocreator">Support our adventure and unlock exclusive access and perks</string>
     <string-array name="payments_benefits_cocreator">
-        <item>Unique name (from 5 characters)</item>
+        <item>唯一名字（大于 5 个字）</item>
         <item>256 GB 网络空间</item>
         <item>25 个访客协作位置</item>
         <item>与团队聊天</item>
-        <item>Unique collectible</item>
+        <item>独特的可收藏的</item>
     </string-array>
     <string name="payments_detials_button_pay">使用信用卡</string>
     <string name="payments_detials_button_submit">提交</string>
     <string name="payments_details_whats_included">包含的内容</string>
     <string name="payments_email_title">获得您的免费会员资格</string>
-    <string name="payments_email_subtitle">We need your email to keep spam at bay and the fun in play!</string>
-    <string name="payments_email_checkbox_text">I\'d like to get updates on products and enjoy free perks!</string>
+    <string name="payments_email_subtitle">我们需要您的邮箱来隔绝垃圾信息以及使用时的乐趣！</string>
+    <string name="payments_email_checkbox_text">我想获得产品的更新并享受免费优惠！</string>
     <string name="payments_email_hint">电子邮件</string>
     <string name="payments_tier_current_title">您目前的状态：</string>
     <string name="payments_tier_current_valid">有效期至</string>
@@ -1226,10 +1226,24 @@
     <string name="payments_code_resend_in">在 %1$n 秒内重新发送</string>
     <!-- Payments Welcome -->
     <string name="payments_welcome_title">欢迎来到网络，\n%1$s</string>
-    <string name="payments_welcome_subtitle">Big cheers for your curiosity!</string>
+    <string name="payments_welcome_subtitle">为你的好奇心干杯大的！</string>
     <string name="payments_welcome_button">继续</string>
+    <!-- Notifications -->
+    <string name="notifications_alert_error_unknown">An unknown error has occurred. Please try again later.</string>
+    <string name="notifications_alert_error_bad_input">Invalid input detected. Please check your data and try again.</string>
+    <string name="notifications_alert_error_internal">An internal error has occurred. Our team has been notified.</string>
+    <string name="notifications_alert_error_no_objects_to_import">No items found to import. Please select valid objects for import.</string>
+    <string name="notifications_alert_error_import_canceled">The import process has been canceled by the user.</string>
+    <string name="notifications_alert_error_limit_exceeded">The import limit for rows or relations has been exceeded. Please reduce the amount and try again.</string>
+    <string name="notifications_alert_error_file_load">There was an error loading the file. Please check the file and try again.</string>
+    <string name="notifications_alert_error_insufficient_permissions">You do not have the necessary permissions to perform this action. Please check your permissions and try again.</string>
     <!-- Gallery Experience -->
     <string name="gallery_experience_made">Made by</string>
     <string name="gallery_experience_install">安装</string>
     <string name="gallery_experience_install_new">安装至新的空间</string>
+    <string name="gallery_experience_alert_title_success">Experience was installed</string>
+    <string name="gallery_experience_alert_subtitle_success">\"%1$s\" was installed to a new space. You can now open and start using it.</string>
+    <string name="gallery_experience_alert_title_error">哎呀!</string>
+    <string name="gallery_experience_alert_button_space">Open space</string>
+    <string name="gallery_experience_alert_button_error">关闭</string>
 </resources>

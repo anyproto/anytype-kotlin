@@ -1011,13 +1011,14 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
             )
         )
 
+        coroutineTestRule.advanceUntilIdle()
+
         assertEquals(
             expected = ViewState.Success(expected),
             actual = vm.state.value
         )
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `should not render backlinks and links as featured relations, when no sub objects are present`() = runTest {
 

@@ -1577,6 +1577,7 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubGetTemplates()
         stubUpdateTextStyle()
+        stubUserPermission()
         stubMergeBlocks(root)
 
         storeOfRelations.merge(listOf(relation))

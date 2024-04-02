@@ -650,6 +650,8 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
 
         // checking open-by-default-app command
 
+        coroutineTestRule.advanceUntilIdle()
+
         testObserver.assertValue { value ->
             value is EventWrapper && value.peekContent() == Command.OpenFileByDefaultApp(
                 id = fileBlockId,

@@ -836,12 +836,11 @@ open class EditorPresentationTestSetup {
         permission: SpaceMemberPermissions = SpaceMemberPermissions.OWNER
     ) {
         permissions.stub {
-            on {
-                observe(space = space)
-            } doReturn flowOf(permission)
-            on {
-                get(space)
-            } doReturn permission
+            on { observe(space = space) } doReturn flowOf(permission)
+        }
+
+        permissions.stub {
+            on { get(space) } doReturn permission
         }
     }
 

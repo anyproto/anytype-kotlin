@@ -117,6 +117,7 @@ class EditorMenuTest : EditorPresentationTestSetup() {
             mapOf(
                 root to Block.Fields(
                     mapOf(
+                        Relations.SPACE_ID to defaultSpace,
                         Relations.ID to root,
                         Relations.SPACE_ID to space
                     )
@@ -129,6 +130,7 @@ class EditorMenuTest : EditorPresentationTestSetup() {
         val objectRestrictions = listOf(ObjectRestriction.LAYOUT_CHANGE, ObjectRestriction.DELETE)
 
         stubInterceptEvents()
+        stubInterceptThreadStatus()
         stubOpenDocument(
             document = doc,
             objectRestrictions = objectRestrictions,

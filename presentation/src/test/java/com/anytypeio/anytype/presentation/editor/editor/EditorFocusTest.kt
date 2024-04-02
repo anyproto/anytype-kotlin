@@ -284,6 +284,8 @@ class EditorFocusTest : EditorPresentationTestSetup() {
 
         vm.onOutsideClicked()
 
+        coroutineTestRule.advanceUntilIdle()
+
         vm.state.test().apply {
             try {
                 assertValue { value ->

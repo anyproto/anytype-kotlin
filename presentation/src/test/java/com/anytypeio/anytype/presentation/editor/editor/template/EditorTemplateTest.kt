@@ -69,8 +69,6 @@ class EditorTemplateTest: EditorPresentationTestSetup() {
             )
         )
 
-
-
         stubOpenDocument(
             document = document,
             details = detailsList
@@ -83,7 +81,7 @@ class EditorTemplateTest: EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
-        advanceUntilIdle()
+        coroutineTestRule.advanceUntilIdle()
 
         assertTrue(vm.isObjectTemplate())
     }

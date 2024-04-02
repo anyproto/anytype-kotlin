@@ -1190,7 +1190,7 @@
     <string name="payments_tier_details_name_domain">.any</string>
     <string name="payments_tier_details_name_min">Minimum 7 caractères</string>
     <string name="payments_tier_details_name_error">Ce nom est déjà utilisé</string>
-    <string name="payments_tier_details_name_success">Ce nom peut être utilisé !</string>
+    <string name="payments_tier_details_name_success">Ce nom est disponible !</string>
     <string name="payments_tier_details_info_explorer">Plongez dans le réseau et profitez du frisson de la collaboration entre personnes</string>
     <string-array name="payments_benefits_explorer">
         <item>1 Go d\'espace réseau</item>

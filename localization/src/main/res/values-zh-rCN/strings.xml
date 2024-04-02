@@ -1156,7 +1156,7 @@
     <string name="payments_header">会员</string>
     <string name="payments_subheader">加入 Anytype Network 意味着一起书写它的故事</string>
     <string name="payments_card_text_1">共创愿景</string>
-    <string name="payments_card_description_1">As a valued member your voice matters! Engage in exclusive events, shape strategic choices, and influence our roadmap.</string>
+    <string name="payments_card_description_1">作为尊贵的会员，你的声音很重要！参与独家活动，制定战略选择，并影响我们的路线图。</string>
     <string name="payments_card_text_2">Unlock Member Benefits</string>
     <string name="payments_card_description_2">Members enjoy higher backup storage &amp; sync limits, invitations for multiple guests to collaborate in shared spaces, and a unique identity on the Anytype Network.</string>
     <string name="payments_card_text_3">Support Digital Independence</string>
@@ -1168,7 +1168,7 @@
     <string name="payments_tier_builder">建造者</string>
     <string name="payments_tier_builder_description">解锁多方协作的魔法以及享受顶级支持</string>
     <string name="payments_tier_cocreator">共创者</string>
-    <string name="payments_tier_cocreator_description">Support our adventure and unlock exclusive access and perks</string>
+    <string name="payments_tier_cocreator_description">支持我们的探险并解锁专属访问权限和好处</string>
     <string name="payments_tier_custom">自定义</string>
     <string name="payments_tier_custom_description">Membership tailored to your specific needs and preferences</string>
     <string name="payments_button_learn">了解详情</string>
@@ -1200,7 +1200,7 @@
         <item>10 个访客协作位置</item>
         <item>优先支持</item>
     </string-array>
-    <string name="payments_tier_details_info_cocreator">Support our adventure and unlock exclusive access and perks</string>
+    <string name="payments_tier_details_info_cocreator">支持我们的探险并解锁专属访问权限和好处</string>
     <string-array name="payments_benefits_cocreator">
         <item>唯一名字（大于 5 个字）</item>
         <item>256 GB 网络空间</item>
@@ -1217,7 +1217,7 @@
     <string name="payments_email_hint">电子邮件</string>
     <string name="payments_tier_current_title">您目前的状态：</string>
     <string name="payments_tier_current_valid">有效期至</string>
-    <string name="payments_tier_current_paid_by">Paid by Card</string>
+    <string name="payments_tier_current_paid_by">银行卡支付</string>
     <string name="payments_tier_current_button">管理付款</string>
     <string name="payments_tier_current_change_email_button">更改电子邮件</string>
     <!-- Payments Code -->
@@ -1238,12 +1238,12 @@
     <string name="notifications_alert_error_file_load">There was an error loading the file. Please check the file and try again.</string>
     <string name="notifications_alert_error_insufficient_permissions">You do not have the necessary permissions to perform this action. Please check your permissions and try again.</string>
     <!-- Gallery Experience -->
-    <string name="gallery_experience_made">Made by</string>
+    <string name="gallery_experience_made">作者：</string>
     <string name="gallery_experience_install">安装</string>
     <string name="gallery_experience_install_new">安装至新的空间</string>
-    <string name="gallery_experience_alert_title_success">Experience was installed</string>
-    <string name="gallery_experience_alert_subtitle_success">\"%1$s\" was installed to a new space. You can now open and start using it.</string>
+    <string name="gallery_experience_alert_title_success">已安装体验</string>
+    <string name="gallery_experience_alert_subtitle_success">“%1$s”已成功安装到一个新的空间。您现在可以打开并开始使用它。</string>
     <string name="gallery_experience_alert_title_error">哎呀!</string>
-    <string name="gallery_experience_alert_button_space">Open space</string>
+    <string name="gallery_experience_alert_button_space">打开空间</string>
     <string name="gallery_experience_alert_button_error">关闭</string>
 </resources>

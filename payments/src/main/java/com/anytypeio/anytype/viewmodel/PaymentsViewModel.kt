@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.models.Tier
+import com.anytypeio.anytype.playbilling.BillingClientLifecycle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -11,6 +12,7 @@ import timber.log.Timber
 
 class PaymentsViewModel(
     private val analytics: Analytics,
+    private val billingClientLifecycle: BillingClientLifecycle
 ) : ViewModel() {
 
     val viewState = MutableStateFlow<PaymentsMainState>(PaymentsMainState.Loading)
@@ -26,7 +28,6 @@ class PaymentsViewModel(
 
     init {
         Timber.d("PaymentsViewModel init")
-
         _tiers.addAll(gertTiers())
         setupActiveTierName()
         viewState.value = PaymentsMainState.Default(_tiers)

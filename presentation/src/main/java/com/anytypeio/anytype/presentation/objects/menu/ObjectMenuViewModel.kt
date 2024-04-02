@@ -280,7 +280,10 @@ class ObjectMenuViewModel(
                 isDismissed.value = true
             }
             ObjectAction.USE_AS_TEMPLATE -> {
-                proceedWithCreatingTemplateFromObject(ctx)
+                proceedWithCreatingTemplateFromObject(
+                    ctx = ctx,
+                    space = space
+                )
             }
             ObjectAction.SET_AS_DEFAULT -> {
                 proceedWithSettingAsDefaultTemplate(ctx = ctx)
@@ -323,7 +326,7 @@ class ObjectMenuViewModel(
         }
     }
 
-    private fun proceedWithCreatingTemplateFromObject(ctx: Id) {
+    private fun proceedWithCreatingTemplateFromObject(ctx: Id, space: Id) {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             val params = CreateTemplateFromObject.Params(obj = ctx)
@@ -335,7 +338,11 @@ class ObjectMenuViewModel(
                         ctx = ctx,
                         startTime = startTime
                     )
-                    buildOpenTemplateCommand(ctx, template)
+                    buildOpenTemplateCommand(
+                        ctx = ctx,
+                        space = space,
+                        template = template
+                    )
                     isDismissed.value = true
                 },
                 onFailure = {
@@ -346,7 +353,7 @@ class ObjectMenuViewModel(
         }
     }
 
-    private suspend fun buildOpenTemplateCommand(ctx: Id, template: Id) {
+    private suspend fun buildOpenTemplateCommand(ctx: Id, space: Id, template: Id) {
         val details = storage.details.current().details
         val type = details[ctx]?.type?.firstOrNull()
         val typeStruct = details[type]?.map
@@ -357,7 +364,8 @@ class ObjectMenuViewModel(
                 templateId = template,
                 typeId = objType.id,
                 typeKey = objTypeKey,
-                typeName = objType.name.orEmpty()
+                typeName = objType.name.orEmpty(),
+                space = space
             )
             commands.emit(command)
         } else {

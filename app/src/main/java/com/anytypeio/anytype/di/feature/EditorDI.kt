@@ -5,6 +5,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.di.feature.cover.UnsplashSubComponent
@@ -55,6 +56,7 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
@@ -104,6 +106,7 @@ import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.DocumentExternalEventReducer
 import com.anytypeio.anytype.presentation.editor.Editor
+import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModelFactory
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.Interactor
@@ -133,6 +136,7 @@ import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
 import com.anytypeio.anytype.providers.DefaultUriFileProvider
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import dagger.Binds
+import dagger.BindsInstance
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
@@ -151,6 +155,8 @@ interface EditorSubComponent {
 
     @Subcomponent.Builder
     interface Builder {
+        @BindsInstance
+        fun withParams(params: EditorViewModel.Params): Builder
         fun session(module: EditorSessionModule): Builder
         fun usecase(module: EditorUseCaseModule): Builder
         fun build(): EditorSubComponent
@@ -243,6 +249,8 @@ object EditorSessionModule {
     @JvmStatic
     @Provides
     fun providePageViewModelFactory(
+        params: EditorViewModel.Params,
+        permissions: UserPermissionProvider,
         openPage: OpenPage,
         closePage: CloseBlock,
         interceptEvents: InterceptEvents,
@@ -285,6 +293,8 @@ object EditorSessionModule {
         dispatchers: AppCoroutineDispatchers,
         getNetworkMode: GetNetworkMode
     ): EditorViewModelFactory = EditorViewModelFactory(
+        params = params,
+        permissions = permissions,
         openPage = openPage,
         closeObject = closePage,
         createBlockLinkWithObject = createBlockLinkWithObject,

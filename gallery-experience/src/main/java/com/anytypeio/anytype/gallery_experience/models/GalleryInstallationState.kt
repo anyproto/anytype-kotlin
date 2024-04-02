@@ -18,9 +18,8 @@ data class GalleryInstallationSpacesState(
 sealed class GalleryInstallationNavigation(val route: String) {
     object Main : GalleryInstallationNavigation("main")
     object Spaces : GalleryInstallationNavigation("spaces")
-    object Success : GalleryInstallationNavigation("success")
+    object CloseSpaces : GalleryInstallationNavigation("closeSpaces")
     object Dismiss : GalleryInstallationNavigation("")
-    object Exit : GalleryInstallationNavigation("exit")
 }
 
 data class GallerySpaceView(

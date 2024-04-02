@@ -85,6 +85,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         closable = MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
         stubNetworkMode()
+        stubObservePermissions()
     }
 
     @After
@@ -102,7 +103,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
      */
     @Test
     fun `set by relation, view type and template are empty, page template empty`() = runTest {
-        val spaceId = RandomString.make()
+        val spaceId = defaultSpace
         val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
         val relationObject1 = ObjectWrapper.Relation(map = setByRelationMap)
         val dvViewerRelation1 =
@@ -192,7 +193,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
      */
     @Test
     fun `set by relation, view type and template are empty, page template blank`() = runTest {
-        val workspaceId = RandomString.make()
+        val workspaceId = defaultSpace
         val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
         val relationObject1 = ObjectWrapper.Relation(map = setByRelationMap)
         val dvViewerRelation1 =
@@ -282,7 +283,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
      */
     @Test
     fun `set by relation, view type and template are empty, page template custom`() = runTest {
-        val workspaceId = RandomString.make()
+        val workspaceId = defaultSpace
         val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
         val relationObject1 = ObjectWrapper.Relation(map = setByRelationMap)
         val dvViewerRelation1 =
@@ -373,7 +374,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `set by relation, view type is custom and template is empty, custom type template is not empty`() =
         runTest {
-            val spaceId = RandomString.make()
+            val spaceId = defaultSpace
             val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
             val relationObject1 = ObjectWrapper.Relation(map = setByRelationMap)
             val dvViewerRelation1 =
@@ -474,7 +475,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `set by relation, view type is custom and template is empty, custom type template is empty`() =
         runTest {
-            val spaceId = RandomString.make()
+            val spaceId = defaultSpace
             val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
             val relationObject1 = ObjectWrapper.Relation(map = setByRelationMap)
             val dvViewerRelation1 =
@@ -575,7 +576,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `set by relation, view type is custom and template is empty, custom type template is blank`() =
         runTest {
-            val spaceId = RandomString.make()
+            val spaceId = defaultSpace
             val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
             val relationObject1 = ObjectWrapper.Relation(map = setByRelationMap)
             val dvViewerRelation1 =
@@ -676,7 +677,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `set by relation, view type is custom and template is blank, custom type template is not empty`() =
         runTest {
-            val spaceId = RandomString.make()
+            val spaceId = defaultSpace
             val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
             val relationObject1 = ObjectWrapper.Relation(map = setByRelationMap)
             val dvViewerRelation1 =
@@ -777,7 +778,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `set by relation, view type is custom and template is not empty, custom type template is different`() =
         runTest {
-            val workspaceId = RandomString.make()
+            val workspaceId = defaultSpace
             val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
             val relationObject1 = ObjectWrapper.Relation(map = setByRelationMap)
             val dvViewerRelation1 =

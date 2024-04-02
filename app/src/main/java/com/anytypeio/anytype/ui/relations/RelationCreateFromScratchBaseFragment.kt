@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.relations.LimitObjectTypeAdapter
 import com.anytypeio.anytype.core_ui.features.relations.RelationConnectWithAdapter
 import com.anytypeio.anytype.core_ui.features.relations.RelationFormatAdapter
@@ -27,6 +28,7 @@ import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentRelationCreateFromScratchBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.relations.RelationCreateFromScratchBaseViewModel
 import com.anytypeio.anytype.presentation.relations.RelationCreateFromScratchForDataViewViewModel
 import com.anytypeio.anytype.presentation.relations.RelationCreateFromScratchForObjectBlockViewModel
@@ -40,6 +42,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import java.io.Serializable
 import javax.inject.Inject
+import kotlinx.coroutines.flow.flow
 
 abstract class RelationCreateFromScratchBaseFragment :
     BaseBottomSheetFragment<FragmentRelationCreateFromScratchBinding>() {
@@ -47,6 +50,7 @@ abstract class RelationCreateFromScratchBaseFragment :
     abstract val vm: RelationCreateFromScratchBaseViewModel
 
     protected val ctx get() = arg<Id>(CTX_KEY)
+    protected val space get() = arg<Id>(SPACE_KEY)
     private val query get() = arg<Id>(QUERY_KEY)
 
     private val nameInputAdapter = RelationNameInputAdapter {
@@ -140,6 +144,7 @@ abstract class RelationCreateFromScratchBaseFragment :
 
     companion object {
         const val CTX_KEY = "arg.relation-create-from-scratch.ctx"
+        const val SPACE_KEY = "arg.relation-create-from-scratch.space"
         const val QUERY_KEY = "arg.relation-create-from-scratch.query"
     }
 
@@ -158,16 +163,22 @@ class RelationCreateFromScratchForObjectFragment : RelationCreateFromScratchBase
     }
 
     override fun onLimitObjectTypeClicked() {
+        val bundle: Bundle
+        if (isSetOrCollection)
+            bundle = LimitObjectTypeFragment.args(
+                ctx = ctx,
+                space = space,
+                flow = LimitObjectTypeFragment.FLOW_SET_OR_COLLECTION
+            )
+        else
+            bundle = LimitObjectTypeFragment.args(
+                ctx = ctx,
+                space = space,
+                flow = LimitObjectTypeFragment.FLOW_OBJECT
+            )
         findNavController().navigate(
             R.id.limitObjectTypeScreen,
-            bundleOf(
-                LimitObjectTypeFragment.CTX_KEY to ctx,
-                if (isSetOrCollection) {
-                    LimitObjectTypeFragment.FLOW_TYPE to LimitObjectTypeFragment.FLOW_SET_OR_COLLECTION
-                } else {
-                    LimitObjectTypeFragment.FLOW_TYPE to LimitObjectTypeFragment.FLOW_OBJECT
-                }
-            )
+            bundle
         )
     }
 
@@ -186,10 +197,26 @@ class RelationCreateFromScratchForObjectFragment : RelationCreateFromScratchBase
     }
 
     override fun injectDependencies() {
+        val params = DefaultComponentParam(
+            ctx = ctx,
+            space = SpaceId(space)
+        )
         if (isSetOrCollection) {
-            componentManager().relationCreateFromScratchForObjectSetComponent.get(ctx).inject(this)
+            componentManager()
+                .relationCreateFromScratchForObjectSetComponent
+                .get(
+                    key = ctx,
+                    param = params
+                )
+                .inject(this)
         } else {
-            componentManager().relationCreateFromScratchForObjectComponent.get(ctx).inject(this)
+            componentManager()
+                .relationCreateFromScratchForObjectComponent
+                .get(
+                    key = ctx,
+                    param = params
+                )
+                .inject(this)
         }
     }
 
@@ -237,9 +264,10 @@ class RelationCreateFromScratchForDataViewFragment : RelationCreateFromScratchBa
     override fun onLimitObjectTypeClicked() {
         findNavController().navigate(
             R.id.limitObjectTypeScreen,
-            bundleOf(
-                LimitObjectTypeFragment.CTX_KEY to ctx,
-                LimitObjectTypeFragment.FLOW_TYPE to LimitObjectTypeFragment.FLOW_DV
+            LimitObjectTypeFragment.args(
+                ctx = ctx,
+                space = space,
+                flow = LimitObjectTypeFragment.FLOW_DV
             )
         )
     }
@@ -255,7 +283,16 @@ class RelationCreateFromScratchForDataViewFragment : RelationCreateFromScratchBa
     }
 
     override fun injectDependencies() {
-        componentManager().relationCreateFromScratchForDataViewComponent.get(ctx).inject(this)
+        componentManager()
+            .relationCreateFromScratchForDataViewComponent
+            .get(
+                key = ctx,
+                param = DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {
@@ -309,9 +346,10 @@ class RelationCreateFromScratchForObjectBlockFragment : RelationCreateFromScratc
     override fun onLimitObjectTypeClicked() {
         findNavController().navigate(
             R.id.limitObjectTypeScreen,
-            bundleOf(
-                LimitObjectTypeFragment.CTX_KEY to ctx,
-                LimitObjectTypeFragment.FLOW_TYPE to LimitObjectTypeFragment.FLOW_BLOCK
+            LimitObjectTypeFragment.args(
+                ctx = ctx,
+                space = space,
+                flow = LimitObjectTypeFragment.FLOW_BLOCK
             )
         )
     }
@@ -327,7 +365,16 @@ class RelationCreateFromScratchForObjectBlockFragment : RelationCreateFromScratc
     }
 
     override fun injectDependencies() {
-        componentManager().relationCreateFromScratchForObjectBlockComponent.get(ctx).inject(this)
+        componentManager()
+            .relationCreateFromScratchForObjectBlockComponent
+            .get(
+                key = ctx,
+                param = DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {

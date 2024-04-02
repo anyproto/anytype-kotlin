@@ -355,7 +355,11 @@ fun NavController.safeNavigate(
     args: Bundle? = null
 ) {
     if (currentDestinationId == currentDestination?.id) {
-        navigate(id, args)
+        runCatching {
+            navigate(id, args)
+        }.onFailure {
+            Timber.e(it, "Error while navigation")
+        }
     }
 }
 

@@ -67,7 +67,7 @@
     <string name="deleted_account_danger_zone_msg">一旦您请求删除您的账户，您有 30 天的时间取消此请求。 30 天后，您的加密帐户数据将从备份节点永久删除，您将无法在新设备上登录 Anytype。</string>
     <string name="danger_zone">危险操作区域</string>
     <string name="snackbar_template_add">新模板已添加到类型</string>
-    <string name="settings_membership">Membership</string>
+    <string name="settings_membership">会员</string>
     <string name="default_text_placeholder">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
     <string name="default_url_placeholder">https://humanparts.medium.com/how-i-overcame-cult-trauma-with-psychedelics-4342c03a074c</string>
     <string name="multi_select_turn_into">转换为</string>
@@ -189,7 +189,7 @@
     <string name="error_while_loading_picture">加载图片时出现错误</string>
     <string name="block_with_a_picture">带有图片的块</string>
     <string name="tap_here_to_insert_a_bookmark_url">单击此处插入一个书签 URL</string>
-    <string name="archive">Archive</string>
+    <string name="archive">归档</string>
     <string name="add_block_option_icon">添加块选项图标</string>
     <string name="bookmark_error_menu_button">书签错误菜单按钮</string>
     <string name="bookmark_error">出错了，请重试</string>
@@ -363,7 +363,7 @@
     <string name="enter_text">输入文本</string>
     <string name="enter_number">输入号码</string>
     <string name="enter_date">输入日期</string>
-    <string name="enter_url">Enter URL</string>
+    <string name="enter_url">输入 URL</string>
     <string name="enter_email">输入电子邮件地址</string>
     <string name="enter_phone">输入电话号码</string>
     <string name="scroll_to_select_position">滚动以选择新位置</string>
@@ -824,9 +824,9 @@
     <string name="download_anytype_url">https://download.anytype.io</string>
     <string name="space_type_personal">个人</string>
     <string name="space_type_private">私人</string>
-    <string name="space_type_private_space">Private space</string>
+    <string name="space_type_private_space">私人空间</string>
     <string name="space_type_shared">共享</string>
-    <string name="space_type_shared_space">Shared space</string>
+    <string name="space_type_shared_space">共享空间</string>
     <string name="space_type_unknown">未知</string>
     <string name="create_space_start_with">开始于：</string>
     <string name="create_object_section_lists">分组</string>
@@ -1120,7 +1120,7 @@
     <string name="widget_types_hide">隐藏类型</string>
     <!--endregion-->
     <!--region MULTIPLAYER -->
-    <string name="multiplayer_share_invite_link">Share invite link</string>
+    <string name="multiplayer_share_invite_link">分享邀请链接</string>
     <string name="multiplayer_share_invite_link_description">发送此链接来邀请他人。在他们的请求批准时分配访问权限。</string>
     <string name="multiplayer_invite_link">邀请链接</string>
     <string name="multiplayer_join_a_space">加入空间</string>
@@ -1133,102 +1133,117 @@
     <string name="multiplayer_members_and_requests">成员和请求</string>
     <string name="multiplayer_unjoining_requested">Unjoining requested</string>
     <string name="multiplayer_joining_requested">Joining requested</string>
-    <string name="multiplayer_approve_request">Approve</string>
-    <string name="multiplayer_view_request">View request</string>
+    <string name="multiplayer_approve_request">接受</string>
+    <string name="multiplayer_view_request">查看请求</string>
     <string name="multiplayer_owner">所有者</string>
     <string name="multiplayer_can_edit">可编辑</string>
     <string name="multiplayer_can_read">Can read</string>
     <string name="multiplayer_space_add_viewer">Add viewer</string>
     <string name="multiplayer_space_add_editor">Add editor</string>
-    <string name="multiplayer_space_request_reject">Reject</string>
+    <string name="multiplayer_space_request_reject">拒绝</string>
     <string name="multiplayer_space_join_request_header">%1$s requested to join %2$s space</string>
     <string name="multiplayer_remove_member">Remove member</string>
     <string name="multiplayer_request_sent_toast">已发送申请</string>
-    <string name="multiplayer_space_stop_sharing">Stop sharing</string>
-    <string name="multiplayer_sharing">Sharing</string>
+    <string name="multiplayer_space_stop_sharing">停止共享</string>
+    <string name="multiplayer_sharing">分享</string>
     <string name="multiplayer_share">分享</string>
-    <string name="multiplayer_manage">Manage</string>
-    <string name="multiplayer_leave_space">Leave space</string>
-    <string name="multiplayer_generate_invite_link_description">Create invite link to share space and add new members</string>
-    <string name="multiplayer_generate_invite_link">Generate invite link</string>
+    <string name="multiplayer_manage">管理</string>
+    <string name="multiplayer_leave_space">离开空间</string>
+    <string name="multiplayer_generate_invite_link_description">创建邀请链接以共享空间并添加新成员</string>
+    <string name="multiplayer_generate_invite_link">生成邀请链接</string>
     <!--endregion-->
     <!--region PAYMENTS -->
-    <string name="payments_header">Membership</string>
-    <string name="payments_subheader">Joining Anytype network means contributing to its story</string>
-    <string name="payments_card_text_1">Co-create the Vision</string>
+    <string name="payments_header">会员</string>
+    <string name="payments_subheader">加入 Anytype Network 意味着一起书写它的故事</string>
+    <string name="payments_card_text_1">共创愿景</string>
     <string name="payments_card_description_1">As a valued member your voice matters! Engage in exclusive events, shape strategic choices, and influence our roadmap.</string>
     <string name="payments_card_text_2">Unlock Member Benefits</string>
     <string name="payments_card_description_2">Members enjoy higher backup storage &amp; sync limits, invitations for multiple guests to collaborate in shared spaces, and a unique identity on the Anytype Network.</string>
     <string name="payments_card_text_3">Support Digital Independence</string>
     <string name="payments_card_description_3">Your contribution supports our team and endorses our vision of a user-owned, secure, and collaborative digital network.</string>
-    <string name="payments_card_text_4">Invest in Connectivity</string>
+    <string name="payments_card_text_4">对连接的投资</string>
     <string name="payments_card_description_4">Our network\'s value exceeds the sum of its parts. Your membership sustains the infrastructure for its growth which underpins this network.</string>
-    <string name="payments_tier_explorer">Explorer</string>
+    <string name="payments_tier_explorer">探索者</string>
     <string name="payments_tier_explorer_description">Dive into the network and enjoy the thrill of one-on-one collaboration</string>
-    <string name="payments_tier_builder">Builder</string>
-    <string name="payments_tier_builder_description">Unlock the magic of multi-party collaboration and enjoy top-notch support</string>
-    <string name="payments_tier_cocreator">Co-Creator</string>
+    <string name="payments_tier_builder">建造者</string>
+    <string name="payments_tier_builder_description">解锁多方协作的魔法以及享受顶级支持</string>
+    <string name="payments_tier_cocreator">共创者</string>
     <string name="payments_tier_cocreator_description">Support our adventure and unlock exclusive access and perks</string>
-    <string name="payments_tier_custom">Custom</string>
+    <string name="payments_tier_custom">自定义</string>
     <string name="payments_tier_custom_description">Membership tailored to your specific needs and preferences</string>
-    <string name="payments_button_learn">Learn more</string>
+    <string name="payments_button_learn">了解详情</string>
     <string name="payments_button_contact">联络</string>
-    <string name="payments_member_link">Membership levels details</string>
-    <string name="payments_privacy_link">Privacy policy</string>
-    <string name="payments_terms_link">Terms and conditions</string>
-    <string name="payments_let_us_link_start">Would you like to use Anytype for business, education, etc.?</string>
-    <string name="payments_let_us_link_end">Please let us know here.</string>
-    <string name="payments_current_label">Current</string>
+    <string name="payments_member_link">会员等级详情</string>
+    <string name="payments_privacy_link">隐私政策</string>
+    <string name="payments_terms_link">条款与条件</string>
+    <string name="payments_let_us_link_start">您想要使用 Anytype 用于例如商业、教育或者其他类似用途吗？</string>
+    <string name="payments_let_us_link_end">请在这里告诉我们。</string>
+    <string name="payments_current_label">当前</string>
     <!-- Tier details -->
-    <string name="payments_tier_details_name_title">Pick your unique name</string>
+    <string name="payments_tier_details_name_title">选择您独有的名字</string>
     <string name="payments_tier_details_name_subtitle">This is your unique name on the Anytype network, confirming your Membership. It acts as your personal domain and cannot be changed.</string>
-    <string name="payments_tier_details_name_hint">Myself</string>
+    <string name="payments_tier_details_name_hint">我自己</string>
     <string name="payments_tier_details_name_domain">.any</string>
-    <string name="payments_tier_details_name_min">Min 7 characters</string>
-    <string name="payments_tier_details_name_error">This name is already taken!</string>
+    <string name="payments_tier_details_name_min">最少 7 个字符</string>
+    <string name="payments_tier_details_name_error">此名称已被占用</string>
     <string name="payments_tier_details_name_success">This name is up for grabs!</string>
     <string name="payments_tier_details_info_explorer">Dive into the network and enjoy the thrill of one-on-one collaboration</string>
     <string-array name="payments_benefits_explorer">
-        <item>1 GB of network space</item>
-        <item>10 one-to-one spaces</item>
-        <item>Up to 10 shared spaces in read-only mode</item>
+        <item>1 GB 网络空间</item>
+        <item>10 个仅单人编辑空间</item>
+        <item>最多 10 个在只读模式下的共享空间</item>
     </string-array>
-    <string name="payments_tier_details_info_builder">Unlock the magic of multi-party collaboration and enjoy top-notch support</string>
+    <string name="payments_tier_details_info_builder">解锁多方协作的魔法以及享受顶级支持</string>
     <string-array name="payments_benefits_builder">
-        <item>Unique name (from 7 characters)</item>
-        <item>128 GB of network space</item>
-        <item>10 Guest collaborator seats</item>
-        <item>Priority support</item>
+        <item>唯一名字（大于 7 个字）</item>
+        <item>128 GB 网络空间</item>
+        <item>10 个访客协作位置</item>
+        <item>优先支持</item>
     </string-array>
     <string name="payments_tier_details_info_cocreator">Support our adventure and unlock exclusive access and perks</string>
     <string-array name="payments_benefits_cocreator">
-        <item>Unique name (from 5 characters)</item>
-        <item>256 GB of network space</item>
-        <item>25 Guest collaborator seats</item>
-        <item>Chat with the team</item>
-        <item>Unique collectible</item>
+        <item>唯一名字（大于 5 个字）</item>
+        <item>256 GB 网络空间</item>
+        <item>25 个访客协作位置</item>
+        <item>与团队聊天</item>
+        <item>独特的可收藏的</item>
     </string-array>
-    <string name="payments_detials_button_pay">Pay by Card</string>
-    <string name="payments_detials_button_submit">Submit</string>
-    <string name="payments_details_whats_included">What’s included</string>
-    <string name="payments_email_title">Get your free membership</string>
-    <string name="payments_email_subtitle">We need your email to keep spam at bay and the fun in play!</string>
-    <string name="payments_email_checkbox_text">I\'d like to get updates on products and enjoy free perks!</string>
-    <string name="payments_email_hint">E-mail</string>
-    <string name="payments_tier_current_title">Your current status:</string>
-    <string name="payments_tier_current_valid">Valid until</string>
+    <string name="payments_detials_button_pay">使用信用卡</string>
+    <string name="payments_detials_button_submit">提交</string>
+    <string name="payments_details_whats_included">包含的内容</string>
+    <string name="payments_email_title">获得您的免费会员资格</string>
+    <string name="payments_email_subtitle">我们需要您的邮箱来隔绝垃圾信息以及使用时的乐趣！</string>
+    <string name="payments_email_checkbox_text">我想获得产品的更新并享受免费优惠！</string>
+    <string name="payments_email_hint">电子邮件</string>
+    <string name="payments_tier_current_title">您目前的状态：</string>
+    <string name="payments_tier_current_valid">有效期至</string>
     <string name="payments_tier_current_paid_by">Paid by Card</string>
-    <string name="payments_tier_current_button">Manage payment</string>
+    <string name="payments_tier_current_button">管理付款</string>
+    <string name="payments_tier_current_change_email_button">更改电子邮件</string>
     <!-- Payments Code -->
-    <string name="payments_code_title">Enter the code sent to your email</string>
-    <string name="payments_code_resend">Resend</string>
-    <string name="payments_code_resend_in">Resend in %1$n sec</string>
+    <string name="payments_code_title">输入发送到您邮箱的代码</string>
+    <string name="payments_code_resend">重新发送</string>
+    <string name="payments_code_resend_in">在 %1$n 秒内重新发送</string>
     <!-- Payments Welcome -->
-    <string name="payments_welcome_title">Welcome to the network,\n%1$s</string>
-    <string name="payments_welcome_subtitle">Big cheers for your curiosity!</string>
-    <string name="payments_welcome_button">Continue</string>
+    <string name="payments_welcome_title">欢迎来到网络，\n%1$s</string>
+    <string name="payments_welcome_subtitle">为你的好奇心干杯大的！</string>
+    <string name="payments_welcome_button">继续</string>
+    <!-- Notifications -->
+    <string name="notifications_alert_error_unknown">An unknown error has occurred. Please try again later.</string>
+    <string name="notifications_alert_error_bad_input">Invalid input detected. Please check your data and try again.</string>
+    <string name="notifications_alert_error_internal">An internal error has occurred. Our team has been notified.</string>
+    <string name="notifications_alert_error_no_objects_to_import">No items found to import. Please select valid objects for import.</string>
+    <string name="notifications_alert_error_import_canceled">The import process has been canceled by the user.</string>
+    <string name="notifications_alert_error_limit_exceeded">The import limit for rows or relations has been exceeded. Please reduce the amount and try again.</string>
+    <string name="notifications_alert_error_file_load">There was an error loading the file. Please check the file and try again.</string>
+    <string name="notifications_alert_error_insufficient_permissions">You do not have the necessary permissions to perform this action. Please check your permissions and try again.</string>
     <!-- Gallery Experience -->
     <string name="gallery_experience_made">Made by</string>
     <string name="gallery_experience_install">安装</string>
     <string name="gallery_experience_install_new">安装至新的空间</string>
+    <string name="gallery_experience_alert_title_success">Experience was installed</string>
+    <string name="gallery_experience_alert_subtitle_success">\"%1$s\" was installed to a new space. You can now open and start using it.</string>
+    <string name="gallery_experience_alert_title_error">哎呀!</string>
+    <string name="gallery_experience_alert_button_space">Open space</string>
+    <string name="gallery_experience_alert_button_error">关闭</string>
 </resources>

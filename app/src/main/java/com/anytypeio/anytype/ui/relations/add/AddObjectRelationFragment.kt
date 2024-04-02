@@ -14,12 +14,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.relations.RelationObjectValueAdapter
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.hasSpan
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -27,6 +29,7 @@ import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseDialogFragment
 import com.anytypeio.anytype.databinding.FragmentRelationObjectValueAddBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.relations.add.AddObjectRelationViewModel
 import com.anytypeio.anytype.presentation.relations.add.ObjectValueAddCommand
 import com.anytypeio.anytype.presentation.relations.add.ObjectValueAddView
@@ -42,6 +45,7 @@ class AddObjectRelationFragment : BaseDialogFragment<FragmentRelationObjectValue
     val vm: AddObjectRelationViewModel by viewModels { factory }
 
     private val ctx get() = argString(CONTEXT_ID)
+    private val space get() = argString(SPACE_ID_KEY)
     private val objectId get() = argString(OBJECT_ID)
     private val relationKey get() = argString(RELATION_KEY)
     private val types get() = arg<List<String>>(TARGET_TYPES)
@@ -164,16 +168,28 @@ class AddObjectRelationFragment : BaseDialogFragment<FragmentRelationObjectValue
     }
 
     override fun injectDependencies() {
+        val param = DefaultComponentParam(
+            ctx = ctx,
+            space = SpaceId(space)
+        )
         when (flow) {
             FLOW_OBJECT -> {
-                componentManager().addObjectRelationObjectValueComponent.get(ctx).inject(this)
+                componentManager()
+                    .addObjectRelationObjectValueComponent
+                    .get(param)
+                    .inject(this)
             }
             FLOW_OBJECT_SET -> {
-                componentManager().addObjectSetObjectRelationObjectValueComponent.get(ctx)
+                componentManager()
+                    .addObjectSetObjectRelationObjectValueComponent
+                    .get(param)
                     .inject(this)
             }
             FLOW_DATAVIEW -> {
-                componentManager().addDataViewRelationObjectValueComponent.get(ctx).inject(this)
+                componentManager()
+                    .addDataViewRelationObjectValueComponent
+                    .get(param)
+                    .inject(this)
             }
         }
     }
@@ -203,6 +219,7 @@ class AddObjectRelationFragment : BaseDialogFragment<FragmentRelationObjectValue
 
         fun new(
             ctx: Id,
+            space: Id,
             objectId: Id,
             relationKey: Key,
             types: List<Id>,
@@ -210,6 +227,7 @@ class AddObjectRelationFragment : BaseDialogFragment<FragmentRelationObjectValue
         ) = AddObjectRelationFragment().apply {
             arguments = bundleOf(
                 CONTEXT_ID to ctx,
+                SPACE_ID_KEY to space,
                 OBJECT_ID to objectId,
                 RELATION_KEY to relationKey,
                 TARGET_TYPES to types,
@@ -218,6 +236,7 @@ class AddObjectRelationFragment : BaseDialogFragment<FragmentRelationObjectValue
         }
 
         const val CONTEXT_ID = "arg.relation.add.object.context"
+        const val SPACE_ID_KEY = "arg.relation.add.object.space-id"
         const val RELATION_KEY = "arg.relation.add.object.relation.key"
         const val OBJECT_ID = "arg.relation.add.object.object.id"
         const val TARGET_TYPES = "arg.relation.add.object.target_types"

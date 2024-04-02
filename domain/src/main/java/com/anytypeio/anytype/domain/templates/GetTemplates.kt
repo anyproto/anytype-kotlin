@@ -66,6 +66,7 @@ class GetTemplates(
                     ),
                     keys = listOf(
                         Relations.ID,
+                        Relations.SPACE_ID,
                         Relations.NAME,
                         Relations.LAYOUT,
                         Relations.ICON_EMOJI,

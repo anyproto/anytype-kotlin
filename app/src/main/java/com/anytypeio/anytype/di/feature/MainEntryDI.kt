@@ -25,6 +25,7 @@ import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
 import com.anytypeio.anytype.domain.wallpaper.WallpaperStore
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.main.MainViewModelFactory
+import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
 import com.anytypeio.anytype.ui.main.MainActivity
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicatorImpl
@@ -68,7 +69,8 @@ object MainEntryModule {
         configStorage: ConfigStorage,
         spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
         localeProvider: LocaleProvider,
-        userPermissionProvider: UserPermissionProvider
+        userPermissionProvider: UserPermissionProvider,
+        notificationsProvider: NotificationsProvider
     ): MainViewModelFactory = MainViewModelFactory(
         resumeAccount = resumeAccount,
         analytics = analytics,
@@ -82,7 +84,8 @@ object MainEntryModule {
         configStorage = configStorage,
         spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
         localeProvider = localeProvider,
-        userPermissionProvider = userPermissionProvider
+        userPermissionProvider = userPermissionProvider,
+        notificationsProvider = notificationsProvider
     )
 
     @JvmStatic

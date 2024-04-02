@@ -135,6 +135,7 @@ open class LinkToObjectOrWebViewModelTest {
     @Test
     fun `should return selected range error state when selection range start is equal end`() = runTest {
 
+
         spaceManager.set(spaceId)
         val target = MockDataFactory.randomString()
 
@@ -146,6 +147,7 @@ open class LinkToObjectOrWebViewModelTest {
         runBlocking { store.document.update(listOf(block)) }
 
         val vm = givenViewModel()
+        stubSearchObjects(params = vm.getSearchObjectsParams(ctx))
 
         vm.onStart(
             blockId = target,

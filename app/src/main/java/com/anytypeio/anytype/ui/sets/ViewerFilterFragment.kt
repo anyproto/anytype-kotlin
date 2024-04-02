@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.features.dataview.modals.FilterByAdapter
 import com.anytypeio.anytype.core_ui.layout.DividerVerticalItemDecoration
@@ -22,6 +23,7 @@ import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentFilterBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.sets.filter.ViewerFilterCommand
 import com.anytypeio.anytype.presentation.sets.filter.ViewerFilterViewModel
 import com.anytypeio.anytype.ui.sets.modals.filter.CreateFilterFlowRootFragment
@@ -32,6 +34,7 @@ import javax.inject.Inject
 open class ViewerFilterFragment : BaseBottomSheetFragment<FragmentFilterBinding>() {
 
     private val ctx get() = argString(CONTEXT_ID_KEY)
+    private val space get() = argString(SPACE_ID_KEY)
     private val viewer get() = argString(VIEWER_ID_KEY)
 
     private val filterAdapter by lazy {
@@ -121,12 +124,17 @@ open class ViewerFilterFragment : BaseBottomSheetFragment<FragmentFilterBinding>
     private fun observeCommands(command: ViewerFilterCommand) {
         when (command) {
             is ViewerFilterCommand.Modal.ShowRelationList -> {
-                val fr = CreateFilterFlowRootFragment.new(ctx = ctx, viewer = viewer)
+                val fr = CreateFilterFlowRootFragment.new(
+                    ctx = ctx,
+                    space = space,
+                    viewer = viewer
+                )
                 fr.show(parentFragmentManager, null)
             }
             is ViewerFilterCommand.Modal.UpdateInputValueFilter -> {
                 val fr = ModifyFilterFromInputFieldValueFragment.new(
                     ctx = ctx,
+                    space = space,
                     relation = command.relation,
                     index = command.filterIndex,
                     viewer = viewer
@@ -136,6 +144,7 @@ open class ViewerFilterFragment : BaseBottomSheetFragment<FragmentFilterBinding>
             is ViewerFilterCommand.Modal.UpdateSelectValueFilter -> {
                 val fr = ModifyFilterFromSelectedValueFragment.new(
                     ctx = ctx,
+                    space = space,
                     relation = command.relation,
                     index = command.filterIndex,
                     viewer = viewer
@@ -146,7 +155,15 @@ open class ViewerFilterFragment : BaseBottomSheetFragment<FragmentFilterBinding>
     }
 
     override fun injectDependencies() {
-        componentManager().viewerFilterComponent.get(ctx).inject(this)
+        componentManager()
+            .viewerFilterComponent
+            .get(
+                params = DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {
@@ -162,10 +179,19 @@ open class ViewerFilterFragment : BaseBottomSheetFragment<FragmentFilterBinding>
 
     companion object {
         const val CONTEXT_ID_KEY = "arg.viewer.filters.context"
+        const val SPACE_ID_KEY = "arg.viewer.filters.space-id"
         const val VIEWER_ID_KEY = "arg.viewer.filters.viewer"
 
-        fun new(ctx: Id, viewer: Id) = ViewerFilterFragment().apply {
-            arguments = bundleOf(CONTEXT_ID_KEY to ctx, VIEWER_ID_KEY to viewer)
+        fun new(
+            ctx: Id,
+            space: Id,
+            viewer: Id
+        ) = ViewerFilterFragment().apply {
+            arguments = bundleOf(
+                CONTEXT_ID_KEY to ctx,
+                SPACE_ID_KEY to space,
+                VIEWER_ID_KEY to viewer
+            )
         }
     }
 }

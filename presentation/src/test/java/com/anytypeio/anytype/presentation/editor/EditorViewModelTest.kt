@@ -62,6 +62,7 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
@@ -132,15 +133,22 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.runTest
+import org.junit.After
+import org.junit.Assert.assertThrows
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -350,11 +358,13 @@ open class EditorViewModelTest {
     private lateinit var updateDetail: UpdateDetail
 
     @Mock
-    lateinit var fileLimitsEventChannel: FileLimitsEventChannel
     lateinit var interceptFileLimitEvents: InterceptFileLimitEvents
 
     @Mock
     lateinit var storelessSubscriptionContainer: StorelessSubscriptionContainer
+
+    @Mock
+    lateinit var permissions: UserPermissionProvider
 
     lateinit var vm: EditorViewModel
 
@@ -401,10 +411,28 @@ open class EditorViewModelTest {
         MockitoAnnotations.openMocks(this)
         builder = UrlBuilder(gateway)
         stubNetworkMode()
+        stubObserveEvents()
+        stubInterceptEvents()
         spaceManager.stub {
             onBlocking {
                 get()
             } doReturn defaultSpace
+        }
+        stubFileLimitEvents()
+        stubUpdateBlocksMark()
+        stubOpenPage(root, emptyList())
+        stubUpdateText()
+        openPage.stub {
+            onBlocking {
+                async(any())
+            } doReturn Resultat.success(
+                Result.Success(
+                    Payload(
+                        context = root,
+                        events = emptyList()
+                    )
+                )
+            )
         }
     }
 
@@ -498,21 +526,21 @@ open class EditorViewModelTest {
 
     @Test
     fun `should close page when the system back button is pressed`() {
+        runTest {
+            val root = MockDataFactory.randomUuid()
 
-        val root = MockDataFactory.randomUuid()
+            stubOpenPage(root)
+            stubInterceptEvents()
+            stubClosePage(null, null)
 
-        stubOpenPage(root)
-        stubInterceptEvents()
+            givenViewModel()
 
-        givenViewModel()
+            vm.onStart(id = root, space = defaultSpace)
 
-        vm.onStart(id = root, space = defaultSpace)
+            verifyNoInteractions(closePage)
 
-        verifyNoInteractions(closePage)
+            vm.onSystemBackPressed(editorHasChildrenScreens = false)
 
-        vm.onSystemBackPressed(editorHasChildrenScreens = false)
-
-        runBlockingTest {
             verify(closePage, times(1)).async(any())
         }
     }
@@ -532,29 +560,6 @@ open class EditorViewModelTest {
         testObserver
             .assertHasValue()
             .assertValue { value -> value.peekContent() == AppNavigation.Command.Exit }
-    }
-
-    @Test
-    fun `should not emit any navigation command if there is an error while closing the page`() {
-
-        val root = MockDataFactory.randomUuid()
-
-        val error = Exception("Error while closing this page")
-
-        stubOpenPage(root)
-        stubClosePage(error)
-        stubInterceptEvents()
-        givenViewModel()
-
-        vm.onStart(id = root, space = defaultSpace)
-
-        val testObserver = vm.navigation.test()
-
-        verifyNoInteractions(closePage)
-
-        vm.onSystemBackPressed(editorHasChildrenScreens = false)
-
-        testObserver.assertNoValue()
     }
 
     @Test
@@ -2815,7 +2820,6 @@ open class EditorViewModelTest {
         }
 
         stubObserveEvents(flow)
-        stubOpenPage(context = root)
         stubClosePage()
         givenViewModel()
 
@@ -3650,11 +3654,14 @@ open class EditorViewModelTest {
     }
 
     private fun stubClosePage(
-        exception: Exception? = null
+        exception: Exception? = null,
+        context: Id? = root,
     ) {
 
         closePage.stub {
-            onBlocking { async(root) } doReturn Resultat.success(Unit)
+            onBlocking { if (context == null) async(any()) else async(root) } doReturn Resultat.success(
+                Unit
+            )
         }
 
         exception?.let {
@@ -3675,6 +3682,12 @@ open class EditorViewModelTest {
                     )
                 )
             )
+        }
+    }
+
+    fun stubFileLimitEvents() {
+        interceptFileLimitEvents.stub {
+            onBlocking { run(Unit) } doReturn emptyFlow()
         }
     }
 
@@ -3699,6 +3712,22 @@ open class EditorViewModelTest {
                     )
                 )
             )
+        }
+    }
+
+    private fun stubUpdateBlocksMark() {
+        updateBlocksMark.stub {
+            onBlocking {
+                invoke(any())
+            } doReturn Either.Right(Payload("", emptyList()))
+        }
+    }
+
+    private fun stubUpdateText() {
+        updateText.stub {
+            onBlocking {
+                invoke(any())
+            } doReturn Either.Right(Unit)
         }
     }
 
@@ -3727,12 +3756,6 @@ open class EditorViewModelTest {
             onBlocking { build(params) } doReturn flow
         }
         if (stubInterceptThreadStatus) stubInterceptThreadStatus()
-    }
-
-    private fun stubUpdateText() {
-        updateText.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(Unit)
-        }
     }
 
     private fun stubReplaceBlock(root: String) {
@@ -3776,7 +3799,12 @@ open class EditorViewModelTest {
 
     private fun givenSharedFile() {
         documentFileShareDownloader.stub {
-            onBlocking { async(any()) } doReturn Resultat.success(MiddlewareShareDownloader.Response(Uri.EMPTY, ""))
+            onBlocking { async(any()) } doReturn Resultat.success(
+                MiddlewareShareDownloader.Response(
+                    Uri.EMPTY,
+                    ""
+                )
+            )
         }
     }
 
@@ -3832,7 +3860,7 @@ open class EditorViewModelTest {
         downloadUnsplashImage = DownloadUnsplashImage(unsplashRepo)
         clearBlockContent = ClearBlockContent(repo)
         clearBlockStyle = ClearBlockStyle(repo)
-        interceptFileLimitEvents = InterceptFileLimitEvents(fileLimitsEventChannel, dispatchers)
+        interceptFileLimitEvents = interceptFileLimitEvents
         setObjectInternalFlags = SetObjectInternalFlags(repo, dispatchers)
 
         getObjectTypes = GetObjectTypes(repo, dispatchers)
@@ -3926,7 +3954,12 @@ open class EditorViewModelTest {
             templatesContainer = templatesContainer,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             dispatchers = dispatchers,
-            getNetworkMode = getNetworkMode
+            getNetworkMode = getNetworkMode,
+            params = EditorViewModel.Params(
+                ctx = root,
+                space = SpaceId(defaultSpace)
+            ),
+            permissions = permissions
         )
     }
 

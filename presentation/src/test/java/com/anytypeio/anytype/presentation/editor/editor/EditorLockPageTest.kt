@@ -20,6 +20,7 @@ import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
 import kotlin.test.assertEquals
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -31,6 +32,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
     @get:Rule
     val rule = InstantTaskExecutorRule()
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
@@ -50,6 +52,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
         MockitoAnnotations.openMocks(this)
         stubGetNetworkMode()
         stubSpaceManager()
+        stubFileLimitEvents()
     }
 
     @Test

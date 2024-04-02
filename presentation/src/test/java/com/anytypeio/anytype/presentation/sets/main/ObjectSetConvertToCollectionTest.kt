@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.sets.main
 
 import app.cash.turbine.testIn
+import app.cash.turbine.turbineScope
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.presentation.collections.MockSet
@@ -33,6 +34,7 @@ class ObjectSetConvertToCollectionTest : ObjectSetViewModelTestSetup() {
         viewModel = givenViewModel()
         mockObjectSet = MockSet(context = root, space = defaultSpace)
         stubGetDefaultPageType()
+        stubObservePermissions()
     }
 
     @After
@@ -42,9 +44,12 @@ class ObjectSetConvertToCollectionTest : ObjectSetViewModelTestSetup() {
 
     @Test
     fun `should start collection subscription after changing from set to collection`() = runTest {
+        turbineScope {
         // SETUP
         stubSpaceManager(defaultSpace)
         stubInterceptEvents()
+        stubNetworkMode()
+        stubObjectToCollection()
         stubInterceptThreadStatus()
         stubOpenObject(
             doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
@@ -60,57 +65,58 @@ class ObjectSetConvertToCollectionTest : ObjectSetViewModelTestSetup() {
             objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2)
         )
 
-        val stateFlow = stateReducer.state.testIn(backgroundScope)
+            val stateFlow = stateReducer.state.testIn(backgroundScope)
 
-        // TESTING
+            // TESTING
 
         proceedWithStartingViewModel()
 
-        val firstState = stateFlow.awaitItem()
-        assertIs<ObjectState.Init>(firstState)
+            val firstState = stateFlow.awaitItem()
+            assertIs<ObjectState.Init>(firstState)
 
-        val secondState = stateFlow.awaitItem()
-        assertIs<ObjectState.DataView.Set>(secondState)
+            val secondState = stateFlow.awaitItem()
+            assertIs<ObjectState.DataView.Set>(secondState)
 
-        viewModel.proceedWithConvertingToCollection()
+            viewModel.proceedWithConvertingToCollection()
 
-        val eventSetIsCollection = Event.Command.DataView.SetIsCollection(
-            context = root,
-            dv = mockObjectSet.dataView.id,
-            isCollection = true
-        )
-
-        dispatcher.send(
-            Payload(
+            val eventSetIsCollection = Event.Command.DataView.SetIsCollection(
                 context = root,
-                events = listOf(eventSetIsCollection)
+                dv = mockObjectSet.dataView.id,
+                isCollection = true
             )
-        )
 
-        val thirdState = stateFlow.awaitItem()
-        assertIs<ObjectState.DataView.Collection>(thirdState)
-
-        advanceUntilIdle()
-
-        verifyBlocking(repo, times(1)) {
-            searchObjectsWithSubscription(
-                eq(mockObjectSet.subscriptionId),
-                eq(listOf()),
-                eq(
-                    mockObjectSet.filters + ObjectSearchConstants.defaultDataViewFilters(
-                        listOf(spaceConfig.space, spaceConfig.techSpace)
-                    )
-                ),
-                eq(ObjectSearchConstants.defaultDataViewKeys + mockObjectSet.dvKeys),
-                eq(listOf()),
-                eq(0L),
-                eq(ObjectSetConfig.DEFAULT_LIMIT),
-                eq(null),
-                eq(null),
-                eq(null),
-                eq(null),
-                eq(mockObjectSet.root)
+            dispatcher.send(
+                Payload(
+                    context = root,
+                    events = listOf(eventSetIsCollection)
+                )
             )
+
+            val thirdState = stateFlow.awaitItem()
+            assertIs<ObjectState.DataView.Collection>(thirdState)
+
+            advanceUntilIdle()
+
+            verifyBlocking(repo, times(1)) {
+                searchObjectsWithSubscription(
+                    eq(mockObjectSet.subscriptionId),
+                    eq(listOf()),
+                    eq(
+                        mockObjectSet.filters + ObjectSearchConstants.defaultDataViewFilters(
+                            listOf(spaceConfig.space, spaceConfig.techSpace)
+                        )
+                    ),
+                    eq(ObjectSearchConstants.defaultDataViewKeys + mockObjectSet.dvKeys),
+                    eq(listOf()),
+                    eq(0L),
+                    eq(ObjectSetConfig.DEFAULT_LIMIT),
+                    eq(null),
+                    eq(null),
+                    eq(null),
+                    eq(null),
+                    eq(mockObjectSet.root)
+                )
+            }
         }
     }
 

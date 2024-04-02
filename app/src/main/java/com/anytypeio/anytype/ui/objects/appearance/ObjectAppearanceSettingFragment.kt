@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.objects.appearance.ObjectAppearanceSettingAdapter
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.drawable
@@ -19,6 +20,7 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentObjectAppearanceSettingBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.objects.appearance.ObjectAppearanceSettingViewModel
 import com.anytypeio.anytype.ui.objects.appearance.choose.ObjectAppearanceChooseDescriptionFragment
 import com.anytypeio.anytype.ui.objects.appearance.choose.ObjectAppearanceChooseIconFragment
@@ -33,6 +35,7 @@ class ObjectAppearanceSettingFragment :
     private val vm by viewModels<ObjectAppearanceSettingViewModel> { factory }
 
     private val ctx: String get() = argString(CONTEXT_ID_KEY)
+    private val space: String get() = argString(SPACE_KEY)
     private val block: String get() = argString(BLOCK_ID_KEY)
     private val adapterAppearance by lazy {
         ObjectAppearanceSettingAdapter(
@@ -90,10 +93,18 @@ class ObjectAppearanceSettingFragment :
     private fun observeCommands(command: ObjectAppearanceSettingViewModel.Command) {
         val fr = when (command) {
             ObjectAppearanceSettingViewModel.Command.IconScreen -> {
-                ObjectAppearanceChooseIconFragment.new(block = block, ctx = ctx)
+                ObjectAppearanceChooseIconFragment.new(
+                    block = block,
+                    ctx = ctx,
+                    space = space
+                )
             }
             ObjectAppearanceSettingViewModel.Command.PreviewLayoutScreen -> {
-                ObjectAppearanceChoosePreviewLayoutFragment.new(block = block, ctx = ctx)
+                ObjectAppearanceChoosePreviewLayoutFragment.new(
+                    block = block,
+                    ctx = ctx,
+                    space = space
+                )
             }
             ObjectAppearanceSettingViewModel.Command.DescriptionScreen -> {
                 ObjectAppearanceChooseDescriptionFragment.new(block = block, ctx = ctx)
@@ -103,7 +114,15 @@ class ObjectAppearanceSettingFragment :
     }
 
     override fun injectDependencies() {
-        componentManager().objectAppearanceSettingComponent.get(ctx).inject(this)
+        componentManager()
+            .objectAppearanceSettingComponent
+            .get(
+                params = DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {
@@ -118,14 +137,15 @@ class ObjectAppearanceSettingFragment :
     )
 
     companion object {
-        fun new(ctx: Id, block: Id) = ObjectAppearanceSettingFragment().apply {
+        fun new(ctx: Id, space: Id, block: Id) = ObjectAppearanceSettingFragment().apply {
             arguments = bundleOf(
                 CONTEXT_ID_KEY to ctx,
+                SPACE_KEY to space,
                 BLOCK_ID_KEY to block
             )
         }
-
         const val CONTEXT_ID_KEY = "arg.object-appearance-setting.ctx"
+        const val SPACE_KEY = "arg.object-appearance-setting.space"
         const val BLOCK_ID_KEY = "arg.object-appearance-setting.block"
     }
 }

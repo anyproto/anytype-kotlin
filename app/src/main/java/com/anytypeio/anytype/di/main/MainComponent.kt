@@ -25,6 +25,7 @@ import com.anytypeio.anytype.di.feature.library.LibraryDependencies
 import com.anytypeio.anytype.di.feature.multiplayer.RequestJoinSpaceDependencies
 import com.anytypeio.anytype.di.feature.multiplayer.ShareSpaceDependencies
 import com.anytypeio.anytype.di.feature.multiplayer.SpaceJoinRequestDependencies
+import com.anytypeio.anytype.di.feature.notifications.NotificationDependencies
 import com.anytypeio.anytype.di.feature.objects.SelectObjectTypeDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingStartDependencies
@@ -77,7 +78,8 @@ import javax.inject.Singleton
         SubscriptionsModule::class,
         CrashReportingModule::class,
         TemplatesModule::class,
-        NetworkModeModule::class
+        NetworkModeModule::class,
+        NotificationsModule::class
     ]
 )
 interface MainComponent :
@@ -114,7 +116,8 @@ interface MainComponent :
     SpaceJoinRequestDependencies,
     RequestJoinSpaceDependencies,
     PaymentsComponentDependencies,
-    GalleryInstallationComponentDependencies
+    GalleryInstallationComponentDependencies,
+    NotificationDependencies
 {
 
     fun inject(app: AndroidApplication)
@@ -144,7 +147,7 @@ interface MainComponent :
 }
 
 @Module
-private abstract class ComponentDependenciesModule private constructor() {
+abstract class ComponentDependenciesModule {
 
     @Binds
     @IntoMap
@@ -315,4 +318,9 @@ private abstract class ComponentDependenciesModule private constructor() {
     @IntoMap
     @ComponentDependenciesKey(GalleryInstallationComponentDependencies::class)
     abstract fun provideGalleryInstallationDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(NotificationDependencies::class)
+    abstract fun provideNotificationDependencies(component: MainComponent): ComponentDependencies
 }

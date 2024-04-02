@@ -107,6 +107,7 @@ import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.showActionableSnackBar
 import com.anytypeio.anytype.databinding.FragmentEditorBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.ext.extractMarks
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
@@ -958,11 +959,17 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     findNavController().safeNavigate(
                         R.id.pageScreen,
                         R.id.action_pageScreen_to_objectCoverScreen,
-                        bundleOf(SelectCoverObjectFragment.CTX_KEY to command.ctx)
+                        SelectCoverObjectFragment.args(
+                            ctx = command.ctx,
+                            space = space
+                        )
                     )
                 }
                 is Command.OpenObjectLayout -> {
-                    val fr = ObjectLayoutFragment.new(command.ctx).apply {
+                    val fr = ObjectLayoutFragment.new(
+                        ctx = command.ctx,
+                        space = space
+                    ).apply {
                         onDismissListener = { vm.onLayoutDialogDismissed() }
                     }
                     fr.showChildFragment()
@@ -999,8 +1006,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     ObjectRelationListFragment
                         .new(
                             ctx = command.ctx,
+                            space = space,
                             target = command.target,
-                            mode = ObjectRelationListFragment.MODE_ADD
+                            mode = ObjectRelationListFragment.MODE_ADD,
                         )
                         .showChildFragment()
                 }
@@ -1011,6 +1019,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         R.id.objectRelationListScreen,
                         bundleOf(
                             ObjectRelationListFragment.ARG_CTX to command.ctx,
+                            ObjectRelationListFragment.ARG_SPACE to space,
                             ObjectRelationListFragment.ARG_TARGET to command.target,
                             ObjectRelationListFragment.ARG_LOCKED to command.isLocked,
                             ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST,
@@ -1024,7 +1033,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         target = command.target,
                         relationKey = command.relationKey,
                         targetObjectTypes = command.targetObjectTypes,
-                        isLocked = command.isReadOnlyValue
+                        isLocked = command.isReadOnlyValue,
+                        space = command.space
                     )
                     fr.showChildFragment()
                 }
@@ -1034,7 +1044,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         ctx = command.ctx,
                         relationKey = command.relationKey,
                         objectId = command.target,
-                        isLocked = command.isReadOnlyValue
+                        isLocked = command.isReadOnlyValue,
+                        space = command.space
                     )
                     fr.showChildFragment()
                 }
@@ -1042,6 +1053,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     hideKeyboard()
                     val fr = RelationDateValueFragment.new(
                         ctx = command.ctx,
+                        space = command.space,
                         objectId = command.target,
                         relationKey = command.relationKey,
                         isLocked = command.isReadOnlyValue
@@ -1111,7 +1123,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     hideSoftInput()
                     val fr = RelationAddToObjectBlockFragment.newInstance(
                         ctx = command.ctx,
-                        target = command.target
+                        target = command.target,
+                        space = space
                     )
                     fr.showChildFragment()
                 }
@@ -1122,7 +1135,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         blockId = command.target,
                         rangeStart = command.range.first,
                         rangeEnd = command.range.last,
-                        isWholeBlockMarkup = command.isWholeBlockMarkup
+                        isWholeBlockMarkup = command.isWholeBlockMarkup,
+                        space = space
                     )
                     fr.showChildFragment()
                 }
@@ -1141,7 +1155,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is Command.OpenObjectAppearanceSettingScreen -> {
                     val fr = ObjectAppearanceSettingFragment.new(
                         ctx = command.ctx,
-                        block = command.block
+                        block = command.block,
+                        space = space
                     )
                     fr.showChildFragment()
                 }
@@ -1154,7 +1169,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     val fr = SetBlockTextValueFragment.new(
                         ctx = command.ctx,
                         block = command.block,
-                        table = command.table
+                        table = command.table,
+                        space = space
                     ).apply {
                         onDismissListener = {
                             vm.onSetBlockTextValueScreenDismiss()
@@ -1168,12 +1184,13 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     findNavController().safeNavigate(
                         R.id.pageScreen,
                         R.id.nav_relations,
-                        bundleOf(
-                            TagOrStatusValueFragment.CTX_KEY to command.ctx,
-                            TagOrStatusValueFragment.OBJECT_ID_KEY to command.target,
-                            TagOrStatusValueFragment.RELATION_KEY to command.relationKey,
-                            TagOrStatusValueFragment.IS_LOCKED_KEY to command.isReadOnlyValue,
-                            TagOrStatusValueFragment.RELATION_CONTEXT_KEY to RelationContext.OBJECT
+                        TagOrStatusValueFragment.args(
+                            ctx = command.ctx,
+                            space = command.space,
+                            obj = command.target,
+                            relation = command.relationKey,
+                            isLocked = command.isReadOnlyValue,
+                            context = RelationContext.OBJECT
                         )
                     )
                 }
@@ -1181,12 +1198,13 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     findNavController().safeNavigate(
                         R.id.pageScreen,
                         R.id.objectValueScreen,
-                        bundleOf(
-                            ObjectValueFragment.CTX_KEY to command.ctx,
-                            ObjectValueFragment.OBJECT_ID_KEY to command.target,
-                            ObjectValueFragment.RELATION_KEY to command.relationKey,
-                            ObjectValueFragment.IS_LOCKED_KEY to command.isReadOnlyValue,
-                            ObjectValueFragment.RELATION_CONTEXT_KEY to RelationContext.OBJECT
+                        ObjectValueFragment.args(
+                            ctx = command.ctx,
+                            space = command.space,
+                            obj = command.target,
+                            relation = command.relationKey,
+                            isLocked = command.isReadOnlyValue,
+                            relationContext = RelationContext.OBJECT
                         )
                     )
                 }
@@ -1979,14 +1997,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
     }
 
-    override fun injectDependencies() {
-        componentManager().editorComponent.get(extractDocumentId()).inject(this)
-    }
-
-    override fun releaseDependencies() {
-        componentManager().editorComponent.release(extractDocumentId())
-    }
-
     private fun getEditorSettings() {
     }
 
@@ -2175,6 +2185,22 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     ): FragmentEditorBinding = FragmentEditorBinding.inflate(
         inflater, container, false
     )
+
+    override fun injectDependencies() {
+        componentManager().editorComponent
+            .get(
+                key = ctx,
+                param = DefaultComponentParam(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
+    }
+
+    override fun releaseDependencies() {
+        componentManager().editorComponent.release(ctx)
+    }
 
     companion object {
 

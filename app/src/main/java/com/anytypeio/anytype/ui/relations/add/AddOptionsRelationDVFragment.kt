@@ -4,8 +4,10 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationDVViewModel
 import javax.inject.Inject
@@ -44,10 +46,14 @@ open class AddOptionsRelationDVFragment : BaseAddOptionsRelationFragment() {
     }
 
     override fun injectDependencies() {
+        val param = DefaultComponentParam(
+            ctx = ctx,
+            space = SpaceId(space)
+        )
         if (isIntrinsic) {
-            componentManager().addObjectSetObjectRelationValueComponent.get(ctx).inject(this)
+            componentManager().addObjectSetObjectRelationValueComponent.get(param).inject(this)
         } else {
-            componentManager().addDataViewObjectRelationValueComponent.get(ctx).inject(this)
+            componentManager().addDataViewObjectRelationValueComponent.get(param).inject(this)
         }
     }
 
@@ -62,12 +68,14 @@ open class AddOptionsRelationDVFragment : BaseAddOptionsRelationFragment() {
     companion object {
         fun new(
             ctx: Id,
+            space: Id,
             target: Id,
             relationKey: Key,
             isIntrinsic: Boolean
         ) = AddOptionsRelationDVFragment().apply {
             arguments = bundleOf(
                 CTX_KEY to ctx,
+                SPACE_ID_KEY to space,
                 TARGET_KEY to target,
                 RELATION_KEY to relationKey,
                 IS_INTRINSIC_KEY to isIntrinsic

@@ -47,6 +47,7 @@ import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.util.getExternalFilesDirTemp
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
 import com.anytypeio.anytype.ui.editor.CreateObjectFragment
+import com.anytypeio.anytype.ui.notifications.NotificationsFragment
 import com.anytypeio.anytype.ui.sharing.SharingFragment
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
 import com.github.javiersantos.appupdater.AppUpdater
@@ -159,6 +160,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                             }
                             is Command.Error -> {
                                 toast(command.msg)
+                            }
+                            Command.Notifications -> {
+                                NotificationsFragment().show(supportFragmentManager, null)
                             }
                         }
                     }

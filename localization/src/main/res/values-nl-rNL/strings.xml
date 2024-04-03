@@ -824,7 +824,7 @@
     <string name="anytype_update_alert_description">Een deel van je gegevens werd beheerd door een nieuwere versie van Anytype. Update de app alsjeblieft om met al je documenten en de nieuwe functies te werken.</string>
     <string name="anytype_update_alert_title">Het is tijd om te updaten</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
-    <string name="space_type_personal">Persoonlijk</string>
+    <string name="space_type_default">Persoonlijk</string>
     <string name="space_type_private">Persoonlijk</string>
     <string name="space_type_private_space">Privé ruimte</string>
     <string name="space_type_shared">Gedeeld</string>

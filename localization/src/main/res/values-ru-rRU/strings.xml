@@ -828,7 +828,7 @@
     <string name="anytype_update_alert_description">Некоторые из ваших данных были изменены в более новой версии Anytype. Пожалуйста, обновите текущее приложение для работы со всеми вашими документами и последними функциями.</string>
     <string name="anytype_update_alert_title">Пришло время обновить приложение</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
-    <string name="space_type_personal">Личный</string>
+    <string name="space_type_default">Личный</string>
     <string name="space_type_private">Приватный</string>
     <string name="space_type_private_space">Private space</string>
     <string name="space_type_shared">Общие</string>

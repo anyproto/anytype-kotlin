@@ -824,7 +824,7 @@
     <string name="anytype_update_alert_description">Some of your data was managed in a newer version of Anytype. Please update the app to work with all your docs and the latest features.</string>
     <string name="anytype_update_alert_title">Det er på tide å oppdatere</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
-    <string name="space_type_personal">Personlig</string>
+    <string name="space_type_default">Personlig</string>
     <string name="space_type_private">Private</string>
     <string name="space_type_private_space">Privat rom</string>
     <string name="space_type_shared">Delt</string>

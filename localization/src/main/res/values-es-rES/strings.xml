@@ -824,7 +824,7 @@
     <string name="anytype_update_alert_description">Algunos de tus datos se gestionaron en una versión más reciente de Anytype. Actualiza la aplicación para que funcione con todos tus documentos y las últimas funciones.</string>
     <string name="anytype_update_alert_title">¡Es la hora de actualizar!</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
-    <string name="space_type_personal">Personal</string>
+    <string name="space_type_default">Personal</string>
     <string name="space_type_private">Privado</string>
     <string name="space_type_private_space">Espacio privado</string>
     <string name="space_type_shared">Compartido</string>

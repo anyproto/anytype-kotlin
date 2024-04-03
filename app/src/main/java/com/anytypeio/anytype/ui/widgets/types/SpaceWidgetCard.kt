@@ -88,7 +88,7 @@ fun SpaceWidgetCard(
             maxLines = 1
         )
         val spaceTypeName = when(spaceType) {
-            PERSONAL_SPACE_TYPE -> stringResource(id = R.string.space_type_personal)
+            PERSONAL_SPACE_TYPE -> stringResource(id = R.string.space_type_default)
             PRIVATE_SPACE_TYPE -> stringResource(id = R.string.space_type_private)
             SHARED_SPACE_TYPE -> stringResource(id = R.string.space_type_shared)
             else -> stringResource(id = R.string.space_type_unknown)

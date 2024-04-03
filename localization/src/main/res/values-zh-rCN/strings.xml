@@ -822,7 +822,7 @@
     <string name="anytype_update_alert_description">您的某些数据是在 Anytype 的较新版本中管理的。请更新应用程序，以便使用您的所有文档和最新功能。</string>
     <string name="anytype_update_alert_title">是时候更新了</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
-    <string name="space_type_personal">个人</string>
+    <string name="space_type_default">个人</string>
     <string name="space_type_private">私人</string>
     <string name="space_type_private_space">私人空间</string>
     <string name="space_type_shared">共享</string>

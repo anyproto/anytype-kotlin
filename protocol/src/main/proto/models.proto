@@ -1218,26 +1218,6 @@ message MembershipTierData {
         PeriodTypeYears = 5;  
     }
 
-    enum FeatureId {
-        Unknown = 0;
-        StorageGBs = 1;
-        Invites = 2;
-        SpaceWriters = 3;
-        SpaceReaders = 4;
-        SharedSpaces = 5;
-    }
-    
-    message Feature {
-        FeatureId featureId = 1;
-
-        // usually feature has uint value
-        // like "storage" - 120
-        uint32 valueUint = 2;
-
-        // in case feature will have string value
-        string valueStr = 3;
-    }
-
     // this is a unique ID of the tier
     // you should hardcode this in your app and provide icon, graphics, etc for each tier 
     // (even for old/historical/inactive/hidden tiers)
@@ -1247,24 +1227,21 @@ message MembershipTierData {
     // just a short technical description
     // you don't have to use it, you can use your own UI-friendly texts
     string description = 3;
-    // can you buy it (ON ALL PLATFORMS, without clarification)?
-    bool isActive = 4;
     // is this tier for debugging only?
-    bool isTest = 5;  
-    // hidden tiers are only visible once user got them
-    bool isHiddenTier = 6;
+    bool isTest = 4;    
     // how long is the period of the subscription
-    PeriodType periodType = 7;
+    PeriodType periodType = 5;
     // i.e. "5 days" or "3 years"
-    uint32 periodValue = 8;
+    uint32 periodValue = 6;
     // this one is a price we use ONLY on Stripe platform
-    uint32 priceStripeUsdCents = 9;
+    uint32 priceStripeUsdCents = 7;
     // number of ANY NS names that this tier includes 
-    // (not counted as a "feature" and not in the features list)
-    uint32 anyNamesCountIncluded = 10;
-    // somename.any - len of 8
-    uint32 anyNameMinLength = 11;
-    // each tier has a set of features
-    // the key is FeatureId
-    repeated Feature features = 12;
+    // also in the "features" list (see below)
+    uint32 anyNamesCountIncluded = 8;
+    // somename.any - is of len 8
+    uint32 anyNameMinLength = 9;
+    // localized strings for the features
+    repeated string features = 10;
+    // green, blue, red, purple, custom
+    string colorStr = 11;
 }

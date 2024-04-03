@@ -2,7 +2,7 @@ package com.anytypeio.anytype.domain.workspace
 
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.PERSONAL_SPACE_TYPE
+import com.anytypeio.anytype.core_models.DEFAULT_SPACE_TYPE
 import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SpaceType
 import com.anytypeio.anytype.core_models.UNKNOWN_SPACE_TYPE
@@ -71,7 +71,7 @@ interface SpaceManager {
             val accountConfig = configStorage.getOrNull()
             return if (accountConfig != null) {
                 if (space == accountConfig.space)
-                    PERSONAL_SPACE_TYPE
+                    DEFAULT_SPACE_TYPE
                 else
                     PRIVATE_SPACE_TYPE
             } else {

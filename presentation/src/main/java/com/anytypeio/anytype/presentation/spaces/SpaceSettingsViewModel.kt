@@ -140,7 +140,7 @@ class SpaceSettingsViewModel(
     }
 
     private fun resolveIsSpaceDeletable(spaceView: ObjectWrapper.SpaceView) =
-        spaceView.spaceAccessType != null && spaceView.spaceAccessType != SpaceAccessType.PERSONAL
+        spaceView.spaceAccessType != null && spaceView.spaceAccessType != SpaceAccessType.DEFAULT
 
     fun onNameSet(name: String) {
         Timber.d("onNameSet")

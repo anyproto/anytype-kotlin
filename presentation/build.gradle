@@ -20,6 +20,10 @@ android {
         buildConfigField "boolean", "ENABLE_VIEWS_MENU", "true"
     }
     namespace 'com.anytypeio.anytype.presentation'
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 dependencies {

@@ -106,6 +106,7 @@ import org.mockito.kotlin.verifyNoMoreInteractions
 
 class HomeScreenViewModelTest {
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
     val coroutineTestRule = DefaultCoroutineTestRule()
 

@@ -110,6 +110,7 @@ import com.anytypeio.anytype.presentation.editor.editor.table.EditorTableDelegat
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
+import com.anytypeio.anytype.presentation.home.UserPermissionProviderStub
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -367,8 +368,7 @@ open class EditorPresentationTestSetup {
     @Mock
     lateinit var getNetworkMode: GetNetworkMode
 
-    @Mock
-    lateinit var permissions: UserPermissionProvider
+    var permissions: UserPermissionProvider = UserPermissionProviderStub()
 
     open fun buildViewModel(urlBuilder: UrlBuilder = builder): EditorViewModel {
 
@@ -835,13 +835,9 @@ open class EditorPresentationTestSetup {
         space: SpaceId = SpaceId(defaultSpace),
         permission: SpaceMemberPermissions = SpaceMemberPermissions.OWNER
     ) {
-        permissions.stub {
-            on { observe(space = space) } doReturn flowOf(permission)
-        }
-
-        permissions.stub {
-            on { get(space) } doReturn permission
-        }
+        (permissions as UserPermissionProviderStub).stubObserve(
+            space, permission
+        )
     }
 
     fun proceedWithDefaultBeforeTestStubbing() {

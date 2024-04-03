@@ -2232,6 +2232,7 @@ open class EditorViewModelTest {
         stubObserveEvents(flow)
         stubOpenPage(context = root)
         stubCreateBlock(root)
+        stubUnlinkBlocks(root)
         givenViewModel()
 
         vm.onStart(id = root, space = defaultSpace)

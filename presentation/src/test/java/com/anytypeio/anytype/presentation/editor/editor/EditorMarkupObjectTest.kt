@@ -45,7 +45,6 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         proceedWithDefaultBeforeTestStubbing()
-
     }
 
     @After

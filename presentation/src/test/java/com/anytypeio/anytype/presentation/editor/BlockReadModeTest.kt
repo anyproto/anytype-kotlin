@@ -152,6 +152,7 @@ class BlockReadModeTest : EditorViewModelTest() {
         val paragraphs = blocks
         stubObserveEvents(flow)
         stubOpenPage()
+        stubUserPermission()
         givenViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
@@ -210,6 +211,7 @@ class BlockReadModeTest : EditorViewModelTest() {
         val paragraphs = blocks
         stubObserveEvents(flow)
         stubOpenPage()
+        stubUserPermission()
         givenViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
@@ -244,6 +246,7 @@ class BlockReadModeTest : EditorViewModelTest() {
         val paragraphs = blocks
         stubObserveEvents(flow)
         stubOpenPage()
+        stubUserPermission()
         givenViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
@@ -304,6 +307,7 @@ class BlockReadModeTest : EditorViewModelTest() {
         val paragraphs = blocks
         stubObserveEvents(flow)
         stubOpenPage()
+        stubUserPermission()
         givenViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
@@ -341,11 +345,12 @@ class BlockReadModeTest : EditorViewModelTest() {
         val paragraphs = blocks
         stubObserveEvents(flow)
         stubOpenPage()
-        givenViewModel()
+        stubUserPermission()
         stubDuplicateBlock(
             newBlockId = MockDataFactory.randomUuid(),
             root = root
         )
+        givenViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
 

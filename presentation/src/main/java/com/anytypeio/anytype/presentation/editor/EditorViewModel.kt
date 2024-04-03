@@ -776,8 +776,7 @@ class EditorViewModel(
                     }
                 }
                 if (permission?.isOwnerOrEditor() == true) {
-                    if (mode == EditorMode.Read)
-                        mode = EditorMode.Edit
+                    // TODO
                 } else {
                     if (mode == EditorMode.Edit)
                         mode = EditorMode.Read

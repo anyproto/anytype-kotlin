@@ -758,11 +758,11 @@ class EditorViewModel(
             .stream()
             .filter { it.isNotEmpty() }
             .onEach { document -> refreshStyleToolbar(document) }
-            .combine(permission) { doc, permission -> doc to permission }
             .withLatestFrom(
                 orchestrator.stores.focus.stream(),
                 orchestrator.stores.details.stream()
-            ) { (models, permission), focus, details ->
+            ) { models, focus, details ->
+                val permission = permission.value
                 val root = models.first { it.id == context }
                 if (mode == EditorMode.Locked) {
                     if (root.fields.isLocked != true) {

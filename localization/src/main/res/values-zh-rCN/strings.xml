@@ -48,7 +48,7 @@
     <string name="about_meta_info_for_copy">设备：%1$s\nAndroid 版本：%2$d\n应用版本：%3$s\n构建号：%4$d\n库版本：%5$s\n账户\u00A0 ID：\u00A0%6$s\n设备\u00A0 ID：\u00A0%7$s\n分析\u00A0 ID：\u00A0%8$s</string>
     <string name="space">空间</string>
     <string name="space_name">空间名称</string>
-    <string name="default_space">个人空间</string>
+    <string name="default_space">默认空间</string>
     <string name="space_settings_apply_random_gradient">应用随机渐变色</string>
     <string name="delete_space">删除空间</string>
     <string name="you_can_store">您可以在我们的节点上免费加密备份存储多达 %1$s 的文件。如果达到限制，文件将仅存储在本地。</string>
@@ -804,7 +804,7 @@
     <string name="go_to_the_app">进入应用</string>
     <string name="exiting_please_wait">正在退出... 请稍等</string>
     <string name="loading_please_wait">正在加载……请稍等</string>
-    <string name="personal">个人</string>
+    <string name="personal">默认</string>
     <string name="create_space">创建空间</string>
     <string name="generic_error">出错了，请再试一次。</string>
     <string name="type">类型</string>
@@ -822,7 +822,7 @@
     <string name="anytype_update_alert_description">您的某些数据是在 Anytype 的较新版本中管理的。请更新应用程序，以便使用您的所有文档和最新功能。</string>
     <string name="anytype_update_alert_title">是时候更新了</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
-    <string name="space_type_default">个人</string>
+    <string name="space_type_default">默认</string>
     <string name="space_type_private">私人</string>
     <string name="space_type_private_space">私人空间</string>
     <string name="space_type_shared">共享</string>
@@ -1155,12 +1155,12 @@
     <string name="payments_subheader">加入 Anytype Network 意味着一起书写它的故事</string>
     <string name="payments_card_text_1">共创愿景</string>
     <string name="payments_card_description_1">作为尊贵的会员，你的声音很重要！参与独家活动，制定战略选择，并影响我们的路线图。</string>
-    <string name="payments_card_text_2">Unlock Member Benefits</string>
-    <string name="payments_card_description_2">Members enjoy higher backup storage &amp; sync limits, invitations for multiple guests to collaborate in shared spaces, and a unique identity on the Anytype Network.</string>
-    <string name="payments_card_text_3">Support Digital Independence</string>
-    <string name="payments_card_description_3">Your contribution supports our team and endorses our vision of a user-owned, secure, and collaborative digital network.</string>
+    <string name="payments_card_text_2">解锁会员福利</string>
+    <string name="payments_card_description_2">会员可以享受更高的备份存储和同步空间，可邀请多位访客在共享空间中进行协作，以及 Anytype 网络上独有的身份。</string>
+    <string name="payments_card_text_3">支持数字独立性</string>
+    <string name="payments_card_description_3">您的贡献支持我们这个团队并支持我们“由用户拥有的、安全和协作的数字环境”的愿景。</string>
     <string name="payments_card_text_4">对连接的投资</string>
-    <string name="payments_card_description_4">Our network\'s value exceeds the sum of its parts. Your membership sustains the infrastructure for its growth which underpins this network.</string>
+    <string name="payments_card_description_4">我们的网络的价值超过了其各部分的总和。您的会员资格维持了用于支撑这个网络增长的基础设施。</string>
     <string name="payments_tier_explorer">探索者</string>
     <string name="payments_tier_explorer_description">Dive into the network and enjoy the thrill of one-on-one collaboration</string>
     <string name="payments_tier_builder">建造者</string>
@@ -1224,7 +1224,7 @@
     <string name="payments_code_resend_in">在 %1$n 秒内重新发送</string>
     <!-- Payments Welcome -->
     <string name="payments_welcome_title">欢迎来到网络，\n%1$s</string>
-    <string name="payments_welcome_subtitle">Big cheers for your curiosity!</string>
+    <string name="payments_welcome_subtitle">为你的好奇心干一杯大的！</string>
     <string name="payments_welcome_button">继续</string>
     <!-- Notifications -->
     <string name="notifications_alert_error_unknown">An unknown error has occurred. Please try again later.</string>
@@ -1233,8 +1233,8 @@
     <string name="notifications_alert_error_no_objects_to_import">No items found to import. Please select valid objects for import.</string>
     <string name="notifications_alert_error_import_canceled">The import process has been canceled by the user.</string>
     <string name="notifications_alert_error_limit_exceeded">The import limit for rows or relations has been exceeded. Please reduce the amount and try again.</string>
-    <string name="notifications_alert_error_file_load">There was an error loading the file. Please check the file and try again.</string>
-    <string name="notifications_alert_error_insufficient_permissions">You do not have the necessary permissions to perform this action. Please check your permissions and try again.</string>
+    <string name="notifications_alert_error_file_load">加载文件时出现了一点问题。请检查文件后重试。</string>
+    <string name="notifications_alert_error_insufficient_permissions">您没有执行此操作的必要权限。请检查您的权限并重试。</string>
     <!-- Gallery Experience -->
     <string name="gallery_experience_made">作者：</string>
     <string name="gallery_experience_install">安装</string>

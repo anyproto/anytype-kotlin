@@ -1230,7 +1230,7 @@
     <string name="payments_code_resend_in">Verstuur opnieuw over %1$n seconden</string>
     <!-- Payments Welcome -->
     <string name="payments_welcome_title">Welkom bij het netwerk, \n%1$s</string>
-    <string name="payments_welcome_subtitle">Hulde voor jouw nieuwsgierigheid!</string>
+    <string name="payments_welcome_subtitle">Big cheers for your curiosity!</string>
     <string name="payments_welcome_button">Ga verder</string>
     <!-- Notifications -->
     <string name="notifications_alert_error_unknown">Er heeft zich een onbekende fout voorgedaan. Probeer het later opnieuw.</string>

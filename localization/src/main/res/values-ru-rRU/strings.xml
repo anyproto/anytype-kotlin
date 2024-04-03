@@ -48,7 +48,7 @@
     <string name="about_meta_info_for_copy">Устройство: %1$s\nAndroid версия: %2$d\nВерсия приложения: %3$s\nНомер сборки: %4$d\nВерсия библиотеки: %5$s\nАккаунт\u00A0ID:\u00A0%6$s\nУстройство\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s</string>
     <string name="space">Пространство</string>
     <string name="space_name">Название пространства</string>
-    <string name="personal_space">Настройки</string>
+    <string name="default_space">Настройки</string>
     <string name="space_settings_apply_random_gradient">Применить случайный градиент</string>
     <string name="delete_space">Удалить пространство</string>
     <string name="you_can_store">Вы можете бесплатно хранить до %1$s ваших файлов на нашем узле резервного копирования. При достижении лимита файлы будут храниться только локально.</string>
@@ -828,7 +828,7 @@
     <string name="anytype_update_alert_description">Некоторые из ваших данных были изменены в более новой версии Anytype. Пожалуйста, обновите текущее приложение для работы со всеми вашими документами и последними функциями.</string>
     <string name="anytype_update_alert_title">Пришло время обновить приложение</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
-    <string name="space_type_personal">Личный</string>
+    <string name="space_type_default">Личный</string>
     <string name="space_type_private">Приватный</string>
     <string name="space_type_private_space">Private space</string>
     <string name="space_type_shared">Общие</string>
@@ -994,8 +994,6 @@
     <string name="onboarding_soul_creation_description">This is how you will appear in the app</string>
     <string name="onboarding_soul_creation_placeholder">Идентификатор Anytype</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
-    <string name="onboarding_soul_space_creation">Setting up the Personal space…</string>
-    <string name="onboarding_soul_creation_personal_space">Настройки</string>
     <string name="onboarding_type_recovery_phrase">Введите свою фразу восстановления</string>
     <string name="onboarding_login_or">ИЛИ</string>
     <string name="onboarding_entering_void_title">Входим в пустоту</string>

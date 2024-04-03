@@ -262,7 +262,7 @@ sealed class ObjectWrapper {
             get() {
                 val code = getValue<Double?>(Relations.SPACE_ACCOUNT_STATUS)
                 return SpaceStatus
-                    .values()
+                    .entries
                     .firstOrNull { it.code == code?.toInt() }
                     ?: SpaceStatus.UNKNOWN
             }
@@ -271,7 +271,7 @@ sealed class ObjectWrapper {
             get() {
                 val code = getValue<Double?>(Relations.SPACE_ACCESS_TYPE)
                 return SpaceAccessType
-                    .values()
+                    .entries
                     .firstOrNull { it.code == code?.toInt() }
             }
     }

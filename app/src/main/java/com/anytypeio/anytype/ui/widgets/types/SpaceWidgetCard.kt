@@ -17,7 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.PERSONAL_SPACE_TYPE
+import com.anytypeio.anytype.core_models.DEFAULT_SPACE_TYPE
 import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SHARED_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SpaceType
@@ -88,7 +88,7 @@ fun SpaceWidgetCard(
             maxLines = 1
         )
         val spaceTypeName = when(spaceType) {
-            PERSONAL_SPACE_TYPE -> stringResource(id = R.string.space_type_default)
+            DEFAULT_SPACE_TYPE -> stringResource(id = R.string.space_type_default)
             PRIVATE_SPACE_TYPE -> stringResource(id = R.string.space_type_private)
             SHARED_SPACE_TYPE -> stringResource(id = R.string.space_type_shared)
             else -> stringResource(id = R.string.space_type_unknown)

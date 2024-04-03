@@ -48,7 +48,7 @@
     <string name="about_meta_info_for_copy">Dispositivo: %1$s\nVersione di Android: %2$d\nVersione app: %3$s\nNumero di build: %4$d\nVersione libreria: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDispositivo\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s</string>
     <string name="space">Spazio</string>
     <string name="space_name">Nome dello Spazio</string>
-    <string name="personal_space">Impostazioni</string>
+    <string name="default_space">Default space</string>
     <string name="space_settings_apply_random_gradient">Applica gradiente casuale</string>
     <string name="delete_space">Elimina spazio</string>
     <string name="you_can_store">Puoi archiviare gratuitamente fino a %1$s di file personali sul nostro nodo di backup crittografato. Se raggiungi il limite, i file verranno archiviati solo localmente.</string>
@@ -806,7 +806,7 @@
     <string name="go_to_the_app">Vai all\'app</string>
     <string name="exiting_please_wait">Exiting... please wait</string>
     <string name="loading_please_wait">Loading... please wait</string>
-    <string name="personal">Personale</string>
+    <string name="personal">Default</string>
     <string name="create_space">Crea uno spazio</string>
     <string name="generic_error">Something went wrong. Please try again.</string>
     <string name="type">Tipo</string>
@@ -824,7 +824,7 @@
     <string name="anytype_update_alert_description">Some of your data was managed in a newer version of Anytype. Please update the app to work with all your docs and the latest features.</string>
     <string name="anytype_update_alert_title">È ora di aggiornare</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
-    <string name="space_type_personal">Personale</string>
+    <string name="space_type_default">Default</string>
     <string name="space_type_private">Privato</string>
     <string name="space_type_private_space">Private space</string>
     <string name="space_type_shared">Condiviso</string>
@@ -990,8 +990,6 @@
     <string name="onboarding_soul_creation_description">This is how you will appear in the app</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
-    <string name="onboarding_soul_space_creation">Setting up the Personal space…</string>
-    <string name="onboarding_soul_creation_personal_space">Impostazioni</string>
     <string name="onboarding_type_recovery_phrase">Digita la frase di recupero</string>
     <string name="onboarding_login_or">O</string>
     <string name="onboarding_entering_void_title">Entrando nel Void</string>
@@ -1224,17 +1222,31 @@
     <string name="payments_tier_current_valid">Valido fino al</string>
     <string name="payments_tier_current_paid_by">Paid by Card</string>
     <string name="payments_tier_current_button">Manage payment</string>
-    <string name="payments_tier_current_change_email_button">Change e-mail</string>
+    <string name="payments_tier_current_change_email_button">Cambia email</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Inserisci il codice inviato alla tua email</string>
     <string name="payments_code_resend">Invia di nuovo</string>
     <string name="payments_code_resend_in">Resend in %1$n sec</string>
     <!-- Payments Welcome -->
     <string name="payments_welcome_title">Welcome to the network,\n%1$s</string>
-    <string name="payments_welcome_subtitle">Grande applausi per la tua curiosità!</string>
+    <string name="payments_welcome_subtitle">Big cheers for your curiosity!</string>
     <string name="payments_welcome_button">Continue</string>
+    <!-- Notifications -->
+    <string name="notifications_alert_error_unknown">An unknown error has occurred. Please try again later.</string>
+    <string name="notifications_alert_error_bad_input">Invalid input detected. Please check your data and try again.</string>
+    <string name="notifications_alert_error_internal">An internal error has occurred. Our team has been notified.</string>
+    <string name="notifications_alert_error_no_objects_to_import">No items found to import. Please select valid objects for import.</string>
+    <string name="notifications_alert_error_import_canceled">The import process has been canceled by the user.</string>
+    <string name="notifications_alert_error_limit_exceeded">The import limit for rows or relations has been exceeded. Please reduce the amount and try again.</string>
+    <string name="notifications_alert_error_file_load">There was an error loading the file. Please check the file and try again.</string>
+    <string name="notifications_alert_error_insufficient_permissions">You do not have the necessary permissions to perform this action. Please check your permissions and try again.</string>
     <!-- Gallery Experience -->
     <string name="gallery_experience_made">Realizzato da</string>
     <string name="gallery_experience_install">Installa</string>
     <string name="gallery_experience_install_new">Installa in un nuovo spazio</string>
+    <string name="gallery_experience_alert_title_success">Experience was installed</string>
+    <string name="gallery_experience_alert_subtitle_success">\"%1$s\" was installed to a new space. You can now open and start using it.</string>
+    <string name="gallery_experience_alert_title_error">Ops!</string>
+    <string name="gallery_experience_alert_button_space">Open space</string>
+    <string name="gallery_experience_alert_button_error">Chiudi</string>
 </resources>

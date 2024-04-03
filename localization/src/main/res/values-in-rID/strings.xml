@@ -48,7 +48,7 @@
     <string name="about_meta_info_for_copy">Perangkat: %1$s\nVersi Android: %2$d\nVersi Aplikasi: %3$s\nPembuatan Nomor: %4$d\nVersi Pustaka: %5$s\nAkun\u00A0ID:\u00A0%6$s\nPerangkat\u00A0ID:\u00A0%7$s\nAnalisis\u00A0ID:\u00A0%8$s</string>
     <string name="space">Ruang</string>
     <string name="space_name">Nama Ruang</string>
-    <string name="personal_space">Setelan</string>
+    <string name="default_space">Default space</string>
     <string name="space_settings_apply_random_gradient">Terapkan gradasi acak</string>
     <string name="delete_space">Hapus ruang</string>
     <string name="you_can_store">Kamu bisa menyimpan berkasmu hingga %1$s di simpul cadangan terenkripsi kami secara gratis. Jika melewati batas, berkasmu hanya akan disimpan secara lokal.</string>
@@ -804,7 +804,7 @@
     <string name="go_to_the_app">Ke aplikasi</string>
     <string name="exiting_please_wait">Exiting... please wait</string>
     <string name="loading_please_wait">Loading... please wait</string>
-    <string name="personal">Pribadi</string>
+    <string name="personal">Bawaan</string>
     <string name="create_space">Buat ruang</string>
     <string name="generic_error">Something went wrong. Please try again.</string>
     <string name="type">Tipe</string>
@@ -822,7 +822,7 @@
     <string name="anytype_update_alert_description">Some of your data was managed in a newer version of Anytype. Please update the app to work with all your docs and the latest features.</string>
     <string name="anytype_update_alert_title">Waktunya memperbarui</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
-    <string name="space_type_personal">Pribadi</string>
+    <string name="space_type_default">Bawaan</string>
     <string name="space_type_private">Pribadi</string>
     <string name="space_type_private_space">Ruang pribadi</string>
     <string name="space_type_shared">Berbagi</string>
@@ -988,8 +988,6 @@
     <string name="onboarding_soul_creation_description">This is how you will appear in the app</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
-    <string name="onboarding_soul_space_creation">Setting up the Personal space…</string>
-    <string name="onboarding_soul_creation_personal_space">Setelan</string>
     <string name="onboarding_type_recovery_phrase">Masukkan frasa pemulihanmu</string>
     <string name="onboarding_login_or">ATAU</string>
     <string name="onboarding_entering_void_title">Memasuki Void</string>
@@ -1219,7 +1217,7 @@
     <string name="payments_tier_current_valid">Berlaku hingga</string>
     <string name="payments_tier_current_paid_by">Paid by Card</string>
     <string name="payments_tier_current_button">Manage payment</string>
-    <string name="payments_tier_current_change_email_button">Change e-mail</string>
+    <string name="payments_tier_current_change_email_button">Ganti surel</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Masukkan kode yang dikirim ke surelmu</string>
     <string name="payments_code_resend">Kirim ulang</string>
@@ -1228,8 +1226,22 @@
     <string name="payments_welcome_title">Welcome to the network,\n%1$s</string>
     <string name="payments_welcome_subtitle">Big cheers for your curiosity!</string>
     <string name="payments_welcome_button">Continue</string>
+    <!-- Notifications -->
+    <string name="notifications_alert_error_unknown">An unknown error has occurred. Please try again later.</string>
+    <string name="notifications_alert_error_bad_input">Invalid input detected. Please check your data and try again.</string>
+    <string name="notifications_alert_error_internal">An internal error has occurred. Our team has been notified.</string>
+    <string name="notifications_alert_error_no_objects_to_import">No items found to import. Please select valid objects for import.</string>
+    <string name="notifications_alert_error_import_canceled">The import process has been canceled by the user.</string>
+    <string name="notifications_alert_error_limit_exceeded">The import limit for rows or relations has been exceeded. Please reduce the amount and try again.</string>
+    <string name="notifications_alert_error_file_load">There was an error loading the file. Please check the file and try again.</string>
+    <string name="notifications_alert_error_insufficient_permissions">You do not have the necessary permissions to perform this action. Please check your permissions and try again.</string>
     <!-- Gallery Experience -->
     <string name="gallery_experience_made">Dibuat oleh</string>
     <string name="gallery_experience_install">Pasang</string>
     <string name="gallery_experience_install_new">Pasang ke ruang baru</string>
+    <string name="gallery_experience_alert_title_success">Experience was installed</string>
+    <string name="gallery_experience_alert_subtitle_success">\"%1$s\" was installed to a new space. You can now open and start using it.</string>
+    <string name="gallery_experience_alert_title_error">Waduh!</string>
+    <string name="gallery_experience_alert_button_space">Open space</string>
+    <string name="gallery_experience_alert_button_error">Tutup</string>
 </resources>

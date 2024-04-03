@@ -48,7 +48,7 @@
     <string name="about_meta_info_for_copy">Device: %1$s\nAndroid version: %2$d\nApp version: %3$s\nBuild number: %4$d\nLibrary version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDevice\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s</string>
     <string name="space">Rom</string>
     <string name="space_name">Romnavn</string>
-    <string name="personal_space">Innstillinger</string>
+    <string name="default_space">Default space</string>
     <string name="space_settings_apply_random_gradient">Bruk tilfeldig gradient</string>
     <string name="delete_space">Slett rom</string>
     <string name="you_can_store">You can store up to %1$s of your files on our encrypted backup node for free. If you reach the limit, files will be stored only locally.</string>
@@ -806,7 +806,7 @@
     <string name="go_to_the_app">Gå til appen</string>
     <string name="exiting_please_wait">Exiting... please wait</string>
     <string name="loading_please_wait">Loading... please wait</string>
-    <string name="personal">Personlig</string>
+    <string name="personal">Default</string>
     <string name="create_space">Opprett et rom</string>
     <string name="generic_error">Something went wrong. Please try again.</string>
     <string name="type">Type</string>
@@ -824,7 +824,7 @@
     <string name="anytype_update_alert_description">Some of your data was managed in a newer version of Anytype. Please update the app to work with all your docs and the latest features.</string>
     <string name="anytype_update_alert_title">Det er på tide å oppdatere</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
-    <string name="space_type_personal">Personlig</string>
+    <string name="space_type_default">Default</string>
     <string name="space_type_private">Private</string>
     <string name="space_type_private_space">Privat rom</string>
     <string name="space_type_shared">Delt</string>
@@ -990,8 +990,6 @@
     <string name="onboarding_soul_creation_description">This is how you will appear in the app</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
-    <string name="onboarding_soul_space_creation">Setting up the Personal space…</string>
-    <string name="onboarding_soul_creation_personal_space">Innstillinger</string>
     <string name="onboarding_type_recovery_phrase">Skriv inn gjenopprettingsfrasen din</string>
     <string name="onboarding_login_or">ELLER</string>
     <string name="onboarding_entering_void_title">Går inn i Void</string>
@@ -1232,8 +1230,22 @@
     <string name="payments_welcome_title">Velkommen til nettverket,\n%1$s</string>
     <string name="payments_welcome_subtitle">Big cheers for your curiosity!</string>
     <string name="payments_welcome_button">Fortsett</string>
+    <!-- Notifications -->
+    <string name="notifications_alert_error_unknown">An unknown error has occurred. Please try again later.</string>
+    <string name="notifications_alert_error_bad_input">Invalid input detected. Please check your data and try again.</string>
+    <string name="notifications_alert_error_internal">An internal error has occurred. Our team has been notified.</string>
+    <string name="notifications_alert_error_no_objects_to_import">No items found to import. Please select valid objects for import.</string>
+    <string name="notifications_alert_error_import_canceled">The import process has been canceled by the user.</string>
+    <string name="notifications_alert_error_limit_exceeded">The import limit for rows or relations has been exceeded. Please reduce the amount and try again.</string>
+    <string name="notifications_alert_error_file_load">There was an error loading the file. Please check the file and try again.</string>
+    <string name="notifications_alert_error_insufficient_permissions">You do not have the necessary permissions to perform this action. Please check your permissions and try again.</string>
     <!-- Gallery Experience -->
     <string name="gallery_experience_made">Laget av</string>
     <string name="gallery_experience_install">Installer</string>
     <string name="gallery_experience_install_new">Installer til nytt rom</string>
+    <string name="gallery_experience_alert_title_success">Experience was installed</string>
+    <string name="gallery_experience_alert_subtitle_success">\"%1$s\" was installed to a new space. You can now open and start using it.</string>
+    <string name="gallery_experience_alert_title_error">Oops!</string>
+    <string name="gallery_experience_alert_button_space">Open space</string>
+    <string name="gallery_experience_alert_button_error">Lukk</string>
 </resources>

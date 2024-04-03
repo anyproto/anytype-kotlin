@@ -82,14 +82,18 @@ interface TextBlockHolder : TextHolder {
     }
 
     private fun setSpannable(markup: Markup, textColor: Int) {
-        content.setText(
-            markup.toSpannable(
-                textColor = textColor,
-                context = content.context,
-                underlineHeight = getUnderlineHeight()
-            ),
-            TextView.BufferType.SPANNABLE
-        )
+        runCatching {
+            content.setText(
+                markup.toSpannable(
+                    textColor = textColor,
+                    context = content.context,
+                    underlineHeight = getUnderlineHeight()
+                ),
+                TextView.BufferType.SPANNABLE
+            )
+        }.onFailure {
+            Timber.e(it, "Error while setting spannable")
+        }
     }
 
     fun getMentionIconSize(): Int
@@ -105,21 +109,25 @@ interface TextBlockHolder : TextHolder {
     ) {
         content.dismissMentionWatchers()
         with(content) {
-            setText(
-                markup.toSpannable(
-                    textColor = textColor,
-                    context = context,
-                    mentionImageSize = getMentionIconSize(),
-                    mentionImagePadding = getMentionIconPadding(),
-                    mentionCheckedIcon = getMentionCheckedIcon(),
-                    mentionUncheckedIcon = getMentionUncheckedIcon(),
-                    click = { clicked(ListenerType.Mention(it)) },
-                    onImageReady = { param -> refreshMentionSpan(param) },
-                    mentionInitialsSize = getMentionInitialsSize(),
-                    underlineHeight = getUnderlineHeight()
-                ),
-                TextView.BufferType.SPANNABLE
-            )
+            runCatching {
+                setText(
+                    markup.toSpannable(
+                        textColor = textColor,
+                        context = context,
+                        mentionImageSize = getMentionIconSize(),
+                        mentionImagePadding = getMentionIconPadding(),
+                        mentionCheckedIcon = getMentionCheckedIcon(),
+                        mentionUncheckedIcon = getMentionUncheckedIcon(),
+                        click = { clicked(ListenerType.Mention(it)) },
+                        onImageReady = { param -> refreshMentionSpan(param) },
+                        mentionInitialsSize = getMentionInitialsSize(),
+                        underlineHeight = getUnderlineHeight()
+                    ),
+                    TextView.BufferType.SPANNABLE
+                )
+            }.onFailure {
+                Timber.e(it, "Error while setting text")
+            }
         }
     }
 

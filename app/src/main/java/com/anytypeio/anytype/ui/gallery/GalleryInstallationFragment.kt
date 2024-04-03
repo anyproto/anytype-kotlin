@@ -19,6 +19,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.NO_VALUE
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
@@ -48,7 +49,7 @@ class GalleryInstallationFragment : BaseBottomSheetComposeFragment() {
     @Inject
     lateinit var factory: GalleryInstallationViewModelFactory
     private val vm by viewModels<GalleryInstallationViewModel> { factory }
-    private lateinit var navController: NavHostController
+    private lateinit var currentNavController: NavHostController
 
     @OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalMaterial3Api::class)
     override fun onCreateView(
@@ -61,10 +62,10 @@ class GalleryInstallationFragment : BaseBottomSheetComposeFragment() {
             setContent {
                 MaterialTheme {
                     val bottomSheetNavigator = rememberBottomSheetNavigator()
-                    navController = rememberNavController(bottomSheetNavigator)
+                    currentNavController = rememberNavController(bottomSheetNavigator)
                     val errorText = remember { mutableStateOf(NO_VALUE) }
                     val isErrorDialogVisible = remember { mutableStateOf(false) }
-                    SetupNavigation(bottomSheetNavigator, navController)
+                    SetupNavigation(bottomSheetNavigator, currentNavController)
                     LaunchedEffect(key1 = Unit) {
                         vm.errorState.collect { error ->
                             if (!error.isNullOrBlank()) {
@@ -77,14 +78,8 @@ class GalleryInstallationFragment : BaseBottomSheetComposeFragment() {
                         BaseAlertDialog(
                             dialogText = errorText.value,
                             buttonText = stringResource(id = R.string.alert_qr_camera_ok),
-                            onButtonClick = {
-                                isErrorDialogVisible.value = false
-                                errorText.value = NO_VALUE
-                            },
-                            onDismissRequest = {
-                                isErrorDialogVisible.value = false
-                                errorText.value = NO_VALUE
-                            }
+                            onButtonClick = vm::onDismiss,
+                            onDismissRequest = vm::onDismiss
                         )
                     }
                 }
@@ -97,14 +92,16 @@ class GalleryInstallationFragment : BaseBottomSheetComposeFragment() {
         jobs += subscribe(vm.command) { command ->
             Timber.d("GalleryInstallationFragment command: $command")
             when (command) {
-                GalleryInstallationNavigation.Main -> navController.navigate(
+                GalleryInstallationNavigation.Main -> currentNavController.navigate(
                     GalleryInstallationNavigation.Main.route
                 )
-                GalleryInstallationNavigation.Spaces -> navController.navigate(
+                GalleryInstallationNavigation.Spaces -> currentNavController.navigate(
                     GalleryInstallationNavigation.Spaces.route
                 )
-                GalleryInstallationNavigation.Dismiss -> navController.popBackStack()
-                GalleryInstallationNavigation.Exit -> dismiss()
+                GalleryInstallationNavigation.CloseSpaces -> currentNavController.popBackStack()
+                GalleryInstallationNavigation.Dismiss -> {
+                    findNavController().popBackStack()
+                }
                 else -> {}
             }
         }
@@ -153,7 +150,7 @@ class GalleryInstallationFragment : BaseBottomSheetComposeFragment() {
             state = vm.spacesViewState.collectAsStateWithLifecycle().value,
             onNewSpaceClick = vm::onNewSpaceClick,
             onSpaceClick = vm::onSpaceClick,
-            onDismiss = vm::onDismiss
+            onDismiss = vm::onCloseSpaces
         )
     }
 

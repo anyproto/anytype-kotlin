@@ -48,7 +48,7 @@
     <string name="about_meta_info_for_copy">Gerät: %1$s\nAndroid Version: %2$d\nApp Version: %3$s\nBuild Nummer: %4$d\nLibrary Version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nGeräte\u00A0ID:\u00A0%7$s\nAnalyse\u00A0ID:\u00A0%8$s</string>
     <string name="space">Space</string>
     <string name="space_name">Space-Name</string>
-    <string name="personal_space">Einstellungen</string>
+    <string name="default_space">Default space</string>
     <string name="space_settings_apply_random_gradient">Zufälligen Farbverlauf anwenden</string>
     <string name="delete_space">Space löschen</string>
     <string name="you_can_store">Du kannst bis zu %1$s deiner Dateien auf unserem verschlüsselten und kostenlosen Backup-Knoten speichern. Wenn das Limit erreicht wurde, werden Dateien nur noch lokal gespeichert.</string>
@@ -806,7 +806,7 @@
     <string name="go_to_the_app">Zur App gehen</string>
     <string name="exiting_please_wait">Beenden... bitte warten</string>
     <string name="loading_please_wait">Wird geladen... bitte warten</string>
-    <string name="personal">Persönlich</string>
+    <string name="personal">Standard</string>
     <string name="create_space">Space erstellen</string>
     <string name="generic_error">Etwas ist schiefgelaufen. Bitte versuche es erneut.</string>
     <string name="type">Typ</string>
@@ -824,7 +824,7 @@
     <string name="anytype_update_alert_description">Einige deiner Daten wurden in einer neueren Version von Anytype verwaltet. Bitte aktualisiere die App, um mit allen Dokumenten und neuesten Funktionen zu arbeiten.</string>
     <string name="anytype_update_alert_title">Es ist Zeit für ein Update</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
-    <string name="space_type_personal">Persönlich</string>
+    <string name="space_type_default">Standard</string>
     <string name="space_type_private">Privat</string>
     <string name="space_type_private_space">Private space</string>
     <string name="space_type_shared">Geteilt</string>
@@ -990,8 +990,6 @@
     <string name="onboarding_soul_creation_description">So wirst du in der App erscheinen</string>
     <string name="onboarding_soul_creation_placeholder">Anytype-Identität</string>
     <string name="onboarding_soul_creation">Identität wird erstellt...</string>
-    <string name="onboarding_soul_space_creation">Persönlicher Space wird eingerichtet...</string>
-    <string name="onboarding_soul_creation_personal_space">Einstellungen</string>
     <string name="onboarding_type_recovery_phrase">Geben Sie Ihre Wiederherstellungsphrase ein</string>
     <string name="onboarding_login_or">ODER</string>
     <string name="onboarding_entering_void_title">Leere betreten</string>
@@ -1166,7 +1164,7 @@
     <string name="payments_card_text_3">Digitale Unabhängigkeit unterstützen</string>
     <string name="payments_card_description_3">Mit deinem Beitrag unterstützt du unser unabhängiges Team und befürwortest unsere Vision︎ eines nutzergeführten, sicheren und gemeinschaftlichen digitalen Netzwerks.</string>
     <string name="payments_card_text_4">In Konnektivität investieren</string>
-    <string name="payments_card_description_4">Our network\'s value exceeds the sum of its parts. Your membership sustains the infrastructure for its growth which underpins this network.</string>
+    <string name="payments_card_description_4">Der Wert unseres Netzwerks ist größer als die Summe seiner Teile. Durch deine Mitgliedschaft wird die Infrastruktur für sein Wachstum aufrechterhalten, die dieses Netzwerk trägt.</string>
     <string name="payments_tier_explorer">Entdecker</string>
     <string name="payments_tier_explorer_description">Tauche in das Netzwerk ein und genieße den Nervenkitzel der persönlichen Zusammenarbeit</string>
     <string name="payments_tier_builder">Erbauer</string>
@@ -1185,7 +1183,7 @@
     <string name="payments_current_label">Aktuell</string>
     <!-- Tier details -->
     <string name="payments_tier_details_name_title">Wähle deinen einzigartigen Namen</string>
-    <string name="payments_tier_details_name_subtitle">This is your unique name on the Anytype network, confirming your Membership. It acts as your personal domain and cannot be changed.</string>
+    <string name="payments_tier_details_name_subtitle">Dies ist dein eindeutiger Name im Anytype-Netzwerk, der deine Mitgliedschaft bestätigt. Er dient als deine persönliche Domain und kann nicht geändert werden.</string>
     <string name="payments_tier_details_name_hint">Myself</string>
     <string name="payments_tier_details_name_domain">.any</string>
     <string name="payments_tier_details_name_min">Mindestens 7 Zeichen</string>
@@ -1223,17 +1221,31 @@
     <string name="payments_tier_current_valid">Gültig bis</string>
     <string name="payments_tier_current_paid_by">Mit Karte bezahlt</string>
     <string name="payments_tier_current_button">Zahlung verwalten</string>
-    <string name="payments_tier_current_change_email_button">Change e-mail</string>
+    <string name="payments_tier_current_change_email_button">E-Mail-Adresse ändern</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Gib den an deine E-Mail-Adresse gesendeten Code ein</string>
     <string name="payments_code_resend">Erneut senden</string>
     <string name="payments_code_resend_in">Erneut senden in %1$n Sek.</string>
     <!-- Payments Welcome -->
     <string name="payments_welcome_title">Willkommen im Netzwerk,\n%1$s</string>
-    <string name="payments_welcome_subtitle">Ein Hoch auf deine Neugierde!</string>
+    <string name="payments_welcome_subtitle">Big cheers for your curiosity!</string>
     <string name="payments_welcome_button">Fortfahren</string>
+    <!-- Notifications -->
+    <string name="notifications_alert_error_unknown">Es ist ein unbekannter Fehler aufgetreten. Bitte versuche es später noch einmal.</string>
+    <string name="notifications_alert_error_bad_input">Ungültige Eingabe erkannt. Bitte überprüfe deine Daten und versuche es erneut.</string>
+    <string name="notifications_alert_error_internal">Es ist ein interner Fehler aufgetreten. Unser Team wurde benachrichtigt.</string>
+    <string name="notifications_alert_error_no_objects_to_import">Keine Objekte zum Importieren gefunden. Bitte wähle gültige Objekte für den Import aus.</string>
+    <string name="notifications_alert_error_import_canceled">Der Importvorgang wurde vom Benutzer abgebrochen.</string>
+    <string name="notifications_alert_error_limit_exceeded">Das Importlimit für Zeilen oder Beziehungen wurde überschritten. Bitte reduziere die Anzahl und versuche es erneut.</string>
+    <string name="notifications_alert_error_file_load">Es ist ein Fehler beim Laden der Datei aufgetreten. Bitte überprüfe die Datei und versuche es erneut.</string>
+    <string name="notifications_alert_error_insufficient_permissions">Du hast nicht die notwendigen Berechtigungen zum Durchführen dieser Aktion. Bitte überprüfe deine Berechtigungen und versuche es erneut.</string>
     <!-- Gallery Experience -->
     <string name="gallery_experience_made">Erstellt von</string>
     <string name="gallery_experience_install">Installieren</string>
     <string name="gallery_experience_install_new">In neuen Space installieren</string>
+    <string name="gallery_experience_alert_title_success">Experience was installed</string>
+    <string name="gallery_experience_alert_subtitle_success">\"%1$s\" was installed to a new space. You can now open and start using it.</string>
+    <string name="gallery_experience_alert_title_error">Hoppla!</string>
+    <string name="gallery_experience_alert_button_space">Open space</string>
+    <string name="gallery_experience_alert_button_error">Schließen</string>
 </resources>

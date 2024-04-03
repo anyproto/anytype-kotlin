@@ -28,6 +28,7 @@ import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
 import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
 import com.anytypeio.anytype.presentation.splash.SplashViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -86,7 +87,7 @@ class MainViewModel(
             }
         }
         viewModelScope.launch {
-            notificationsProvider.observe().collect { notifications ->
+            notificationsProvider.events.collect { notifications ->
                 notifications.forEach { event ->
                     handleNotification(event)
                 }
@@ -97,6 +98,7 @@ class MainViewModel(
     private suspend fun handleNotification(event: Notification.Event) {
         val payload = event.notification?.payload
         if (payload is NotificationPayload.GalleryImport) {
+            delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
             commands.emit(Command.Notifications)
         }
     }
@@ -249,5 +251,9 @@ class MainViewModel(
             data class Files(val uris: List<String>): Sharing()
         }
         object Notifications : Command()
+    }
+
+    companion object {
+        const val DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN = 200L
     }
 }

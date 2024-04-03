@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_utils.ext.hasSpan
 import com.anytypeio.anytype.presentation.relations.toName
 import com.anytypeio.anytype.presentation.sets.filter.FilterViewModel
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
+import timber.log.Timber
 
 class FilterHelper {
     fun handleOpenNumberPicker(
@@ -18,13 +19,16 @@ class FilterHelper {
         fragment.arguments?.apply {
             putSerializable(KEY_OPTION, command.option)
         }
-
-        RelationTextValueFragment.new(
-            ctx = ctx,
-            space = space,
-            name = command.option.toName(),
-            value = command.value
-        ).show(fragment.childFragmentManager, null)
+        runCatching {
+            RelationTextValueFragment.new(
+                ctx = ctx,
+                space = space,
+                name = command.option.toName(),
+                value = command.value
+            ).show(fragment.childFragmentManager, null)
+        }.onFailure {
+            Timber.e(it, "Error while navigation")
+        }
     }
 
     fun handleNumberValueChanged(

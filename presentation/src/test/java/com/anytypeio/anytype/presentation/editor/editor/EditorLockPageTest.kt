@@ -50,9 +50,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        stubGetNetworkMode()
-        stubSpaceManager()
-        stubFileLimitEvents()
+        proceedWithDefaultBeforeTestStubbing()
     }
 
     @Test
@@ -651,6 +649,8 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
         vm.onClickListener(ListenerType.File.View(fileBlockId))
 
         // checking open-by-default-app command
+
+        coroutineTestRule.advanceUntilIdle()
 
         testObserver.assertValue { value ->
             value is EventWrapper && value.peekContent() == Command.OpenFileByDefaultApp(

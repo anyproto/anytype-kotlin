@@ -43,7 +43,7 @@ class GalleryInstallationViewModel(
     val mainState = MutableStateFlow<GalleryInstallationState>(GalleryInstallationState.Loading)
     val spacesViewState =
         MutableStateFlow(GalleryInstallationSpacesState(emptyList(), false))
-    val command = MutableStateFlow<GalleryInstallationNavigation?>(null)
+    val command = MutableSharedFlow<GalleryInstallationNavigation>(replay = 0)
     val errorState = MutableSharedFlow<String?>(replay = 0)
 
     private val MAX_SPACES = 10
@@ -86,7 +86,7 @@ class GalleryInstallationViewModel(
                         },
                         isNewButtonVisible = filteredSpaces.size < MAX_SPACES
                     )
-                    command.value = GalleryInstallationNavigation.Spaces
+                    command.emit(GalleryInstallationNavigation.Spaces)
                 },
                 onFailure = { error ->
                     Timber.e(error, "GetSpaceViews failed")
@@ -97,18 +97,18 @@ class GalleryInstallationViewModel(
     }
 
     fun onNewSpaceClick() {
-        val state = (mainState.value as? GalleryInstallationState.Success) ?: return
-        subscribeToEventProcessChannel()
-        command.value = GalleryInstallationNavigation.Dismiss
-        val manifestInfo = state.info
-        mainState.value = state.copy(isLoading = true)
-        val params = CreateSpace.Params(
-            details = mapOf(
-                Relations.NAME to manifestInfo.title,
-                Relations.ICON_OPTION to spaceGradientProvider.randomId().toDouble()
-            )
-        )
+        Timber.d("onNewSpaceClick")
         viewModelScope.launch {
+            command.emit(GalleryInstallationNavigation.CloseSpaces)
+            val state = (mainState.value as? GalleryInstallationState.Success) ?: return@launch
+            val manifestInfo = state.info
+            mainState.value = state.copy(isLoading = true)
+            val params = CreateSpace.Params(
+                details = mapOf(
+                    Relations.NAME to manifestInfo.title,
+                    Relations.ICON_OPTION to spaceGradientProvider.randomId().toDouble()
+                )
+            )
             createSpace.async(params).fold(
                 onSuccess = { space ->
                     Timber.d("CreateSpace success, space: $space")
@@ -116,7 +116,6 @@ class GalleryInstallationViewModel(
                         spaceId = SpaceId(space),
                         isNewSpace = true,
                         manifestInfo = manifestInfo,
-                        state = state
                     )
                 },
                 onFailure = { error ->
@@ -129,30 +128,39 @@ class GalleryInstallationViewModel(
     }
 
     fun onSpaceClick(space: GallerySpaceView) {
-        val state = (mainState.value as? GalleryInstallationState.Success) ?: return
-        subscribeToEventProcessChannel()
         Timber.d("onSpaceClick, space: $space")
-        command.value = GalleryInstallationNavigation.Dismiss
-        mainState.value = state.copy(isLoading = true)
-        val spaceId = space.obj.targetSpaceId
-        if (spaceId == null) {
-            Timber.e("onSpaceClick, spaceId is null")
-            return
+        viewModelScope.launch {
+            command.emit(GalleryInstallationNavigation.CloseSpaces)
+            val state = (mainState.value as? GalleryInstallationState.Success) ?: return@launch
+            mainState.value = state.copy(isLoading = true)
+            val spaceId = space.obj.targetSpaceId
+            if (spaceId == null) {
+                Timber.e("onSpaceClick, spaceId is null")
+                return@launch
+            }
+            proceedWithInstallation(
+                spaceId = SpaceId(spaceId),
+                isNewSpace = false,
+                manifestInfo = state.info,
+            )
         }
-        proceedWithInstallation(
-            spaceId = SpaceId(spaceId),
-            isNewSpace = false,
-            manifestInfo = state.info,
-            state = state
-        )
     }
 
     fun onDismiss() {
-        command.value = GalleryInstallationNavigation.Dismiss
+        Timber.d("onDismiss")
+        viewModelScope.launch {
+            command.emit(GalleryInstallationNavigation.Dismiss)
+        }
     }
 
-    private fun proceedWithInstallation(
-        state: GalleryInstallationState.Success,
+    fun onCloseSpaces() {
+        Timber.d("onCloseSpaces")
+        viewModelScope.launch {
+            command.emit(GalleryInstallationNavigation.CloseSpaces)
+        }
+    }
+
+    private suspend fun proceedWithInstallation(
         spaceId: SpaceId,
         isNewSpace: Boolean,
         manifestInfo: ManifestInfo
@@ -163,18 +171,16 @@ class GalleryInstallationViewModel(
             title = manifestInfo.title,
             isNewSpace = isNewSpace
         )
-        viewModelScope.launch {
-            importExperience.async(params).fold(
-                onSuccess = {
-                    Timber.d("ObjectImportExperience success")
-                    command.value = GalleryInstallationNavigation.Success
-                    mainState.value = state.copy(isLoading = false)
+        importExperience.stream(params).collect { result ->
+            result.fold(
+                onLoading = {
+                    //We immediately close the screen after sending the importExperience command,
+                    // as either an error or success will be returned in the form of
+                    // a Notification Event, which should be handled in the MainViewModel.
+                    command.emit(GalleryInstallationNavigation.Dismiss)
                 },
-                onFailure = { error ->
-                    Timber.e(error, "ObjectImportExperience failed")
-                    mainState.value = state.copy(isLoading = false)
-                    errorState.emit("Import experience error: ${error.message}")
-                }
+                onSuccess = { Timber.d("ObjectImportExperience success") },
+                onFailure = { error -> Timber.e(error, "ObjectImportExperience failed") }
             )
         }
     }
@@ -184,7 +190,7 @@ class GalleryInstallationViewModel(
             eventProcessChannel.observe().collect { events ->
                 Timber.d("EventProcessChannel events: $events")
                 if (events.any { it is Process.Event.Done && it.process?.type == Process.Type.IMPORT }) {
-                    command.value = GalleryInstallationNavigation.Exit
+                    command.emit(GalleryInstallationNavigation.Dismiss)
                 }
             }
         }

@@ -53,9 +53,7 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        stubSpaceManager()
-        stubGetNetworkMode()
-        stubFileLimitEvents()
+        proceedWithDefaultBeforeTestStubbing()
     }
 
     @After
@@ -396,6 +394,8 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
         stubCreateBlock(root = root)
         stubSearchObjects()
         stubCopy()
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
         stubOpenDocument(
             document = doc,
             details = customDetails

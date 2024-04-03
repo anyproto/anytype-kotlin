@@ -266,8 +266,10 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -275,6 +277,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.skip
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import com.anytypeio.anytype.presentation.editor.Editor.Mode as EditorMode
@@ -407,7 +410,10 @@ class EditorViewModel(
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
     override val commands = MutableLiveData<EventWrapper<Command>>()
 
+    val permission = MutableStateFlow(permissions.get(params.space))
+
     init {
+        proceedWithObservingPermissions()
         proceedWithObservingProfileIcon()
         startHandlingTextChanges()
         startProcessingFocusChanges()
@@ -438,6 +444,16 @@ class EditorViewModel(
                     )
                 }
             }
+        }
+    }
+
+    private fun proceedWithObservingPermissions() {
+        viewModelScope.launch {
+            permissions
+                .observe(space = params.space)
+                .collect {
+                    permission.value = it
+                }
         }
     }
 
@@ -627,8 +643,7 @@ class EditorViewModel(
                 orchestrator.stores.textSelection
                     .stream()
                     .distinctUntilChanged()
-            )
-            { a, b -> Pair(a, b) }
+            ) { a, b -> a to b }
             .onEach { (action, textSelection) ->
                 val range = textSelection.selection
                 if (textSelection.isNotEmpty && range != null && range.first != range.last) {
@@ -707,7 +722,7 @@ class EditorViewModel(
 
         proceedWithUpdatingText(
             intent = Intent.Text.UpdateText(
-                context = context,
+                context = params.ctx,
                 target = new.id,
                 text = new.content<Content.Text>().text,
                 marks = new.content<Content.Text>().marks
@@ -747,6 +762,7 @@ class EditorViewModel(
                 orchestrator.stores.focus.stream(),
                 orchestrator.stores.details.stream()
             ) { models, focus, details ->
+                val permission = permission.value
                 val root = models.first { it.id == context }
                 if (mode == EditorMode.Locked) {
                     if (root.fields.isLocked != true) {
@@ -759,6 +775,13 @@ class EditorViewModel(
                         sendToast("Your object is locked")
                     }
                 }
+                if (permission?.isOwnerOrEditor() == true) {
+                    // TODO
+                } else {
+                    if (mode == EditorMode.Edit)
+                        mode = EditorMode.Read
+                }
+
                 footers.value = getFooterState(root, details)
                 val flags = mutableListOf<BlockViewRenderer.RenderFlag>()
                 Timber.d("Rendering starting...")
@@ -1719,7 +1742,7 @@ class EditorViewModel(
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.CRUD.Create(
-                    context = context,
+                    context = params.ctx,
                     target = target,
                     position = position,
                     prototype = Prototype.Text(style = style)
@@ -4337,7 +4360,7 @@ class EditorViewModel(
         isPopUpToDashboard: Boolean = false
     ) {
         viewModelScope.launch {
-            closePage.async(context).fold(
+            closePage.async(params.ctx).fold(
                 onFailure = {
                     Timber.e(it, "Error while closing object")
                     navigate(
@@ -4604,10 +4627,7 @@ class EditorViewModel(
 
     fun onStop() {
         Timber.d("onStop, ")
-        jobs.apply {
-            forEach { it.cancel() }
-            clear()
-        }
+        jobs.cancel()
         if (copyFileToCache.isActive()) {
             copyFileToCache.cancel()
         }
@@ -7239,6 +7259,7 @@ class EditorViewModel(
 
     private fun proceedWithCheckingInternalFlagShouldSelectType(flags: List<InternalFlags>) {
         val containsFlag = flags.any { it == InternalFlags.ShouldSelectType }
+        val isUserEditor = permission.value?.isOwnerOrEditor() == true
         when {
             isTypesWidgetVisible -> {
                 if (!containsFlag) {
@@ -7247,7 +7268,7 @@ class EditorViewModel(
             }
             containsFlag -> {
                 val restrictions = orchestrator.stores.objectRestrictions.current()
-                if (restrictions.none { it == ObjectRestriction.TYPE_CHANGE }) {
+                if (restrictions.none { it == ObjectRestriction.TYPE_CHANGE } && isUserEditor) {
                     setTypesWidgetVisibility(true)
                 }
             }
@@ -7255,7 +7276,8 @@ class EditorViewModel(
     }
 
     private fun proceedWithCheckingInternalFlagShouldSelectTemplate(flags: List<InternalFlags>) {
-        if (flags.contains(InternalFlags.ShouldSelectTemplate)) {
+        val isUserEditor = permission.value?.isOwnerOrEditor() == true
+        if (flags.contains(InternalFlags.ShouldSelectTemplate) && isUserEditor) {
             Timber.d("Object has internal flag: ShouldSelectTemplate. Show templates toolbar")
             proceedWithShowTemplatesToolbar()
         } else {

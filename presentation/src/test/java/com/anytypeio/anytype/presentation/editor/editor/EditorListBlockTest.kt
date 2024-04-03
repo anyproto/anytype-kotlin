@@ -47,9 +47,9 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        stubSpaceManager()
-        stubGetNetworkMode()
-        stubFileLimitEvents()
+        proceedWithDefaultBeforeTestStubbing()
+        stubInterceptThreadStatus()
+        stubInterceptEvents()
     }
 
     @Test
@@ -106,6 +106,8 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
             text = txt,
             marks = emptyList()
         )
+
+        coroutineTestRule.advanceUntilIdle()
 
         verifyBlocking(splitBlock, times(1)) {
             invoke(
@@ -176,6 +178,8 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
             marks = emptyList()
         )
 
+        coroutineTestRule.advanceUntilIdle()
+
         verifyBlocking(splitBlock, times(1)) {
             invoke(
                 params = SplitBlock.Params(
@@ -245,6 +249,8 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
             marks = emptyList()
         )
 
+        coroutineTestRule.advanceUntilIdle()
+
         verifyBlocking(splitBlock, times(1)) {
             invoke(
                 params = SplitBlock.Params(
@@ -309,6 +315,8 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
             text = target.content<Block.Content.Text>().text,
             marks = emptyList()
         )
+
+        coroutineTestRule.advanceUntilIdle()
 
         verifyBlocking(splitBlock, times(1)) {
             invoke(
@@ -448,6 +456,8 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
             )
         )
 
+        coroutineTestRule.advanceUntilIdle()
+
         vm.state.test().assertValue(after)
     }
 
@@ -573,6 +583,8 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
                 )
             )
         )
+
+        coroutineTestRule.advanceUntilIdle()
 
         vm.state.test().assertValue(after)
     }
@@ -721,6 +733,8 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
             )
         )
 
+        coroutineTestRule.advanceUntilIdle()
+
         vm.state.test().assertValue(after)
     }
 
@@ -847,6 +861,8 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
                 )
             )
         )
+
+        coroutineTestRule.advanceUntilIdle()
 
         vm.state.test().assertValue(after)
     }

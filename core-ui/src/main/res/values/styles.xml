@@ -291,7 +291,7 @@
 
     <style name="BlockImageErrorTextStyle" parent="TextView.UXStyle.Captions.2.Regular">
         <item name="android:layout_gravity">center</item>
-        <item name="android:textColor">@color/palette_system_red</item>
+        <item name="android:textColor">@color/text_tertiary</item>
     </style>
 
     <style name="GreyProgressBar" parent="ThemeOverlay.AppCompat.Light">

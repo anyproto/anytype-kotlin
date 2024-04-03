@@ -18,6 +18,7 @@ import com.anytypeio.anytype.core_models.StubParagraph
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.ext.parseThemeTextColor
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
@@ -413,6 +414,7 @@ open class EditorViewModelTest {
         stubNetworkMode()
         stubObserveEvents()
         stubInterceptEvents()
+        stubUserPermission()
         spaceManager.stub {
             onBlocking {
                 get()
@@ -546,7 +548,7 @@ open class EditorViewModelTest {
     }
 
     @Test
-    fun `should emit an approprtiate navigation command when the page is closed`() {
+    fun `should emit an appropriate navigation command when the page is closed`() {
         stubInterceptEvents()
         stubClosePage()
         givenViewModel()
@@ -888,7 +890,6 @@ open class EditorViewModelTest {
     @Test
     fun `should apply two different markup actions`() {
 
-        val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
 
         val paragraph = Block(
@@ -944,7 +945,6 @@ open class EditorViewModelTest {
         coroutineTestRule.advanceTime(100)
 
         val firstTimeRange = 0..3
-        val firstTimeMarkup = StylingEvent.Markup.Bold
 
         vm.onBlockFocusChanged(
             hasFocus = true,
@@ -992,7 +992,6 @@ open class EditorViewModelTest {
         }
 
         val secondTimeRange = 0..5
-        val secondTimeMarkup = StylingEvent.Markup.Italic
 
         vm.onSelectionChanged(
             id = paragraph.id,
@@ -1033,6 +1032,8 @@ open class EditorViewModelTest {
             )
         )
 
+        coroutineTestRule.advanceUntilIdle()
+
         vm.state.test().apply {
             assertHasValue()
             assertValue(secondTimeExpected)
@@ -1042,7 +1043,6 @@ open class EditorViewModelTest {
     @Test
     fun `should apply two markup actions of the same markup type`() {
 
-        val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
 
         val paragraph = Block(
@@ -1087,6 +1087,7 @@ open class EditorViewModelTest {
 
         stubObserveEvents(events)
         stubOpenPage()
+        stubUserPermission()
         givenViewModel(builder)
 
         vm.onStart(id = root, space = defaultSpace)
@@ -1094,7 +1095,6 @@ open class EditorViewModelTest {
         coroutineTestRule.advanceTime(100)
 
         val firstTimeRange = 0..3
-        val firstTimeMarkup = StylingEvent.Markup.Bold
 
         vm.onBlockFocusChanged(
             hasFocus = true,
@@ -1149,7 +1149,6 @@ open class EditorViewModelTest {
         )
 
         val secondTimeRange = 0..5
-        val secondTimeMarkup = StylingEvent.Markup.Bold
 
         vm.onSelectionChanged(
             id = paragraph.id,
@@ -1186,6 +1185,8 @@ open class EditorViewModelTest {
             )
         )
 
+        coroutineTestRule.advanceUntilIdle()
+
         vm.state.test().apply {
             assertHasValue()
             assertValue(secondTimeExpected)
@@ -1193,9 +1194,8 @@ open class EditorViewModelTest {
     }
 
     @Test
-    fun `should dispatch texts changes and markup even if only markup is changed`() {
+    fun `should dispatch texts changes and markup even if only markup is changed`() = runTest {
 
-        val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
 
         val paragraph = StubParagraph(
@@ -1241,7 +1241,6 @@ open class EditorViewModelTest {
         coroutineTestRule.advanceTime(100)
 
         val range = 0..3
-        val markup = StylingEvent.Markup.Bold
 
         vm.onBlockFocusChanged(
             hasFocus = true,
@@ -1262,18 +1261,16 @@ open class EditorViewModelTest {
             )
         )
 
-        runBlockingTest {
-            verify(updateText, times(1)).invoke(
-                params = eq(
-                    UpdateText.Params(
-                        target = paragraph.id,
-                        marks = marks,
-                        context = page.id,
-                        text = paragraph.content.asText().text
-                    )
+        verify(updateText, times(1)).invoke(
+            params = eq(
+                UpdateText.Params(
+                    target = paragraph.id,
+                    marks = marks,
+                    context = page.id,
+                    text = paragraph.content.asText().text
                 )
             )
-        }
+        )
     }
 
     @Test
@@ -2070,9 +2067,8 @@ open class EditorViewModelTest {
     }
 
     @Test
-    fun `should proceed with creating a new block on end-line-enter-press event`() {
+    fun `should proceed with creating a new block on end-line-enter-press event`() = runTest {
 
-        val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
 
         val page = listOf(
@@ -2124,18 +2120,16 @@ open class EditorViewModelTest {
             text = page.last().content<Block.Content.Text>().text
         )
 
-        runBlockingTest {
-            verify(createBlock, times(1)).async(
-                params = eq(
-                    CreateBlock.Params(
-                        context = root,
-                        target = child,
-                        position = Position.BOTTOM,
-                        prototype = Block.Prototype.Text(style = Block.Content.Text.Style.P)
-                    )
+        verify(createBlock, times(1)).async(
+            params = eq(
+                CreateBlock.Params(
+                    context = root,
+                    target = child,
+                    position = Position.BOTTOM,
+                    prototype = Block.Prototype.Text(style = Block.Content.Text.Style.P)
                 )
             )
-        }
+        )
     }
 
     @Test
@@ -2196,10 +2190,9 @@ open class EditorViewModelTest {
     }
 
     @Test
-    fun `should start creating a new paragraph on endline-enter-pressed event inside a quote block`() {
+    fun `should start creating a new paragraph on endline-enter-pressed event inside a quote block`() = runTest {
 
         val style = Block.Content.Text.Style.QUOTE
-        val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
 
         val page = listOf(
@@ -2237,8 +2230,9 @@ open class EditorViewModelTest {
         }
 
         stubObserveEvents(flow)
-        stubOpenPage()
+        stubOpenPage(context = root)
         stubCreateBlock(root)
+        stubUnlinkBlocks(root)
         givenViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
@@ -2256,20 +2250,18 @@ open class EditorViewModelTest {
             marks = emptyList()
         )
 
-        runBlockingTest {
-            verify(createBlock, times(1)).async(
-                params = eq(
-                    CreateBlock.Params(
-                        context = root,
-                        target = child,
-                        prototype = Block.Prototype.Text(
-                            style = Block.Content.Text.Style.P
-                        ),
-                        position = Position.BOTTOM
-                    )
+        verify(createBlock, times(1)).async(
+            params = eq(
+                CreateBlock.Params(
+                    context = root,
+                    target = child,
+                    prototype = Block.Prototype.Text(
+                        style = Block.Content.Text.Style.P
+                    ),
+                    position = Position.BOTTOM
                 )
             )
-        }
+        )
     }
 
     @Test
@@ -3120,7 +3112,7 @@ open class EditorViewModelTest {
         coroutineTestRule.advanceTime(200)
     }
 
-    private fun stubDuplicateBlock(newBlockId: String, root: String) {
+    fun stubDuplicateBlock(newBlockId: String, root: String) {
         duplicateBlock.stub {
             onBlocking { invoke(any()) } doReturn Either.Right(
                 Pair(
@@ -3692,7 +3684,7 @@ open class EditorViewModelTest {
     }
 
     fun stubOpenPage(
-        context: Id = MockDataFactory.randomString(),
+        context: Id = root,
         events: List<Event> = emptyList()
     ) {
         openPage.stub {
@@ -4181,8 +4173,6 @@ open class EditorViewModelTest {
     fun `should be zero selected blocks after done click`() {
         // SETUP
 
-        val root = MockDataFactory.randomUuid()
-
         val paragraphs = listOf(StubParagraph(), StubParagraph(), StubParagraph())
 
         val page = listOf(
@@ -4396,5 +4386,16 @@ open class EditorViewModelTest {
         verifyNoMoreInteractions(updateText)
 
         coroutineTestRule.advanceTime(200)
+    }
+
+    fun stubUserPermission(
+        space: SpaceId = SpaceId(defaultSpace),
+        permission: SpaceMemberPermissions = SpaceMemberPermissions.OWNER
+    ) {
+        permissions.stub {
+            on {
+                observe(space = space)
+            } doReturn flowOf(permission)
+        }
     }
 }

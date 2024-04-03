@@ -54,6 +54,7 @@ class EditorTitleTest : EditorPresentationTestSetup() {
         MockitoAnnotations.openMocks(this)
         stubSpaceManager()
         stubGetNetworkMode()
+        stubUserPermission()
         stubInterceptEvents()
         stubFileLimitEvents()
         stubCopy()

@@ -3111,7 +3111,7 @@ open class EditorViewModelTest {
         coroutineTestRule.advanceTime(200)
     }
 
-    private fun stubDuplicateBlock(newBlockId: String, root: String) {
+    fun stubDuplicateBlock(newBlockId: String, root: String) {
         duplicateBlock.stub {
             onBlocking { invoke(any()) } doReturn Either.Right(
                 Pair(

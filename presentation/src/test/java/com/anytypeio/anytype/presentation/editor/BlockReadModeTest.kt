@@ -342,6 +342,10 @@ class BlockReadModeTest : EditorViewModelTest() {
         stubObserveEvents(flow)
         stubOpenPage()
         givenViewModel()
+        stubDuplicateBlock(
+            newBlockId = MockDataFactory.randomUuid(),
+            root = root
+        )
 
         vm.onStart(id = root, space = defaultSpace)
 

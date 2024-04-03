@@ -48,7 +48,7 @@
     <string name="about_meta_info_for_copy">Dispositivo: %1$s\nVersão do Android: %2$d\nVersão do aplicativo: %3$s\nCompilação: %4$d\nVersão da biblioteca: %5$s\nConta\u00A0ID:\u00A0%6$s\nDispositivo\u00A0ID:\u00A0%7$s\nAnálise de Dados\u00A0ID:\u00A0%8$s</string>
     <string name="space">Espaço</string>
     <string name="space_name">Nome do espaço</string>
-    <string name="personal_space">Configurações</string>
+    <string name="default_space">Configurações</string>
     <string name="space_settings_apply_random_gradient">Aplicar gradiente aleatório</string>
     <string name="delete_space">Excluir Espaço</string>
     <string name="you_can_store">Você pode armazenar até %1$s de seus arquivos em nosso nó de backup criptografado gratuitamente. Se você atingir o limite, os arquivos serão armazenados apenas localmente.</string>
@@ -990,8 +990,6 @@
     <string name="onboarding_soul_creation_description">Você aparecerá assim no app</string>
     <string name="onboarding_soul_creation_placeholder">Identidade Anytype</string>
     <string name="onboarding_soul_creation">Criando a sua Identidade…</string>
-    <string name="onboarding_soul_space_creation">Configurando seu Espaço Pessoal…</string>
-    <string name="onboarding_soul_creation_personal_space">Configurações</string>
     <string name="onboarding_type_recovery_phrase">Digite sua frase de recuperação</string>
     <string name="onboarding_login_or">OU</string>
     <string name="onboarding_entering_void_title">Entrando no vazio</string>

@@ -48,7 +48,7 @@
     <string name="about_meta_info_for_copy">Apparaat: %1$s\nAndroid versie: %2$d\nApp versie: %3$s\nBuild nummer: %4$d\nbibliotheek versie: %5$s\nAccount:\u00A0ID:\u00A0%6$s\nApparaat\u00A0ID:\u00A0%7$s\nAnalyse\u00A0ID:\u00A0%8$s</string>
     <string name="space">Ruimte</string>
     <string name="space_name">Naam ruimte</string>
-    <string name="personal_space">Persoonlijke ruimte</string>
+    <string name="default_space">Persoonlijke ruimte</string>
     <string name="space_settings_apply_random_gradient">Pas willekeurig verloop toe</string>
     <string name="delete_space">Verwijder ruimte</string>
     <string name="you_can_store">Je kunt maximaal %1$s van je bestanden gratis opslaan op onze versleutelde back-up node. Als de limiet is bereikt, zullen bestanden alleen lokaal worden opgeslagen.</string>
@@ -990,8 +990,6 @@
     <string name="onboarding_soul_creation_description">Dit is zoals je in de app zult verschijnen</string>
     <string name="onboarding_soul_creation_placeholder">Anytype identiteit</string>
     <string name="onboarding_soul_creation">Jouw identiteit aan het aanmaken…</string>
-    <string name="onboarding_soul_space_creation">Jouw persoonlijke ruimte aan het aanmaken...</string>
-    <string name="onboarding_soul_creation_personal_space">Persoonlijke ruimte</string>
     <string name="onboarding_type_recovery_phrase">Type je herstelzin</string>
     <string name="onboarding_login_or">OF</string>
     <string name="onboarding_entering_void_title">De Void binnengaan</string>

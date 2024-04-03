@@ -33,9 +33,9 @@ class EditorCreateBlockTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        stubSpaceManager()
-        stubGetNetworkMode()
-        stubFileLimitEvents()
+        proceedWithDefaultBeforeTestStubbing()
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
     }
 
     val title = StubTitle()
@@ -84,6 +84,8 @@ class EditorCreateBlockTest : EditorPresentationTestSetup() {
                 isBookmark = false
             )
 
+            coroutineTestRule.advanceUntilIdle()
+
             //VERIFY
             verify(createBlock, times(1)).async(
                 params = eq(
@@ -100,7 +102,5 @@ class EditorCreateBlockTest : EditorPresentationTestSetup() {
                     )
                 )
             )
-
-            coroutineTestRule.advanceTime(300L)
         }
 }

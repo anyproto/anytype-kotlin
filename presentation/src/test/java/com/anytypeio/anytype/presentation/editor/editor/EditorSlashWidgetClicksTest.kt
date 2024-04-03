@@ -36,9 +36,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        stubSpaceManager()
-        stubGetNetworkMode()
-        stubFileLimitEvents()
+        proceedWithDefaultBeforeTestStubbing()
     }
 
     /**
@@ -455,6 +453,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
         val document = listOf(page, header, title, a, b)
 
         stubInterceptEvents()
+        stubInterceptThreadStatus()
         stubOpenDocument(
             document = document,
             details = customDetails,

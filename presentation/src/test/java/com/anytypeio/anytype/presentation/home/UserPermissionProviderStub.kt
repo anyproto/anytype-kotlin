@@ -14,7 +14,9 @@ class UserPermissionProviderStub : UserPermissionProvider {
 
     override fun stop() {}
 
-    override fun get(space: SpaceId): SpaceMemberPermissions? = null
+    override fun get(space: SpaceId): SpaceMemberPermissions? {
+        return permission
+    }
 
     override fun observe(space: SpaceId): Flow<SpaceMemberPermissions?> = flowOf(permission)
     fun stubObserve(spaceId: SpaceId, permission: SpaceMemberPermissions) {

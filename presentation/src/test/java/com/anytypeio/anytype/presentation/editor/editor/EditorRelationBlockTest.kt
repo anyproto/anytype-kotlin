@@ -46,9 +46,9 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        stubSpaceManager()
-        stubGetNetworkMode()
-        stubFileLimitEvents()
+        proceedWithDefaultBeforeTestStubbing()
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
     }
 
     @Test
@@ -336,6 +336,7 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
         )
 
         stubInterceptEvents()
+        stubInterceptThreadStatus()
         stubSearchObjects()
         stubOpenDocument(
             document = doc,
@@ -392,6 +393,8 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
                 )
             )
         )
+
+        coroutineTestRule.advanceUntilIdle()
 
         assertEquals(
             expected = ViewState.Success(expected),

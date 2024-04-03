@@ -86,9 +86,9 @@ class EditorMentionTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        stubSpaceManager()
-        stubGetNetworkMode()
-        stubFileLimitEvents()
+        proceedWithDefaultBeforeTestStubbing()
+        stubInterceptThreadStatus()
+        stubInterceptEvents()
     }
 
     @Test
@@ -198,6 +198,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                 mentionTrigger = mentionTrigger
             )
         }
+
+        coroutineTestRule.advanceUntilIdle()
 
         vm.state.test().apply {
             assertValue(
@@ -311,6 +313,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
 
         stubOpenDocument(document)
         stubInterceptEvents()
+        stubInterceptThreadStatus()
         stubGetDefaultObjectType(type = ObjectTypeIds.NOTE)
 
         updateText.stub {
@@ -500,6 +503,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
 
             advanceUntilIdle()
         }
+
+        coroutineTestRule.advanceUntilIdle()
 
         vm.state.test().apply {
             assertValue(
@@ -1138,6 +1143,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                 mentionTrigger = mentionTrigger
             )
         }
+
+        coroutineTestRule.advanceUntilIdle()
 
         vm.state.test().apply {
             assertValue(

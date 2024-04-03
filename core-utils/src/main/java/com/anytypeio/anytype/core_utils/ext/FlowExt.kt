@@ -99,6 +99,49 @@ fun <A, B, C : Any?, R> Flow<A>.withLatestFrom(
     }
 }
 
+fun <A, B, C, D : Any?, R> Flow<A>.withLatestFrom(
+    first: Flow<B>,
+    second: Flow<C>,
+    third: Flow<D>,
+    transform: suspend (A, B, C, D ) -> R
+): Flow<R> = flow {
+    coroutineScope {
+        val latestB = AtomicReference<B?>()
+        val latestC = AtomicReference<C?>()
+        val latestD = AtomicReference<D?>()
+        val outerScope = this
+        launch {
+            try {
+                first.collect { latestB.set(it) }
+            } catch (e: CancellationException) {
+                outerScope.cancel(e) // cancel outer scope on cancellation exception, too
+            }
+        }
+        launch {
+            try {
+                second.collect { latestC.set(it) }
+            } catch (e: CancellationException) {
+                outerScope.cancel(e) // cancel outer scope on cancellation exception, too
+            }
+        }
+        launch {
+            try {
+                third.collect { latestD.set(it) }
+            } catch (e: CancellationException) {
+                outerScope.cancel(e) // cancel outer scope on cancellation exception, too
+            }
+        }
+        collect { a: A ->
+            val b = latestB.get()
+            val c = latestC.get()
+            val d = latestD.get()
+            if (b != null && c != null && d != null) {
+                emit(transform(a, b, c, d))
+            }
+        }
+    }
+}
+
 fun MutableList<Job>.cancel() {
     forEach { it.cancel() }
     clear()

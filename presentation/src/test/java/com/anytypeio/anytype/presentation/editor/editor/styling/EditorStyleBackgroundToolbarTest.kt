@@ -37,7 +37,7 @@ class EditorStyleBackgroundToolbarTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        stubSpaceManager()
+        proceedWithDefaultBeforeTestStubbing()
     }
 
     @After

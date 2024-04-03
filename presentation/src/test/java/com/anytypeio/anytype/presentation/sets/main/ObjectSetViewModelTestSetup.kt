@@ -64,6 +64,7 @@ import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.home.UserPermissionProviderStub
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
@@ -197,8 +198,7 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var getNetworkMode: GetNetworkMode
 
-    @Mock
-    lateinit var permissions: UserPermissionProvider
+    var permissions: UserPermissionProvider = UserPermissionProviderStub()
 
     lateinit var spaceConfig: Config
 
@@ -498,11 +498,9 @@ open class ObjectSetViewModelTestSetup {
     fun stubObservePermissions(
         permission: SpaceMemberPermissions = SpaceMemberPermissions.OWNER
     ) {
-        permissions.stub {
-            on {
-                observe(SpaceId(defaultSpace))
-            } doReturn flowOf(permission)
-        }
+        (permissions as UserPermissionProviderStub).stubObserve(
+            SpaceId(""), permission
+        )
     }
 
     fun stubObjectToCollection() {

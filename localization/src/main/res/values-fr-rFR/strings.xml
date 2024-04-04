@@ -1155,8 +1155,10 @@
     <string name="multiplayer_leave_space_warning_subtitle">This space will be removed from your devices  and you will no longer have access to it</string>
     <string name="multiplayer_generate_invite_link_description">Créer un lien d\'invitation pour partager de l\'espace et ajouter de nouveaux membres</string>
     <string name="multiplayer_generate_invite_link">Générer un lien d\'invitation</string>
+    <string name="multiplayer_show_qr_code">Afficher le QR code</string>
     <string name="multiplayer_how_to_share_space">Comment partager un espace ?</string>
     <string name="multiplayer_how_to_share_space_step_1">SVP fournir le lien à la personne avec qui vous souhaitez collaborer.</string>
+    <string name="multiplayer_how_to_share_space_qr_code">Please provide this QR code to the person you\'d like to collaborate with.</string>
     <string name="multiplayer_how_to_share_space_step_2">En cliquant le lien, une personne demande à joindre l\'espace.</string>
     <string name="multiplayer_how_to_share_space_step_3">Après l\'approbation de la demande, vous pouvez choisir les droits d\'accès pour cette personne.</string>
     <!--endregion-->

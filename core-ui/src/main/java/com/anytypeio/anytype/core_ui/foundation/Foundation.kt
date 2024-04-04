@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
@@ -359,5 +358,18 @@ fun MyOptionMembership() {
         image = R.drawable.ic_membership,
         text = "Membership",
         activeTierName = "Builder"
+    )
+}
+
+@Preview
+@Composable
+fun WarningPreview() {
+    Warning(
+        title = "Leave space",
+        subtitle = "Investors space will be removed from your devices  and you will no longer have access to it",
+        actionButtonText = "Leave space",
+        cancelButtonText = "Cancel",
+        onNegativeClick = {},
+        onPositiveClick = {}
     )
 }

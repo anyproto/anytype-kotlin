@@ -46,7 +46,7 @@ class SpaceSettingsViewModel(
     private val analytics: Analytics,
     private val setSpaceDetails: SetSpaceDetails,
     private val spaceManager: SpaceManager,
-    private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
+    private val container: StorelessSubscriptionContainer,
     private val gradientProvider: SpaceGradientProvider,
     private val urlBuilder: UrlBuilder,
     private val deleteSpace: DeleteSpace,
@@ -76,7 +76,7 @@ class SpaceSettingsViewModel(
     private fun proceedWithFetchingSpaceMetaData() {
         viewModelScope.launch {
             val config = spaceManager.getConfig(params.space)
-            storelessSubscriptionContainer.subscribe(
+            container.subscribe(
                 StoreSearchParams(
                     subscription = SPACE_SETTINGS_SUBSCRIPTION,
                     filters = buildList {
@@ -324,7 +324,7 @@ class SpaceSettingsViewModel(
     class Factory @Inject constructor(
         private val params: Params,
         private val analytics: Analytics,
-        private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
+        private val container: StorelessSubscriptionContainer,
         private val urlBuilder: UrlBuilder,
         private val setSpaceDetails: SetSpaceDetails,
         private val gradientProvider: SpaceGradientProvider,
@@ -339,7 +339,7 @@ class SpaceSettingsViewModel(
         override fun <T : ViewModel> create(
             modelClass: Class<T>
         ): T = SpaceSettingsViewModel(
-            storelessSubscriptionContainer = storelessSubscriptionContainer,
+            container = container,
             urlBuilder = urlBuilder,
             spaceManager = spaceManager,
             setSpaceDetails = setSpaceDetails,

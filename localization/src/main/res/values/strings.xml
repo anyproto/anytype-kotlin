@@ -1330,6 +1330,7 @@
     <string name="multiplayer_remove_member">Remove member</string>
     <string name="multiplayer_request_sent_toast">Request sent</string>
     <string name="multiplayer_space_stop_sharing">Stop sharing</string>
+    <string name="multiplayer_more_info">More info</string>
     <string name="multiplayer_sharing">Sharing</string>
     <string name="multiplayer_share">Share</string>
     <string name="multiplayer_manage">Manage</string>

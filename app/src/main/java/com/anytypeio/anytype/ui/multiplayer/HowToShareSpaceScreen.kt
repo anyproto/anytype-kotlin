@@ -45,7 +45,7 @@ fun HowToShareSpaceScreen() {
             color = colorResource(id = R.color.text_primary)
         )
         Spacer(modifier = Modifier.height(12.dp))
-        Row(Modifier.padding(horizontal = 16.dp)) {
+        Row(Modifier.padding(horizontal = 20.dp)) {
             Text(
                 text = " • ",
                 color = colorResource(id = R.color.text_primary),
@@ -58,7 +58,7 @@ fun HowToShareSpaceScreen() {
                 style = BodyCalloutRegular
             )
         }
-        Row(Modifier.padding(horizontal = 16.dp)) {
+        Row(Modifier.padding(horizontal = 20.dp)) {
             Text(
                 text = " • ",
                 color = colorResource(id = R.color.text_primary),
@@ -71,7 +71,7 @@ fun HowToShareSpaceScreen() {
                 style = BodyCalloutRegular
             )
         }
-        Row(Modifier.padding(horizontal = 16.dp)) {
+        Row(Modifier.padding(horizontal = 20.dp)) {
             Text(
                 text = " • ",
                 color = colorResource(id = R.color.text_primary),

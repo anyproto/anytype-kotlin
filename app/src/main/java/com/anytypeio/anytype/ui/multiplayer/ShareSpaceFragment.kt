@@ -60,7 +60,8 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                         onCanViewClicked = vm::onCanViewClicked,
                         onRemoveMemberClicked = vm::onRemoveMemberClicked,
                         onStopSharingClicked = vm::onStopSharingSpaceClicked,
-                        onGenerateInviteLinkClicked = vm::onGenerateSpaceInviteLink
+                        onGenerateInviteLinkClicked = vm::onGenerateSpaceInviteLink,
+                        onMoreInfoClicked = vm::onMoreInfoClicked
                     )
                 }
                 LaunchedEffect(Unit) {
@@ -106,7 +107,7 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
             }
             is ShareSpaceViewModel.Command.ShowHowToShareSpace -> {
                 runCatching {
-
+                    findNavController().navigate(R.id.howToShareSpaceScreen)
                 }
             }
             is ShareSpaceViewModel.Command.Dismiss -> {

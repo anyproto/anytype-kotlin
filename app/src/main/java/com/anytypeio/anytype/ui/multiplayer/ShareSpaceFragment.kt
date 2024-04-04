@@ -102,12 +102,14 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                         )
                     )
                 }.onFailure {
-                    Timber.e(it, "Error while nagigation")
+                    Timber.e(it, "Error while navigation")
                 }
             }
             is ShareSpaceViewModel.Command.ShowHowToShareSpace -> {
                 runCatching {
                     findNavController().navigate(R.id.howToShareSpaceScreen)
+                }.onFailure {
+                    Timber.e(it, "Error while navigation")
                 }
             }
             is ShareSpaceViewModel.Command.Dismiss -> {

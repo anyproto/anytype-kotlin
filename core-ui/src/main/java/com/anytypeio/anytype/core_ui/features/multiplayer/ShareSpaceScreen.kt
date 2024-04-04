@@ -183,13 +183,13 @@ fun ShareSpaceScreen(
             }
         }
         AnimatedVisibility(
-            visible = shareLinkViewState is ShareSpaceViewModel.ShareLinkViewState.Share,
+            visible = shareLinkViewState is ShareSpaceViewModel.ShareLinkViewState.Shared,
             enter = slideInVertically { it },
             exit = slideOutVertically { it },
             modifier = Modifier.align(Alignment.BottomStart)
         ) {
             Box(modifier = Modifier.padding(16.dp)) {
-                if (shareLinkViewState is ShareSpaceViewModel.ShareLinkViewState.Share) {
+                if (shareLinkViewState is ShareSpaceViewModel.ShareLinkViewState.Shared) {
                     ShareInviteLinkCard(
                         link = shareLinkViewState.link,
                         onShareInviteClicked = onShareInviteLinkClicked,
@@ -509,7 +509,7 @@ fun SpaceUnjoinRequestPreview() {
 @Preview
 fun ShareSpaceScreenPreview() {
     ShareSpaceScreen(
-        shareLinkViewState = ShareSpaceViewModel.ShareLinkViewState.Share(
+        shareLinkViewState = ShareSpaceViewModel.ShareLinkViewState.Shared(
             link = "https://anytype.io/ibafyrfhfsag6rea3ifffsasssg..."
         ),
         onShareInviteLinkClicked = {},

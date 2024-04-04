@@ -63,7 +63,8 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                         onStopSharingClicked = vm::onStopSharingSpaceClicked,
                         onGenerateInviteLinkClicked = vm::onGenerateSpaceInviteLink,
                         onMoreInfoClicked = vm::onMoreInfoClicked,
-                        onShareQrCodeClicked = vm::onShareQrCodeClicked
+                        onShareQrCodeClicked = vm::onShareQrCodeClicked,
+                        onDeleteLinkClicked = vm::onDeleteLinkClicked
                     )
                 }
                 LaunchedEffect(Unit) {

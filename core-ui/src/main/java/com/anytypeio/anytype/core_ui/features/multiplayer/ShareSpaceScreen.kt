@@ -83,7 +83,8 @@ fun ShareSpaceScreen(
     onRemoveMemberClicked: (ShareSpaceMemberView) -> Unit,
     onStopSharingClicked: () -> Unit,
     onMoreInfoClicked: () -> Unit,
-    onShareQrCodeClicked: () -> Unit
+    onShareQrCodeClicked: () -> Unit,
+    onDeleteLinkClicked: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -215,7 +216,7 @@ fun ShareSpaceScreen(
                     ShareInviteLinkCard(
                         link = shareLinkViewState.link,
                         onShareInviteClicked = onShareInviteLinkClicked,
-                        onRegenerateInviteLinkClicked = onRegenerateInviteLinkClicked,
+                        onDeleteLinkClicked = onDeleteLinkClicked,
                         onShowQrCodeClicked = onShareQrCodeClicked
                     )
                 }
@@ -603,7 +604,8 @@ fun ShareSpaceScreenPreview() {
         onStopSharingClicked = {},
         onGenerateInviteLinkClicked = {},
         onMoreInfoClicked = {},
-        onShareQrCodeClicked = {}
+        onShareQrCodeClicked = {},
+        onDeleteLinkClicked = {}
     )
 }
 

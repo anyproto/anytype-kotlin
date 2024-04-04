@@ -1143,6 +1143,7 @@
     <string name="multiplayer_remove_member">Hapus anggota</string>
     <string name="multiplayer_request_sent_toast">Permintaan terkirim</string>
     <string name="multiplayer_space_stop_sharing">Berhenti berbagi</string>
+    <string name="multiplayer_more_info">Informasi lebih lanjut</string>
     <string name="multiplayer_sharing">Berbagi</string>
     <string name="multiplayer_share">Bagikan</string>
     <string name="multiplayer_manage">Kelola</string>
@@ -1150,6 +1151,10 @@
     <string name="multiplayer_leave_space_warning_subtitle">This space will be removed from your devices  and you will no longer have access to it</string>
     <string name="multiplayer_generate_invite_link_description">Buat tautan undangan untuk membagikan ruang dan menambah anggota baru</string>
     <string name="multiplayer_generate_invite_link">Buat tautan undangan</string>
+    <string name="multiplayer_how_to_share_space">Bagaimana caranya membagikan ruang?</string>
+    <string name="multiplayer_how_to_share_space_step_1">Berikan tautan kepada orang yang ingin kamu ajak berkolaborasi.</string>
+    <string name="multiplayer_how_to_share_space_step_2">Dengan mengeklik tautan, orang itu akan meminta bergabung ke dalam ruang.</string>
+    <string name="multiplayer_how_to_share_space_step_3">Setelah menyetujui permintaannya, kamu bisa memilih hak akses untuk orang tersebut.</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Langganan</string>

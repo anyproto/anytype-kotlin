@@ -28,7 +28,7 @@ class StopSharingWarning : BaseBottomSheetComposeFragment() {
             setContent {
                 MaterialTheme(typography = typography) {
                     Warning(
-                        actionButtonText = stringResource(R.string.multiplayer_space_stop_sharing_space),
+                        actionButtonText = stringResource(R.string.multiplayer_space_stop_sharing),
                         cancelButtonText = stringResource(R.string.cancel),
                         title = stringResource(R.string.multiplayer_space_stop_sharing),
                         subtitle = stringResource(R.string.multiplayer_space_stop_sharing_space_description),

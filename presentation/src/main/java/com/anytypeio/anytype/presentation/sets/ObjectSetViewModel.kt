@@ -1250,11 +1250,7 @@ class ObjectSetViewModel(
     private suspend fun proceedWithNewDataViewObject(
         response: CreateDataViewObject.Result,
     ) {
-        if (response.struct == null) {
-            Timber.e("Error while creating new object")
-            return
-        }
-        val obj = ObjectWrapper.Basic(response.struct!!)
+        val obj = ObjectWrapper.Basic(response.struct.orEmpty())
         if (obj.layout == ObjectType.Layout.NOTE) {
             proceedWithOpeningObject(
                 target = response.objectId,

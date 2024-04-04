@@ -23,6 +23,7 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
+import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel.Command
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 import timber.log.Timber
@@ -83,9 +84,9 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
         expand()
     }
 
-    private fun proceedWithCommand(command: ShareSpaceViewModel.Command) {
+    private fun proceedWithCommand(command: Command) {
         when (command) {
-            is ShareSpaceViewModel.Command.ShareInviteLink -> {
+            is Command.ShareInviteLink -> {
                 val intent = Intent().apply {
                     action = Intent.ACTION_SEND
                     putExtra(Intent.EXTRA_TEXT, command.link)
@@ -93,7 +94,8 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                 }
                 startActivity(Intent.createChooser(intent, null))
             }
-            is ShareSpaceViewModel.Command.ShareQrCode -> {
+
+            is Command.ShareQrCode -> {
                 runCatching {
                     findNavController().navigate(
                         resId = R.id.shareSpaceInviteQrCodeScreen,
@@ -105,7 +107,8 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     Timber.d(it, "Error while navigation")
                 }
             }
-            is ShareSpaceViewModel.Command.ViewJoinRequest -> {
+
+            is Command.ViewJoinRequest -> {
                 runCatching {
                     findNavController().navigate(
                         resId = R.id.spaceJoinRequestScreen,
@@ -118,14 +121,33 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     Timber.e(it, "Error while navigation")
                 }
             }
-            is ShareSpaceViewModel.Command.ShowHowToShareSpace -> {
+
+            is Command.ShowHowToShareSpace -> {
                 runCatching {
                     findNavController().navigate(R.id.howToShareSpaceScreen)
                 }.onFailure {
                     Timber.e(it, "Error while navigation")
                 }
             }
-            is ShareSpaceViewModel.Command.Dismiss -> {
+
+            is Command.ShowStopSharingWarning -> {
+                runCatching {
+                    val dialog = StopSharingWarning()
+                    dialog.onAccepted = {
+                        vm.onStopSharingAccepted().also {
+                            dialog.dismiss()
+                        }
+                    }
+                    dialog.onCancelled = {
+                        // Do nothing.
+                    }
+                    dialog.show(childFragmentManager, null)
+                }.onFailure {
+                    Timber.e(it, "Error while navigation")
+                }
+            }
+
+            is Command.Dismiss -> {
                 dismiss()
             }
         }

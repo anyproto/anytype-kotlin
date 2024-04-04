@@ -218,6 +218,7 @@ dependencies {
 
     implementation libs.shimmerLayout
     implementation libs.photoView
+    implementation libs.composeQrCode
     implementation libs.zxing
 
     implementation libs.androidxSecurityCrypto

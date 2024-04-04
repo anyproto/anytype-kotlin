@@ -61,7 +61,8 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                         onRemoveMemberClicked = vm::onRemoveMemberClicked,
                         onStopSharingClicked = vm::onStopSharingSpaceClicked,
                         onGenerateInviteLinkClicked = vm::onGenerateSpaceInviteLink,
-                        onMoreInfoClicked = vm::onMoreInfoClicked
+                        onMoreInfoClicked = vm::onMoreInfoClicked,
+                        onShareQrCodeClicked = vm::onShareQrCodeClicked
                     )
                 }
                 LaunchedEffect(Unit) {
@@ -91,6 +92,18 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     type = "text/plain"
                 }
                 startActivity(Intent.createChooser(intent, null))
+            }
+            is ShareSpaceViewModel.Command.ShareQrCode -> {
+                runCatching {
+                    findNavController().navigate(
+                        resId = R.id.shareSpaceInviteQrCodeScreen,
+                        args = ShareQrCodeSpaceInviteFragment.args(
+                            link = command.link
+                        )
+                    )
+                }.onFailure {
+                    Timber.d(it, "Error while navigation")
+                }
             }
             is ShareSpaceViewModel.Command.ViewJoinRequest -> {
                 runCatching {

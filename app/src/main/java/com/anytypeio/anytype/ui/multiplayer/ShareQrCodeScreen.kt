@@ -29,12 +29,14 @@ fun ShareQrCodeScreenPreview() {
 @Composable
 fun ShareQrCodeScreen(link: String) {
     Column(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Dragger(Modifier.padding(vertical = 6.dp))
         Text(
-            text = "Share space",
+            text = stringResource(id = R.string.multiplayer_share_space),
             style = HeadlineHeading,
             color = colorResource(id = R.color.text_primary)
         )

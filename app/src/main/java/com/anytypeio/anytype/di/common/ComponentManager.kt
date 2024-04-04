@@ -121,7 +121,6 @@ import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueVi
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagOrStatusValueViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
-import com.anytypeio.anytype.ui.main.MainActivity
 import com.anytypeio.anytype.ui.relations.RelationEditParameters
 import com.anytypeio.anytype.ui.types.edit.TypeEditParameters
 import com.anytypeio.anytype.ui.widgets.collection.DaggerCollectionComponent
@@ -132,10 +131,8 @@ class ComponentManager(
     private val provider: HasComponentDependencies
 ) {
 
-    fun mainEntryComponent(activity: MainActivity) = Component {
-        main.mainEntryComponentBuilder()
-            .activity(activity)
-            .module(MainEntryModule).build()
+    val mainEntryComponent = Component {
+        main.mainEntryComponentBuilder().module(MainEntryModule).build()
     }
 
     val debugSettingsComponent = Component {

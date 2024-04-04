@@ -317,7 +317,7 @@ class ShareSpaceViewModel(
     }
 
     fun onStopSharingAccepted() {
-        Timber.d("onStopSharingClicked")
+        Timber.d("onStopSharingAccepted")
         viewModelScope.launch {
             if (isCurrentUserOwner.value && shareLinkViewState.value is ShareLinkViewState.Shared) {
                 stopSharingSpace.async(

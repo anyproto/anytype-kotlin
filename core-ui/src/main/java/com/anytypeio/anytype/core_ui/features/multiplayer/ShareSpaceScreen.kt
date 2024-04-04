@@ -65,13 +65,14 @@ import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceMemberView
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
+import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel.ShareLinkViewState
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 
 @Composable
 fun ShareSpaceScreen(
     isCurrentUserOwner: Boolean,
     members: List<ShareSpaceMemberView>,
-    shareLinkViewState: ShareSpaceViewModel.ShareLinkViewState,
+    shareLinkViewState: ShareLinkViewState,
     onRegenerateInviteLinkClicked: () -> Unit,
     onGenerateInviteLinkClicked: () -> Unit,
     onShareInviteLinkClicked: () -> Unit,
@@ -80,7 +81,8 @@ fun ShareSpaceScreen(
     onCanViewClicked: (ShareSpaceMemberView) -> Unit,
     onCanEditClicked: (ShareSpaceMemberView) -> Unit,
     onRemoveMemberClicked: (ShareSpaceMemberView) -> Unit,
-    onStopSharingClicked: () -> Unit
+    onStopSharingClicked: () -> Unit,
+    onMoreInfoClicked: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -122,16 +124,35 @@ fun ShareSpaceScreen(
                         ) {
                             DropdownMenuItem(
                                 onClick = {
-                                    onStopSharingClicked()
+                                    onMoreInfoClicked()
                                     isMenuExpanded = false
                                 }
                             ) {
                                 Text(
-                                    text = stringResource(id = R.string.multiplayer_space_stop_sharing),
+                                    text = stringResource(id = R.string.multiplayer_more_info),
                                     style = BodyRegular,
-                                    color = colorResource(id = R.color.palette_dark_red),
+                                    color = colorResource(id = R.color.text_primary),
                                     modifier = Modifier.weight(1.0f)
                                 )
+                            }
+                            if (shareLinkViewState is ShareLinkViewState.Shared) {
+                                Divider(
+                                    paddingStart = 0.dp,
+                                    paddingEnd = 0.dp
+                                )
+                                DropdownMenuItem(
+                                    onClick = {
+                                        onStopSharingClicked()
+                                        isMenuExpanded = false
+                                    }
+                                ) {
+                                    Text(
+                                        text = stringResource(id = R.string.multiplayer_space_stop_sharing),
+                                        style = BodyRegular,
+                                        color = colorResource(id = R.color.palette_dark_red),
+                                        modifier = Modifier.weight(1.0f)
+                                    )
+                                }
                             }
                         }
                     }
@@ -183,13 +204,13 @@ fun ShareSpaceScreen(
             }
         }
         AnimatedVisibility(
-            visible = shareLinkViewState is ShareSpaceViewModel.ShareLinkViewState.Shared,
+            visible = shareLinkViewState is ShareLinkViewState.Shared,
             enter = slideInVertically { it },
             exit = slideOutVertically { it },
             modifier = Modifier.align(Alignment.BottomStart)
         ) {
             Box(modifier = Modifier.padding(16.dp)) {
-                if (shareLinkViewState is ShareSpaceViewModel.ShareLinkViewState.Shared) {
+                if (shareLinkViewState is ShareLinkViewState.Shared) {
                     ShareInviteLinkCard(
                         link = shareLinkViewState.link,
                         onShareInviteClicked = onShareInviteLinkClicked,
@@ -199,7 +220,7 @@ fun ShareSpaceScreen(
             }
         }
         AnimatedVisibility(
-            visible = shareLinkViewState is ShareSpaceViewModel.ShareLinkViewState.NotGenerated,
+            visible = shareLinkViewState is ShareLinkViewState.NotGenerated,
             enter = slideInVertically { it },
             exit = slideOutVertically { it },
             modifier = Modifier.align(Alignment.BottomStart)
@@ -578,7 +599,8 @@ fun ShareSpaceScreenPreview() {
         onCanEditClicked = {},
         isCurrentUserOwner = false,
         onStopSharingClicked = {},
-        onGenerateInviteLinkClicked = {}
+        onGenerateInviteLinkClicked = {},
+        onMoreInfoClicked = {}
     )
 }
 

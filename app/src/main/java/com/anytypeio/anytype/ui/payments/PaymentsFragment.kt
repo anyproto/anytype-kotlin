@@ -76,7 +76,6 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
                     navController.popBackStack(PaymentsNavigation.Main.route, false)
                     navController.navigate(PaymentsNavigation.Welcome.route)
                 }
-
                 PaymentsNavigation.Dismiss -> navController.popBackStack()
                 else -> {}
             }

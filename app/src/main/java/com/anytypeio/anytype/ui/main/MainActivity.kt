@@ -72,8 +72,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     @Inject
     lateinit var featureToggles: FeatureToggles
 
-
-
     val container: FragmentContainerView get() = findViewById(R.id.fragment)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -317,14 +315,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     override fun nav(): AppNavigation = navigator
 
     fun inject() {
-        componentManager().mainEntryComponent(this).get().inject(this)
+        componentManager().mainEntryComponent.get().inject(this)
     }
 
     fun release() {
-        componentManager().mainEntryComponent(this).release()
+        componentManager().mainEntryComponent.release()
     }
-
-
 
     companion object {
         const val AUTO_UPDATE_URL = "https://fra1.digitaloceanspaces.com/anytype-release/latest-android.json"

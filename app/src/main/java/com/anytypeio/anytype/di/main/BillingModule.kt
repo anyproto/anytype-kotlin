@@ -17,7 +17,7 @@ object BillingModule {
     fun provideBillingLifecycle(
         context: Context,
         dispatchers: AppCoroutineDispatchers,
-        @Named(ConfigModule.DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
+        @Named(ConfigModule.DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope
     ): BillingClientLifecycle {
         return BillingClientLifecycle(
             dispatchers = dispatchers,

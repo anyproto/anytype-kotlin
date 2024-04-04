@@ -29,7 +29,6 @@ import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
 import com.anytypeio.anytype.ui.main.MainActivity
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicatorImpl
-import dagger.BindsInstance
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
@@ -42,8 +41,6 @@ interface MainEntrySubComponent {
     @Subcomponent.Builder
     interface Builder {
         fun build(): MainEntrySubComponent
-        @BindsInstance
-        fun activity(activity: MainActivity): Builder
         fun module(module: MainEntryModule): Builder
     }
 

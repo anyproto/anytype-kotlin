@@ -291,7 +291,7 @@ class ShareSpaceViewModel(
     fun onStopSharingSpaceClicked() {
         Timber.d("onStopSharingClicked")
         viewModelScope.launch {
-            if (isCurrentUserOwner.value) {
+            if (isCurrentUserOwner.value && shareLinkViewState.value is ShareLinkViewState.Share) {
                 stopSharingSpace.async(
                     params = params.space
                 ).fold(
@@ -357,8 +357,8 @@ class ShareSpaceViewModel(
     )
 
     sealed class ShareLinkViewState {
-        object Init: ShareLinkViewState()
-        object NotGenerated: ShareLinkViewState()
+        data object Init: ShareLinkViewState()
+        data object NotGenerated: ShareLinkViewState()
         data class Share(val link: String): ShareLinkViewState()
     }
 

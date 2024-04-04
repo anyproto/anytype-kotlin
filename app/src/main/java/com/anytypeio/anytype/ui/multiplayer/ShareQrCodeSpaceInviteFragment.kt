@@ -4,17 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.MaterialTheme
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.ui.settings.typography
-import com.lightspark.composeqr.QrCodeView
 
 class ShareQrCodeSpaceInviteFragment : BaseBottomSheetComposeFragment() {
 
@@ -29,10 +25,7 @@ class ShareQrCodeSpaceInviteFragment : BaseBottomSheetComposeFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MaterialTheme(typography = typography) {
-                    QrCodeView(
-                        data = link,
-                        modifier = Modifier.size(300.dp)
-                    )
+                    ShareQrCodeScreen(link)
                 }
             }
         }

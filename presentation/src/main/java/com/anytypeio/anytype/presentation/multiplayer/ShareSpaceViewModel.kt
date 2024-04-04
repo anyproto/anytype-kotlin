@@ -181,6 +181,22 @@ class ShareSpaceViewModel(
         }
     }
 
+    fun onShareQrCodeClicked() {
+        viewModelScope.launch {
+            when(val value = shareLinkViewState.value) {
+                ShareLinkViewState.Init -> {
+                    // Do nothing.
+                }
+                is ShareLinkViewState.Shared -> {
+                    commands.emit(Command.ShareQrCode(value.link))
+                }
+                is ShareLinkViewState.NotGenerated -> {
+                    // Do nothing
+                }
+            }
+        }
+    }
+
     fun onViewRequestClicked(view: ShareSpaceMemberView) {
         viewModelScope.launch {
             commands.emit(
@@ -368,8 +384,9 @@ class ShareSpaceViewModel(
 
     sealed class Command {
         data class ShareInviteLink(val link: String) : Command()
+        data class ShareQrCode(val link: String) : Command()
         data class ViewJoinRequest(val space: SpaceId, val member: Id) : Command()
-        object ShowHowToShareSpace: Command()
+        data object ShowHowToShareSpace: Command()
         data object Dismiss : Command()
     }
 

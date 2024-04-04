@@ -17,7 +17,6 @@ import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.getOrThrow
-import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -314,6 +313,12 @@ class ShareSpaceViewModel(
         proceedWithGeneratingInviteLink()
     }
 
+    fun onMoreInfoClicked() {
+        viewModelScope.launch {
+            commands.emit(Command.ShowHowToShareSpace)
+        }
+    }
+
     override fun onCleared() {
         viewModelScope.launch {
             container.unsubscribe(
@@ -333,7 +338,6 @@ class ShareSpaceViewModel(
         private val stopSharingSpace: StopSharingSpace,
         private val getAccount: GetAccount,
         private val removeSpaceMembers: RemoveSpaceMembers,
-        private val configStorage: ConfigStorage,
         private val container: StorelessSubscriptionContainer,
         private val urlBuilder: UrlBuilder,
         private val getSpaceInviteLink: GetSpaceInviteLink
@@ -365,7 +369,8 @@ class ShareSpaceViewModel(
     sealed class Command {
         data class ShareInviteLink(val link: String) : Command()
         data class ViewJoinRequest(val space: SpaceId, val member: Id) : Command()
-        object Dismiss : Command()
+        object ShowHowToShareSpace: Command()
+        data object Dismiss : Command()
     }
 
     companion object {

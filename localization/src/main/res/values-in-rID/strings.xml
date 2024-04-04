@@ -48,7 +48,7 @@
     <string name="about_meta_info_for_copy">Perangkat: %1$s\nVersi Android: %2$d\nVersi Aplikasi: %3$s\nPembuatan Nomor: %4$d\nVersi Pustaka: %5$s\nAkun\u00A0ID:\u00A0%6$s\nPerangkat\u00A0ID:\u00A0%7$s\nAnalisis\u00A0ID:\u00A0%8$s</string>
     <string name="space">Ruang</string>
     <string name="space_name">Nama Ruang</string>
-    <string name="default_space">Default space</string>
+    <string name="default_space">Ruang bawaan</string>
     <string name="space_settings_apply_random_gradient">Terapkan gradasi acak</string>
     <string name="delete_space">Hapus ruang</string>
     <string name="you_can_store">Kamu bisa menyimpan berkasmu hingga %1$s di simpul cadangan terenkripsi kami secara gratis. Jika melewati batas, berkasmu hanya akan disimpan secara lokal.</string>
@@ -1148,11 +1148,13 @@
     <string name="multiplayer_share">Bagikan</string>
     <string name="multiplayer_manage">Kelola</string>
     <string name="multiplayer_leave_space">Tinggalkan ruang</string>
-    <string name="multiplayer_leave_space_warning_subtitle">This space will be removed from your devices  and you will no longer have access to it</string>
+    <string name="multiplayer_leave_space_warning_subtitle">Ruang ini akan dihapus dari perangkat-perangkatmu dan kamu tidak akan bisa mengaksesnya lagi</string>
     <string name="multiplayer_generate_invite_link_description">Buat tautan undangan untuk membagikan ruang dan menambah anggota baru</string>
     <string name="multiplayer_generate_invite_link">Buat tautan undangan</string>
+    <string name="multiplayer_show_qr_code">Tampilkan kode QR</string>
     <string name="multiplayer_how_to_share_space">Bagaimana caranya membagikan ruang?</string>
     <string name="multiplayer_how_to_share_space_step_1">Berikan tautan kepada orang yang ingin kamu ajak berkolaborasi.</string>
+    <string name="multiplayer_how_to_share_space_qr_code">Please provide this QR code to the person you\'d like to collaborate with.</string>
     <string name="multiplayer_how_to_share_space_step_2">Dengan mengeklik tautan, orang itu akan meminta bergabung ke dalam ruang.</string>
     <string name="multiplayer_how_to_share_space_step_3">Setelah menyetujui permintaannya, kamu bisa memilih hak akses untuk orang tersebut.</string>
     <!--endregion-->
@@ -1233,21 +1235,21 @@
     <string name="payments_welcome_subtitle">Big cheers for your curiosity!</string>
     <string name="payments_welcome_button">Continue</string>
     <!-- Notifications -->
-    <string name="notifications_alert_error_unknown">An unknown error has occurred. Please try again later.</string>
-    <string name="notifications_alert_error_bad_input">Invalid input detected. Please check your data and try again.</string>
-    <string name="notifications_alert_error_internal">An internal error has occurred. Our team has been notified.</string>
-    <string name="notifications_alert_error_no_objects_to_import">No items found to import. Please select valid objects for import.</string>
-    <string name="notifications_alert_error_import_canceled">The import process has been canceled by the user.</string>
-    <string name="notifications_alert_error_limit_exceeded">The import limit for rows or relations has been exceeded. Please reduce the amount and try again.</string>
-    <string name="notifications_alert_error_file_load">There was an error loading the file. Please check the file and try again.</string>
-    <string name="notifications_alert_error_insufficient_permissions">You do not have the necessary permissions to perform this action. Please check your permissions and try again.</string>
+    <string name="notifications_alert_error_unknown">Terjadi galat yang tidak diketahui. Silakan coba lagi nanti.</string>
+    <string name="notifications_alert_error_bad_input">Terdeteksi input yang tidak valid. Silakan cek datamu dan coba lagi.</string>
+    <string name="notifications_alert_error_internal">Terjadi galat internal. Tim kami telah diberitahukan.</string>
+    <string name="notifications_alert_error_no_objects_to_import">Tidak ada item untuk diimpor. Silakan pilih objek yang valid untuk diimpor.</string>
+    <string name="notifications_alert_error_import_canceled">Proses impor dibatalkan pengguna.</string>
+    <string name="notifications_alert_error_limit_exceeded">Batas impor untuk baris atau relasi telah tercapai. Silakan kurangi jumlah yang ingin diimpor lalu coba lagi.</string>
+    <string name="notifications_alert_error_file_load">Terjadi galat memuat berkas. Silakan cek ulang berkas lalu coba lagi.</string>
+    <string name="notifications_alert_error_insufficient_permissions">Kamu tidak memiliki izin yang sesuai untuk melakukan tindakan ini. Silakan cek perizinanmu lalu coba lagi.</string>
     <!-- Gallery Experience -->
     <string name="gallery_experience_made">Dibuat oleh</string>
     <string name="gallery_experience_install">Pasang</string>
     <string name="gallery_experience_install_new">Pasang ke ruang baru</string>
     <string name="gallery_experience_alert_title_success">Experience was installed</string>
-    <string name="gallery_experience_alert_subtitle_success">\"%1$s\" was installed to a new space. You can now open and start using it.</string>
+    <string name="gallery_experience_alert_subtitle_success">\"%1$s\" telah dipasang di ruang baru. Sekarang kamu bisa membukanya dan mulai menggunakannya.</string>
     <string name="gallery_experience_alert_title_error">Waduh!</string>
-    <string name="gallery_experience_alert_button_space">Open space</string>
+    <string name="gallery_experience_alert_button_space">Buka ruang</string>
     <string name="gallery_experience_alert_button_error">Tutup</string>
 </resources>

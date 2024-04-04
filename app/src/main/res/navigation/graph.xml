@@ -556,6 +556,6 @@
 
     <dialog
         android:id="@+id/howToShareSpaceScreen"
-        android:name="com.anytypeio.anytype.ui.multiplayer."/>
+        android:name="com.anytypeio.anytype.ui.multiplayer.HowToShareSpaceFragment"/>
 
 </navigation>

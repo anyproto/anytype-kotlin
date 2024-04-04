@@ -194,10 +194,18 @@ class SpaceSettingsViewModel(
 
     fun onDeleteSpaceClicked() {
         viewModelScope.launch {
-            analytics.sendEvent(
-                eventName = EventsDictionary.clickDeleteSpace,
-                props = Props(mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.settings))
-            )
+            val state = spaceViewState.value
+            if (state is ViewState.Success) {
+                if (state.data.permissions.isOwnerOrEditor()) {
+                    commands.emit(Command.ShowDeleteSpaceWarning)
+                } else {
+                    commands.emit(Command.ShowLeaveSpaceWarning)
+                }
+                analytics.sendEvent(
+                    eventName = EventsDictionary.clickDeleteSpace,
+                    props = Props(mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.settings))
+                )
+            }
         }
     }
 
@@ -309,6 +317,8 @@ class SpaceSettingsViewModel(
         data class ShareSpaceDebug(val filepath: Filepath) : Command()
         data class SharePrivateSpace(val space: SpaceId) : Command()
         data class ManageSharedSpace(val space: SpaceId) : Command()
+        data object ShowDeleteSpaceWarning : Command()
+        data object ShowLeaveSpaceWarning : Command()
     }
 
     class Factory @Inject constructor(

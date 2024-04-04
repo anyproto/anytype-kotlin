@@ -1,8 +1,6 @@
 package com.anytypeio.anytype.di.common
 
 import android.content.Context
-import androidx.lifecycle.DefaultLifecycleObserver
-import com.android.billingclient.api.PurchasesUpdatedListener
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId

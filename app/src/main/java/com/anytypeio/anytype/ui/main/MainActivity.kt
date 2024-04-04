@@ -3,12 +3,8 @@ package com.anytypeio.anytype.ui.main
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Parcelable
-import android.provider.OpenableColumns
-import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
@@ -17,12 +13,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
-import com.android.billingclient.api.BillingClient
-import com.android.billingclient.api.BillingClientStateListener
-import com.android.billingclient.api.BillingResult
-import com.android.billingclient.api.Purchase
-import com.android.billingclient.api.PurchasesUpdatedListener
-import com.android.billingclient.api.QueryProductDetailsParams
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.app.DefaultAppActionManager
@@ -44,7 +34,6 @@ import com.anytypeio.anytype.presentation.main.MainViewModel
 import com.anytypeio.anytype.presentation.main.MainViewModel.Command
 import com.anytypeio.anytype.presentation.main.MainViewModelFactory
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
-import com.anytypeio.anytype.presentation.util.getExternalFilesDirTemp
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
 import com.anytypeio.anytype.ui.editor.CreateObjectFragment
 import com.anytypeio.anytype.ui.notifications.NotificationsFragment
@@ -52,13 +41,9 @@ import com.anytypeio.anytype.ui.sharing.SharingFragment
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
 import com.github.javiersantos.appupdater.AppUpdater
 import com.github.javiersantos.appupdater.enums.UpdateFrom
-import java.io.File
-import java.io.FileOutputStream
 import javax.inject.Inject
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Provider {

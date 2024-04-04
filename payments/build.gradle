@@ -27,6 +27,8 @@ dependencies {
     implementation project(':presentation')
     implementation project(':library-emojifier')
 
+    implementation libs.playBilling
+
     compileOnly libs.javaxInject
 
     implementation libs.lifecycleViewModel

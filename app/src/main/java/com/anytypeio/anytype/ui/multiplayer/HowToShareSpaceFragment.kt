@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.ui.spaces
+package com.anytypeio.anytype.ui.multiplayer
 
 import android.os.Bundle
 import android.view.LayoutInflater

@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.ui.spaces
+package com.anytypeio.anytype.ui.multiplayer
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

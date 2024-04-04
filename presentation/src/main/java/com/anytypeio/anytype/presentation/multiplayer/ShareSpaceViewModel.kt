@@ -365,7 +365,8 @@ class ShareSpaceViewModel(
     sealed class Command {
         data class ShareInviteLink(val link: String) : Command()
         data class ViewJoinRequest(val space: SpaceId, val member: Id) : Command()
-        object Dismiss : Command()
+        object ShowHowToShareSpace: Command()
+        data object Dismiss : Command()
     }
 
     companion object {

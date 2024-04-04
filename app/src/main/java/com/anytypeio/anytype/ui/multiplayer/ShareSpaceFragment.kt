@@ -25,6 +25,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
+import timber.log.Timber
 
 class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
 
@@ -91,13 +92,22 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                 startActivity(Intent.createChooser(intent, null))
             }
             is ShareSpaceViewModel.Command.ViewJoinRequest -> {
-                findNavController().navigate(
-                    resId = R.id.spaceJoinRequestScreen,
-                    args = SpaceJoinRequestFragment.args(
-                        space = command.space,
-                        member = command.member
+                runCatching {
+                    findNavController().navigate(
+                        resId = R.id.spaceJoinRequestScreen,
+                        args = SpaceJoinRequestFragment.args(
+                            space = command.space,
+                            member = command.member
+                        )
                     )
-                )
+                }.onFailure {
+                    Timber.e(it, "Error while nagigation")
+                }
+            }
+            is ShareSpaceViewModel.Command.ShowHowToShareSpace -> {
+                runCatching {
+
+                }
             }
             is ShareSpaceViewModel.Command.Dismiss -> {
                 dismiss()

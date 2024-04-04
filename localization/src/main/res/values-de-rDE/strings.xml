@@ -1149,7 +1149,7 @@
     <string name="multiplayer_space_stop_sharing">Stop sharing</string>
     <string name="multiplayer_space_stop_sharing_space">Stop sharing the space</string>
     <string name="multiplayer_space_stop_sharing_space_description">Participants will no longer sync to this space and the share link will be deactivated.</string>
-    <string name="multiplayer_more_info">More info</string>
+    <string name="multiplayer_more_info">Mehr Informationen</string>
     <string name="multiplayer_sharing">Sharing</string>
     <string name="multiplayer_share">Teilen</string>
     <string name="multiplayer_manage">Verwalten</string>
@@ -1238,7 +1238,7 @@
     <string name="payments_code_resend_in">Erneut senden in %1$n Sek.</string>
     <!-- Payments Welcome -->
     <string name="payments_welcome_title">Willkommen im Netzwerk,\n%1$s</string>
-    <string name="payments_welcome_subtitle">Big cheers for your curiosity!</string>
+    <string name="payments_welcome_subtitle">Ein Hoch auf deine Neugierde!</string>
     <string name="payments_welcome_button">Fortfahren</string>
     <!-- Notifications -->
     <string name="notifications_alert_error_unknown">Es ist ein unbekannter Fehler aufgetreten. Bitte versuche es später noch einmal.</string>

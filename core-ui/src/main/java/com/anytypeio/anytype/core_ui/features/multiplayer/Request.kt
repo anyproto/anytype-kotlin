@@ -76,8 +76,8 @@ fun SpaceJoinRequestScreen(
         Text(
             text = stringResource(
                 R.string.multiplayer_space_join_request_header,
-                state.memberName,
-                state.spaceName
+                state.memberName.ifEmpty { stringResource(id = R.string.untitled) },
+                state.spaceName.ifEmpty { stringResource(id = R.string.untitled) }
             ),
             style = HeadlineHeading,
             textAlign = TextAlign.Center,

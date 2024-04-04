@@ -1143,13 +1143,18 @@
     <string name="multiplayer_remove_member">Remove member</string>
     <string name="multiplayer_request_sent_toast">已发送申请</string>
     <string name="multiplayer_space_stop_sharing">停止共享</string>
+    <string name="multiplayer_more_info">更多信息</string>
     <string name="multiplayer_sharing">分享</string>
     <string name="multiplayer_share">分享</string>
     <string name="multiplayer_manage">管理</string>
     <string name="multiplayer_leave_space">离开空间</string>
-    <string name="multiplayer_leave_space_warning_subtitle">This space will be removed from your devices  and you will no longer have access to it</string>
+    <string name="multiplayer_leave_space_warning_subtitle">这个空间将被从您的设备中删除，您将无法再访问它</string>
     <string name="multiplayer_generate_invite_link_description">创建邀请链接以共享空间并添加新成员</string>
     <string name="multiplayer_generate_invite_link">生成邀请链接</string>
+    <string name="multiplayer_how_to_share_space">如何共享空间？</string>
+    <string name="multiplayer_how_to_share_space_step_1">请向您与想要合作的人提供这个链接。</string>
+    <string name="multiplayer_how_to_share_space_step_2">通过点击链接，将收到一个人加入空间的请求。</string>
+    <string name="multiplayer_how_to_share_space_step_3">批准请求后，您可以选择此人的访问权限。</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">会员</string>
@@ -1163,13 +1168,13 @@
     <string name="payments_card_text_4">对连接的投资</string>
     <string name="payments_card_description_4">我们的网络的价值超过了其各部分的总和。您的会员资格维持了用于支撑这个网络增长的基础设施。</string>
     <string name="payments_tier_explorer">探索者</string>
-    <string name="payments_tier_explorer_description">Dive into the network and enjoy the thrill of one-on-one collaboration</string>
+    <string name="payments_tier_explorer_description">潜入网络并享受一对一协作的提示</string>
     <string name="payments_tier_builder">建造者</string>
     <string name="payments_tier_builder_description">解锁多方协作的魔法以及享受顶级支持</string>
     <string name="payments_tier_cocreator">共创者</string>
     <string name="payments_tier_cocreator_description">支持我们的探险并解锁专属访问权限和好处</string>
     <string name="payments_tier_custom">自定义</string>
-    <string name="payments_tier_custom_description">Membership tailored to your specific needs and preferences</string>
+    <string name="payments_tier_custom_description">适合您的具体需要和偏好的会员资格</string>
     <string name="payments_button_learn">了解详情</string>
     <string name="payments_button_contact">联络</string>
     <string name="payments_member_link">会员等级详情</string>
@@ -1186,7 +1191,7 @@
     <string name="payments_tier_details_name_min">最少 7 个字符</string>
     <string name="payments_tier_details_name_error">此名称已被占用</string>
     <string name="payments_tier_details_name_success">这个名称是可获得的!</string>
-    <string name="payments_tier_details_info_explorer">Dive into the network and enjoy the thrill of one-on-one collaboration</string>
+    <string name="payments_tier_details_info_explorer">潜入网络并享受一对一协作的提示</string>
     <string-array name="payments_benefits_explorer">
         <item>1 GB 网络空间</item>
         <item>10 个仅单人编辑空间</item>

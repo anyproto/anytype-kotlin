@@ -29,6 +29,7 @@ import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
+import com.anytypeio.anytype.ui.spaces.LeaveSpaceWarning
 import com.anytypeio.anytype.ui_settings.space.SpaceSettingsScreen
 import java.io.File
 import javax.inject.Inject
@@ -63,18 +64,7 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                     onNameSet = vm::onNameSet,
                     state = vm.spaceViewState.collectAsStateWithLifecycle().value,
                     onDeleteSpaceClicked = throttledClick(
-                        onClick = {
-                            vm.onDeleteSpaceClicked()
-                            val dialog = DeleteSpaceWarning.new()
-                            dialog.onDeletionAccepted = {
-                                dialog.dismiss()
-                                vm.onDeleteSpaceAcceptedClicked()
-                            }
-                            dialog.onDeletionCancelled = {
-                                vm.onDeleteSpaceWarningCancelled()
-                            }
-                            dialog.show(childFragmentManager, null)
-                        }
+                        onClick = { vm.onDeleteSpaceClicked() }
                     ),
                     onFileStorageClick = throttledClick(
                         onClick = {
@@ -160,6 +150,28 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                     }.onFailure {
                         Timber.e(it, "Error while opening share-space screen")
                     }
+                }
+                is Command.ShowDeleteSpaceWarning -> {
+                    val dialog = DeleteSpaceWarning.new()
+                    dialog.onDeletionAccepted = {
+                        dialog.dismiss()
+                        vm.onDeleteSpaceAcceptedClicked()
+                    }
+                    dialog.onDeletionCancelled = {
+                        vm.onDeleteSpaceWarningCancelled()
+                    }
+                    dialog.show(childFragmentManager, null)
+                }
+                is Command.ShowLeaveSpaceWarning -> {
+                    val dialog = LeaveSpaceWarning.new()
+                    dialog.onLeaveSpaceAccepted = {
+                        dialog.dismiss()
+                        vm.onDeleteSpaceAcceptedClicked()
+                    }
+                    dialog.onLeaveSpaceCancelled = {
+                        vm.onDeleteSpaceWarningCancelled()
+                    }
+                    dialog.show(childFragmentManager, null)
                 }
             }
         }

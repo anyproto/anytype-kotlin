@@ -40,9 +40,7 @@ class EditorObjectTypeChangeWidgetTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        stubSpaceManager()
-        stubGetNetworkMode()
-        stubFileLimitEvents()
+        proceedWithDefaultBeforeTestStubbing()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -92,8 +90,9 @@ class EditorObjectTypeChangeWidgetTest : EditorPresentationTestSetup() {
 
         val objectDetails = Block.Fields(
             mapOf(
-                "type" to ObjectTypeIds.NOTE,
-                "layout" to ObjectType.Layout.NOTE.code.toDouble(),
+                Relations.SPACE_ID to defaultSpace,
+                Relations.TYPE to ObjectTypeIds.NOTE,
+                Relations.LAYOUT to ObjectType.Layout.NOTE.code.toDouble(),
                 Relations.INTERNAL_FLAGS to listOf(1.0)
             )
         )

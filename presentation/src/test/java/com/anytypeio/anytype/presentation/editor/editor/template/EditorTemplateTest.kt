@@ -33,14 +33,15 @@ class EditorTemplateTest: EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        stubSpaceManager()
-        stubGetNetworkMode()
-        stubFileLimitEvents()
+        proceedWithDefaultBeforeTestStubbing()
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `should isObjectTemplate true  when opening template object`() = runTest {
+
         val title = StubTitle()
         val header = StubHeader(children = listOf(title.id))
         val page = StubSmartBlock(id = root, children = listOf(header.id))
@@ -53,6 +54,7 @@ class EditorTemplateTest: EditorPresentationTestSetup() {
             details = mapOf(
                 root to Block.Fields(
                     mapOf(
+                        Relations.SPACE_ID to defaultSpace,
                         Relations.TYPE to listOf<String>(typeObjectId),
                         Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble()
                     )
@@ -60,12 +62,18 @@ class EditorTemplateTest: EditorPresentationTestSetup() {
                 typeObjectId to Block.Fields(
                     mapOf(
                         Relations.ID to typeObjectId,
+                        Relations.SPACE_ID to defaultSpace,
                         Relations.UNIQUE_KEY to ObjectTypeIds.TEMPLATE
                     )
                 )
             )
         )
-        stubOpenDocument(document = document, details = detailsList)
+
+        stubOpenDocument(
+            document = document,
+            details = detailsList
+        )
+
 
         val vm = buildViewModel()
 
@@ -73,7 +81,7 @@ class EditorTemplateTest: EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
-        advanceUntilIdle()
+        coroutineTestRule.advanceUntilIdle()
 
         assertTrue(vm.isObjectTemplate())
     }

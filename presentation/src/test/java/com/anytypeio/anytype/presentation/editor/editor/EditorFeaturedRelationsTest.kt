@@ -16,6 +16,7 @@ import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColo
 import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
 import kotlin.test.assertEquals
@@ -48,9 +49,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        stubSpaceManager()
-        stubFileLimitEvents()
-        stubGetNetworkMode()
+        proceedWithDefaultBeforeTestStubbing()
     }
 
     @After
@@ -180,10 +179,17 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
             )
         )
 
-        assertEquals(
-            expected = ViewState.Success(expected),
-            actual = vm.state.value
-        )
+        val test = vm.state.test()
+
+        val first = test.awaitValue()
+        val second = test.awaitValue()
+
+        second.assertValue(ViewState.Success(expected))
+
+//        assertEquals(
+//            expected = ViewState.Success(expected),
+//            actual = second
+//        )
     }
 
     @Test
@@ -884,7 +890,6 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
         )
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `should render backlinks and links as featured relations`() = runTest {
 
@@ -1007,13 +1012,14 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
             )
         )
 
+        coroutineTestRule.advanceUntilIdle()
+
         assertEquals(
             expected = ViewState.Success(expected),
             actual = vm.state.value
         )
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `should not render backlinks and links as featured relations, when no sub objects are present`() = runTest {
 

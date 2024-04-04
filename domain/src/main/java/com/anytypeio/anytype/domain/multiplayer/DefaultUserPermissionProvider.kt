@@ -120,3 +120,5 @@ class DefaultUserPermissionProvider @Inject constructor(
         const val NO_LIMIT = 0
     }
 }
+
+typealias Permissions = UserPermissionProvider

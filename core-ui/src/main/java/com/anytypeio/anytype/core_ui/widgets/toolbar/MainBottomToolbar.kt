@@ -7,6 +7,8 @@ import android.widget.LinearLayout
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.WidgetMainBottomToolbarBinding
 import com.anytypeio.anytype.core_ui.reactive.clicks
+import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.bumptech.glide.Glide
 
@@ -55,6 +57,15 @@ class MainBottomToolbar @JvmOverloads constructor(
                 binding.ivProfile.setImageResource(R.drawable.ic_nav_profile_icon_placeholder_circle)
                 binding.tvProfileInitial.text = ""
             }
+        }
+    }
+
+    fun setIsReadOnly(isReadOnly: Boolean) {
+        with(binding.btnAddDoc) {
+            if (isReadOnly)
+                gone()
+            else
+                visible()
         }
     }
 }

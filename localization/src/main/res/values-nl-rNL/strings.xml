@@ -48,7 +48,7 @@
     <string name="about_meta_info_for_copy">Apparaat: %1$s\nAndroid versie: %2$d\nApp versie: %3$s\nBuild nummer: %4$d\nbibliotheek versie: %5$s\nAccount:\u00A0ID:\u00A0%6$s\nApparaat\u00A0ID:\u00A0%7$s\nAnalyse\u00A0ID:\u00A0%8$s</string>
     <string name="space">Ruimte</string>
     <string name="space_name">Naam ruimte</string>
-    <string name="personal_space">Persoonlijke ruimte</string>
+    <string name="default_space">Default space</string>
     <string name="space_settings_apply_random_gradient">Pas willekeurig verloop toe</string>
     <string name="delete_space">Verwijder ruimte</string>
     <string name="you_can_store">Je kunt maximaal %1$s van je bestanden gratis opslaan op onze versleutelde back-up node. Als de limiet is bereikt, zullen bestanden alleen lokaal worden opgeslagen.</string>
@@ -806,7 +806,7 @@
     <string name="go_to_the_app">Ga naar de app</string>
     <string name="exiting_please_wait">Aan het afsluiten... een ogenblik geduld</string>
     <string name="loading_please_wait">Aan het laden... even geduld a.j.b.</string>
-    <string name="personal">Persoonlijk</string>
+    <string name="personal">Standaard</string>
     <string name="create_space">Maak een ruimte aan</string>
     <string name="generic_error">Er is iets misgegaan. Probeer het alsjeblieft opnieuw.</string>
     <string name="type">Type</string>
@@ -824,7 +824,7 @@
     <string name="anytype_update_alert_description">Een deel van je gegevens werd beheerd door een nieuwere versie van Anytype. Update de app alsjeblieft om met al je documenten en de nieuwe functies te werken.</string>
     <string name="anytype_update_alert_title">Het is tijd om te updaten</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
-    <string name="space_type_personal">Persoonlijk</string>
+    <string name="space_type_default">Standaard</string>
     <string name="space_type_private">Persoonlijk</string>
     <string name="space_type_private_space">Privé ruimte</string>
     <string name="space_type_shared">Gedeeld</string>
@@ -990,8 +990,6 @@
     <string name="onboarding_soul_creation_description">Dit is zoals je in de app zult verschijnen</string>
     <string name="onboarding_soul_creation_placeholder">Anytype identiteit</string>
     <string name="onboarding_soul_creation">Jouw identiteit aan het aanmaken…</string>
-    <string name="onboarding_soul_space_creation">Jouw persoonlijke ruimte aan het aanmaken...</string>
-    <string name="onboarding_soul_creation_personal_space">Persoonlijke ruimte</string>
     <string name="onboarding_type_recovery_phrase">Type je herstelzin</string>
     <string name="onboarding_login_or">OF</string>
     <string name="onboarding_entering_void_title">De Void binnengaan</string>
@@ -1230,7 +1228,7 @@
     <string name="payments_code_resend_in">Verstuur opnieuw over %1$n seconden</string>
     <!-- Payments Welcome -->
     <string name="payments_welcome_title">Welkom bij het netwerk, \n%1$s</string>
-    <string name="payments_welcome_subtitle">Hulde voor jouw nieuwsgierigheid!</string>
+    <string name="payments_welcome_subtitle">Big cheers for your curiosity!</string>
     <string name="payments_welcome_button">Ga verder</string>
     <!-- Notifications -->
     <string name="notifications_alert_error_unknown">Er heeft zich een onbekende fout voorgedaan. Probeer het later opnieuw.</string>

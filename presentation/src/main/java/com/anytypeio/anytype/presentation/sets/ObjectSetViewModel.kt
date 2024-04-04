@@ -399,6 +399,8 @@ class ObjectSetViewModel(
                 }.catch {
                     Timber.e(it, "Error while observing space icon")
                 }.flowOn(dispatchers.io).collect { icon.value = it }
+            } else {
+                Timber.w("Config not found to get profile object id")
             }
         }
     }

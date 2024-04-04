@@ -23,7 +23,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.PERSONAL_SPACE_TYPE
+import com.anytypeio.anytype.core_models.DEFAULT_SPACE_TYPE
 import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SHARED_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SpaceType
@@ -94,7 +94,7 @@ fun SpaceSettingsScreen(
         item { Divider() }
         item {
             if (state is ViewState.Success) {
-                if (state.data.spaceType == PERSONAL_SPACE_TYPE) {
+                if (state.data.spaceType == DEFAULT_SPACE_TYPE) {
                     Section(title = stringResource(id = R.string.type))
                 } else {
                     Section(title = stringResource(id = R.string.multiplayer_sharing))
@@ -106,7 +106,7 @@ fun SpaceSettingsScreen(
         item {
             if (state is ViewState.Success) {
                 when(state.data.spaceType) {
-                    PERSONAL_SPACE_TYPE -> {
+                    DEFAULT_SPACE_TYPE -> {
                         TypeOfSpace(state.data.spaceType)
                     }
                     PRIVATE_SPACE_TYPE -> {
@@ -327,7 +327,7 @@ fun SpaceSettingsScreenPreview() {
                 name = "Dream team",
                 icon = SpaceIconView.Placeholder,
                 isDeletable = true,
-                spaceType = PERSONAL_SPACE_TYPE,
+                spaceType = DEFAULT_SPACE_TYPE,
                 permissions = SpaceMemberPermissions.OWNER
             )
         ),
@@ -465,7 +465,7 @@ fun TypeOfSpace(spaceType: SpaceType?) {
         )
         if (spaceType != null) {
             val spaceTypeName = when (spaceType) {
-                PERSONAL_SPACE_TYPE -> stringResource(id = R.string.space_type_personal)
+                DEFAULT_SPACE_TYPE -> stringResource(id = R.string.space_type_default)
                 PRIVATE_SPACE_TYPE -> stringResource(id = R.string.space_type_private)
                 SHARED_SPACE_TYPE -> stringResource(id = R.string.space_type_shared)
                 else -> stringResource(id = R.string.space_type_unknown)

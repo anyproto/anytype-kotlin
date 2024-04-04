@@ -1,13 +1,13 @@
 [versions]
-middlewareVersion = "v0.33.0-rc6"
+middlewareVersion = "v0.33.0-rc7"
 kotlinVersion = '1.9.22'
 
 androidxCoreVersion = "1.12.0"
 
-androidxComposeVersion = '1.6.3'
+androidxComposeVersion = '1.6.4'
 composeKotlinCompilerVersion = '1.5.10'
 composeMaterial3Version = '1.2.1'
-composeMaterialVersion = '1.6.3'
+composeMaterialVersion = '1.6.4'
 composeConstraintLayoutVersion = '1.0.1'
 
 dokkaVersion = '1.9.20'
@@ -24,7 +24,8 @@ glideVersion = "4.14.2"
 mockitoKotlinVersion = "5.2.1"
 junitVersion = '4.13.2'
 androidJunitVersion = "1.1.5"
-runnerVersion = "1.5.0"
+runnerVersion = "1.5.2"
+rulesVersion = "1.5.0"
 mockitoAndroidVersion = '5.11.0'
 kotlinCoroutinesVersion = '1.8.0'
 coroutineTestingVersion = '1.8.0'
@@ -61,7 +62,7 @@ espressoVersion = '3.5.1'
 disableAnimationVersion = '2.0.0'
 leakCanaryVersion = '2.12'
 timberVersion = '5.0.1'
-protobufJavaVersion = '3.9.2'
+protobufJavaVersion = '3.25.2'
 protocVersion = '3.9.0'
 roomVersion = '2.6.1'
 dataStoreVersion = '1.0.0'
@@ -104,7 +105,7 @@ mockitoKotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "m
 junit = { module = "junit:junit", version.ref = "junitVersion" }
 androidJUnit = { module = "androidx.test.ext:junit", version.ref = "androidJunitVersion" }
 testRunner = { module = "androidx.test:runner", version.ref = "runnerVersion" }
-testRules = { module = "androidx.test:rules", version.ref = "runnerVersion" }
+testRules = { module = "androidx.test:rules", version.ref = "rulesVersion" }
 mockitoAndroid = { module = "org.mockito:mockito-android", version.ref = "mockitoAndroidVersion" }
 coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinCoroutinesVersion" }
 coroutineTesting = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutineTestingVersion" }

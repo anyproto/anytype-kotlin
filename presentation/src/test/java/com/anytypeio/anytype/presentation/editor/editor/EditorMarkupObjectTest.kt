@@ -44,9 +44,7 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        stubSpaceManager()
-        stubGetNetworkMode()
-        stubFileLimitEvents()
+        proceedWithDefaultBeforeTestStubbing()
     }
 
     @After
@@ -55,7 +53,7 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should add object markup to text`() {
+    fun `should add object markup to text`() = runTest {
         val title = MockTypicalDocumentFactory.title
         val header = MockTypicalDocumentFactory.header
         val block = Block(
@@ -105,6 +103,8 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
             proceedToAddObjectToTextAsLink(id = linkObject)
         }
 
+        coroutineTestRule.advanceUntilIdle()
+
         vm.state.test().apply {
             assertValue(
                 ViewState.Success(
@@ -144,7 +144,7 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should add object markup to text end remove all clicked marks in range`() {
+    fun `should add object markup to text end remove all clicked marks in range`() = runTest {
         val title = MockTypicalDocumentFactory.title
         val header = MockTypicalDocumentFactory.header
         val linkObject = MockDataFactory.randomUuid()
@@ -302,6 +302,8 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
                 )
             )
         )
+
+        coroutineTestRule.advanceUntilIdle()
 
         val actual = vm.state.value
         assertEquals(expected, actual)

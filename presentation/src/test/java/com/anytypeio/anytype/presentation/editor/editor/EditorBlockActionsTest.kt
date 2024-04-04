@@ -29,9 +29,7 @@ class EditorBlockActionsTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        stubSpaceManager()
-        stubFileLimitEvents()
-        stubGetNetworkMode()
+        proceedWithDefaultBeforeTestStubbing()
         stubInterceptEvents()
     }
 

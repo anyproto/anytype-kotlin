@@ -29,9 +29,7 @@ class EditorGranularChangeTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        stubSpaceManager()
-        stubGetNetworkMode()
-        stubFileLimitEvents()
+        proceedWithDefaultBeforeTestStubbing()
     }
 
     @Test

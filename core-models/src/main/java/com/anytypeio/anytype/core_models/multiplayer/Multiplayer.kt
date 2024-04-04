@@ -42,6 +42,6 @@ enum class SpaceMemberPermissions(
 
 enum class SpaceAccessType(val code: Int) {
     PRIVATE(0),
-    PERSONAL(1),
+    DEFAULT(1),
     SHARED(2)
 }

@@ -1165,7 +1165,7 @@ class HomeScreenViewModel(
                 navigate(
                     Navigation.OpenSet(
                         ctx = navigation.target,
-                        space = navigation.target
+                        space = navigation.space
                     )
                 )
             }

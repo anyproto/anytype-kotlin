@@ -217,7 +217,7 @@ fun SettingsTextField(
             .fillMaxWidth(),
         onValueChange = onValueChange,
         enabled = isEditEnabled,
-        readOnly = false,
+        readOnly = !isEditEnabled,
         textStyle = HeadlineHeading.copy(color = colorResource(id = R.color.text_primary)),
         cursorBrush = SolidColor(colorResource(id = R.color.orange)),
         visualTransformation = visualTransformation,

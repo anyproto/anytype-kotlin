@@ -58,7 +58,7 @@
     <string name="about_meta_info_for_copy">Device: %1$s\nAndroid version: %2$d\nApp version: %3$s\nBuild number: %4$d\nLibrary version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDevice\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s</string>
     <string name="space">Space</string>
     <string name="space_name">Space name</string>
-    <string name="personal_space">Personal Space</string>
+    <string name="default_space">Default space</string>
     <string name="space_settings_apply_random_gradient">Apply random gradient</string>
     <string name="delete_space">Delete space</string>
     <string name="you_can_store">You can store up to %1$s of your files on our encrypted backup node for free. If you reach the limit, files will be stored only locally.</string>
@@ -891,7 +891,7 @@
 
     <string name="exiting_please_wait">Exiting... please wait</string>
     <string name="loading_please_wait">Loading... please wait</string>
-    <string name="personal">Personal</string>
+    <string name="personal">Default</string>
     <string name="create_space">Create a space</string>
 
     <string name="generic_error">Something went wrong. Please try again.</string>
@@ -912,7 +912,7 @@
     <string name="anytype_update_alert_title">It\'s time to update</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
 
-    <string name="space_type_personal">Personal</string>
+    <string name="space_type_default">Default</string>
     <string name="space_type_private">Private</string>
     <string name="space_type_private_space">Private space</string>
     <string name="space_type_shared">Shared</string>
@@ -1099,8 +1099,6 @@
     <string name="onboarding_soul_creation_description">This is how you will appear in the app</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
-    <string name="onboarding_soul_space_creation">Setting up the Personal space…</string>
-    <string name="onboarding_soul_creation_personal_space">Personal Space</string>
     <string name="onboarding_type_recovery_phrase">Type your recovery phrase</string>
     <string name="onboarding_login_or">OR</string>
     <string name="onboarding_entering_void_title">Entering the Void</string>
@@ -1336,6 +1334,7 @@
     <string name="multiplayer_share">Share</string>
     <string name="multiplayer_manage">Manage</string>
     <string name="multiplayer_leave_space">Leave space</string>
+    <string name="multiplayer_leave_space_warning_subtitle">This space will be removed from your devices  and you will no longer have access to it</string>
     <string name="multiplayer_generate_invite_link_description">Create invite link to share space and add new members</string>
     <string name="multiplayer_generate_invite_link">Generate invite link</string>
 

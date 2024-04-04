@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Response
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -109,6 +110,7 @@ import com.anytypeio.anytype.presentation.editor.editor.table.EditorTableDelegat
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
+import com.anytypeio.anytype.presentation.home.UserPermissionProviderStub
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -120,10 +122,8 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import org.mockito.Mock
 import org.mockito.kotlin.any
-import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.notNull
 import org.mockito.kotlin.stub
 
 open class EditorPresentationTestSetup {
@@ -368,8 +368,7 @@ open class EditorPresentationTestSetup {
     @Mock
     lateinit var getNetworkMode: GetNetworkMode
 
-    @Mock
-    lateinit var permissions: UserPermissionProvider
+    var permissions: UserPermissionProvider = UserPermissionProviderStub()
 
     open fun buildViewModel(urlBuilder: UrlBuilder = builder): EditorViewModel {
 
@@ -826,9 +825,25 @@ open class EditorPresentationTestSetup {
         }
     }
 
-    fun stubSpaceManager(space: String = "") {
+    fun stubSpaceManager(space: String = defaultSpace) {
         spaceManager.stub {
             onBlocking { get() } doReturn space
         }
+    }
+
+    fun stubUserPermission(
+        space: SpaceId = SpaceId(defaultSpace),
+        permission: SpaceMemberPermissions = SpaceMemberPermissions.OWNER
+    ) {
+        (permissions as UserPermissionProviderStub).stubObserve(
+            space, permission
+        )
+    }
+
+    fun proceedWithDefaultBeforeTestStubbing() {
+        stubSpaceManager()
+        stubUserPermission()
+        stubGetNetworkMode()
+        stubFileLimitEvents()
     }
 }

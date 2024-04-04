@@ -8,7 +8,7 @@ import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
-import com.anytypeio.anytype.playbilling.BillingClientLifecycle
+import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
 import com.anytypeio.anytype.ui.payments.PaymentsFragment
 import com.anytypeio.anytype.payments.viewmodel.PaymentsViewModelFactory
 import dagger.Binds

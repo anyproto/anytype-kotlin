@@ -17,7 +17,7 @@ import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.playbilling.BillingClientLifecycle
+import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
 import com.anytypeio.anytype.payments.screens.CodeScreen
 import com.anytypeio.anytype.payments.screens.MainPaymentsScreen
 import com.anytypeio.anytype.payments.screens.PaymentWelcomeScreen

@@ -2,7 +2,7 @@ package com.anytypeio.anytype.di.main
 
 import android.content.Context
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
-import com.anytypeio.anytype.playbilling.BillingClientLifecycle
+import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
 import dagger.Module
 import dagger.Provides
 import javax.inject.Named

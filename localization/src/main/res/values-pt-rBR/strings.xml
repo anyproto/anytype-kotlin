@@ -1147,6 +1147,7 @@
     <string name="multiplayer_remove_member">Remover membro</string>
     <string name="multiplayer_request_sent_toast">Solicitação enviada</string>
     <string name="multiplayer_space_stop_sharing">Stop sharing</string>
+    <string name="multiplayer_more_info">More info</string>
     <string name="multiplayer_sharing">Sharing</string>
     <string name="multiplayer_share">Compartilhar</string>
     <string name="multiplayer_manage">Manage</string>
@@ -1154,6 +1155,10 @@
     <string name="multiplayer_leave_space_warning_subtitle">This space will be removed from your devices  and you will no longer have access to it</string>
     <string name="multiplayer_generate_invite_link_description">Create invite link to share space and add new members</string>
     <string name="multiplayer_generate_invite_link">Generate invite link</string>
+    <string name="multiplayer_how_to_share_space">How to share a space?</string>
+    <string name="multiplayer_how_to_share_space_step_1">Please provide the link to the person you\'d like to collaborate with.</string>
+    <string name="multiplayer_how_to_share_space_step_2">By clicking the link, a person requests to join the space.</string>
+    <string name="multiplayer_how_to_share_space_step_3">After approving the request, you can choose the access rights for that person.</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Associação</string>

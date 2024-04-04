@@ -1147,6 +1147,8 @@
     <string name="multiplayer_remove_member">Supprimer un membre</string>
     <string name="multiplayer_request_sent_toast">Demande envoyée</string>
     <string name="multiplayer_space_stop_sharing">Arrêter le partage</string>
+    <string name="multiplayer_space_stop_sharing_space">Arrêter le partage de l\'espace</string>
+    <string name="multiplayer_space_stop_sharing_space_description">Participants will no longer sync to this space and the share link will be deactivated.</string>
     <string name="multiplayer_more_info">Plus d\'infos</string>
     <string name="multiplayer_sharing">Partager</string>
     <string name="multiplayer_share">Partager</string>

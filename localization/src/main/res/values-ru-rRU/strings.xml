@@ -1159,6 +1159,7 @@
     <string name="multiplayer_share">Поделиться</string>
     <string name="multiplayer_manage">Manage</string>
     <string name="multiplayer_leave_space">Leave space</string>
+    <string name="multiplayer_leave_space_warning_subtitle">This space will be removed from your devices  and you will no longer have access to it</string>
     <string name="multiplayer_generate_invite_link_description">Создать ссылку-приглашение для совместного использования и добавления новых участников</string>
     <string name="multiplayer_generate_invite_link">Создать ссылку на приглашение</string>
     <!--endregion-->

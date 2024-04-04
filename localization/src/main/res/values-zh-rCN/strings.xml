@@ -1151,8 +1151,10 @@
     <string name="multiplayer_leave_space_warning_subtitle">这个空间将被从您的设备中删除，您将无法再访问它</string>
     <string name="multiplayer_generate_invite_link_description">创建邀请链接以共享空间并添加新成员</string>
     <string name="multiplayer_generate_invite_link">生成邀请链接</string>
+    <string name="multiplayer_show_qr_code">显示二维码</string>
     <string name="multiplayer_how_to_share_space">如何共享空间？</string>
     <string name="multiplayer_how_to_share_space_step_1">请向您与想要合作的人提供这个链接。</string>
+    <string name="multiplayer_how_to_share_space_qr_code">Please provide this QR code to the person you\'d like to collaborate with.</string>
     <string name="multiplayer_how_to_share_space_step_2">通过点击链接，将收到一个人加入空间的请求。</string>
     <string name="multiplayer_how_to_share_space_step_3">批准请求后，您可以选择此人的访问权限。</string>
     <!--endregion-->

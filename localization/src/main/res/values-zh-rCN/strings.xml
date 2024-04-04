@@ -1143,6 +1143,8 @@
     <string name="multiplayer_remove_member">Remove member</string>
     <string name="multiplayer_request_sent_toast">已发送申请</string>
     <string name="multiplayer_space_stop_sharing">停止共享</string>
+    <string name="multiplayer_space_stop_sharing_space">停止共享此空间</string>
+    <string name="multiplayer_space_stop_sharing_space_description">Participants will no longer sync to this space and the share link will be deactivated.</string>
     <string name="multiplayer_more_info">更多信息</string>
     <string name="multiplayer_sharing">分享</string>
     <string name="multiplayer_share">分享</string>

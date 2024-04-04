@@ -35,8 +35,9 @@ fun ShareQrCodeScreen(link: String) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Dragger(Modifier.padding(vertical = 6.dp))
+        Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = stringResource(id = R.string.multiplayer_share_space),
+            text = stringResource(id = R.string.multiplayer_invite_link),
             style = HeadlineHeading,
             color = colorResource(id = R.color.text_primary)
         )

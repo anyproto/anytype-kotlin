@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
-import com.anytypeio.anytype.playbilling.BillingClientLifecycle
+import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
 import javax.inject.Inject
 
 class PaymentsViewModelFactory @Inject constructor(

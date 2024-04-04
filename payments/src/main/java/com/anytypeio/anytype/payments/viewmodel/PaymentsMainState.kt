@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.payments.viewmodel
 
-import com.anytypeio.anytype.models.Tier
+import com.anytypeio.anytype.payments.models.Tier
+
 
 sealed class PaymentsMainState {
     object Loading : PaymentsMainState()

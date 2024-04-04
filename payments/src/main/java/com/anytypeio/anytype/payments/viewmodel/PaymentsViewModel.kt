@@ -6,10 +6,10 @@ import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.constants.BillingConstants
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
-import com.anytypeio.anytype.models.Tier
-import com.anytypeio.anytype.playbilling.BillingClientLifecycle
+import com.anytypeio.anytype.payments.constants.BillingConstants
+import com.anytypeio.anytype.payments.models.Tier
+import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow

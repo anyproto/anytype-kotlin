@@ -26,8 +26,8 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
-import com.anytypeio.anytype.models.Tier
-import com.anytypeio.anytype.peyments.R
+import com.anytypeio.anytype.payments.R
+import com.anytypeio.anytype.payments.models.Tier
 import com.anytypeio.anytype.payments.viewmodel.PaymentsWelcomeState
 import com.anytypeio.anytype.payments.viewmodel.TierId
 

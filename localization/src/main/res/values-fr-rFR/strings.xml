@@ -1147,6 +1147,7 @@
     <string name="multiplayer_remove_member">Supprimer un membre</string>
     <string name="multiplayer_request_sent_toast">Demande envoyée</string>
     <string name="multiplayer_space_stop_sharing">Arrêter le partage</string>
+    <string name="multiplayer_more_info">Plus d\'infos</string>
     <string name="multiplayer_sharing">Partager</string>
     <string name="multiplayer_share">Partager</string>
     <string name="multiplayer_manage">Gérer</string>
@@ -1154,6 +1155,10 @@
     <string name="multiplayer_leave_space_warning_subtitle">This space will be removed from your devices  and you will no longer have access to it</string>
     <string name="multiplayer_generate_invite_link_description">Créer un lien d\'invitation pour partager de l\'espace et ajouter de nouveaux membres</string>
     <string name="multiplayer_generate_invite_link">Générer un lien d\'invitation</string>
+    <string name="multiplayer_how_to_share_space">Comment partager un espace ?</string>
+    <string name="multiplayer_how_to_share_space_step_1">SVP fournir le lien à la personne avec qui vous souhaitez collaborer.</string>
+    <string name="multiplayer_how_to_share_space_step_2">En cliquant le lien, une personne demande à joindre l\'espace.</string>
+    <string name="multiplayer_how_to_share_space_step_3">Après l\'approbation de la demande, vous pouvez choisir les droits d\'accès pour cette personne.</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Adhésion</string>

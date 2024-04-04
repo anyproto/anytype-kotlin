@@ -10,7 +10,7 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.playbilling.BillingClientLifecycle
 import com.anytypeio.anytype.ui.payments.PaymentsFragment
-import com.anytypeio.anytype.viewmodel.PaymentsViewModelFactory
+import com.anytypeio.anytype.payments.viewmodel.PaymentsViewModelFactory
 import dagger.Binds
 import dagger.Component
 import dagger.Module

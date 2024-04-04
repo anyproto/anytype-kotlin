@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.viewmodel
+package com.anytypeio.anytype.payments.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

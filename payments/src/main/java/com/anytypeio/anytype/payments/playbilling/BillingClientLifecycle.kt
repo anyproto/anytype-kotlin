@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.playbilling
+package com.anytypeio.anytype.payments.playbilling
 
 import android.app.Activity
 import android.content.Context
@@ -16,9 +16,9 @@ import com.android.billingclient.api.PurchasesResponseListener
 import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
-import com.anytypeio.anytype.constants.BillingConstants
-import com.anytypeio.anytype.constants.BillingConstants.suscriptionTiers
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.payments.constants.BillingConstants
+import com.anytypeio.anytype.payments.constants.BillingConstants.suscriptionTiers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

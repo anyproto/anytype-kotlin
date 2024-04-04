@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.constants
+package com.anytypeio.anytype.payments.constants
 
 object BillingConstants {
 

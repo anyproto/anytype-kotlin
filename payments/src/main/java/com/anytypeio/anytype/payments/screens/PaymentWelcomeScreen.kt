@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.screens
+package com.anytypeio.anytype.payments.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -28,8 +28,8 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.models.Tier
 import com.anytypeio.anytype.peyments.R
-import com.anytypeio.anytype.viewmodel.PaymentsWelcomeState
-import com.anytypeio.anytype.viewmodel.TierId
+import com.anytypeio.anytype.payments.viewmodel.PaymentsWelcomeState
+import com.anytypeio.anytype.payments.viewmodel.TierId
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

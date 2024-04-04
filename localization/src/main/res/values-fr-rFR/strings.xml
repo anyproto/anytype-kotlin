@@ -1151,6 +1151,7 @@
     <string name="multiplayer_share">Partager</string>
     <string name="multiplayer_manage">Gérer</string>
     <string name="multiplayer_leave_space">Quitter l\'espace</string>
+    <string name="multiplayer_leave_space_warning_subtitle">This space will be removed from your devices  and you will no longer have access to it</string>
     <string name="multiplayer_generate_invite_link_description">Créer un lien d\'invitation pour partager de l\'espace et ajouter de nouveaux membres</string>
     <string name="multiplayer_generate_invite_link">Générer un lien d\'invitation</string>
     <!--endregion-->

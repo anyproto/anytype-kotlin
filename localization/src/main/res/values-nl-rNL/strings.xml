@@ -1151,6 +1151,7 @@
     <string name="multiplayer_share">Deel</string>
     <string name="multiplayer_manage">Beheer</string>
     <string name="multiplayer_leave_space">Verlaat ruimte</string>
+    <string name="multiplayer_leave_space_warning_subtitle">This space will be removed from your devices  and you will no longer have access to it</string>
     <string name="multiplayer_generate_invite_link_description">Create invite link to share space and add new members</string>
     <string name="multiplayer_generate_invite_link">Generate invite link</string>
     <!--endregion-->

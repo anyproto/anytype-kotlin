@@ -93,7 +93,7 @@ class ShareSpaceViewModel(
                         SpaceAccessType.SHARED -> {
                             val link = getSpaceInviteLink.async(params.space)
                             if (link.isSuccess) {
-                                ShareLinkViewState.Share(link.getOrThrow().scheme)
+                                ShareLinkViewState.Shared(link.getOrThrow().scheme)
                             } else {
                                 null
                             }
@@ -153,7 +153,7 @@ class ShareSpaceViewModel(
                 .async(params.space)
                 .fold(
                     onSuccess = { link ->
-                        shareLinkViewState.value = ShareLinkViewState.Share(link = link.scheme)
+                        shareLinkViewState.value = ShareLinkViewState.Shared(link = link.scheme)
                     },
                     onFailure = {
                         Timber.e(it, "Error while generating invite link")
@@ -172,7 +172,7 @@ class ShareSpaceViewModel(
                 ShareLinkViewState.Init -> {
                     // Do nothing.
                 }
-                is ShareLinkViewState.Share -> {
+                is ShareLinkViewState.Shared -> {
                     commands.emit(Command.ShareInviteLink(value.link))
                 }
                 is ShareLinkViewState.NotGenerated -> {
@@ -291,7 +291,7 @@ class ShareSpaceViewModel(
     fun onStopSharingSpaceClicked() {
         Timber.d("onStopSharingClicked")
         viewModelScope.launch {
-            if (isCurrentUserOwner.value) {
+            if (isCurrentUserOwner.value && shareLinkViewState.value is ShareLinkViewState.Shared) {
                 stopSharingSpace.async(
                     params = params.space
                 ).fold(
@@ -357,9 +357,9 @@ class ShareSpaceViewModel(
     )
 
     sealed class ShareLinkViewState {
-        object Init: ShareLinkViewState()
-        object NotGenerated: ShareLinkViewState()
-        data class Share(val link: String): ShareLinkViewState()
+        data object Init: ShareLinkViewState()
+        data object NotGenerated: ShareLinkViewState()
+        data class Shared(val link: String): ShareLinkViewState()
     }
 
     sealed class Command {

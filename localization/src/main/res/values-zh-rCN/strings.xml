@@ -1179,12 +1179,12 @@
     <string name="payments_current_label">当前</string>
     <!-- Tier details -->
     <string name="payments_tier_details_name_title">选择您独有的名字</string>
-    <string name="payments_tier_details_name_subtitle">This is your unique name on the Anytype network, confirming your Membership. It acts as your personal domain and cannot be changed.</string>
+    <string name="payments_tier_details_name_subtitle">这是您在 Anytype 网络上独有的名字，正在确认您的会员资格。它将作为您的个人域名，且不能更改。</string>
     <string name="payments_tier_details_name_hint">我自己</string>
     <string name="payments_tier_details_name_domain">.any</string>
     <string name="payments_tier_details_name_min">最少 7 个字符</string>
     <string name="payments_tier_details_name_error">此名称已被占用</string>
-    <string name="payments_tier_details_name_success">This name is up for grabs!</string>
+    <string name="payments_tier_details_name_success">这个名称是可获得的!</string>
     <string name="payments_tier_details_info_explorer">Dive into the network and enjoy the thrill of one-on-one collaboration</string>
     <string-array name="payments_benefits_explorer">
         <item>1 GB 网络空间</item>
@@ -1227,12 +1227,12 @@
     <string name="payments_welcome_subtitle">为你的好奇心干一杯大的！</string>
     <string name="payments_welcome_button">继续</string>
     <!-- Notifications -->
-    <string name="notifications_alert_error_unknown">An unknown error has occurred. Please try again later.</string>
-    <string name="notifications_alert_error_bad_input">Invalid input detected. Please check your data and try again.</string>
-    <string name="notifications_alert_error_internal">An internal error has occurred. Our team has been notified.</string>
-    <string name="notifications_alert_error_no_objects_to_import">No items found to import. Please select valid objects for import.</string>
-    <string name="notifications_alert_error_import_canceled">The import process has been canceled by the user.</string>
-    <string name="notifications_alert_error_limit_exceeded">The import limit for rows or relations has been exceeded. Please reduce the amount and try again.</string>
+    <string name="notifications_alert_error_unknown">发生了未知错误。请稍后再试。</string>
+    <string name="notifications_alert_error_bad_input">检测到无效的输入。请检查您的数据，然后重试。</string>
+    <string name="notifications_alert_error_internal">出现内部错误。已经通知了我们团队。</string>
+    <string name="notifications_alert_error_no_objects_to_import">没有找到要导入的项目。请选择有效的对象进行导入。</string>
+    <string name="notifications_alert_error_import_canceled">导入流程已被用户取消。</string>
+    <string name="notifications_alert_error_limit_exceeded">导入的行数或关联已经超出限制。请减少数量然后重试。</string>
     <string name="notifications_alert_error_file_load">加载文件时出现了一点问题。请检查文件后重试。</string>
     <string name="notifications_alert_error_insufficient_permissions">您没有执行此操作的必要权限。请检查您的权限并重试。</string>
     <!-- Gallery Experience -->

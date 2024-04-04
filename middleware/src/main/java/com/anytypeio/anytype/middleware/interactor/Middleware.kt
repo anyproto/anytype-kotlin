@@ -2503,6 +2503,14 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
+    fun revokeSpaceInvite(space: SpaceId) {
+        val request = Rpc.Space.InviteRevoke.Request(spaceId = space.id)
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.spaceInviteRevoke(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+    }
+
+    @Throws(Exception::class)
     fun downloadGalleryManifest(command: Command.DownloadGalleryManifest): ManifestInfo? {
         val request = Rpc.Gallery.DownloadManifest.Request(
             url = command.url

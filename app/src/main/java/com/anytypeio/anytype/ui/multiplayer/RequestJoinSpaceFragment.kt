@@ -18,8 +18,9 @@ import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.common.ViewState
+import com.anytypeio.anytype.presentation.common.TypedViewState
 import com.anytypeio.anytype.presentation.multiplayer.RequestJoinSpaceViewModel
+import com.anytypeio.anytype.presentation.multiplayer.RequestJoinSpaceViewModel.ErrorView
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 
@@ -42,18 +43,25 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
             setContent {
                 MaterialTheme(typography = typography) {
                     when(val state = vm.state.collectAsStateWithLifecycle().value) {
-                        is ViewState.Error -> {
-                            toast(state.error).also { dismiss() }
-                        }
-                        ViewState.Loading -> {
+                        is TypedViewState.Loading -> {
                             // Render nothing.
                         }
-                        is ViewState.Success -> {
+                        is TypedViewState.Success -> {
                             JoinSpaceScreen(
                                 onRequestJoinSpaceClicked = vm::onRequestToJoinClicked,
                                 spaceName = state.data.spaceName,
                                 createdByName = state.data.creatorName
                             )
+                        }
+                        is TypedViewState.Error -> {
+                            when(state.error) {
+                                ErrorView.AlreadySpaceMember -> {
+                                    // TODO
+                                }
+                                ErrorView.LinkRevoked -> {
+                                    // TODO
+                                }
+                            }
                         }
                     }
                     LaunchedEffect(Unit) {

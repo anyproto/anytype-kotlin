@@ -1,5 +1,5 @@
 [versions]
-middlewareVersion = "v0.33.0-rc7"
+middlewareVersion = "v0.33.0-rc8"
 kotlinVersion = '1.9.22'
 
 androidxCoreVersion = "1.12.0"
@@ -69,6 +69,8 @@ dataStoreVersion = '1.0.0'
 amplitudeVersion = '3.35.1'
 coilComposeVersion = '2.6.0'
 sentryVersion = '7.6.0'
+
+composeQrCodeVersion = '1.0.1'
 
 [libraries]
 middleware = { module = "io.anyproto:anytype-heart-android", version.ref = "middlewareVersion" }
@@ -165,6 +167,7 @@ sentry = { module = "io.sentry:sentry-android", version.ref = "sentryVersion" }
 sentryTimber = { module = "io.sentry:sentry-android-timber", version.ref = "sentryVersion" }
 navigationCompose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationComposeVersion" }
 appUpdater = { module = "com.github.PLPsiSoft:AndroidAppUpdater", version = "9913ce80da7871c84af24b9adc2bf2414ca294f0" }
+composeQrCode = { module = "com.lightspark:compose-qr-code", version.ref = "composeQrCodeVersion" }
 playBilling = { module = "com.android.billingclient:billing", version = "6.2.0" }
 
 [bundles]

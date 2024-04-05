@@ -7,5 +7,4 @@ enum class Mimetype(val value: String) {
     MIME_FILE_ALL("*/*"),
     MIME_IMAGE_AND_VIDEO("image/*,video/*"),
     MIME_YAML("application/zip"),
-    MIME_APPLICATION_ALL("application/*")
 }

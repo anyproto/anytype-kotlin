@@ -44,8 +44,8 @@ class PaymentsViewModel(
     private val builderSubProductWithProductDetails =
         billingClientLifecycle.builderSubProductWithProductDetails
 
-    private val _eventFlow = MutableSharedFlow<BillingFlowParams>(extraBufferCapacity = 1)
-    val eventFlow = _eventFlow.asSharedFlow()
+    private val _launchBillingCommand = MutableSharedFlow<BillingFlowParams>()
+    val launchBillingCommand = _launchBillingCommand.asSharedFlow()
 
 
     init {
@@ -360,7 +360,7 @@ class PaymentsViewModel(
                     offerToken = offerToken
                 )
             }
-            _eventFlow.emit(billingParams)
+            _launchBillingCommand.emit(billingParams)
         }
     }
 

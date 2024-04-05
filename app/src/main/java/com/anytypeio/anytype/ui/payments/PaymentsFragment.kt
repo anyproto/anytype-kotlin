@@ -80,7 +80,7 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
                 else -> {}
             }
         }
-        jobs += subscribe(vm.eventFlow) { event ->
+        jobs += subscribe(vm.launchBillingCommand) { event ->
             billingClientLifecycle.launchBillingFlow(
                 activity = requireActivity(),
                 params = event

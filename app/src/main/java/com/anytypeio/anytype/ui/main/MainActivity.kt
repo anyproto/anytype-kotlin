@@ -3,11 +3,8 @@ package com.anytypeio.anytype.ui.main
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Parcelable
-import android.provider.OpenableColumns
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
@@ -37,7 +34,6 @@ import com.anytypeio.anytype.presentation.main.MainViewModel
 import com.anytypeio.anytype.presentation.main.MainViewModel.Command
 import com.anytypeio.anytype.presentation.main.MainViewModelFactory
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
-import com.anytypeio.anytype.presentation.util.getExternalFilesDirTemp
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
 import com.anytypeio.anytype.ui.editor.CreateObjectFragment
 import com.anytypeio.anytype.ui.notifications.NotificationsFragment
@@ -45,8 +41,6 @@ import com.anytypeio.anytype.ui.sharing.SharingFragment
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
 import com.github.javiersantos.appupdater.AppUpdater
 import com.github.javiersantos.appupdater.enums.UpdateFrom
-import java.io.File
-import java.io.FileOutputStream
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking

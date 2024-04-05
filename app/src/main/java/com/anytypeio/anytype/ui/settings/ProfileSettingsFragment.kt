@@ -34,8 +34,8 @@ import com.anytypeio.anytype.ui.auth.account.DeleteAccountWarning
 import com.anytypeio.anytype.ui.profile.KeychainPhraseDialog
 import com.anytypeio.anytype.ui_settings.account.ProfileSettingsScreen
 import com.anytypeio.anytype.ui_settings.account.ProfileSettingsViewModel
-import com.anytypeio.anytype.viewmodel.PaymentsViewModel
-import com.anytypeio.anytype.viewmodel.PaymentsViewModelFactory
+import com.anytypeio.anytype.payments.viewmodel.PaymentsViewModel
+import com.anytypeio.anytype.payments.viewmodel.PaymentsViewModelFactory
 import javax.inject.Inject
 import timber.log.Timber
 

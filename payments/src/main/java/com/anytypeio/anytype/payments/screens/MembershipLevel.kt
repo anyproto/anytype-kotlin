@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.screens
+package com.anytypeio.anytype.payments.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -57,10 +57,10 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.core_ui.views.Relations2
-import com.anytypeio.anytype.models.Tier
-import com.anytypeio.anytype.peyments.R
-import com.anytypeio.anytype.viewmodel.PaymentsTierState
-import com.anytypeio.anytype.viewmodel.TierId
+import com.anytypeio.anytype.payments.R
+import com.anytypeio.anytype.payments.models.Tier
+import com.anytypeio.anytype.payments.viewmodel.PaymentsTierState
+import com.anytypeio.anytype.payments.viewmodel.TierId
 
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.screens
+package com.anytypeio.anytype.payments.screens
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -50,9 +50,9 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.views.BodyBold
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
-import com.anytypeio.anytype.peyments.R
-import com.anytypeio.anytype.viewmodel.PaymentsCodeState
-import com.anytypeio.anytype.viewmodel.TierId
+import com.anytypeio.anytype.payments.R
+import com.anytypeio.anytype.payments.viewmodel.PaymentsCodeState
+import com.anytypeio.anytype.payments.viewmodel.TierId
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

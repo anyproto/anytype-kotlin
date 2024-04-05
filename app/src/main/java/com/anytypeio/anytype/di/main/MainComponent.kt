@@ -79,7 +79,8 @@ import javax.inject.Singleton
         CrashReportingModule::class,
         TemplatesModule::class,
         NetworkModeModule::class,
-        NotificationsModule::class
+        NotificationsModule::class,
+        BillingModule::class
     ]
 )
 interface MainComponent :

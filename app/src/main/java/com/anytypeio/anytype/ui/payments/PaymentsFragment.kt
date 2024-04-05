@@ -17,14 +17,15 @@ import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.screens.CodeScreen
-import com.anytypeio.anytype.screens.MainPaymentsScreen
-import com.anytypeio.anytype.screens.PaymentWelcomeScreen
-import com.anytypeio.anytype.screens.TierScreen
+import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
+import com.anytypeio.anytype.payments.screens.CodeScreen
+import com.anytypeio.anytype.payments.screens.MainPaymentsScreen
+import com.anytypeio.anytype.payments.screens.PaymentWelcomeScreen
+import com.anytypeio.anytype.payments.screens.TierScreen
 import com.anytypeio.anytype.ui.settings.typography
-import com.anytypeio.anytype.viewmodel.PaymentsNavigation
-import com.anytypeio.anytype.viewmodel.PaymentsViewModel
-import com.anytypeio.anytype.viewmodel.PaymentsViewModelFactory
+import com.anytypeio.anytype.payments.viewmodel.PaymentsNavigation
+import com.anytypeio.anytype.payments.viewmodel.PaymentsViewModel
+import com.anytypeio.anytype.payments.viewmodel.PaymentsViewModelFactory
 import com.google.accompanist.navigation.material.BottomSheetNavigator
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
@@ -38,6 +39,14 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
     lateinit var factory: PaymentsViewModelFactory
     private val vm by viewModels<PaymentsViewModel> { factory }
     private lateinit var navController: NavHostController
+
+    @Inject
+    lateinit var billingClientLifecycle: BillingClientLifecycle
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        lifecycle.addObserver(billingClientLifecycle)
+    }
 
     @OptIn(ExperimentalMaterialNavigationApi::class)
     override fun onCreateView(
@@ -70,6 +79,12 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
                 PaymentsNavigation.Dismiss -> navController.popBackStack()
                 else -> {}
             }
+        }
+        jobs += subscribe(vm.launchBillingCommand) { event ->
+            billingClientLifecycle.launchBillingFlow(
+                activity = requireActivity(),
+                params = event
+            )
         }
     }
 

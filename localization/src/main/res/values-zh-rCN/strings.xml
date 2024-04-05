@@ -1144,7 +1144,7 @@
     <string name="multiplayer_request_sent_toast">已发送申请</string>
     <string name="multiplayer_space_stop_sharing">停止共享</string>
     <string name="multiplayer_space_stop_sharing_space">停止共享此空间</string>
-    <string name="multiplayer_space_stop_sharing_space_description">Participants will no longer sync to this space and the share link will be deactivated.</string>
+    <string name="multiplayer_space_stop_sharing_space_description">参与者将不再同步到此空间，共享链接也将被停用。</string>
     <string name="multiplayer_more_info">更多信息</string>
     <string name="multiplayer_sharing">分享</string>
     <string name="multiplayer_share">分享</string>
@@ -1156,7 +1156,7 @@
     <string name="multiplayer_show_qr_code">显示二维码</string>
     <string name="multiplayer_how_to_share_space">如何共享空间？</string>
     <string name="multiplayer_how_to_share_space_step_1">请向您与想要合作的人提供这个链接。</string>
-    <string name="multiplayer_how_to_share_space_qr_code">Please provide this QR code to the person you\'d like to collaborate with.</string>
+    <string name="multiplayer_how_to_share_space_qr_code">请向您与想要合作的人提供这个二维码。</string>
     <string name="multiplayer_how_to_share_space_step_2">通过点击链接，将收到一个人加入空间的请求。</string>
     <string name="multiplayer_how_to_share_space_step_3">批准请求后，您可以选择此人的访问权限。</string>
     <!--endregion-->

@@ -1198,7 +1198,7 @@
     <string name="payments_tier_details_info_explorer">潜入网络并享受一对一协作的提示</string>
     <string-array name="payments_benefits_explorer">
         <item>1 GB 网络空间</item>
-        <item>10 个仅单人编辑空间</item>
+        <item>10 个单人空间</item>
         <item>最多 10 个在只读模式下的共享空间</item>
     </string-array>
     <string name="payments_tier_details_info_builder">解锁多方协作的魔法以及享受顶级支持</string>

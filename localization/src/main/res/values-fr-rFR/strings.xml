@@ -48,7 +48,7 @@
     <string name="about_meta_info_for_copy">Device: %1$s\nAndroid version: %2$d\nApp version: %3$s\nBuild number: %4$d\nLibrary version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDevice\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s</string>
     <string name="space">Espace</string>
     <string name="space_name">Nom de l\'espace</string>
-    <string name="default_space">Default space</string>
+    <string name="default_space">Espace par défaut</string>
     <string name="space_settings_apply_random_gradient">Appliquer un dégradé aléatoire</string>
     <string name="delete_space">Supprimer l\'espace</string>
     <string name="you_can_store">Vous pouvez stocker gratuitement jusqu\'à %1$s de vos fichiers sur notre nœud de sauvegarde chiffré. Si vous atteignez la limite, les fichiers ne seront stockés que localement.</string>
@@ -1148,19 +1148,19 @@
     <string name="multiplayer_request_sent_toast">Demande envoyée</string>
     <string name="multiplayer_space_stop_sharing">Arrêter le partage</string>
     <string name="multiplayer_space_stop_sharing_space">Arrêter le partage de l\'espace</string>
-    <string name="multiplayer_space_stop_sharing_space_description">Participants will no longer sync to this space and the share link will be deactivated.</string>
+    <string name="multiplayer_space_stop_sharing_space_description">Les membres ne seront plus synchronisés à cet espace et le lien de partage sera désactivé.</string>
     <string name="multiplayer_more_info">Plus d\'infos</string>
     <string name="multiplayer_sharing">Partager</string>
     <string name="multiplayer_share">Partager</string>
     <string name="multiplayer_manage">Gérer</string>
     <string name="multiplayer_leave_space">Quitter l\'espace</string>
-    <string name="multiplayer_leave_space_warning_subtitle">This space will be removed from your devices  and you will no longer have access to it</string>
+    <string name="multiplayer_leave_space_warning_subtitle">Cet espace sera retiré de vos appareils et vous n\'aurez plus accès à celui-ci</string>
     <string name="multiplayer_generate_invite_link_description">Créer un lien d\'invitation pour partager de l\'espace et ajouter de nouveaux membres</string>
     <string name="multiplayer_generate_invite_link">Générer un lien d\'invitation</string>
     <string name="multiplayer_show_qr_code">Afficher le QR code</string>
     <string name="multiplayer_how_to_share_space">Comment partager un espace ?</string>
     <string name="multiplayer_how_to_share_space_step_1">SVP fournir le lien à la personne avec qui vous souhaitez collaborer.</string>
-    <string name="multiplayer_how_to_share_space_qr_code">Please provide this QR code to the person you\'d like to collaborate with.</string>
+    <string name="multiplayer_how_to_share_space_qr_code">Veuillez fournir ce code QR à la personne avec laquelle vous souhaitez collaborer.</string>
     <string name="multiplayer_how_to_share_space_step_2">En cliquant le lien, une personne demande à joindre l\'espace.</string>
     <string name="multiplayer_how_to_share_space_step_3">Après l\'approbation de la demande, vous pouvez choisir les droits d\'accès pour cette personne.</string>
     <!--endregion-->
@@ -1238,7 +1238,7 @@
     <string name="payments_code_resend_in">Renvoyer dans %1$n sec</string>
     <!-- Payments Welcome -->
     <string name="payments_welcome_title">Bienvenue sur le réseau,\n%1$s</string>
-    <string name="payments_welcome_subtitle">Big cheers for your curiosity!</string>
+    <string name="payments_welcome_subtitle">Merci beaucoup pour votre curiosité !</string>
     <string name="payments_welcome_button">Continuer</string>
     <!-- Notifications -->
     <string name="notifications_alert_error_unknown">Une erreur inconnue est survenue. Veuillez réessayer plus tard.</string>

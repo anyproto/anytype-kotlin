@@ -26,6 +26,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.device.FileSharer
 import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.Permissions
 import com.anytypeio.anytype.domain.objects.CreateBookmarkObject
 import com.anytypeio.anytype.domain.objects.CreatePrefilledNote
 import com.anytypeio.anytype.domain.spaces.GetSpaceViews
@@ -57,7 +58,8 @@ class AddToAnytypeViewModel(
     private val awaitAccountStartManager: AwaitAccountStartManager,
     private val analytics: Analytics,
     private val uploadFile: UploadFile,
-    private val fileSharer: FileSharer
+    private val fileSharer: FileSharer,
+    private val permissions: Permissions
 ) : BaseViewModel() {
 
     private val selectedSpaceId = MutableStateFlow(NO_VALUE)
@@ -94,16 +96,28 @@ class AddToAnytypeViewModel(
                 .flatMapLatest {
                     combine(
                         spaces,
-                        selectedSpaceId
+                        selectedSpaceId,
                     ) { spaces, selected ->
-                        spaces.mapIndexed { index, space ->
+                        val isSelectedSpaceAvailable = if (selected.isEmpty()) {
+                            false
+                        } else {
+                            permissions.get(SpaceId(selected))?.isOwnerOrEditor() == true
+                        }
+                        spaces.filter { wrapper ->
+                            val space = wrapper.targetSpaceId
+                            if (space.isNullOrEmpty())
+                                false
+                            else {
+                                permissions.get(SpaceId(space))?.isOwnerOrEditor() == true
+                            }
+                        }.mapIndexed { index, space ->
                             SpaceView(
                                 obj = space,
                                 icon = space.spaceIcon(
                                     builder = urlBuilder,
                                     spaceGradientProvider = SpaceGradientProvider.Default
                                 ),
-                                isSelected = if (selected.isEmpty()) {
+                                isSelected = if (!isSelectedSpaceAvailable) {
                                     index == 0
                                 } else {
                                     space.targetSpaceId == selected
@@ -357,7 +371,8 @@ class AddToAnytypeViewModel(
         private val awaitAccountStartManager: AwaitAccountStartManager,
         private val analytics: Analytics,
         private val uploadFile: UploadFile,
-        private val fileSharer: FileSharer
+        private val fileSharer: FileSharer,
+        private val permissions: Permissions
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -370,7 +385,8 @@ class AddToAnytypeViewModel(
                 awaitAccountStartManager = awaitAccountStartManager,
                 analytics = analytics,
                 uploadFile = uploadFile,
-                fileSharer = fileSharer
+                fileSharer = fileSharer,
+                permissions = permissions
             ) as T
         }
     }

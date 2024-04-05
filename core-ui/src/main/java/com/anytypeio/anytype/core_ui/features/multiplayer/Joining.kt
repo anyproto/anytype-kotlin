@@ -47,6 +47,16 @@ fun JoinSpaceScreenPreview() {
 }
 
 @Composable
+@Preview
+fun JoinSpaceScreenPreviewWithEmptyNames() {
+    JoinSpaceScreen(
+        onRequestJoinSpaceClicked = {},
+        spaceName = "",
+        createdByName = ""
+    )
+}
+
+@Composable
 fun JoinSpaceScreen(
     onRequestJoinSpaceClicked: () -> Unit,
     spaceName: String,
@@ -81,8 +91,8 @@ fun JoinSpaceScreen(
             modifier = Modifier.padding(horizontal = 48.dp),
             text = stringResource(
                 id = R.string.multiplayer_space_request_to_join_msg,
-                spaceName,
-                createdByName
+                spaceName.ifEmpty { stringResource(id = R.string.untitled) },
+                createdByName.ifEmpty { stringResource(id = R.string.untitled) }
             ),
             textAlign = TextAlign.Center
         )

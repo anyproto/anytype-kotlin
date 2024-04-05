@@ -554,4 +554,12 @@
         android:id="@+id/requestJoinSpaceScreen"
         android:name="com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment"/>
 
+    <dialog
+        android:id="@+id/howToShareSpaceScreen"
+        android:name="com.anytypeio.anytype.ui.multiplayer.HowToShareSpaceFragment"/>
+
+    <dialog
+        android:id="@+id/shareSpaceInviteQrCodeScreen"
+        android:name="com.anytypeio.anytype.ui.multiplayer.ShareQrCodeSpaceInviteFragment"/>
+
 </navigation>

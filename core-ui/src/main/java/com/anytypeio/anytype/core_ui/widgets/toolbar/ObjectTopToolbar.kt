@@ -97,7 +97,7 @@ class ObjectTopToolbar @JvmOverloads constructor(
         if (isReadOnly) {
             binding.ivThreeDots.invisible()
         } else {
-            binding.ivThreeDots.visible()
+            binding.ivThreeDots.invisible()
         }
     }
 

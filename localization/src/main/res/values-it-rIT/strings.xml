@@ -48,7 +48,7 @@
     <string name="about_meta_info_for_copy">Dispositivo: %1$s\nVersione di Android: %2$d\nVersione app: %3$s\nNumero di build: %4$d\nVersione libreria: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDispositivo\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s</string>
     <string name="space">Spazio</string>
     <string name="space_name">Nome dello Spazio</string>
-    <string name="default_space">Default space</string>
+    <string name="default_space">Spazio predefinito</string>
     <string name="space_settings_apply_random_gradient">Applica gradiente casuale</string>
     <string name="delete_space">Elimina spazio</string>
     <string name="you_can_store">Puoi archiviare gratuitamente fino a %1$s di file personali sul nostro nodo di backup crittografato. Se raggiungi il limite, i file verranno archiviati solo localmente.</string>

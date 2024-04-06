@@ -1249,7 +1249,7 @@
     <string name="gallery_experience_made">作者：</string>
     <string name="gallery_experience_install">安装</string>
     <string name="gallery_experience_install_new">安装至新的空间</string>
-    <string name="gallery_experience_alert_title_success">已安装体验</string>
+    <string name="gallery_experience_alert_title_success">体验已安装</string>
     <string name="gallery_experience_alert_subtitle_success">“%1$s”已成功安装到一个新的空间。您现在可以打开并开始使用它。</string>
     <string name="gallery_experience_alert_title_error">哎呀!</string>
     <string name="gallery_experience_alert_button_space">打开空间</string>

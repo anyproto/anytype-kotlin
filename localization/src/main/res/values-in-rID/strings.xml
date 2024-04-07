@@ -1144,7 +1144,7 @@
     <string name="multiplayer_request_sent_toast">Permintaan terkirim</string>
     <string name="multiplayer_space_stop_sharing">Berhenti berbagi</string>
     <string name="multiplayer_space_stop_sharing_space">Berhenti membagikan ruang</string>
-    <string name="multiplayer_space_stop_sharing_space_description">Participants will no longer sync to this space and the share link will be deactivated.</string>
+    <string name="multiplayer_space_stop_sharing_space_description">Anggota tidak akan lagi menyinkronkan ruang ini dan tautan pembagian akan dinonaktifkan.</string>
     <string name="multiplayer_more_info">Informasi lebih lanjut</string>
     <string name="multiplayer_sharing">Berbagi</string>
     <string name="multiplayer_share">Bagikan</string>
@@ -1156,7 +1156,7 @@
     <string name="multiplayer_show_qr_code">Tampilkan kode QR</string>
     <string name="multiplayer_how_to_share_space">Bagaimana caranya membagikan ruang?</string>
     <string name="multiplayer_how_to_share_space_step_1">Berikan tautan kepada orang yang ingin kamu ajak berkolaborasi.</string>
-    <string name="multiplayer_how_to_share_space_qr_code">Please provide this QR code to the person you\'d like to collaborate with.</string>
+    <string name="multiplayer_how_to_share_space_qr_code">Berikan kode QR ini kepada orang yang ingin kamu ajak berkolaborasi.</string>
     <string name="multiplayer_how_to_share_space_step_2">Dengan mengeklik tautan, orang itu akan meminta bergabung ke dalam ruang.</string>
     <string name="multiplayer_how_to_share_space_step_3">Setelah menyetujui permintaannya, kamu bisa memilih hak akses untuk orang tersebut.</string>
     <!--endregion-->

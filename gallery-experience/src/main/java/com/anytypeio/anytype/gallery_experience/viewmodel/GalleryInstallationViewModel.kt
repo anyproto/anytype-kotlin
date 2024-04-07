@@ -130,6 +130,12 @@ class GalleryInstallationViewModel(
                             mapOf(EventsPropertiesKey.type to galleryParamNew)
                         )
                     )
+                    analytics.sendEvent(
+                        eventName = EventsDictionary.createSpace,
+                        props = Props(
+                            mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.gallery)
+                        )
+                    )
                     proceedWithInstallation(
                         spaceId = SpaceId(space),
                         isNewSpace = true,

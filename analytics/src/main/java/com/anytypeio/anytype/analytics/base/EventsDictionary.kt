@@ -234,6 +234,7 @@ object EventsDictionary {
         const val navigation = "Navigation"
         const val longTap = "LongTap"
         const val sharingExtension = "SharingExtension"
+        const val gallery = "Gallery"
     }
 
     object Type {

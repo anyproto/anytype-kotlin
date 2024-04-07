@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.base.fold
@@ -66,7 +68,12 @@ class CreateSpaceViewModel(
                 result.fold(
                     onLoading = { isInProgress.value = true },
                     onSuccess = { space: Id ->
-                        analytics.sendEvent(eventName = EventsDictionary.createSpace)
+                        analytics.sendEvent(
+                            eventName = EventsDictionary.createSpace,
+                            props = Props(
+                                mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.navigation)
+                            )
+                        )
                         setNewSpaceAsCurrentSpace(space)
                         Timber.d("Successfully created space: $space").also {
                             isSucceeded.value = true

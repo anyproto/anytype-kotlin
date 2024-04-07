@@ -1159,10 +1159,10 @@
     <string name="multiplayer_generate_invite_link">Einladungslink generieren</string>
     <string name="multiplayer_show_qr_code">QR-Code anzeigen</string>
     <string name="multiplayer_how_to_share_space">How to share a space?</string>
-    <string name="multiplayer_how_to_share_space_step_1">Please provide the link to the person you\'d like to collaborate with.</string>
+    <string name="multiplayer_how_to_share_space_step_1">Bitte gib den Link zu der Person an, mit der du zusammenarbeiten möchtest.</string>
     <string name="multiplayer_how_to_share_space_qr_code">Bitte teile diesen QR-Code mit der Person, mit der Du zusammenarbeiten möchtest.</string>
     <string name="multiplayer_how_to_share_space_step_2">By clicking the link, a person requests to join the space.</string>
-    <string name="multiplayer_how_to_share_space_step_3">After approving the request, you can choose the access rights for that person.</string>
+    <string name="multiplayer_how_to_share_space_step_3">Nach der Genehmigung der Anfrage kannst du die Zugriffsrechte für diese Person festlegen.</string>
     <string name="multiplayer_delete_space_sharing_link">Delete sharing link</string>
     <string name="multiplayer_delete_link">Link löschen</string>
     <string name="multiplayer_delete_link_description">New members won’t be able to join the space. You can generate a new link anytype.</string>
@@ -1171,7 +1171,7 @@
     <string name="payments_header">Mitgliedschaft</string>
     <string name="payments_subheader">Dem Anytype-Netzwerk beizutreten bedeutet, einen Beitrag zu seiner Geschichte zu leisten</string>
     <string name="payments_card_text_1">Erschaffe die Vision mit</string>
-    <string name="payments_card_description_1">As a valued member your voice matters! Engage in exclusive events, shape strategic choices, and influence our roadmap.</string>
+    <string name="payments_card_description_1">Als geschätztes Mitglied zählt deine Stimme! Nimm an exklusiven Veranstaltungen teil, gestalte strategische Entscheidungen und beeinflusse unseren Entwicklungsplan.</string>
     <string name="payments_card_text_2">Mitgliedsvorteile freischalten</string>
     <string name="payments_card_description_2">Members enjoy higher backup storage &amp; sync limits, invitations for multiple guests to collaborate in shared spaces, and a unique identity on the Anytype Network.</string>
     <string name="payments_card_text_3">Digitale Unabhängigkeit unterstützen</string>
@@ -1183,9 +1183,9 @@
     <string name="payments_tier_builder">Erbauer</string>
     <string name="payments_tier_builder_description">Entfessle die Magie der Zusammenarbeit mit mehreren Teilnehmern und genieße erstklassige Unterstützung</string>
     <string name="payments_tier_cocreator">Mitersteller</string>
-    <string name="payments_tier_cocreator_description">Support our adventure and unlock exclusive access and perks</string>
+    <string name="payments_tier_cocreator_description">Unterstütze unser Abenteuer und erhalte exklusiven Zugang und Vergünstigungen</string>
     <string name="payments_tier_custom">Custom</string>
-    <string name="payments_tier_custom_description">Membership tailored to your specific needs and preferences</string>
+    <string name="payments_tier_custom_description">Eine Mitgliedschaft, die auf deine speziellen Bedürfnisse und Vorlieben zugeschnitten ist</string>
     <string name="payments_button_learn">Mehr erfahren</string>
     <string name="payments_button_contact">Kontakt</string>
     <string name="payments_member_link">Details zu den Mitgliedschaftsstufen</string>
@@ -1215,7 +1215,7 @@
         <item>10 Plätze für Gastmitarbeiter</item>
         <item>Vorrangige Unterstützung</item>
     </string-array>
-    <string name="payments_tier_details_info_cocreator">Support our adventure and unlock exclusive access and perks</string>
+    <string name="payments_tier_details_info_cocreator">Unterstütze unser Abenteuer und erhalte exklusiven Zugang und Vergünstigungen</string>
     <string-array name="payments_benefits_cocreator">
         <item>Eindeutiger Name (ab 5 Zeichen)</item>
         <item>256 GB Netzwerkspeicher</item>

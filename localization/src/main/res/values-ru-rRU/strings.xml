@@ -1155,12 +1155,22 @@
     <string name="multiplayer_remove_member">Remove member</string>
     <string name="multiplayer_request_sent_toast">Запрос отправлен</string>
     <string name="multiplayer_space_stop_sharing">Stop sharing</string>
+    <string name="multiplayer_space_stop_sharing_space">Прекратить совместное использование пространства</string>
+    <string name="multiplayer_space_stop_sharing_space_description">Participants will no longer sync to this space and the share link will be deactivated.</string>
+    <string name="multiplayer_more_info">Подробнее</string>
     <string name="multiplayer_sharing">Совместное использование</string>
     <string name="multiplayer_share">Поделиться</string>
     <string name="multiplayer_manage">Manage</string>
     <string name="multiplayer_leave_space">Leave space</string>
+    <string name="multiplayer_leave_space_warning_subtitle">This space will be removed from your devices  and you will no longer have access to it</string>
     <string name="multiplayer_generate_invite_link_description">Создать ссылку-приглашение для совместного использования и добавления новых участников</string>
     <string name="multiplayer_generate_invite_link">Создать ссылку на приглашение</string>
+    <string name="multiplayer_show_qr_code">Показать QR-код</string>
+    <string name="multiplayer_how_to_share_space">Как поделиться пространством?</string>
+    <string name="multiplayer_how_to_share_space_step_1">Пожалуйста, предоставьте ссылку человеку, с которым хотите сотрудничать.</string>
+    <string name="multiplayer_how_to_share_space_qr_code">Please provide this QR code to the person you\'d like to collaborate with.</string>
+    <string name="multiplayer_how_to_share_space_step_2">Нажав на ссылку, человек запросит вступление в пространство.</string>
+    <string name="multiplayer_how_to_share_space_step_3">После одобрения запроса Вы можете выбрать права доступа для этого человека.</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Членство</string>

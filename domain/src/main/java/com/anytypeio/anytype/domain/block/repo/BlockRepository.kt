@@ -434,6 +434,7 @@ interface BlockRepository {
     suspend fun deleteRelationOption(command: Command.DeleteRelationOptions)
 
     suspend fun generateSpaceInviteLink(space: SpaceId) : SpaceInviteLink
+    suspend fun revokeSpaceInviteLink(space: SpaceId)
     suspend fun approveSpaceRequest(
         space: SpaceId,
         identity: Id,

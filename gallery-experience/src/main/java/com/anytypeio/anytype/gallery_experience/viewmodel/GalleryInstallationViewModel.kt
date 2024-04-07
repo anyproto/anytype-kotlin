@@ -3,6 +3,14 @@ package com.anytypeio.anytype.gallery_experience.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsDictionary.galleryInstallSuccess
+import com.anytypeio.anytype.analytics.base.EventsDictionary.galleryParamExisting
+import com.anytypeio.anytype.analytics.base.EventsDictionary.galleryParamNew
+import com.anytypeio.anytype.analytics.base.EventsDictionary.screenGalleryInstall
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
+import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.ManifestInfo
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Process
@@ -20,6 +28,8 @@ import com.anytypeio.anytype.gallery_experience.models.GalleryInstallationNaviga
 import com.anytypeio.anytype.gallery_experience.models.GalleryInstallationSpacesState
 import com.anytypeio.anytype.gallery_experience.models.GalleryInstallationState
 import com.anytypeio.anytype.gallery_experience.models.GallerySpaceView
+import com.anytypeio.anytype.presentation.extension.getTypePropName
+import com.anytypeio.anytype.presentation.spaces.SelectSpaceViewModel.Companion.MAX_SPACE_COUNT
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -46,8 +56,6 @@ class GalleryInstallationViewModel(
     val command = MutableSharedFlow<GalleryInstallationNavigation>(replay = 0)
     val errorState = MutableSharedFlow<String?>(replay = 0)
 
-    private val MAX_SPACES = 10
-
     init {
         Timber.d("GalleryInstallationViewModel init, viewModelParams: $viewModelParams")
         downloadGalleryManifest()
@@ -61,6 +69,7 @@ class GalleryInstallationViewModel(
                     if (manifestInfo != null) {
                         Timber.d("DownloadGalleryManifest success, manifestInfo: $manifestInfo")
                         mainState.value = GalleryInstallationState.Success(manifestInfo)
+                        sendScreenEvent(name = manifestInfo.title)
                     } else {
                         Timber.e("DownloadGalleryManifest failed, manifestInfo is null")
                         errorState.emit("Download manifest error: manifestInfo is null")
@@ -84,7 +93,7 @@ class GalleryInstallationViewModel(
                         spaces = filteredSpaces.map {
                             it.toView(urlBuilder, spaceGradientProvider)
                         },
-                        isNewButtonVisible = filteredSpaces.size < MAX_SPACES
+                        isNewButtonVisible = filteredSpaces.size < MAX_SPACE_COUNT
                     )
                     command.emit(GalleryInstallationNavigation.Spaces)
                 },
@@ -92,6 +101,9 @@ class GalleryInstallationViewModel(
                     Timber.e(error, "GetSpaceViews failed")
                     errorState.emit("Get Spaces error: ${error.message}")
                 }
+            )
+            analytics.sendEvent(
+                eventName = EventsDictionary.clickGalleryInstall
             )
         }
     }
@@ -117,6 +129,12 @@ class GalleryInstallationViewModel(
                         isNewSpace = true,
                         manifestInfo = manifestInfo,
                     )
+                    analytics.sendEvent(
+                        eventName = EventsDictionary.clickGalleryInstallSpace,
+                        props = Props(
+                            mapOf(EventsPropertiesKey.type to galleryParamNew)
+                        )
+                    )
                 },
                 onFailure = { error ->
                     mainState.value = state.copy(isLoading = false)
@@ -138,6 +156,12 @@ class GalleryInstallationViewModel(
                 Timber.e("onSpaceClick, spaceId is null")
                 return@launch
             }
+            analytics.sendEvent(
+                eventName = EventsDictionary.clickGalleryInstallSpace,
+                props = Props(
+                    mapOf(EventsPropertiesKey.type to galleryParamExisting)
+                )
+            )
             proceedWithInstallation(
                 spaceId = SpaceId(spaceId),
                 isNewSpace = false,
@@ -165,6 +189,12 @@ class GalleryInstallationViewModel(
         isNewSpace: Boolean,
         manifestInfo: ManifestInfo
     ) {
+        analytics.sendEvent(
+            eventName = galleryInstallSuccess,
+            props = Props(
+                mapOf(EventsPropertiesKey.name to manifestInfo.title)
+            ),
+        )
         val params = ImportExperience.Params(
             spaceId = spaceId,
             url = manifestInfo.downloadLink,
@@ -208,6 +238,15 @@ class GalleryInstallationViewModel(
         val deepLinkType: String,
         val deepLinkSource: String
     )
+
+    private suspend fun sendScreenEvent(name: String) {
+        analytics.sendEvent(
+            eventName = screenGalleryInstall,
+            props = Props(
+                mapOf(EventsPropertiesKey.name to name)
+            ),
+        )
+    }
 }
 
 private fun ObjectWrapper.SpaceView.toView(

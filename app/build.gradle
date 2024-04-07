@@ -188,6 +188,7 @@ dependencies {
     implementation libs.pickT
     implementation libs.emojiCompat
     implementation libs.navigationCompose
+    implementation libs.playBilling
 
     implementation libs.lifecycleViewModel
     implementation libs.lifecycleRuntime

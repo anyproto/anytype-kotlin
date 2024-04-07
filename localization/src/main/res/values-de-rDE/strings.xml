@@ -189,7 +189,7 @@
     <string name="error_while_loading_picture">Fehler beim Laden des Bildes</string>
     <string name="block_with_a_picture">Block mit einem Bild</string>
     <string name="tap_here_to_insert_a_bookmark_url">Hier tippen, um ein Lesezeichen einzufügen</string>
-    <string name="archive">Archive</string>
+    <string name="archive">Archiv</string>
     <string name="add_block_option_icon">Add block option icon</string>
     <string name="bookmark_error_menu_button">Bookmark error menu button</string>
     <string name="bookmark_error">Es ist etwas schiefgelaufen, versuchen Sie es noch einmal</string>
@@ -826,9 +826,9 @@
     <string name="download_anytype_url">https://download.anytype.io</string>
     <string name="space_type_default">Standard</string>
     <string name="space_type_private">Privat</string>
-    <string name="space_type_private_space">Private space</string>
+    <string name="space_type_private_space">privater Bereich</string>
     <string name="space_type_shared">Geteilt</string>
-    <string name="space_type_shared_space">Shared space</string>
+    <string name="space_type_shared_space">geteilter Bereich</string>
     <string name="space_type_unknown">Unbekannt</string>
     <string name="create_space_start_with">Starte mit</string>
     <string name="create_object_section_lists">Gruppen</string>
@@ -1146,18 +1146,28 @@
     <string name="multiplayer_space_join_request_header">%1$s beantragte den Beitritt zu %2$s</string>
     <string name="multiplayer_remove_member">Mitglied entfernen</string>
     <string name="multiplayer_request_sent_toast">Anfrage gesendet</string>
-    <string name="multiplayer_space_stop_sharing">Stop sharing</string>
+    <string name="multiplayer_space_stop_sharing">Beende Teilen</string>
+    <string name="multiplayer_space_stop_sharing_space">Stop sharing the space</string>
+    <string name="multiplayer_space_stop_sharing_space_description">Teilnehmende werden nicht länger mit diesem Bereich synchronisieren und der \"Teilen\" -Link wird deaktiviert.</string>
+    <string name="multiplayer_more_info">Mehr Informationen</string>
     <string name="multiplayer_sharing">Sharing</string>
     <string name="multiplayer_share">Teilen</string>
     <string name="multiplayer_manage">Verwalten</string>
-    <string name="multiplayer_leave_space">Leave space</string>
+    <string name="multiplayer_leave_space">Bereich verlassen</string>
+    <string name="multiplayer_leave_space_warning_subtitle">Dieser Bereich wird von Deinen Geräten entfernt und Du wirst keinen Zugang zu diesem Bereich mehr haben.</string>
     <string name="multiplayer_generate_invite_link_description">Create invite link to share space and add new members</string>
     <string name="multiplayer_generate_invite_link">Einladungslink generieren</string>
+    <string name="multiplayer_show_qr_code">QR-Code anzeigen</string>
+    <string name="multiplayer_how_to_share_space">How to share a space?</string>
+    <string name="multiplayer_how_to_share_space_step_1">Please provide the link to the person you\'d like to collaborate with.</string>
+    <string name="multiplayer_how_to_share_space_qr_code">Bitte teile diesen QR-Code mit der Person, mit der Du zusammenarbeiten möchtest.</string>
+    <string name="multiplayer_how_to_share_space_step_2">By clicking the link, a person requests to join the space.</string>
+    <string name="multiplayer_how_to_share_space_step_3">After approving the request, you can choose the access rights for that person.</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Mitgliedschaft</string>
     <string name="payments_subheader">Dem Anytype-Netzwerk beizutreten bedeutet, einen Beitrag zu seiner Geschichte zu leisten</string>
-    <string name="payments_card_text_1">Co-create the Vision</string>
+    <string name="payments_card_text_1">Erschaffe die Vision mit</string>
     <string name="payments_card_description_1">As a valued member your voice matters! Engage in exclusive events, shape strategic choices, and influence our roadmap.</string>
     <string name="payments_card_text_2">Mitgliedsvorteile freischalten</string>
     <string name="payments_card_description_2">Members enjoy higher backup storage &amp; sync limits, invitations for multiple guests to collaborate in shared spaces, and a unique identity on the Anytype Network.</string>
@@ -1228,7 +1238,7 @@
     <string name="payments_code_resend_in">Erneut senden in %1$n Sek.</string>
     <!-- Payments Welcome -->
     <string name="payments_welcome_title">Willkommen im Netzwerk,\n%1$s</string>
-    <string name="payments_welcome_subtitle">Big cheers for your curiosity!</string>
+    <string name="payments_welcome_subtitle">Ein Hoch auf deine Neugierde!</string>
     <string name="payments_welcome_button">Fortfahren</string>
     <!-- Notifications -->
     <string name="notifications_alert_error_unknown">Es ist ein unbekannter Fehler aufgetreten. Bitte versuche es später noch einmal.</string>

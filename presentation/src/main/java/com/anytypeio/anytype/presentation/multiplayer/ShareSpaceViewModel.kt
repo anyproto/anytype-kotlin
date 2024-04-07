@@ -24,6 +24,7 @@ import com.anytypeio.anytype.domain.multiplayer.ChangeSpaceMemberPermissions
 import com.anytypeio.anytype.domain.multiplayer.GenerateSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.RemoveSpaceMembers
+import com.anytypeio.anytype.domain.multiplayer.RevokeSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.StopSharingSpace
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
@@ -42,6 +43,7 @@ class ShareSpaceViewModel(
     private val params: Params,
     private val getSpaceInviteLink: GetSpaceInviteLink,
     private val generateSpaceInviteLink: GenerateSpaceInviteLink,
+    private val revokeSpaceInviteLink: RevokeSpaceInviteLink,
     private val removeSpaceMembers: RemoveSpaceMembers,
     private val changeSpaceMemberPermissions: ChangeSpaceMemberPermissions,
     private val stopSharingSpace: StopSharingSpace,
@@ -338,6 +340,41 @@ class ShareSpaceViewModel(
         }
     }
 
+    fun onDeleteLinkClicked() {
+        Timber.d("onDeleteLinkClicked")
+        viewModelScope.launch {
+            if (isCurrentUserOwner.value) {
+                viewModelScope.launch {
+                    commands.emit(Command.ShowDeleteLinkWarning)
+                }
+            } else {
+                Timber.w("Something wrong with permissions.")
+            }
+        }
+    }
+
+    fun onDeleteLinkAccepted() {
+        Timber.d("onDeleteLinkAccepted")
+        viewModelScope.launch {
+            if (isCurrentUserOwner.value) {
+                revokeSpaceInviteLink.async(
+                    params = params.space
+                ).fold(
+                    onSuccess = {
+                        Timber.d("Revoked space invite link")
+                    },
+                    onFailure = { e ->
+                        Timber.e(e, "Error while revoking space invite link").also {
+                            sendToast(e.msg())
+                        }
+                    }
+                )
+            } else {
+                Timber.w("Something wrong with permissions.")
+            }
+        }
+    }
+
     fun onGenerateSpaceInviteLink() {
         proceedWithGeneratingInviteLink()
     }
@@ -363,6 +400,7 @@ class ShareSpaceViewModel(
     class Factory @Inject constructor(
         private val params: Params,
         private val generateSpaceInviteLink: GenerateSpaceInviteLink,
+        private val revokeSpaceInviteLink: RevokeSpaceInviteLink,
         private val changeSpaceMemberPermissions: ChangeSpaceMemberPermissions,
         private val stopSharingSpace: StopSharingSpace,
         private val getAccount: GetAccount,
@@ -375,6 +413,7 @@ class ShareSpaceViewModel(
         override fun <T : ViewModel> create(modelClass: Class<T>): T = ShareSpaceViewModel(
             params = params,
             generateSpaceInviteLink = generateSpaceInviteLink,
+            revokeSpaceInviteLink = revokeSpaceInviteLink,
             changeSpaceMemberPermissions = changeSpaceMemberPermissions,
             removeSpaceMembers = removeSpaceMembers,
             stopSharingSpace = stopSharingSpace,
@@ -401,6 +440,7 @@ class ShareSpaceViewModel(
         data class ViewJoinRequest(val space: SpaceId, val member: Id) : Command()
         data object ShowHowToShareSpace: Command()
         data object ShowStopSharingWarning: Command()
+        data object ShowDeleteLinkWarning: Command()
         data object Dismiss : Command()
     }
 

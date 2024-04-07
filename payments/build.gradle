@@ -4,9 +4,6 @@ plugins {
 }
 
 android {
-
-    def config = rootProject.extensions.getByName("ext")
-
     buildFeatures {
         compose true
     }
@@ -14,7 +11,7 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion libs.versions.composeKotlinCompilerVersion.get()
     }
-    namespace 'com.anytypeio.anytype.peyments'
+    namespace 'com.anytypeio.anytype.payments'
 }
 
 dependencies {
@@ -26,6 +23,8 @@ dependencies {
     implementation project(':localization')
     implementation project(':presentation')
     implementation project(':library-emojifier')
+
+    implementation libs.playBilling
 
     compileOnly libs.javaxInject
 

@@ -532,8 +532,10 @@ open class ObjectSetFragment :
         lifecycleScope.subscribe(vm.permission.filterNotNull()) { permission ->
             if (permission.isOwnerOrEditor()) {
                 binding.topToolbar.ivThreeDots.visible()
+                binding.bottomToolbar.setIsReadOnly(false)
             } else {
                 binding.topToolbar.ivThreeDots.invisible()
+                binding.bottomToolbar.setIsReadOnly(true)
             }
         }
     }

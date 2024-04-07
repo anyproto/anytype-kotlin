@@ -6490,6 +6490,8 @@ message Rpc {
                 // will feature current billing ID
                 // stripe.com/?client_reference_id=1234
                 string paymentUrl = 2;
+                // billingID is only needed for mobile clients
+                string billingId = 3;
 
                 message Error {
                     Code code = 1;

@@ -188,6 +188,7 @@ dependencies {
     implementation libs.pickT
     implementation libs.emojiCompat
     implementation libs.navigationCompose
+    implementation libs.playBilling
 
     implementation libs.lifecycleViewModel
     implementation libs.lifecycleRuntime
@@ -218,6 +219,7 @@ dependencies {
 
     implementation libs.shimmerLayout
     implementation libs.photoView
+    implementation libs.composeQrCode
     implementation libs.zxing
 
     implementation libs.androidxSecurityCrypto

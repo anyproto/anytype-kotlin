@@ -24,6 +24,7 @@ import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
+import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Title1
 
@@ -34,6 +35,7 @@ fun ShareInviteLinkCardPreview() {
         link = "https://anytype.io/ibafyrfhfsag6rea3ifffsasssa3ifffsasssga3ifffsasssga3ifffsas",
         onShareInviteClicked = {},
         onRegenerateInviteLinkClicked = {},
+        onShowQrCodeClicked = {},
         modifier = Modifier
     )
 }
@@ -52,7 +54,8 @@ fun ShareInviteLinkCard(
     modifier: Modifier = Modifier,
     link: String,
     onShareInviteClicked: () -> Unit,
-    onRegenerateInviteLinkClicked: () -> Unit
+    onRegenerateInviteLinkClicked: () -> Unit,
+    onShowQrCodeClicked: () -> Unit
 ) {
     ElevatedCard(
         modifier = modifier,
@@ -117,6 +120,21 @@ fun ShareInviteLinkCard(
             ButtonPrimary(
                 text = stringResource(R.string.multiplayer_share_invite_link),
                 onClick = onShareInviteClicked,
+                size = ButtonSize.Large,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+            )
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
+        ) {
+            ButtonSecondary(
+                text = stringResource(R.string.multiplayer_show_qr_code),
+                onClick = onShowQrCodeClicked,
                 size = ButtonSize.Large,
                 modifier = Modifier
                     .fillMaxWidth()

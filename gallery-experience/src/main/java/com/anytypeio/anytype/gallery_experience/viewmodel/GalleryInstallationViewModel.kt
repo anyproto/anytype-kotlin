@@ -124,16 +124,16 @@ class GalleryInstallationViewModel(
             createSpace.async(params).fold(
                 onSuccess = { space ->
                     Timber.d("CreateSpace success, space: $space")
-                    proceedWithInstallation(
-                        spaceId = SpaceId(space),
-                        isNewSpace = true,
-                        manifestInfo = manifestInfo,
-                    )
                     analytics.sendEvent(
                         eventName = EventsDictionary.clickGalleryInstallSpace,
                         props = Props(
                             mapOf(EventsPropertiesKey.type to galleryParamNew)
                         )
+                    )
+                    proceedWithInstallation(
+                        spaceId = SpaceId(space),
+                        isNewSpace = true,
+                        manifestInfo = manifestInfo,
                     )
                 },
                 onFailure = { error ->

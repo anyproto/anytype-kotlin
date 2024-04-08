@@ -8,11 +8,13 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_ui.features.multiplayer.JoinSpaceScreen
 import com.anytypeio.anytype.core_ui.foundation.Warning
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -58,10 +60,10 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                             when(state.error) {
                                 ErrorView.AlreadySpaceMember -> {
                                     Warning(
-                                        title = "You are already a member of this space",
-                                        subtitle = "",
-                                        actionButtonText = "Open space",
-                                        cancelButtonText = "Cancel",
+                                        title = stringResource(id = R.string.multiplayer_already_space_member),
+                                        subtitle = EMPTY_STRING_VALUE,
+                                        actionButtonText = stringResource(id = R.string.multiplayer_open_space),
+                                        cancelButtonText = stringResource(id = R.string.cancel),
                                         onNegativeClick = {
                                               dismiss()
                                         },

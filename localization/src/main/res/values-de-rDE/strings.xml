@@ -1165,7 +1165,11 @@
     <string name="multiplayer_how_to_share_space_step_3">Nach der Genehmigung der Anfrage kannst du die Zugriffsrechte für diese Person festlegen.</string>
     <string name="multiplayer_delete_space_sharing_link">Delete sharing link</string>
     <string name="multiplayer_delete_link">Link löschen</string>
-    <string name="multiplayer_delete_link_description">New members won’t be able to join the space. You can generate a new link anytype.</string>
+    <string name="multiplayer_delete_link_description">New members won’t be able to join the space. You can generate a new link anytime.</string>
+    <string name="multiplayer_already_space_member">You are already a member of this space</string>
+    <string name="multiplayer_open_space">Open space</string>
+    <string name="multiplayer_error_space_deleted">Space deleted</string>
+    <string name="multiplayer_error_space_not_found">Space not found</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Mitgliedschaft</string>

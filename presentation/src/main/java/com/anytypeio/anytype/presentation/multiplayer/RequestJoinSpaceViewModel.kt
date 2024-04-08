@@ -3,14 +3,20 @@ package com.anytypeio.anytype.presentation.multiplayer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteError
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.base.getOrDefault
+import com.anytypeio.anytype.domain.multiplayer.CheckIsUserSpaceMember
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteView
 import com.anytypeio.anytype.domain.multiplayer.SendJoinSpaceRequest
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
+import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.common.ViewState
+import com.anytypeio.anytype.presentation.common.TypedViewState
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,10 +27,13 @@ class RequestJoinSpaceViewModel(
     private val params: Params,
     private val getSpaceInviteView: GetSpaceInviteView,
     private val sendJoinSpaceRequest: SendJoinSpaceRequest,
-    private val spaceInviteResolver: SpaceInviteResolver
+    private val spaceInviteResolver: SpaceInviteResolver,
+    private val checkIsUserSpaceMember: CheckIsUserSpaceMember,
+    private val spaceManager: SpaceManager,
+    private val saveCurrentSpace: SaveCurrentSpace
 ) : BaseViewModel() {
 
-    val state = MutableStateFlow<ViewState<SpaceInviteView>>(ViewState.Loading)
+    val state = MutableStateFlow<TypedViewState<SpaceInviteView, ErrorView>>(TypedViewState.Loading)
     val commands = MutableSharedFlow<Command>(0)
 
     init {
@@ -43,28 +52,48 @@ class RequestJoinSpaceViewModel(
                     )
                 ).fold(
                     onSuccess = { view ->
-                        state.value = ViewState.Success(view)
+                        val isAlreadyMember = checkIsUserSpaceMember
+                            .async(view.space)
+                            .getOrDefault(false)
+                        if (isAlreadyMember) {
+                            state.value = TypedViewState.Error(
+                                ErrorView.AlreadySpaceMember(view.space)
+                            )
+                        } else {
+                            state.value = TypedViewState.Success(view)
+                        }
                     },
                     onFailure = { e ->
+                        if (e is SpaceInviteError) {
+                            when(e) {
+                                is SpaceInviteError.InvalidInvite -> {
+                                    state.value = TypedViewState.Error(
+                                        ErrorView.InvalidLink
+                                    )
+                                }
+                                is SpaceInviteError.SpaceDeleted -> {
+                                    commands.emit(Command.Toast.SpaceDeleted)
+                                    commands.emit(Command.Dismiss)
+                                }
+                                is SpaceInviteError.SpaceNotFound -> {
+                                    commands.emit(Command.Toast.SpaceNotFound)
+                                    commands.emit(Command.Dismiss)
+                                }
+                            }
+                        }
                         Timber.e(e, "Error while getting space invite view")
                     }
                 )
             }
         } else {
-            Timber.e("Could not parse invite link: ${params.link}")
-            state.value = ViewState.Error("Could not parse invite link: ${params.link}")
+            Timber.w("Could not parse invite link: ${params.link}")
+            state.value = TypedViewState.Error(ErrorView.InvalidLink)
         }
     }
 
     fun onRequestToJoinClicked() {
         when(val curr = state.value) {
-            is ViewState.Error -> {
-                // Do nothing.
-            }
-            is ViewState.Loading -> {
-                // Do nothing.
-            }
-            is ViewState.Success -> {
+            is TypedViewState.Success -> {
                 viewModelScope.launch {
                     val fileKey = spaceInviteResolver.parseFileKey(params.link)
                     val contentId = spaceInviteResolver.parseContentId(params.link)
@@ -89,6 +118,22 @@ class RequestJoinSpaceViewModel(
                         )
                     }
                 }
+            } else -> {
+                // Do nothing.
+            }
+        }
+    }
+
+    fun onOpenSpaceClicked(space: SpaceId) {
+        viewModelScope.launch {
+            val curr = spaceManager.get()
+            if (curr == space.id) {
+                commands.emit(Command.Dismiss)
+            } else {
+                spaceManager.set(space.id)
+                saveCurrentSpace.async(params = SaveCurrentSpace.Params(space))
+                // TODO navigate to the target space instead of dismissing
+                commands.emit(Command.Dismiss)
             }
         }
     }
@@ -97,14 +142,20 @@ class RequestJoinSpaceViewModel(
         private val params: Params,
         private val getSpaceInviteView: GetSpaceInviteView,
         private val sendJoinSpaceRequest: SendJoinSpaceRequest,
-        private val spaceInviteResolver: SpaceInviteResolver
+        private val spaceInviteResolver: SpaceInviteResolver,
+        private val checkIsUserSpaceMember: CheckIsUserSpaceMember,
+        private val saveCurrentSpace: SaveCurrentSpace,
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = RequestJoinSpaceViewModel(
             params = params,
             getSpaceInviteView = getSpaceInviteView,
             sendJoinSpaceRequest = sendJoinSpaceRequest,
-            spaceInviteResolver = spaceInviteResolver
+            spaceInviteResolver = spaceInviteResolver,
+            checkIsUserSpaceMember = checkIsUserSpaceMember,
+            saveCurrentSpace = saveCurrentSpace,
+            spaceManager = spaceManager
         ) as T
     }
 
@@ -112,8 +163,15 @@ class RequestJoinSpaceViewModel(
 
     sealed class Command {
         sealed class Toast : Command() {
-            object RequestSent : Toast()
+            data object RequestSent : Toast()
+            data object SpaceNotFound : Toast()
+            data object SpaceDeleted : Toast()
         }
-        object Dismiss: Command()
+        data object Dismiss: Command()
     }
+
+    sealed class ErrorView {
+        data object InvalidLink : ErrorView()
+        data class AlreadySpaceMember(val space: SpaceId) : ErrorView()
+     }
 }

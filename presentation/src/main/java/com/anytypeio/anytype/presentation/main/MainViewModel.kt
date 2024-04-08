@@ -100,6 +100,10 @@ class MainViewModel(
         if (payload is NotificationPayload.GalleryImport) {
             delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
             commands.emit(Command.Notifications)
+        } else {
+            viewModelScope.launch {
+                toasts.emit(payload.toString())
+            }
         }
     }
 
@@ -240,7 +244,7 @@ class MainViewModel(
 
     sealed class Command {
         data class ShowDeletedAccountScreen(val deadline: Long) : Command()
-        object LogoutDueToAccountDeletion : Command()
+        data object LogoutDueToAccountDeletion : Command()
         class OpenCreateNewType(val type: Id) : Command()
         data class Error(val msg: String) : Command()
         sealed class Sharing : Command() {

@@ -45,3 +45,9 @@ enum class SpaceAccessType(val code: Int) {
     DEFAULT(1),
     SHARED(2)
 }
+
+sealed class SpaceInviteError : Exception() {
+    class SpaceNotFound : SpaceInviteError()
+    class SpaceDeleted: SpaceInviteError()
+    class InvalidInvite: SpaceInviteError()
+}

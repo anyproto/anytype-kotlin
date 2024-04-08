@@ -16,6 +16,10 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_ui.features.multiplayer.JoinSpaceScreen
+import com.anytypeio.anytype.core_ui.foundation.AlertConfig
+import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
+import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_BLUE
+import com.anytypeio.anytype.core_ui.foundation.GenericAlert
 import com.anytypeio.anytype.core_ui.foundation.Warning
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -73,7 +77,18 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                                     )
                                 }
                                 is ErrorView.InvalidLink -> {
-                                    toast("link revoked")
+                                    GenericAlert(
+                                        config = AlertConfig.WithOneButton(
+                                            title = "This link does not seem to work",
+                                            firstButtonText = stringResource(id = R.string.button_okay),
+                                            firstButtonType = BUTTON_SECONDARY,
+                                            description = EMPTY_STRING_VALUE,
+                                            icon = AlertConfig.Icon(
+                                                gradient = GRADIENT_TYPE_BLUE,
+                                                icon = R.drawable.ic_alert_message
+                                            )
+                                        )
+                                    )
                                 }
                             }
                         }
@@ -98,6 +113,12 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
             }
             RequestJoinSpaceViewModel.Command.Toast.RequestSent -> {
                 toast(getString(R.string.multiplayer_request_sent_toast))
+            }
+            RequestJoinSpaceViewModel.Command.Toast.SpaceDeleted -> {
+                toast(getString(R.string.multiplayer_error_space_deleted))
+            }
+            RequestJoinSpaceViewModel.Command.Toast.SpaceNotFound -> {
+                toast(getString(R.string.multiplayer_error_space_not_found))
             }
         }
     }

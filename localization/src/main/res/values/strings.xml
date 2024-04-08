@@ -1353,6 +1353,7 @@
     <string name="multiplayer_open_space">Open space</string>
     <string name="multiplayer_error_space_deleted">Space deleted</string>
     <string name="multiplayer_error_space_not_found">Space not found</string>
+    <string name="multiplayer_read_only_access_error">Read-only access. Contact space owner for changes.</string>
 
     <!--endregion-->
 
@@ -1469,6 +1470,5 @@
     <string name="gallery_experience_alert_title_error">Oops!</string>
     <string name="gallery_experience_alert_button_space">Open space</string>
     <string name="gallery_experience_alert_button_error">Close</string>
-
 
 </resources>

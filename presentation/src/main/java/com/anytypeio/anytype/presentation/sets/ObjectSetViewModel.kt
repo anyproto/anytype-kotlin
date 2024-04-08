@@ -182,6 +182,8 @@ class ObjectSetViewModel(
 
     val permission = MutableStateFlow<SpaceMemberPermissions?>(SpaceMemberPermissions.NO_PERMISSIONS)
 
+    private val isOwnerOrEditor get() = permission.value?.isOwnerOrEditor() ==  true
+
     val status = MutableStateFlow<SyncStatusView?>(null)
     val error = MutableStateFlow<String?>(null)
 
@@ -1647,15 +1649,19 @@ class ObjectSetViewModel(
         Timber.d("onClickListener, clicked:[$clicked]")
         when (clicked) {
             is ListenerType.Relation.SetQuery -> {
-                val queries = clicked.queries.map { it.id }
-                val command = if (queries.isEmpty()) {
-                    ObjectSetCommand.Modal.OpenEmptyDataViewSelectQueryScreen
+                if (isOwnerOrEditor) {
+                    val queries = clicked.queries.map { it.id }
+                    val command = if (queries.isEmpty()) {
+                        ObjectSetCommand.Modal.OpenEmptyDataViewSelectQueryScreen
+                    } else {
+                        ObjectSetCommand.Modal.OpenDataViewSelectQueryScreen(
+                            selectedTypes = queries
+                        )
+                    }
+                    dispatch(command)
                 } else {
-                    ObjectSetCommand.Modal.OpenDataViewSelectQueryScreen(
-                        selectedTypes = queries
-                    )
+                    dispatch(ObjectSetCommand.ShowOnlyAccessError)
                 }
-                dispatch(command)
             }
             is ListenerType.Relation.ChangeQueryByRelation -> {
                 toast(clicked.msg)
@@ -1669,19 +1675,24 @@ class ObjectSetViewModel(
                                 //do nothing
                             }
                             is ObjectState.DataView.Set -> {
-                                val setOfValue = state.getSetOfValue(context)
-                                val command = if (state.isSetByRelation(setOfValue = setOfValue)) {
-                                    ObjectSetCommand.Modal.ShowObjectSetRelationPopupMenu(
-                                        ctx = clicked.relation.id,
-                                        anchor = clicked.viewId
-                                    )
+                                if (isOwnerOrEditor) {
+                                    val setOfValue = state.getSetOfValue(context)
+                                    val command =
+                                        if (state.isSetByRelation(setOfValue = setOfValue)) {
+                                            ObjectSetCommand.Modal.ShowObjectSetRelationPopupMenu(
+                                                ctx = clicked.relation.id,
+                                                anchor = clicked.viewId
+                                            )
+                                        } else {
+                                            ObjectSetCommand.Modal.ShowObjectSetTypePopupMenu(
+                                                ctx = clicked.relation.id,
+                                                anchor = clicked.viewId
+                                            )
+                                        }
+                                    dispatch(command)
                                 } else {
-                                    ObjectSetCommand.Modal.ShowObjectSetTypePopupMenu(
-                                        ctx = clicked.relation.id,
-                                        anchor = clicked.viewId
-                                    )
+                                    dispatch(ObjectSetCommand.ShowOnlyAccessError)
                                 }
-                                dispatch(command)
                             }
                         }
                     }

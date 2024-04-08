@@ -127,4 +127,6 @@ sealed class ObjectSetCommand {
         data class MailTo(val email: String) : Intent()
         data class Call(val phone: String) : Intent()
     }
+
+    data object ShowOnlyAccessError : ObjectSetCommand()
 }

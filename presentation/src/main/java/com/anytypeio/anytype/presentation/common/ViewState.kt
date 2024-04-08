@@ -11,6 +11,3 @@ sealed class TypedViewState<out T : Any, out E: Any> {
     data class Error<out T : Any, out E: Any>(val error: E) : TypedViewState<T, E>()
     data object Loading : TypedViewState<Nothing, Nothing>()
 }
-
-
-

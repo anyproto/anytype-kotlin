@@ -68,7 +68,7 @@ class RequestJoinSpaceViewModel(
                             when(e) {
                                 is SpaceInviteError.InvalidInvite -> {
                                     state.value = TypedViewState.Error(
-                                        ErrorView.InvalidLinkf
+                                        ErrorView.InvalidLink
                                     )
                                 }
                                 is SpaceInviteError.SpaceDeleted -> {

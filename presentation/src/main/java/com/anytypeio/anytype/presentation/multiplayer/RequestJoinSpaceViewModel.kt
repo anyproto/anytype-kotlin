@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.base.getOrDefault
+import com.anytypeio.anytype.domain.multiplayer.CheckIsUserSpaceMember
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteView
 import com.anytypeio.anytype.domain.multiplayer.SendJoinSpaceRequest
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
@@ -21,7 +23,8 @@ class RequestJoinSpaceViewModel(
     private val params: Params,
     private val getSpaceInviteView: GetSpaceInviteView,
     private val sendJoinSpaceRequest: SendJoinSpaceRequest,
-    private val spaceInviteResolver: SpaceInviteResolver
+    private val spaceInviteResolver: SpaceInviteResolver,
+    private val checkIsUserSpaceMember: CheckIsUserSpaceMember
 ) : BaseViewModel() {
 
     val state = MutableStateFlow<TypedViewState<SpaceInviteView, ErrorView>>(TypedViewState.Loading)
@@ -43,7 +46,14 @@ class RequestJoinSpaceViewModel(
                     )
                 ).fold(
                     onSuccess = { view ->
-                        state.value = TypedViewState.Success(view)
+                        val isAlreadyMember = checkIsUserSpaceMember
+                            .async(view.space)
+                            .getOrDefault(false)
+                        if (isAlreadyMember) {
+                            state.value = TypedViewState.Error(ErrorView.AlreadySpaceMember)
+                        } else {
+                            state.value = TypedViewState.Success(view)
+                        }
                     },
                     onFailure = { e ->
                         Timber.e(e, "Error while getting space invite view")
@@ -96,14 +106,16 @@ class RequestJoinSpaceViewModel(
         private val params: Params,
         private val getSpaceInviteView: GetSpaceInviteView,
         private val sendJoinSpaceRequest: SendJoinSpaceRequest,
-        private val spaceInviteResolver: SpaceInviteResolver
+        private val spaceInviteResolver: SpaceInviteResolver,
+        private val checkIsUserSpaceMember: CheckIsUserSpaceMember
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = RequestJoinSpaceViewModel(
             params = params,
             getSpaceInviteView = getSpaceInviteView,
             sendJoinSpaceRequest = sendJoinSpaceRequest,
-            spaceInviteResolver = spaceInviteResolver
+            spaceInviteResolver = spaceInviteResolver,
+            checkIsUserSpaceMember = checkIsUserSpaceMember
         ) as T
     }
 

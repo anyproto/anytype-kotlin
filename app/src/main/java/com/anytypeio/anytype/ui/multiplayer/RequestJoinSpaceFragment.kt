@@ -14,6 +14,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.multiplayer.JoinSpaceScreen
+import com.anytypeio.anytype.core_ui.foundation.Warning
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
@@ -56,10 +57,21 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                         is TypedViewState.Error -> {
                             when(state.error) {
                                 ErrorView.AlreadySpaceMember -> {
-                                    // TODO
+                                    Warning(
+                                        title = "You are already a member of this space",
+                                        subtitle = "",
+                                        actionButtonText = "Open space",
+                                        cancelButtonText = "Cancel",
+                                        onNegativeClick = {
+                                              dismiss()
+                                        },
+                                        onPositiveClick = {
+                                            toast("Todo")
+                                        }
+                                    )
                                 }
                                 ErrorView.LinkRevoked -> {
-                                    // TODO
+                                    toast("link revoked")
                                 }
                             }
                         }

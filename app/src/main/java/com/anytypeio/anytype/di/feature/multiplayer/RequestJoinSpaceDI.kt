@@ -3,6 +3,7 @@ package com.anytypeio.anytype.di.feature.multiplayer
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -54,6 +55,7 @@ object RequestJoinSpaceModule {
 
 interface RequestJoinSpaceDependencies : ComponentDependencies {
     fun blockRepository(): BlockRepository
+    fun auth(): AuthRepository
     fun urlBuilder(): UrlBuilder
     fun dispatchers(): AppCoroutineDispatchers
     fun spaceManager(): SpaceManager

@@ -45,7 +45,7 @@ import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 
 @Preview
 @Composable
-fun AlertWithTwoButtons() {
+private fun AlertWithTwoButtons() {
     GenericAlert(
         onFirstButtonClicked = {},
         onSecondButtonClicked = {},
@@ -66,7 +66,7 @@ fun AlertWithTwoButtons() {
 
 @Preview
 @Composable
-fun AlertWithWarningAndTwoButtons() {
+private fun AlertWithWarningAndTwoButtons() {
     GenericAlert(
         onFirstButtonClicked = {},
         onSecondButtonClicked = {},
@@ -86,8 +86,8 @@ fun AlertWithWarningAndTwoButtons() {
 }
 
 @Preview
-@Composable
-fun AlertWithWarningButton() {
+@Composable 
+private fun AlertWithWarningButton() {
     GenericAlert(
         onFirstButtonClicked = {},
         onSecondButtonClicked = {},
@@ -108,7 +108,7 @@ fun AlertWithWarningButton() {
 
 @Preview
 @Composable
-fun AlertWithMessageButton() {
+private fun AlertWithMessageButton() {
     GenericAlert(
         onFirstButtonClicked = {},
         onSecondButtonClicked = {},

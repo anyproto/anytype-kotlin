@@ -20,7 +20,8 @@ class DataViewSelectSourceFragment : BaseObjectTypeChangeFragment() {
             isWithBookmark = true,
             excludeTypes = emptyList(),
             selectedTypes = selectedTypes,
-            isSetSource = true
+            isSetSource = true,
+            isWithFiles = true
         )
     }
 

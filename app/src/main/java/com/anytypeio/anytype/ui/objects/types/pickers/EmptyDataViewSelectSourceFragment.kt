@@ -18,7 +18,8 @@ class EmptyDataViewSelectSourceFragment : BaseObjectTypeChangeFragment() {
             isWithBookmark = true,
             excludeTypes = emptyList(),
             selectedTypes = emptyList(),
-            isSetSource = true
+            isSetSource = true,
+            isWithFiles = true
         )
     }
 

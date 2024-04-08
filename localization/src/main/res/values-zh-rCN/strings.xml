@@ -1166,6 +1166,7 @@
     <string name="multiplayer_open_space">打开空间</string>
     <string name="multiplayer_error_space_deleted">Space deleted</string>
     <string name="multiplayer_error_space_not_found">Space not found</string>
+    <string name="multiplayer_read_only_access_error">Read-only access. Contact space owner for changes.</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">会员</string>

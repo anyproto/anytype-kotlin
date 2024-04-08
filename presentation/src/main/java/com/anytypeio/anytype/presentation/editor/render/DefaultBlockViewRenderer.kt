@@ -2156,7 +2156,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             }
             Relations.IDENTITY -> {
                 val relation = storeOfRelations.getByKey(key)
-                details.identityRelation(
+                identityRelation(
                     relationDetails = relation,
                     isFeatured = true,
                     values = details.details[ctx]?.map ?: emptyMap(),

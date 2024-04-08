@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
+import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -344,7 +345,7 @@ object MultiValueParser {
     }
 }
 
-fun Block.Details.identityRelation(
+fun identityRelation(
     relationDetails: ObjectWrapper.Relation?,
     values: Map<String, Any?>,
     isFeatured: Boolean = false,
@@ -353,11 +354,13 @@ fun Block.Details.identityRelation(
     if (relationDetails == null) {
         return null
     }
-    val value = if (objLayout == ObjectType.Layout.PARTICIPANT) {
-        values.getOrDefault(Relations.GLOBAL_NAME, null)
-    } else {
-        values.getOrDefault(Relations.IDENTITY, null)
-    }
+    val globalNameValue = values.getSingleValue<String>(Relations.GLOBAL_NAME)
+    val value =
+        if (objLayout == ObjectType.Layout.PARTICIPANT && !globalNameValue.isNullOrBlank()) {
+            globalNameValue
+        } else {
+            values.getSingleValue(Relations.IDENTITY)
+        }
     return ObjectRelationView.Default(
         id = relationDetails.id,
         key = relationDetails.key,

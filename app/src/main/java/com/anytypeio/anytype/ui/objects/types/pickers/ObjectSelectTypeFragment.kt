@@ -20,7 +20,8 @@ class ObjectSelectTypeFragment : BaseObjectTypeChangeFragment() {
             isWithBookmark = false,
             excludeTypes = excludeTypes,
             selectedTypes = emptyList(),
-            isSetSource = false
+            isSetSource = false,
+            isWithFiles = false
         )
     }
 

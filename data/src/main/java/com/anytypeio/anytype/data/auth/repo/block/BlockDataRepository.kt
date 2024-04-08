@@ -922,8 +922,8 @@ class BlockDataRepository(
         )
     }
 
-    override suspend fun approveSpaceLeaveRequest(space: SpaceId) {
-        remote.approveSpaceLeaveRequest(space = space)
+    override suspend fun approveSpaceLeaveRequest(command: Command.ApproveSpaceLeaveRequest) {
+        remote.approveSpaceLeaveRequest(command)
     }
 
     override suspend fun declineSpaceRequest(space: SpaceId, identity: Id) {

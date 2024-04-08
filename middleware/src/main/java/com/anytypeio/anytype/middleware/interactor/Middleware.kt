@@ -2459,6 +2459,14 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
+    fun approveSpaceLeaveRequest(space: SpaceId) {
+        val request = Rpc.Space.LeaveApprove.Request(spaceId = space.id)
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.spaceLeaveApprove(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+    }
+
+    @Throws(Exception::class)
     fun getSpaceInviteView(
         inviteContentId: Id,
         inviteFileKey: String

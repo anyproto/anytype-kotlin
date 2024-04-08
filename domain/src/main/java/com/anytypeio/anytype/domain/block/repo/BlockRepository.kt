@@ -440,6 +440,7 @@ interface BlockRepository {
         identity: Id,
         permissions: SpaceMemberPermissions
     )
+    suspend fun approveSpaceLeaveRequest(space: SpaceId)
     suspend fun declineSpaceRequest(space: SpaceId, identity: Id)
     suspend fun removeSpaceMembers(space: SpaceId, identities: List<Id>)
     suspend fun changeSpaceMemberPermissions(

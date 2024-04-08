@@ -884,6 +884,10 @@ class BlockMiddleware(
         )
     }
 
+    override suspend fun approveSpaceLeaveRequest(space: SpaceId) {
+        middleware.approveSpaceLeaveRequest(space = space)
+    }
+
     override suspend fun declineSpaceRequest(space: SpaceId, identity: Id) {
         middleware.declineSpaceRequest(
             space = space,

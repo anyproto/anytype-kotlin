@@ -383,17 +383,24 @@ message Block {
             }
 
             message Sort {
-                string id = 6;
                 string RelationKey = 1;
                 Type type = 2;
                 repeated google.protobuf.Value customOrder = 3;
                 RelationFormat format = 4;
                 bool includeTime = 5;
+                string id = 6;
+                EmptyType emptyPlacement = 7;
 
                 enum Type {
                     Asc = 0;
                     Desc = 1;
                     Custom = 2;
+                }
+
+                enum EmptyType {
+                    NotSpecified = 0;
+                    Start = 1;
+                    End = 2;
                 }
             }
 

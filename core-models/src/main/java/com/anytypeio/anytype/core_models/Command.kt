@@ -461,6 +461,11 @@ sealed class Command {
         val inviteFileKey: String
     )
 
+    data class ApproveSpaceLeaveRequest(
+        val space: SpaceId,
+        val identities: List<Id>
+    )
+
     data class DownloadGalleryManifest(val url: String)
 
     data class ImportExperience(

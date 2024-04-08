@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.base.getOrThrow
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.ApproveLeaveSpaceRequest
 import com.anytypeio.anytype.domain.multiplayer.ChangeSpaceMemberPermissions
 import com.anytypeio.anytype.domain.multiplayer.GenerateSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
@@ -45,6 +46,7 @@ class ShareSpaceViewModel(
     private val generateSpaceInviteLink: GenerateSpaceInviteLink,
     private val revokeSpaceInviteLink: RevokeSpaceInviteLink,
     private val removeSpaceMembers: RemoveSpaceMembers,
+    private val approveLeaveSpaceRequest: ApproveLeaveSpaceRequest,
     private val changeSpaceMemberPermissions: ChangeSpaceMemberPermissions,
     private val stopSharingSpace: StopSharingSpace,
     private val container: StorelessSubscriptionContainer,
@@ -210,10 +212,10 @@ class ShareSpaceViewModel(
         }
     }
 
-    fun onApproveUnjoinRequestClicked(view: ShareSpaceMemberView) {
+    fun onApproveLeaveRequestClicked(view: ShareSpaceMemberView) {
         viewModelScope.launch {
-            removeSpaceMembers.async(
-                RemoveSpaceMembers.Params(
+            approveLeaveSpaceRequest.async(
+                ApproveLeaveSpaceRequest.Params(
                     space = params.space,
                     identities = listOf(view.obj.identity)
                 )
@@ -405,6 +407,7 @@ class ShareSpaceViewModel(
         private val stopSharingSpace: StopSharingSpace,
         private val getAccount: GetAccount,
         private val removeSpaceMembers: RemoveSpaceMembers,
+        private val approveLeaveSpaceRequest: ApproveLeaveSpaceRequest,
         private val container: StorelessSubscriptionContainer,
         private val urlBuilder: UrlBuilder,
         private val getSpaceInviteLink: GetSpaceInviteLink
@@ -420,7 +423,8 @@ class ShareSpaceViewModel(
             container = container,
             urlBuilder = urlBuilder,
             getAccount = getAccount,
-            getSpaceInviteLink = getSpaceInviteLink
+            getSpaceInviteLink = getSpaceInviteLink,
+            approveLeaveSpaceRequest = approveLeaveSpaceRequest
         ) as T
     }
 

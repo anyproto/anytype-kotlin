@@ -232,17 +232,21 @@ fun Warning(
             style = HeadlineHeading,
             color = colorResource(R.color.text_primary)
         )
-        Text(
-            text = subtitle,
-            modifier = Modifier.padding(
-                top = 12.dp,
-                start = 20.dp,
-                end = 20.dp,
-                bottom = 10.dp
-            ),
-            style = BodyCalloutRegular,
-            color = colorResource(R.color.text_primary)
-        )
+        if (subtitle.isNotEmpty()) {
+            Text(
+                text = subtitle,
+                modifier = Modifier.padding(
+                    top = 12.dp,
+                    start = 20.dp,
+                    end = 20.dp,
+                    bottom = 10.dp
+                ),
+                style = BodyCalloutRegular,
+                color = colorResource(R.color.text_primary)
+            )
+        } else {
+            Spacer(modifier = Modifier.height(12.dp))
+        }
         Row(
             modifier = Modifier
                 .padding(

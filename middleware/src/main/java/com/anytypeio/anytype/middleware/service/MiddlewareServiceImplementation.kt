@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.exceptions.AccountIsDeletedException
 import com.anytypeio.anytype.core_models.exceptions.LoginException
 import com.anytypeio.anytype.core_models.exceptions.MigrationNeededException
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
+import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteError
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.data.auth.exception.AnytypeNeedsUpgradeException
 import com.anytypeio.anytype.data.auth.exception.NotFoundObjectException
@@ -1827,7 +1828,23 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Space.InviteView.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Space.InviteView.Response.Error.Code.NULL) {
-            throw Exception(error.description)
+            when(error.code) {
+                Rpc.Space.InviteView.Response.Error.Code.NO_SUCH_SPACE -> {
+                    throw SpaceInviteError.SpaceNotFound()
+                }
+                Rpc.Space.InviteView.Response.Error.Code.SPACE_IS_DELETED -> {
+                    throw SpaceInviteError.SpaceDeleted()
+                }
+                Rpc.Space.InviteView.Response.Error.Code.INVITE_NOT_FOUND -> {
+                    throw SpaceInviteError.InvalidInvite()
+                }
+                Rpc.Space.InviteView.Response.Error.Code.INVITE_BAD_SIGNATURE -> {
+                    throw SpaceInviteError.InvalidInvite()
+                }
+                else -> {
+                    throw Exception(error.description)
+                }
+            }
         } else {
             return response
         }

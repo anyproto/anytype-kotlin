@@ -45,7 +45,7 @@ import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 
 @Preview
 @Composable
-fun AlertWithTwoButtons() {
+private fun AlertWithTwoButtons() {
     GenericAlert(
         onFirstButtonClicked = {},
         onSecondButtonClicked = {},
@@ -66,7 +66,7 @@ fun AlertWithTwoButtons() {
 
 @Preview
 @Composable
-fun AlertWithWarningAndTwoButtons() {
+private fun AlertWithWarningAndTwoButtons() {
     GenericAlert(
         onFirstButtonClicked = {},
         onSecondButtonClicked = {},
@@ -86,8 +86,8 @@ fun AlertWithWarningAndTwoButtons() {
 }
 
 @Preview
-@Composable
-fun AlertWithWarningButton() {
+@Composable 
+private fun AlertWithWarningButton() {
     GenericAlert(
         onFirstButtonClicked = {},
         onSecondButtonClicked = {},
@@ -108,7 +108,7 @@ fun AlertWithWarningButton() {
 
 @Preview
 @Composable
-fun AlertWithMessageButton() {
+private fun AlertWithMessageButton() {
     GenericAlert(
         onFirstButtonClicked = {},
         onSecondButtonClicked = {},
@@ -139,8 +139,10 @@ fun GenericAlert(
         if (icon != null) { AlertIcon(icon) }
         Spacer(modifier = Modifier.height(16.dp))
         AlertTitle(config.title)
-        Spacer(modifier = Modifier.height(8.dp))
-        AlertDescription(config.description)
+        if (config.withDescription) {
+            Spacer(modifier = Modifier.height(8.dp))
+            AlertDescription(config.description)
+        }
         Spacer(modifier = Modifier.height(20.dp))
         AlertButtons(
             config = config,
@@ -331,6 +333,8 @@ sealed class AlertConfig {
     abstract val title: String
     abstract val description: String
     abstract val icon: Icon?
+
+    val withDescription get() = description.isNotEmpty()
 
     data class WithTwoButtons(
         override val icon: Icon?,

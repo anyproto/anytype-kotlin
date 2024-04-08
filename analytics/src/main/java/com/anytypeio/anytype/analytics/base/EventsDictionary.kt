@@ -192,6 +192,14 @@ object EventsDictionary {
     const val selectNetwork = "SelectNetwork"
     const val uploadNetworkConfiguration = "UploadNetworkConfiguration"
 
+    //Gallery experience
+    const val screenGalleryInstall = "ScreenGalleryInstall"
+    const val clickGalleryInstall = "ClickGalleryInstall"
+    const val clickGalleryInstallSpace = "ClickGalleryInstallSpace"
+    const val galleryInstallSuccess = "GalleryInstall"
+    const val galleryParamNew = "New"
+    const val galleryParamExisting = "Existing"
+
     enum class ScreenOnboardingStep(val value: String) {
         VOID("Void"),
         PHRASE("Phrase")
@@ -226,6 +234,7 @@ object EventsDictionary {
         const val navigation = "Navigation"
         const val longTap = "LongTap"
         const val sharingExtension = "SharingExtension"
+        const val gallery = "Gallery"
     }
 
     object Type {
@@ -283,4 +292,5 @@ object EventsPropertiesKey {
     const val align = "align"
     const val view = "view"
     const val step = "step"
+    const val name = "name"
 }

@@ -87,7 +87,10 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                                                 gradient = GRADIENT_TYPE_BLUE,
                                                 icon = R.drawable.ic_alert_message
                                             )
-                                        )
+                                        ),
+                                        onFirstButtonClicked = {
+                                            dismiss()
+                                        }
                                     )
                                 }
                             }

@@ -139,8 +139,10 @@ fun GenericAlert(
         if (icon != null) { AlertIcon(icon) }
         Spacer(modifier = Modifier.height(16.dp))
         AlertTitle(config.title)
-        Spacer(modifier = Modifier.height(8.dp))
-        AlertDescription(config.description)
+        if (config.withDescription) {
+            Spacer(modifier = Modifier.height(8.dp))
+            AlertDescription(config.description)
+        }
         Spacer(modifier = Modifier.height(20.dp))
         AlertButtons(
             config = config,
@@ -331,6 +333,8 @@ sealed class AlertConfig {
     abstract val title: String
     abstract val description: String
     abstract val icon: Icon?
+
+    val withDescription get() = description.isNotEmpty()
 
     data class WithTwoButtons(
         override val icon: Icon?,

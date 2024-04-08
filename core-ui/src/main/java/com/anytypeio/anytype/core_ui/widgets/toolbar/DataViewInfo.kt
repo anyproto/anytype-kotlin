@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.widgets.toolbar
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View.OnClickListener
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ViewDataviewInfoBinding
@@ -23,7 +24,10 @@ class DataViewInfo @JvmOverloads constructor(
     val binding = ViewDataviewInfoBinding.inflate(LayoutInflater.from(context), this, true)
     private var type: TYPE = TYPE.INIT
 
-    fun show(type: TYPE) {
+    fun show(
+        type: TYPE,
+        isReadOnlyAccess: Boolean
+    ) {
         this.type = type
         visible()
         when (type) {
@@ -34,20 +38,40 @@ class DataViewInfo @JvmOverloads constructor(
             }
             TYPE.COLLECTION_NO_ITEMS -> {
                 binding.title.text = resources.getString(R.string.collection_no_items_title)
-                binding.description.text =
-                    resources.getString(R.string.collection_no_items_description)
-                binding.button.text = resources.getString(R.string.collection_no_items_button)
+                if (isReadOnlyAccess) {
+                    binding.description.invisible()
+                    binding.button.invisible()
+                } else {
+                    binding.description.text = resources.getString(R.string.collection_no_items_description)
+                    binding.button.text = resources.getString(R.string.collection_no_items_button)
+                    binding.description.visible()
+                    binding.button.visible()
+                }
             }
             TYPE.SET_NO_QUERY -> {
+                if (isReadOnlyAccess) {
+                    binding.description.invisible()
+                    binding.button.invisible()
+                } else {
+                    binding.description.text = resources.getString(R.string.set_no_query_description)
+                    binding.button.text = resources.getString(R.string.set_no_query_button)
+                    binding.description.visible()
+                    binding.button.visible()
+                }
                 binding.title.text = resources.getString(R.string.set_no_query_title)
-                binding.description.text = resources.getString(R.string.set_no_query_description)
-                binding.button.text = resources.getString(R.string.set_no_query_button)
             }
             TYPE.SET_NO_ITEMS -> {
                 binding.title.text = resources.getString(R.string.set_no_items_title)
-                binding.description.text =
-                    resources.getString(R.string.set_no_items_description)
-                binding.button.text = resources.getString(R.string.set_no_items_button)
+                if (isReadOnlyAccess) {
+                    binding.description.invisible()
+                    binding.button.invisible()
+                } else {
+                    binding.description.text =
+                        resources.getString(R.string.set_no_items_description)
+                    binding.button.text = resources.getString(R.string.set_no_items_button)
+                    binding.description.visible()
+                    binding.button.visible()
+                }
             }
         }
     }

@@ -155,8 +155,8 @@ private fun ViewersWidgetContent(
     val views = remember { mutableStateOf(currentState.items) }
     views.value = currentState.items
 
-    val isEditing = remember { mutableStateOf(currentState.isEditing) }
-    isEditing.value = currentState.isEditing
+    val isEditing = remember { mutableStateOf(currentState.isEditing && !state.isReadOnly) }
+    isEditing.value = currentState.isEditing && !state.isReadOnly
     
     Box(
         modifier = Modifier
@@ -185,20 +185,22 @@ private fun ViewersWidgetContent(
                     .fillMaxWidth()
                     .height(48.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.CenterStart),
-                ) {
-                    if (currentState.isEditing) {
-                        ActionText(
-                            text = stringResource(id = R.string.done),
-                            click = { action(DoneMode) }
-                        )
-                    } else {
-                        ActionText(
-                            text = stringResource(id = R.string.edit),
-                            click = { action(EditMode) }
-                        )
+                if (!state.isReadOnly) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.CenterStart),
+                    ) {
+                        if (currentState.isEditing) {
+                            ActionText(
+                                text = stringResource(id = R.string.done),
+                                click = { action(DoneMode) }
+                            )
+                        } else {
+                            ActionText(
+                                text = stringResource(id = R.string.edit),
+                                click = { action(EditMode) }
+                            )
+                        }
                     }
                 }
                 Box(modifier = Modifier.align(Alignment.Center)) {
@@ -208,23 +210,25 @@ private fun ViewersWidgetContent(
                         color = colorResource(R.color.text_primary)
                     )
                 }
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .noRippleThrottledClickable {
-                            action.invoke(ViewersWidgetUi.Action.Plus)
-                        }
-                ) {
-                    Image(
-                        modifier = Modifier.padding(
-                            start = 16.dp,
-                            top = 12.dp,
-                            bottom = 12.dp,
-                            end = 16.dp
-                        ),
-                        painter = painterResource(id = R.drawable.ic_default_plus),
-                        contentDescription = null
-                    )
+                if (!state.isReadOnly) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .noRippleThrottledClickable {
+                                action.invoke(ViewersWidgetUi.Action.Plus)
+                            }
+                    ) {
+                        Image(
+                            modifier = Modifier.padding(
+                                start = 16.dp,
+                                top = 12.dp,
+                                bottom = 12.dp,
+                                end = 16.dp
+                            ),
+                            painter = painterResource(id = R.drawable.ic_default_plus),
+                            contentDescription = null
+                        )
+                    }
                 }
             }
 

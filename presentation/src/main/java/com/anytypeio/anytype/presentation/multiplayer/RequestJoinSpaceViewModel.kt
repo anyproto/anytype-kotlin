@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.multiplayer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteError
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.msg
@@ -63,6 +64,23 @@ class RequestJoinSpaceViewModel(
                         }
                     },
                     onFailure = { e ->
+                        if (e is SpaceInviteError) {
+                            when(e) {
+                                is SpaceInviteError.InvalidInvite -> {
+                                    state.value = TypedViewState.Error(
+                                        ErrorView.InvalidLinkf
+                                    )
+                                }
+                                is SpaceInviteError.SpaceDeleted -> {
+                                    commands.emit(Command.Toast.SpaceDeleted)
+                                    commands.emit(Command.Dismiss)
+                                }
+                                is SpaceInviteError.SpaceNotFound -> {
+                                    commands.emit(Command.Toast.SpaceNotFound)
+                                    commands.emit(Command.Dismiss)
+                                }
+                            }
+                        }
                         Timber.e(e, "Error while getting space invite view")
                     }
                 )
@@ -148,12 +166,14 @@ class RequestJoinSpaceViewModel(
     sealed class Command {
         sealed class Toast : Command() {
             data object RequestSent : Toast()
+            data object SpaceNotFound : Toast()
+            data object SpaceDeleted : Toast()
         }
         data object Dismiss: Command()
     }
 
     sealed class ErrorView {
-        data object LinkRevoked : ErrorView()
+        data object InvalidLink : ErrorView()
         data class AlreadySpaceMember(val space: SpaceId) : ErrorView()
      }
 }

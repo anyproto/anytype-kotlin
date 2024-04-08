@@ -72,7 +72,7 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                                         }
                                     )
                                 }
-                                is ErrorView.LinkRevoked -> {
+                                is ErrorView.InvalidLink -> {
                                     toast("link revoked")
                                 }
                             }

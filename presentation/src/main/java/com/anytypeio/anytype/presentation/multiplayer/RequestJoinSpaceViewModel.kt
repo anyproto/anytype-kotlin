@@ -132,6 +132,7 @@ class RequestJoinSpaceViewModel(
             } else {
                 spaceManager.set(space.id)
                 saveCurrentSpace.async(params = SaveCurrentSpace.Params(space))
+                // TODO navigate to the target space instead of dismissing
                 commands.emit(Command.Dismiss)
             }
         }

@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.screens
+package com.anytypeio.anytype.payments.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -37,7 +37,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.fontInterSemibold
-import com.anytypeio.anytype.models.Tier
+import com.anytypeio.anytype.payments.models.Tier
 
 @Composable
 fun TierView(

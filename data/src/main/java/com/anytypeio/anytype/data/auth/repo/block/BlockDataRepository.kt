@@ -906,6 +906,10 @@ class BlockDataRepository(
         return remote.generateSpaceInviteLink(space)
     }
 
+    override suspend fun revokeSpaceInviteLink(space: SpaceId) {
+        return remote.revokeSpaceInviteLink(space = space)
+    }
+
     override suspend fun approveSpaceRequest(
         space: SpaceId,
         identity: Id,

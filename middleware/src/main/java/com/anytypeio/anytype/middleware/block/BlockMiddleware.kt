@@ -868,6 +868,10 @@ class BlockMiddleware(
         return middleware.generateSpaceInviteLink(space)
     }
 
+    override suspend fun revokeSpaceInviteLink(space: SpaceId) {
+        middleware.revokeSpaceInvite(space = space)
+    }
+
     override suspend fun approveSpaceRequest(
         space: SpaceId,
         identity: Id,

@@ -22,5 +22,4 @@ class GetSpaceInviteView @Inject constructor(
         val inviteContentId: String,
         val inviteFileKey: String
     )
-
 }

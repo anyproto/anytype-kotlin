@@ -168,6 +168,7 @@ sentryTimber = { module = "io.sentry:sentry-android-timber", version.ref = "sent
 navigationCompose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationComposeVersion" }
 appUpdater = { module = "com.github.PLPsiSoft:AndroidAppUpdater", version = "9913ce80da7871c84af24b9adc2bf2414ca294f0" }
 composeQrCode = { module = "com.lightspark:compose-qr-code", version.ref = "composeQrCodeVersion" }
+playBilling = { module = "com.android.billingclient:billing", version = "6.2.0" }
 
 [bundles]
 

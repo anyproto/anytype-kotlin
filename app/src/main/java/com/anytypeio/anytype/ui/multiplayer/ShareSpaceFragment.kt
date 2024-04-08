@@ -63,7 +63,8 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                         onStopSharingClicked = vm::onStopSharingSpaceClicked,
                         onGenerateInviteLinkClicked = vm::onGenerateSpaceInviteLink,
                         onMoreInfoClicked = vm::onMoreInfoClicked,
-                        onShareQrCodeClicked = vm::onShareQrCodeClicked
+                        onShareQrCodeClicked = vm::onShareQrCodeClicked,
+                        onDeleteLinkClicked = vm::onDeleteLinkClicked
                     )
                 }
                 LaunchedEffect(Unit) {
@@ -94,7 +95,6 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                 }
                 startActivity(Intent.createChooser(intent, null))
             }
-
             is Command.ShareQrCode -> {
                 runCatching {
                     findNavController().navigate(
@@ -107,7 +107,6 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     Timber.d(it, "Error while navigation")
                 }
             }
-
             is Command.ViewJoinRequest -> {
                 runCatching {
                     findNavController().navigate(
@@ -121,7 +120,6 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     Timber.e(it, "Error while navigation")
                 }
             }
-
             is Command.ShowHowToShareSpace -> {
                 runCatching {
                     findNavController().navigate(R.id.howToShareSpaceScreen)
@@ -129,7 +127,6 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     Timber.e(it, "Error while navigation")
                 }
             }
-
             is Command.ShowStopSharingWarning -> {
                 runCatching {
                     val dialog = StopSharingWarning()
@@ -146,7 +143,22 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     Timber.e(it, "Error while navigation")
                 }
             }
-
+            is Command.ShowDeleteLinkWarning -> {
+                runCatching {
+                    val dialog = DeleteSpaceInviteLinkWarning()
+                    dialog.onAccepted = {
+                        vm.onDeleteLinkAccepted().also {
+                            dialog.dismiss()
+                        }
+                    }
+                    dialog.onCancelled = {
+                        // Do nothing.
+                    }
+                    dialog.show(childFragmentManager, null)
+                }.onFailure {
+                    Timber.e(it, "Error while navigation")
+                }
+            }
             is Command.Dismiss -> {
                 dismiss()
             }

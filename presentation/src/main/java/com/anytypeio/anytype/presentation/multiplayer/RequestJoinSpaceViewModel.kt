@@ -86,11 +86,8 @@ class RequestJoinSpaceViewModel(
                 )
             }
         } else {
-            Timber.e("Could not parse invite link: ${params.link}")
-            sendToast("Could not parse invite link: ${params.link}")
-            viewModelScope.launch {
-                commands.emit(Command.Dismiss)
-            }
+            Timber.w("Could not parse invite link: ${params.link}")
+            state.value = TypedViewState.Error(ErrorView.InvalidLink)
         }
     }
 

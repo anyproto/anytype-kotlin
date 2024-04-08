@@ -70,7 +70,7 @@ sealed class NotificationPayload {
 
     data class Unsupported(val type: String) : NotificationPayload()
 
-    object Test : NotificationPayload()
+    data object Test : NotificationPayload()
 }
 
 enum class NotificationStatus {

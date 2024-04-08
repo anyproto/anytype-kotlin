@@ -5,7 +5,7 @@ interface DeepLinkResolver {
     fun resolve(deeplink: String) : Action
 
     sealed class Action {
-        object Unknown : Action()
+        data object Unknown : Action()
         sealed class Import : Action() {
             data class Experience(val type: String, val source: String) : Action()
         }

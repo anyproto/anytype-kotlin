@@ -4,7 +4,6 @@ import android.net.Uri
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
-import timber.log.Timber
 
 const val DEEP_LINK_PATTERN = "anytype://"
 
@@ -42,7 +41,7 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
         }
 
         else -> DeepLinkResolver.Action.Unknown
-    }//.also { Timber.d("Resolved deeplink: $deeplink to action: $it") }
+    }
 }
 
 object DefaultSpaceInviteResolver : SpaceInviteResolver {

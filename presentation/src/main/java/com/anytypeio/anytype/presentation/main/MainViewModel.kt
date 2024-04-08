@@ -240,7 +240,7 @@ class MainViewModel(
 
     sealed class Command {
         data class ShowDeletedAccountScreen(val deadline: Long) : Command()
-        object LogoutDueToAccountDeletion : Command()
+        data object LogoutDueToAccountDeletion : Command()
         class OpenCreateNewType(val type: Id) : Command()
         data class Error(val msg: String) : Command()
         sealed class Sharing : Command() {

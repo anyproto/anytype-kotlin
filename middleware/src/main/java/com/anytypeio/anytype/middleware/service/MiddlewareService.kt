@@ -507,6 +507,9 @@ interface MiddlewareService {
     fun spaceJoinCancel(request: Rpc.Space.JoinCancel.Request): Rpc.Space.JoinCancel.Response
 
     @Throws(Exception::class)
+    fun spaceLeaveApprove(request: Rpc.Space.LeaveApprove.Request): Rpc.Space.LeaveApprove.Response
+
+    @Throws(Exception::class)
     fun spaceParticipantPermissionsChange(request: Rpc.Space.ParticipantPermissionsChange.Request): Rpc.Space.ParticipantPermissionsChange.Response
 
     @Throws(Exception::class)

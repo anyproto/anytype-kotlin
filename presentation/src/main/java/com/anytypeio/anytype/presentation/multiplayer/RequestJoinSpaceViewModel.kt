@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.getOrDefault
@@ -11,6 +12,8 @@ import com.anytypeio.anytype.domain.multiplayer.CheckIsUserSpaceMember
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteView
 import com.anytypeio.anytype.domain.multiplayer.SendJoinSpaceRequest
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
+import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.common.TypedViewState
 import javax.inject.Inject
@@ -24,7 +27,9 @@ class RequestJoinSpaceViewModel(
     private val getSpaceInviteView: GetSpaceInviteView,
     private val sendJoinSpaceRequest: SendJoinSpaceRequest,
     private val spaceInviteResolver: SpaceInviteResolver,
-    private val checkIsUserSpaceMember: CheckIsUserSpaceMember
+    private val checkIsUserSpaceMember: CheckIsUserSpaceMember,
+    private val spaceManager: SpaceManager,
+    private val saveCurrentSpace: SaveCurrentSpace
 ) : BaseViewModel() {
 
     val state = MutableStateFlow<TypedViewState<SpaceInviteView, ErrorView>>(TypedViewState.Loading)
@@ -50,7 +55,9 @@ class RequestJoinSpaceViewModel(
                             .async(view.space)
                             .getOrDefault(false)
                         if (isAlreadyMember) {
-                            state.value = TypedViewState.Error(ErrorView.AlreadySpaceMember)
+                            state.value = TypedViewState.Error(
+                                ErrorView.AlreadySpaceMember(view.space)
+                            )
                         } else {
                             state.value = TypedViewState.Success(view)
                         }
@@ -102,12 +109,27 @@ class RequestJoinSpaceViewModel(
         }
     }
 
+    fun onOpenSpaceClicked(space: SpaceId) {
+        viewModelScope.launch {
+            val curr = spaceManager.get()
+            if (curr == space.id) {
+                commands.emit(Command.Dismiss)
+            } else {
+                spaceManager.set(space.id)
+                saveCurrentSpace.async(params = SaveCurrentSpace.Params(space))
+                commands.emit(Command.Dismiss)
+            }
+        }
+    }
+
     class Factory @Inject constructor(
         private val params: Params,
         private val getSpaceInviteView: GetSpaceInviteView,
         private val sendJoinSpaceRequest: SendJoinSpaceRequest,
         private val spaceInviteResolver: SpaceInviteResolver,
-        private val checkIsUserSpaceMember: CheckIsUserSpaceMember
+        private val checkIsUserSpaceMember: CheckIsUserSpaceMember,
+        private val saveCurrentSpace: SaveCurrentSpace,
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = RequestJoinSpaceViewModel(
@@ -115,7 +137,9 @@ class RequestJoinSpaceViewModel(
             getSpaceInviteView = getSpaceInviteView,
             sendJoinSpaceRequest = sendJoinSpaceRequest,
             spaceInviteResolver = spaceInviteResolver,
-            checkIsUserSpaceMember = checkIsUserSpaceMember
+            checkIsUserSpaceMember = checkIsUserSpaceMember,
+            saveCurrentSpace = saveCurrentSpace,
+            spaceManager = spaceManager
         ) as T
     }
 
@@ -130,6 +154,6 @@ class RequestJoinSpaceViewModel(
 
     sealed class ErrorView {
         data object LinkRevoked : ErrorView()
-        data object AlreadySpaceMember : ErrorView()
+        data class AlreadySpaceMember(val space: SpaceId) : ErrorView()
      }
 }

@@ -57,22 +57,22 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                             )
                         }
                         is TypedViewState.Error -> {
-                            when(state.error) {
-                                ErrorView.AlreadySpaceMember -> {
+                            when(val err = state.error) {
+                                is ErrorView.AlreadySpaceMember -> {
                                     Warning(
                                         title = stringResource(id = R.string.multiplayer_already_space_member),
                                         subtitle = EMPTY_STRING_VALUE,
                                         actionButtonText = stringResource(id = R.string.multiplayer_open_space),
                                         cancelButtonText = stringResource(id = R.string.cancel),
                                         onNegativeClick = {
-                                              dismiss()
+                                            dismiss()
                                         },
                                         onPositiveClick = {
-                                            toast("Todo")
+                                            vm.onOpenSpaceClicked(err.space)
                                         }
                                     )
                                 }
-                                ErrorView.LinkRevoked -> {
+                                is ErrorView.LinkRevoked -> {
                                     toast("link revoked")
                                 }
                             }

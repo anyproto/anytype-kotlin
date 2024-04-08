@@ -9,6 +9,7 @@ import com.anytypeio.anytype.presentation.widgets.ToIndex
 data class ViewersWidgetUi(
     val showWidget: Boolean,
     val isEditing: Boolean,
+    val isReadOnly: Boolean,
     val items: List<ViewerView>
 ) {
 
@@ -21,14 +22,15 @@ data class ViewersWidgetUi(
         fun init() = ViewersWidgetUi(
             showWidget = false,
             isEditing = false,
-            items = emptyList()
+            items = emptyList(),
+            isReadOnly = true
         )
     }
 
     sealed class Action {
-        object Dismiss : Action()
-        object EditMode : Action()
-        object DoneMode : Action()
+        data object Dismiss : Action()
+        data object EditMode : Action()
+        data object DoneMode : Action()
         data class Delete(val viewer: Id) : Action()
         data class Edit(val id: Id) : Action()
         data class OnMove(
@@ -39,7 +41,7 @@ data class ViewersWidgetUi(
 
         data class SetActive(val id: Id, val type: DVViewerType) : Action()
 
-        object Plus : Action()
+        data object Plus : Action()
     }
 }
 

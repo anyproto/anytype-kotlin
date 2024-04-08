@@ -334,8 +334,16 @@ class ObjectSetViewModel(
         }
 
         viewModelScope.launch {
-            _dvViews.collectLatest {
-                viewersWidgetState.value = viewersWidgetState.value.copy(items = it)
+            combine(
+                _dvViews,
+                permission
+            ) {  views, permissions ->
+                views to permissions
+            }.collect { (views, permissions) ->
+                viewersWidgetState.value = viewersWidgetState.value.copy(
+                    items = views,
+                    isReadOnly = permissions?.isOwnerOrEditor() != true
+                )
             }
         }
 

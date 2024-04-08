@@ -1161,7 +1161,11 @@
     <string name="multiplayer_how_to_share_space_step_3">Setelah menyetujui permintaannya, kamu bisa memilih hak akses untuk orang tersebut.</string>
     <string name="multiplayer_delete_space_sharing_link">Hapus tautan berbagi</string>
     <string name="multiplayer_delete_link">Hapus tautan</string>
-    <string name="multiplayer_delete_link_description">Anggota baru tidak akan dapat bergabung ke ruang ini. Kamu bisa membuat tautan baru kapan saja.</string>
+    <string name="multiplayer_delete_link_description">New members won’t be able to join the space. You can generate a new link anytime.</string>
+    <string name="multiplayer_already_space_member">You are already a member of this space</string>
+    <string name="multiplayer_open_space">Buka ruang</string>
+    <string name="multiplayer_error_space_deleted">Space deleted</string>
+    <string name="multiplayer_error_space_not_found">Space not found</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Langganan</string>

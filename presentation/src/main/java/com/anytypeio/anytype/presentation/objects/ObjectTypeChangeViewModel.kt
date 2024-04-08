@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Marketplace
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds.MARKETPLACE_OBJECT_TYPE_PREFIX
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
@@ -53,9 +54,15 @@ class ObjectTypeChangeViewModel(
     val commands = MutableSharedFlow<Command>()
 
     private val pipeline = combine(searchQuery, setup) { query, setup ->
+        val recommendedLayouts = if (setup.isWithFiles) {
+            SupportedLayouts.editorLayouts + SupportedLayouts.fileLayouts
+        } else {
+            SupportedLayouts.editorLayouts
+        }
         val myTypes = proceedWithGettingMyTypes(
             query = query,
-            setup = setup
+            setup = setup,
+            recommendedLayouts = recommendedLayouts
         )
         val marketplaceTypes = proceedWithGettingMarketplaceTypes(
             myTypes = myTypes,
@@ -99,7 +106,8 @@ class ObjectTypeChangeViewModel(
         isWithBookmark: Boolean,
         excludeTypes: List<Id>,
         selectedTypes: List<Id>,
-        isSetSource: Boolean
+        isSetSource: Boolean,
+        isWithFiles: Boolean
     ) {
         Timber.d("Starting with params: isWithCollection=$isWithCollection, isWithBookmark=$isWithBookmark, excludeTypes=$excludeTypes, selectedTypes=$selectedTypes, isSetSource=$isSetSource")
         viewModelScope.launch {
@@ -109,7 +117,8 @@ class ObjectTypeChangeViewModel(
                     isWithBookmark = isWithBookmark,
                     excludeTypes = excludeTypes,
                     selectedTypes = selectedTypes,
-                    isSetSource = isSetSource
+                    isSetSource = isSetSource,
+                    isWithFiles = isWithFiles
                 )
             )
         }
@@ -118,7 +127,8 @@ class ObjectTypeChangeViewModel(
     fun onStart(
         isWithCollection: Boolean,
         isWithBookmark: Boolean,
-        isSetSource: Boolean
+        isSetSource: Boolean,
+        isWithFiles: Boolean
     ) {
         viewModelScope.launch {
             getDefaultObjectType.execute(Unit).fold(
@@ -132,7 +142,8 @@ class ObjectTypeChangeViewModel(
                             isWithBookmark = isWithBookmark,
                             excludeTypes = listOf(it.type.key),
                             selectedTypes = emptyList(),
-                            isSetSource = isSetSource
+                            isSetSource = isSetSource,
+                            isWithFiles = isWithFiles
                         )
                     )
                 }
@@ -272,12 +283,13 @@ class ObjectTypeChangeViewModel(
 
     private suspend fun proceedWithGettingMyTypes(
         query: String,
-        setup: Setup
+        setup: Setup,
+        recommendedLayouts: List<ObjectType.Layout>
     ) = getObjectTypes.run(
         GetObjectTypes.Params(
             filters = ObjectSearchConstants.filterTypes(
                 spaces = listOf(spaceManager.get()),
-                recommendedLayouts = SupportedLayouts.editorLayouts + SupportedLayouts.fileLayouts,
+                recommendedLayouts = recommendedLayouts,
                 excludeParticipant = !setup.isSetSource
             ),
             sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
@@ -296,7 +308,8 @@ class ObjectTypeChangeViewModel(
         val isWithBookmark: Boolean,
         val excludeTypes: List<Id>,
         val selectedTypes: List<Id>,
-        val isSetSource: Boolean
+        val isSetSource: Boolean,
+        val isWithFiles: Boolean
     )
 
     sealed class Command {

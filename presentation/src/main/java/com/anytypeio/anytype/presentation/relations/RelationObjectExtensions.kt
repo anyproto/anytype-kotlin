@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.relations
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
@@ -341,4 +342,30 @@ object MultiValueParser {
         is List<*> -> value.typeOf()
         else -> emptyList()
     }
+}
+
+fun Block.Details.identityRelation(
+    relationDetails: ObjectWrapper.Relation?,
+    values: Map<String, Any?>,
+    isFeatured: Boolean = false,
+    objLayout : ObjectType.Layout?
+): ObjectRelationView? {
+    if (relationDetails == null) {
+        return null
+    }
+    val value = if (objLayout == ObjectType.Layout.PARTICIPANT) {
+        values.getOrDefault(Relations.GLOBAL_NAME, null)
+    } else {
+        values.getOrDefault(Relations.IDENTITY, null)
+    }
+    return ObjectRelationView.Default(
+        id = relationDetails.id,
+        key = relationDetails.key,
+        name = relationDetails.name.orEmpty(),
+        value = value as? String,
+        featured = isFeatured,
+        readOnly = relationDetails.isReadonlyValue,
+        format = relationDetails.format,
+        system = relationDetails.key.isSystemKey()
+    )
 }

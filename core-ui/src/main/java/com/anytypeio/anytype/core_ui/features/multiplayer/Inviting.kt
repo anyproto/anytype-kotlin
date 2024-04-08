@@ -1,16 +1,23 @@
 package com.anytypeio.anytype.core_ui.features.multiplayer
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -23,6 +30,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
+import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
@@ -34,7 +42,7 @@ fun ShareInviteLinkCardPreview() {
     ShareInviteLinkCard(
         link = "https://anytype.io/ibafyrfhfsag6rea3ifffsasssa3ifffsasssga3ifffsasssga3ifffsas",
         onShareInviteClicked = {},
-        onRegenerateInviteLinkClicked = {},
+        onDeleteLinkClicked = {},
         onShowQrCodeClicked = {},
         modifier = Modifier
     )
@@ -54,9 +62,10 @@ fun ShareInviteLinkCard(
     modifier: Modifier = Modifier,
     link: String,
     onShareInviteClicked: () -> Unit,
-    onRegenerateInviteLinkClicked: () -> Unit,
+    onDeleteLinkClicked: () -> Unit,
     onShowQrCodeClicked: () -> Unit
 ) {
+    var isMenuExpanded by remember { mutableStateOf(false) }
     ElevatedCard(
         modifier = modifier,
         colors = CardDefaults.cardColors(
@@ -78,13 +87,38 @@ fun ShareInviteLinkCard(
                 color = colorResource(id = R.color.text_primary),
                 modifier = Modifier.weight(1.0f)
             )
-            Image(
-                painter = painterResource(id = R.drawable.ic_action_replace),
-                contentDescription = "Regenerate-invite icon",
-                modifier = Modifier.noRippleClickable {
-                    onRegenerateInviteLinkClicked()
+            Box {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_action_more),
+                    contentDescription = "Menu button",
+                    modifier = Modifier.noRippleClickable {
+                        isMenuExpanded = true
+                    }
+                )
+                DropdownMenu(
+                    expanded = isMenuExpanded,
+                    onDismissRequest = {
+                        isMenuExpanded = false
+                    },
+                    modifier = Modifier.background(
+                        color = colorResource(id = R.color.background_secondary)
+                    )
+                ) {
+                    DropdownMenuItem(
+                        onClick = {
+                            onDeleteLinkClicked()
+                            isMenuExpanded = false
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.multiplayer_delete_link),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.palette_dark_red),
+                            modifier = Modifier.weight(1.0f)
+                        )
+                    }
                 }
-            )
+            }
         }
         Spacer(modifier = Modifier.height(8.dp))
         Text(

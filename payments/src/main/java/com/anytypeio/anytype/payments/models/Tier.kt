@@ -1,6 +1,6 @@
-package com.anytypeio.anytype.models
+package com.anytypeio.anytype.payments.models
 
-import com.anytypeio.anytype.viewmodel.TierId
+import com.anytypeio.anytype.payments.viewmodel.TierId
 
 sealed class Tier {
     abstract val id: TierId

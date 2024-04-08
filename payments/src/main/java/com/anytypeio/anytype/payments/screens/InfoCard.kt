@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.screens
+package com.anytypeio.anytype.payments.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

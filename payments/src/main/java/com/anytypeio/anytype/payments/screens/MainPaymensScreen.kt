@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.screens
+package com.anytypeio.anytype.payments.screens
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -53,9 +53,9 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.fontRiccioneRegular
-import com.anytypeio.anytype.models.Tier
-import com.anytypeio.anytype.viewmodel.PaymentsMainState
-import com.anytypeio.anytype.viewmodel.TierId
+import com.anytypeio.anytype.payments.models.Tier
+import com.anytypeio.anytype.payments.viewmodel.PaymentsMainState
+import com.anytypeio.anytype.payments.viewmodel.TierId
 
 @Composable
 fun MainPaymentsScreen(state: PaymentsMainState, tierClicked: (TierId) -> Unit) {

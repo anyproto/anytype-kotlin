@@ -48,7 +48,7 @@
     <string name="about_meta_info_for_copy">Device: %1$s\nAndroid version: %2$d\nApp version: %3$s\nBuild number: %4$d\nLibrary version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDevice\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s</string>
     <string name="space">Rom</string>
     <string name="space_name">Romnavn</string>
-    <string name="default_space">Default space</string>
+    <string name="default_space">Standard rom</string>
     <string name="space_settings_apply_random_gradient">Bruk tilfeldig gradient</string>
     <string name="delete_space">Slett rom</string>
     <string name="you_can_store">You can store up to %1$s of your files on our encrypted backup node for free. If you reach the limit, files will be stored only locally.</string>
@@ -1147,12 +1147,25 @@
     <string name="multiplayer_remove_member">Remove member</string>
     <string name="multiplayer_request_sent_toast">Forespørsel sendt</string>
     <string name="multiplayer_space_stop_sharing">Stopp deling</string>
+    <string name="multiplayer_space_stop_sharing_space">Slutt å dele rom</string>
+    <string name="multiplayer_space_stop_sharing_space_description">Participants will no longer sync to this space and the share link will be deactivated.</string>
+    <string name="multiplayer_more_info">Mer info</string>
     <string name="multiplayer_sharing">Deling</string>
     <string name="multiplayer_share">Del</string>
     <string name="multiplayer_manage">Administrer</string>
     <string name="multiplayer_leave_space">Forlat rom</string>
+    <string name="multiplayer_leave_space_warning_subtitle">This space will be removed from your devices  and you will no longer have access to it</string>
     <string name="multiplayer_generate_invite_link_description">Create invite link to share space and add new members</string>
     <string name="multiplayer_generate_invite_link">Generer invitasjonslenke</string>
+    <string name="multiplayer_show_qr_code">Vis QR-kode</string>
+    <string name="multiplayer_how_to_share_space">Hvordan dele et rom?</string>
+    <string name="multiplayer_how_to_share_space_step_1">Please provide the link to the person you\'d like to collaborate with.</string>
+    <string name="multiplayer_how_to_share_space_qr_code">Vennligst gi denne QR-koden til personen du ønsker å samarbeide med.</string>
+    <string name="multiplayer_how_to_share_space_step_2">By clicking the link, a person requests to join the space.</string>
+    <string name="multiplayer_how_to_share_space_step_3">After approving the request, you can choose the access rights for that person.</string>
+    <string name="multiplayer_delete_space_sharing_link">Slett delingslenke</string>
+    <string name="multiplayer_delete_link">Slett lenke</string>
+    <string name="multiplayer_delete_link_description">Nye medlemmer vil ikke kunne bli med i rommet. Du kan generere en ny lenke når som helst.</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Medlemskap</string>
@@ -1171,7 +1184,7 @@
     <string name="payments_tier_builder_description">Unlock the magic of multi-party collaboration and enjoy top-notch support</string>
     <string name="payments_tier_cocreator">Co-Creator</string>
     <string name="payments_tier_cocreator_description">Support our adventure and unlock exclusive access and perks</string>
-    <string name="payments_tier_custom">Custom</string>
+    <string name="payments_tier_custom">Tilpasset</string>
     <string name="payments_tier_custom_description">Membership tailored to your specific needs and preferences</string>
     <string name="payments_button_learn">Lær mer</string>
     <string name="payments_button_contact">Kontakt</string>
@@ -1221,7 +1234,7 @@
     <string name="payments_tier_current_valid">Gyldig til</string>
     <string name="payments_tier_current_paid_by">Betalt med kort</string>
     <string name="payments_tier_current_button">Administrer betaling</string>
-    <string name="payments_tier_current_change_email_button">Change e-mail</string>
+    <string name="payments_tier_current_change_email_button">Endre e-post</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Skriv inn koden som er sendt til deg på e-post</string>
     <string name="payments_code_resend">Send på nytt</string>

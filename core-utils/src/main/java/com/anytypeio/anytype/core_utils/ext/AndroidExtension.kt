@@ -5,6 +5,7 @@ import android.content.ActivityNotFoundException
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.content.Intent.EXTRA_MIME_TYPES
 import android.content.res.Resources
 import android.graphics.Point
 import android.graphics.Rect
@@ -287,10 +288,7 @@ fun Fragment.startFilePicker(mime: Mimetype, requestCode: Int? = null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
-                    type = mime.value
-                    if (mime == Mimetype.MIME_YAML) {
-                        putExtra(Intent.EXTRA_MIME_TYPES, MIME_EXTRA_YAML)
-                    }
+                    configureTypeOfIntentForMime(this, mime)
                 }
                 val code = if (mime == Mimetype.MIME_FILE_ALL) {
                     REQUEST_FILE_SAF_CODE
@@ -306,7 +304,7 @@ fun Fragment.startFilePicker(mime: Mimetype, requestCode: Int? = null) {
                         Intent(Intent.ACTION_PICK, MediaStore.Video.Media.INTERNAL_CONTENT_URI)
                     }
                 intent.apply {
-                    type = mime.value
+                    configureTypeOfIntentForMime(this, mime)
                     action = Intent.ACTION_GET_CONTENT
                     putExtra("return-data", true)
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -314,6 +312,15 @@ fun Fragment.startFilePicker(mime: Mimetype, requestCode: Int? = null) {
                 startActivityForResult(intent, requestCode ?: REQUEST_MEDIA_CODE)
             }
         }
+    }
+}
+
+private fun configureTypeOfIntentForMime(intent: Intent, mime: Mimetype) {
+    if (mime == Mimetype.MIME_YAML) {
+        intent.type = Mimetype.MIME_FILE_ALL.value
+        intent.putExtra(EXTRA_MIME_TYPES, MIME_EXTRA_YAML)
+    } else {
+        intent.type = mime.value
     }
 }
 

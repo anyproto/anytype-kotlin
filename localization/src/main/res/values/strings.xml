@@ -1346,6 +1346,9 @@
     <string name="multiplayer_how_to_share_space_qr_code">Please provide this QR code to the person you\'d like to collaborate with.</string>
     <string name="multiplayer_how_to_share_space_step_2">By clicking the link, a person requests to join the space.</string>
     <string name="multiplayer_how_to_share_space_step_3">After approving the request, you can choose the access rights for that person.</string>
+    <string name="multiplayer_delete_space_sharing_link">Delete sharing link</string>
+    <string name="multiplayer_delete_link">Delete link</string>
+    <string name="multiplayer_delete_link_description">New members won’t be able to join the space. You can generate a new link anytype.</string>
 
     <!--endregion-->
 

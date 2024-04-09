@@ -15,8 +15,6 @@ import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForOb
 import com.anytypeio.anytype.di.feature.sets.CreateFilterSubComponent
 import com.anytypeio.anytype.di.feature.sets.ModifyFilterSubComponent
 import com.anytypeio.anytype.di.feature.sets.SelectFilterRelationSubComponent
-import com.anytypeio.anytype.di.feature.sets.viewer.ViewerCardSizeSelectSubcomponent
-import com.anytypeio.anytype.di.feature.sets.viewer.ViewerImagePreviewSelectSubcomponent
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
@@ -134,8 +132,6 @@ interface ObjectSetSubComponent {
     fun setOrCollectionRelationValueComponent() : SetOrCollectionRelationValueSubComponent.Builder
 
     fun objectSetSettingsComponent(): ObjectSetSettingsSubComponent.Builder
-    fun viewerCardSizeSelectComponent(): ViewerCardSizeSelectSubcomponent.Builder
-    fun viewerImagePreviewSelectComponent(): ViewerImagePreviewSelectSubcomponent.Builder
     fun relationAddToDataViewComponent(): RelationAddToDataViewSubComponent.Builder
     fun relationCreateFromScratchForDataViewComponent(): RelationCreateFromScratchForDataViewSubComponent.Builder
     fun selectSortRelationComponent(): SelectSortRelationSubComponent.Builder

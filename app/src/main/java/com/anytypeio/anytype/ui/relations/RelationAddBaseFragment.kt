@@ -167,7 +167,8 @@ class RelationAddToObjectFragment : RelationAddBaseFragment() {
         val fr = RelationCreateFromScratchForObjectFragment.new(
             ctx = ctx,
             query = createFromScratchAdapter.query,
-            isSetOrCollection = isSetOrCollection
+            isSetOrCollection = isSetOrCollection,
+            space = space
         )
         fr.show(childFragmentManager, null)
     }
@@ -318,7 +319,8 @@ class RelationAddToObjectBlockFragment : RelationAddBaseFragment(),
         val fr = RelationCreateFromScratchForObjectBlockFragment.newInstance(
             ctx = ctx,
             target = target,
-            query = createFromScratchAdapter.query
+            query = createFromScratchAdapter.query,
+            space = space
         )
         fr.show(childFragmentManager, null)
     }

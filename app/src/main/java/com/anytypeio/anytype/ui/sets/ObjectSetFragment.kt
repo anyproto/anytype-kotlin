@@ -599,7 +599,10 @@ open class ObjectSetFragment :
                 }
                 setupNewButtons(state.isCreateObjectAllowed)
                 setCurrentViewerName(state.title)
-                dataViewInfo.show(DataViewInfo.TYPE.COLLECTION_NO_ITEMS)
+                dataViewInfo.show(
+                    type = DataViewInfo.TYPE.COLLECTION_NO_ITEMS,
+                    isReadOnlyAccess = !state.isCreateObjectAllowed
+                )
                 setViewer(viewer = null)
             }
             is DataViewViewState.Collection.Default -> {
@@ -636,7 +639,10 @@ open class ObjectSetFragment :
                 }
                 setupNewButtons(state.isCreateObjectAllowed)
                 setCurrentViewerName(getString(R.string.viewer_default_title))
-                dataViewInfo.show(type = DataViewInfo.TYPE.SET_NO_QUERY)
+                dataViewInfo.show(
+                    type = DataViewInfo.TYPE.SET_NO_QUERY,
+                    isReadOnlyAccess = !state.isCreateObjectAllowed
+                )
                 setViewer(viewer = null)
             }
             is DataViewViewState.Set.NoItems -> {
@@ -647,14 +653,17 @@ open class ObjectSetFragment :
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
                 setupNewButtons(state.isCreateObjectAllowed)
-                customizeViewButton.isEnabled = true
+                customizeViewButton.isEnabled = state.isEditingViewAllowed
                 if (state.isEditingViewAllowed) {
                     customizeViewButton.visible()
                 } else {
                     customizeViewButton.invisible()
                 }
                 setCurrentViewerName(state.title)
-                dataViewInfo.show(type = DataViewInfo.TYPE.SET_NO_ITEMS)
+                dataViewInfo.show(
+                    type = DataViewInfo.TYPE.SET_NO_ITEMS,
+                    isReadOnlyAccess = !state.isCreateObjectAllowed
+                )
                 setViewer(viewer = null)
             }
             is DataViewViewState.Set.Default -> {
@@ -1229,6 +1238,11 @@ open class ObjectSetFragment :
                     }
                 )
                 popup.show()
+            }
+            is ObjectSetCommand.ShowOnlyAccessError -> {
+                toast(
+                    getString(R.string.multiplayer_read_only_access_error)
+                )
             }
         }
     }

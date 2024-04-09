@@ -3,11 +3,13 @@ package com.anytypeio.anytype.presentation.relations
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
+import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -277,7 +279,7 @@ fun Block.Details.linksFeaturedRelation(
                 return null
             } else {
                 val count = backlinks.size
-                ObjectRelationView.Links.To(
+                ObjectRelationView.Links.Backlinks(
                     id = relation.id,
                     key = relation.key,
                     name = relation.name.orEmpty(),
@@ -341,4 +343,32 @@ object MultiValueParser {
         is List<*> -> value.typeOf()
         else -> emptyList()
     }
+}
+
+fun identityRelation(
+    relationDetails: ObjectWrapper.Relation?,
+    values: Map<String, Any?>,
+    isFeatured: Boolean = false,
+    objLayout : ObjectType.Layout?
+): ObjectRelationView? {
+    if (relationDetails == null) {
+        return null
+    }
+    val globalNameValue = values.getSingleValue<String>(Relations.GLOBAL_NAME)
+    val value =
+        if (objLayout == ObjectType.Layout.PARTICIPANT && !globalNameValue.isNullOrBlank()) {
+            globalNameValue
+        } else {
+            values.getSingleValue(Relations.IDENTITY)
+        }
+    return ObjectRelationView.Default(
+        id = relationDetails.id,
+        key = relationDetails.key,
+        name = relationDetails.name.orEmpty(),
+        value = value as? String,
+        featured = isFeatured,
+        readOnly = relationDetails.isReadonlyValue,
+        format = relationDetails.format,
+        system = relationDetails.key.isSystemKey()
+    )
 }

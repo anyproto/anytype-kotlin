@@ -317,6 +317,7 @@ fun Fragment.startFilePicker(mime: Mimetype, requestCode: Int? = null) {
 
 private fun configureTypeOfIntentForMime(intent: Intent, mime: Mimetype) {
     if (mime == Mimetype.MIME_YAML) {
+        intent.type = Mimetype.MIME_FILE_ALL.value
         intent.putExtra(EXTRA_MIME_TYPES, MIME_EXTRA_YAML)
     } else {
         intent.type = mime.value

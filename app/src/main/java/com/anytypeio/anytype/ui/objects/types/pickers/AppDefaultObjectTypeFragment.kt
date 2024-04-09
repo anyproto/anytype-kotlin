@@ -18,7 +18,8 @@ class AppDefaultObjectTypeFragment : BaseObjectTypeChangeFragment() {
         vm.onStart(
             isWithCollection = false,
             isWithBookmark = false,
-            isSetSource = false
+            isSetSource = false,
+            isWithFiles = false
         )
     }
 

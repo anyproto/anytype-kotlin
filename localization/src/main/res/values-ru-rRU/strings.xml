@@ -1063,7 +1063,7 @@
     <string name="relation_origin_library_installed">Библиотеки установлены.</string>
     <string name="relation_origin_bookmark">Закладка</string>
     <!--endregion-->
-    <plurals name="links_to_count">
+    <plurals name="backlinks_count">
         <item quantity="one">%d ссылка на</item>
         <item quantity="few">%d links to</item>
         <item quantity="many">%d links to</item>
@@ -1171,6 +1171,9 @@
     <string name="multiplayer_how_to_share_space_qr_code">Please provide this QR code to the person you\'d like to collaborate with.</string>
     <string name="multiplayer_how_to_share_space_step_2">Нажав на ссылку, человек запросит вступление в пространство.</string>
     <string name="multiplayer_how_to_share_space_step_3">После одобрения запроса Вы можете выбрать права доступа для этого человека.</string>
+    <string name="multiplayer_delete_space_sharing_link">Delete sharing link</string>
+    <string name="multiplayer_delete_link">Удалить ссылку</string>
+    <string name="multiplayer_delete_link_description">New members won’t be able to join the space. You can generate a new link anytype.</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Членство</string>

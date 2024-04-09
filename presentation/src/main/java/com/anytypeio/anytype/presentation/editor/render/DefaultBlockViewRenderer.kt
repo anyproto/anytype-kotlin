@@ -37,6 +37,7 @@ import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
 import com.anytypeio.anytype.presentation.relations.BlockFieldsCoverWrapper
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.getCover
+import com.anytypeio.anytype.presentation.relations.identityRelation
 import com.anytypeio.anytype.presentation.relations.linksFeaturedRelation
 import com.anytypeio.anytype.presentation.relations.objectTypeRelation
 import com.anytypeio.anytype.presentation.relations.view
@@ -2113,7 +2114,9 @@ class DefaultBlockViewRenderer @Inject constructor(
         val views = mapFeaturedRelations(
             ctx = ctx,
             keys = obj.featuredRelations,
-            details = details
+            details = details,
+            objLayout = obj.layout
+
         ).sortedByDescending { it.key == Relations.TYPE }
         return BlockView.FeaturedRelation(
             id = block.id,
@@ -2126,7 +2129,8 @@ class DefaultBlockViewRenderer @Inject constructor(
     private suspend fun mapFeaturedRelations(
         ctx: Id,
         keys: List<Key>,
-        details: Block.Details
+        details: Block.Details,
+        objLayout: ObjectType.Layout?
     ): List<ObjectRelationView> = keys.mapNotNull { key ->
         when (key) {
             Relations.DESCRIPTION -> null
@@ -2148,6 +2152,15 @@ class DefaultBlockViewRenderer @Inject constructor(
                     ctx = ctx,
                     relationKey = key,
                     isFeatured = true
+                )
+            }
+            Relations.IDENTITY -> {
+                val relation = storeOfRelations.getByKey(key)
+                identityRelation(
+                    relationDetails = relation,
+                    isFeatured = true,
+                    values = details.details[ctx]?.map ?: emptyMap(),
+                    objLayout = objLayout
                 )
             }
             else -> {

@@ -1059,7 +1059,7 @@
     <string name="relation_origin_library_installed">Libreria installata</string>
     <string name="relation_origin_bookmark">Segnalibro</string>
     <!--endregion-->
-    <plurals name="links_to_count">
+    <plurals name="backlinks_count">
         <item quantity="one">%d collegamento a </item>
         <item quantity="other">%d collegamenti a</item>
     </plurals>
@@ -1164,6 +1164,9 @@
     <string name="multiplayer_how_to_share_space_qr_code">Si prega di fornire questo codice QR alla persona con cui si desidera collaborare.</string>
     <string name="multiplayer_how_to_share_space_step_2">Cliccando sul link, una persona richiede di unirsi allo spazio.</string>
     <string name="multiplayer_how_to_share_space_step_3">Dopo aver approvato la richiesta, puoi scegliere i diritti di accesso per quella persona.</string>
+    <string name="multiplayer_delete_space_sharing_link">Delete sharing link</string>
+    <string name="multiplayer_delete_link">Elimina link</string>
+    <string name="multiplayer_delete_link_description">New members won’t be able to join the space. You can generate a new link anytype.</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Membership</string>

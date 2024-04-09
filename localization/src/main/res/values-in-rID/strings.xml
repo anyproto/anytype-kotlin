@@ -1057,7 +1057,7 @@
     <string name="relation_origin_library_installed">Pustaka terpasang</string>
     <string name="relation_origin_bookmark">Markah</string>
     <!--endregion-->
-    <plurals name="links_to_count">
+    <plurals name="backlinks_count">
         <item quantity="other">%d links to</item>
     </plurals>
     <plurals name="links_from_count">
@@ -1159,6 +1159,9 @@
     <string name="multiplayer_how_to_share_space_qr_code">Berikan kode QR ini kepada orang yang ingin kamu ajak berkolaborasi.</string>
     <string name="multiplayer_how_to_share_space_step_2">Dengan mengeklik tautan, orang itu akan meminta bergabung ke dalam ruang.</string>
     <string name="multiplayer_how_to_share_space_step_3">Setelah menyetujui permintaannya, kamu bisa memilih hak akses untuk orang tersebut.</string>
+    <string name="multiplayer_delete_space_sharing_link">Hapus tautan berbagi</string>
+    <string name="multiplayer_delete_link">Hapus tautan</string>
+    <string name="multiplayer_delete_link_description">Anggota baru tidak akan dapat bergabung ke ruang ini. Kamu bisa membuat tautan baru kapan saja.</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Langganan</string>

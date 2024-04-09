@@ -239,6 +239,10 @@ class ObjectValueViewModel(
     //region ACTIONS
     fun onAction(action: ObjectValueItemAction) {
         Timber.d("onAction, action: $action")
+        if (!isEditableRelation && action is ObjectValueItemAction.Click) {
+            onOpenObjectAction(action.item)
+            return
+        }
         if (!isEditableRelation && action !is ObjectValueItemAction.Open) {
             Timber.d("ObjectValueViewModel onAction, relation is not editable")
             sendToast("Relation is not editable")

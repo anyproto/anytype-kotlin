@@ -126,7 +126,8 @@ class ObjectTypeChangeViewModelTest {
             isWithCollection = false,
             isSetSource = false,
             excludeTypes = emptyList(),
-            selectedTypes = emptyList()
+            selectedTypes = emptyList(),
+            isWithFiles = true
         )
 
         verifyBlocking(blockRepository, times(1)) {
@@ -205,7 +206,8 @@ class ObjectTypeChangeViewModelTest {
             isWithCollection = false,
             isSetSource = false,
             excludeTypes = emptyList(),
-            selectedTypes = emptyList()
+            selectedTypes = emptyList(),
+            isWithFiles = true
         )
 
         // Checking search query for my types
@@ -342,7 +344,8 @@ class ObjectTypeChangeViewModelTest {
             isWithCollection = false,
             isSetSource = false,
             excludeTypes = emptyList(),
-            selectedTypes = emptyList()
+            selectedTypes = emptyList(),
+            isWithFiles = true
         )
 
         // Checking search query for my types
@@ -502,7 +505,8 @@ class ObjectTypeChangeViewModelTest {
             isWithCollection = false,
             isSetSource = false,
             excludeTypes = emptyList(),
-            selectedTypes = emptyList()
+            selectedTypes = emptyList(),
+            isWithFiles = true
         )
 
         // Checking search query for my types
@@ -547,6 +551,44 @@ class ObjectTypeChangeViewModelTest {
                     )
                 )
             }
+        }
+    }
+
+    @Test
+    fun `should start query for user types without file layouts`() = runTest {
+
+        // SETUP
+
+        stubSpaceManager(spaceId)
+        val vm = givenViewModel()
+
+        val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(
+            spaces = listOf(spaceId),
+            recommendedLayouts = SupportedLayouts.editorLayouts
+        )
+
+        // TESTING
+
+        verifyNoInteractions(blockRepository)
+
+        vm.onStart(
+            isWithBookmark = false,
+            isWithCollection = false,
+            isSetSource = false,
+            excludeTypes = emptyList(),
+            selectedTypes = emptyList(),
+            isWithFiles = false
+        )
+
+        verifyBlocking(blockRepository, times(1)) {
+            searchObjects(
+                filters = expectedMyTypesFilters,
+                sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
+                limit = 0,
+                offset = 0,
+                keys = ObjectSearchConstants.defaultKeysObjectType,
+                fulltext = ""
+            )
         }
     }
 

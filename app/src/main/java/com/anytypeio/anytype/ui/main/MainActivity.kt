@@ -153,6 +153,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
             }
         }
         if (savedInstanceState == null) {
+            Timber.d("onSaveInstanceStateNotNull")
             val action = intent.action
             if (action == Intent.ACTION_SEND || action == Intent.ACTION_SEND_MULTIPLE) {
                 proceedWithShareIntent(intent)
@@ -190,6 +191,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     }
 
     override fun onNewIntent(intent: Intent?) {
+        Timber.d("onNewIntent")
         super.onNewIntent(intent)
         if (intent != null) {
             when(intent.action) {
@@ -220,7 +222,14 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         if (BuildConfig.DEBUG) Timber.d("Proceeding with share intent: $intent")
         when {
             intent.type == Mimetype.MIME_TEXT_PLAIN.value -> {
-                vm.onIntentTextShare(intent.getStringExtra(Intent.EXTRA_TEXT).orEmpty())
+                val raw = intent.getStringExtra(Intent.EXTRA_TEXT)
+                if (raw != null) {
+                    if (raw.contains(DEEP_LINK_PATTERN)) {
+                        deepLink = raw
+                    } else if (raw.isNotEmpty()) {
+                        vm.onIntentTextShare(raw)
+                    }
+                }
             }
             intent.type?.startsWith(SHARE_IMAGE_INTENT_PATTERN) == true -> {
                 proceedWithImageShareIntent(intent)

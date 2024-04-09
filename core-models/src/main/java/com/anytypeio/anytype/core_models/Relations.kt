@@ -85,6 +85,7 @@ object Relations {
     const val PARTICIPANT_PERMISSIONS = "participantPermissions"
     const val SPACE_ACCESS_TYPE = "spaceAccessType"
     const val IDENTITY = "identity"
+    const val GLOBAL_NAME = "globalName"
 
     val systemRelationKeys = listOf(
         "id",

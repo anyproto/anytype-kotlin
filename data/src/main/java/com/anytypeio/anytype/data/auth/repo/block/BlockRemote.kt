@@ -394,6 +394,8 @@ interface BlockRemote {
         identity: Id,
         permissions: SpaceMemberPermissions
     )
+    suspend fun approveSpaceLeaveRequest(command: Command.ApproveSpaceLeaveRequest)
+
     suspend fun declineSpaceRequest(space: SpaceId, identity: Id)
 
     suspend fun removeSpaceMembers(space: SpaceId, identities: List<Id>)

@@ -200,6 +200,7 @@ abstract class ObjectMenuBaseFragment :
             R.id.objectRelationListScreen,
             bundleOf(
                 ObjectRelationListFragment.ARG_CTX to ctx,
+                ObjectRelationListFragment.ARG_SPACE to space,
                 ObjectRelationListFragment.ARG_TARGET to null,
                 ObjectRelationListFragment.ARG_LOCKED to isLocked,
                 ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST,
@@ -213,6 +214,7 @@ abstract class ObjectMenuBaseFragment :
             R.id.objectRelationListScreen,
             bundleOf(
                 ObjectRelationListFragment.ARG_CTX to ctx,
+                ObjectRelationListFragment.ARG_SPACE to space,
                 ObjectRelationListFragment.ARG_TARGET to null,
                 ObjectRelationListFragment.ARG_LOCKED to isLocked,
                 ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST,

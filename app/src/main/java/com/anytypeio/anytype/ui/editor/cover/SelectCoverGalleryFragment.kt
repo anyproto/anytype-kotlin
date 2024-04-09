@@ -214,10 +214,6 @@ class SelectCoverObjectFragment : SelectCoverGalleryFragment() {
     }
 
     companion object {
-        fun new(ctx: Id, space: Id) = SelectCoverObjectFragment().apply {
-            arguments = bundleOf(CTX_KEY to ctx, SPACE_KEY to space)
-        }
-
         fun args(ctx: Id, space: Id) = bundleOf(
             CTX_KEY to ctx, SPACE_KEY to space
         )

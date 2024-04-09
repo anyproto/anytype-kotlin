@@ -103,11 +103,14 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
         }
         binding.btnPlus.setOnClickListener {
             if (!isLocked) {
-                RelationAddToObjectFragment.new(
-                    ctx = ctx,
-                    space = space,
-                    isSetOrCollection = isSetFlow
-                ).showChildFragment()
+                val fr = RelationAddToObjectFragment().apply {
+                    arguments = RelationAddToObjectFragment.args(
+                        ctx = ctx,
+                        space = space,
+                        isSetOrCollection = isSetFlow
+                    )
+                }
+                fr.showChildFragment()
             } else {
                 toast(getString(R.string.unlock_your_object_to_add_new_relation))
             }

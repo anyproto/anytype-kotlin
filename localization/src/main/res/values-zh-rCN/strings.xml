@@ -1057,11 +1057,11 @@
     <string name="relation_origin_library_installed">库已安装</string>
     <string name="relation_origin_bookmark">书签</string>
     <!--endregion-->
-    <plurals name="links_to_count">
-        <item quantity="other">%d 链接至</item>
+    <plurals name="backlinks_count">
+        <item quantity="other">%d backlinks</item>
     </plurals>
     <plurals name="links_from_count">
-        <item quantity="other">%d 链接自</item>
+        <item quantity="other">%d links</item>
     </plurals>
     <!--region ORIGIN RELATION VALUES -->
     <string name="date_type_tomorrow">明天</string>

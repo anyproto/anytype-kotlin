@@ -131,14 +131,6 @@
             android:name="com.anytypeio.anytype.ui.editor.cover.ObjectSetUnsplashFragment"
             android:label="Object-Cover-Unsplash-Screen" />
         <dialog
-            android:id="@+id/viewerCardSizeSelectFragment"
-            android:name="com.anytypeio.anytype.ui.sets.modals.viewer.ViewerCardSizeSelectFragment"
-            android:label="ViewCardSizeSelectFragment" />
-        <dialog
-            android:id="@+id/viewerImagePreviewSelectFragment"
-            android:name="com.anytypeio.anytype.ui.sets.modals.viewer.ViewerImagePreviewSelectFragment"
-            android:label="ViewerCoverSelectFragment" />
-        <dialog
             android:id="@+id/setNameForNewRecordScreen"
             android:name="com.anytypeio.anytype.ui.sets.modals.SetObjectSetRecordNameFragment" />
         <dialog

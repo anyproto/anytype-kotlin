@@ -5,6 +5,7 @@ import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.relations.RelationCreateFromLibraryViewModel
@@ -54,7 +55,8 @@ class RelationCreateFromLibraryFragment : RelationCreateFromScratchBaseFragment(
             R.id.relationFormatPickerScreen,
             bundleOf(
                 RelationCreateFromScratchFormatPickerFragment.CTX_KEY to ctx,
-                RelationCreateFromScratchFormatPickerFragment.FLOW_TYPE to RelationCreateFromScratchFormatPickerFragment.FLOW_LIBRARY
+                RelationCreateFromScratchFormatPickerFragment.FLOW_TYPE to RelationCreateFromScratchFormatPickerFragment.FLOW_LIBRARY,
+                RelationCreateFromScratchFormatPickerFragment.SPACE_KEY to space
             )
         )
     }
@@ -68,6 +70,6 @@ class RelationCreateFromLibraryFragment : RelationCreateFromScratchBaseFragment(
     }
 
     companion object {
-        fun args(query: String) = bundleOf(QUERY_KEY to query)
+        fun args(query: String, space: Id) = bundleOf(QUERY_KEY to query, SPACE_KEY to space)
     }
 }

@@ -262,7 +262,7 @@ class HomeScreenFragment : BaseComposeFragment() {
                 runCatching {
                     findNavController().navigate(
                         R.id.action_open_space_settings,
-                        SpaceSettingsFragment.args(command.spaceId)
+                        SpaceSettingsFragment.args(space = command.spaceId)
                     )
                 }.onFailure { e ->
                     Timber.e(e, "Error while opening space settings")

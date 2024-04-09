@@ -6438,8 +6438,9 @@ message Rpc {
             message Request {
                 uint32 requestedTier = 1;
 
-                // full name including .any suffix
-                string requestedAnyName = 2;
+                string nsName = 2;
+
+                anytype.model.NameserviceNameType nsNameType = 3;
             }
 
             message Response {
@@ -6482,7 +6483,9 @@ message Rpc {
 
                 // if empty - then no name requested
                 // if non-empty - PP node will register that name on behalf of the user
-                string requestedAnyName = 3;
+                string nsName = 3;
+
+                anytype.model.NameserviceNameType nsNameType = 4;
             }
 
             message Response {
@@ -6554,7 +6557,9 @@ message Rpc {
             message Request {
                 // if empty - then no name requested
                 // if non-empty - PP node will register that name on behalf of the user
-                string requestedAnyName = 1;
+                string nsName = 1;
+
+                anytype.model.NameserviceNameType nsNameType = 2;
             }
 
             message Response {
@@ -6577,6 +6582,35 @@ message Rpc {
                         MEMBERSHIP_WRONG_STATE = 7;
 
                         BAD_ANYNAME = 8;
+                    }
+                }
+            }
+        }
+
+        /**
+        * Get the current status of the e-mail verification.
+        * Status can change if you call GetVerificationEmail or VerifyEmailCode
+        */
+        message GetVerificationEmailStatus {
+            message Request {
+            }
+
+            message Response {
+                Error error = 1;
+
+                anytype.model.Membership.EmailVerificationStatus status = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        NOT_LOGGED_IN = 3;
+                        PAYMENT_NODE_ERROR = 4;
                     }
                 }
             }
@@ -6696,8 +6730,9 @@ message Rpc {
     message NameService {
         message ResolveName {
             message Request {
-                // including ".any" suffix
-                string fullName = 1;
+                string nsName = 1;
+
+                anytype.model.NameserviceNameType nsNameType = 2;
             }
 
             message Response {

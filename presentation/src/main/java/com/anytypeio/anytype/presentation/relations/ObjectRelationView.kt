@@ -125,7 +125,7 @@ sealed class ObjectRelationView : DefaultObjectDiffIdentifier {
     }
 
     sealed class Links : ObjectRelationView() {
-        data class To(
+        data class Backlinks(
             override val id: Id,
             override val key: Key,
             override val name: String,

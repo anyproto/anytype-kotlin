@@ -191,7 +191,8 @@ class RelationCreateFromScratchForObjectFragment : RelationCreateFromScratchBase
                     FLOW_TYPE to FLOW_SET_OR_COLLECTION
                 } else {
                     FLOW_TYPE to FLOW_OBJECT
-                }
+                },
+                RelationCreateFromScratchFormatPickerFragment.SPACE_KEY to space
             )
         )
     }
@@ -235,16 +236,22 @@ class RelationCreateFromScratchForObjectFragment : RelationCreateFromScratchBase
         fun new(
             ctx: Id,
             query: String,
+            space: Id,
             isSetOrCollection: Boolean = false
         ) = RelationCreateFromScratchForObjectFragment().apply {
             arguments = bundleOf(
                 CTX_KEY to ctx,
                 QUERY_KEY to query,
+                SPACE_KEY to space,
                 IS_SET_OR_COLLECTION_KEY to isSetOrCollection
             )
         }
 
-        fun args(ctx: Id, query: String) = bundleOf(CTX_KEY to ctx, QUERY_KEY to query)
+        fun args(ctx: Id, query: String, space: Id) = bundleOf(
+            CTX_KEY to ctx,
+            QUERY_KEY to query,
+            SPACE_KEY to space
+        )
     }
 }
 
@@ -277,7 +284,8 @@ class RelationCreateFromScratchForDataViewFragment : RelationCreateFromScratchBa
             R.id.relationFormatPickerScreen,
             bundleOf(
                 RelationCreateFromScratchFormatPickerFragment.CTX_KEY to ctx,
-                FLOW_TYPE to FLOW_DV
+                FLOW_TYPE to FLOW_DV,
+                RelationCreateFromScratchFormatPickerFragment.SPACE_KEY to space
             )
         )
     }
@@ -359,7 +367,8 @@ class RelationCreateFromScratchForObjectBlockFragment : RelationCreateFromScratc
             R.id.relationFormatPickerScreen,
             bundleOf(
                 RelationCreateFromScratchFormatPickerFragment.CTX_KEY to ctx,
-                FLOW_TYPE to FLOW_BLOCK
+                FLOW_TYPE to FLOW_BLOCK,
+                RelationCreateFromScratchFormatPickerFragment.SPACE_KEY to space
             )
         )
     }
@@ -387,11 +396,13 @@ class RelationCreateFromScratchForObjectBlockFragment : RelationCreateFromScratc
         fun newInstance(
             ctx: Id,
             target: Id,
+            space: Id,
             query: String
         ) = RelationCreateFromScratchForObjectBlockFragment().apply {
             arguments = bundleOf(
                 CTX_KEY to ctx,
                 QUERY_KEY to query,
+                SPACE_KEY to space,
                 TARGET_KEY to target
             )
         }

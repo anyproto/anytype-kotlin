@@ -1059,13 +1059,13 @@
     <string name="relation_origin_library_installed">Bibliothèque installée.</string>
     <string name="relation_origin_bookmark">Marque-page</string>
     <!--endregion-->
-    <plurals name="links_to_count">
-        <item quantity="one">%d lien vers</item>
-        <item quantity="other">%d links to</item>
+    <plurals name="backlinks_count">
+        <item quantity="one">%d backlink</item>
+        <item quantity="other">%d backlinks</item>
     </plurals>
     <plurals name="links_from_count">
-        <item quantity="one">Lien %d depuis</item>
-        <item quantity="other">%d links from</item>
+        <item quantity="one">%d link</item>
+        <item quantity="other">%d links</item>
     </plurals>
     <!--region ORIGIN RELATION VALUES -->
     <string name="date_type_tomorrow">Demain</string>

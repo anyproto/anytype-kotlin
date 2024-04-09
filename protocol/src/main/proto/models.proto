@@ -1164,41 +1164,47 @@ message ManifestInfo {
     string language = 12;
 }
 
-message Membership {
-    enum Tier {
-        TierNewUser = 0;
-        // "free" tier
-        TierExplorer = 1;
-        // this tier can be used just for testing in debug mode
-        // it will still create an active subscription, but with NO features
-        TierBuilder1WeekTEST = 2;
-        // this tier can be used just for testing in debug mode
-        // it will still create an active subscription, but with NO features
-        TierCoCreator1WeekTEST = 3;
-        TierBuilder = 4;
-        TierCoCreator = 5;
-    }
-    
+enum NameserviceNameType {
+    // .any suffix
+    AnyName = 0;
+}
+
+
+message Membership {    
     enum Status {
         StatusUnknown = 0;
-        // please wait a bit more
+        // please wait a bit more, we are still processing your request
+        // the payment is confirmed, but we need more time to do some side-effects:
+        // - increase limits
+        // - send emails
+        // - allocate names
         StatusPending = 1;
+        // the membership is active, ready to use!
         StatusActive = 2;
         // in some cases we need to finalize the process:
         // - if user has bought membership directly without first calling
         // the BuySubscription method
-        // 
         // in this case please call Finalize to finish the process
         StatusPendingRequiresFinalization = 3;
     }
     
     enum PaymentMethod {
-        MethodCard = 0; // Stripe
-        MethodCrypto = 1;
-        MethodApplePay = 2;
-        MethodGooglePay = 3;
-        MethodAppleInapp = 4;
-        MethodGoogleInapp = 5;
+        MethodNone = 0;
+        MethodCard = 1;
+        MethodCrypto = 2;
+        MethodInappApple = 3;
+        MethodInappGoogle = 4;
+    }
+
+    enum EmailVerificationStatus {
+        // user NEVER comleted the verification of the email
+        StatusNotVerified = 0;
+        // user has asked for new code, but did not enter it yet
+        // (even if email was verified before, you can ask to UPDATE your e-mail)
+        // please wait, you can not ask for more codes yet
+        StatusCodeSent = 1;
+        // the e-mail is finally verified
+        StatusVerified = 2;
     }
 
     // it was Tier before, changed to int32 to allow dynamic values
@@ -1225,16 +1231,14 @@ message MembershipTierData {
         PeriodTypeYears = 5;  
     }
 
-    // this is a unique ID of the tier
-    // you should hardcode this in your app and provide icon, graphics, etc for each tier 
-    // (even for old/historical/inactive/hidden tiers)
+    // this is a unique Payment Node ID of the tier
+    // WARNING: tiers can be sorted differently, not according to their IDs!
     uint32 id = 1;
     // localazied name of the tier
     string name = 2;
     // just a short technical description
-    // you don't have to use it, you can use your own UI-friendly texts
     string description = 3;
-    // is this tier for debugging only?
+    // is this tier for testing and debugging only?
     bool isTest = 4;    
     // how long is the period of the subscription
     PeriodType periodType = 5;
@@ -1251,4 +1255,16 @@ message MembershipTierData {
     repeated string features = 10;
     // green, blue, red, purple, custom
     string colorStr = 11;
+
+    // Stripe platform-specific data:
+    string stripeProductId = 12;
+    string stripeManageUrl = 13;
+
+    // iOS platform-specific data:
+    string iosProductId = 15;
+    string iosManageUrl = 16;
+
+    // Android platform-specific data:
+    string androidProductId = 17;
+    string androidManageUrl = 18;
 }

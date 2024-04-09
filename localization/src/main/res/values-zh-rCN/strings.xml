@@ -1161,12 +1161,12 @@
     <string name="multiplayer_how_to_share_space_step_3">批准请求后，您可以选择此人的访问权限。</string>
     <string name="multiplayer_delete_space_sharing_link">删除共享链接</string>
     <string name="multiplayer_delete_link">删除链接</string>
-    <string name="multiplayer_delete_link_description">New members won’t be able to join the space. You can generate a new link anytime.</string>
-    <string name="multiplayer_already_space_member">You are already a member of this space</string>
+    <string name="multiplayer_delete_link_description">新成员将无法加入空间。您可以随时生成一个新链接。</string>
+    <string name="multiplayer_already_space_member">你已经是这个空间的成员了</string>
     <string name="multiplayer_open_space">打开空间</string>
-    <string name="multiplayer_error_space_deleted">Space deleted</string>
-    <string name="multiplayer_error_space_not_found">Space not found</string>
-    <string name="multiplayer_read_only_access_error">Read-only access. Contact space owner for changes.</string>
+    <string name="multiplayer_error_space_deleted">空间已删除</string>
+    <string name="multiplayer_error_space_not_found">找不到空间</string>
+    <string name="multiplayer_read_only_access_error">只读权限。请联系空间所有者进行修改。</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">会员</string>

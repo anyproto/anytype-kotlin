@@ -279,7 +279,7 @@ fun Block.Details.linksFeaturedRelation(
                 return null
             } else {
                 val count = backlinks.size
-                ObjectRelationView.Links.To(
+                ObjectRelationView.Links.Backlinks(
                     id = relation.id,
                     key = relation.key,
                     name = relation.name.orEmpty(),

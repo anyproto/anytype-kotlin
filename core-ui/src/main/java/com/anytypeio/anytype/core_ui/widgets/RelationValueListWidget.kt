@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.view.marginStart
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
@@ -402,9 +401,9 @@ class RelationValueListWidget @JvmOverloads constructor(
                 )
             }
 
-            is ObjectRelationView.Links.To -> {
+            is ObjectRelationView.Links.Backlinks -> {
                 val count = context.resources.getQuantityString(
-                    R.plurals.links_to_count,
+                    R.plurals.backlinks_count,
                     relation.count,
                     relation.count
                 )

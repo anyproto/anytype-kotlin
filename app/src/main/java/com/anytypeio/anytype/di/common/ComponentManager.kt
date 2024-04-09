@@ -116,7 +116,6 @@ import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.SpaceJoinRequestViewModel
 import com.anytypeio.anytype.presentation.objects.SelectObjectTypeViewModel
 import com.anytypeio.anytype.presentation.relations.option.CreateOrEditOptionViewModel
-import com.anytypeio.anytype.presentation.relations.value.attachment.AttachmentValueViewModel
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueViewModel
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagOrStatusValueViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
@@ -1116,48 +1115,6 @@ class ComponentManager(
                 )
             )
             .objectValueDataViewComponent()
-            .params(params)
-            .build()
-    }
-
-    val attachmentObjectComponent = ComponentWithParams { params: AttachmentValueViewModel.ViewModelParams ->
-        editorComponent
-            .get(
-                key = params.ctx,
-                param = DefaultComponentParam(
-                    ctx = params.ctx,
-                    space = params.space
-                )
-            )
-            .attachmentValueObjectComponent()
-            .params(params)
-            .build()
-    }
-
-    val attachmentSetComponent = ComponentWithParams { params: AttachmentValueViewModel.ViewModelParams ->
-        objectSetComponent
-            .get(
-                key = params.ctx,
-                param = DefaultComponentParam(
-                    ctx = params.ctx,
-                    space = params.space
-                )
-            )
-            .attachmentSetComponent()
-            .params(params)
-            .build()
-    }
-
-    val attachmentDataViewComponent = ComponentWithParams { params: AttachmentValueViewModel.ViewModelParams ->
-        objectSetComponent
-            .get(
-                key = params.ctx,
-                param = DefaultComponentParam(
-                    ctx = params.ctx,
-                    space = params.space
-                )
-            )
-            .attachmentDataViewComponent()
             .params(params)
             .build()
     }

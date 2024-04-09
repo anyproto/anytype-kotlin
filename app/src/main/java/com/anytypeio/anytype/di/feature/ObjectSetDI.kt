@@ -6,7 +6,6 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.primitives.Space
-import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.feature.cover.UnsplashSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationAddToDataViewSubComponent
@@ -169,8 +168,6 @@ interface ObjectSetSubComponent {
     fun tagStatusDataViewComponent(): TagOrStatusValueDataViewComponent.Builder
     fun optionSetComponent(): CreateOrEditOptionSetComponent.Builder
     fun optionDataViewComponent(): CreateOrEditOptionDataViewComponent.Builder
-    fun attachmentSetComponent(): AttachmentValueSetComponent.Builder
-    fun attachmentDataViewComponent(): AttachmentValueDataViewComponent.Builder
     fun objectValueSetComponent(): ObjectValueSetComponent.Builder
     fun objectValueDataViewComponent(): ObjectValueDataViewComponent.Builder
 }

@@ -75,6 +75,12 @@ class NotificationsViewModel(
                     isReadOnly = !payload.permissions.isOwnerOrEditor()
                 )
             }
+            is NotificationPayload.ParticipantRemove -> {
+                state.value = NotificationsScreenState.Multiplayer.MemberSpaceRemove(
+                    spaceName = payload.spaceName,
+                    identityName = payload.identityName
+                )
+            }
             else -> {
                 Timber.w("Ignored notification: $payload")
             }
@@ -140,10 +146,16 @@ sealed class NotificationsScreenState {
             val identity: Id,
             val name: String
         ) : Multiplayer()
+        // Member
         data class MemberRequestApproved(
             val space: SpaceId,
             val spaceName: String,
             val isReadOnly: Boolean
+        ) : Multiplayer()
+        // Member
+        data class MemberSpaceRemove(
+            val spaceName: String,
+            val identityName: String
         ) : Multiplayer()
     }
 }

@@ -54,6 +54,25 @@ fun MemberRequestApprovedNotification(
 }
 
 @Composable
+fun MemberSpaceRemovedNotification() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color = colorResource(id = R.color.background_primary),)
+            .padding(horizontal = 20.dp, vertical = 16.dp)
+    ) {
+        Text(
+            text = stringResource(id = R.string.multiplayer_notification_member_removed_from_space),
+            modifier = Modifier
+                .align(Alignment.CenterStart),
+            color = colorResource(id = R.color.text_secondary),
+            style = Caption1Regular,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+@Composable
 @Preview
 fun MemberRequestApprovedWithAccessRightsNotificationPreview() {
     MemberRequestApprovedNotification(

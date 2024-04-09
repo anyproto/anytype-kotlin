@@ -100,6 +100,9 @@ fun NotificationsScreen(
                 isReadOnly = state.isReadOnly
             )
         }
+        is NotificationsScreenState.Multiplayer.MemberSpaceRemove -> {
+            MemberSpaceRemovedNotification()
+        }
         NotificationsScreenState.Hidden -> {}
     }
 }

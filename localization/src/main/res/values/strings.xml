@@ -1360,6 +1360,7 @@
     <string name="multiplayer_notification_member_joined_space_with_editor_only_rights"><b>%1$s</b> joined <b>%2$s</b> space with edit access rights</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Your request to join the %1$s space has been approved with read-only access rights. The space will be available on your device soon.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Your request to join the %1$s space has been approved with edit access rights. The space will be available on your device soon.</string>
+    <string name="multiplayer_notification_view_request">View</string>
 
     <!--endregion-->
 

@@ -1170,7 +1170,7 @@
     <string name="multiplayer_open_space">Espace ouvert</string>
     <string name="multiplayer_error_space_deleted">Space deleted</string>
     <string name="multiplayer_error_space_not_found">Space not found</string>
-    <string name="multiplayer_read_only_access_error">Read-only access. Contact space owner for changes.</string>
+    <string name="multiplayer_read_only_access_error">Accès en lecture seule. Contactez le propriétaire de l\'espace pour faire des modifications.</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Adhésion</string>

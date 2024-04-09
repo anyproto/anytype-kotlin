@@ -6,7 +6,6 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.primitives.Space
-import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.feature.cover.UnsplashSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationAddToDataViewSubComponent
@@ -16,8 +15,6 @@ import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForOb
 import com.anytypeio.anytype.di.feature.sets.CreateFilterSubComponent
 import com.anytypeio.anytype.di.feature.sets.ModifyFilterSubComponent
 import com.anytypeio.anytype.di.feature.sets.SelectFilterRelationSubComponent
-import com.anytypeio.anytype.di.feature.sets.viewer.ViewerCardSizeSelectSubcomponent
-import com.anytypeio.anytype.di.feature.sets.viewer.ViewerImagePreviewSelectSubcomponent
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
@@ -135,8 +132,6 @@ interface ObjectSetSubComponent {
     fun setOrCollectionRelationValueComponent() : SetOrCollectionRelationValueSubComponent.Builder
 
     fun objectSetSettingsComponent(): ObjectSetSettingsSubComponent.Builder
-    fun viewerCardSizeSelectComponent(): ViewerCardSizeSelectSubcomponent.Builder
-    fun viewerImagePreviewSelectComponent(): ViewerImagePreviewSelectSubcomponent.Builder
     fun relationAddToDataViewComponent(): RelationAddToDataViewSubComponent.Builder
     fun relationCreateFromScratchForDataViewComponent(): RelationCreateFromScratchForDataViewSubComponent.Builder
     fun selectSortRelationComponent(): SelectSortRelationSubComponent.Builder
@@ -169,8 +164,6 @@ interface ObjectSetSubComponent {
     fun tagStatusDataViewComponent(): TagOrStatusValueDataViewComponent.Builder
     fun optionSetComponent(): CreateOrEditOptionSetComponent.Builder
     fun optionDataViewComponent(): CreateOrEditOptionDataViewComponent.Builder
-    fun attachmentSetComponent(): AttachmentValueSetComponent.Builder
-    fun attachmentDataViewComponent(): AttachmentValueDataViewComponent.Builder
     fun objectValueSetComponent(): ObjectValueSetComponent.Builder
     fun objectValueDataViewComponent(): ObjectValueDataViewComponent.Builder
 }

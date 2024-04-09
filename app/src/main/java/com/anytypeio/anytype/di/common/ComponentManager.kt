@@ -86,8 +86,6 @@ import com.anytypeio.anytype.di.feature.sets.CreateFilterModule
 import com.anytypeio.anytype.di.feature.sets.ModifyFilterModule
 import com.anytypeio.anytype.di.feature.sets.PickConditionModule
 import com.anytypeio.anytype.di.feature.sets.SelectFilterRelationModule
-import com.anytypeio.anytype.di.feature.sets.viewer.ViewerCardSizeSelectModule
-import com.anytypeio.anytype.di.feature.sets.viewer.ViewerImagePreviewSelectModule
 import com.anytypeio.anytype.di.feature.settings.DaggerAboutAppComponent
 import com.anytypeio.anytype.di.feature.settings.DaggerAppearanceComponent
 import com.anytypeio.anytype.di.feature.settings.DaggerFilesStorageComponent
@@ -116,7 +114,6 @@ import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.SpaceJoinRequestViewModel
 import com.anytypeio.anytype.presentation.objects.SelectObjectTypeViewModel
 import com.anytypeio.anytype.presentation.relations.option.CreateOrEditOptionViewModel
-import com.anytypeio.anytype.presentation.relations.value.attachment.AttachmentValueViewModel
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueViewModel
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagOrStatusValueViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
@@ -548,22 +545,6 @@ class ComponentManager(
             .get(key = param.ctx, param = param)
             .objectSetSettingsComponent()
             .module(ObjectSetSettingsModule)
-            .build()
-    }
-
-    val viewerCardSizeSelectComponent = ComponentWithParams { param: DefaultComponentParam ->
-        objectSetComponent
-            .get(key = param.ctx, param = param)
-            .viewerCardSizeSelectComponent()
-            .module(ViewerCardSizeSelectModule)
-            .build()
-    }
-
-    val viewerImagePreviewSelectComponent = ComponentWithParams { param: DefaultComponentParam ->
-        objectSetComponent
-            .get(key = param.ctx, param = param)
-            .viewerImagePreviewSelectComponent()
-            .module(ViewerImagePreviewSelectModule)
             .build()
     }
 
@@ -1116,48 +1097,6 @@ class ComponentManager(
                 )
             )
             .objectValueDataViewComponent()
-            .params(params)
-            .build()
-    }
-
-    val attachmentObjectComponent = ComponentWithParams { params: AttachmentValueViewModel.ViewModelParams ->
-        editorComponent
-            .get(
-                key = params.ctx,
-                param = DefaultComponentParam(
-                    ctx = params.ctx,
-                    space = params.space
-                )
-            )
-            .attachmentValueObjectComponent()
-            .params(params)
-            .build()
-    }
-
-    val attachmentSetComponent = ComponentWithParams { params: AttachmentValueViewModel.ViewModelParams ->
-        objectSetComponent
-            .get(
-                key = params.ctx,
-                param = DefaultComponentParam(
-                    ctx = params.ctx,
-                    space = params.space
-                )
-            )
-            .attachmentSetComponent()
-            .params(params)
-            .build()
-    }
-
-    val attachmentDataViewComponent = ComponentWithParams { params: AttachmentValueViewModel.ViewModelParams ->
-        objectSetComponent
-            .get(
-                key = params.ctx,
-                param = DefaultComponentParam(
-                    ctx = params.ctx,
-                    space = params.space
-                )
-            )
-            .attachmentDataViewComponent()
             .params(params)
             .build()
     }

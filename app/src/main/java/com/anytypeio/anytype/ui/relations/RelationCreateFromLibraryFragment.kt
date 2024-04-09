@@ -54,7 +54,8 @@ class RelationCreateFromLibraryFragment : RelationCreateFromScratchBaseFragment(
             R.id.relationFormatPickerScreen,
             bundleOf(
                 RelationCreateFromScratchFormatPickerFragment.CTX_KEY to ctx,
-                RelationCreateFromScratchFormatPickerFragment.FLOW_TYPE to RelationCreateFromScratchFormatPickerFragment.FLOW_LIBRARY
+                RelationCreateFromScratchFormatPickerFragment.FLOW_TYPE to RelationCreateFromScratchFormatPickerFragment.FLOW_LIBRARY,
+                RelationCreateFromScratchFormatPickerFragment.SPACE_KEY to space
             )
         )
     }

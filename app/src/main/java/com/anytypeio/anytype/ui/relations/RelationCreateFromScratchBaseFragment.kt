@@ -191,7 +191,8 @@ class RelationCreateFromScratchForObjectFragment : RelationCreateFromScratchBase
                     FLOW_TYPE to FLOW_SET_OR_COLLECTION
                 } else {
                     FLOW_TYPE to FLOW_OBJECT
-                }
+                },
+                RelationCreateFromScratchFormatPickerFragment.SPACE_KEY to space
             )
         )
     }
@@ -277,7 +278,8 @@ class RelationCreateFromScratchForDataViewFragment : RelationCreateFromScratchBa
             R.id.relationFormatPickerScreen,
             bundleOf(
                 RelationCreateFromScratchFormatPickerFragment.CTX_KEY to ctx,
-                FLOW_TYPE to FLOW_DV
+                FLOW_TYPE to FLOW_DV,
+                RelationCreateFromScratchFormatPickerFragment.SPACE_KEY to space
             )
         )
     }
@@ -359,7 +361,8 @@ class RelationCreateFromScratchForObjectBlockFragment : RelationCreateFromScratc
             R.id.relationFormatPickerScreen,
             bundleOf(
                 RelationCreateFromScratchFormatPickerFragment.CTX_KEY to ctx,
-                FLOW_TYPE to FLOW_BLOCK
+                FLOW_TYPE to FLOW_BLOCK,
+                RelationCreateFromScratchFormatPickerFragment.SPACE_KEY to space
             )
         )
     }

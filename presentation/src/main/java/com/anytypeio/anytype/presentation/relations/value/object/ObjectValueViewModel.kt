@@ -4,8 +4,10 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Relation.Format.*
 import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
@@ -112,24 +114,40 @@ class ObjectValueViewModel(
         query: String,
         ids: List<Id>
     ): SearchObjects.Params {
-        return if (isEditableRelation) {
-            SearchObjects.Params(
-                keys = ObjectSearchConstants.defaultKeys,
-                filters = ObjectSearchConstants.filterAddObjectToRelation(
-                    spaces = spaceManager.getSpaceWithTechSpace(),
-                    targetTypes = relation.relationFormatObjectTypes
-                ),
-                fulltext = query
-            )
-        } else {
-            SearchObjects.Params(
-                keys = ObjectSearchConstants.defaultKeys,
-                filters = ObjectSearchConstants.filterObjectsByIds(
-                    spaces = spaceManager.getSpaceWithTechSpace(),
-                    ids = ids
-                )
-            )
+        val spaces = spaceManager.getSpaceWithTechSpace(space = viewModelParams.space.id)
+        val isFileRelation = relation.format == FILE
+        val searchKeys =
+            if (isFileRelation) ObjectSearchConstants.defaultFilesKeys else ObjectSearchConstants.defaultKeys
+        val searchFilters = when {
+            isFileRelation -> {
+                if (isEditableRelation) {
+                    ObjectSearchConstants.filesFilters(spaces = spaces)
+                } else {
+                    ObjectSearchConstants.filterObjectsByIds(
+                        spaces = spaces,
+                        ids = ids
+                    )
+                }
+            }
+            else -> {
+                if (isEditableRelation) {
+                    ObjectSearchConstants.filterAddObjectToRelation(
+                        spaces = spaces,
+                        targetTypes = relation.relationFormatObjectTypes
+                    )
+                } else {
+                    ObjectSearchConstants.filterObjectsByIds(
+                        spaces = spaces,
+                        ids = ids
+                    )
+                }
+            }
         }
+        return SearchObjects.Params(
+            keys = searchKeys,
+            filters = searchFilters,
+            fulltext = if (isEditableRelation) query else SearchObjects.EMPTY_TEXT
+        )
     }
 
     private fun emitCommand(command: Command, delay: Long = 0L) {
@@ -166,14 +184,7 @@ class ObjectValueViewModel(
                 isEditableRelation = isEditableRelation,
                 title = relation.name.orEmpty(),
                 items = buildList {
-                    val typeNames = mutableListOf<String>()
-                    relation.relationFormatObjectTypes.forEach { it ->
-                        storeOfObjectTypes.get(it)?.let { type ->
-                            val name = type.name
-                            if (!name.isNullOrBlank()) typeNames.add(name)
-                        }
-                    }
-                    val objectTypeNames = typeNames.joinToString(", ")
+                    val objectTypeNames = getFormatObjectTypeNames(relation)
                     if (isEditableRelation) add(ObjectValueItem.ObjectType(name = objectTypeNames))
                     addAll(views)
                 }
@@ -184,6 +195,20 @@ class ObjectValueViewModel(
                 title = relation.name.orEmpty(),
             )
         }
+    }
+
+    private suspend fun getFormatObjectTypeNames(relation: ObjectWrapper.Relation): String {
+        val objectTypeKeys =
+            if (relation.format == FILE) {
+                ObjectTypeIds.getFileTypes().mapNotNull { key ->
+                    storeOfObjectTypes.getByKey(key)?.name?.takeIf { it.isNotBlank() }
+                }
+            } else {
+                relation.relationFormatObjectTypes.mapNotNull { id ->
+                    storeOfObjectTypes.get(id)?.name?.takeIf { it.isNotBlank() }
+                }
+            }
+        return objectTypeKeys.joinToString(", ")
     }
 
     private suspend fun mapObjects(

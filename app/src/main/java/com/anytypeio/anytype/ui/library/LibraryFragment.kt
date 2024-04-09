@@ -123,7 +123,8 @@ class LibraryFragment : BaseComposeFragment() {
                         R.id.openRelationCreationScreen,
                         RelationCreateFromScratchForObjectFragment.args(
                             ctx = "",
-                            query = it.name
+                            query = it.name,
+                            space = space
                         )
                     )
                 }

@@ -1059,7 +1059,7 @@
     <string name="relation_origin_library_installed">Biblioteca instalada</string>
     <string name="relation_origin_bookmark">Marcador</string>
     <!--endregion-->
-    <plurals name="links_to_count">
+    <plurals name="backlinks_count">
         <item quantity="one">%d link para</item>
         <item quantity="other">%d links para</item>
     </plurals>

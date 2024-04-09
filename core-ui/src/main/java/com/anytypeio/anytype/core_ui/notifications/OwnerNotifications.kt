@@ -31,8 +31,7 @@ fun OwnerUserRequestToJoin(
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                color = colorResource(id = R.color.background_primary),
-//                shape = RoundedCornerShape(8.dp)
+                color = colorResource(id = R.color.background_primary)
             )
             .padding(horizontal = 20.dp, vertical = 16.dp)
             .noRippleClickable { onManageClicked() },
@@ -79,8 +78,7 @@ fun OwnerUserRequestToLeave(
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                color = colorResource(id = R.color.background_primary),
-//                shape = RoundedCornerShape(8.dp)
+                color = colorResource(id = R.color.background_primary)
             )
             .padding(horizontal = 20.dp, vertical = 16.dp)
             .noRippleClickable { onManageClicked() },
@@ -116,44 +114,6 @@ fun OwnerUserRequestToLeave(
         )
     }
 }
-
-//@Composable
-//fun NewJoinRequestNotification(
-//    onManageClicked: () -> Unit
-//) {
-//    Box(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .background(
-//                color = colorResource(id = R.color.background_notification_primary),
-//                shape = RoundedCornerShape(8.dp)
-//            )
-//            .padding(horizontal = 20.dp, vertical = 16.dp)
-//            .noRippleClickable { onManageClicked() }
-//    ) {
-//        Text(
-//            text = stringResource(id = R.string.multiplayer_notification_new_join_request),
-//            modifier = Modifier.align(Alignment.CenterStart),
-//            color = colorResource(id = R.color.text_secondary),
-//            style = Caption1Regular
-//
-//        )
-//        Text(
-//            text = stringResource(id = R.string.multiplayer_manage),
-//            modifier = Modifier.align(Alignment.CenterEnd),
-//            color = colorResource(id = R.color.text_white),
-//            style = Caption1Medium
-//        )
-//    }
-//}
-//
-//@Composable
-//@Preview
-//private fun NewJoinRequestNotificationPreview() {
-//    NewJoinRequestNotification(
-//        onManageClicked = {}
-//    )
-//}
 
 @Composable
 @Preview

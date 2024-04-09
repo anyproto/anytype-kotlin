@@ -25,9 +25,7 @@ fun MemberRequestApprovedNotification(
         modifier = Modifier
             .fillMaxWidth()
             .background(
-//                color = colorResource(id = R.color.background_notification_primary),
                 color = colorResource(id = R.color.background_primary),
-//                shape = RoundedCornerShape(8.dp)
             )
             .padding(horizontal = 20.dp, vertical = 16.dp)
     ) {

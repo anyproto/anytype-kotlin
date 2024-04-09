@@ -95,7 +95,7 @@ fun NotificationsScreen(
             )
         }
         is NotificationsScreenState.Multiplayer.MemberRequestApproved -> {
-            MemberRequestApprovedWithAccessRightsNotification(
+            MemberRequestApprovedNotification(
                 spaceName = state.spaceName,
                 isReadOnly = state.isReadOnly
             )

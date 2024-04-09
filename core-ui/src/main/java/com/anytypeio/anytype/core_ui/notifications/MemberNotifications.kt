@@ -17,7 +17,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 
 @Composable
-fun MemberRequestApprovedWithAccessRightsNotification(
+fun MemberRequestApprovedNotification(
     spaceName: String,
     isReadOnly: Boolean
 ) {
@@ -56,7 +56,7 @@ fun MemberRequestApprovedWithAccessRightsNotification(
 @Composable
 @Preview
 fun MemberRequestApprovedWithAccessRightsNotificationPreview() {
-    MemberRequestApprovedWithAccessRightsNotification(
+    MemberRequestApprovedNotification(
         spaceName = "Art historians",
         isReadOnly = true
     )

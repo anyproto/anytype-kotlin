@@ -40,17 +40,18 @@ sealed class NotificationPayload {
         val identityIcon: String
     ) : NotificationPayload()
 
-    data class ParticipantRequestApproved(
-        val spaceId: SpaceId,
-        val permissions: SpaceMemberPermissions
-    ) : NotificationPayload()
-
     data class RequestToLeave(
         val spaceId: SpaceId,
         val identity: String,
         val identityName: String,
         val identityIcon: String
     ) : NotificationPayload()
+
+    data class ParticipantRequestApproved(
+        val spaceId: SpaceId,
+        val permissions: SpaceMemberPermissions
+    ) : NotificationPayload()
+
 
     data class ParticipantRemove(
         val identity: String,

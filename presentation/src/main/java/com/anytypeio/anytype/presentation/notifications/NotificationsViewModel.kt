@@ -39,29 +39,42 @@ class NotificationsViewModel(
 
     private fun handleNotification(event: Notification.Event) {
         val payload = event.notification?.payload
-        if (payload is NotificationPayload.GalleryImport) {
-            if (payload.errorCode != ImportErrorCode.NULL) {
-                state.value = NotificationsScreenState.GalleryInstalledError(
-                    errorCode = payload.errorCode
-                )
-            } else {
-                state.value = NotificationsScreenState.GalleryInstalled(
-                    spaceId = payload.spaceId,
-                    galleryName = payload.name
+        when (payload) {
+            is NotificationPayload.GalleryImport -> {
+                if (payload.errorCode != ImportErrorCode.NULL) {
+                    state.value = NotificationsScreenState.GalleryInstalledError(
+                        errorCode = payload.errorCode
+                    )
+                } else {
+                    state.value = NotificationsScreenState.GalleryInstalled(
+                        spaceId = payload.spaceId,
+                        galleryName = payload.name
+                    )
+                }
+            }
+            is NotificationPayload.RequestToJoin -> {
+                state.value = NotificationsScreenState.Multiplayer.RequestToJoin(
+                    space = payload.spaceId,
+                    identity = payload.identity,
+                    name = payload.identityName
                 )
             }
-        } else if (payload is NotificationPayload.RequestToJoin) {
-            state.value = NotificationsScreenState.Multiplayer.RequestToJoin(
-                space = payload.spaceId,
-                identity = payload.identity,
-                name = payload.identityName,
-                icon = payload.identityIcon
-            )
-        } else if (payload is NotificationPayload.ParticipantRequestApproved) {
-            state.value = NotificationsScreenState.Multiplayer.MemberRequestApproved(
-                spaceName = payload.spaceId.id,
-                isReadOnly = !payload.permissions.isOwnerOrEditor()
-            )
+            is NotificationPayload.RequestToLeave -> {
+                state.value = NotificationsScreenState.Multiplayer.RequestToLeave(
+                    space = payload.spaceId,
+                    identity = payload.identity,
+                    name = payload.identityName
+                )
+            }
+            is NotificationPayload.ParticipantRequestApproved -> {
+                state.value = NotificationsScreenState.Multiplayer.MemberRequestApproved(
+                    spaceName = payload.spaceId.id,
+                    isReadOnly = !payload.permissions.isOwnerOrEditor()
+                )
+            }
+            else -> {
+                Timber.w("Ignored notification: $payload")
+            }
         }
     }
 
@@ -110,11 +123,17 @@ sealed class NotificationsScreenState {
         val errorCode: ImportErrorCode
     ) : NotificationsScreenState()
     sealed class Multiplayer : NotificationsScreenState() {
+        // Owner
         data class RequestToJoin(
             val space: SpaceId,
             val identity: Id,
-            val name: String,
-            val icon: Id
+            val name: String
+        ) : Multiplayer()
+        // Owner
+        data class RequestToLeave(
+            val space: SpaceId,
+            val identity: Id,
+            val name: String
         ) : Multiplayer()
         data class MemberRequestApproved(
             val spaceName: String,

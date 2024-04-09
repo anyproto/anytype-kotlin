@@ -105,6 +105,10 @@ class MainViewModel(
                 delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
                 commands.emit(Command.Notifications)
             }
+            is NotificationPayload.RequestToLeave -> {
+                delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
+                commands.emit(Command.Notifications)
+            }
             is NotificationPayload.ParticipantRequestApproved -> {
                 delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
                 commands.emit(Command.Notifications)

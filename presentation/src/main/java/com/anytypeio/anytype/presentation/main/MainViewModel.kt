@@ -96,13 +96,23 @@ class MainViewModel(
     }
 
     private suspend fun handleNotification(event: Notification.Event) {
-        val payload = event.notification?.payload
-        if (payload is NotificationPayload.GalleryImport) {
-            delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
-            commands.emit(Command.Notifications)
-        } else {
-            viewModelScope.launch {
-                toasts.emit(payload.toString())
+        when (val payload = event.notification?.payload) {
+            is NotificationPayload.GalleryImport -> {
+                delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
+                commands.emit(Command.Notifications)
+            }
+            is NotificationPayload.RequestToJoin -> {
+                delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
+                commands.emit(Command.Notifications)
+            }
+            is NotificationPayload.ParticipantRequestApproved -> {
+                delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
+                commands.emit(Command.Notifications)
+            }
+            else -> {
+                viewModelScope.launch {
+                    toasts.emit(payload.toString())
+                }
             }
         }
     }

@@ -27,7 +27,7 @@ data class Notification(
 
 sealed class NotificationPayload {
     data class GalleryImport(
-        val processId: String,
+        val processId: Id,
         val errorCode: ImportErrorCode,
         val spaceId: SpaceId,
         val name: String
@@ -35,7 +35,7 @@ sealed class NotificationPayload {
 
     data class RequestToJoin(
         val spaceId: SpaceId,
-        val identity: String,
+        val identity: Id,
         val identityName: String,
         val identityIcon: String
     ) : NotificationPayload()

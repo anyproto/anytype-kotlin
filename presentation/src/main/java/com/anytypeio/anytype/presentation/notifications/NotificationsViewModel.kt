@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ImportErrorCode
 import com.anytypeio.anytype.core_models.Notification
 import com.anytypeio.anytype.core_models.NotificationPayload
@@ -49,6 +50,18 @@ class NotificationsViewModel(
                     galleryName = payload.name
                 )
             }
+        } else if (payload is NotificationPayload.RequestToJoin) {
+            state.value = NotificationsScreenState.Multiplayer.RequestToJoin(
+                space = payload.spaceId,
+                identity = payload.identity,
+                name = payload.identityName,
+                icon = payload.identityIcon
+            )
+        } else if (payload is NotificationPayload.ParticipantRequestApproved) {
+            state.value = NotificationsScreenState.Multiplayer.MemberRequestApproved(
+                spaceName = payload.spaceId.id,
+                isReadOnly = !payload.permissions.isOwnerOrEditor()
+            )
         }
     }
 
@@ -80,7 +93,7 @@ class NotificationsViewModel(
     }
 
     sealed class Command {
-        object Dismiss : Command()
+        data object Dismiss : Command()
         data class NavigateToSpace(val spaceId: SpaceId) : Command()
     }
 }
@@ -88,7 +101,7 @@ class NotificationsViewModel(
 
 
 sealed class NotificationsScreenState {
-    object Hidden : NotificationsScreenState()
+    data object Hidden : NotificationsScreenState()
     data class GalleryInstalled(
         val spaceId: SpaceId,
         val galleryName: String
@@ -96,4 +109,16 @@ sealed class NotificationsScreenState {
     data class GalleryInstalledError(
         val errorCode: ImportErrorCode
     ) : NotificationsScreenState()
+    sealed class Multiplayer : NotificationsScreenState() {
+        data class RequestToJoin(
+            val space: SpaceId,
+            val identity: Id,
+            val name: String,
+            val icon: Id
+        ) : Multiplayer()
+        data class MemberRequestApproved(
+            val spaceName: String,
+            val isReadOnly: Boolean
+        ) : Multiplayer()
+    }
 }

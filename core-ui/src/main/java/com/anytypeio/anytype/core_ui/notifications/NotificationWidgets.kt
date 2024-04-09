@@ -1,32 +1,48 @@
 package com.anytypeio.anytype.core_ui.notifications
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.ImportErrorCode
-import com.anytypeio.anytype.core_models.ImportErrorCode.*
+import com.anytypeio.anytype.core_models.ImportErrorCode.BAD_INPUT
+import com.anytypeio.anytype.core_models.ImportErrorCode.FILE_LOAD_ERROR
+import com.anytypeio.anytype.core_models.ImportErrorCode.IMPORT_IS_CANCELED
+import com.anytypeio.anytype.core_models.ImportErrorCode.INSUFFICIENT_PERMISSIONS
+import com.anytypeio.anytype.core_models.ImportErrorCode.INTERNAL_ERROR
+import com.anytypeio.anytype.core_models.ImportErrorCode.LIMIT_OF_ROWS_OR_RELATIONS_EXCEEDED
+import com.anytypeio.anytype.core_models.ImportErrorCode.NO_OBJECTS_TO_IMPORT
+import com.anytypeio.anytype.core_models.ImportErrorCode.NULL
+import com.anytypeio.anytype.core_models.ImportErrorCode.UNKNOWN_ERROR
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.AlertIcon
 import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_GREEN
 import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_RED
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
+import com.anytypeio.anytype.core_ui.views.Caption1Medium
+import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.presentation.notifications.NotificationsScreenState
 
@@ -66,7 +82,19 @@ fun NotificationsScreen(
                 onButtonClick = onErrorButtonClick
             )
         }
-
+        is NotificationsScreenState.Multiplayer.RequestToJoin -> {
+            OwnerUserRequestToJoin(
+                name = state.name,
+                spaceName = state.space.id,
+                onManageClicked = {}
+            )
+        }
+        is NotificationsScreenState.Multiplayer.MemberRequestApproved -> {
+            MemberRequestApprovedWithAccessRightsNotification(
+                spaceName = state.spaceName,
+                isReadOnly = state.isReadOnly
+            )
+        }
         NotificationsScreenState.Hidden -> {}
     }
 }
@@ -203,5 +231,198 @@ fun NotificationsScreenPreviewError() {
         state = NotificationsScreenState.GalleryInstalledError(IMPORT_IS_CANCELED),
         onActionButtonClick = {},
         onErrorButtonClick = {}
+    )
+}
+
+@Composable
+fun NewJoinRequestNotification(
+    onManageClicked: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                color = colorResource(id = R.color.background_notification_primary),
+                shape = RoundedCornerShape(8.dp)
+            )
+            .padding(horizontal = 20.dp, vertical = 16.dp)
+            .noRippleClickable { onManageClicked() }
+    ) {
+        Text(
+            text = stringResource(id = R.string.multiplayer_notification_new_join_request),
+            modifier = Modifier.align(Alignment.CenterStart),
+            color = colorResource(id = R.color.text_secondary),
+            style = Caption1Regular
+
+        )
+        Text(
+            text = stringResource(id = R.string.multiplayer_manage),
+            modifier = Modifier.align(Alignment.CenterEnd),
+            color = colorResource(id = R.color.text_white),
+            style = Caption1Medium
+        )
+    }
+}
+
+@Composable
+fun UserJoinedSpaceWithAccessRightsNotification(
+    name: String,
+    spaceName: String,
+    onManageClicked: () -> Unit,
+    isReadOnly: Boolean
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                color = colorResource(id = R.color.background_notification_primary),
+                shape = RoundedCornerShape(8.dp)
+            )
+            .padding(horizontal = 20.dp, vertical = 16.dp)
+            .noRippleClickable { onManageClicked() }
+    ) {
+        Box(
+            modifier = Modifier
+                .size(32.dp)
+                .background(
+                    color = Color.Red,
+                    shape = CircleShape
+                )
+        )
+        val placeholder = stringResource(id = R.string.untitled)
+        val msg = if (isReadOnly)
+            stringResource(
+                id = R.string.multiplayer_notification_member_joined_space_with_read_only_rights,
+                name.ifEmpty { placeholder },
+                spaceName.ifEmpty { placeholder }
+            )
+        else
+            stringResource(
+                id = R.string.multiplayer_notification_member_joined_space_with_read_only_rights,
+                name.ifEmpty { placeholder },
+                spaceName.ifEmpty { placeholder }
+            )
+        Text(
+            text = msg,
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .padding(start = 44.dp),
+            color = colorResource(id = R.color.text_secondary),
+            style = Caption1Regular
+        )
+    }
+}
+
+@Composable
+fun OwnerUserRequestToJoin(
+    name: String,
+    spaceName: String,
+    onManageClicked: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                color = colorResource(id = R.color.background_notification_primary),
+                shape = RoundedCornerShape(8.dp)
+            )
+            .padding(horizontal = 20.dp, vertical = 16.dp)
+            .noRippleClickable { onManageClicked() }
+    ) {
+        Box(
+            modifier = Modifier
+                .size(32.dp)
+                .background(
+                    color = Color.Red,
+                    shape = CircleShape
+                )
+        )
+        val placeholder = stringResource(id = R.string.untitled)
+        Text(
+            text = stringResource(
+                id = R.string.multiplayer_notification_member_user_sends_join_request,
+                name.ifEmpty { placeholder },
+                spaceName.ifEmpty { placeholder }
+            ),
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .padding(start = 44.dp),
+            color = colorResource(id = R.color.text_secondary),
+            style = Caption1Regular
+        )
+    }
+}
+
+@Composable
+fun MemberRequestApprovedWithAccessRightsNotification(
+    spaceName: String,
+    isReadOnly: Boolean
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                color = colorResource(id = R.color.background_notification_primary),
+                shape = RoundedCornerShape(8.dp)
+            )
+            .padding(horizontal = 20.dp, vertical = 16.dp)
+    ) {
+        val placeholder = stringResource(id = R.string.untitled)
+        val msg = if (isReadOnly)
+            stringResource(
+                id = R.string.multiplayer_notification_member_request_approved_with_read_only_rights,
+                spaceName.ifEmpty { placeholder }
+            )
+        else
+            stringResource(
+                id = R.string.multiplayer_notification_member_request_approved_with_read_only_rights,
+                spaceName.ifEmpty { placeholder }
+            )
+        Text(
+            text = msg,
+            modifier = Modifier
+                .align(Alignment.CenterStart),
+            color = colorResource(id = R.color.text_secondary),
+            style = Caption1Regular,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+@Composable
+@Preview
+private fun NewJoinRequestNotificationPreview() {
+    NewJoinRequestNotification(
+        onManageClicked = {}
+    )
+}
+
+@Composable
+@Preview
+private fun UserJoinedSpaceWithAccessRightsNotificationPreview() {
+    UserJoinedSpaceWithAccessRightsNotification(
+        name = "Carl Einstein",
+        spaceName = "Art historians",
+        isReadOnly = true,
+        onManageClicked = {}
+    )
+}
+
+@Composable
+@Preview
+fun MemberRequestApprovedWithAccessRightsNotificationPreview() {
+    MemberRequestApprovedWithAccessRightsNotification(
+        spaceName = "Art historians",
+        isReadOnly = true
+    )
+}
+
+@Composable
+@Preview
+private fun OwnerUserRequestToJoinPreview() {
+    OwnerUserRequestToJoin(
+        name = "Carl Einstein",
+        spaceName = "Art historians",
+        onManageClicked = {}
     )
 }

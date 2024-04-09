@@ -197,15 +197,17 @@ class RelationAddToObjectFragment : RelationAddBaseFragment() {
 
         private const val IS_SET_OR_COLLECTION_KEY = "arg.relation-add-to-object.is-set-or-collection"
 
-        fun args(
+        fun new(
             ctx: Id,
             space: Id,
-            isSetOrCollection: Boolean
-        ) = bundleOf(
-            CTX_KEY to ctx,
-            SPACE_KEY to space,
-            IS_SET_OR_COLLECTION_KEY to isSetOrCollection
-        )
+            isSetOrCollection: Boolean = true
+        ) = RelationAddToObjectFragment().apply {
+            arguments = bundleOf(
+                CTX_KEY to ctx,
+                SPACE_KEY to space,
+                IS_SET_OR_COLLECTION_KEY to isSetOrCollection
+            )
+        }
     }
 }
 

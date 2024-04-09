@@ -55,20 +55,23 @@ class NotificationsViewModel(
             is NotificationPayload.RequestToJoin -> {
                 state.value = NotificationsScreenState.Multiplayer.RequestToJoin(
                     space = payload.spaceId,
+                    spaceName = payload.spaceName,
                     identity = payload.identity,
-                    name = payload.identityName
+                    identityName = payload.identityName
                 )
             }
             is NotificationPayload.RequestToLeave -> {
                 state.value = NotificationsScreenState.Multiplayer.RequestToLeave(
                     space = payload.spaceId,
+                    spaceName = payload.spaceName,
                     identity = payload.identity,
                     name = payload.identityName
                 )
             }
             is NotificationPayload.ParticipantRequestApproved -> {
                 state.value = NotificationsScreenState.Multiplayer.MemberRequestApproved(
-                    spaceName = payload.spaceId.id,
+                    space = payload.spaceId,
+                    spaceName = payload.spaceName,
                     isReadOnly = !payload.permissions.isOwnerOrEditor()
                 )
             }
@@ -126,16 +129,19 @@ sealed class NotificationsScreenState {
         // Owner
         data class RequestToJoin(
             val space: SpaceId,
+            val spaceName: String,
             val identity: Id,
-            val name: String
+            val identityName: String
         ) : Multiplayer()
         // Owner
         data class RequestToLeave(
             val space: SpaceId,
+            val spaceName: String,
             val identity: Id,
             val name: String
         ) : Multiplayer()
         data class MemberRequestApproved(
+            val space: SpaceId,
             val spaceName: String,
             val isReadOnly: Boolean
         ) : Multiplayer()

@@ -82,15 +82,15 @@ fun NotificationsScreen(
         }
         is NotificationsScreenState.Multiplayer.RequestToJoin -> {
             OwnerUserRequestToJoin(
-                name = state.name,
-                spaceName = state.space.id,
+                name = state.identityName,
+                spaceName = state.spaceName,
                 onManageClicked = {}
             )
         }
         is NotificationsScreenState.Multiplayer.RequestToLeave -> {
             OwnerUserRequestToLeave(
                 name = state.name,
-                spaceName = state.space.id,
+                spaceName = state.spaceName,
                 onManageClicked = {}
             )
         }

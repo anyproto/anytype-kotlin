@@ -1063,17 +1063,17 @@
     <string name="relation_origin_library_installed">Library installed</string>
     <string name="relation_origin_bookmark">Закладка</string>
     <!--endregion-->
-    <plurals name="links_to_count">
-        <item quantity="one">%d link to</item>
-        <item quantity="few">%d links to</item>
-        <item quantity="many">%d links to</item>
-        <item quantity="other">%d links to</item>
+    <plurals name="backlinks_count">
+        <item quantity="one">%d backlink</item>
+        <item quantity="few">%d backlinks</item>
+        <item quantity="many">%d backlinks</item>
+        <item quantity="other">%d backlinks</item>
     </plurals>
     <plurals name="links_from_count">
-        <item quantity="one">%d link from</item>
-        <item quantity="few">%d links from</item>
-        <item quantity="many">%d links from</item>
-        <item quantity="other">%d links from</item>
+        <item quantity="one">%d link</item>
+        <item quantity="few">%d links</item>
+        <item quantity="many">%d links</item>
+        <item quantity="other">%d links</item>
     </plurals>
     <!--region ORIGIN RELATION VALUES -->
     <string name="date_type_tomorrow">Завтра</string>

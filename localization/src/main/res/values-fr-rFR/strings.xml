@@ -1163,13 +1163,13 @@
     <string name="multiplayer_how_to_share_space_qr_code">Veuillez fournir ce code QR à la personne avec laquelle vous souhaitez collaborer.</string>
     <string name="multiplayer_how_to_share_space_step_2">En cliquant le lien, une personne demande à joindre l\'espace.</string>
     <string name="multiplayer_how_to_share_space_step_3">Après l\'approbation de la demande, vous pouvez choisir les droits d\'accès pour cette personne.</string>
-    <string name="multiplayer_delete_space_sharing_link">Delete sharing link</string>
+    <string name="multiplayer_delete_space_sharing_link">Supprimer le lien de partage</string>
     <string name="multiplayer_delete_link">Supprimer le lien</string>
-    <string name="multiplayer_delete_link_description">New members won’t be able to join the space. You can generate a new link anytime.</string>
-    <string name="multiplayer_already_space_member">You are already a member of this space</string>
+    <string name="multiplayer_delete_link_description">Les nouveaux membres ne pourront pas rejoindre l\'espace. Vous pouvez générer un nouveau lien à tout moment.</string>
+    <string name="multiplayer_already_space_member">Vous êtes déjà membre de cet espace</string>
     <string name="multiplayer_open_space">Espace ouvert</string>
-    <string name="multiplayer_error_space_deleted">Space deleted</string>
-    <string name="multiplayer_error_space_not_found">Space not found</string>
+    <string name="multiplayer_error_space_deleted">L\'espace a été supprimé</string>
+    <string name="multiplayer_error_space_not_found">Fichier non trouvé</string>
     <string name="multiplayer_read_only_access_error">Accès en lecture seule. Contactez le propriétaire de l\'espace pour faire des modifications.</string>
     <!--endregion-->
     <!--region PAYMENTS -->

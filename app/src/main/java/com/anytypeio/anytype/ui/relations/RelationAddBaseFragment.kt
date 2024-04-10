@@ -204,6 +204,7 @@ class RelationAddToObjectFragment : RelationAddBaseFragment() {
         ) = RelationAddToObjectFragment().apply {
             arguments = bundleOf(
                 CTX_KEY to ctx,
+                SPACE_KEY to space,
                 IS_SET_OR_COLLECTION_KEY to isSetOrCollection
             )
         }

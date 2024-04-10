@@ -60,6 +60,7 @@ class ShareSpaceViewModel(
     val isCurrentUserOwner = MutableStateFlow(false)
 
     init {
+        Timber.d("Share-space init with params: $params")
         proceedWithSpaceAccessTypeSubscription()
         proceedWithSpaceMemberSubscription()
     }

@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.Notification
 import com.anytypeio.anytype.core_models.NotificationPayload
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.multiplayer.GetSpaceMemberByIdentity
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -21,7 +22,8 @@ class NotificationsViewModel(
     private val analytics: Analytics,
     private val notificationsProvider: NotificationsProvider,
     private val spaceManager: SpaceManager,
-    private val saveCurrentSpace: SaveCurrentSpace
+    private val saveCurrentSpace: SaveCurrentSpace,
+    private val getSpaceMemberByIdentity: GetSpaceMemberByIdentity
 ) : BaseViewModel() {
 
     val state = MutableStateFlow<NotificationsScreenState>(NotificationsScreenState.Hidden)
@@ -114,13 +116,63 @@ class NotificationsViewModel(
         }
     }
 
+    fun onNotificationAction(action: NotificationAction) {
+        when(action) {
+            is NotificationAction.Multiplayer.ViewSpaceJoinRequest -> {
+                proceedWithSpaceJoinRequest(action)
+            }
+            is NotificationAction.Multiplayer.ViewSpaceLeaveRequest -> {
+                proceedWithSpaceLeaveRequest(action)
+            }
+        }
+    }
+
+    private fun proceedWithSpaceLeaveRequest(action: NotificationAction.Multiplayer.ViewSpaceLeaveRequest) {
+        viewModelScope.launch {
+            command.emit(Command.Dismiss)
+            command.emit(
+                Command.ViewSpaceLeaveRequest(
+                    space = action.space,
+                )
+            )
+        }
+    }
+
+    private fun proceedWithSpaceJoinRequest(action: NotificationAction.Multiplayer.ViewSpaceJoinRequest) {
+        viewModelScope.launch {
+            getSpaceMemberByIdentity.async(
+                GetSpaceMemberByIdentity.Params(
+                    space = action.space,
+                    identity = action.identity
+                )
+            ).fold(
+                onSuccess = { member ->
+                    if (member != null && member.spaceId == action.space.id) {
+                        command.emit(Command.Dismiss)
+                        command.emit(
+                            Command.ViewSpaceJoinRequest(
+                                space = action.space,
+                                member = member.id
+                            )
+                        )
+                    } else {
+                        Timber.w("Space member not found")
+                    }
+                },
+                onFailure = {
+                    Timber.e(it, "Error while searching space member by identity")
+                }
+            )
+        }
+    }
+
     sealed class Command {
         data object Dismiss : Command()
         data class NavigateToSpace(val spaceId: SpaceId) : Command()
+        data class ViewSpaceJoinRequest(val space: SpaceId, val member: Id) : Command()
+        data class ViewSpaceLeaveRequest(val space: SpaceId) : Command()
     }
 }
-
-
 
 sealed class NotificationsScreenState {
     data object Hidden : NotificationsScreenState()
@@ -156,6 +208,18 @@ sealed class NotificationsScreenState {
         data class MemberSpaceRemove(
             val spaceName: String,
             val identityName: String
+        ) : Multiplayer()
+    }
+}
+
+sealed class NotificationAction {
+    sealed class Multiplayer : NotificationAction() {
+        data class ViewSpaceJoinRequest(
+            val space: SpaceId,
+            val identity: Id
+        ) : Multiplayer()
+        data class ViewSpaceLeaveRequest(
+            val space: SpaceId
         ) : Multiplayer()
     }
 }

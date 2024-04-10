@@ -42,6 +42,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
+import com.anytypeio.anytype.presentation.notifications.NotificationAction
 import com.anytypeio.anytype.presentation.notifications.NotificationsScreenState
 
 
@@ -49,7 +50,8 @@ import com.anytypeio.anytype.presentation.notifications.NotificationsScreenState
 fun NotificationsScreen(
     state: NotificationsScreenState,
     onActionButtonClick: (SpaceId) -> Unit,
-    onErrorButtonClick: () -> Unit
+    onErrorButtonClick: () -> Unit,
+    onNotificationAction: (NotificationAction) -> Unit
 ) {
     when (state) {
         is NotificationsScreenState.GalleryInstalled -> {
@@ -84,14 +86,27 @@ fun NotificationsScreen(
             OwnerUserRequestToJoin(
                 name = state.identityName,
                 spaceName = state.spaceName,
-                onManageClicked = {}
+                onViewClicked = {
+                    onNotificationAction(
+                        NotificationAction.Multiplayer.ViewSpaceJoinRequest(
+                            space = state.space,
+                            identity = state.identity
+                        )
+                    )
+                }
             )
         }
         is NotificationsScreenState.Multiplayer.RequestToLeave -> {
             OwnerUserRequestToLeave(
                 name = state.name,
                 spaceName = state.spaceName,
-                onManageClicked = {}
+                onViewClicked = {
+                    onNotificationAction(
+                        NotificationAction.Multiplayer.ViewSpaceLeaveRequest(
+                            space = state.space
+                        )
+                    )
+                }
             )
         }
         is NotificationsScreenState.Multiplayer.MemberRequestApproved -> {
@@ -228,7 +243,8 @@ fun NotificationsScreenPreview() {
             galleryName = "Strategic Writing"
         ),
         onActionButtonClick = {},
-        onErrorButtonClick = {}
+        onErrorButtonClick = {},
+        onNotificationAction = {}
     )
 }
 
@@ -238,7 +254,8 @@ fun NotificationsScreenPreviewError() {
     NotificationsScreen(
         state = NotificationsScreenState.GalleryInstalledError(IMPORT_IS_CANCELED),
         onActionButtonClick = {},
-        onErrorButtonClick = {}
+        onErrorButtonClick = {},
+        onNotificationAction = {}
     )
 }
 

@@ -25,7 +25,7 @@ import com.anytypeio.anytype.core_ui.views.Caption1Regular
 fun OwnerUserRequestToJoin(
     name: String,
     spaceName: String,
-    onManageClicked: () -> Unit
+    onViewClicked: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -34,7 +34,7 @@ fun OwnerUserRequestToJoin(
                 color = colorResource(id = R.color.background_primary)
             )
             .padding(horizontal = 20.dp, vertical = 16.dp)
-            .noRippleClickable { onManageClicked() },
+            .noRippleClickable { onViewClicked() },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
@@ -72,7 +72,7 @@ fun OwnerUserRequestToJoin(
 fun OwnerUserRequestToLeave(
     name: String,
     spaceName: String,
-    onManageClicked: () -> Unit
+    onViewClicked: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -81,7 +81,7 @@ fun OwnerUserRequestToLeave(
                 color = colorResource(id = R.color.background_primary)
             )
             .padding(horizontal = 20.dp, vertical = 16.dp)
-            .noRippleClickable { onManageClicked() },
+            .noRippleClickable { onViewClicked() },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
@@ -121,7 +121,7 @@ private fun OwnerUserRequestToJoinPreview() {
     OwnerUserRequestToJoin(
         name = "Carl Einstein",
         spaceName = "Art historians",
-        onManageClicked = {}
+        onViewClicked = {}
     )
 }
 
@@ -131,6 +131,6 @@ private fun OwnerUserRequestToLeavePreview() {
     OwnerUserRequestToLeave(
         name = "Aby Warburg",
         spaceName = "Art historians",
-        onManageClicked = {}
+        onViewClicked = {}
     )
 }

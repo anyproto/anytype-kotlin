@@ -533,4 +533,32 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun objectImportExperience(request: Rpc.Object.ImportExperience.Request): Rpc.Object.ImportExperience.Response
     //endregion
+
+    //region MEMBERSHIP
+    @Throws(Exception::class)
+    fun getStatus(request: Rpc.Membership.GetStatus.Request): Rpc.Membership.GetStatus.Response
+
+    @Throws(Exception::class)
+    fun isNameValid(request: Rpc.Membership.IsNameValid.Request): Rpc.Membership.IsNameValid.Response
+
+    @Throws(Exception::class)
+    fun getPaymentUrl(request: Rpc.Membership.GetPaymentUrl.Request): Rpc.Membership.GetPaymentUrl.Response
+
+    @Throws(Exception::class)
+    fun getPortalLinkUrl(request: Rpc.Membership.GetPortalLinkUrl.Request): Rpc.Membership.GetPortalLinkUrl.Response
+
+    @Throws(Exception::class)
+    fun finalizeMembership(request: Rpc.Membership.Finalize.Request): Rpc.Membership.Finalize.Response
+
+    @Throws(Exception::class)
+    fun getVerificationEmailStatus(request: Rpc.Membership.GetVerificationEmailStatus.Request): Rpc.Membership.GetVerificationEmailStatus.Response
+
+    @Throws(Exception::class)
+    fun getVerificationEmail(request: Rpc.Membership.GetVerificationEmail.Request): Rpc.Membership.GetVerificationEmail.Response
+
+    @Throws(Exception::class)
+    fun verifyEmailCode(request: Rpc.Membership.VerifyEmailCode.Request): Rpc.Membership.VerifyEmailCode.Response
+
+    @Throws(Exception::class)
+    fun getTiers(request: Rpc.Membership.Tiers.Get.Request): Rpc.Membership.Tiers.Get.Response
 }

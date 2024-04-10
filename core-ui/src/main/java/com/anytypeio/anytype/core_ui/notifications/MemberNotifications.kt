@@ -71,8 +71,49 @@ fun MemberSpaceRemovedNotification() {
 }
 
 @Composable
+fun MemberSpacePermissionChange(
+    spaceName: String,
+    isReadOnly: Boolean
+) {
+    val msg = if (isReadOnly)
+        stringResource(
+            id = R.string.multiplayer_notification_member_permission_change_read,
+            spaceName
+        )
+    else
+        stringResource(
+            id = R.string.multiplayer_notification_member_permission_change_edit,
+            spaceName
+        )
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color = colorResource(id = R.color.background_primary),)
+            .padding(horizontal = 20.dp, vertical = 16.dp)
+    ) {
+        Text(
+            text = msg,
+            modifier = Modifier
+                .align(Alignment.CenterStart),
+            color = colorResource(id = R.color.text_secondary),
+            style = Caption1Regular,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+@Composable
 @Preview
-fun MemberRequestApprovedWithAccessRightsNotificationPreview() {
+private fun MemberSpacePermissionChangePreview() {
+    MemberSpacePermissionChange(
+        spaceName = "Books",
+        isReadOnly = true
+    )
+}
+
+@Composable
+@Preview
+private fun MemberRequestApprovedWithAccessRightsNotificationPreview() {
     MemberRequestApprovedNotification(
         spaceName = "Art historians",
         isReadOnly = true

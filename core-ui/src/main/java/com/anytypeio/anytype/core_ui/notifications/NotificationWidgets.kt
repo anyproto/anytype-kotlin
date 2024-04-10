@@ -118,6 +118,12 @@ fun NotificationsScreen(
         is NotificationsScreenState.Multiplayer.MemberSpaceRemove -> {
             MemberSpaceRemovedNotification()
         }
+        is NotificationsScreenState.Multiplayer.MemberPermissionChanged -> {
+            MemberSpacePermissionChange(
+                spaceName = state.spaceName,
+                isReadOnly = !state.permissions.isOwnerOrEditor()
+            )
+        }
         NotificationsScreenState.Hidden -> {}
     }
 }

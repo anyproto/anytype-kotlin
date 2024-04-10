@@ -117,6 +117,10 @@ class MainViewModel(
                 delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
                 commands.emit(Command.Notifications)
             }
+            is NotificationPayload.ParticipantPermissionsChange -> {
+                delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
+                commands.emit(Command.Notifications)
+            }
             else -> {
                 viewModelScope.launch {
                     toasts.emit(payload.toString())

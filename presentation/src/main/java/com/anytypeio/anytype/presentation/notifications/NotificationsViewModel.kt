@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ImportErrorCode
 import com.anytypeio.anytype.core_models.Notification
 import com.anytypeio.anytype.core_models.NotificationPayload
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceMemberByIdentity
@@ -40,8 +41,7 @@ class NotificationsViewModel(
     }
 
     private fun handleNotification(event: Notification.Event) {
-        val payload = event.notification?.payload
-        when (payload) {
+        when (val payload = event.notification?.payload) {
             is NotificationPayload.GalleryImport -> {
                 if (payload.errorCode != ImportErrorCode.NULL) {
                     state.value = NotificationsScreenState.GalleryInstalledError(
@@ -81,6 +81,13 @@ class NotificationsViewModel(
                 state.value = NotificationsScreenState.Multiplayer.MemberSpaceRemove(
                     spaceName = payload.spaceName,
                     identityName = payload.identityName
+                )
+            }
+            is NotificationPayload.ParticipantPermissionsChange -> {
+                state.value = NotificationsScreenState.Multiplayer.MemberPermissionChanged(
+                    spaceId = payload.spaceId,
+                    spaceName = payload.spaceName,
+                    permissions = payload.permissions
                 )
             }
             else -> {
@@ -208,6 +215,12 @@ sealed class NotificationsScreenState {
         data class MemberSpaceRemove(
             val spaceName: String,
             val identityName: String
+        ) : Multiplayer()
+        // Member
+        data class MemberPermissionChanged(
+            val spaceId: SpaceId,
+            val spaceName: String,
+            val permissions: SpaceMemberPermissions
         ) : Multiplayer()
     }
 }

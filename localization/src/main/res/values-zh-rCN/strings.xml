@@ -1170,10 +1170,10 @@
     <string name="multiplayer_notification_member_user_sends_join_request"><b>%1$s</b> 已请求加入 <b>%2$s</b> 空间。</string>
     <string name="multiplayer_notification_member_user_sends_leave_request"><b>%1$s</b> 请求离开 <b>%2$s</b> 空间。</string>
     <string name="multiplayer_notification_new_join_request">新的加入请求</string>
-    <string name="multiplayer_notification_member_joined_space_with_read_only_rights"><b>%1$s</b> joined <b>%2$s</b> space with read-only access rights</string>
-    <string name="multiplayer_notification_member_joined_space_with_editor_only_rights"><b>%1$s</b> joined <b>%2$s</b> space with edit access rights</string>
-    <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Your request to join the %1$s space has been approved with read-only access rights. The space will be available on your device soon.</string>
-    <string name="multiplayer_notification_member_request_approved_with_edit_rights">Your request to join the %1$s space has been approved with edit access rights. The space will be available on your device soon.</string>
+    <string name="multiplayer_notification_member_joined_space_with_read_only_rights"><b>%1$s</b> 加入了 <b>%2$s</b> 空间并拥有只读访问权限</string>
+    <string name="multiplayer_notification_member_joined_space_with_editor_only_rights"><b>%1$s</b> 加入了 <b>%2$s</b> 空间并拥有编辑访问权限</string>
+    <string name="multiplayer_notification_member_request_approved_with_read_only_rights">您加入 %1$s 空间的请求已获批准并获得了只读访问权限，该空间很快就会在您的设备中显示。</string>
+    <string name="multiplayer_notification_member_request_approved_with_edit_rights">您加入 %1$s 空间的请求已获批准并获得了编辑访问权限，该空间很快就会在您的设备中显示。</string>
     <string name="multiplayer_notification_member_removed_from_space">您从空间中被移出，或空间已被所有者删除。</string>
     <string name="multiplayer_notification_view_request">视图</string>
     <!--endregion-->

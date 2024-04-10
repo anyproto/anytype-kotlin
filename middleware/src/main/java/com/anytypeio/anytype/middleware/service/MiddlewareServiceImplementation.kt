@@ -1973,4 +1973,17 @@ class MiddlewareServiceImplementation @Inject constructor(
             return response
         }
     }
+
+    override fun notificationReply(request: Rpc.Notification.Reply.Request): Rpc.Notification.Reply.Response {
+        val encoded = Service.notificationReply(
+            Rpc.Notification.Reply.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Notification.Reply.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Notification.Reply.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

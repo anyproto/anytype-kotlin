@@ -100,7 +100,13 @@ fun NotificationsScreen(
             OwnerUserRequestToLeave(
                 name = state.name,
                 spaceName = state.spaceName,
-                onManageClicked = {}
+                onViewClicked = {
+                    onNotificationAction(
+                        NotificationAction.Multiplayer.ViewSpaceLeaveRequest(
+                            space = state.space
+                        )
+                    )
+                }
             )
         }
         is NotificationsScreenState.Multiplayer.MemberRequestApproved -> {

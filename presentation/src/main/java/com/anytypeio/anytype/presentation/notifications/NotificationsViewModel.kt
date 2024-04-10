@@ -119,31 +119,50 @@ class NotificationsViewModel(
     fun onNotificationAction(action: NotificationAction) {
         when(action) {
             is NotificationAction.Multiplayer.ViewSpaceJoinRequest -> {
-                viewModelScope.launch {
-                    getSpaceMemberByIdentity.async(
-                        GetSpaceMemberByIdentity.Params(
-                            space = action.space,
-                            identity = action.identity
-                        )
-                    ).fold(
-                        onSuccess = {  member ->
-                            if (member != null && member.spaceId == action.space.id) {
-                                command.emit(
-                                    Command.ViewSpaceJoinRequest(
-                                        space = action.space,
-                                        member = member.id
-                                    )
-                                )
-                            } else {
-                                TODO()
-                            }
-                        },
-                        onFailure = {
-                            TODO()
-                        }
-                    )
-                }
+                proceedWithSpaceJoinRequest(action)
             }
+            is NotificationAction.Multiplayer.ViewSpaceLeaveRequest -> {
+                proceedWithSpaceLeaveRequest(action)
+            }
+        }
+    }
+
+    private fun proceedWithSpaceLeaveRequest(action: NotificationAction.Multiplayer.ViewSpaceLeaveRequest) {
+        viewModelScope.launch {
+            command.emit(Command.Dismiss)
+            command.emit(
+                Command.ViewSpaceLeaveRequest(
+                    space = action.space,
+                )
+            )
+        }
+    }
+
+    private fun proceedWithSpaceJoinRequest(action: NotificationAction.Multiplayer.ViewSpaceJoinRequest) {
+        viewModelScope.launch {
+            getSpaceMemberByIdentity.async(
+                GetSpaceMemberByIdentity.Params(
+                    space = action.space,
+                    identity = action.identity
+                )
+            ).fold(
+                onSuccess = { member ->
+                    if (member != null && member.spaceId == action.space.id) {
+                        command.emit(Command.Dismiss)
+                        command.emit(
+                            Command.ViewSpaceJoinRequest(
+                                space = action.space,
+                                member = member.id
+                            )
+                        )
+                    } else {
+                        Timber.w("Space member not found")
+                    }
+                },
+                onFailure = {
+                    Timber.e(it, "Error while searching space member by identity")
+                }
+            )
         }
     }
 
@@ -151,6 +170,7 @@ class NotificationsViewModel(
         data object Dismiss : Command()
         data class NavigateToSpace(val spaceId: SpaceId) : Command()
         data class ViewSpaceJoinRequest(val space: SpaceId, val member: Id) : Command()
+        data class ViewSpaceLeaveRequest(val space: SpaceId) : Command()
     }
 }
 
@@ -197,6 +217,9 @@ sealed class NotificationAction {
         data class ViewSpaceJoinRequest(
             val space: SpaceId,
             val identity: Id
+        ) : Multiplayer()
+        data class ViewSpaceLeaveRequest(
+            val space: SpaceId
         ) : Multiplayer()
     }
 }

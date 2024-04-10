@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.notifications.NotificationsViewModel
 import com.anytypeio.anytype.presentation.notifications.NotificationsViewModelFactory
+import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.SpaceJoinRequestFragment
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
@@ -65,6 +66,16 @@ class NotificationsFragment : BaseBottomSheetComposeFragment() {
                                 space = command.space,
                                 member = command.member
                             )
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Error while navigation")
+                    }
+                }
+                is NotificationsViewModel.Command.ViewSpaceLeaveRequest -> {
+                    runCatching {
+                        findNavController().navigate(
+                            R.id.shareSpaceScreen,
+                            ShareSpaceFragment.args(space = command.space)
                         )
                     }.onFailure {
                         Timber.e(it, "Error while navigation")

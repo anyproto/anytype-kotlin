@@ -1118,4 +1118,19 @@ object ObjectSearchConstants {
         Relations.PARTICIPANT_STATUS,
         Relations.PARTICIPANT_PERMISSIONS,
     )
+
+    val spaceViewKeys = listOf(
+        Relations.ID,
+        Relations.NAME,
+        Relations.TARGET_SPACE_ID,
+        Relations.ICON_IMAGE,
+        Relations.ICON_EMOJI,
+        Relations.ICON_OPTION,
+        Relations.CREATED_DATE,
+        Relations.SPACE_ACCOUNT_STATUS,
+        Relations.SPACE_ACCESS_TYPE,
+        Relations.SPACE_LOCAL_STATUS,
+        Relations.READERS_LIMIT,
+        Relations.WRITERS_LIMIT
+    )
 }

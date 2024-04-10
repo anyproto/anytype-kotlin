@@ -5,6 +5,7 @@ import com.anytypeio.anytype.data.auth.event.NotificationsRemoteChannel
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.mappers.toCoreModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.mapNotNull
 
 class NotificationsMiddlewareChannel(
@@ -33,6 +34,6 @@ class NotificationsMiddlewareChannel(
                         else -> null
                     }
                 }
-            }
+            }.filter { events -> events.isNotEmpty() }
     }
 }

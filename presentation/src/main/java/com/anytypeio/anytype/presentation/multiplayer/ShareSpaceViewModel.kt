@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
@@ -13,6 +14,7 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions.OWNER
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.fold
@@ -30,6 +32,7 @@ import com.anytypeio.anytype.domain.multiplayer.StopSharingSpace
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.spaceViewKeys
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -56,13 +59,14 @@ class ShareSpaceViewModel(
 
     val members = MutableStateFlow<List<ShareSpaceMemberView>>(emptyList())
     val shareLinkViewState = MutableStateFlow<ShareLinkViewState>(ShareLinkViewState.Init)
+    val spaceViewCounts = MutableStateFlow<SpaceViewCounts?>(null)
     val commands = MutableSharedFlow<Command>()
     val isCurrentUserOwner = MutableStateFlow(false)
 
     init {
         Timber.d("Share-space init with params: $params")
         proceedWithSpaceAccessTypeSubscription()
-        proceedWithSpaceMemberSubscription()
+        //proceedWithSpaceMemberSubscription()
     }
 
     private fun proceedWithSpaceAccessTypeSubscription() {
@@ -70,11 +74,7 @@ class ShareSpaceViewModel(
             container.subscribe(
                 StoreSearchParams(
                     subscription = SHARE_SPACE_SPACE_SUBSCRIPTION,
-                    keys = buildList {
-                        add(Relations.ID)
-                        add(Relations.SPACE_ACCESS_TYPE)
-                        add(Relations.TARGET_SPACE_ID)
-                    },
+                    keys = spaceViewKeys,
                     limit = 1,
                     filters = buildList {
                         add(
@@ -528,3 +528,8 @@ data class ShareSpaceMemberView(
         }
     }
 }
+
+data class SpaceViewCounts(
+    val readers: Int,
+    val writers: Int
+)

@@ -51,7 +51,8 @@ class NotificationsProviderTest {
                 spaceId = SpaceId("spaceId"),
                 identity = "identity",
                 identityName = "identityName",
-                identityIcon = "identityIcon"
+                identityIcon = "identityIcon",
+                spaceName = "spaceName"
             ),
             space = SpaceId("space"),
             aclHeadId = "aclHeadId"

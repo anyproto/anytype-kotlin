@@ -1179,6 +1179,15 @@
     <string name="multiplayer_error_space_deleted">Space deleted</string>
     <string name="multiplayer_error_space_not_found">Space not found</string>
     <string name="multiplayer_read_only_access_error">Read-only access. Contact space owner for changes.</string>
+    <string name="multiplayer_notification_member_user_sends_join_request"><b>%1$s</b> requested to join the <b>%2$s</b> space.</string>
+    <string name="multiplayer_notification_member_user_sends_leave_request"><b>%1$s</b> requested to leave the <b>%2$s</b> space.</string>
+    <string name="multiplayer_notification_new_join_request">New join request</string>
+    <string name="multiplayer_notification_member_joined_space_with_read_only_rights"><b>%1$s</b> joined <b>%2$s</b> space with read-only access rights</string>
+    <string name="multiplayer_notification_member_joined_space_with_editor_only_rights"><b>%1$s</b> joined <b>%2$s</b> space with edit access rights</string>
+    <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Your request to join the %1$s space has been approved with read-only access rights. The space will be available on your device soon.</string>
+    <string name="multiplayer_notification_member_request_approved_with_edit_rights">Your request to join the %1$s space has been approved with edit access rights. The space will be available on your device soon.</string>
+    <string name="multiplayer_notification_member_removed_from_space">Вы были удалены из пространства, или оно было удалено владельцем.</string>
+    <string name="multiplayer_notification_view_request">Вид</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Членство</string>

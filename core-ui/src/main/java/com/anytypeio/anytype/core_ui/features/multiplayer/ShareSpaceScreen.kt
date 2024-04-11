@@ -29,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
@@ -304,6 +305,7 @@ private fun SpaceMember(
                     )
                 ) {
                     DropdownMenuItem(
+                        modifier = Modifier.alpha(0.3f),
                         onClick = {
                             onCanViewClicked().also {
                                 isMemberMenuExpanded = false

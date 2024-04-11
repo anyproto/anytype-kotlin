@@ -42,13 +42,13 @@ fun SpaceView.canAddReaders(participants: List<SpaceMember>): Boolean {
 
 fun SpaceView.canChangeWriterToReader(participants: List<SpaceMember>): Boolean {
     readersLimit?.let {
-        return it >= activeReaders(participants)
+        return it.toInt() >= activeReaders(participants)
     } ?: return true
 }
 
 fun SpaceView.canChangeReaderToWriter(participants: List<SpaceMember>): Boolean {
     writersLimit?.let {
-        return it > activeWriters(participants)
+        return it.toInt() > activeWriters(participants)
     } ?: return true
 }
 

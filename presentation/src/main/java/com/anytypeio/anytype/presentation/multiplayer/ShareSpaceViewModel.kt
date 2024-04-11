@@ -86,7 +86,9 @@ class ShareSpaceViewModel(
                 val spaceViewMembers = mapMembers.mapNotNull { m ->
                     ShareSpaceMemberView.fromObject(
                         obj = m,
-                        urlBuilder = urlBuilder
+                        urlBuilder = urlBuilder,
+                        canChangeWriterToReader = canChangeWriterToReader,
+                        canChangeReaderToWriter = canChangeReaderToWriter
                     )
                 }
                 Triple(spaceView, spaceViewMembers, accountId)
@@ -438,7 +440,9 @@ class ShareSpaceViewModel(
 data class ShareSpaceMemberView(
     val obj: ObjectWrapper.SpaceMember,
     val config: Config = Config.Member.Owner,
-    val icon: SpaceMemberIconView
+    val icon: SpaceMemberIconView,
+    val canReadEnabled: Boolean = false,
+    val canEditEnabled: Boolean = false
 ) {
     sealed class Config {
         sealed class Request : Config() {
@@ -457,7 +461,9 @@ data class ShareSpaceMemberView(
     companion object {
         fun fromObject(
             obj: ObjectWrapper.SpaceMember,
-            urlBuilder: UrlBuilder
+            urlBuilder: UrlBuilder,
+            canChangeWriterToReader: Boolean,
+            canChangeReaderToWriter: Boolean
         ) : ShareSpaceMemberView? {
             val icon = SpaceMemberIconView.icon(
                 obj = obj,
@@ -474,12 +480,16 @@ data class ShareSpaceMemberView(
                         SpaceMemberPermissions.WRITER -> ShareSpaceMemberView(
                             obj = obj,
                             config = Config.Member.Writer,
-                            icon = icon
+                            icon = icon,
+                            canReadEnabled = canChangeWriterToReader,
+                            canEditEnabled = canChangeReaderToWriter
                         )
                         SpaceMemberPermissions.OWNER -> ShareSpaceMemberView(
                             obj = obj,
                             config = Config.Member.Owner,
-                            icon = icon
+                            icon = icon,
+                            canReadEnabled = canChangeWriterToReader,
+                            canEditEnabled = canChangeReaderToWriter
                         )
                         SpaceMemberPermissions.NO_PERMISSIONS -> ShareSpaceMemberView(
                             obj = obj,

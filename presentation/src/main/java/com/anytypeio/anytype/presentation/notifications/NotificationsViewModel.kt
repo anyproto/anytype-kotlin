@@ -98,6 +98,13 @@ class NotificationsViewModel(
                     permissions = payload.permissions
                 )
             }
+            is NotificationPayload.ParticipantRequestDecline -> {
+                state.value = NotificationsScreenState.Multiplayer.MemberRequestDeclined(
+                    notification = notification.id,
+                    spaceId = payload.spaceId,
+                    spaceName = payload.spaceName
+                )
+            }
             else -> {
                 Timber.w("Ignored notification: $payload")
             }
@@ -260,6 +267,12 @@ sealed class NotificationsScreenState {
             val spaceId: SpaceId,
             val spaceName: String,
             val permissions: SpaceMemberPermissions
+        ) : Multiplayer()
+        // Member
+        data class MemberRequestDeclined(
+            override val notification: Id,
+            val spaceId: SpaceId,
+            val spaceName: String
         ) : Multiplayer()
     }
 }

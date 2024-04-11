@@ -126,6 +126,11 @@ fun NotificationsScreen(
                 isReadOnly = !state.permissions.isOwnerOrEditor()
             )
         }
+        is NotificationsScreenState.Multiplayer.MemberRequestDeclined -> {
+            MemberJoinRequestDeclined(
+                spaceName = state.spaceName
+            )
+        }
         NotificationsScreenState.Hidden -> {}
     }
 }

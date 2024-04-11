@@ -121,6 +121,10 @@ class MainViewModel(
                 delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
                 commands.emit(Command.Notifications)
             }
+            is NotificationPayload.ParticipantRequestDecline -> {
+                delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
+                commands.emit(Command.Notifications)
+            }
             else -> {
                 viewModelScope.launch {
                     toasts.emit(payload.toString())
@@ -276,7 +280,7 @@ class MainViewModel(
             data class File(val uri: String): Sharing()
             data class Files(val uris: List<String>): Sharing()
         }
-        object Notifications : Command()
+        data object Notifications : Command()
     }
 
     companion object {

@@ -103,6 +103,29 @@ fun MemberSpacePermissionChange(
 }
 
 @Composable
+fun MemberJoinRequestDeclined(
+    spaceName: String
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color = colorResource(id = R.color.background_primary),)
+            .padding(horizontal = 20.dp, vertical = 16.dp)
+    ) {
+        Text(
+            text = stringResource(
+                id = R.string.multiplayer_notification_member_join_request_declined,
+                spaceName
+            ),
+            modifier = Modifier.align(Alignment.CenterStart),
+            color = colorResource(id = R.color.text_secondary),
+            style = Caption1Regular,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+@Composable
 @Preview
 private fun MemberSpacePermissionChangePreview() {
     MemberSpacePermissionChange(
@@ -117,5 +140,13 @@ private fun MemberRequestApprovedWithAccessRightsNotificationPreview() {
     MemberRequestApprovedNotification(
         spaceName = "Art historians",
         isReadOnly = true
+    )
+}
+
+@Composable
+@Preview
+private fun MemberJoinRequestDeclinedPreview() {
+    MemberJoinRequestDeclined(
+        spaceName = "Planets"
     )
 }

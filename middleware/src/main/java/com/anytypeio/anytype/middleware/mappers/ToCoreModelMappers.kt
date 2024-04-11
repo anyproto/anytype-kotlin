@@ -42,6 +42,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.SpaceUsage
+import com.anytypeio.anytype.core_models.membership.EmailVerificationStatus
 import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
@@ -1038,5 +1039,13 @@ fun MMembershipTierData.toCoreModel() : MembershipTierData {
         androidProductId = androidProductId,
         androidManageUrl = androidManageUrl
     )
+}
+
+fun MEmailVerificationStatus.toCoreModel(): EmailVerificationStatus {
+    return when (this) {
+        MEmailVerificationStatus.StatusNotVerified -> EmailVerificationStatus.STATUS_VERIFIED
+        MEmailVerificationStatus.StatusCodeSent -> EmailVerificationStatus.STATUS_CODE_SENT
+        MEmailVerificationStatus.StatusVerified -> EmailVerificationStatus.STATUS_VERIFIED
+    }
 }
 //endregion

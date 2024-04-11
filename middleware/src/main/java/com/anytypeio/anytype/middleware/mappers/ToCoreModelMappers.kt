@@ -42,6 +42,11 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.SpaceUsage
+import com.anytypeio.anytype.core_models.membership.Membership
+import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
+import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
+import com.anytypeio.anytype.core_models.membership.MembershipStatus
+import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
@@ -964,6 +969,74 @@ fun MNotification.toCoreModel(): Notification {
             test != null -> NotificationPayload.Test
             else -> NotificationPayload.Unsupported("Unsupported notification payload :${this.javaClass.simpleName}")
         },
+    )
+}
+//endregion
+
+//region MEMBERSHIP
+fun MMembershipStatus.toCoreModel(): MembershipStatus {
+    return when (this) {
+        MMembershipStatus.StatusUnknown -> MembershipStatus.STATUS_UNKNOWN
+        MMembershipStatus.StatusPending -> MembershipStatus.STATUS_PENDING
+        MMembershipStatus.StatusActive -> MembershipStatus.STATUS_ACTIVE
+        MMembershipStatus.StatusPendingRequiresFinalization -> MembershipStatus.STATUS_PENDING_FINALIZATION
+    }
+}
+
+fun MMembershipPaymentMethod.toCoreModel(): MembershipPaymentMethod {
+    return when (this) {
+        MMembershipPaymentMethod.MethodNone -> MembershipPaymentMethod.METHOD_NONE
+        MMembershipPaymentMethod.MethodCard -> MembershipPaymentMethod.METHOD_CARD
+        MMembershipPaymentMethod.MethodCrypto -> MembershipPaymentMethod.METHOD_CRYPTO
+        MMembershipPaymentMethod.MethodInappApple -> MembershipPaymentMethod.METHOD_INAPP_APPLE
+        MMembershipPaymentMethod.MethodInappGoogle -> MembershipPaymentMethod.METHOD_INAPP_GOOGLE
+    }
+}
+
+fun MMembership.toCoreModel(): Membership {
+    return Membership(
+        tier = tier,
+        membershipStatus = status.toCoreModel(),
+        dateStarted = dateStarted,
+        dateEnds = dateEnds,
+        isAutoRenew = isAutoRenew,
+        paymentMethod = paymentMethod.toCoreModel(),
+        requestedAnyName = requestedAnyName,
+        userEmail = userEmail,
+        subscribeToNewsletter = subscribeToNewsletter
+    )
+}
+
+fun MMembershipTierDataPeriodType.toCoreModel(): MembershipPeriodType {
+    return when (this) {
+        MMembershipTierDataPeriodType.PeriodTypeUnknown -> MembershipPeriodType.PERIOD_TYPE_UNKNOWN
+        MMembershipTierDataPeriodType.PeriodTypeUnlimited -> MembershipPeriodType.PERIOD_TYPE_UNLIMITED
+        MMembershipTierDataPeriodType.PeriodTypeDays -> MembershipPeriodType.PERIOD_TYPE_DAYS
+        MMembershipTierDataPeriodType.PeriodTypeWeeks -> MembershipPeriodType.PERIOD_TYPE_WEEKS
+        MMembershipTierDataPeriodType.PeriodTypeMonths -> MembershipPeriodType.PERIOD_TYPE_MONTHS
+        MMembershipTierDataPeriodType.PeriodTypeYears -> MembershipPeriodType.PERIOD_TYPE_YEARS
+    }
+}
+
+fun MMembershipTierData.toCoreModel() : MembershipTierData {
+    return MembershipTierData(
+        id = id,
+        name = name,
+        description = description,
+        isTest = isTest,
+        periodType = periodType.toCoreModel(),
+        periodValue = periodValue,
+        priceStripeUsdCents = priceStripeUsdCents,
+        anyNamesCountIncluded = anyNamesCountIncluded,
+        anyNameMinLength = anyNameMinLength,
+        features = features,
+        colorStr = colorStr,
+        stripeProductId = stripeProductId,
+        stripeManageUrl = stripeManageUrl,
+        iosProductId = iosProductId,
+        iosManageUrl = iosManageUrl,
+        androidProductId = androidProductId,
+        androidManageUrl = androidManageUrl
     )
 }
 //endregion

@@ -2,24 +2,24 @@ package com.anytypeio.anytype.core_models.membership
 
 data class Membership(
     val tier: Int,
-    val status: Status,
+    val membershipStatus: MembershipStatus,
     val dateStarted: Long,
     val dateEnds: Long,
     val isAutoRenew: Boolean,
-    val paymentMethod: PaymentMethod,
+    val paymentMethod: MembershipPaymentMethod,
     val requestedAnyName: String,
     val userEmail: String,
     val subscribeToNewsletter: Boolean
 )
 
-enum class Status {
+enum class MembershipStatus {
     STATUS_UNKNOWN,
     STATUS_PENDING,
     STATUS_ACTIVE,
     STATUS_PENDING_FINALIZATION
 }
 
-enum class PaymentMethod {
+enum class MembershipPaymentMethod {
     METHOD_NONE,
     METHOD_CARD,
     METHOD_CRYPTO,
@@ -32,7 +32,7 @@ data class MembershipTierData(
     val name: String,
     val description: String,
     val isTest: Boolean,
-    val periodType: PeriodType,
+    val periodType: MembershipPeriodType,
     val periodValue: Int,
     val priceStripeUsdCents: Int,
     val anyNamesCountIncluded: Int,
@@ -47,7 +47,7 @@ data class MembershipTierData(
     val androidManageUrl: String?
 )
 
-enum class PeriodType {
+enum class MembershipPeriodType {
     PERIOD_TYPE_UNKNOWN,
     PERIOD_TYPE_UNLIMITED,
     PERIOD_TYPE_DAYS,

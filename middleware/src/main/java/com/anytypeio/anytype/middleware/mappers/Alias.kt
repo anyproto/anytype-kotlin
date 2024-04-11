@@ -83,5 +83,6 @@ typealias MImportErrorCode = anytype.model.Import.ErrorCode
 
 typealias MMembership = anytype.model.Membership
 typealias MMembershipStatus = anytype.model.Membership.Status
+typealias MMembershipPaymentMethod = anytype.model.Membership.PaymentMethod
 typealias MMembershipTierData = anytype.model.MembershipTierData
 typealias MMembershipTierDataPeriodType = anytype.model.MembershipTierData.PeriodType

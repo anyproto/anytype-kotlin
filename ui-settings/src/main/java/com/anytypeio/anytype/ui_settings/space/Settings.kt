@@ -94,11 +94,7 @@ fun SpaceSettingsScreen(
         item { Divider() }
         item {
             if (state is ViewState.Success) {
-                if (state.data.spaceType == DEFAULT_SPACE_TYPE) {
-                    Section(title = stringResource(id = R.string.type))
-                } else {
-                    Section(title = stringResource(id = R.string.multiplayer_sharing))
-                }
+                Section(title = stringResource(id = R.string.multiplayer_space_type))
             } else {
                 Section(title = EMPTY_STRING_VALUE)
             }

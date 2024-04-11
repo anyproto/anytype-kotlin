@@ -23,6 +23,8 @@ import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.RemoveSpaceMembers
 import com.anytypeio.anytype.domain.multiplayer.RevokeSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.StopSharingSpace
+import com.anytypeio.anytype.domain.`object`.canChangeReaderToWriter
+import com.anytypeio.anytype.domain.`object`.canChangeWriterToReader
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.getSpaceMembersSearchParams
@@ -54,6 +56,9 @@ class ShareSpaceViewModel(
     val commands = MutableSharedFlow<Command>()
     val isCurrentUserOwner = MutableStateFlow(false)
 
+    private var canChangeWriterToReader = false
+    private var canChangeReaderToWriter = false
+
     init {
         Timber.d("Share-space init with params: $params")
         proceedWithSubscriptions()
@@ -75,9 +80,12 @@ class ShareSpaceViewModel(
                 getAccount.asFlow(Unit)
             ) { spaceResponse, membersResponse, accountId ->
                 val spaceView = spaceResponse.firstOrNull()?.let { ObjectWrapper.SpaceView(it.map) }
-                val spaceViewMembers = membersResponse.mapNotNull { wrapper ->
+                val mapMembers = membersResponse.map { ObjectWrapper.SpaceMember(it.map) }
+                canChangeReaderToWriter = spaceView?.canChangeReaderToWriter(mapMembers) ?: false
+                canChangeWriterToReader = spaceView?.canChangeWriterToReader(mapMembers) ?: false
+                val spaceViewMembers = mapMembers.mapNotNull { m ->
                     ShareSpaceMemberView.fromObject(
-                        obj = ObjectWrapper.SpaceMember(wrapper.map),
+                        obj = m,
                         urlBuilder = urlBuilder
                     )
                 }

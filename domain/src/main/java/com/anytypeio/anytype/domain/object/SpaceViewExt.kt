@@ -41,18 +41,18 @@ fun SpaceView.canAddReaders(participants: List<SpaceMember>): Boolean {
 }
 
 fun SpaceView.canChangeWriterToReader(participants: List<SpaceMember>): Boolean {
-    this.readersLimit?.let {
+    readersLimit?.let {
         return it >= activeReaders(participants)
     } ?: return true
 }
 
 fun SpaceView.canChangeReaderToWriter(participants: List<SpaceMember>): Boolean {
-    this.writersLimit?.let {
+    writersLimit?.let {
         return it > activeWriters(participants)
     } ?: return true
 }
 
-private fun SpaceView.activeReaders(participants: List<SpaceMember>): Int =
+private fun activeReaders(participants: List<SpaceMember>): Int =
     participants.count {
         it.permissions in listOf(
             SpaceMemberPermissions.READER,
@@ -61,7 +61,7 @@ private fun SpaceView.activeReaders(participants: List<SpaceMember>): Int =
         )
     }
 
-private fun SpaceView.activeWriters(participants: List<SpaceMember>): Int =
+private fun activeWriters(participants: List<SpaceMember>): Int =
     participants.count {
         it.permissions in listOf(
             SpaceMemberPermissions.WRITER,

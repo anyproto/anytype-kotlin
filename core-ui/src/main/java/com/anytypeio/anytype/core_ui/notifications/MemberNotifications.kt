@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,7 +26,11 @@ fun MemberRequestApprovedNotification(
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                color = colorResource(id = R.color.background_primary),
+                color = colorResource(id = R.color.background_notification_primary),
+                shape = RoundedCornerShape(
+                    topEnd = 8.dp,
+                    topStart = 8.dp
+                )
             )
             .padding(horizontal = 20.dp, vertical = 16.dp)
     ) {
@@ -56,7 +61,13 @@ fun MemberSpaceRemovedNotification() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(color = colorResource(id = R.color.background_primary),)
+            .background(
+                color = colorResource(id = R.color.background_notification_primary),
+                shape = RoundedCornerShape(
+                    topEnd = 8.dp,
+                    topStart = 8.dp
+                )
+            )
             .padding(horizontal = 20.dp, vertical = 16.dp)
     ) {
         Text(
@@ -88,7 +99,13 @@ fun MemberSpacePermissionChange(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(color = colorResource(id = R.color.background_primary),)
+            .background(
+                color = colorResource(id = R.color.background_notification_primary),
+                shape = RoundedCornerShape(
+                    topEnd = 8.dp,
+                    topStart = 8.dp
+                )
+            )
             .padding(horizontal = 20.dp, vertical = 16.dp)
     ) {
         Text(
@@ -109,7 +126,13 @@ fun MemberJoinRequestDeclined(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(color = colorResource(id = R.color.background_primary),)
+            .background(
+                color = colorResource(id = R.color.background_notification_primary),
+                shape = RoundedCornerShape(
+                    topEnd = 8.dp,
+                    topStart = 8.dp
+                )
+            )
             .padding(horizontal = 20.dp, vertical = 16.dp)
     ) {
         Text(

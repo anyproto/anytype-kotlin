@@ -825,11 +825,12 @@
     <string name="anytype_update_alert_title">È ora di aggiornare</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
     <string name="space_type_default">Default</string>
+    <string name="space_type_default_space">Spazio predefinito</string>
     <string name="space_type_private">Privato</string>
     <string name="space_type_private_space">Private space</string>
     <string name="space_type_shared">Condiviso</string>
     <string name="space_type_shared_space">Shared space</string>
-    <string name="space_type_unknown">Sconosciuto</string>
+    <string name="space_type_unknown">Tipo sconosciuto</string>
     <string name="create_space_start_with">Start with</string>
     <string name="create_object_section_lists">Liste</string>
     <string name="create_object_section_objects">Oggetti</string>
@@ -1134,13 +1135,14 @@
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tocca per scrivere il tuo commento</string>
     <string name="multiplayer_share_space">Condividi lo spazio</string>
     <string name="multiplayer_members_and_requests">Membri e richieste</string>
+    <string name="multiplayer_members">Membri</string>
     <string name="multiplayer_leave_request">Richiesta di uscita</string>
-    <string name="multiplayer_join_request">Richiesta di adesione</string>
+    <string name="multiplayer_join_request">Richiesta di partecipazione</string>
     <string name="multiplayer_approve_request">Approva</string>
     <string name="multiplayer_view_request">Visualizza richiesta</string>
     <string name="multiplayer_owner">Proprietario</string>
     <string name="multiplayer_can_edit">Può modificare</string>
-    <string name="multiplayer_can_view">Può leggere</string>
+    <string name="multiplayer_can_view">Can view</string>
     <string name="multiplayer_space_add_viewer">Aggiungi visualizzatore</string>
     <string name="multiplayer_space_add_editor">Aggiungi editor</string>
     <string name="multiplayer_space_request_reject">Rifiuta</string>
@@ -1152,6 +1154,7 @@
     <string name="multiplayer_space_stop_sharing_space_description">I partecipanti non si sincronizzeranno più con questo spazio e il link di condivisione verrà disattivato.</string>
     <string name="multiplayer_more_info">Ulteriori informazioni</string>
     <string name="multiplayer_sharing">Condivisione</string>
+    <string name="multiplayer_space_type">Tipo di spazio</string>
     <string name="multiplayer_share">Condividi</string>
     <string name="multiplayer_manage">Manage</string>
     <string name="multiplayer_leave_space">Leave space</string>
@@ -1184,6 +1187,7 @@
     <string name="multiplayer_notification_member_permission_change_edit">Your access rights were changed to edit in the %1$s space.</string>
     <string name="multiplayer_notification_member_join_request_declined">Your request to join the %1$s space has been declined.</string>
     <string name="multiplayer_notification_view_request">Vista</string>
+    <string name="multiplayer_toast_permission_not_allowed">Changing permissions is not allowed</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Membership</string>

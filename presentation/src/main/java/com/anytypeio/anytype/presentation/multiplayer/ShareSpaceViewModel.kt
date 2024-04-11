@@ -115,8 +115,8 @@ class ShareSpaceViewModel(
         members: List<ShareSpaceMemberView>,
         account: Id
     ) {
-        isCurrentUserOwner.value = members.any { result ->
-            with(result.obj) {
+        isCurrentUserOwner.value = members.any { member ->
+            with(member.obj) {
                 identity.isNotEmpty() && identity == account && permissions == OWNER
             }
         }

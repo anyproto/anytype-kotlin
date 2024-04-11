@@ -24,6 +24,10 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.membership.EmailVerificationStatus
+import com.anytypeio.anytype.core_models.membership.GetPaymentUrlResponse
+import com.anytypeio.anytype.core_models.membership.Membership
+import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
@@ -984,5 +988,41 @@ class BlockDataRepository(
 
     override suspend fun replyNotifications(notifications: List<Id>) {
         remote.replyNotifications(notifications = notifications)
+    }
+
+    override suspend fun getMembershipStatus(command: Command.Membership.GetStatus): Membership? {
+        return remote.getMembershipStatus(command)
+    }
+
+    override suspend fun isNameValid(command: Command.Membership.IsNameValid) {
+        remote.isNameValid(command)
+    }
+
+    override suspend fun getPaymentUrl(command: Command.Membership.GetPaymentUrl): GetPaymentUrlResponse {
+        return remote.getPaymentUrl(command)
+    }
+
+    override suspend fun getPortalLinkUrl(): String {
+        return remote.getPortalLinkUrl()
+    }
+
+    override suspend fun finalizeMembership(command: Command.Membership.Finalize) {
+        remote.finalizeMembership(command)
+    }
+
+    override suspend fun getVerificationEmailStatus(): EmailVerificationStatus {
+        return remote.getVerificationEmailStatus()
+    }
+
+    override suspend fun getVerificationEmail(command: Command.Membership.GetVerificationEmail) {
+        remote.getVerificationEmail(command)
+    }
+
+    override suspend fun verifyEmailCode(command: Command.Membership.VerifyEmailCode) {
+        remote.verifyEmailCode(command)
+    }
+
+    override suspend fun getTiers(command: Command.Membership.GetTiers): List<MembershipTierData> {
+        return remote.getTiers(command)
     }
 }

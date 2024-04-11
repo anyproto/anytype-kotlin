@@ -24,6 +24,10 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.membership.EmailVerificationStatus
+import com.anytypeio.anytype.core_models.membership.GetPaymentUrlResponse
+import com.anytypeio.anytype.core_models.membership.Membership
+import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
@@ -421,4 +425,14 @@ interface BlockRemote {
     suspend fun importExperience(command: Command.ImportExperience)
 
     suspend fun replyNotifications(notifications: List<Id>)
+
+    suspend fun getMembershipStatus(command: Command.Membership.GetStatus): Membership?
+    suspend fun isNameValid(command: Command.Membership.IsNameValid)
+    suspend fun getPaymentUrl(command: Command.Membership.GetPaymentUrl): GetPaymentUrlResponse
+    suspend fun getPortalLinkUrl(): String
+    suspend fun finalizeMembership(command: Command.Membership.Finalize)
+    suspend fun getVerificationEmailStatus(): EmailVerificationStatus
+    suspend fun getVerificationEmail(command: Command.Membership.GetVerificationEmail)
+    suspend fun verifyEmailCode(command: Command.Membership.VerifyEmailCode)
+    suspend fun getTiers(command: Command.Membership.GetTiers): List<MembershipTierData>
 }

@@ -89,6 +89,7 @@ fun NotificationsScreen(
                 onViewClicked = {
                     onNotificationAction(
                         NotificationAction.Multiplayer.ViewSpaceJoinRequest(
+                            notification = state.notification,
                             space = state.space,
                             identity = state.identity
                         )
@@ -103,6 +104,7 @@ fun NotificationsScreen(
                 onViewClicked = {
                     onNotificationAction(
                         NotificationAction.Multiplayer.ViewSpaceLeaveRequest(
+                            notification = state.notification,
                             space = state.space
                         )
                     )

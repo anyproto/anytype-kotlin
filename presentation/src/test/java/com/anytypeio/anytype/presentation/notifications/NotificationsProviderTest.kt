@@ -52,8 +52,7 @@ class NotificationsProviderTest {
                 spaceName = "Books",
                 identity = "identity",
                 identityName = "identityName",
-                identityIcon = "identityIcon",
-                spaceName = "spaceName"
+                identityIcon = "identityIcon"
             ),
             space = SpaceId("space"),
             aclHeadId = "aclHeadId"

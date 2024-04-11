@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,7 +28,11 @@ fun OwnerUserRequestToJoin(
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                color = colorResource(id = R.color.background_primary)
+                color = colorResource(id = R.color.background_notification_primary),
+                shape = RoundedCornerShape(
+                    topEnd = 8.dp,
+                    topStart = 8.dp
+                )
             )
             .padding(horizontal = 20.dp, vertical = 16.dp)
             .noRippleClickable { onViewClicked() },
@@ -49,7 +54,7 @@ fun OwnerUserRequestToJoin(
             text = stringResource(id = R.string.multiplayer_notification_view_request),
             modifier = Modifier
                 .padding(start = 12.dp),
-            color = colorResource(id = R.color.text_primary),
+            color = colorResource(id = R.color.text_white),
             style = Caption1Medium
         )
     }
@@ -65,7 +70,11 @@ fun OwnerUserRequestToLeave(
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                color = colorResource(id = R.color.background_primary)
+                color = colorResource(id = R.color.background_notification_primary),
+                shape = RoundedCornerShape(
+                    topEnd = 8.dp,
+                    topStart = 8.dp
+                )
             )
             .padding(horizontal = 20.dp, vertical = 16.dp)
             .noRippleClickable { onViewClicked() },
@@ -86,7 +95,7 @@ fun OwnerUserRequestToLeave(
             text = stringResource(id = R.string.multiplayer_notification_view_request),
             modifier = Modifier
                 .padding(start = 12.dp),
-            color = colorResource(id = R.color.text_primary),
+            color = colorResource(id = R.color.text_white),
             style = Caption1Medium
         )
     }

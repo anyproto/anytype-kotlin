@@ -185,7 +185,8 @@ class SpaceSettingsViewModel(
                         space = SpaceId(config.space),
                         details = mapOf(
                             Relations.ICON_OPTION to spaceGradientProvider.randomId().toDouble(),
-                            Relations.ICON_IMAGE to null
+                            Relations.ICON_IMAGE to null,
+                            Relations.ICON_EMOJI to null
                         )
                     )
                 )

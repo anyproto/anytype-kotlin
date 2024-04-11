@@ -913,11 +913,12 @@
     <string name="download_anytype_url">https://download.anytype.io</string>
 
     <string name="space_type_default">Default</string>
+    <string name="space_type_default_space">Default space</string>
     <string name="space_type_private">Private</string>
     <string name="space_type_private_space">Private space</string>
     <string name="space_type_shared">Shared</string>
     <string name="space_type_shared_space">Shared space</string>
-    <string name="space_type_unknown">Unknown</string>
+    <string name="space_type_unknown">Unknown type</string>
     <string name="create_space_start_with">Start with</string>
     <string name="create_object_section_lists">Lists</string>
     <string name="create_object_section_objects">Objects</string>
@@ -1323,7 +1324,7 @@
     <string name="multiplayer_view_request">View request</string>
     <string name="multiplayer_owner">Owner</string>
     <string name="multiplayer_can_edit">Can edit</string>
-    <string name="multiplayer_can_read">Can read</string>
+    <string name="multiplayer_can_view">Can view</string>
     <string name="multiplayer_space_add_viewer">Add viewer</string>
     <string name="multiplayer_space_add_editor">Add editor</string>
     <string name="multiplayer_space_request_reject">Reject</string>

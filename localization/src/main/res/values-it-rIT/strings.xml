@@ -1140,7 +1140,7 @@
     <string name="multiplayer_view_request">Visualizza richiesta</string>
     <string name="multiplayer_owner">Proprietario</string>
     <string name="multiplayer_can_edit">Può modificare</string>
-    <string name="multiplayer_can_read">Può leggere</string>
+    <string name="multiplayer_can_view">Può leggere</string>
     <string name="multiplayer_space_add_viewer">Aggiungi visualizzatore</string>
     <string name="multiplayer_space_add_editor">Aggiungi editor</string>
     <string name="multiplayer_space_request_reject">Rifiuta</string>

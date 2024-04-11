@@ -291,7 +291,7 @@ private fun SpaceMember(
                         stringResource(id = R.string.multiplayer_owner)
                     }
                     ShareSpaceMemberView.Config.Member.Reader -> {
-                        stringResource(id = R.string.multiplayer_can_read)
+                        stringResource(id = R.string.multiplayer_can_view)
                     }
                     else -> EMPTY_STRING_VALUE
                 },
@@ -324,7 +324,7 @@ private fun SpaceMember(
                         }
                     ) {
                         Text(
-                            text = stringResource(id = R.string.multiplayer_can_read),
+                            text = stringResource(id = R.string.multiplayer_can_view),
                             style = BodyRegular,
                             color = colorResource(id = R.color.text_primary),
                             modifier = Modifier.weight(1.0f)

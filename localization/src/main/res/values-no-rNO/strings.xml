@@ -1139,7 +1139,7 @@
     <string name="multiplayer_view_request">Vis forespørsel</string>
     <string name="multiplayer_owner">Eier</string>
     <string name="multiplayer_can_edit">Kan redigere</string>
-    <string name="multiplayer_can_read">Can read</string>
+    <string name="multiplayer_can_view">Can read</string>
     <string name="multiplayer_space_add_viewer">Add viewer</string>
     <string name="multiplayer_space_add_editor">Add editor</string>
     <string name="multiplayer_space_request_reject">Avvis</string>

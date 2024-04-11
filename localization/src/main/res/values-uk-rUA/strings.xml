@@ -1147,7 +1147,7 @@
     <string name="multiplayer_view_request">View request</string>
     <string name="multiplayer_owner">Owner</string>
     <string name="multiplayer_can_edit">Can edit</string>
-    <string name="multiplayer_can_read">Can read</string>
+    <string name="multiplayer_can_view">Can read</string>
     <string name="multiplayer_space_add_viewer">Add viewer</string>
     <string name="multiplayer_space_add_editor">Add editor</string>
     <string name="multiplayer_space_request_reject">Reject</string>

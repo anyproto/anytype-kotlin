@@ -1135,7 +1135,7 @@
     <string name="multiplayer_view_request">Lihat permintaan</string>
     <string name="multiplayer_owner">Pemilik</string>
     <string name="multiplayer_can_edit">Can edit</string>
-    <string name="multiplayer_can_read">Bisa membaca</string>
+    <string name="multiplayer_can_view">Bisa membaca</string>
     <string name="multiplayer_space_add_viewer">Tambah pembaca</string>
     <string name="multiplayer_space_add_editor">Tambah penyunting</string>
     <string name="multiplayer_space_request_reject">Tolak</string>

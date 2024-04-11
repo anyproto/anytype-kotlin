@@ -22,8 +22,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.DEFAULT_SPACE_TYPE
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SHARED_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SpaceType
@@ -116,7 +116,8 @@ fun SpaceSettingsScreen(
                     }
                     SHARED_SPACE_TYPE -> {
                         SharedSpaceSharing(
-                            onManageSharedSpaceClicked = onManageSharedSpaceClicked
+                            onManageSharedSpaceClicked = onManageSharedSpaceClicked,
+                            isUserOwner = state.data.permissions == SpaceMemberPermissions.OWNER
                         )
                     }
                 }
@@ -391,7 +392,8 @@ fun PrivateSpaceSharing(
 
 @Composable
 fun SharedSpaceSharing(
-    onManageSharedSpaceClicked: () -> Unit
+    onManageSharedSpaceClicked: () -> Unit,
+    isUserOwner: Boolean
 ) {
     Box(
         modifier = Modifier
@@ -417,7 +419,10 @@ fun SharedSpaceSharing(
         ) {
             Text(
                 modifier = Modifier.align(Alignment.CenterVertically),
-                text = stringResource(id = R.string.multiplayer_manage),
+                text = if (isUserOwner)
+                    stringResource(id = R.string.multiplayer_manage)
+                else
+                    stringResource(id = R.string.multiplayer_members),
                 color = colorResource(id = R.color.text_secondary),
                 style = BodyRegular
             )
@@ -431,22 +436,6 @@ fun SharedSpaceSharing(
             )
         }
     }
-}
-
-@Preview
-@Composable
-fun PrivateSpaceSharingPreview() {
-    PrivateSpaceSharing(
-        onSharePrivateSpaceClicked = {}
-    )
-}
-
-@Preview
-@Composable
-fun SharedSpaceSharingPreview() {
-    SharedSpaceSharing(
-        onManageSharedSpaceClicked = {}
-    )
 }
 
 @Composable
@@ -480,4 +469,21 @@ fun TypeOfSpace(spaceType: SpaceType?) {
             )
         }
     }
+}
+
+@Preview
+@Composable
+private fun PrivateSpaceSharingPreview() {
+    PrivateSpaceSharing(
+        onSharePrivateSpaceClicked = {}
+    )
+}
+
+@Preview
+@Composable
+private fun SharedSpaceSharingPreview() {
+    SharedSpaceSharing(
+        onManageSharedSpaceClicked = {},
+        isUserOwner = true
+    )
 }

@@ -18,7 +18,6 @@ import com.anytypeio.anytype.domain.multiplayer.ApproveJoinSpaceRequest
 import com.anytypeio.anytype.domain.multiplayer.DeclineSpaceJoinRequest
 import com.anytypeio.anytype.domain.`object`.canAddReaders
 import com.anytypeio.anytype.domain.`object`.canAddWriters
-import com.anytypeio.anytype.domain.`object`.canChangeReaderToWriter
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -124,7 +123,7 @@ class SpaceJoinRequestViewModel(
                             urlBuilder = urlBuilder
                         ),
                         canAddAsReader = curr.spaceView.canAddReaders(curr.participants),
-                        canAddAsEditor = curr.spaceView.canChangeReaderToWriter(curr.participants)
+                        canAddAsEditor = curr.spaceView.canAddWriters(curr.participants)
                     )
                 }
             }

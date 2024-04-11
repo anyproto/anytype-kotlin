@@ -183,7 +183,9 @@ fun ShareSpaceScreen(
                                 onRemoveMemberClicked = {
                                     onRemoveMemberClicked(member)
                                 },
-                                icon = member.icon
+                                icon = member.icon,
+                                canEditEnabled = member.canEditEnabled,
+                                canReadEnabled = member.canReadEnabled
                             )
                         }
                         is ShareSpaceMemberView.Config.Request -> {
@@ -246,7 +248,9 @@ private fun SpaceMember(
     config: ShareSpaceMemberView.Config.Member,
     onCanEditClicked: () -> Unit,
     onCanViewClicked: () -> Unit,
-    onRemoveMemberClicked: () -> Unit
+    onRemoveMemberClicked: () -> Unit,
+    canEditEnabled: Boolean,
+    canReadEnabled: Boolean
 ) {
     var isMemberMenuExpanded by remember { mutableStateOf(false) }
     Row(
@@ -305,6 +309,7 @@ private fun SpaceMember(
                     )
                 ) {
                     DropdownMenuItem(
+                        modifier = Modifier.alpha(if (canReadEnabled) 1.0f else 0.3f),
                         onClick = {
                             onCanViewClicked().also {
                                 isMemberMenuExpanded = false
@@ -327,6 +332,7 @@ private fun SpaceMember(
                     }
                     Divider()
                     DropdownMenuItem(
+                        modifier = Modifier.alpha(if (canEditEnabled) 1.0f else 0.3f),
                         onClick = {
                             onCanEditClicked().also {
                                 isMemberMenuExpanded = false
@@ -625,7 +631,9 @@ private fun SpaceOwnerMemberPreview() {
         onCanEditClicked = {},
         onCanViewClicked = {},
         onRemoveMemberClicked = {},
-        isCurrentUserOwner = true
+        isCurrentUserOwner = true,
+        canEditEnabled = true,
+        canReadEnabled = true
     )
 }
 
@@ -644,6 +652,8 @@ private fun SpaceEditorMemberPreview() {
         onCanEditClicked = {},
         onCanViewClicked = {},
         onRemoveMemberClicked = {},
-        isCurrentUserOwner = true
+        isCurrentUserOwner = true,
+        canReadEnabled = true,
+        canEditEnabled = true
     )
 }

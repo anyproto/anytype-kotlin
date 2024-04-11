@@ -49,6 +49,7 @@ class NotificationsProviderTest {
             isLocal = false,
             payload = NotificationPayload.RequestToJoin(
                 spaceId = SpaceId("spaceId"),
+                spaceName = "Books",
                 identity = "identity",
                 identityName = "identityName",
                 identityIcon = "identityIcon"

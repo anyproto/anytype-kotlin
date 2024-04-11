@@ -1141,6 +1141,7 @@
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tap to write your comment</string>
     <string name="multiplayer_share_space">Share space</string>
     <string name="multiplayer_members_and_requests">Members and requests</string>
+    <string name="multiplayer_members">Members</string>
     <string name="multiplayer_unjoining_requested">Unjoining requested</string>
     <string name="multiplayer_joining_requested">Joining requested</string>
     <string name="multiplayer_approve_request">Approve</string>
@@ -1191,6 +1192,7 @@
     <string name="multiplayer_notification_member_permission_change_edit">Your access rights were changed to edit in the %1$s space.</string>
     <string name="multiplayer_notification_member_join_request_declined">Your request to join the %1$s space has been declined.</string>
     <string name="multiplayer_notification_view_request">Подання</string>
+    <string name="multiplayer_toast_permission_not_allowed">Changing permissions is not allowed</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Membership</string>

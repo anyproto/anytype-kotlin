@@ -23,6 +23,7 @@ import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.RemoveSpaceMembers
 import com.anytypeio.anytype.domain.multiplayer.RevokeSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.StopSharingSpace
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.canChangeReaderToWriter
 import com.anytypeio.anytype.domain.`object`.canChangeWriterToReader
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -47,8 +48,9 @@ class ShareSpaceViewModel(
     private val changeSpaceMemberPermissions: ChangeSpaceMemberPermissions,
     private val stopSharingSpace: StopSharingSpace,
     private val container: StorelessSubscriptionContainer,
+    private val permissions: UserPermissionProvider,
     private val getAccount: GetAccount,
-    private val urlBuilder: UrlBuilder
+    private val urlBuilder: UrlBuilder,
 ) : BaseViewModel() {
 
     val members = MutableStateFlow<List<ShareSpaceMemberView>>(emptyList())
@@ -62,7 +64,19 @@ class ShareSpaceViewModel(
 
     init {
         Timber.d("Share-space init with params: $params")
+        proceedWithUserPermissions()
         proceedWithSubscriptions()
+
+    }
+
+    private fun proceedWithUserPermissions() {
+        viewModelScope.launch {
+            permissions
+                .observe(space = params.space)
+                .collect { permission ->
+                    isCurrentUserOwner.value = permission == OWNER
+                }
+        }
     }
 
     private fun proceedWithSubscriptions() {
@@ -78,8 +92,8 @@ class ShareSpaceViewModel(
             combine(
                 container.subscribe(spaceSearchParams),
                 container.subscribe(spaceMembersSearchParams),
-                getAccount.asFlow(Unit)
-            ) { spaceResponse, membersResponse, accountId ->
+                isCurrentUserOwner
+            ) { spaceResponse, membersResponse, isCurrentUserOwner ->
 
                 val spaceView = spaceResponse.firstOrNull()?.let { ObjectWrapper.SpaceView(it.map) }
                 val spaceMembers = membersResponse.map { ObjectWrapper.SpaceMember(it.map) }
@@ -96,44 +110,40 @@ class ShareSpaceViewModel(
                     )
                 }
 
-                Triple(spaceView, spaceViewMembers, accountId)
+                Triple(spaceView, spaceViewMembers, isCurrentUserOwner)
             }.catch {
                 Timber.e(
                     it, "Error while $SHARE_SPACE_MEMBER_SUBSCRIPTION " +
                             "and $SHARE_SPACE_SPACE_SUBSCRIPTION subscription"
                 )
-            }.collect { (spaceView, spaceViewMembers, accountId) ->
+            }.collect { (spaceView, spaceViewMembers, isCurrentUserOwner) ->
                 spaceAccessType.value = spaceView?.spaceAccessType
-                setShareLinkViewState(spaceView)
-                proceedWithIsCurrentUserOwner(spaceViewMembers, accountId.id)
+                setShareLinkViewState(spaceView, isCurrentUserOwner)
                 members.value = spaceViewMembers
             }
         }
     }
 
-    private fun proceedWithIsCurrentUserOwner(
-        members: List<ShareSpaceMemberView>,
-        account: Id
+    private suspend fun setShareLinkViewState(
+        space: ObjectWrapper.SpaceView?,
+        isCurrentUserOwner: Boolean
     ) {
-        isCurrentUserOwner.value = members.any { member ->
-            with(member.obj) {
-                identity.isNotEmpty() && identity == account && permissions == OWNER
-            }
-        }
-    }
-
-    private suspend fun setShareLinkViewState(space: ObjectWrapper.SpaceView?) {
-        shareLinkViewState.value = when (space?.spaceAccessType) {
-            SpaceAccessType.PRIVATE -> ShareLinkViewState.NotGenerated
-            SpaceAccessType.SHARED -> {
-                val link = getSpaceInviteLink.async(params.space)
-                if (link.isSuccess) {
-                    ShareLinkViewState.Shared(link.getOrThrow().scheme)
-                } else {
-                    ShareLinkViewState.NotGenerated
+        if (isCurrentUserOwner) {
+            shareLinkViewState.value = when (space?.spaceAccessType) {
+                SpaceAccessType.PRIVATE -> ShareLinkViewState.NotGenerated
+                SpaceAccessType.SHARED -> {
+                    val link = getSpaceInviteLink.async(params.space)
+                    if (link.isSuccess) {
+                        ShareLinkViewState.Shared(link.getOrThrow().scheme)
+                    } else {
+                        ShareLinkViewState.NotGenerated
+                    }
                 }
+
+                else -> ShareLinkViewState.Init
             }
-            else -> ShareLinkViewState.Init
+        } else {
+            ShareLinkViewState.Init
         }
     }
 
@@ -401,7 +411,8 @@ class ShareSpaceViewModel(
         private val approveLeaveSpaceRequest: ApproveLeaveSpaceRequest,
         private val container: StorelessSubscriptionContainer,
         private val urlBuilder: UrlBuilder,
-        private val getSpaceInviteLink: GetSpaceInviteLink
+        private val getSpaceInviteLink: GetSpaceInviteLink,
+        private val permissions: UserPermissionProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = ShareSpaceViewModel(
@@ -415,7 +426,8 @@ class ShareSpaceViewModel(
             urlBuilder = urlBuilder,
             getAccount = getAccount,
             getSpaceInviteLink = getSpaceInviteLink,
-            approveLeaveSpaceRequest = approveLeaveSpaceRequest
+            approveLeaveSpaceRequest = approveLeaveSpaceRequest,
+            permissions = permissions
         ) as T
     }
 

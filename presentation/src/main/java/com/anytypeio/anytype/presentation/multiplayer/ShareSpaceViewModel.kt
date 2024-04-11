@@ -22,7 +22,6 @@ import com.anytypeio.anytype.domain.base.getOrThrow
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
-import com.anytypeio.anytype.domain.library.space.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ApproveLeaveSpaceRequest
 import com.anytypeio.anytype.domain.multiplayer.ChangeSpaceMemberPermissions
@@ -55,7 +54,6 @@ class ShareSpaceViewModel(
     private val changeSpaceMemberPermissions: ChangeSpaceMemberPermissions,
     private val stopSharingSpace: StopSharingSpace,
     private val container: StorelessSubscriptionContainer,
-    private val spaceViewContainer: SpaceViewSubscriptionContainer,
     private val getAccount: GetAccount,
     private val urlBuilder: UrlBuilder
 ) : BaseViewModel() {
@@ -74,7 +72,7 @@ class ShareSpaceViewModel(
 
     private fun proceedWithSpaceAccessTypeSubscription() {
         viewModelScope.launch {
-            spaceViewContainer.subscribe(
+            container.subscribe(
                 StoreSearchByIdsParams(
                     subscription = SHARE_SPACE_SPACE_SUBSCRIPTION,
                     keys = spaceViewKeys,
@@ -404,7 +402,6 @@ class ShareSpaceViewModel(
         private val removeSpaceMembers: RemoveSpaceMembers,
         private val approveLeaveSpaceRequest: ApproveLeaveSpaceRequest,
         private val container: StorelessSubscriptionContainer,
-        private val spaceViewContainer: SpaceViewSubscriptionContainer,
         private val urlBuilder: UrlBuilder,
         private val getSpaceInviteLink: GetSpaceInviteLink
     ) : ViewModelProvider.Factory {
@@ -420,8 +417,7 @@ class ShareSpaceViewModel(
             urlBuilder = urlBuilder,
             getAccount = getAccount,
             getSpaceInviteLink = getSpaceInviteLink,
-            approveLeaveSpaceRequest = approveLeaveSpaceRequest,
-            spaceViewContainer = spaceViewContainer
+            approveLeaveSpaceRequest = approveLeaveSpaceRequest
         ) as T
     }
 

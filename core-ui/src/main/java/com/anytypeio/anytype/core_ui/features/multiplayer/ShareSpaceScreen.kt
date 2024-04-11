@@ -102,7 +102,11 @@ fun ShareSpaceScreen(
             item {
                 var isMenuExpanded by remember { mutableStateOf(false) }
                 Box(modifier = Modifier.fillMaxWidth()) {
-                    Toolbar(title = stringResource(R.string.multiplayer_share_space))
+                    if (isCurrentUserOwner) {
+                        Toolbar(title = stringResource(R.string.multiplayer_sharing))
+                    } else {
+                        Toolbar(title = stringResource(R.string.multiplayer_members))
+                    }
                     Box(
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
@@ -162,10 +166,12 @@ fun ShareSpaceScreen(
                     }
                 }
             }
-            item {
-                Section(
-                    title = stringResource(R.string.multiplayer_members_and_requests)
-                )
+            if (isCurrentUserOwner) {
+                item {
+                    Section(
+                        title = stringResource(R.string.multiplayer_members_and_requests)
+                    )
+                }
             }
             members.forEachIndexed { index, member ->
                 item {

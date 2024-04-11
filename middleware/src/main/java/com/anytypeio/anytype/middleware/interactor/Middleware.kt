@@ -28,6 +28,7 @@ import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.SearchResult
+import com.anytypeio.anytype.core_models.SpaceSearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
@@ -1079,6 +1080,26 @@ class Middleware @Inject constructor(
                     null
             },
             counter = null
+        )
+    }
+
+    @Throws(Exception::class)
+    fun searchSpaceByIdWithSubscription(
+        subscription: Id,
+        ids: List<Id>,
+        keys: List<String>
+    ): SpaceSearchResult {
+        val request = Rpc.Object.SubscribeIds.Request(
+            subId = subscription,
+            keys = keys,
+            ids = ids
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectIdsSubscribe(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return SpaceSearchResult(
+            results = response.records,
+            dependencies = response.dependencies
         )
     }
 

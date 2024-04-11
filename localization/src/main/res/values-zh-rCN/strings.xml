@@ -823,11 +823,12 @@
     <string name="anytype_update_alert_title">是时候更新了</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
     <string name="space_type_default">默认</string>
+    <string name="space_type_default_space">默认空间</string>
     <string name="space_type_private">私人</string>
     <string name="space_type_private_space">私人空间</string>
     <string name="space_type_shared">共享</string>
     <string name="space_type_shared_space">共享空间</string>
-    <string name="space_type_unknown">未知</string>
+    <string name="space_type_unknown">未知类型</string>
     <string name="create_space_start_with">开始于：</string>
     <string name="create_object_section_lists">分组</string>
     <string name="create_object_section_objects">对象</string>
@@ -1129,13 +1130,14 @@
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tap to write your comment</string>
     <string name="multiplayer_share_space">共享空间</string>
     <string name="multiplayer_members_and_requests">成员和请求</string>
-    <string name="multiplayer_leave_request">Unjoining requested</string>
-    <string name="multiplayer_join_request">Joining requested</string>
+    <string name="multiplayer_members">参与的人</string>
+    <string name="multiplayer_leave_request">退出请求</string>
+    <string name="multiplayer_join_request">加入请求</string>
     <string name="multiplayer_approve_request">接受</string>
     <string name="multiplayer_view_request">查看请求</string>
     <string name="multiplayer_owner">所有者</string>
     <string name="multiplayer_can_edit">可编辑</string>
-    <string name="multiplayer_can_view">Can read</string>
+    <string name="multiplayer_can_view">Can view</string>
     <string name="multiplayer_space_add_viewer">Add viewer</string>
     <string name="multiplayer_space_add_editor">Add editor</string>
     <string name="multiplayer_space_request_reject">拒绝</string>
@@ -1147,6 +1149,7 @@
     <string name="multiplayer_space_stop_sharing_space_description">参与者将不再同步到此空间，共享链接也将被停用。</string>
     <string name="multiplayer_more_info">更多信息</string>
     <string name="multiplayer_sharing">分享</string>
+    <string name="multiplayer_space_type">空间类型</string>
     <string name="multiplayer_share">分享</string>
     <string name="multiplayer_manage">管理</string>
     <string name="multiplayer_leave_space">离开空间</string>
@@ -1179,6 +1182,7 @@
     <string name="multiplayer_notification_member_permission_change_edit">Your access rights were changed to edit in the %1$s space.</string>
     <string name="multiplayer_notification_member_join_request_declined">Your request to join the %1$s space has been declined.</string>
     <string name="multiplayer_notification_view_request">视图</string>
+    <string name="multiplayer_toast_permission_not_allowed">不允许更改权限</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">会员</string>

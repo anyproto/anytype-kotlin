@@ -21,7 +21,7 @@ import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.SearchResult
-import com.anytypeio.anytype.core_models.SpaceSearchResult
+import com.anytypeio.anytype.core_models.GenericSpaceResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
@@ -221,7 +221,7 @@ interface BlockRepository {
 
     suspend fun searchSpaceWithSubscription(
         command: Command.SearchSpaceWithSubscription
-    ): SpaceSearchResult
+    ): GenericSpaceResult
 
     suspend fun cancelObjectSearchSubscription(subscriptions: List<Id>)
 

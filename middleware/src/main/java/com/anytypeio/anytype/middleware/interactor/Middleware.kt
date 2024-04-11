@@ -28,7 +28,7 @@ import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.SearchResult
-import com.anytypeio.anytype.core_models.SpaceSearchResult
+import com.anytypeio.anytype.core_models.GenericSpaceResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
@@ -1086,7 +1086,7 @@ class Middleware @Inject constructor(
     @Throws(Exception::class)
     fun searchSpaceWithSubscription(
         command: Command.SearchSpaceWithSubscription
-    ): SpaceSearchResult {
+    ): GenericSpaceResult {
         val request = Rpc.Object.SearchSubscribe.Request(
             subId = command.subscription,
             sorts = command.sorts.map { it.toMiddlewareModel() },
@@ -1097,7 +1097,7 @@ class Middleware @Inject constructor(
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectSearchSubscribe(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return SpaceSearchResult(
+        return GenericSpaceResult(
             results = response.records,
             dependencies = response.dependencies
         )

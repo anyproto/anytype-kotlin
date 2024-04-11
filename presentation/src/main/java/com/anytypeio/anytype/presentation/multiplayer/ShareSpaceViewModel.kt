@@ -55,6 +55,7 @@ class ShareSpaceViewModel(
     val shareLinkViewState = MutableStateFlow<ShareLinkViewState>(ShareLinkViewState.Init)
     val commands = MutableSharedFlow<Command>()
     val isCurrentUserOwner = MutableStateFlow(false)
+    val spaceAccessType = MutableStateFlow<SpaceAccessType?>(null)
 
     private var canChangeWriterToReader = false
     private var canChangeReaderToWriter = false
@@ -79,11 +80,14 @@ class ShareSpaceViewModel(
                 container.subscribe(spaceMembersSearchParams),
                 getAccount.asFlow(Unit)
             ) { spaceResponse, membersResponse, accountId ->
+
                 val spaceView = spaceResponse.firstOrNull()?.let { ObjectWrapper.SpaceView(it.map) }
-                val mapMembers = membersResponse.map { ObjectWrapper.SpaceMember(it.map) }
-                canChangeReaderToWriter = spaceView?.canChangeReaderToWriter(mapMembers) ?: false
-                canChangeWriterToReader = spaceView?.canChangeWriterToReader(mapMembers) ?: false
-                val spaceViewMembers = mapMembers.mapNotNull { m ->
+                val spaceMembers = membersResponse.map { ObjectWrapper.SpaceMember(it.map) }
+
+                canChangeReaderToWriter = spaceView?.canChangeReaderToWriter(spaceMembers) ?: false
+                canChangeWriterToReader = spaceView?.canChangeWriterToReader(spaceMembers) ?: false
+
+                val spaceViewMembers = spaceMembers.mapNotNull { m ->
                     ShareSpaceMemberView.fromObject(
                         obj = m,
                         urlBuilder = urlBuilder,
@@ -91,6 +95,7 @@ class ShareSpaceViewModel(
                         canChangeReaderToWriter = canChangeReaderToWriter
                     )
                 }
+
                 Triple(spaceView, spaceViewMembers, accountId)
             }.catch {
                 Timber.e(
@@ -98,6 +103,7 @@ class ShareSpaceViewModel(
                             "and $SHARE_SPACE_SPACE_SUBSCRIPTION subscription"
                 )
             }.collect { (spaceView, spaceViewMembers, accountId) ->
+                spaceAccessType.value = spaceView?.spaceAccessType
                 setShareLinkViewState(spaceView)
                 proceedWithIsCurrentUserOwner(spaceViewMembers, accountId.id)
                 members.value = spaceViewMembers
@@ -109,8 +115,8 @@ class ShareSpaceViewModel(
         members: List<ShareSpaceMemberView>,
         account: Id
     ) {
-        isCurrentUserOwner.value = members.any { result ->
-            with(result.obj) {
+        isCurrentUserOwner.value = members.any { member ->
+            with(member.obj) {
                 identity.isNotEmpty() && identity == account && permissions == OWNER
             }
         }
@@ -124,7 +130,7 @@ class ShareSpaceViewModel(
                 if (link.isSuccess) {
                     ShareLinkViewState.Shared(link.getOrThrow().scheme)
                 } else {
-                    ShareLinkViewState.Init
+                    ShareLinkViewState.NotGenerated
                 }
             }
             else -> ShareLinkViewState.Init
@@ -146,23 +152,14 @@ class ShareSpaceViewModel(
         }
     }
 
-    fun onRegenerateInviteLinkClicked() {
-        proceedWithGeneratingInviteLink()
-    }
-
     fun onShareInviteLinkClicked() {
         viewModelScope.launch {
             when (val value = shareLinkViewState.value) {
-                ShareLinkViewState.Init -> {
-                    // Do nothing.
-                }
-
                 is ShareLinkViewState.Shared -> {
                     commands.emit(Command.ShareInviteLink(value.link))
                 }
-
-                is ShareLinkViewState.NotGenerated -> {
-                    // Do nothing
+                else -> {
+                    Timber.w("Ignoring share-invite click while in state: $value")
                 }
             }
         }
@@ -171,14 +168,11 @@ class ShareSpaceViewModel(
     fun onShareQrCodeClicked() {
         viewModelScope.launch {
             when(val value = shareLinkViewState.value) {
-                ShareLinkViewState.Init -> {
-                    // Do nothing.
-                }
                 is ShareLinkViewState.Shared -> {
                     commands.emit(Command.ShareQrCode(value.link))
                 }
-                is ShareLinkViewState.NotGenerated -> {
-                    // Do nothing
+                else -> {
+                    Timber.w("Ignoring QR-code click while in state: $value")
                 }
             }
         }

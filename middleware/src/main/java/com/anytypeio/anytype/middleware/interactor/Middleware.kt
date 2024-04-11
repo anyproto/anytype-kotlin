@@ -1084,18 +1084,18 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun searchSpaceByIdWithSubscription(
-        subscription: Id,
-        ids: List<Id>,
-        keys: List<String>
+    fun searchSpaceWithSubscription(
+        command: Command.SearchSpaceWithSubscription
     ): SpaceSearchResult {
-        val request = Rpc.Object.SubscribeIds.Request(
-            subId = subscription,
-            keys = keys,
-            ids = ids
+        val request = Rpc.Object.SearchSubscribe.Request(
+            subId = command.subscription,
+            sorts = command.sorts.map { it.toMiddlewareModel() },
+            filters = command.filters.map { it.toMiddlewareModel() },
+            keys = command.keys,
+            limit = command.limit.toLong()
         )
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectIdsSubscribe(request)
+        val response = service.objectSearchSubscribe(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return SpaceSearchResult(
             results = response.records,

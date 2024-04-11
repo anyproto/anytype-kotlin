@@ -435,16 +435,10 @@ class BlockDataRepository(
         keys = keys
     )
 
-    override suspend fun searchSpaceByIdWithSubscription(
-        subscription: Id,
-        ids: List<Id>,
-        keys: List<String>
+    override suspend fun searchSpaceWithSubscription(
+        command: Command.SearchSpaceWithSubscription
     ): SpaceSearchResult {
-        return remote.searchSpaceByIdWithSubscription(
-            subscription = subscription,
-            ids = ids,
-            keys = keys
-        )
+        return remote.searchSpaceWithSubscription(command = command)
     }
 
     override suspend fun cancelObjectSearchSubscription(

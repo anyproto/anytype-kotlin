@@ -474,4 +474,12 @@ sealed class Command {
         val title: String,
         val isNewSpace: Boolean
     )
+
+    data class SearchSpaceWithSubscription(
+        val subscription: Id,
+        val sorts: List<DVSort>,
+        val filters: List<DVFilter>,
+        val keys: List<Key>,
+        val limit: Int
+    )
 }

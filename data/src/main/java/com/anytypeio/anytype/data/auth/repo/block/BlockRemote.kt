@@ -178,10 +178,8 @@ interface BlockRemote {
         keys: List<String>
     ): SearchResult
 
-    suspend fun searchSpaceByIdWithSubscription(
-        subscription: Id,
-        ids: List<Id>,
-        keys: List<String>
+    suspend fun searchSpaceWithSubscription(
+        command:Command.SearchSpaceWithSubscription
     ): SpaceSearchResult
 
     suspend fun cancelObjectSearchSubscription(subscriptions: List<Id>)

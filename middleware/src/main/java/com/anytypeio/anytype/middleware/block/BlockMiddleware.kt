@@ -393,16 +393,10 @@ class BlockMiddleware(
         keys = keys
     )
 
-    override suspend fun searchSpaceByIdWithSubscription(
-        subscription: Id,
-        ids: List<Id>,
-        keys: List<String>
+    override suspend fun searchSpaceWithSubscription(
+        command: Command.SearchSpaceWithSubscription
     ): SpaceSearchResult {
-        return middleware.searchSpaceByIdWithSubscription(
-            subscription = subscription,
-            ids = ids,
-            keys = keys
-        )
+        return middleware.searchSpaceWithSubscription(command = command)
     }
 
     override suspend fun cancelObjectSearchSubscription(

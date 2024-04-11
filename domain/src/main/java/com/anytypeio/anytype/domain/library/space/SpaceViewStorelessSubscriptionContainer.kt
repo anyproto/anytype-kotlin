@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.domain.library.space
 
+import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper.SpaceView
 import com.anytypeio.anytype.core_models.SubscriptionEvent
@@ -7,7 +8,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.runCatchingL
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.debugging.Logger
-import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
+import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.processors.space.SpaceEventAddProcessor
 import com.anytypeio.anytype.domain.library.processors.space.SpaceEventAmendProcessor
 import com.anytypeio.anytype.domain.library.processors.space.SpaceEventPositionProcessor
@@ -26,7 +27,7 @@ import kotlinx.coroutines.withContext
 
 interface SpaceViewSubscriptionContainer {
 
-    fun subscribe(searchParams: StoreSearchByIdsParams) : Flow<List<SpaceView>>
+    fun subscribe(searchParams: StoreSearchParams) : Flow<List<SpaceView>>
     suspend fun unsubscribe(subscriptions: List<Id>)
 
     class Impl @Inject constructor(
@@ -45,13 +46,16 @@ interface SpaceViewSubscriptionContainer {
 
         private fun subscribe(subscriptions: List<Id>) = channel.subscribe(subscriptions)
 
-        override fun subscribe(searchParams: StoreSearchByIdsParams) = flow {
+        override fun subscribe(searchParams: StoreSearchParams) = flow {
             with(searchParams) {
-                val initial = repo.searchSpaceByIdWithSubscription(
+                val params = Command.SearchSpaceWithSubscription(
                     subscription = subscription,
-                    ids = targets,
+                    filters = filters,
+                    sorts = sorts,
+                    limit = limit,
                     keys = keys
-                ).results.map { result ->
+                )
+                val initial = repo.searchSpaceWithSubscription(params).results.map { result ->
                     val spaceView = if (!result.isNullOrEmpty()) {
                         SpaceView(result)
                     } else {

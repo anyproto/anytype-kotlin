@@ -21,6 +21,7 @@ import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.SearchResult
+import com.anytypeio.anytype.core_models.SpaceSearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
@@ -176,6 +177,12 @@ interface BlockRemote {
         ids: List<Id>,
         keys: List<String>
     ): SearchResult
+
+    suspend fun searchSpaceByIdWithSubscription(
+        subscription: Id,
+        ids: List<Id>,
+        keys: List<String>
+    ): SpaceSearchResult
 
     suspend fun cancelObjectSearchSubscription(subscriptions: List<Id>)
 

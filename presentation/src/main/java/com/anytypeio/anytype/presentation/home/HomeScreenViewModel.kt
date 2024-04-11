@@ -282,7 +282,9 @@ class HomeScreenViewModel(
                         .async(params = previouslyOpenedWidgetObject)
                         .fold(
                             onSuccess = { closed.add(previouslyOpenedWidgetObject) },
-                            onFailure = { Timber.e(it, "Error while closing object from history") }
+                            onFailure = {
+                                Timber.e(it, "Error while closing object from history: $previouslyOpenedWidgetObject")
+                            }
                         )
                 }
             }

@@ -477,9 +477,9 @@ sealed class Command {
 
     sealed class Membership {
         data class GetStatus(val noCache: Boolean) : Membership()
-        data class IsNameValid(val tier: String, val name: String) : Membership()
+        data class IsNameValid(val tier: Int, val name: String) : Membership()
         data class GetPaymentUrl(
-            val tier: String,
+            val tier: Int,
             val paymentMethod: String,
             val name: String,
             val nameType: String

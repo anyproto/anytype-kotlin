@@ -106,7 +106,8 @@ class ShareSpaceViewModel(
                         obj = m,
                         urlBuilder = urlBuilder,
                         canChangeWriterToReader = canChangeWriterToReader,
-                        canChangeReaderToWriter = canChangeReaderToWriter
+                        canChangeReaderToWriter = canChangeReaderToWriter,
+                        includeRequests = isCurrentUserOwner
                     )
                 }
 
@@ -467,15 +468,15 @@ data class ShareSpaceMemberView(
 ) {
     sealed class Config {
         sealed class Request : Config() {
-            object Join: Request()
-            object Unjoin: Request()
+            data object Join: Request()
+            data object Leave: Request()
         }
         sealed class Member: Config() {
-            object Owner: Member()
-            object Writer: Member()
-            object Reader: Member()
-            object NoPermissions: Member()
-            object Unknown: Member()
+            data object Owner: Member()
+            data object Writer: Member()
+            data object Reader: Member()
+            data object NoPermissions: Member()
+            data object Unknown: Member()
         }
     }
 
@@ -484,7 +485,8 @@ data class ShareSpaceMemberView(
             obj: ObjectWrapper.SpaceMember,
             urlBuilder: UrlBuilder,
             canChangeWriterToReader: Boolean,
-            canChangeReaderToWriter: Boolean
+            canChangeReaderToWriter: Boolean,
+            includeRequests: Boolean
         ) : ShareSpaceMemberView? {
             val icon = SpaceMemberIconView.icon(
                 obj = obj,
@@ -524,16 +526,26 @@ data class ShareSpaceMemberView(
                         )
                     }
                 }
-                ParticipantStatus.JOINING -> ShareSpaceMemberView(
-                    obj = obj,
-                    config = Config.Request.Join,
-                    icon = icon
-                )
-                ParticipantStatus.REMOVING -> ShareSpaceMemberView(
-                    obj = obj,
-                    config = Config.Request.Unjoin,
-                    icon = icon
-                )
+                ParticipantStatus.JOINING -> {
+                    if (includeRequests)
+                        ShareSpaceMemberView(
+                            obj = obj,
+                            config = Config.Request.Join,
+                            icon = icon
+                        )
+                    else
+                        null
+                }
+                ParticipantStatus.REMOVING -> {
+                    if (includeRequests)
+                        ShareSpaceMemberView(
+                            obj = obj,
+                            config = Config.Request.Leave,
+                            icon = icon
+                        )
+                    else
+                        null
+                }
                 else -> null
             }
         }

@@ -450,13 +450,13 @@ private fun SpaceMemberRequest(
             Spacer(modifier = Modifier.height(2.dp))
             val color = when(request) {
                 ShareSpaceMemberView.Config.Request.Join -> ThemeColor.PINK
-                ShareSpaceMemberView.Config.Request.Unjoin -> ThemeColor.RED
+                ShareSpaceMemberView.Config.Request.Leave -> ThemeColor.RED
             }
             val text = when(request) {
                 ShareSpaceMemberView.Config.Request.Join -> stringResource(
                     id = R.string.multiplayer_joining_requested
                 )
-                ShareSpaceMemberView.Config.Request.Unjoin -> stringResource(
+                ShareSpaceMemberView.Config.Request.Leave -> stringResource(
                     id = R.string.multiplayer_unjoining_requested
                 )
             }
@@ -486,7 +486,7 @@ private fun SpaceMemberRequest(
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
             }
-            ShareSpaceMemberView.Config.Request.Unjoin -> {
+            ShareSpaceMemberView.Config.Request.Leave -> {
                 ButtonSecondary(
                     text = stringResource(R.string.multiplayer_approve_request),
                     onClick = throttledClick(
@@ -531,7 +531,7 @@ fun SpaceUnjoinRequestPreview() {
             )
         ),
         icon = SpaceMemberIconView.Placeholder(name = "Konstantin"),
-        request = ShareSpaceMemberView.Config.Request.Unjoin,
+        request = ShareSpaceMemberView.Config.Request.Leave,
         onApproveUnjoinRequestClicked = {},
         onViewRequestClicked = {}
     )
@@ -581,7 +581,7 @@ fun ShareSpaceScreenPreview() {
                             Relations.NAME to "Aleksey"
                         )
                     ),
-                    config = ShareSpaceMemberView.Config.Request.Unjoin,
+                    config = ShareSpaceMemberView.Config.Request.Leave,
                     icon = SpaceMemberIconView.Placeholder(
                         name = "Aleksey"
                     )

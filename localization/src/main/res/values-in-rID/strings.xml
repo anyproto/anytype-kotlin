@@ -823,11 +823,12 @@
     <string name="anytype_update_alert_title">Waktunya memperbarui</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
     <string name="space_type_default">Bawaan</string>
+    <string name="space_type_default_space">Ruang bawaan</string>
     <string name="space_type_private">Pribadi</string>
     <string name="space_type_private_space">Ruang pribadi</string>
     <string name="space_type_shared">Berbagi</string>
     <string name="space_type_shared_space">Ruang terbagi</string>
-    <string name="space_type_unknown">Tidak diketahui</string>
+    <string name="space_type_unknown">Unknown type</string>
     <string name="create_space_start_with">Start with</string>
     <string name="create_object_section_lists">Grup</string>
     <string name="create_object_section_objects">Objek</string>
@@ -1129,13 +1130,14 @@
     <string name="multiplayer_tap_to_write_request_to_join_comment">Ketuk untuk menulis komentar</string>
     <string name="multiplayer_share_space">Bagikan ruang</string>
     <string name="multiplayer_members_and_requests">Members and requests</string>
-    <string name="multiplayer_leave_request">Unjoining requested</string>
-    <string name="multiplayer_join_request">Joining requested</string>
+    <string name="multiplayer_members">Anggota</string>
+    <string name="multiplayer_leave_request">Permintaan keluar</string>
+    <string name="multiplayer_join_request">Permintaan bergabung</string>
     <string name="multiplayer_approve_request">Terima</string>
     <string name="multiplayer_view_request">Lihat permintaan</string>
     <string name="multiplayer_owner">Pemilik</string>
     <string name="multiplayer_can_edit">Can edit</string>
-    <string name="multiplayer_can_view">Bisa membaca</string>
+    <string name="multiplayer_can_view">Can view</string>
     <string name="multiplayer_space_add_viewer">Tambah pembaca</string>
     <string name="multiplayer_space_add_editor">Tambah penyunting</string>
     <string name="multiplayer_space_request_reject">Tolak</string>
@@ -1147,6 +1149,7 @@
     <string name="multiplayer_space_stop_sharing_space_description">Anggota tidak akan lagi menyinkronkan ruang ini dan tautan pembagian akan dinonaktifkan.</string>
     <string name="multiplayer_more_info">Informasi lebih lanjut</string>
     <string name="multiplayer_sharing">Berbagi</string>
+    <string name="multiplayer_space_type">Tipe ruang</string>
     <string name="multiplayer_share">Bagikan</string>
     <string name="multiplayer_manage">Kelola</string>
     <string name="multiplayer_leave_space">Tinggalkan ruang</string>
@@ -1179,6 +1182,7 @@
     <string name="multiplayer_notification_member_permission_change_edit">Your access rights were changed to edit in the %1$s space.</string>
     <string name="multiplayer_notification_member_join_request_declined">Your request to join the %1$s space has been declined.</string>
     <string name="multiplayer_notification_view_request">Tampilan</string>
+    <string name="multiplayer_toast_permission_not_allowed">Changing permissions is not allowed</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Langganan</string>

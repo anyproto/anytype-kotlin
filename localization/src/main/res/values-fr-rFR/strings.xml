@@ -1060,12 +1060,12 @@
     <string name="relation_origin_bookmark">Marque-page</string>
     <!--endregion-->
     <plurals name="backlinks_count">
-        <item quantity="one">%d lien vers</item>
-        <item quantity="other">%d links to</item>
+        <item quantity="one">Rétrolien %d</item>
+        <item quantity="other">%d backlinks</item>
     </plurals>
     <plurals name="links_from_count">
-        <item quantity="one">Lien %d depuis</item>
-        <item quantity="other">%d links from</item>
+        <item quantity="one">%d lien</item>
+        <item quantity="other">%d links</item>
     </plurals>
     <!--region ORIGIN RELATION VALUES -->
     <string name="date_type_tomorrow">Demain</string>
@@ -1163,9 +1163,23 @@
     <string name="multiplayer_how_to_share_space_qr_code">Veuillez fournir ce code QR à la personne avec laquelle vous souhaitez collaborer.</string>
     <string name="multiplayer_how_to_share_space_step_2">En cliquant le lien, une personne demande à joindre l\'espace.</string>
     <string name="multiplayer_how_to_share_space_step_3">Après l\'approbation de la demande, vous pouvez choisir les droits d\'accès pour cette personne.</string>
-    <string name="multiplayer_delete_space_sharing_link">Delete sharing link</string>
+    <string name="multiplayer_delete_space_sharing_link">Supprimer le lien de partage</string>
     <string name="multiplayer_delete_link">Supprimer le lien</string>
-    <string name="multiplayer_delete_link_description">New members won’t be able to join the space. You can generate a new link anytype.</string>
+    <string name="multiplayer_delete_link_description">Les nouveaux membres ne pourront pas rejoindre l\'espace. Vous pouvez générer un nouveau lien à tout moment.</string>
+    <string name="multiplayer_already_space_member">Vous êtes déjà membre de cet espace</string>
+    <string name="multiplayer_open_space">Espace ouvert</string>
+    <string name="multiplayer_error_space_deleted">L\'espace a été supprimé</string>
+    <string name="multiplayer_error_space_not_found">Fichier non trouvé</string>
+    <string name="multiplayer_read_only_access_error">Accès en lecture seule. Contactez le propriétaire de l\'espace pour faire des modifications.</string>
+    <string name="multiplayer_notification_member_user_sends_join_request"><b>%1$s</b> requested to join the <b>%2$s</b> space.</string>
+    <string name="multiplayer_notification_member_user_sends_leave_request"><b>%1$s</b> requested to leave the <b>%2$s</b> space.</string>
+    <string name="multiplayer_notification_new_join_request">New join request</string>
+    <string name="multiplayer_notification_member_joined_space_with_read_only_rights"><b>%1$s</b> joined <b>%2$s</b> space with read-only access rights</string>
+    <string name="multiplayer_notification_member_joined_space_with_editor_only_rights"><b>%1$s</b> joined <b>%2$s</b> space with edit access rights</string>
+    <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Your request to join the %1$s space has been approved with read-only access rights. The space will be available on your device soon.</string>
+    <string name="multiplayer_notification_member_request_approved_with_edit_rights">Your request to join the %1$s space has been approved with edit access rights. The space will be available on your device soon.</string>
+    <string name="multiplayer_notification_member_removed_from_space">Vous avez été retiré de l\'espace \'\' , ou l\'espace a été supprimé par le propriétaire.</string>
+    <string name="multiplayer_notification_view_request">Vue</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Adhésion</string>

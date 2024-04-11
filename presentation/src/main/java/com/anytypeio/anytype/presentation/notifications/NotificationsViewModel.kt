@@ -8,9 +8,11 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ImportErrorCode
 import com.anytypeio.anytype.core_models.Notification
 import com.anytypeio.anytype.core_models.NotificationPayload
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceMemberByIdentity
+import com.anytypeio.anytype.domain.notifications.ReplyNotifications
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -23,7 +25,8 @@ class NotificationsViewModel(
     private val notificationsProvider: NotificationsProvider,
     private val spaceManager: SpaceManager,
     private val saveCurrentSpace: SaveCurrentSpace,
-    private val getSpaceMemberByIdentity: GetSpaceMemberByIdentity
+    private val getSpaceMemberByIdentity: GetSpaceMemberByIdentity,
+    private val replyNotifications: ReplyNotifications
 ) : BaseViewModel() {
 
     val state = MutableStateFlow<NotificationsScreenState>(NotificationsScreenState.Hidden)
@@ -40,8 +43,8 @@ class NotificationsViewModel(
     }
 
     private fun handleNotification(event: Notification.Event) {
-        val payload = event.notification?.payload
-        when (payload) {
+        val notification = event.notification ?: return
+        when (val payload = notification.payload) {
             is NotificationPayload.GalleryImport -> {
                 if (payload.errorCode != ImportErrorCode.NULL) {
                     state.value = NotificationsScreenState.GalleryInstalledError(
@@ -56,6 +59,7 @@ class NotificationsViewModel(
             }
             is NotificationPayload.RequestToJoin -> {
                 state.value = NotificationsScreenState.Multiplayer.RequestToJoin(
+                    notification = notification.id,
                     space = payload.spaceId,
                     spaceName = payload.spaceName,
                     identity = payload.identity,
@@ -64,6 +68,7 @@ class NotificationsViewModel(
             }
             is NotificationPayload.RequestToLeave -> {
                 state.value = NotificationsScreenState.Multiplayer.RequestToLeave(
+                    notification = notification.id,
                     space = payload.spaceId,
                     spaceName = payload.spaceName,
                     identity = payload.identity,
@@ -72,6 +77,7 @@ class NotificationsViewModel(
             }
             is NotificationPayload.ParticipantRequestApproved -> {
                 state.value = NotificationsScreenState.Multiplayer.MemberRequestApproved(
+                    notification = notification.id,
                     space = payload.spaceId,
                     spaceName = payload.spaceName,
                     isReadOnly = !payload.permissions.isOwnerOrEditor()
@@ -79,8 +85,24 @@ class NotificationsViewModel(
             }
             is NotificationPayload.ParticipantRemove -> {
                 state.value = NotificationsScreenState.Multiplayer.MemberSpaceRemove(
+                    notification = notification.id,
                     spaceName = payload.spaceName,
                     identityName = payload.identityName
+                )
+            }
+            is NotificationPayload.ParticipantPermissionsChange -> {
+                state.value = NotificationsScreenState.Multiplayer.MemberPermissionChanged(
+                    notification = notification.id,
+                    spaceId = payload.spaceId,
+                    spaceName = payload.spaceName,
+                    permissions = payload.permissions
+                )
+            }
+            is NotificationPayload.ParticipantRequestDecline -> {
+                state.value = NotificationsScreenState.Multiplayer.MemberRequestDeclined(
+                    notification = notification.id,
+                    spaceId = payload.spaceId,
+                    spaceName = payload.spaceName
                 )
             }
             else -> {
@@ -129,6 +151,16 @@ class NotificationsViewModel(
 
     private fun proceedWithSpaceLeaveRequest(action: NotificationAction.Multiplayer.ViewSpaceLeaveRequest) {
         viewModelScope.launch {
+            replyNotifications.async(
+                params = listOf(action.notification)
+            ).fold(
+                onSuccess = {
+                    Timber.d("Replied notification: ${action.notification}")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while replying notification")
+                }
+            )
             command.emit(Command.Dismiss)
             command.emit(
                 Command.ViewSpaceLeaveRequest(
@@ -148,6 +180,16 @@ class NotificationsViewModel(
             ).fold(
                 onSuccess = { member ->
                     if (member != null && member.spaceId == action.space.id) {
+                        replyNotifications.async(
+                            params = listOf(action.notification)
+                        ).fold(
+                            onSuccess = {
+                                Timber.d("Replied notification: ${action.notification}")
+                            },
+                            onFailure = {
+                                Timber.e(it, "Error while replying notification")
+                            }
+                        )
                         command.emit(Command.Dismiss)
                         command.emit(
                             Command.ViewSpaceJoinRequest(
@@ -184,8 +226,15 @@ sealed class NotificationsScreenState {
         val errorCode: ImportErrorCode
     ) : NotificationsScreenState()
     sealed class Multiplayer : NotificationsScreenState() {
+
+        /**
+         * Notification id
+         */
+        abstract val notification: Id
+
         // Owner
         data class RequestToJoin(
+            override val notification: Id,
             val space: SpaceId,
             val spaceName: String,
             val identity: Id,
@@ -193,6 +242,7 @@ sealed class NotificationsScreenState {
         ) : Multiplayer()
         // Owner
         data class RequestToLeave(
+            override val notification: Id,
             val space: SpaceId,
             val spaceName: String,
             val identity: Id,
@@ -200,14 +250,29 @@ sealed class NotificationsScreenState {
         ) : Multiplayer()
         // Member
         data class MemberRequestApproved(
+            override val notification: Id,
             val space: SpaceId,
             val spaceName: String,
             val isReadOnly: Boolean
         ) : Multiplayer()
         // Member
         data class MemberSpaceRemove(
+            override val notification: Id,
             val spaceName: String,
             val identityName: String
+        ) : Multiplayer()
+        // Member
+        data class MemberPermissionChanged(
+            override val notification: Id,
+            val spaceId: SpaceId,
+            val spaceName: String,
+            val permissions: SpaceMemberPermissions
+        ) : Multiplayer()
+        // Member
+        data class MemberRequestDeclined(
+            override val notification: Id,
+            val spaceId: SpaceId,
+            val spaceName: String
         ) : Multiplayer()
     }
 }
@@ -215,10 +280,12 @@ sealed class NotificationsScreenState {
 sealed class NotificationAction {
     sealed class Multiplayer : NotificationAction() {
         data class ViewSpaceJoinRequest(
+            val notification: Id,
             val space: SpaceId,
             val identity: Id
         ) : Multiplayer()
         data class ViewSpaceLeaveRequest(
+            val notification: Id,
             val space: SpaceId
         ) : Multiplayer()
     }

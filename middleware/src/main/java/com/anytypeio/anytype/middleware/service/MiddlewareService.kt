@@ -533,4 +533,11 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun objectImportExperience(request: Rpc.Object.ImportExperience.Request): Rpc.Object.ImportExperience.Response
     //endregion
+
+    //region NOTIFICATIONS
+
+    @Throws(Exception::class)
+    fun notificationReply(request: Rpc.Notification.Reply.Request):  Rpc.Notification.Reply.Response
+
+    //endregion
 }

@@ -956,4 +956,8 @@ class BlockMiddleware(
     override suspend fun importExperience(command: Command.ImportExperience) {
         middleware.importExperience(command)
     }
+
+    override suspend fun replyNotifications(notifications: List<Id>) {
+        middleware.replyNotifications(notifications = notifications)
+    }
 }

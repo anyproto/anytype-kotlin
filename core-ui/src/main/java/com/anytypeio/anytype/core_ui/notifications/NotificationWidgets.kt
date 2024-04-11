@@ -89,6 +89,7 @@ fun NotificationsScreen(
                 onViewClicked = {
                     onNotificationAction(
                         NotificationAction.Multiplayer.ViewSpaceJoinRequest(
+                            notification = state.notification,
                             space = state.space,
                             identity = state.identity
                         )
@@ -103,6 +104,7 @@ fun NotificationsScreen(
                 onViewClicked = {
                     onNotificationAction(
                         NotificationAction.Multiplayer.ViewSpaceLeaveRequest(
+                            notification = state.notification,
                             space = state.space
                         )
                     )
@@ -117,6 +119,17 @@ fun NotificationsScreen(
         }
         is NotificationsScreenState.Multiplayer.MemberSpaceRemove -> {
             MemberSpaceRemovedNotification()
+        }
+        is NotificationsScreenState.Multiplayer.MemberPermissionChanged -> {
+            MemberSpacePermissionChange(
+                spaceName = state.spaceName,
+                isReadOnly = !state.permissions.isOwnerOrEditor()
+            )
+        }
+        is NotificationsScreenState.Multiplayer.MemberRequestDeclined -> {
+            MemberJoinRequestDeclined(
+                spaceName = state.spaceName
+            )
         }
         NotificationsScreenState.Hidden -> {}
     }

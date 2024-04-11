@@ -53,6 +53,7 @@ class CheckIsUserSpaceMember @Inject constructor(
                 Relations.NAME,
                 Relations.SPACE_ID,
                 Relations.PARTICIPANT_PERMISSIONS,
+                Relations.PARTICIPANT_STATUS,
                 Relations.IDENTITY,
                 Relations.LAYOUT
             )

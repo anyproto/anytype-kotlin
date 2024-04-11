@@ -994,4 +994,8 @@ class BlockDataRepository(
     override suspend fun importExperience(command: Command.ImportExperience) {
         remote.importExperience(command)
     }
+
+    override suspend fun replyNotifications(notifications: List<Id>) {
+        remote.replyNotifications(notifications = notifications)
+    }
 }

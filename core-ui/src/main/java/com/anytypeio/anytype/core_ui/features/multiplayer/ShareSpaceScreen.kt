@@ -305,7 +305,6 @@ private fun SpaceMember(
                     )
                 ) {
                     DropdownMenuItem(
-                        modifier = Modifier.alpha(0.3f),
                         onClick = {
                             onCanViewClicked().also {
                                 isMemberMenuExpanded = false

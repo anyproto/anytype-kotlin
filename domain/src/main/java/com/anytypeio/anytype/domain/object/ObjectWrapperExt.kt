@@ -1,36 +1,37 @@
 package com.anytypeio.anytype.domain.`object`
 
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 
 /**
  * Function for applying granular changes in object, replacing existing values with the new ones.
  * @param [diff] difference
  */
-fun ObjectWrapper.Basic.amend(diff: Map<String, Any?>) = ObjectWrapper.Basic(map + diff)
-fun ObjectWrapper.Relation.amend(diff: Map<String, Any?>) = ObjectWrapper.Relation(map + diff)
-fun ObjectWrapper.Type.amend(diff: Map<String, Any?>) = ObjectWrapper.Type(map + diff)
+fun ObjectWrapper.Basic.amend(diff: Map<Id, Any?>) = ObjectWrapper.Basic(map + diff)
+fun ObjectWrapper.Relation.amend(diff: Map<Id, Any?>) = ObjectWrapper.Relation(map + diff)
+fun ObjectWrapper.Type.amend(diff: Map<Id, Any?>) = ObjectWrapper.Type(map + diff)
 /**
  * Function for applying granular changes in object.
  */
-fun ObjectWrapper.Basic.unset(keys: List<String>) = ObjectWrapper.Basic(
+fun ObjectWrapper.Basic.unset(keys: List<Id>) = ObjectWrapper.Basic(
     map.toMutableMap().apply {
         keys.forEach { k -> remove(k) }
     }
 )
 
-fun ObjectWrapper.Relation.unset(keys: List<String>) = ObjectWrapper.Relation(
+fun ObjectWrapper.Relation.unset(keys: List<Id>) = ObjectWrapper.Relation(
     map.toMutableMap().apply {
         keys.forEach { k -> remove(k) }
     }
 )
 
-fun ObjectWrapper.Type.unset(keys: List<String>) = ObjectWrapper.Type(
+fun ObjectWrapper.Type.unset(keys: List<Id>) = ObjectWrapper.Type(
     map.toMutableMap().apply {
         keys.forEach { k -> remove(k) }
     }
 )
 
-fun List<String>.move(target: String, afterId: String?) : List<String> {
+fun List<Id>.move(target: Id, afterId: Id?) : List<Id> {
     val result = toMutableList()
     val targetIdx = indexOfFirst { it == target }
     if (targetIdx != -1) {

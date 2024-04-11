@@ -274,6 +274,9 @@ sealed class ObjectWrapper {
                     .entries
                     .firstOrNull { it.code == code?.toInt() }
             }
+
+        val writersLimit: Double? by default
+        val readersLimit: Double? by default
     }
 
     inline fun <reified T> getValue(relation: Key): T? {

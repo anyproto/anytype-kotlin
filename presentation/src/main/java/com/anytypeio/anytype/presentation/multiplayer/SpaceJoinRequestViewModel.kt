@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.msg
@@ -143,7 +144,11 @@ class SpaceJoinRequestViewModel(
                 val currentState = state.value
                 if (currentState is State.Success) {
                     state.value = currentState.copy(
-                        participants = result.map { ObjectWrapper.SpaceMember(it.map) }
+                        participants = result
+                            .map { ObjectWrapper.SpaceMember(it.map) }
+                            .filter { it.status == ParticipantStatus.ACTIVE
+                                    && it.permissions != SpaceMemberPermissions.NO_PERMISSIONS
+                            }
                     )
                 }
             }

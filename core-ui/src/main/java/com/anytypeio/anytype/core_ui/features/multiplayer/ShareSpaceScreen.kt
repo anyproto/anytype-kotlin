@@ -49,6 +49,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
+import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
@@ -71,14 +72,14 @@ import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 
 @Composable
 fun ShareSpaceScreen(
+    spaceAccessType: SpaceAccessType?,
     isCurrentUserOwner: Boolean,
     members: List<ShareSpaceMemberView>,
     shareLinkViewState: ShareLinkViewState,
-    onRegenerateInviteLinkClicked: () -> Unit,
     onGenerateInviteLinkClicked: () -> Unit,
     onShareInviteLinkClicked: () -> Unit,
     onViewRequestClicked: (ShareSpaceMemberView) -> Unit,
-    onApproveUnjoinRequestClicked: (ShareSpaceMemberView) -> Unit,
+    onApproveLeaveRequestClicked: (ShareSpaceMemberView) -> Unit,
     onCanViewClicked: (ShareSpaceMemberView) -> Unit,
     onCanEditClicked: (ShareSpaceMemberView) -> Unit,
     onRemoveMemberClicked: (ShareSpaceMemberView) -> Unit,
@@ -138,7 +139,7 @@ fun ShareSpaceScreen(
                                     modifier = Modifier.weight(1.0f)
                                 )
                             }
-                            if (shareLinkViewState is ShareLinkViewState.Shared) {
+                            if (spaceAccessType == SpaceAccessType.SHARED) {
                                 Divider(
                                     paddingStart = 0.dp,
                                     paddingEnd = 0.dp
@@ -197,7 +198,7 @@ fun ShareSpaceScreen(
                                     onViewRequestClicked(member)
                                 },
                                 onApproveUnjoinRequestClicked = {
-                                    onApproveUnjoinRequestClicked(member)
+                                    onApproveLeaveRequestClicked(member)
                                 }
                             )
                         }
@@ -544,7 +545,6 @@ fun ShareSpaceScreenPreview() {
             link = "https://anytype.io/ibafyrfhfsag6rea3ifffsasssg..."
         ),
         onShareInviteLinkClicked = {},
-        onRegenerateInviteLinkClicked = {},
         members = buildList {
             add(
                 ShareSpaceMemberView(
@@ -602,7 +602,7 @@ fun ShareSpaceScreenPreview() {
                 )
             )
         },
-        onApproveUnjoinRequestClicked = {},
+        onApproveLeaveRequestClicked = {},
         onViewRequestClicked = {},
         onRemoveMemberClicked = {},
         onCanViewClicked = {},
@@ -612,7 +612,8 @@ fun ShareSpaceScreenPreview() {
         onGenerateInviteLinkClicked = {},
         onMoreInfoClicked = {},
         onShareQrCodeClicked = {},
-        onDeleteLinkClicked = {}
+        onDeleteLinkClicked = {},
+        spaceAccessType = null
     )
 }
 

@@ -17,10 +17,10 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_ui.features.multiplayer.JoinSpaceScreen
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
+import com.anytypeio.anytype.core_ui.foundation.Announcement
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
 import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_BLUE
 import com.anytypeio.anytype.core_ui.foundation.GenericAlert
-import com.anytypeio.anytype.core_ui.foundation.Warning
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
@@ -50,29 +50,41 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
             setContent {
                 MaterialTheme(typography = typography) {
                     when(val state = vm.state.collectAsStateWithLifecycle().value) {
-                        is TypedViewState.Loading -> {
-                            // Render nothing.
-                        }
-                        is TypedViewState.Success -> {
+                        is TypedViewState.Loading, is TypedViewState.Success -> {
+                            val isLoading: Boolean
+                            val spaceName: String
+                            val createdByName: String
+                            if (state is TypedViewState.Loading) {
+                                isLoading = true
+                                spaceName = stringResource(R.string.three_dots_text_placeholder)
+                                createdByName = stringResource(R.string.three_dots_text_placeholder)
+                            }
+                            else {
+                                isLoading = vm.isRequestInProgress.collectAsStateWithLifecycle().value
+                                with(state as TypedViewState.Success) {
+                                    spaceName = state.data.spaceName
+                                    createdByName = state.data.creatorName
+                                }
+                            }
                             JoinSpaceScreen(
-                                isLoading = vm.isRequestInProgress.collectAsStateWithLifecycle().value,
+                                isLoading = isLoading,
                                 onRequestJoinSpaceClicked = vm::onRequestToJoinClicked,
-                                spaceName = state.data.spaceName,
-                                createdByName = state.data.creatorName
+                                spaceName = spaceName,
+                                createdByName = createdByName
                             )
                         }
                         is TypedViewState.Error -> {
                             when(val err = state.error) {
                                 is ErrorView.AlreadySpaceMember -> {
-                                    Warning(
+                                    Announcement(
                                         title = stringResource(id = R.string.multiplayer_already_space_member),
                                         subtitle = EMPTY_STRING_VALUE,
                                         actionButtonText = stringResource(id = R.string.multiplayer_open_space),
                                         cancelButtonText = stringResource(id = R.string.cancel),
-                                        onNegativeClick = {
+                                        onLeftClicked = {
                                             dismiss()
                                         },
-                                        onPositiveClick = {
+                                        onRightClicked = {
                                             vm.onOpenSpaceClicked(err.space)
                                         }
                                     )

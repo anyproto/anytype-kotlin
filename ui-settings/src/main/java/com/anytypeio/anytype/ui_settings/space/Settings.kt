@@ -350,6 +350,11 @@ fun PrivateSpaceSharing(
         modifier = Modifier
             .height(52.dp)
             .fillMaxWidth()
+            .noRippleClickable(
+                onClick = throttledClick(
+                    onClick = { onSharePrivateSpaceClicked() }
+                )
+            )
     ) {
         Text(
             modifier = Modifier
@@ -360,13 +365,7 @@ fun PrivateSpaceSharing(
             style = BodyRegular
         )
         Row(
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .noRippleClickable(
-                    onClick = throttledClick(
-                        onClick = { onSharePrivateSpaceClicked() }
-                    )
-                )
+            modifier = Modifier.align(Alignment.CenterEnd)
         ) {
             Text(
                 modifier = Modifier.align(Alignment.CenterVertically),
@@ -395,6 +394,11 @@ fun SharedSpaceSharing(
         modifier = Modifier
             .height(52.dp)
             .fillMaxWidth()
+            .noRippleClickable(
+                onClick = throttledClick(
+                    onClick = { onManageSharedSpaceClicked() }
+                )
+            )
     ) {
         Text(
             modifier = Modifier
@@ -405,13 +409,7 @@ fun SharedSpaceSharing(
             style = BodyRegular
         )
         Row(
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .noRippleClickable(
-                    onClick = throttledClick(
-                        onClick = { onManageSharedSpaceClicked() }
-                    )
-                )
+            modifier = Modifier.align(Alignment.CenterEnd)
         ) {
             Text(
                 modifier = Modifier.align(Alignment.CenterVertically),

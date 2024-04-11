@@ -161,6 +161,15 @@ private fun SelectSpaceSpaceItem(
                 gradientBackground = colorResource(id = R.color.default_gradient_background),
                 gradientCornerRadius = 4.dp
             )
+            if (item.view.isShared) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_shared_space_arrow),
+                    contentDescription = "Shared space arrow icon",
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(start = 8.dp, bottom = 8.dp)
+                )
+            }
         }
         Spacer(modifier = Modifier.height(10.dp))
         Text(

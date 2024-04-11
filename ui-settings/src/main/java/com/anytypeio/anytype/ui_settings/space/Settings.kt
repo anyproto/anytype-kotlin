@@ -94,11 +94,7 @@ fun SpaceSettingsScreen(
         item { Divider() }
         item {
             if (state is ViewState.Success) {
-                if (state.data.spaceType == DEFAULT_SPACE_TYPE) {
-                    Section(title = stringResource(id = R.string.type))
-                } else {
-                    Section(title = stringResource(id = R.string.multiplayer_sharing))
-                }
+                Section(title = stringResource(id = R.string.multiplayer_space_type))
             } else {
                 Section(title = EMPTY_STRING_VALUE)
             }
@@ -454,9 +450,9 @@ fun TypeOfSpace(spaceType: SpaceType?) {
         )
         if (spaceType != null) {
             val spaceTypeName = when (spaceType) {
-                DEFAULT_SPACE_TYPE -> stringResource(id = R.string.space_type_default)
-                PRIVATE_SPACE_TYPE -> stringResource(id = R.string.space_type_private)
-                SHARED_SPACE_TYPE -> stringResource(id = R.string.space_type_shared)
+                DEFAULT_SPACE_TYPE -> stringResource(id = R.string.space_type_default_space)
+                PRIVATE_SPACE_TYPE -> stringResource(id = R.string.space_type_private_space)
+                SHARED_SPACE_TYPE -> stringResource(id = R.string.space_type_shared_space)
                 else -> stringResource(id = R.string.space_type_unknown)
             }
             Text(

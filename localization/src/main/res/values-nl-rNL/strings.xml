@@ -1133,14 +1133,13 @@
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tik om je reactie te schrijven</string>
     <string name="multiplayer_share_space">Deel ruimte</string>
     <string name="multiplayer_members_and_requests">Leden en verzoeken</string>
-    <string name="multiplayer_members">Leden</string>
-    <string name="multiplayer_unjoining_requested">Uitschrijven aangevraagd</string>
-    <string name="multiplayer_joining_requested">Deelnemen aangevraagd</string>
+    <string name="multiplayer_leave_request">Uitschrijven aangevraagd</string>
+    <string name="multiplayer_join_request">Deelnemen aangevraagd</string>
     <string name="multiplayer_approve_request">Goedkeuren</string>
     <string name="multiplayer_view_request">View request</string>
     <string name="multiplayer_owner">Eigenaar</string>
     <string name="multiplayer_can_edit">Kan bewerken</string>
-    <string name="multiplayer_can_read">Kan lezen</string>
+    <string name="multiplayer_can_view">Kan lezen</string>
     <string name="multiplayer_space_add_viewer">Voeg lezer toe</string>
     <string name="multiplayer_space_add_editor">Voeg bewerker toe</string>
     <string name="multiplayer_space_request_reject">Weiger</string>
@@ -1184,7 +1183,6 @@
     <string name="multiplayer_notification_member_permission_change_edit">Your access rights were changed to edit in the %1$s space.</string>
     <string name="multiplayer_notification_member_join_request_declined">Your request to join the %1$s space has been declined.</string>
     <string name="multiplayer_notification_view_request">Weergave</string>
-    <string name="multiplayer_toast_permission_not_allowed">Changing permissions is not allowed</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Lidmaatschap</string>

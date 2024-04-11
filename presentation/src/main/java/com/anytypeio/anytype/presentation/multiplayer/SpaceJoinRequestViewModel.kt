@@ -192,11 +192,6 @@ class SpaceJoinRequestViewModel(
                     // Do nothing
                 }
                 is State.Success -> {
-                    val spaceView = curr.spaceView
-                    if (!spaceView.canAddReaders(curr.participants)) {
-                        sendToast("Can't add reader, check your space's limitations")
-                        return@launch
-                    }
                     approveJoinSpaceRequest.async(
                         ApproveJoinSpaceRequest.Params(
                             space = params.space,
@@ -229,12 +224,6 @@ class SpaceJoinRequestViewModel(
                     // Do nothing
                 }
                 is State.Success -> {
-                    val spaceView = curr.spaceView
-                    if (!spaceView.canAddWriters(curr.participants)) {
-                        sendToast("Can't add writer, check your space's limitations")
-                        return@launch
-                    }
-                    spaceView.canAddWriters(curr.participants).takeIf { it } ?: return@launch
                     approveJoinSpaceRequest.async(
                         ApproveJoinSpaceRequest.Params(
                             space = params.space,

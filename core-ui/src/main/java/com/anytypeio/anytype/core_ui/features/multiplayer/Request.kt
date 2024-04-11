@@ -42,7 +42,7 @@ fun SpaceJoinRequestScreenPreview() {
             memberName = "Merk",
             spaceName = "Investors",
             icon = SpaceMemberIconView.Placeholder("Merk"),
-            canAddAsReader = true,
+            canAddAsReader = false,
             canAddAsEditor = true
         )
     )

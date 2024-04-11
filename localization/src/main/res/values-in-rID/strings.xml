@@ -1159,7 +1159,7 @@
     <string name="multiplayer_show_qr_code">Tampilkan kode QR</string>
     <string name="multiplayer_how_to_share_space">Bagaimana caranya membagikan ruang?</string>
     <string name="multiplayer_how_to_share_space_step_1">Berikan tautan kepada orang yang ingin kamu ajak berkolaborasi.</string>
-    <string name="multiplayer_how_to_share_space_qr_code">Berikan kode QR ini kepada orang yang ingin kamu ajak berkolaborasi.</string>
+    <string name="multiplayer_how_to_share_space_qr_code">Show this QR code to the person you\'d like to collaborate with.</string>
     <string name="multiplayer_how_to_share_space_step_2">Dengan mengeklik tautan, orang itu akan meminta bergabung ke dalam ruang.</string>
     <string name="multiplayer_how_to_share_space_step_3">Setelah menyetujui permintaannya, kamu bisa memilih hak akses untuk orang tersebut.</string>
     <string name="multiplayer_delete_space_sharing_link">Hapus tautan berbagi</string>
@@ -1278,4 +1278,5 @@
     <string name="gallery_experience_alert_title_error">Waduh!</string>
     <string name="gallery_experience_alert_button_space">Buka ruang</string>
     <string name="gallery_experience_alert_button_error">Tutup</string>
+    <string name="three_dots_text_placeholder">...</string>
 </resources>

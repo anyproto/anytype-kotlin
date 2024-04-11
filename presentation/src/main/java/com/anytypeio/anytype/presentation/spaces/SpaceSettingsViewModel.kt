@@ -184,7 +184,8 @@ class SpaceSettingsViewModel(
                     SetSpaceDetails.Params(
                         space = SpaceId(config.space),
                         details = mapOf(
-                            Relations.ICON_OPTION to spaceGradientProvider.randomId().toDouble()
+                            Relations.ICON_OPTION to spaceGradientProvider.randomId().toDouble(),
+                            Relations.ICON_IMAGE to null
                         )
                     )
                 )

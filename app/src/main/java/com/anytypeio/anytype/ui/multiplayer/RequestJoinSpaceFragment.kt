@@ -55,6 +55,7 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                         }
                         is TypedViewState.Success -> {
                             JoinSpaceScreen(
+                                isLoading = vm.isRequestInProgress.collectAsStateWithLifecycle().value,
                                 onRequestJoinSpaceClicked = vm::onRequestToJoinClicked,
                                 spaceName = state.data.spaceName,
                                 createdByName = state.data.creatorName

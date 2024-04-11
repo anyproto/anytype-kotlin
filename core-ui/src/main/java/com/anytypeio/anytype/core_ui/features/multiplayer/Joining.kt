@@ -29,7 +29,7 @@ import com.anytypeio.anytype.core_ui.foundation.AlertIcon
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_BLUE
 import com.anytypeio.anytype.core_ui.views.BodyRegular
-import com.anytypeio.anytype.core_ui.views.ButtonPrimary
+import com.anytypeio.anytype.core_ui.views.ButtonPrimaryLoading
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
@@ -60,7 +60,8 @@ fun JoinSpaceScreenPreviewWithEmptyNames() {
 fun JoinSpaceScreen(
     onRequestJoinSpaceClicked: () -> Unit,
     spaceName: String,
-    createdByName: String
+    createdByName: String,
+    isLoading: Boolean = false
 ) {
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -100,13 +101,14 @@ fun JoinSpaceScreen(
         Box(
             modifier = Modifier.padding(start = 20.dp, end = 20.dp)
         ) {
-            ButtonPrimary(
+            ButtonPrimaryLoading(
                 onClick = throttledClick(
                     onClick = { onRequestJoinSpaceClicked() }
                 ),
                 size = ButtonSize.Large,
                 text = stringResource(R.string.multiplayer_space_request_to_join),
-                modifier = Modifier.fillMaxWidth()
+                modifierButton = Modifier.fillMaxWidth(),
+                loading = isLoading
             )
         }
         Spacer(modifier = Modifier.height(20.dp))

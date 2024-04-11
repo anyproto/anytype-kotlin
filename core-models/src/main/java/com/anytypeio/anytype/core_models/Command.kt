@@ -474,4 +474,22 @@ sealed class Command {
         val title: String,
         val isNewSpace: Boolean
     )
+
+    sealed class Membership {
+        data class GetStatus(val noCache: Boolean) : Membership()
+        data class IsNameValid(val tier: String, val name: String) : Membership()
+        data class GetPaymentUrl(
+            val tier: String,
+            val paymentMethod: String,
+            val name: String,
+            val nameType: String
+        ) : Membership()
+
+        data class Finalize(val name: String, val nameType: String) : Membership()
+        data class GetVerificationEmail(val email: String, val subscribeToNewsletter: Boolean) :
+            Membership()
+
+        data class VerifyEmailCode(val code: String) : Membership()
+        data class GetTiers(val noCache: Boolean, val locale: String) : Membership()
+    }
 }

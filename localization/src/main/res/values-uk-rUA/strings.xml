@@ -829,11 +829,12 @@
     <string name="anytype_update_alert_title">It\'s time to update</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
     <string name="space_type_default">Default</string>
+    <string name="space_type_default_space">Default space</string>
     <string name="space_type_private">Private</string>
     <string name="space_type_private_space">Private space</string>
     <string name="space_type_shared">Спільні</string>
     <string name="space_type_shared_space">Shared space</string>
-    <string name="space_type_unknown">Невідомо</string>
+    <string name="space_type_unknown">Unknown type</string>
     <string name="create_space_start_with">Start with</string>
     <string name="create_object_section_lists">Groups</string>
     <string name="create_object_section_objects">Об\'єкти</string>
@@ -1141,13 +1142,14 @@
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tap to write your comment</string>
     <string name="multiplayer_share_space">Share space</string>
     <string name="multiplayer_members_and_requests">Members and requests</string>
-    <string name="multiplayer_leave_request">Unjoining requested</string>
-    <string name="multiplayer_join_request">Joining requested</string>
+    <string name="multiplayer_members">Members</string>
+    <string name="multiplayer_leave_request">Leave request</string>
+    <string name="multiplayer_join_request">Join request</string>
     <string name="multiplayer_approve_request">Approve</string>
     <string name="multiplayer_view_request">View request</string>
     <string name="multiplayer_owner">Owner</string>
     <string name="multiplayer_can_edit">Can edit</string>
-    <string name="multiplayer_can_view">Can read</string>
+    <string name="multiplayer_can_view">Can view</string>
     <string name="multiplayer_space_add_viewer">Add viewer</string>
     <string name="multiplayer_space_add_editor">Add editor</string>
     <string name="multiplayer_space_request_reject">Reject</string>
@@ -1159,6 +1161,7 @@
     <string name="multiplayer_space_stop_sharing_space_description">Participants will no longer sync to this space and the share link will be deactivated.</string>
     <string name="multiplayer_more_info">More info</string>
     <string name="multiplayer_sharing">Sharing</string>
+    <string name="multiplayer_space_type">Space type</string>
     <string name="multiplayer_share">Share</string>
     <string name="multiplayer_manage">Manage</string>
     <string name="multiplayer_leave_space">Leave space</string>
@@ -1191,6 +1194,7 @@
     <string name="multiplayer_notification_member_permission_change_edit">Your access rights were changed to edit in the %1$s space.</string>
     <string name="multiplayer_notification_member_join_request_declined">Your request to join the %1$s space has been declined.</string>
     <string name="multiplayer_notification_view_request">Подання</string>
+    <string name="multiplayer_toast_permission_not_allowed">Changing permissions is not allowed</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Membership</string>

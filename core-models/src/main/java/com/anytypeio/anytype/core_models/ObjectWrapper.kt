@@ -145,6 +145,9 @@ sealed class ObjectWrapper {
         val targetSpaceId: Id? by default
 
         val backlinks get() = getValues<Id>(Relations.BACKLINKS)
+
+        val readersLimit: Double? by default
+        val writersLimit: Double? by default
     }
 
     /**

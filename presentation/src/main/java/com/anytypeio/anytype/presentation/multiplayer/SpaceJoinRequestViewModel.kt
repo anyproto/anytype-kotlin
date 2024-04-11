@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.multiplayer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
@@ -15,12 +16,18 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ApproveJoinSpaceRequest
 import com.anytypeio.anytype.domain.multiplayer.DeclineSpaceJoinRequest
+import com.anytypeio.anytype.domain.`object`.canChangeReaderToWriter
+import com.anytypeio.anytype.domain.`object`.canChangeWriterToReader
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.filterParticipants
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -91,8 +98,10 @@ class SpaceJoinRequestViewModel(
                         if (spaceView != null && member != null) {
                             state.value = State.Success(
                                 member = ObjectWrapper.SpaceMember(member.map),
-                                spaceView = ObjectWrapper.SpaceView(spaceView.map)
+                                spaceView = ObjectWrapper.SpaceView(spaceView.map),
+                                participants = emptyList()
                             )
+                            getMembers(config)
                         } else {
                             state.value = State.Error
                         }
@@ -119,6 +128,26 @@ class SpaceJoinRequestViewModel(
                 }
             }
         }
+    }
+
+    private suspend fun getMembers(config: Config) {
+        val searchMembersParams = SearchObjects.Params(
+            filters = filterParticipants(
+                spaces = listOf(config.spaceView)
+            ),
+            keys = ObjectSearchConstants.spaceMemberKeys
+        )
+        searchObjects(searchMembersParams).proceed(
+            failure = { Timber.e(it, "Error while fetching participants") },
+            success = { result ->
+                val currentState = state.value
+                if (currentState is State.Success) {
+                    state.value = currentState.copy(
+                        participants = result.map { ObjectWrapper.SpaceMember(it.map) }
+                    )
+                }
+            }
+        )
     }
 
     fun onRejectRequestClicked() {
@@ -238,7 +267,8 @@ class SpaceJoinRequestViewModel(
         object Init : State()
         data class Success(
             val member: ObjectWrapper.SpaceMember,
-            val spaceView: ObjectWrapper.SpaceView
+            val spaceView: ObjectWrapper.SpaceView,
+            val participants: List<ObjectWrapper.SpaceMember>
         ) : State()
         object Error : State()
     }

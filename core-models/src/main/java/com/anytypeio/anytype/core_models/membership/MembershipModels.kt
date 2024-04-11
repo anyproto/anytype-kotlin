@@ -56,3 +56,18 @@ enum class MembershipPeriodType {
     PERIOD_TYPE_YEARS
 }
 
+data class GetPaymentUrlResponse(
+    val paymentUrl: String,
+    val billingId: String
+)
+
+enum class NameServiceNameType {
+    ANY_NAME
+}
+
+enum class EmailVerificationStatus {
+    STATUS_NOT_VERIFIED,
+    STATUS_CODE_SENT,
+    STATUS_VERIFIED
+}
+

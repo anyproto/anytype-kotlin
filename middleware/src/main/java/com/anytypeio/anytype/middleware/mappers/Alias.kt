@@ -86,3 +86,5 @@ typealias MMembershipStatus = anytype.model.Membership.Status
 typealias MMembershipPaymentMethod = anytype.model.Membership.PaymentMethod
 typealias MMembershipTierData = anytype.model.MembershipTierData
 typealias MMembershipTierDataPeriodType = anytype.model.MembershipTierData.PeriodType
+typealias MNameServiceNameType = anytype.model.NameserviceNameType
+typealias MEmailVerificationStatus = anytype.model.Membership.EmailVerificationStatus

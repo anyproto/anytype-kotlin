@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.library.space.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.DefaultUserPermissionProvider
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
@@ -124,6 +125,21 @@ object SubscriptionsModule {
         scope = scope,
         container = container,
         repo = repo,
+        logger = logger
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun objectSpaceViewSubscriptionContainer(
+        repo: BlockRepository,
+        channel: SubscriptionEventChannel,
+        dispatchers: AppCoroutineDispatchers,
+        logger: Logger
+    ): SpaceViewSubscriptionContainer = SpaceViewSubscriptionContainer.Impl(
+        repo = repo,
+        channel = channel,
+        dispatchers = dispatchers,
         logger = logger
     )
 }

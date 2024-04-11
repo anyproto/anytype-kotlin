@@ -498,7 +498,9 @@ data class ShareSpaceMemberView(
                         SpaceMemberPermissions.READER -> ShareSpaceMemberView(
                             obj = obj,
                             config = Config.Member.Reader,
-                            icon = icon
+                            icon = icon,
+                            canReadEnabled = canChangeWriterToReader,
+                            canEditEnabled = canChangeReaderToWriter
                         )
                         SpaceMemberPermissions.WRITER -> ShareSpaceMemberView(
                             obj = obj,

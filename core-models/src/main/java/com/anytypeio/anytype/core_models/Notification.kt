@@ -27,7 +27,7 @@ data class Notification(
 
 sealed class NotificationPayload {
     data class GalleryImport(
-        val processId: String,
+        val processId: Id,
         val errorCode: ImportErrorCode,
         val spaceId: SpaceId,
         val name: String
@@ -35,6 +35,15 @@ sealed class NotificationPayload {
 
     data class RequestToJoin(
         val spaceId: SpaceId,
+        val spaceName: String,
+        val identity: Id,
+        val identityName: String,
+        val identityIcon: String
+    ) : NotificationPayload()
+
+    data class RequestToLeave(
+        val spaceId: SpaceId,
+        val spaceName: String,
         val identity: String,
         val identityName: String,
         val identityIcon: String
@@ -42,29 +51,27 @@ sealed class NotificationPayload {
 
     data class ParticipantRequestApproved(
         val spaceId: SpaceId,
+        val spaceName: String,
         val permissions: SpaceMemberPermissions
     ) : NotificationPayload()
 
-    data class RequestToLeave(
+
+    data class ParticipantRemove(
         val spaceId: SpaceId,
+        val spaceName: String,
         val identity: String,
         val identityName: String,
         val identityIcon: String
     ) : NotificationPayload()
 
-    data class ParticipantRemove(
-        val identity: String,
-        val identityName: String,
-        val identityIcon: String,
-        val spaceId: SpaceId
-    ) : NotificationPayload()
-
     data class ParticipantRequestDecline(
-        val spaceId: SpaceId
+        val spaceId: SpaceId,
+        val spaceName: String
     ) : NotificationPayload()
 
     data class ParticipantPermissionsChange(
         val spaceId: SpaceId,
+        val spaceName: String,
         val permissions: SpaceMemberPermissions
     ) : NotificationPayload()
 

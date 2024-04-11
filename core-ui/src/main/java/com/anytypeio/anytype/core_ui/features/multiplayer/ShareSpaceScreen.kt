@@ -29,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
@@ -48,6 +49,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
+import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
@@ -70,14 +72,14 @@ import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 
 @Composable
 fun ShareSpaceScreen(
+    spaceAccessType: SpaceAccessType?,
     isCurrentUserOwner: Boolean,
     members: List<ShareSpaceMemberView>,
     shareLinkViewState: ShareLinkViewState,
-    onRegenerateInviteLinkClicked: () -> Unit,
     onGenerateInviteLinkClicked: () -> Unit,
     onShareInviteLinkClicked: () -> Unit,
     onViewRequestClicked: (ShareSpaceMemberView) -> Unit,
-    onApproveUnjoinRequestClicked: (ShareSpaceMemberView) -> Unit,
+    onApproveLeaveRequestClicked: (ShareSpaceMemberView) -> Unit,
     onCanViewClicked: (ShareSpaceMemberView) -> Unit,
     onCanEditClicked: (ShareSpaceMemberView) -> Unit,
     onRemoveMemberClicked: (ShareSpaceMemberView) -> Unit,
@@ -100,7 +102,11 @@ fun ShareSpaceScreen(
             item {
                 var isMenuExpanded by remember { mutableStateOf(false) }
                 Box(modifier = Modifier.fillMaxWidth()) {
-                    Toolbar(title = stringResource(R.string.multiplayer_share_space))
+                    if (isCurrentUserOwner) {
+                        Toolbar(title = stringResource(R.string.multiplayer_sharing))
+                    } else {
+                        Toolbar(title = stringResource(R.string.multiplayer_members))
+                    }
                     Box(
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
@@ -137,7 +143,7 @@ fun ShareSpaceScreen(
                                     modifier = Modifier.weight(1.0f)
                                 )
                             }
-                            if (shareLinkViewState is ShareLinkViewState.Shared) {
+                            if (spaceAccessType == SpaceAccessType.SHARED) {
                                 Divider(
                                     paddingStart = 0.dp,
                                     paddingEnd = 0.dp
@@ -160,10 +166,12 @@ fun ShareSpaceScreen(
                     }
                 }
             }
-            item {
-                Section(
-                    title = stringResource(R.string.multiplayer_members_and_requests)
-                )
+            if (isCurrentUserOwner) {
+                item {
+                    Section(
+                        title = stringResource(R.string.multiplayer_members_and_requests)
+                    )
+                }
             }
             members.forEachIndexed { index, member ->
                 item {
@@ -182,7 +190,9 @@ fun ShareSpaceScreen(
                                 onRemoveMemberClicked = {
                                     onRemoveMemberClicked(member)
                                 },
-                                icon = member.icon
+                                icon = member.icon,
+                                canEditEnabled = member.canEditEnabled,
+                                canReadEnabled = member.canReadEnabled
                             )
                         }
                         is ShareSpaceMemberView.Config.Request -> {
@@ -194,7 +204,7 @@ fun ShareSpaceScreen(
                                     onViewRequestClicked(member)
                                 },
                                 onApproveUnjoinRequestClicked = {
-                                    onApproveUnjoinRequestClicked(member)
+                                    onApproveLeaveRequestClicked(member)
                                 }
                             )
                         }
@@ -245,7 +255,9 @@ private fun SpaceMember(
     config: ShareSpaceMemberView.Config.Member,
     onCanEditClicked: () -> Unit,
     onCanViewClicked: () -> Unit,
-    onRemoveMemberClicked: () -> Unit
+    onRemoveMemberClicked: () -> Unit,
+    canEditEnabled: Boolean,
+    canReadEnabled: Boolean
 ) {
     var isMemberMenuExpanded by remember { mutableStateOf(false) }
     Row(
@@ -279,7 +291,7 @@ private fun SpaceMember(
                         stringResource(id = R.string.multiplayer_owner)
                     }
                     ShareSpaceMemberView.Config.Member.Reader -> {
-                        stringResource(id = R.string.multiplayer_can_read)
+                        stringResource(id = R.string.multiplayer_can_view)
                     }
                     else -> EMPTY_STRING_VALUE
                 },
@@ -304,6 +316,7 @@ private fun SpaceMember(
                     )
                 ) {
                     DropdownMenuItem(
+                        modifier = Modifier.alpha(if (canReadEnabled) 1.0f else 0.3f),
                         onClick = {
                             onCanViewClicked().also {
                                 isMemberMenuExpanded = false
@@ -311,7 +324,7 @@ private fun SpaceMember(
                         }
                     ) {
                         Text(
-                            text = stringResource(id = R.string.multiplayer_can_read),
+                            text = stringResource(id = R.string.multiplayer_can_view),
                             style = BodyRegular,
                             color = colorResource(id = R.color.text_primary),
                             modifier = Modifier.weight(1.0f)
@@ -326,6 +339,7 @@ private fun SpaceMember(
                     }
                     Divider()
                     DropdownMenuItem(
+                        modifier = Modifier.alpha(if (canEditEnabled) 1.0f else 0.3f),
                         onClick = {
                             onCanEditClicked().also {
                                 isMemberMenuExpanded = false
@@ -442,14 +456,14 @@ private fun SpaceMemberRequest(
             Spacer(modifier = Modifier.height(2.dp))
             val color = when(request) {
                 ShareSpaceMemberView.Config.Request.Join -> ThemeColor.PINK
-                ShareSpaceMemberView.Config.Request.Unjoin -> ThemeColor.RED
+                ShareSpaceMemberView.Config.Request.Leave -> ThemeColor.RED
             }
             val text = when(request) {
                 ShareSpaceMemberView.Config.Request.Join -> stringResource(
-                    id = R.string.multiplayer_joining_requested
+                    id = R.string.multiplayer_join_request
                 )
-                ShareSpaceMemberView.Config.Request.Unjoin -> stringResource(
-                    id = R.string.multiplayer_unjoining_requested
+                ShareSpaceMemberView.Config.Request.Leave -> stringResource(
+                    id = R.string.multiplayer_leave_request
                 )
             }
             Text(
@@ -478,7 +492,7 @@ private fun SpaceMemberRequest(
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
             }
-            ShareSpaceMemberView.Config.Request.Unjoin -> {
+            ShareSpaceMemberView.Config.Request.Leave -> {
                 ButtonSecondary(
                     text = stringResource(R.string.multiplayer_approve_request),
                     onClick = throttledClick(
@@ -523,7 +537,7 @@ fun SpaceUnjoinRequestPreview() {
             )
         ),
         icon = SpaceMemberIconView.Placeholder(name = "Konstantin"),
-        request = ShareSpaceMemberView.Config.Request.Unjoin,
+        request = ShareSpaceMemberView.Config.Request.Leave,
         onApproveUnjoinRequestClicked = {},
         onViewRequestClicked = {}
     )
@@ -537,7 +551,6 @@ fun ShareSpaceScreenPreview() {
             link = "https://anytype.io/ibafyrfhfsag6rea3ifffsasssg..."
         ),
         onShareInviteLinkClicked = {},
-        onRegenerateInviteLinkClicked = {},
         members = buildList {
             add(
                 ShareSpaceMemberView(
@@ -574,7 +587,7 @@ fun ShareSpaceScreenPreview() {
                             Relations.NAME to "Aleksey"
                         )
                     ),
-                    config = ShareSpaceMemberView.Config.Request.Unjoin,
+                    config = ShareSpaceMemberView.Config.Request.Leave,
                     icon = SpaceMemberIconView.Placeholder(
                         name = "Aleksey"
                     )
@@ -595,7 +608,7 @@ fun ShareSpaceScreenPreview() {
                 )
             )
         },
-        onApproveUnjoinRequestClicked = {},
+        onApproveLeaveRequestClicked = {},
         onViewRequestClicked = {},
         onRemoveMemberClicked = {},
         onCanViewClicked = {},
@@ -605,7 +618,8 @@ fun ShareSpaceScreenPreview() {
         onGenerateInviteLinkClicked = {},
         onMoreInfoClicked = {},
         onShareQrCodeClicked = {},
-        onDeleteLinkClicked = {}
+        onDeleteLinkClicked = {},
+        spaceAccessType = null
     )
 }
 
@@ -624,7 +638,9 @@ private fun SpaceOwnerMemberPreview() {
         onCanEditClicked = {},
         onCanViewClicked = {},
         onRemoveMemberClicked = {},
-        isCurrentUserOwner = true
+        isCurrentUserOwner = true,
+        canEditEnabled = true,
+        canReadEnabled = true
     )
 }
 
@@ -643,6 +659,8 @@ private fun SpaceEditorMemberPreview() {
         onCanEditClicked = {},
         onCanViewClicked = {},
         onRemoveMemberClicked = {},
-        isCurrentUserOwner = true
+        isCurrentUserOwner = true,
+        canReadEnabled = true,
+        canEditEnabled = true
     )
 }

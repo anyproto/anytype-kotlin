@@ -4,11 +4,15 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ImportErrorCode
 import com.anytypeio.anytype.core_models.Notification
 import com.anytypeio.anytype.core_models.NotificationPayload
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.multiplayer.GetSpaceMemberByIdentity
+import com.anytypeio.anytype.domain.notifications.ReplyNotifications
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -20,7 +24,9 @@ class NotificationsViewModel(
     private val analytics: Analytics,
     private val notificationsProvider: NotificationsProvider,
     private val spaceManager: SpaceManager,
-    private val saveCurrentSpace: SaveCurrentSpace
+    private val saveCurrentSpace: SaveCurrentSpace,
+    private val getSpaceMemberByIdentity: GetSpaceMemberByIdentity,
+    private val replyNotifications: ReplyNotifications
 ) : BaseViewModel() {
 
     val state = MutableStateFlow<NotificationsScreenState>(NotificationsScreenState.Hidden)
@@ -37,17 +43,70 @@ class NotificationsViewModel(
     }
 
     private fun handleNotification(event: Notification.Event) {
-        val payload = event.notification?.payload
-        if (payload is NotificationPayload.GalleryImport) {
-            if (payload.errorCode != ImportErrorCode.NULL) {
-                state.value = NotificationsScreenState.GalleryInstalledError(
-                    errorCode = payload.errorCode
+        val notification = event.notification ?: return
+        when (val payload = notification.payload) {
+            is NotificationPayload.GalleryImport -> {
+                if (payload.errorCode != ImportErrorCode.NULL) {
+                    state.value = NotificationsScreenState.GalleryInstalledError(
+                        errorCode = payload.errorCode
+                    )
+                } else {
+                    state.value = NotificationsScreenState.GalleryInstalled(
+                        spaceId = payload.spaceId,
+                        galleryName = payload.name
+                    )
+                }
+            }
+            is NotificationPayload.RequestToJoin -> {
+                state.value = NotificationsScreenState.Multiplayer.RequestToJoin(
+                    notification = notification.id,
+                    space = payload.spaceId,
+                    spaceName = payload.spaceName,
+                    identity = payload.identity,
+                    identityName = payload.identityName
                 )
-            } else {
-                state.value = NotificationsScreenState.GalleryInstalled(
+            }
+            is NotificationPayload.RequestToLeave -> {
+                state.value = NotificationsScreenState.Multiplayer.RequestToLeave(
+                    notification = notification.id,
+                    space = payload.spaceId,
+                    spaceName = payload.spaceName,
+                    identity = payload.identity,
+                    name = payload.identityName
+                )
+            }
+            is NotificationPayload.ParticipantRequestApproved -> {
+                state.value = NotificationsScreenState.Multiplayer.MemberRequestApproved(
+                    notification = notification.id,
+                    space = payload.spaceId,
+                    spaceName = payload.spaceName,
+                    isReadOnly = !payload.permissions.isOwnerOrEditor()
+                )
+            }
+            is NotificationPayload.ParticipantRemove -> {
+                state.value = NotificationsScreenState.Multiplayer.MemberSpaceRemove(
+                    notification = notification.id,
+                    spaceName = payload.spaceName,
+                    identityName = payload.identityName
+                )
+            }
+            is NotificationPayload.ParticipantPermissionsChange -> {
+                state.value = NotificationsScreenState.Multiplayer.MemberPermissionChanged(
+                    notification = notification.id,
                     spaceId = payload.spaceId,
-                    galleryName = payload.name
+                    spaceName = payload.spaceName,
+                    permissions = payload.permissions
                 )
+            }
+            is NotificationPayload.ParticipantRequestDecline -> {
+                state.value = NotificationsScreenState.Multiplayer.MemberRequestDeclined(
+                    notification = notification.id,
+                    spaceId = payload.spaceId,
+                    spaceName = payload.spaceName
+                )
+            }
+            else -> {
+                Timber.w("Ignored notification: $payload")
             }
         }
     }
@@ -79,16 +138,86 @@ class NotificationsViewModel(
         }
     }
 
+    fun onNotificationAction(action: NotificationAction) {
+        when(action) {
+            is NotificationAction.Multiplayer.ViewSpaceJoinRequest -> {
+                proceedWithSpaceJoinRequest(action)
+            }
+            is NotificationAction.Multiplayer.ViewSpaceLeaveRequest -> {
+                proceedWithSpaceLeaveRequest(action)
+            }
+        }
+    }
+
+    private fun proceedWithSpaceLeaveRequest(action: NotificationAction.Multiplayer.ViewSpaceLeaveRequest) {
+        viewModelScope.launch {
+            replyNotifications.async(
+                params = listOf(action.notification)
+            ).fold(
+                onSuccess = {
+                    Timber.d("Replied notification: ${action.notification}")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while replying notification")
+                }
+            )
+            command.emit(Command.Dismiss)
+            command.emit(
+                Command.ViewSpaceLeaveRequest(
+                    space = action.space,
+                )
+            )
+        }
+    }
+
+    private fun proceedWithSpaceJoinRequest(action: NotificationAction.Multiplayer.ViewSpaceJoinRequest) {
+        viewModelScope.launch {
+            getSpaceMemberByIdentity.async(
+                GetSpaceMemberByIdentity.Params(
+                    space = action.space,
+                    identity = action.identity
+                )
+            ).fold(
+                onSuccess = { member ->
+                    if (member != null && member.spaceId == action.space.id) {
+                        replyNotifications.async(
+                            params = listOf(action.notification)
+                        ).fold(
+                            onSuccess = {
+                                Timber.d("Replied notification: ${action.notification}")
+                            },
+                            onFailure = {
+                                Timber.e(it, "Error while replying notification")
+                            }
+                        )
+                        command.emit(Command.Dismiss)
+                        command.emit(
+                            Command.ViewSpaceJoinRequest(
+                                space = action.space,
+                                member = member.id
+                            )
+                        )
+                    } else {
+                        Timber.w("Space member not found")
+                    }
+                },
+                onFailure = {
+                    Timber.e(it, "Error while searching space member by identity")
+                }
+            )
+        }
+    }
+
     sealed class Command {
-        object Dismiss : Command()
+        data object Dismiss : Command()
         data class NavigateToSpace(val spaceId: SpaceId) : Command()
+        data class ViewSpaceJoinRequest(val space: SpaceId, val member: Id) : Command()
+        data class ViewSpaceLeaveRequest(val space: SpaceId) : Command()
     }
 }
 
-
-
 sealed class NotificationsScreenState {
-    object Hidden : NotificationsScreenState()
+    data object Hidden : NotificationsScreenState()
     data class GalleryInstalled(
         val spaceId: SpaceId,
         val galleryName: String
@@ -96,4 +225,68 @@ sealed class NotificationsScreenState {
     data class GalleryInstalledError(
         val errorCode: ImportErrorCode
     ) : NotificationsScreenState()
+    sealed class Multiplayer : NotificationsScreenState() {
+
+        /**
+         * Notification id
+         */
+        abstract val notification: Id
+
+        // Owner
+        data class RequestToJoin(
+            override val notification: Id,
+            val space: SpaceId,
+            val spaceName: String,
+            val identity: Id,
+            val identityName: String
+        ) : Multiplayer()
+        // Owner
+        data class RequestToLeave(
+            override val notification: Id,
+            val space: SpaceId,
+            val spaceName: String,
+            val identity: Id,
+            val name: String
+        ) : Multiplayer()
+        // Member
+        data class MemberRequestApproved(
+            override val notification: Id,
+            val space: SpaceId,
+            val spaceName: String,
+            val isReadOnly: Boolean
+        ) : Multiplayer()
+        // Member
+        data class MemberSpaceRemove(
+            override val notification: Id,
+            val spaceName: String,
+            val identityName: String
+        ) : Multiplayer()
+        // Member
+        data class MemberPermissionChanged(
+            override val notification: Id,
+            val spaceId: SpaceId,
+            val spaceName: String,
+            val permissions: SpaceMemberPermissions
+        ) : Multiplayer()
+        // Member
+        data class MemberRequestDeclined(
+            override val notification: Id,
+            val spaceId: SpaceId,
+            val spaceName: String
+        ) : Multiplayer()
+    }
+}
+
+sealed class NotificationAction {
+    sealed class Multiplayer : NotificationAction() {
+        data class ViewSpaceJoinRequest(
+            val notification: Id,
+            val space: SpaceId,
+            val identity: Id
+        ) : Multiplayer()
+        data class ViewSpaceLeaveRequest(
+            val notification: Id,
+            val space: SpaceId
+        ) : Multiplayer()
+    }
 }

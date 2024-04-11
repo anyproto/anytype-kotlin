@@ -10,6 +10,7 @@
     <color name="text_button_label">#000000</color>
 
     <color name="background_primary">#000000</color>
+    <color name="background_notification_primary">#FFFFFF</color>
     <color name="background_secondary">#1F1E1D</color>
     <color name="background_highlighted">#24DAD7CA</color>
 

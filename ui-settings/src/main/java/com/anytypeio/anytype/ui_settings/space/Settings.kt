@@ -22,8 +22,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.DEFAULT_SPACE_TYPE
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SHARED_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SpaceType
@@ -94,11 +94,7 @@ fun SpaceSettingsScreen(
         item { Divider() }
         item {
             if (state is ViewState.Success) {
-                if (state.data.spaceType == DEFAULT_SPACE_TYPE) {
-                    Section(title = stringResource(id = R.string.type))
-                } else {
-                    Section(title = stringResource(id = R.string.multiplayer_sharing))
-                }
+                Section(title = stringResource(id = R.string.multiplayer_space_type))
             } else {
                 Section(title = EMPTY_STRING_VALUE)
             }
@@ -116,7 +112,8 @@ fun SpaceSettingsScreen(
                     }
                     SHARED_SPACE_TYPE -> {
                         SharedSpaceSharing(
-                            onManageSharedSpaceClicked = onManageSharedSpaceClicked
+                            onManageSharedSpaceClicked = onManageSharedSpaceClicked,
+                            isUserOwner = state.data.permissions == SpaceMemberPermissions.OWNER
                         )
                     }
                 }
@@ -391,7 +388,8 @@ fun PrivateSpaceSharing(
 
 @Composable
 fun SharedSpaceSharing(
-    onManageSharedSpaceClicked: () -> Unit
+    onManageSharedSpaceClicked: () -> Unit,
+    isUserOwner: Boolean
 ) {
     Box(
         modifier = Modifier
@@ -417,7 +415,10 @@ fun SharedSpaceSharing(
         ) {
             Text(
                 modifier = Modifier.align(Alignment.CenterVertically),
-                text = stringResource(id = R.string.multiplayer_manage),
+                text = if (isUserOwner)
+                    stringResource(id = R.string.multiplayer_manage)
+                else
+                    stringResource(id = R.string.multiplayer_members),
                 color = colorResource(id = R.color.text_secondary),
                 style = BodyRegular
             )
@@ -431,22 +432,6 @@ fun SharedSpaceSharing(
             )
         }
     }
-}
-
-@Preview
-@Composable
-fun PrivateSpaceSharingPreview() {
-    PrivateSpaceSharing(
-        onSharePrivateSpaceClicked = {}
-    )
-}
-
-@Preview
-@Composable
-fun SharedSpaceSharingPreview() {
-    SharedSpaceSharing(
-        onManageSharedSpaceClicked = {}
-    )
 }
 
 @Composable
@@ -465,9 +450,9 @@ fun TypeOfSpace(spaceType: SpaceType?) {
         )
         if (spaceType != null) {
             val spaceTypeName = when (spaceType) {
-                DEFAULT_SPACE_TYPE -> stringResource(id = R.string.space_type_default)
-                PRIVATE_SPACE_TYPE -> stringResource(id = R.string.space_type_private)
-                SHARED_SPACE_TYPE -> stringResource(id = R.string.space_type_shared)
+                DEFAULT_SPACE_TYPE -> stringResource(id = R.string.space_type_default_space)
+                PRIVATE_SPACE_TYPE -> stringResource(id = R.string.space_type_private_space)
+                SHARED_SPACE_TYPE -> stringResource(id = R.string.space_type_shared_space)
                 else -> stringResource(id = R.string.space_type_unknown)
             }
             Text(
@@ -480,4 +465,21 @@ fun TypeOfSpace(spaceType: SpaceType?) {
             )
         }
     }
+}
+
+@Preview
+@Composable
+private fun PrivateSpaceSharingPreview() {
+    PrivateSpaceSharing(
+        onSharePrivateSpaceClicked = {}
+    )
+}
+
+@Preview
+@Composable
+private fun SharedSpaceSharingPreview() {
+    SharedSpaceSharing(
+        onManageSharedSpaceClicked = {},
+        isUserOwner = true
+    )
 }

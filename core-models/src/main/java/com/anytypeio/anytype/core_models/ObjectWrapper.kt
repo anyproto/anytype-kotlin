@@ -145,6 +145,9 @@ sealed class ObjectWrapper {
         val targetSpaceId: Id? by default
 
         val backlinks get() = getValues<Id>(Relations.BACKLINKS)
+
+        val readersLimit: Double? by default
+        val writersLimit: Double? by default
     }
 
     /**
@@ -274,6 +277,9 @@ sealed class ObjectWrapper {
                     .entries
                     .firstOrNull { it.code == code?.toInt() }
             }
+
+        val writersLimit: Double? by default
+        val readersLimit: Double? by default
     }
 
     inline fun <reified T> getValue(relation: Key): T? {

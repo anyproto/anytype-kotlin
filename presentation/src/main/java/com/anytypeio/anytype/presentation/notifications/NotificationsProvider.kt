@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Notification
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.workspace.NotificationsChannel
+import com.anytypeio.anytype.presentation.BuildConfig
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 interface NotificationsProvider {
     val events: StateFlow<List<Notification.Event>>
@@ -30,6 +32,9 @@ interface NotificationsProvider {
         init {
             scope.launch(dispatchers.io) {
                 observe().collect { events ->
+                    if (BuildConfig.DEBUG) {
+                        Timber.d("New notifications: $events")
+                    }
                     _events.value = events
                 }
             }

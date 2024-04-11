@@ -419,4 +419,6 @@ interface BlockRemote {
 
     suspend fun downloadGalleryManifest(command: Command.DownloadGalleryManifest): ManifestInfo?
     suspend fun importExperience(command: Command.ImportExperience)
+
+    suspend fun replyNotifications(notifications: List<Id>)
 }

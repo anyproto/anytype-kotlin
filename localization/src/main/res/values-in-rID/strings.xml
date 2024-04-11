@@ -1058,10 +1058,10 @@
     <string name="relation_origin_bookmark">Markah</string>
     <!--endregion-->
     <plurals name="backlinks_count">
-        <item quantity="other">%d links to</item>
+        <item quantity="other">%d backlinks</item>
     </plurals>
     <plurals name="links_from_count">
-        <item quantity="other">%d links from</item>
+        <item quantity="other">%d links</item>
     </plurals>
     <!--region ORIGIN RELATION VALUES -->
     <string name="date_type_tomorrow">Besok</string>
@@ -1129,13 +1129,13 @@
     <string name="multiplayer_tap_to_write_request_to_join_comment">Ketuk untuk menulis komentar</string>
     <string name="multiplayer_share_space">Bagikan ruang</string>
     <string name="multiplayer_members_and_requests">Members and requests</string>
-    <string name="multiplayer_unjoining_requested">Unjoining requested</string>
-    <string name="multiplayer_joining_requested">Joining requested</string>
+    <string name="multiplayer_leave_request">Unjoining requested</string>
+    <string name="multiplayer_join_request">Joining requested</string>
     <string name="multiplayer_approve_request">Terima</string>
     <string name="multiplayer_view_request">Lihat permintaan</string>
     <string name="multiplayer_owner">Pemilik</string>
     <string name="multiplayer_can_edit">Can edit</string>
-    <string name="multiplayer_can_read">Bisa membaca</string>
+    <string name="multiplayer_can_view">Bisa membaca</string>
     <string name="multiplayer_space_add_viewer">Tambah pembaca</string>
     <string name="multiplayer_space_add_editor">Tambah penyunting</string>
     <string name="multiplayer_space_request_reject">Tolak</string>
@@ -1161,7 +1161,24 @@
     <string name="multiplayer_how_to_share_space_step_3">Setelah menyetujui permintaannya, kamu bisa memilih hak akses untuk orang tersebut.</string>
     <string name="multiplayer_delete_space_sharing_link">Hapus tautan berbagi</string>
     <string name="multiplayer_delete_link">Hapus tautan</string>
-    <string name="multiplayer_delete_link_description">Anggota baru tidak akan dapat bergabung ke ruang ini. Kamu bisa membuat tautan baru kapan saja.</string>
+    <string name="multiplayer_delete_link_description">New members won’t be able to join the space. You can generate a new link anytime.</string>
+    <string name="multiplayer_already_space_member">You are already a member of this space</string>
+    <string name="multiplayer_open_space">Buka ruang</string>
+    <string name="multiplayer_error_space_deleted">Space deleted</string>
+    <string name="multiplayer_error_space_not_found">Space not found</string>
+    <string name="multiplayer_read_only_access_error">Read-only access. Contact space owner for changes.</string>
+    <string name="multiplayer_notification_member_user_sends_join_request">%1$s requested to join the %2$s space.</string>
+    <string name="multiplayer_notification_member_user_sends_leave_request">%1$s requested to leave the %2$s space.</string>
+    <string name="multiplayer_notification_new_join_request">New join request</string>
+    <string name="multiplayer_notification_member_joined_space_with_read_only_rights">%1$s joined %2$s space with read-only access rights</string>
+    <string name="multiplayer_notification_member_joined_space_with_editor_only_rights">%1$s joined %2$s space with edit access rights</string>
+    <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Your request to join the %1$s space has been approved with read-only access rights. The space will be available on your device soon.</string>
+    <string name="multiplayer_notification_member_request_approved_with_edit_rights">Your request to join the %1$s space has been approved with edit access rights. The space will be available on your device soon.</string>
+    <string name="multiplayer_notification_member_removed_from_space">Kamu telah dikeluarkan dari ruang ini, atau ruang tersebut telah dihapus oleh pemiliknya.</string>
+    <string name="multiplayer_notification_member_permission_change_read">Your access rights were changed to read-only in the %1$s space.</string>
+    <string name="multiplayer_notification_member_permission_change_edit">Your access rights were changed to edit in the %1$s space.</string>
+    <string name="multiplayer_notification_member_join_request_declined">Your request to join the %1$s space has been declined.</string>
+    <string name="multiplayer_notification_view_request">Tampilan</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Langganan</string>

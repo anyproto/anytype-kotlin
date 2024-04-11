@@ -41,7 +41,9 @@ fun SpaceJoinRequestScreenPreview() {
         state = ViewState.Success(
             memberName = "Merk",
             spaceName = "Investors",
-            icon = SpaceMemberIconView.Placeholder("Merk")
+            icon = SpaceMemberIconView.Placeholder("Merk"),
+            canAddAsReader = false,
+            canAddAsEditor = true
         )
     )
 }
@@ -95,7 +97,8 @@ fun SpaceJoinRequestScreen(
             size = ButtonSize.Large,
             modifier = Modifier
                 .padding(horizontal = 20.dp)
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            enabled = state.canAddAsReader
         )
         Spacer(modifier = Modifier.height(10.dp))
         ButtonSecondary(
@@ -106,7 +109,8 @@ fun SpaceJoinRequestScreen(
             size = ButtonSize.Large,
             modifier = Modifier
                 .padding(horizontal = 20.dp)
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            enabled = state.canAddAsEditor
         )
         Spacer(modifier = Modifier.height(10.dp))
         ButtonWarning(

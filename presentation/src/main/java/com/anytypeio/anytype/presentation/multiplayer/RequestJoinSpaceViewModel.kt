@@ -34,6 +34,7 @@ class RequestJoinSpaceViewModel(
 ) : BaseViewModel() {
 
     val state = MutableStateFlow<TypedViewState<SpaceInviteView, ErrorView>>(TypedViewState.Loading)
+    val isRequestInProgress = MutableStateFlow(false)
     val commands = MutableSharedFlow<Command>(0)
 
     init {
@@ -98,6 +99,7 @@ class RequestJoinSpaceViewModel(
                     val fileKey = spaceInviteResolver.parseFileKey(params.link)
                     val contentId = spaceInviteResolver.parseContentId(params.link)
                     if (contentId != null && fileKey != null) {
+                        isRequestInProgress.value = true
                         sendJoinSpaceRequest.async(
                             SendJoinSpaceRequest.Params(
                                 space = curr.data.space,
@@ -116,6 +118,7 @@ class RequestJoinSpaceViewModel(
                                 commands.emit(Command.Dismiss)
                             }
                         )
+                        isRequestInProgress.value = false
                     }
                 }
             } else -> {

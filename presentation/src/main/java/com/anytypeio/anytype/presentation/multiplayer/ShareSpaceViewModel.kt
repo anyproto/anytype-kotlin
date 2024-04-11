@@ -3,11 +3,8 @@ package com.anytypeio.anytype.presentation.multiplayer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.anytypeio.anytype.core_models.DVFilter
-import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
@@ -17,7 +14,6 @@ import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.getOrThrow
-import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ApproveLeaveSpaceRequest
@@ -27,16 +23,18 @@ import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.RemoveSpaceMembers
 import com.anytypeio.anytype.domain.multiplayer.RevokeSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.StopSharingSpace
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.`object`.canChangeReaderToWriter
+import com.anytypeio.anytype.domain.`object`.canChangeWriterToReader
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
-import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.getSpaceMembersSearchParams
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.getSpaceViewSearchParams
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -50,103 +48,103 @@ class ShareSpaceViewModel(
     private val changeSpaceMemberPermissions: ChangeSpaceMemberPermissions,
     private val stopSharingSpace: StopSharingSpace,
     private val container: StorelessSubscriptionContainer,
+    private val permissions: UserPermissionProvider,
     private val getAccount: GetAccount,
-    private val urlBuilder: UrlBuilder
+    private val urlBuilder: UrlBuilder,
 ) : BaseViewModel() {
 
     val members = MutableStateFlow<List<ShareSpaceMemberView>>(emptyList())
     val shareLinkViewState = MutableStateFlow<ShareLinkViewState>(ShareLinkViewState.Init)
     val commands = MutableSharedFlow<Command>()
     val isCurrentUserOwner = MutableStateFlow(false)
+    val spaceAccessType = MutableStateFlow<SpaceAccessType?>(null)
+
+    private var canChangeWriterToReader = false
+    private var canChangeReaderToWriter = false
 
     init {
-        proceedWithSpaceAccessTypeSubscription()
-        proceedWithSpaceMemberSubscription()
+        Timber.d("Share-space init with params: $params")
+        proceedWithUserPermissions()
+        proceedWithSubscriptions()
+
     }
 
-    private fun proceedWithSpaceAccessTypeSubscription() {
+    private fun proceedWithUserPermissions() {
         viewModelScope.launch {
-            container.subscribe(
-                StoreSearchParams(
-                    subscription = SHARE_SPACE_SPACE_SUBSCRIPTION,
-                    keys = buildList {
-                        add(Relations.ID)
-                        add(Relations.SPACE_ACCESS_TYPE)
-                        add(Relations.TARGET_SPACE_ID)
-                    },
-                    limit = 1,
-                    filters = buildList {
-                        add(
-                            DVFilter(
-                                relation = Relations.TARGET_SPACE_ID,
-                                value = params.space.id,
-                                condition = DVFilterCondition.EQUAL
-                            )
-                        )
-                    }
-                )
-            ).mapNotNull { results ->
-                val space = results.firstOrNull()
-                if (space != null) {
-                    val wrapper = ObjectWrapper.SpaceView(space.map)
-                    when(wrapper.spaceAccessType) {
-                        SpaceAccessType.PRIVATE -> {
-                            ShareLinkViewState.NotGenerated
-                        }
-                        SpaceAccessType.SHARED -> {
-                            val link = getSpaceInviteLink.async(params.space)
-                            if (link.isSuccess) {
-                                ShareLinkViewState.Shared(link.getOrThrow().scheme)
-                            } else {
-                                null
-                            }
-                        }
-                        else -> {
-                            null
-                        }
-                    }
-                } else {
-                    null
+            permissions
+                .observe(space = params.space)
+                .collect { permission ->
+                    isCurrentUserOwner.value = permission == OWNER
+                }
+        }
+    }
+
+    private fun proceedWithSubscriptions() {
+        viewModelScope.launch {
+            val spaceSearchParams = getSpaceViewSearchParams(
+                targetSpaceId = params.space.id,
+                subscription = SHARE_SPACE_SPACE_SUBSCRIPTION
+            )
+            val spaceMembersSearchParams = getSpaceMembersSearchParams(
+                spaceId = params.space.id,
+                subscription = SHARE_SPACE_MEMBER_SUBSCRIPTION
+            )
+            combine(
+                container.subscribe(spaceSearchParams),
+                container.subscribe(spaceMembersSearchParams),
+                isCurrentUserOwner
+            ) { spaceResponse, membersResponse, isCurrentUserOwner ->
+
+                val spaceView = spaceResponse.firstOrNull()?.let { ObjectWrapper.SpaceView(it.map) }
+                val spaceMembers = membersResponse.map { ObjectWrapper.SpaceMember(it.map) }
+
+                canChangeReaderToWriter = spaceView?.canChangeReaderToWriter(spaceMembers) ?: false
+                canChangeWriterToReader = spaceView?.canChangeWriterToReader(spaceMembers) ?: false
+
+                val spaceViewMembers = spaceMembers.mapNotNull { m ->
+                    ShareSpaceMemberView.fromObject(
+                        obj = m,
+                        urlBuilder = urlBuilder,
+                        canChangeWriterToReader = canChangeWriterToReader,
+                        canChangeReaderToWriter = canChangeReaderToWriter,
+                        includeRequests = isCurrentUserOwner
+                    )
                 }
 
+                Triple(spaceView, spaceViewMembers, isCurrentUserOwner)
             }.catch {
-                Timber.e("Error while $SHARE_SPACE_SPACE_SUBSCRIPTION subscription")
-            }.collect { result ->
-                shareLinkViewState.value = result
+                Timber.e(
+                    it, "Error while $SHARE_SPACE_MEMBER_SUBSCRIPTION " +
+                            "and $SHARE_SPACE_SPACE_SUBSCRIPTION subscription"
+                )
+            }.collect { (spaceView, spaceViewMembers, isCurrentUserOwner) ->
+                spaceAccessType.value = spaceView?.spaceAccessType
+                setShareLinkViewState(spaceView, isCurrentUserOwner)
+                members.value = spaceViewMembers
             }
         }
     }
 
-    private fun proceedWithSpaceMemberSubscription() {
-        viewModelScope.launch {
-            val account = getAccount.async(Unit).getOrNull()
-            container.subscribe(
-                StoreSearchParams(
-                    subscription = SHARE_SPACE_MEMBER_SUBSCRIPTION,
-                    filters = ObjectSearchConstants.filterParticipants(
-                        spaces = listOf(params.space.id)
-                    ),
-                    sorts = listOf(ObjectSearchConstants.sortByName()),
-                    keys = ObjectSearchConstants.spaceMemberKeys
-                )
-            ).map { results ->
-                results.mapNotNull { wrapper ->
-                    ShareSpaceMemberView.fromObject(
-                        obj = ObjectWrapper.SpaceMember(wrapper.map),
-                        urlBuilder = urlBuilder
-                    )
-                }
-            }.onEach { results ->
-                isCurrentUserOwner.value = results.any { result ->
-                    with(result.obj) {
-                        identity.isNotEmpty() && identity == account?.id && permissions == OWNER
+    private suspend fun setShareLinkViewState(
+        space: ObjectWrapper.SpaceView?,
+        isCurrentUserOwner: Boolean
+    ) {
+        if (isCurrentUserOwner) {
+            shareLinkViewState.value = when (space?.spaceAccessType) {
+                SpaceAccessType.PRIVATE -> ShareLinkViewState.NotGenerated
+                SpaceAccessType.SHARED -> {
+                    val link = getSpaceInviteLink.async(params.space)
+                    if (link.isSuccess) {
+                        ShareLinkViewState.Shared(link.getOrThrow().scheme)
+                    } else {
+                        ShareLinkViewState.NotGenerated
                     }
                 }
-            }.catch {
-                Timber.e("Error while $SHARE_SPACE_MEMBER_SUBSCRIPTION subscription")
-            }.collect {
-                members.value = it
+
+                else -> ShareLinkViewState.Init
             }
+        } else {
+            ShareLinkViewState.Init
         }
     }
 
@@ -165,21 +163,14 @@ class ShareSpaceViewModel(
         }
     }
 
-    fun onRegenerateInviteLinkClicked() {
-        proceedWithGeneratingInviteLink()
-    }
-
     fun onShareInviteLinkClicked() {
         viewModelScope.launch {
-            when(val value = shareLinkViewState.value) {
-                ShareLinkViewState.Init -> {
-                    // Do nothing.
-                }
+            when (val value = shareLinkViewState.value) {
                 is ShareLinkViewState.Shared -> {
                     commands.emit(Command.ShareInviteLink(value.link))
                 }
-                is ShareLinkViewState.NotGenerated -> {
-                    // Do nothing
+                else -> {
+                    Timber.w("Ignoring share-invite click while in state: $value")
                 }
             }
         }
@@ -188,14 +179,11 @@ class ShareSpaceViewModel(
     fun onShareQrCodeClicked() {
         viewModelScope.launch {
             when(val value = shareLinkViewState.value) {
-                ShareLinkViewState.Init -> {
-                    // Do nothing.
-                }
                 is ShareLinkViewState.Shared -> {
                     commands.emit(Command.ShareQrCode(value.link))
                 }
-                is ShareLinkViewState.NotGenerated -> {
-                    // Do nothing
+                else -> {
+                    Timber.w("Ignoring QR-code click while in state: $value")
                 }
             }
         }
@@ -235,7 +223,14 @@ class ShareSpaceViewModel(
     fun onCanEditClicked(
         view: ShareSpaceMemberView
     ) {
-        Timber.d("onCanEditClicked")
+        Timber.d("onCanEditClicked, view: [$view]")
+        if (!view.canEditEnabled)  {
+            Timber.w("Can't change permissions")
+            viewModelScope.launch {
+                commands.emit(Command.ToastPermission)
+            }
+            return
+        }
         viewModelScope.launch {
             if (view.config != ShareSpaceMemberView.Config.Member.Writer) {
                 changeSpaceMemberPermissions.async(
@@ -261,7 +256,14 @@ class ShareSpaceViewModel(
     fun onCanViewClicked(
         view: ShareSpaceMemberView
     ) {
-        Timber.d("onCanViewClicked")
+        Timber.d("onCanViewClicked, view: [$view]")
+        if (!view.canReadEnabled)  {
+            Timber.w("Can't change permissions")
+            viewModelScope.launch {
+                commands.emit(Command.ToastPermission)
+            }
+            return
+        }
         viewModelScope.launch {
             if (view.config != ShareSpaceMemberView.Config.Member.Reader) {
                 changeSpaceMemberPermissions.async(
@@ -410,7 +412,8 @@ class ShareSpaceViewModel(
         private val approveLeaveSpaceRequest: ApproveLeaveSpaceRequest,
         private val container: StorelessSubscriptionContainer,
         private val urlBuilder: UrlBuilder,
-        private val getSpaceInviteLink: GetSpaceInviteLink
+        private val getSpaceInviteLink: GetSpaceInviteLink,
+        private val permissions: UserPermissionProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = ShareSpaceViewModel(
@@ -424,7 +427,8 @@ class ShareSpaceViewModel(
             urlBuilder = urlBuilder,
             getAccount = getAccount,
             getSpaceInviteLink = getSpaceInviteLink,
-            approveLeaveSpaceRequest = approveLeaveSpaceRequest
+            approveLeaveSpaceRequest = approveLeaveSpaceRequest,
+            permissions = permissions
         ) as T
     }
 
@@ -445,6 +449,7 @@ class ShareSpaceViewModel(
         data object ShowHowToShareSpace: Command()
         data object ShowStopSharingWarning: Command()
         data object ShowDeleteLinkWarning: Command()
+        data object ToastPermission : Command()
         data object Dismiss : Command()
     }
 
@@ -457,26 +462,31 @@ class ShareSpaceViewModel(
 data class ShareSpaceMemberView(
     val obj: ObjectWrapper.SpaceMember,
     val config: Config = Config.Member.Owner,
-    val icon: SpaceMemberIconView
+    val icon: SpaceMemberIconView,
+    val canReadEnabled: Boolean = false,
+    val canEditEnabled: Boolean = false
 ) {
     sealed class Config {
         sealed class Request : Config() {
-            object Join: Request()
-            object Unjoin: Request()
+            data object Join: Request()
+            data object Leave: Request()
         }
         sealed class Member: Config() {
-            object Owner: Member()
-            object Writer: Member()
-            object Reader: Member()
-            object NoPermissions: Member()
-            object Unknown: Member()
+            data object Owner: Member()
+            data object Writer: Member()
+            data object Reader: Member()
+            data object NoPermissions: Member()
+            data object Unknown: Member()
         }
     }
 
     companion object {
         fun fromObject(
             obj: ObjectWrapper.SpaceMember,
-            urlBuilder: UrlBuilder
+            urlBuilder: UrlBuilder,
+            canChangeWriterToReader: Boolean,
+            canChangeReaderToWriter: Boolean,
+            includeRequests: Boolean
         ) : ShareSpaceMemberView? {
             val icon = SpaceMemberIconView.icon(
                 obj = obj,
@@ -488,17 +498,23 @@ data class ShareSpaceMemberView(
                         SpaceMemberPermissions.READER -> ShareSpaceMemberView(
                             obj = obj,
                             config = Config.Member.Reader,
-                            icon = icon
+                            icon = icon,
+                            canReadEnabled = canChangeWriterToReader,
+                            canEditEnabled = canChangeReaderToWriter
                         )
                         SpaceMemberPermissions.WRITER -> ShareSpaceMemberView(
                             obj = obj,
                             config = Config.Member.Writer,
-                            icon = icon
+                            icon = icon,
+                            canReadEnabled = canChangeWriterToReader,
+                            canEditEnabled = canChangeReaderToWriter
                         )
                         SpaceMemberPermissions.OWNER -> ShareSpaceMemberView(
                             obj = obj,
                             config = Config.Member.Owner,
-                            icon = icon
+                            icon = icon,
+                            canReadEnabled = canChangeWriterToReader,
+                            canEditEnabled = canChangeReaderToWriter
                         )
                         SpaceMemberPermissions.NO_PERMISSIONS -> ShareSpaceMemberView(
                             obj = obj,
@@ -512,16 +528,26 @@ data class ShareSpaceMemberView(
                         )
                     }
                 }
-                ParticipantStatus.JOINING -> ShareSpaceMemberView(
-                    obj = obj,
-                    config = Config.Request.Join,
-                    icon = icon
-                )
-                ParticipantStatus.REMOVING -> ShareSpaceMemberView(
-                    obj = obj,
-                    config = Config.Request.Unjoin,
-                    icon = icon
-                )
+                ParticipantStatus.JOINING -> {
+                    if (includeRequests)
+                        ShareSpaceMemberView(
+                            obj = obj,
+                            config = Config.Request.Join,
+                            icon = icon
+                        )
+                    else
+                        null
+                }
+                ParticipantStatus.REMOVING -> {
+                    if (includeRequests)
+                        ShareSpaceMemberView(
+                            obj = obj,
+                            config = Config.Request.Leave,
+                            icon = icon
+                        )
+                    else
+                        null
+                }
                 else -> null
             }
         }

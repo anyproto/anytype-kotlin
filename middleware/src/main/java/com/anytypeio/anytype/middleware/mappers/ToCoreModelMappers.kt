@@ -23,7 +23,6 @@ import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Event
-import com.anytypeio.anytype.core_models.Process
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ImportErrorCode
 import com.anytypeio.anytype.core_models.ManifestInfo
@@ -38,6 +37,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Process
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
@@ -909,12 +909,14 @@ fun MNotification.toCoreModel(): Notification {
             participantPermissionsChange != null -> {
                 NotificationPayload.ParticipantPermissionsChange(
                     spaceId = SpaceId(participantPermissionsChange!!.spaceId),
+                    spaceName = participantPermissionsChange!!.spaceName,
                     permissions = participantPermissionsChange!!.permissions.toCore()
                 )
             }
             requestToJoin != null -> {
                 NotificationPayload.RequestToJoin(
                     spaceId = SpaceId(requestToJoin!!.spaceId),
+                    spaceName = requestToJoin!!.spaceName,
                     identity = requestToJoin!!.identity,
                     identityName = requestToJoin!!.identityName,
                     identityIcon = requestToJoin!!.identityIcon
@@ -923,6 +925,7 @@ fun MNotification.toCoreModel(): Notification {
             requestToLeave != null -> {
                 NotificationPayload.RequestToLeave(
                     spaceId = SpaceId(requestToLeave!!.spaceId),
+                    spaceName = requestToLeave!!.spaceName,
                     identity = requestToLeave!!.identity,
                     identityName = requestToLeave!!.identityName,
                     identityIcon = requestToLeave!!.identityIcon
@@ -931,7 +934,8 @@ fun MNotification.toCoreModel(): Notification {
             participantRequestApproved != null -> {
                 NotificationPayload.ParticipantRequestApproved(
                     spaceId = SpaceId(participantRequestApproved!!.spaceId),
-                    permissions = participantRequestApproved!!.permissions.toCore()
+                    permissions = participantRequestApproved!!.permissions.toCore(),
+                    spaceName = participantRequestApproved!!.spaceName
                 )
             }
             participantRemove != null -> {
@@ -939,12 +943,14 @@ fun MNotification.toCoreModel(): Notification {
                     identity = participantRemove!!.identity,
                     identityName = participantRemove!!.identityName,
                     identityIcon = participantRemove!!.identityIcon,
-                    spaceId = SpaceId(participantRemove!!.spaceId)
+                    spaceId = SpaceId(participantRemove!!.spaceId),
+                    spaceName = participantRemove!!.spaceName
                 )
             }
             participantRequestDecline != null -> {
                 NotificationPayload.ParticipantRequestDecline(
-                    spaceId = SpaceId(participantRequestDecline!!.spaceId)
+                    spaceId = SpaceId(participantRequestDecline!!.spaceId),
+                    spaceName = participantRequestDecline!!.spaceName
                 )
             }
             galleryImport != null -> {

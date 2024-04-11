@@ -2547,6 +2547,14 @@ class Middleware @Inject constructor(
         if (BuildConfig.DEBUG) logResponse(response)
     }
 
+    @Throws(Exception::class)
+    fun replyNotifications(notifications: List<Id>) {
+        val request = Rpc.Notification.Reply.Request(ids = notifications)
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.notificationReply(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+    }
+
     private fun logRequest(any: Any) {
         logger.logRequest(any).also {
             if (BuildConfig.DEBUG && threadInfo.isOnMainThread()) {

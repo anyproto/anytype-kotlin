@@ -96,13 +96,39 @@ class MainViewModel(
     }
 
     private suspend fun handleNotification(event: Notification.Event) {
-        val payload = event.notification?.payload
-        if (payload is NotificationPayload.GalleryImport) {
-            delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
-            commands.emit(Command.Notifications)
-        } else {
-            viewModelScope.launch {
-                toasts.emit(payload.toString())
+        when (val payload = event.notification?.payload) {
+            is NotificationPayload.GalleryImport -> {
+                delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
+                commands.emit(Command.Notifications)
+            }
+            is NotificationPayload.RequestToJoin -> {
+                delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
+                commands.emit(Command.Notifications)
+            }
+            is NotificationPayload.RequestToLeave -> {
+                delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
+                commands.emit(Command.Notifications)
+            }
+            is NotificationPayload.ParticipantRequestApproved -> {
+                delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
+                commands.emit(Command.Notifications)
+            }
+            is NotificationPayload.ParticipantRemove -> {
+                delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
+                commands.emit(Command.Notifications)
+            }
+            is NotificationPayload.ParticipantPermissionsChange -> {
+                delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
+                commands.emit(Command.Notifications)
+            }
+            is NotificationPayload.ParticipantRequestDecline -> {
+                delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
+                commands.emit(Command.Notifications)
+            }
+            else -> {
+                viewModelScope.launch {
+                    toasts.emit(payload.toString())
+                }
             }
         }
     }
@@ -254,7 +280,7 @@ class MainViewModel(
             data class File(val uri: String): Sharing()
             data class Files(val uris: List<String>): Sharing()
         }
-        object Notifications : Command()
+        data object Notifications : Command()
     }
 
     companion object {

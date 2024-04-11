@@ -16,8 +16,9 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ApproveJoinSpaceRequest
 import com.anytypeio.anytype.domain.multiplayer.DeclineSpaceJoinRequest
+import com.anytypeio.anytype.domain.`object`.canAddReaders
+import com.anytypeio.anytype.domain.`object`.canAddWriters
 import com.anytypeio.anytype.domain.`object`.canChangeReaderToWriter
-import com.anytypeio.anytype.domain.`object`.canChangeWriterToReader
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -26,8 +27,6 @@ import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.filterParticipants
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -123,7 +122,9 @@ class SpaceJoinRequestViewModel(
                         icon = SpaceMemberIconView.icon(
                             obj = curr.member,
                             urlBuilder = urlBuilder
-                        )
+                        ),
+                        canAddAsReader = curr.spaceView.canAddReaders(curr.participants),
+                        canAddAsEditor = curr.spaceView.canChangeReaderToWriter(curr.participants)
                     )
                 }
             }
@@ -181,6 +182,7 @@ class SpaceJoinRequestViewModel(
     }
 
     fun onJoinAsReaderClicked() {
+        Timber.d("onJoinAsReaderClicked, state: ${state.value}")
         viewModelScope.launch {
             when(val curr = state.value) {
                 is State.Error -> {
@@ -190,6 +192,11 @@ class SpaceJoinRequestViewModel(
                     // Do nothing
                 }
                 is State.Success -> {
+                    val spaceView = curr.spaceView
+                    if (!spaceView.canAddReaders(curr.participants)) {
+                        sendToast("Can't add reader, check your space's limitations")
+                        return@launch
+                    }
                     approveJoinSpaceRequest.async(
                         ApproveJoinSpaceRequest.Params(
                             space = params.space,
@@ -212,6 +219,7 @@ class SpaceJoinRequestViewModel(
     }
 
     fun onJoinAsEditorClicked() {
+        Timber.d("onJoinAsEditorClicked, state: ${state.value}")
         viewModelScope.launch {
             when(val curr = state.value) {
                 is State.Error -> {
@@ -221,6 +229,12 @@ class SpaceJoinRequestViewModel(
                     // Do nothing
                 }
                 is State.Success -> {
+                    val spaceView = curr.spaceView
+                    if (!spaceView.canAddWriters(curr.participants)) {
+                        sendToast("Can't add writer, check your space's limitations")
+                        return@launch
+                    }
+                    spaceView.canAddWriters(curr.participants).takeIf { it } ?: return@launch
                     approveJoinSpaceRequest.async(
                         ApproveJoinSpaceRequest.Params(
                             space = params.space,
@@ -278,7 +292,9 @@ class SpaceJoinRequestViewModel(
         data class Success(
             val memberName: String,
             val spaceName: String,
-            val icon: SpaceMemberIconView
+            val icon: SpaceMemberIconView,
+            val canAddAsReader: Boolean,
+            val canAddAsEditor: Boolean
         ): ViewState()
         object Error: ViewState()
     }

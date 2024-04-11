@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -25,7 +23,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -281,77 +278,70 @@ fun Warning(
     }
 }
 
-@ExperimentalMaterialApi
 @Composable
 fun Announcement(
     title: String,
     subtitle: String,
-    onBackClicked: () -> Unit,
-    onNextClicked: () -> Unit
+    actionButtonText: String,
+    cancelButtonText: String,
+    onRightClicked: () -> Unit,
+    onLeftClicked: () -> Unit,
 ) {
-    Box(contentAlignment = Alignment.BottomCenter) {
-        Card(
+    Column {
+        Text(
+            text = title,
             modifier = Modifier.padding(
+                top = 24.dp,
                 start = 20.dp,
-                end = 20.dp,
-                bottom = 16.dp
+                end = 20.dp
             ),
-            shape = RoundedCornerShape(12.dp),
-            backgroundColor = colorResource(R.color.background_secondary)
-        ) {
-            Column {
-                Text(
-                    text = title,
-                    modifier = Modifier.padding(
-                        top = 24.dp,
-                        start = 20.dp,
-                        end = 20.dp
-                    ),
-                    style = HeadlineHeading,
-                    color = colorResource(R.color.text_primary)
-                )
-                Text(
-                    text = subtitle,
-                    modifier = Modifier.padding(
-                        top = 12.dp,
-                        start = 20.dp,
-                        end = 20.dp
-                    ),
-                    style = BodyCalloutRegular,
-                    color = colorResource(R.color.text_primary)
-                )
-                Row(
-                    modifier = Modifier
-                        .height(68.dp)
-                        .padding(
-                            top = 8.dp,
-                            start = 20.dp,
-                            end = 20.dp
-                        )
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    ButtonSecondary(
-                        text = stringResource(R.string.back),
-                        onClick = onBackClicked,
-                        size = ButtonSize.LargeSecondary,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1.0f)
-                    )
-                    Spacer(modifier = Modifier.width(10.dp))
-                    ButtonPrimary(
-                        text = stringResource(R.string.next),
-                        onClick = onNextClicked,
-                        size = ButtonSize.Large,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1.0f)
-                    )
-                }
-                Spacer(modifier = Modifier.height(10.dp))
-            }
+            style = HeadlineHeading,
+            color = colorResource(R.color.text_primary)
+        )
+        if (subtitle.isNotEmpty()) {
+            Text(
+                text = subtitle,
+                modifier = Modifier.padding(
+                    top = 12.dp,
+                    start = 20.dp,
+                    end = 20.dp,
+                    bottom = 10.dp
+                ),
+                style = BodyCalloutRegular,
+                color = colorResource(R.color.text_primary)
+            )
+        } else {
+            Spacer(modifier = Modifier.height(12.dp))
         }
+        Row(
+            modifier = Modifier
+                .padding(
+                    top = 10.dp,
+                    start = 20.dp,
+                    end = 20.dp
+                )
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            ButtonSecondary(
+                onClick = onLeftClicked,
+                size = ButtonSize.LargeSecondary,
+                text = cancelButtonText,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+            ButtonPrimary(
+                onClick = onRightClicked,
+                size = ButtonSize.Large,
+                text = actionButtonText,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            )
+        }
+        Spacer(modifier = Modifier.height(10.dp))
     }
 }
 
@@ -375,5 +365,18 @@ fun WarningPreview() {
         cancelButtonText = "Cancel",
         onNegativeClick = {},
         onPositiveClick = {}
+    )
+}
+
+@Preview
+@Composable
+fun AnnouncementPreview() {
+    Announcement(
+        title = "Leave space",
+        subtitle = "Investors space will be removed from your devices  and you will no longer have access to it",
+        actionButtonText = "Leave space",
+        cancelButtonText = "Cancel",
+        onLeftClicked = {},
+        onRightClicked = {}
     )
 }

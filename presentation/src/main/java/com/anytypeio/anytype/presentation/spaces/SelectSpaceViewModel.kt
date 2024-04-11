@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.core_utils.ext.allUniqueBy
@@ -42,7 +43,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class SelectSpaceViewModel(
-    private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
+    private val container: StorelessSubscriptionContainer,
     private val spaceManager: SpaceManager,
     private val spaceGradientProvider: SpaceGradientProvider,
     private val urlBuilder: UrlBuilder,
@@ -57,7 +58,7 @@ class SelectSpaceViewModel(
     private val profile = spaceManager
         .observe()
         .flatMapLatest { config ->
-            storelessSubscriptionContainer.subscribe(
+            container.subscribe(
                 StoreSearchByIdsParams(
                     subscription = SELECT_SPACE_PROFILE_SUBSCRIPTION,
                     keys = listOf(
@@ -82,7 +83,7 @@ class SelectSpaceViewModel(
             }
         }
 
-    private val spaces: Flow<List<ObjectWrapper.Basic>> = storelessSubscriptionContainer.subscribe(
+    private val spaces: Flow<List<ObjectWrapper.SpaceView>> = container.subscribe(
         StoreSearchParams(
             subscription = SELECT_SPACE_SUBSCRIPTION,
             keys = listOf(
@@ -92,7 +93,8 @@ class SelectSpaceViewModel(
                 Relations.ICON_IMAGE,
                 Relations.ICON_EMOJI,
                 Relations.ICON_OPTION,
-                Relations.SPACE_ACCOUNT_STATUS
+                Relations.SPACE_ACCOUNT_STATUS,
+                Relations.SPACE_ACCESS_TYPE
             ),
             filters = listOf(
                 DVFilter(
@@ -131,7 +133,9 @@ class SelectSpaceViewModel(
                 "There were duplicated objects. Need to investigate this issue"
             }
         }
-        spaces.distinctBy { it.id }
+        spaces.distinctBy { it.id }.map { obj ->
+            ObjectWrapper.SpaceView(obj.map)
+        }
     }
 
     private fun buildUI() {
@@ -160,7 +164,8 @@ class SelectSpaceViewModel(
                                     icon = wrapper.spaceIcon(
                                         builder = urlBuilder,
                                         spaceGradientProvider = spaceGradientProvider
-                                    )
+                                    ),
+                                    isShared = wrapper.spaceAccessType == SpaceAccessType.SHARED
                                 )
                             )
                         } else {
@@ -239,7 +244,7 @@ class SelectSpaceViewModel(
 
     private fun proceedWithUnsubscribing() {
         viewModelScope.launch {
-            storelessSubscriptionContainer.unsubscribe(
+            container.unsubscribe(
                 subscriptions = listOf(
                     SELECT_SPACE_PROFILE_SUBSCRIPTION,
                     SELECT_SPACE_SUBSCRIPTION
@@ -260,7 +265,7 @@ class SelectSpaceViewModel(
         override fun <T : ViewModel> create(
             modelClass: Class<T>
         ) = SelectSpaceViewModel(
-            storelessSubscriptionContainer = storelessSubscriptionContainer,
+            container = storelessSubscriptionContainer,
             spaceManager = spaceManager,
             spaceGradientProvider = spaceGradientProvider,
             urlBuilder = urlBuilder,
@@ -282,7 +287,8 @@ data class WorkspaceView(
     val space: Id,
     val name: String?,
     val isSelected: Boolean = false,
-    val icon: SpaceIconView
+    val isShared: Boolean,
+    val icon: SpaceIconView,
 )
 
 sealed class SelectSpaceView {

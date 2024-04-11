@@ -50,15 +50,27 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
             setContent {
                 MaterialTheme(typography = typography) {
                     when(val state = vm.state.collectAsStateWithLifecycle().value) {
-                        is TypedViewState.Loading -> {
-                            // Render nothing.
-                        }
-                        is TypedViewState.Success -> {
+                        is TypedViewState.Loading, is TypedViewState.Success -> {
+                            val isLoading: Boolean
+                            val spaceName: String
+                            val createdByName: String
+                            if (state is TypedViewState.Loading) {
+                                isLoading = true
+                                spaceName = stringResource(R.string.three_dots_text_placeholder)
+                                createdByName = stringResource(R.string.three_dots_text_placeholder)
+                            }
+                            else {
+                                isLoading = vm.isRequestInProgress.collectAsStateWithLifecycle().value
+                                with(state as TypedViewState.Success) {
+                                    spaceName = state.data.spaceName
+                                    createdByName = state.data.creatorName
+                                }
+                            }
                             JoinSpaceScreen(
-                                isLoading = vm.isRequestInProgress.collectAsStateWithLifecycle().value,
+                                isLoading = isLoading,
                                 onRequestJoinSpaceClicked = vm::onRequestToJoinClicked,
-                                spaceName = state.data.spaceName,
-                                createdByName = state.data.creatorName
+                                spaceName = spaceName,
+                                createdByName = createdByName
                             )
                         }
                         is TypedViewState.Error -> {

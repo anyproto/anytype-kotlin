@@ -1487,4 +1487,7 @@
     <string name="gallery_experience_alert_button_space">Open space</string>
     <string name="gallery_experience_alert_button_error">Close</string>
 
+
+    <string name="three_dots_text_placeholder">...</string>
+
 </resources>

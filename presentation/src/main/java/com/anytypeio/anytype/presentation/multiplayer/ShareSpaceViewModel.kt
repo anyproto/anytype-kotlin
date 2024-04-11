@@ -3,24 +3,17 @@ package com.anytypeio.anytype.presentation.multiplayer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.anytypeio.anytype.core_models.DVFilter
-import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions.OWNER
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.getOrThrow
-import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
-import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ApproveLeaveSpaceRequest
@@ -32,15 +25,13 @@ import com.anytypeio.anytype.domain.multiplayer.RevokeSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.StopSharingSpace
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
-import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
-import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.spaceViewKeys
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.getSpaceMembersSearchParams
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.getSpaceViewSearchParams
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -60,86 +51,73 @@ class ShareSpaceViewModel(
 
     val members = MutableStateFlow<List<ShareSpaceMemberView>>(emptyList())
     val shareLinkViewState = MutableStateFlow<ShareLinkViewState>(ShareLinkViewState.Init)
-    val spaceViewCounts = MutableStateFlow<SpaceViewCounts?>(null)
     val commands = MutableSharedFlow<Command>()
     val isCurrentUserOwner = MutableStateFlow(false)
 
     init {
         Timber.d("Share-space init with params: $params")
-        proceedWithSpaceAccessTypeSubscription()
-        //proceedWithSpaceMemberSubscription()
+        proceedWithSubscriptions()
     }
 
-    private fun proceedWithSpaceAccessTypeSubscription() {
+    private fun proceedWithSubscriptions() {
         viewModelScope.launch {
-            container.subscribe(
-                StoreSearchByIdsParams(
-                    subscription = SHARE_SPACE_SPACE_SUBSCRIPTION,
-                    keys = spaceViewKeys,
-                    targets = listOf(params.space.id)
-                )
-            ).mapNotNull { results ->
-                val space = results.firstOrNull()
-                if (space != null) {
-                    val wrapper = ObjectWrapper.SpaceView(space.map)
-                    when(wrapper.spaceAccessType) {
-                        SpaceAccessType.PRIVATE -> {
-                            ShareLinkViewState.NotGenerated
-                        }
-                        SpaceAccessType.SHARED -> {
-                            val link = getSpaceInviteLink.async(params.space)
-                            if (link.isSuccess) {
-                                ShareLinkViewState.Shared(link.getOrThrow().scheme)
-                            } else {
-                                null
-                            }
-                        }
-                        else -> {
-                            null
-                        }
-                    }
-                } else {
-                    null
-                }
-
-            }.catch {
-                Timber.e("Error while $SHARE_SPACE_SPACE_SUBSCRIPTION subscription")
-            }.collect { result ->
-                shareLinkViewState.value = result
-            }
-        }
-    }
-
-    private fun proceedWithSpaceMemberSubscription() {
-        viewModelScope.launch {
-            val account = getAccount.async(Unit).getOrNull()
-            container.subscribe(
-                StoreSearchParams(
-                    subscription = SHARE_SPACE_MEMBER_SUBSCRIPTION,
-                    filters = ObjectSearchConstants.filterParticipants(
-                        spaces = listOf(params.space.id)
-                    ),
-                    sorts = listOf(ObjectSearchConstants.sortByName()),
-                    keys = ObjectSearchConstants.spaceMemberKeys
-                )
-            ).map { results ->
-                results.mapNotNull { wrapper ->
+            val spaceSearchParams = getSpaceViewSearchParams(
+                targetSpaceId = params.space.id,
+                subscription = SHARE_SPACE_SPACE_SUBSCRIPTION
+            )
+            val spaceMembersSearchParams = getSpaceMembersSearchParams(
+                spaceId = params.space.id,
+                subscription = SHARE_SPACE_MEMBER_SUBSCRIPTION
+            )
+            combine(
+                container.subscribe(spaceSearchParams),
+                container.subscribe(spaceMembersSearchParams),
+                getAccount.asFlow(Unit)
+            ) { spaceResponse, membersResponse, accountId ->
+                val spaceView = spaceResponse.firstOrNull()?.let { ObjectWrapper.SpaceView(it.map) }
+                val spaceViewMembers = membersResponse.mapNotNull { wrapper ->
                     ShareSpaceMemberView.fromObject(
                         obj = ObjectWrapper.SpaceMember(wrapper.map),
                         urlBuilder = urlBuilder
                     )
                 }
-            }.onEach { results ->
-                isCurrentUserOwner.value = results.any { result ->
-                    with(result.obj) {
-                        identity.isNotEmpty() && identity == account?.id && permissions == OWNER
-                    }
-                }
+                Triple(spaceView, spaceViewMembers, accountId)
             }.catch {
-                Timber.e("Error while $SHARE_SPACE_MEMBER_SUBSCRIPTION subscription")
-            }.collect {
-                members.value = it
+                Timber.e(
+                    it, "Error while $SHARE_SPACE_MEMBER_SUBSCRIPTION " +
+                            "and $SHARE_SPACE_SPACE_SUBSCRIPTION subscription"
+                )
+            }.collect { (spaceView, spaceViewMembers, accountId) ->
+                setShareLinkViewState(spaceView)
+                proceedWithIsCurrentUserOwner(spaceViewMembers, accountId.id)
+                members.value = spaceViewMembers
             }
+        }
+    }
+
+    private fun proceedWithIsCurrentUserOwner(
+        members: List<ShareSpaceMemberView>,
+        account: Id
+    ) {
+        isCurrentUserOwner.value = members.any { result ->
+            with(result.obj) {
+                identity.isNotEmpty() && identity == account && permissions == OWNER
+            }
+        }
+    }
+
+    private suspend fun setShareLinkViewState(space: ObjectWrapper.SpaceView?) {
+        shareLinkViewState.value = when (space?.spaceAccessType) {
+            SpaceAccessType.PRIVATE -> ShareLinkViewState.NotGenerated
+            SpaceAccessType.SHARED -> {
+                val link = getSpaceInviteLink.async(params.space)
+                if (link.isSuccess) {
+                    ShareLinkViewState.Shared(link.getOrThrow().scheme)
+                } else {
+                    ShareLinkViewState.Init
+                }
+            }
+            else -> ShareLinkViewState.Init
         }
     }
 
@@ -164,13 +142,15 @@ class ShareSpaceViewModel(
 
     fun onShareInviteLinkClicked() {
         viewModelScope.launch {
-            when(val value = shareLinkViewState.value) {
+            when (val value = shareLinkViewState.value) {
                 ShareLinkViewState.Init -> {
                     // Do nothing.
                 }
+
                 is ShareLinkViewState.Shared -> {
                     commands.emit(Command.ShareInviteLink(value.link))
                 }
+
                 is ShareLinkViewState.NotGenerated -> {
                     // Do nothing
                 }
@@ -520,8 +500,3 @@ data class ShareSpaceMemberView(
         }
     }
 }
-
-data class SpaceViewCounts(
-    val readers: Int,
-    val writers: Int
-)

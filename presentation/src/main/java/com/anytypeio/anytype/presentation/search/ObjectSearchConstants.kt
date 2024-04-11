@@ -12,6 +12,8 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.domain.library.StoreSearchParams
+import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 
 /**
@@ -1133,4 +1135,34 @@ object ObjectSearchConstants {
         Relations.READERS_LIMIT,
         Relations.WRITERS_LIMIT
     )
+
+    //region SPACE VIEW
+    fun getSpaceViewSearchParams(subscription: String, targetSpaceId: Id): StoreSearchParams {
+        return StoreSearchParams(
+            subscription = subscription,
+            keys = spaceViewKeys,
+            limit = 1,
+            filters = buildList {
+                add(
+                    DVFilter(
+                        relation = Relations.TARGET_SPACE_ID,
+                        value = targetSpaceId,
+                        condition = DVFilterCondition.EQUAL
+                    )
+                )
+            }
+        )
+    }
+
+    fun getSpaceMembersSearchParams(subscription: String, spaceId: Id): StoreSearchParams {
+        return StoreSearchParams(
+            subscription = subscription,
+            filters = filterParticipants(
+                spaces = listOf(spaceId)
+            ),
+            sorts = listOf(sortByName()),
+            keys = spaceMemberKeys
+        )
+    }
+    //endregion
 }

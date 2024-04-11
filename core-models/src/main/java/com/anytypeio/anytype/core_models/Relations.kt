@@ -86,6 +86,8 @@ object Relations {
     const val SPACE_ACCESS_TYPE = "spaceAccessType"
     const val IDENTITY = "identity"
     const val GLOBAL_NAME = "globalName"
+    const val READERS_LIMIT = "readersLimit"
+    const val WRITERS_LIMIT = "writersLimit"
 
     val systemRelationKeys = listOf(
         "id",

@@ -1159,7 +1159,7 @@
     <string name="multiplayer_show_qr_code">显示二维码</string>
     <string name="multiplayer_how_to_share_space">如何共享空间？</string>
     <string name="multiplayer_how_to_share_space_step_1">请向您与想要合作的人提供这个链接。</string>
-    <string name="multiplayer_how_to_share_space_qr_code">请向您与想要合作的人提供这个二维码。</string>
+    <string name="multiplayer_how_to_share_space_qr_code">Show this QR code to the person you\'d like to collaborate with.</string>
     <string name="multiplayer_how_to_share_space_step_2">通过点击链接，将收到一个人加入空间的请求。</string>
     <string name="multiplayer_how_to_share_space_step_3">批准请求后，您可以选择此人的访问权限。</string>
     <string name="multiplayer_delete_space_sharing_link">删除共享链接</string>
@@ -1278,4 +1278,5 @@
     <string name="gallery_experience_alert_title_error">哎呀!</string>
     <string name="gallery_experience_alert_button_space">打开空间</string>
     <string name="gallery_experience_alert_button_error">关闭</string>
+    <string name="three_dots_text_placeholder">...</string>
 </resources>

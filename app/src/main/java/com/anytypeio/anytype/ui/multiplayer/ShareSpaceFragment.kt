@@ -162,6 +162,10 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
             is Command.Dismiss -> {
                 dismiss()
             }
+            is Command.ToastPermission -> {
+                val msg = getString(R.string.multiplayer_toast_permission_not_allowed)
+                toast(msg)
+            }
         }
     }
 

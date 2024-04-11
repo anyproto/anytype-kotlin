@@ -1363,6 +1363,7 @@
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Your request to join the %1$s space has been approved with edit access rights. The space will be available on your device soon.</string>
     <string name="multiplayer_notification_member_removed_from_space">You have been removed from the space, or the space was deleted by the owner.</string>
     <string name="multiplayer_notification_view_request">View</string>
+    <string name="multiplayer_toast_permission_not_allowed">Changing permissions is not allowed</string>
 
     <!--endregion-->
 

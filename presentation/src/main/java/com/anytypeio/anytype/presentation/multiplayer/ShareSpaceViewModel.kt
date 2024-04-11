@@ -218,7 +218,14 @@ class ShareSpaceViewModel(
     fun onCanEditClicked(
         view: ShareSpaceMemberView
     ) {
-        Timber.d("onCanEditClicked")
+        Timber.d("onCanEditClicked, view: [$view]")
+        if (!view.canEditEnabled)  {
+            Timber.w("Can't change permissions")
+            viewModelScope.launch {
+                commands.emit(Command.ToastPermission)
+            }
+            return
+        }
         viewModelScope.launch {
             if (view.config != ShareSpaceMemberView.Config.Member.Writer) {
                 changeSpaceMemberPermissions.async(
@@ -244,7 +251,14 @@ class ShareSpaceViewModel(
     fun onCanViewClicked(
         view: ShareSpaceMemberView
     ) {
-        Timber.d("onCanViewClicked")
+        Timber.d("onCanViewClicked, view: [$view]")
+        if (!view.canReadEnabled)  {
+            Timber.w("Can't change permissions")
+            viewModelScope.launch {
+                commands.emit(Command.ToastPermission)
+            }
+            return
+        }
         viewModelScope.launch {
             if (view.config != ShareSpaceMemberView.Config.Member.Reader) {
                 changeSpaceMemberPermissions.async(
@@ -428,6 +442,7 @@ class ShareSpaceViewModel(
         data object ShowHowToShareSpace: Command()
         data object ShowStopSharingWarning: Command()
         data object ShowDeleteLinkWarning: Command()
+        data object ToastPermission : Command()
         data object Dismiss : Command()
     }
 

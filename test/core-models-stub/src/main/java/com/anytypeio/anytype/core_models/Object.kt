@@ -99,27 +99,3 @@ fun StubObjectType(
         Relations.UNIQUE_KEY to uniqueKey,
     )
 )
-
-fun StubSpaceView(
-    id: String = MockDataFactory.randomUuid(),
-    name: String? = MockDataFactory.randomString(),
-    iconImage: String? = MockDataFactory.randomString(),
-    iconOption: Double? = null,
-    targetSpaceId: String? = null,
-    spaceAccountStatus: Double? = null,
-    spaceAccessType: Double? = null,
-    writersLimit: Int? = null,
-    readersLimit: Int? = null
-): ObjectWrapper.SpaceView = ObjectWrapper.SpaceView(
-    map = mapOf(
-        Relations.ID to id,
-        Relations.NAME to name,
-        Relations.ICON_IMAGE to iconImage,
-        Relations.ICON_OPTION to iconOption,
-        Relations.TARGET_SPACE_ID to targetSpaceId,
-        Relations.SPACE_ACCOUNT_STATUS to spaceAccountStatus,
-        Relations.SPACE_ACCESS_TYPE to spaceAccessType,
-        Relations.WRITERS_LIMIT to writersLimit,
-        Relations.READERS_LIMIT to readersLimit
-    )
-)

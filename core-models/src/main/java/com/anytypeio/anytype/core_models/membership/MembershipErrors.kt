@@ -40,7 +40,7 @@ sealed class MembershipErrors() {
         data class EmailFailedToSend(val message: String) : GetVerificationEmail()
         data class MembershipAlreadyExists(val message: String) : GetVerificationEmail()
     }
-    
+
     sealed class VerifyEmailCode : MembershipErrors() {
         data class EmailAlreadyVerified(val message: String) : VerifyEmailCode()
         data class CodeExpired(val message: String) : VerifyEmailCode()

@@ -80,3 +80,8 @@ typealias MNotification = anytype.model.Notification
 typealias MNotificationActionType = anytype.model.Notification.ActionType
 typealias MNotificationStatus = anytype.model.Notification.Status
 typealias MImportErrorCode = anytype.model.Import.ErrorCode
+
+typealias MMembership = anytype.model.Membership
+typealias MMembershipStatus = anytype.model.Membership.Status
+typealias MMembershipTierData = anytype.model.MembershipTierData
+typealias MMembershipTierDataPeriodType = anytype.model.MembershipTierData.PeriodType

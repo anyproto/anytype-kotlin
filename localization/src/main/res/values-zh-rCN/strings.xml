@@ -1129,8 +1129,8 @@
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tap to write your comment</string>
     <string name="multiplayer_share_space">共享空间</string>
     <string name="multiplayer_members_and_requests">成员和请求</string>
-    <string name="multiplayer_unjoining_requested">Unjoining requested</string>
-    <string name="multiplayer_joining_requested">Joining requested</string>
+    <string name="multiplayer_leave_request">Unjoining requested</string>
+    <string name="multiplayer_join_request">Joining requested</string>
     <string name="multiplayer_approve_request">接受</string>
     <string name="multiplayer_view_request">查看请求</string>
     <string name="multiplayer_owner">所有者</string>

@@ -460,10 +460,10 @@ private fun SpaceMemberRequest(
             }
             val text = when(request) {
                 ShareSpaceMemberView.Config.Request.Join -> stringResource(
-                    id = R.string.multiplayer_joining_requested
+                    id = R.string.multiplayer_join_request
                 )
                 ShareSpaceMemberView.Config.Request.Leave -> stringResource(
-                    id = R.string.multiplayer_unjoining_requested
+                    id = R.string.multiplayer_leave_request
                 )
             }
             Text(

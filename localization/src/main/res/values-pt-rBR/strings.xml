@@ -1133,8 +1133,8 @@
     <string name="multiplayer_tap_to_write_request_to_join_comment">Toque para escrever seu comentário</string>
     <string name="multiplayer_share_space">Compartilhar espaço</string>
     <string name="multiplayer_members_and_requests">Membros e solicitações</string>
-    <string name="multiplayer_unjoining_requested">Desvinculação solicitada</string>
-    <string name="multiplayer_joining_requested">Participação solicitada</string>
+    <string name="multiplayer_leave_request">Desvinculação solicitada</string>
+    <string name="multiplayer_join_request">Participação solicitada</string>
     <string name="multiplayer_approve_request">Aprovar</string>
     <string name="multiplayer_view_request">View request</string>
     <string name="multiplayer_owner">Proprietário</string>

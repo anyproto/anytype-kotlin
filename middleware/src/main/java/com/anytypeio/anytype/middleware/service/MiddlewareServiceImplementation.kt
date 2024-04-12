@@ -1771,19 +1771,6 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
-    override fun spaceExit(request: Rpc.Space.Exit.Request): Rpc.Space.Exit.Response {
-        val encoded = Service.spaceExit(
-            Rpc.Space.Exit.Request.ADAPTER.encode(request)
-        )
-        val response = Rpc.Space.Exit.Response.ADAPTER.decode(encoded)
-        val error = response.error
-        if (error != null && error.code != Rpc.Space.Exit.Response.Error.Code.NULL) {
-            throw Exception(error.description)
-        } else {
-            return response
-        }
-    }
-
     override fun spaceInviteGenerate(request: Rpc.Space.InviteGenerate.Request): Rpc.Space.InviteGenerate.Response {
         val encoded = Service.spaceInviteGenerate(
             Rpc.Space.InviteGenerate.Request.ADAPTER.encode(request)

@@ -486,9 +486,6 @@ interface MiddlewareService {
     //region MULTIPLAYER
 
     @Throws(Exception::class)
-    fun spaceExit(request: Rpc.Space.Exit.Request): Rpc.Space.Exit.Response
-
-    @Throws(Exception::class)
     fun spaceInviteGenerate(request: Rpc.Space.InviteGenerate.Request): Rpc.Space.InviteGenerate.Response
 
     @Throws(Exception::class)

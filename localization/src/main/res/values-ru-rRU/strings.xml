@@ -1171,7 +1171,7 @@
     <string name="multiplayer_show_qr_code">Показать QR-код</string>
     <string name="multiplayer_how_to_share_space">Как поделиться пространством?</string>
     <string name="multiplayer_how_to_share_space_step_1">Пожалуйста, предоставьте ссылку человеку, с которым хотите сотрудничать.</string>
-    <string name="multiplayer_how_to_share_space_qr_code">Please provide this QR code to the person you\'d like to collaborate with.</string>
+    <string name="multiplayer_how_to_share_space_qr_code">Show this QR code to the person you\'d like to collaborate with.</string>
     <string name="multiplayer_how_to_share_space_step_2">Нажав на ссылку, человек запросит вступление в пространство.</string>
     <string name="multiplayer_how_to_share_space_step_3">После одобрения запроса Вы можете выбрать права доступа для этого человека.</string>
     <string name="multiplayer_delete_space_sharing_link">Delete sharing link</string>
@@ -1290,4 +1290,5 @@
     <string name="gallery_experience_alert_title_error">Ой!</string>
     <string name="gallery_experience_alert_button_space">Открыть пространство.</string>
     <string name="gallery_experience_alert_button_error">Закрыть</string>
+    <string name="three_dots_text_placeholder">...</string>
 </resources>

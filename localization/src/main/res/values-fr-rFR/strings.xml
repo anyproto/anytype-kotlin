@@ -1163,7 +1163,7 @@
     <string name="multiplayer_show_qr_code">Afficher le QR code</string>
     <string name="multiplayer_how_to_share_space">Comment partager un espace ?</string>
     <string name="multiplayer_how_to_share_space_step_1">SVP fournir le lien à la personne avec qui vous souhaitez collaborer.</string>
-    <string name="multiplayer_how_to_share_space_qr_code">Veuillez fournir ce code QR à la personne avec laquelle vous souhaitez collaborer.</string>
+    <string name="multiplayer_how_to_share_space_qr_code">Show this QR code to the person you\'d like to collaborate with.</string>
     <string name="multiplayer_how_to_share_space_step_2">En cliquant le lien, une personne demande à joindre l\'espace.</string>
     <string name="multiplayer_how_to_share_space_step_3">Après l\'approbation de la demande, vous pouvez choisir les droits d\'accès pour cette personne.</string>
     <string name="multiplayer_delete_space_sharing_link">Supprimer le lien de partage</string>
@@ -1282,4 +1282,5 @@
     <string name="gallery_experience_alert_title_error">Oups !</string>
     <string name="gallery_experience_alert_button_space">Espace ouvert</string>
     <string name="gallery_experience_alert_button_error">Fermer</string>
+    <string name="three_dots_text_placeholder">...</string>
 </resources>

@@ -1163,7 +1163,7 @@
     <string name="multiplayer_show_qr_code">Vis QR-kode</string>
     <string name="multiplayer_how_to_share_space">Hvordan dele et rom?</string>
     <string name="multiplayer_how_to_share_space_step_1">Please provide the link to the person you\'d like to collaborate with.</string>
-    <string name="multiplayer_how_to_share_space_qr_code">Vennligst gi denne QR-koden til personen du ønsker å samarbeide med.</string>
+    <string name="multiplayer_how_to_share_space_qr_code">Show this QR code to the person you\'d like to collaborate with.</string>
     <string name="multiplayer_how_to_share_space_step_2">By clicking the link, a person requests to join the space.</string>
     <string name="multiplayer_how_to_share_space_step_3">After approving the request, you can choose the access rights for that person.</string>
     <string name="multiplayer_delete_space_sharing_link">Slett delingslenke</string>
@@ -1282,4 +1282,5 @@
     <string name="gallery_experience_alert_title_error">Oops!</string>
     <string name="gallery_experience_alert_button_space">Open space</string>
     <string name="gallery_experience_alert_button_error">Lukk</string>
+    <string name="three_dots_text_placeholder">...</string>
 </resources>

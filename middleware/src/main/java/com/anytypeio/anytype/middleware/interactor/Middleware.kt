@@ -34,7 +34,6 @@ import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.membership.EmailVerificationStatus
 import com.anytypeio.anytype.core_models.membership.GetPaymentUrlResponse
 import com.anytypeio.anytype.core_models.membership.Membership
-import com.anytypeio.anytype.core_models.membership.MembershipStatus
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
@@ -2561,29 +2560,29 @@ class Middleware @Inject constructor(
     }
 
     @Throws
-    fun getMembershipStatus(command: Command.Membership.GetStatus): Membership? {
+    fun membershipStatus(command: Command.Membership.GetStatus): Membership? {
         val request = Rpc.Membership.GetStatus.Request(
             noCache = command.noCache
         )
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.getStatus(request)
+        val response = service.membershipStatus(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response.data_?.toCoreModel()
     }
 
     @Throws
-    fun isNameValid(command: Command.Membership.IsNameValid) {
+    fun membershipIsNameValid(command: Command.Membership.IsNameValid) {
         val request = Rpc.Membership.IsNameValid.Request(
             requestedTier = command.tier,
             nsName = command.name
         )
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.isNameValid(request)
+        val response = service.membershipIsNameValid(request)
         if (BuildConfig.DEBUG) logResponse(response)
     }
 
     @Throws
-    fun getPaymentUrl(command: Command.Membership.GetPaymentUrl): GetPaymentUrlResponse {
+    fun membershipGetPaymentUrl(command: Command.Membership.GetPaymentUrl): GetPaymentUrlResponse {
         val request = Rpc.Membership.GetPaymentUrl.Request(
             requestedTier = command.tier,
             nsName = command.name,
@@ -2591,7 +2590,7 @@ class Middleware @Inject constructor(
             paymentMethod = command.paymentMethod.toMw()
         )
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.getPaymentUrl(request)
+        val response = service.membershipGetPaymentUrl(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return GetPaymentUrlResponse(
             paymentUrl = response.paymentUrl,
@@ -2600,63 +2599,63 @@ class Middleware @Inject constructor(
     }
 
     @Throws
-    fun getPortalLinkUrl(): String {
+    fun membershipGetPortalLinkUrl(): String {
         val request = Rpc.Membership.GetPortalLinkUrl.Request()
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.getPortalLinkUrl(request)
+        val response = service.membershipGetPortalLinkUrl(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response.portalUrl
     }
 
     @Throws
-    fun finalizeMembership(command: Command.Membership.Finalize) {
+    fun membershipFinalize(command: Command.Membership.Finalize) {
         val request = Rpc.Membership.Finalize.Request(
             nsName = command.name,
             nsNameType = command.nameType.toMw(),
         )
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.finalizeMembership(request)
+        val response = service.membershipFinalize(request)
         if (BuildConfig.DEBUG) logResponse(response)
     }
 
     @Throws
-    fun getVerificationEmailStatus(): EmailVerificationStatus {
+    fun membershipGetVerificationEmailStatus(): EmailVerificationStatus {
         val request = Rpc.Membership.GetVerificationEmailStatus.Request()
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.getVerificationEmailStatus(request)
+        val response = service.membershipGetVerificationEmailStatus(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response.status.toCoreModel()
     }
 
     @Throws
-    fun getVerificationEmail(command: Command.Membership.GetVerificationEmail) {
+    fun membershipGetVerificationEmail(command: Command.Membership.GetVerificationEmail) {
         val request = Rpc.Membership.GetVerificationEmail.Request(
             email = command.email,
             subscribeToNewsletter = command.subscribeToNewsletter
         )
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.getVerificationEmail(request)
+        val response = service.membershipGetVerificationEmail(request)
         if (BuildConfig.DEBUG) logResponse(response)
     }
 
     @Throws
-    fun verifyEmailCode(command: Command.Membership.VerifyEmailCode) {
+    fun membershipVerifyEmailCode(command: Command.Membership.VerifyEmailCode) {
         val request = Rpc.Membership.VerifyEmailCode.Request(
             code = command.code
         )
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.verifyEmailCode(request)
+        val response = service.membershipVerifyEmailCode(request)
         if (BuildConfig.DEBUG) logResponse(response)
     }
 
     @Throws
-    fun getTiers(command: Command.Membership.GetTiers): List<MembershipTierData> {
+    fun membershipGetTiers(command: Command.Membership.GetTiers): List<MembershipTierData> {
         val request = Rpc.Membership.Tiers.Get.Request(
             noCache = command.noCache,
             locale = command.locale
         )
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.getTiers(request)
+        val response = service.membershipGetTiers(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response.tiers.map { it.toCoreModel() }
     }

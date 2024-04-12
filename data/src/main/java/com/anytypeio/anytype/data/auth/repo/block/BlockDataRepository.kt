@@ -990,39 +990,39 @@ class BlockDataRepository(
         remote.replyNotifications(notifications = notifications)
     }
 
-    override suspend fun getMembershipStatus(command: Command.Membership.GetStatus): Membership? {
-        return remote.getMembershipStatus(command)
+    override suspend fun membershipStatus(command: Command.Membership.GetStatus): Membership? {
+        return remote.membershipStatus(command)
     }
 
-    override suspend fun isNameValid(command: Command.Membership.IsNameValid) {
-        remote.isNameValid(command)
+    override suspend fun membershipIsNameValid(command: Command.Membership.IsNameValid) {
+        remote.membershipIsNameValid(command)
     }
 
-    override suspend fun getPaymentUrl(command: Command.Membership.GetPaymentUrl): GetPaymentUrlResponse {
-        return remote.getPaymentUrl(command)
+    override suspend fun membershipGetPaymentUrl(command: Command.Membership.GetPaymentUrl): GetPaymentUrlResponse {
+        return remote.membershipGetPaymentUrl(command)
     }
 
-    override suspend fun getPortalLinkUrl(): String {
-        return remote.getPortalLinkUrl()
+    override suspend fun membershipGetPortalLinkUrl(): String {
+        return remote.membershipGetPortalLinkUrl()
     }
 
-    override suspend fun finalizeMembership(command: Command.Membership.Finalize) {
-        remote.finalizeMembership(command)
+    override suspend fun membershipFinalize(command: Command.Membership.Finalize) {
+        remote.membershipFinalize(command)
     }
 
-    override suspend fun getVerificationEmailStatus(): EmailVerificationStatus {
-        return remote.getVerificationEmailStatus()
+    override suspend fun membershipGetVerificationEmailStatus(): EmailVerificationStatus {
+        return remote.membershipGetVerificationEmailStatus()
     }
 
-    override suspend fun getVerificationEmail(command: Command.Membership.GetVerificationEmail) {
-        remote.getVerificationEmail(command)
+    override suspend fun membershipGetVerificationEmail(command: Command.Membership.GetVerificationEmail) {
+        remote.membershipGetVerificationEmail(command)
     }
 
-    override suspend fun verifyEmailCode(command: Command.Membership.VerifyEmailCode) {
-        remote.verifyEmailCode(command)
+    override suspend fun membershipVerifyEmailCode(command: Command.Membership.VerifyEmailCode) {
+        remote.membershipVerifyEmailCode(command)
     }
 
-    override suspend fun getTiers(command: Command.Membership.GetTiers): List<MembershipTierData> {
-        return remote.getTiers(command)
+    override suspend fun membershipGetTiers(command: Command.Membership.GetTiers): List<MembershipTierData> {
+        return remote.membershipGetTiers(command)
     }
 }

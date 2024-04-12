@@ -543,29 +543,30 @@ interface MiddlewareService {
 
     //region MEMBERSHIP
     @Throws(Exception::class)
-    fun getStatus(request: Rpc.Membership.GetStatus.Request): Rpc.Membership.GetStatus.Response
+    fun membershipStatus(request: Rpc.Membership.GetStatus.Request): Rpc.Membership.GetStatus.Response
 
     @Throws(Exception::class)
-    fun isNameValid(request: Rpc.Membership.IsNameValid.Request): Rpc.Membership.IsNameValid.Response
+    fun membershipIsNameValid(request: Rpc.Membership.IsNameValid.Request): Rpc.Membership.IsNameValid.Response
 
     @Throws(Exception::class)
-    fun getPaymentUrl(request: Rpc.Membership.GetPaymentUrl.Request): Rpc.Membership.GetPaymentUrl.Response
+    fun membershipGetPaymentUrl(request: Rpc.Membership.GetPaymentUrl.Request): Rpc.Membership.GetPaymentUrl.Response
 
     @Throws(Exception::class)
-    fun getPortalLinkUrl(request: Rpc.Membership.GetPortalLinkUrl.Request): Rpc.Membership.GetPortalLinkUrl.Response
+    fun membershipGetPortalLinkUrl(request: Rpc.Membership.GetPortalLinkUrl.Request): Rpc.Membership.GetPortalLinkUrl.Response
 
     @Throws(Exception::class)
-    fun finalizeMembership(request: Rpc.Membership.Finalize.Request): Rpc.Membership.Finalize.Response
+    fun membershipFinalize(request: Rpc.Membership.Finalize.Request): Rpc.Membership.Finalize.Response
 
     @Throws(Exception::class)
-    fun getVerificationEmailStatus(request: Rpc.Membership.GetVerificationEmailStatus.Request): Rpc.Membership.GetVerificationEmailStatus.Response
+    fun membershipGetVerificationEmailStatus(request: Rpc.Membership.GetVerificationEmailStatus.Request): Rpc.Membership.GetVerificationEmailStatus.Response
 
     @Throws(Exception::class)
-    fun getVerificationEmail(request: Rpc.Membership.GetVerificationEmail.Request): Rpc.Membership.GetVerificationEmail.Response
+    fun membershipGetVerificationEmail(request: Rpc.Membership.GetVerificationEmail.Request): Rpc.Membership.GetVerificationEmail.Response
 
     @Throws(Exception::class)
-    fun verifyEmailCode(request: Rpc.Membership.VerifyEmailCode.Request): Rpc.Membership.VerifyEmailCode.Response
+    fun membershipVerifyEmailCode(request: Rpc.Membership.VerifyEmailCode.Request): Rpc.Membership.VerifyEmailCode.Response
 
     @Throws(Exception::class)
-    fun getTiers(request: Rpc.Membership.Tiers.Get.Request): Rpc.Membership.Tiers.Get.Response
+    fun membershipGetTiers(request: Rpc.Membership.Tiers.Get.Request): Rpc.Membership.Tiers.Get.Response
+    //endregion
 }

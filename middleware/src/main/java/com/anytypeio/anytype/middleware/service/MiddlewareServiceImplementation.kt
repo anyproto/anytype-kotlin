@@ -1987,7 +1987,7 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
-    override fun getStatus(request: Rpc.Membership.GetStatus.Request): Rpc.Membership.GetStatus.Response {
+    override fun membershipStatus(request: Rpc.Membership.GetStatus.Request): Rpc.Membership.GetStatus.Response {
         val encoded = Service.membershipGetStatus(
             Rpc.Membership.GetStatus.Request.ADAPTER.encode(request)
         )
@@ -2000,7 +2000,7 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
-    override fun isNameValid(request: Rpc.Membership.IsNameValid.Request): Rpc.Membership.IsNameValid.Response {
+    override fun membershipIsNameValid(request: Rpc.Membership.IsNameValid.Request): Rpc.Membership.IsNameValid.Response {
         val encoded = Service.membershipIsNameValid(
             Rpc.Membership.IsNameValid.Request.ADAPTER.encode(request)
         )
@@ -2013,7 +2013,7 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
-    override fun getPaymentUrl(request: Rpc.Membership.GetPaymentUrl.Request): Rpc.Membership.GetPaymentUrl.Response {
+    override fun membershipGetPaymentUrl(request: Rpc.Membership.GetPaymentUrl.Request): Rpc.Membership.GetPaymentUrl.Response {
         val encoded = Service.membershipGetPaymentUrl(
             Rpc.Membership.GetPaymentUrl.Request.ADAPTER.encode(request)
         )
@@ -2026,7 +2026,7 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
-    override fun getPortalLinkUrl(request: Rpc.Membership.GetPortalLinkUrl.Request): Rpc.Membership.GetPortalLinkUrl.Response {
+    override fun membershipGetPortalLinkUrl(request: Rpc.Membership.GetPortalLinkUrl.Request): Rpc.Membership.GetPortalLinkUrl.Response {
         val encoded = Service.membershipGetPortalLinkUrl(
             Rpc.Membership.GetPortalLinkUrl.Request.ADAPTER.encode(request)
         )
@@ -2039,7 +2039,7 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
-    override fun finalizeMembership(request: Rpc.Membership.Finalize.Request): Rpc.Membership.Finalize.Response {
+    override fun membershipFinalize(request: Rpc.Membership.Finalize.Request): Rpc.Membership.Finalize.Response {
         val encoded = Service.membershipFinalize(
             Rpc.Membership.Finalize.Request.ADAPTER.encode(request)
         )
@@ -2052,7 +2052,7 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
-    override fun getVerificationEmailStatus(request: Rpc.Membership.GetVerificationEmailStatus.Request): Rpc.Membership.GetVerificationEmailStatus.Response {
+    override fun membershipGetVerificationEmailStatus(request: Rpc.Membership.GetVerificationEmailStatus.Request): Rpc.Membership.GetVerificationEmailStatus.Response {
         val encoded = Service.membershipGetVerificationEmail(
             Rpc.Membership.GetVerificationEmailStatus.Request.ADAPTER.encode(request)
         )
@@ -2065,7 +2065,7 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
-    override fun getVerificationEmail(request: Rpc.Membership.GetVerificationEmail.Request): Rpc.Membership.GetVerificationEmail.Response {
+    override fun membershipGetVerificationEmail(request: Rpc.Membership.GetVerificationEmail.Request): Rpc.Membership.GetVerificationEmail.Response {
         val encoded = Service.membershipGetVerificationEmail(
             Rpc.Membership.GetVerificationEmail.Request.ADAPTER.encode(request)
         )
@@ -2078,7 +2078,7 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
-    override fun verifyEmailCode(request: Rpc.Membership.VerifyEmailCode.Request): Rpc.Membership.VerifyEmailCode.Response {
+    override fun membershipVerifyEmailCode(request: Rpc.Membership.VerifyEmailCode.Request): Rpc.Membership.VerifyEmailCode.Response {
         val encoded = Service.membershipVerifyEmailCode(
             Rpc.Membership.VerifyEmailCode.Request.ADAPTER.encode(request)
         )
@@ -2091,7 +2091,7 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
-    override fun getTiers(request: Rpc.Membership.Tiers.Get.Request): Rpc.Membership.Tiers.Get.Response {
+    override fun membershipGetTiers(request: Rpc.Membership.Tiers.Get.Request): Rpc.Membership.Tiers.Get.Response {
         val encoded = Service.membershipGetTiers(
             Rpc.Membership.Tiers.Get.Request.ADAPTER.encode(request)
         )

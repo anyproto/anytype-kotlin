@@ -17,7 +17,7 @@ class GetTiers @Inject constructor(
             locale = params.locale,
             noCache = params.noCache
         )
-        return repo.getTiers(command)
+        return repo.membershipGetTiers(command)
     }
 
     data class Params(

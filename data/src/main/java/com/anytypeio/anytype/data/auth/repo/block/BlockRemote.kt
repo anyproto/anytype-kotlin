@@ -426,13 +426,13 @@ interface BlockRemote {
 
     suspend fun replyNotifications(notifications: List<Id>)
 
-    suspend fun getMembershipStatus(command: Command.Membership.GetStatus): Membership?
-    suspend fun isNameValid(command: Command.Membership.IsNameValid)
-    suspend fun getPaymentUrl(command: Command.Membership.GetPaymentUrl): GetPaymentUrlResponse
-    suspend fun getPortalLinkUrl(): String
-    suspend fun finalizeMembership(command: Command.Membership.Finalize)
-    suspend fun getVerificationEmailStatus(): EmailVerificationStatus
-    suspend fun getVerificationEmail(command: Command.Membership.GetVerificationEmail)
-    suspend fun verifyEmailCode(command: Command.Membership.VerifyEmailCode)
-    suspend fun getTiers(command: Command.Membership.GetTiers): List<MembershipTierData>
+    suspend fun membershipStatus(command: Command.Membership.GetStatus): Membership?
+    suspend fun membershipIsNameValid(command: Command.Membership.IsNameValid)
+    suspend fun membershipGetPaymentUrl(command: Command.Membership.GetPaymentUrl): GetPaymentUrlResponse
+    suspend fun membershipGetPortalLinkUrl(): String
+    suspend fun membershipFinalize(command: Command.Membership.Finalize)
+    suspend fun membershipGetVerificationEmailStatus(): EmailVerificationStatus
+    suspend fun membershipGetVerificationEmail(command: Command.Membership.GetVerificationEmail)
+    suspend fun membershipVerifyEmailCode(command: Command.Membership.VerifyEmailCode)
+    suspend fun membershipGetTiers(command: Command.Membership.GetTiers): List<MembershipTierData>
 }

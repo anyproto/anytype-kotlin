@@ -506,9 +506,10 @@ class BlockMiddleware(
 
     override suspend fun clearFileCache() = middleware.fileListOffload()
 
-    override suspend fun applyTemplate(command: Command.ApplyTemplate) = middleware.objectApplyTemplate(
-        command
-    )
+    override suspend fun applyTemplate(command: Command.ApplyTemplate) =
+        middleware.objectApplyTemplate(
+            command
+        )
 
     override suspend fun createTable(
         ctx: String,
@@ -952,39 +953,39 @@ class BlockMiddleware(
         middleware.replyNotifications(notifications = notifications)
     }
 
-    override suspend fun getMembershipStatus(command: Command.Membership.GetStatus): Membership? {
-        return middleware.getMembershipStatus(command)
+    override suspend fun membershipStatus(command: Command.Membership.GetStatus): Membership? {
+        return middleware.membershipStatus(command)
     }
 
-    override suspend fun isNameValid(command: Command.Membership.IsNameValid) {
-        return middleware.isNameValid(command)
+    override suspend fun membershipIsNameValid(command: Command.Membership.IsNameValid) {
+        return middleware.membershipIsNameValid(command)
     }
 
-    override suspend fun getPaymentUrl(command: Command.Membership.GetPaymentUrl): GetPaymentUrlResponse {
-        return middleware.getPaymentUrl(command)
+    override suspend fun membershipGetPaymentUrl(command: Command.Membership.GetPaymentUrl): GetPaymentUrlResponse {
+        return middleware.membershipGetPaymentUrl(command)
     }
 
-    override suspend fun getPortalLinkUrl(): String {
-        return middleware.getPortalLinkUrl()
+    override suspend fun membershipGetPortalLinkUrl(): String {
+        return middleware.membershipGetPortalLinkUrl()
     }
 
-    override suspend fun finalizeMembership(command: Command.Membership.Finalize) {
-        return middleware.finalizeMembership(command)
+    override suspend fun membershipFinalize(command: Command.Membership.Finalize) {
+        return middleware.membershipFinalize(command)
     }
 
-    override suspend fun getVerificationEmailStatus(): EmailVerificationStatus {
-        return middleware.getVerificationEmailStatus()
+    override suspend fun membershipGetVerificationEmailStatus(): EmailVerificationStatus {
+        return middleware.membershipGetVerificationEmailStatus()
     }
 
-    override suspend fun getVerificationEmail(command: Command.Membership.GetVerificationEmail) {
-        return middleware.getVerificationEmail(command)
+    override suspend fun membershipGetVerificationEmail(command: Command.Membership.GetVerificationEmail) {
+        return middleware.membershipGetVerificationEmail(command)
     }
 
-    override suspend fun verifyEmailCode(command: Command.Membership.VerifyEmailCode) {
-        return middleware.verifyEmailCode(command)
+    override suspend fun membershipVerifyEmailCode(command: Command.Membership.VerifyEmailCode) {
+        return middleware.membershipVerifyEmailCode(command)
     }
 
-    override suspend fun getTiers(command: Command.Membership.GetTiers): List<MembershipTierData> {
-        return middleware.getTiers(command)
+    override suspend fun membershipGetTiers(command: Command.Membership.GetTiers): List<MembershipTierData> {
+        return middleware.membershipGetTiers(command)
     }
 }

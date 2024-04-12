@@ -1065,8 +1065,8 @@
         <item quantity="other">%d backlinks</item>
     </plurals>
     <plurals name="links_from_count">
-        <item quantity="one">%d link</item>
-        <item quantity="other">%d links</item>
+        <item quantity="one">%d collegamento</item>
+        <item quantity="other">%d collegamenti</item>
     </plurals>
     <!--region ORIGIN RELATION VALUES -->
     <string name="date_type_tomorrow">Domani</string>
@@ -1142,7 +1142,7 @@
     <string name="multiplayer_view_request">Visualizza richiesta</string>
     <string name="multiplayer_owner">Proprietario</string>
     <string name="multiplayer_can_edit">Può modificare</string>
-    <string name="multiplayer_can_view">Can view</string>
+    <string name="multiplayer_can_view">Può visualizzare</string>
     <string name="multiplayer_space_add_viewer">Aggiungi visualizzatore</string>
     <string name="multiplayer_space_add_editor">Aggiungi editor</string>
     <string name="multiplayer_space_request_reject">Rifiuta</string>
@@ -1164,30 +1164,30 @@
     <string name="multiplayer_show_qr_code">Mostra codice QR</string>
     <string name="multiplayer_how_to_share_space">Come condividere uno spazio?</string>
     <string name="multiplayer_how_to_share_space_step_1">Si prega di fornire il link alla persona con cui si desidera collaborare.</string>
-    <string name="multiplayer_how_to_share_space_qr_code">Show this QR code to the person you\'d like to collaborate with.</string>
+    <string name="multiplayer_how_to_share_space_qr_code">Mostra questo codice QR alla persona con cui vuoi collaborare.</string>
     <string name="multiplayer_how_to_share_space_step_2">Cliccando sul link, una persona richiede di unirsi allo spazio.</string>
     <string name="multiplayer_how_to_share_space_step_3">Dopo aver approvato la richiesta, puoi scegliere i diritti di accesso per quella persona.</string>
     <string name="multiplayer_delete_space_sharing_link">Elimina link di condivisione</string>
     <string name="multiplayer_delete_link">Elimina link</string>
-    <string name="multiplayer_delete_link_description">New members won’t be able to join the space. You can generate a new link anytime.</string>
-    <string name="multiplayer_already_space_member">You are already a member of this space</string>
+    <string name="multiplayer_delete_link_description">I nuovi membri non saranno in grado di unirsi allo spazio. È possibile generare un nuovo link in qualsiasi momento.</string>
+    <string name="multiplayer_already_space_member">Sei già membro di questo spazio</string>
     <string name="multiplayer_open_space">Open space</string>
-    <string name="multiplayer_error_space_deleted">Space deleted</string>
-    <string name="multiplayer_error_space_not_found">Space not found</string>
-    <string name="multiplayer_read_only_access_error">Read-only access. Contact space owner for changes.</string>
-    <string name="multiplayer_notification_member_user_sends_join_request">%1$s requested to join the %2$s space.</string>
-    <string name="multiplayer_notification_member_user_sends_leave_request">%1$s requested to leave the %2$s space.</string>
-    <string name="multiplayer_notification_new_join_request">New join request</string>
-    <string name="multiplayer_notification_member_joined_space_with_read_only_rights">%1$s joined %2$s space with read-only access rights</string>
-    <string name="multiplayer_notification_member_joined_space_with_editor_only_rights">%1$s joined %2$s space with edit access rights</string>
-    <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Your request to join the %1$s space has been approved with read-only access rights. The space will be available on your device soon.</string>
-    <string name="multiplayer_notification_member_request_approved_with_edit_rights">Your request to join the %1$s space has been approved with edit access rights. The space will be available on your device soon.</string>
+    <string name="multiplayer_error_space_deleted">Spazio eliminato</string>
+    <string name="multiplayer_error_space_not_found">Spazio non trovato</string>
+    <string name="multiplayer_read_only_access_error">Accesso in sola lettura. Contatta il proprietario dello spazio per modifiche.</string>
+    <string name="multiplayer_notification_member_user_sends_join_request">%1$s ha richiesto di unirsi allo spazio %2$s.</string>
+    <string name="multiplayer_notification_member_user_sends_leave_request">%1$s ha richiesto di lasciare lo spazio %2$s.</string>
+    <string name="multiplayer_notification_new_join_request">Nuova richiesta di partecipazione</string>
+    <string name="multiplayer_notification_member_joined_space_with_read_only_rights">%1$s si è unito allo spazio %2$s con diritti di accesso in sola lettura</string>
+    <string name="multiplayer_notification_member_joined_space_with_editor_only_rights">%1$s si è unito allo spazio %2$s con diritti di accesso di modifica</string>
+    <string name="multiplayer_notification_member_request_approved_with_read_only_rights">La tua richiesta di unirti allo spazio %1$s è stata approvata con diritti di accesso in sola lettura. Lo spazio sarà disponibile sul tuo dispositivo a breve.</string>
+    <string name="multiplayer_notification_member_request_approved_with_edit_rights">La tua richiesta di unirti allo spazio %1$s è stata approvata con diritti di accesso per la modifica. Lo spazio sarà disponibile sul tuo dispositivo a breve.</string>
     <string name="multiplayer_notification_member_removed_from_space">Sei stato rimosso dallo spazio, oppure lo spazio è stato eliminato dal proprietario.</string>
-    <string name="multiplayer_notification_member_permission_change_read">Your access rights were changed to read-only in the %1$s space.</string>
-    <string name="multiplayer_notification_member_permission_change_edit">Your access rights were changed to edit in the %1$s space.</string>
-    <string name="multiplayer_notification_member_join_request_declined">Your request to join the %1$s space has been declined.</string>
+    <string name="multiplayer_notification_member_permission_change_read">I tuoi diritti di accesso sono stati impostati in sola lettura nello spazio %1$s.</string>
+    <string name="multiplayer_notification_member_permission_change_edit">I tuoi diritti di accesso sono stati impostati per la modifica nello spazio %1$s.</string>
+    <string name="multiplayer_notification_member_join_request_declined">La tua richiesta di unirti allo spazio %1$s è stata rifiutata.</string>
     <string name="multiplayer_notification_view_request">Vista</string>
-    <string name="multiplayer_toast_permission_not_allowed">Changing permissions is not allowed</string>
+    <string name="multiplayer_toast_permission_not_allowed">Non è consentito modificare i permessi</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Membership</string>

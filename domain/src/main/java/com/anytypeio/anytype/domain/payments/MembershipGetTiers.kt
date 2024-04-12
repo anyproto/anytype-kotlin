@@ -7,10 +7,10 @@ import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import javax.inject.Inject
 
-class GetTiers @Inject constructor(
+class MembershipGetTiers @Inject constructor(
     dispatchers: AppCoroutineDispatchers,
     private val repo: BlockRepository
-) : ResultInteractor<GetTiers.Params, List<MembershipTierData>>(dispatchers.io) {
+) : ResultInteractor<MembershipGetTiers.Params, List<MembershipTierData>>(dispatchers.io) {
 
     override suspend fun doWork(params: Params): List<MembershipTierData> {
         val command = Command.Membership.GetTiers(

@@ -1,15 +1,20 @@
 package com.anytypeio.anytype.payments.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
+import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.payments.MembershipGetTiers
 import com.anytypeio.anytype.payments.constants.BillingConstants
 import com.anytypeio.anytype.payments.models.Tier
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -19,7 +24,8 @@ import timber.log.Timber
 class PaymentsViewModel(
     private val analytics: Analytics,
     private val billingClientLifecycle: BillingClientLifecycle,
-    private val getAccount: GetAccount
+    private val getAccount: GetAccount,
+    private val membershipGetTiers: MembershipGetTiers
 ) : ViewModel() {
 
     val viewState = MutableStateFlow<PaymentsMainState>(PaymentsMainState.Loading)
@@ -50,9 +56,20 @@ class PaymentsViewModel(
 
     init {
         Timber.d("PaymentsViewModel init")
-        _tiers.addAll(gertTiers())
+        proceedWithGetTiers()
         setupActiveTierName()
-        viewState.value = PaymentsMainState.Default(_tiers)
+    }
+
+    private fun proceedWithGetTiers() {
+        viewModelScope.launch {
+            membershipGetTiers.async(MembershipGetTiers.Params("en", false)).fold(
+                onSuccess = { result ->
+                    Log.d("Test1983", "proceedWithGetTiers: onSuccess, $result")
+                },
+                onLoading = { viewState.value = PaymentsMainState.Loading },
+                onFailure = { }
+            )
+        }
     }
 
     fun onTierClicked(tierId: TierId) {

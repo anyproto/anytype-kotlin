@@ -25,6 +25,10 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.membership.EmailVerificationStatus
+import com.anytypeio.anytype.core_models.membership.GetPaymentUrlResponse
+import com.anytypeio.anytype.core_models.membership.Membership
+import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
@@ -502,9 +506,10 @@ class BlockMiddleware(
 
     override suspend fun clearFileCache() = middleware.fileListOffload()
 
-    override suspend fun applyTemplate(command: Command.ApplyTemplate) = middleware.objectApplyTemplate(
-        command
-    )
+    override suspend fun applyTemplate(command: Command.ApplyTemplate) =
+        middleware.objectApplyTemplate(
+            command
+        )
 
     override suspend fun createTable(
         ctx: String,
@@ -946,5 +951,41 @@ class BlockMiddleware(
 
     override suspend fun replyNotifications(notifications: List<Id>) {
         middleware.replyNotifications(notifications = notifications)
+    }
+
+    override suspend fun membershipStatus(command: Command.Membership.GetStatus): Membership? {
+        return middleware.membershipStatus(command)
+    }
+
+    override suspend fun membershipIsNameValid(command: Command.Membership.IsNameValid) {
+        return middleware.membershipIsNameValid(command)
+    }
+
+    override suspend fun membershipGetPaymentUrl(command: Command.Membership.GetPaymentUrl): GetPaymentUrlResponse {
+        return middleware.membershipGetPaymentUrl(command)
+    }
+
+    override suspend fun membershipGetPortalLinkUrl(): String {
+        return middleware.membershipGetPortalLinkUrl()
+    }
+
+    override suspend fun membershipFinalize(command: Command.Membership.Finalize) {
+        return middleware.membershipFinalize(command)
+    }
+
+    override suspend fun membershipGetVerificationEmailStatus(): EmailVerificationStatus {
+        return middleware.membershipGetVerificationEmailStatus()
+    }
+
+    override suspend fun membershipGetVerificationEmail(command: Command.Membership.GetVerificationEmail) {
+        return middleware.membershipGetVerificationEmail(command)
+    }
+
+    override suspend fun membershipVerifyEmailCode(command: Command.Membership.VerifyEmailCode) {
+        return middleware.membershipVerifyEmailCode(command)
+    }
+
+    override suspend fun membershipGetTiers(command: Command.Membership.GetTiers): List<MembershipTierData> {
+        return middleware.membershipGetTiers(command)
     }
 }

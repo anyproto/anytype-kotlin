@@ -10,6 +10,8 @@ import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
+import com.anytypeio.anytype.core_models.membership.NameServiceNameType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 
 
@@ -514,4 +516,16 @@ fun SpaceMemberPermissions.toMw() : MParticipantPermission = when(this) {
     SpaceMemberPermissions.WRITER -> MParticipantPermission.Writer
     SpaceMemberPermissions.OWNER -> MParticipantPermission.Owner
     SpaceMemberPermissions.NO_PERMISSIONS -> MParticipantPermission.NoPermissions
+}
+
+fun NameServiceNameType.toMw(): MNameServiceNameType = when (this) {
+    NameServiceNameType.ANY_NAME -> MNameServiceNameType.AnyName
+}
+
+fun MembershipPaymentMethod.toMw(): MMembershipPaymentMethod = when (this) {
+    MembershipPaymentMethod.METHOD_NONE -> MMembershipPaymentMethod.MethodNone
+    MembershipPaymentMethod.METHOD_CARD -> MMembershipPaymentMethod.MethodCard
+    MembershipPaymentMethod.METHOD_CRYPTO -> MMembershipPaymentMethod.MethodCrypto
+    MembershipPaymentMethod.METHOD_INAPP_APPLE -> MMembershipPaymentMethod.MethodInappApple
+    MembershipPaymentMethod.METHOD_INAPP_GOOGLE -> MMembershipPaymentMethod.MethodInappGoogle
 }

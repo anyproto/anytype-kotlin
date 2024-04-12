@@ -1986,4 +1986,121 @@ class MiddlewareServiceImplementation @Inject constructor(
             return response
         }
     }
+
+    override fun membershipStatus(request: Rpc.Membership.GetStatus.Request): Rpc.Membership.GetStatus.Response {
+        val encoded = Service.membershipGetStatus(
+            Rpc.Membership.GetStatus.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Membership.GetStatus.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Membership.GetStatus.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun membershipIsNameValid(request: Rpc.Membership.IsNameValid.Request): Rpc.Membership.IsNameValid.Response {
+        val encoded = Service.membershipIsNameValid(
+            Rpc.Membership.IsNameValid.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Membership.IsNameValid.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Membership.IsNameValid.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun membershipGetPaymentUrl(request: Rpc.Membership.GetPaymentUrl.Request): Rpc.Membership.GetPaymentUrl.Response {
+        val encoded = Service.membershipGetPaymentUrl(
+            Rpc.Membership.GetPaymentUrl.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Membership.GetPaymentUrl.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Membership.GetPaymentUrl.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun membershipGetPortalLinkUrl(request: Rpc.Membership.GetPortalLinkUrl.Request): Rpc.Membership.GetPortalLinkUrl.Response {
+        val encoded = Service.membershipGetPortalLinkUrl(
+            Rpc.Membership.GetPortalLinkUrl.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Membership.GetPortalLinkUrl.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Membership.GetPortalLinkUrl.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun membershipFinalize(request: Rpc.Membership.Finalize.Request): Rpc.Membership.Finalize.Response {
+        val encoded = Service.membershipFinalize(
+            Rpc.Membership.Finalize.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Membership.Finalize.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Membership.Finalize.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun membershipGetVerificationEmailStatus(request: Rpc.Membership.GetVerificationEmailStatus.Request): Rpc.Membership.GetVerificationEmailStatus.Response {
+        val encoded = Service.membershipGetVerificationEmail(
+            Rpc.Membership.GetVerificationEmailStatus.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Membership.GetVerificationEmailStatus.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Membership.GetVerificationEmailStatus.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun membershipGetVerificationEmail(request: Rpc.Membership.GetVerificationEmail.Request): Rpc.Membership.GetVerificationEmail.Response {
+        val encoded = Service.membershipGetVerificationEmail(
+            Rpc.Membership.GetVerificationEmail.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Membership.GetVerificationEmail.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Membership.GetVerificationEmail.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun membershipVerifyEmailCode(request: Rpc.Membership.VerifyEmailCode.Request): Rpc.Membership.VerifyEmailCode.Response {
+        val encoded = Service.membershipVerifyEmailCode(
+            Rpc.Membership.VerifyEmailCode.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Membership.VerifyEmailCode.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Membership.VerifyEmailCode.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun membershipGetTiers(request: Rpc.Membership.Tiers.Get.Request): Rpc.Membership.Tiers.Get.Response {
+        val encoded = Service.membershipGetTiers(
+            Rpc.Membership.Tiers.Get.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Membership.Tiers.Get.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Membership.Tiers.Get.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

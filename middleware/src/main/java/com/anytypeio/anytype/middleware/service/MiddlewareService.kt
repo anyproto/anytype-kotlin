@@ -540,4 +540,33 @@ interface MiddlewareService {
     fun notificationReply(request: Rpc.Notification.Reply.Request):  Rpc.Notification.Reply.Response
 
     //endregion
+
+    //region MEMBERSHIP
+    @Throws(Exception::class)
+    fun membershipStatus(request: Rpc.Membership.GetStatus.Request): Rpc.Membership.GetStatus.Response
+
+    @Throws(Exception::class)
+    fun membershipIsNameValid(request: Rpc.Membership.IsNameValid.Request): Rpc.Membership.IsNameValid.Response
+
+    @Throws(Exception::class)
+    fun membershipGetPaymentUrl(request: Rpc.Membership.GetPaymentUrl.Request): Rpc.Membership.GetPaymentUrl.Response
+
+    @Throws(Exception::class)
+    fun membershipGetPortalLinkUrl(request: Rpc.Membership.GetPortalLinkUrl.Request): Rpc.Membership.GetPortalLinkUrl.Response
+
+    @Throws(Exception::class)
+    fun membershipFinalize(request: Rpc.Membership.Finalize.Request): Rpc.Membership.Finalize.Response
+
+    @Throws(Exception::class)
+    fun membershipGetVerificationEmailStatus(request: Rpc.Membership.GetVerificationEmailStatus.Request): Rpc.Membership.GetVerificationEmailStatus.Response
+
+    @Throws(Exception::class)
+    fun membershipGetVerificationEmail(request: Rpc.Membership.GetVerificationEmail.Request): Rpc.Membership.GetVerificationEmail.Response
+
+    @Throws(Exception::class)
+    fun membershipVerifyEmailCode(request: Rpc.Membership.VerifyEmailCode.Request): Rpc.Membership.VerifyEmailCode.Response
+
+    @Throws(Exception::class)
+    fun membershipGetTiers(request: Rpc.Membership.Tiers.Get.Request): Rpc.Membership.Tiers.Get.Response
+    //endregion
 }

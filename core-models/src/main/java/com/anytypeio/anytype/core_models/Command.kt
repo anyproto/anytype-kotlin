@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.core_models
 
+import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
+import com.anytypeio.anytype.core_models.membership.NameServiceNameType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 
@@ -474,4 +476,24 @@ sealed class Command {
         val title: String,
         val isNewSpace: Boolean
     )
+
+    sealed class Membership {
+        data class GetStatus(val noCache: Boolean) : Membership()
+        data class IsNameValid(val tier: Int, val name: String) : Membership()
+        data class GetPaymentUrl(
+            val tier: Int,
+            val paymentMethod: MembershipPaymentMethod,
+            val name: String,
+            val nameType: NameServiceNameType
+        ) : Membership()
+
+        data class Finalize(val name: String, val nameType: NameServiceNameType) : Membership()
+        data class GetVerificationEmail(
+            val email: String,
+            val subscribeToNewsletter: Boolean
+        ) : Membership()
+
+        data class VerifyEmailCode(val code: String) : Membership()
+        data class GetTiers(val noCache: Boolean, val locale: String) : Membership()
+    }
 }

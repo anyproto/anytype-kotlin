@@ -24,6 +24,10 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.membership.EmailVerificationStatus
+import com.anytypeio.anytype.core_models.membership.GetPaymentUrlResponse
+import com.anytypeio.anytype.core_models.membership.Membership
+import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
@@ -463,4 +467,14 @@ interface BlockRepository {
     suspend fun importExperience(command: Command.ImportExperience)
 
     suspend fun replyNotifications(notifications: List<Id>)
+
+    suspend fun membershipStatus(command: Command.Membership.GetStatus): Membership?
+    suspend fun membershipIsNameValid(command: Command.Membership.IsNameValid)
+    suspend fun membershipGetPaymentUrl(command: Command.Membership.GetPaymentUrl): GetPaymentUrlResponse
+    suspend fun membershipGetPortalLinkUrl(): String
+    suspend fun membershipFinalize(command: Command.Membership.Finalize)
+    suspend fun membershipGetVerificationEmailStatus(): EmailVerificationStatus
+    suspend fun membershipGetVerificationEmail(command: Command.Membership.GetVerificationEmail)
+    suspend fun membershipVerifyEmailCode(command: Command.Membership.VerifyEmailCode)
+    suspend fun membershipGetTiers(command: Command.Membership.GetTiers): List<MembershipTierData>
 }

@@ -1177,7 +1177,7 @@
     <string name="multiplayer_delete_space_sharing_link">Отозвать публичную ссылку</string>
     <string name="multiplayer_delete_link">Удалить ссылку</string>
     <string name="multiplayer_delete_link_description">Новые участники не смогут присоединиться к пространству. Вы можете создать новую ссылку в любое время.</string>
-    <string name="multiplayer_already_space_member">You are already a member of this space</string>
+    <string name="multiplayer_already_space_member">Вы уже являетесь членом этого пространства</string>
     <string name="multiplayer_open_space">Открыть пространство.</string>
     <string name="multiplayer_error_space_deleted">Пространство удалено</string>
     <string name="multiplayer_error_space_not_found">Пространство не найдено</string>
@@ -1203,8 +1203,8 @@
     <string name="payments_card_description_1">As a valued member your voice matters! Engage in exclusive events, shape strategic choices, and influence our roadmap.</string>
     <string name="payments_card_text_2">Unlock Member Benefits</string>
     <string name="payments_card_description_2">Members enjoy higher backup storage &amp; sync limits, invitations for multiple guests to collaborate in shared spaces, and a unique identity on the Anytype Network.</string>
-    <string name="payments_card_text_3">Support Digital Independence</string>
-    <string name="payments_card_description_3">Your contribution supports our team and endorses our vision of a user-owned, secure, and collaborative digital network.</string>
+    <string name="payments_card_text_3">Поддержка Цифровой Независимости</string>
+    <string name="payments_card_description_3">Ваш вклад поддерживает нашу независимую команду и одобряет нашу перспективу, ориентированной на пользователя и безопасной совместной цифровой среды.</string>
     <string name="payments_card_text_4">Инвестировать в Соединение</string>
     <string name="payments_card_description_4">Our network\'s value exceeds the sum of its parts. Your membership sustains the infrastructure for its growth which underpins this network.</string>
     <string name="payments_tier_explorer">Explorer</string>

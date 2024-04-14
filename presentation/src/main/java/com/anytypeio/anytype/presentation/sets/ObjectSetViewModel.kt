@@ -1353,7 +1353,12 @@ class ObjectSetViewModel(
 
     fun onCoverClicked() {
         Timber.d("onCoverClicked, ")
-        dispatch(ObjectSetCommand.Modal.OpenCoverActionMenu(ctx = context))
+        dispatch(
+            ObjectSetCommand.Modal.OpenCoverActionMenu(
+                ctx = params.ctx,
+                space = params.space.id
+            )
+        )
     }
 
     fun onViewerSettingsClicked(viewer: Id) {

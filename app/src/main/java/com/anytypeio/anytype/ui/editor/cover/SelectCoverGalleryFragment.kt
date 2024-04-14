@@ -178,7 +178,7 @@ abstract class SelectCoverGalleryFragment :
     }
 }
 
-class SelectCoverObjectFragment : SelectCoverGalleryFragment() {
+open class SelectCoverObjectFragment : SelectCoverGalleryFragment() {
 
     override val ctx get() = arg<String>(CTX_KEY)
     override val space get() = arg<String>(SPACE_KEY)
@@ -259,9 +259,9 @@ class SelectCoverObjectSetFragment : SelectCoverGalleryFragment() {
     }
 
     companion object {
-        fun new(ctx: Id, space: Id) = SelectCoverObjectSetFragment().apply {
-            arguments = bundleOf(CTX_KEY to ctx, SPACE_KEY to space)
-        }
+        fun args(ctx: Id, space: Id) = bundleOf(
+            CTX_KEY to ctx, SPACE_KEY to space
+        )
 
         const val CTX_KEY = "arg.object-set-cover-gallery.ctx"
         const val SPACE_KEY = "arg.object-set-cover-gallery.space"

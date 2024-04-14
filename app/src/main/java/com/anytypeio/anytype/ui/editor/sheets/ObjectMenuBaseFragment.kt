@@ -226,7 +226,10 @@ abstract class ObjectMenuBaseFragment :
     private fun openSetCover() {
         findNavController().navigate(
             R.id.objectSetCoverScreen,
-            bundleOf(SelectCoverObjectSetFragment.CTX_KEY to ctx)
+            SelectCoverObjectSetFragment.args(
+                ctx = ctx,
+                space = space
+            )
         )
     }
 

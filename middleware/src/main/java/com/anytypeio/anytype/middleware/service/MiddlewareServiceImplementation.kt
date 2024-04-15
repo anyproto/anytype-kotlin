@@ -1870,6 +1870,17 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun spaceMakeShareable(request: Rpc.Space.MakeShareable.Request): Rpc.Space.MakeShareable.Response {
+        val encoded = Service.spaceMakeShareable(Rpc.Space.MakeShareable.Request.ADAPTER.encode(request))
+        val response = Rpc.Space.MakeShareable.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Space.MakeShareable.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun spaceParticipantPermissionsChange(request: Rpc.Space.ParticipantPermissionsChange.Request): Rpc.Space.ParticipantPermissionsChange.Response {
         val encoded = Service.spaceParticipantPermissionsChange(
             Rpc.Space.ParticipantPermissionsChange.Request.ADAPTER.encode(request)

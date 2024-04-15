@@ -1065,8 +1065,8 @@
         <item quantity="other">%d backlinks</item>
     </plurals>
     <plurals name="links_from_count">
-        <item quantity="one">%d link</item>
-        <item quantity="other">%d links</item>
+        <item quantity="one">%d Link</item>
+        <item quantity="other">%d Links</item>
     </plurals>
     <!--region ORIGIN RELATION VALUES -->
     <string name="date_type_tomorrow">Morgen</string>
@@ -1141,7 +1141,7 @@
     <string name="multiplayer_view_request">Anfrage ansehen</string>
     <string name="multiplayer_owner">Eigentümer</string>
     <string name="multiplayer_can_edit">Darf bearbeiten</string>
-    <string name="multiplayer_can_view">Can view</string>
+    <string name="multiplayer_can_view">Darf ansehen</string>
     <string name="multiplayer_space_add_viewer">Viewer hinzufügen</string>
     <string name="multiplayer_space_add_editor">Editor hinzufügen</string>
     <string name="multiplayer_space_request_reject">Ablehnen</string>

@@ -7,8 +7,6 @@ import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.LocaleProvider
-import com.anytypeio.anytype.domain.payments.GetMembershipStatus
-import com.anytypeio.anytype.domain.payments.GetMembershipTiers
 import com.anytypeio.anytype.domain.workspace.MembershipChannel
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.interactor.MembershipMiddlewareChannel
@@ -56,31 +54,19 @@ object MembershipModule {
     )
 
     @JvmStatic
-    @Provides
-    @Singleton
-    fun provideGetMembershipStatus(
-        repository: BlockRepository,
-        dispatchers: AppCoroutineDispatchers
-    ): GetMembershipStatus = GetMembershipStatus(dispatchers, repository)
-
-    @JvmStatic
     @Singleton
     @Provides
     fun provideMembershipProvider(
         dispatchers: AppCoroutineDispatchers,
-        @Named(ConfigModule.DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
         awaitAccountStartManager: AwaitAccountStartManager,
         membershipChannel: MembershipChannel,
-        getMembershipStatus: GetMembershipStatus,
         localeProvider: LocaleProvider,
-        getTiers: GetMembershipTiers
+        repo: BlockRepository
     ): MembershipProvider = MembershipProvider.Default(
         dispatchers = dispatchers,
-        scope = scope,
         membershipChannel = membershipChannel,
         awaitAccountStartManager = awaitAccountStartManager,
-        getMembershipStatus = getMembershipStatus,
         localeProvider = localeProvider,
-        getTiers = getTiers
+        repo = repo
     )
 }

@@ -13,9 +13,9 @@ import com.anytypeio.anytype.domain.workspace.MembershipChannel
 import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
@@ -26,8 +26,8 @@ interface MembershipProvider {
     val status: StateFlow<MembershipStatus>
 
     class Default(
-        dispatchers: AppCoroutineDispatchers,
-        scope: CoroutineScope,
+        private val dispatchers: AppCoroutineDispatchers,
+        private val scope: CoroutineScope,
         private val membershipChannel: MembershipChannel,
         private val awaitAccountStartManager: AwaitAccountStartManager,
         private val getMembershipStatus: GetMembershipStatus,
@@ -36,29 +36,43 @@ interface MembershipProvider {
     ) : MembershipProvider {
 
         private val _status = MutableStateFlow<MembershipStatus>(MembershipStatus.Unknown)
-        override val status: StateFlow<MembershipStatus> = _status
+        override val status: StateFlow<MembershipStatus> = _status.asStateFlow()
 
         init {
-            scope.launch(dispatchers.io) {
-                observe().collect { events ->
-                    if (events.isNotEmpty()) {
+            startMembershipObservation()
+        }
 
-                    }
-                }
+        private fun startMembershipObservation() {
+            scope.launch(dispatchers.io) {
+                observeMembershipEvents()
             }
         }
 
-        private suspend fun proceedWithGettingMembership() {
-            val statusParams = GetMembershipStatus.Params(
-                noCache = false
-            )
-            getMembershipStatus.async(params = statusParams).fold(
-                onSuccess = { membership ->
-                    proceedWithGettingTiers(membership)
-                },
-                onFailure = {
-                    Timber.e(it)
+        @OptIn(ExperimentalCoroutinesApi::class)
+        private suspend fun observeMembershipEvents() {
+            awaitAccountStartManager.isStarted()
+                .flatMapLatest { isStarted ->
+                    if (isStarted) {
+                        proceedWithGettingMembership()
+                        membershipChannel.observe()
+                    } else {
+                        emptyFlow()
+                    }
                 }
+                .collect { events ->
+                    events.forEach { event ->
+                        if (event is Membership.Event.Update) {
+                            proceedWithGettingTiers(event.membership)
+                        }
+                    }
+                }
+        }
+
+        private suspend fun proceedWithGettingMembership() {
+            val statusParams = GetMembershipStatus.Params(noCache = false)
+            getMembershipStatus.async(params = statusParams).fold(
+                onSuccess = { membership -> proceedWithGettingTiers(membership) },
+                onFailure = Timber::e
             )
         }
 
@@ -68,70 +82,57 @@ interface MembershipProvider {
                 locale = localeProvider.language() ?: DEFAULT_LOCALE
             )
             getTiers.async(params = tiersParams).fold(
-                onSuccess = { tiers ->
-                    mapping(membership, tiers)
-                },
-                onFailure = {
-                    Timber.e(it)
-                }
+                onSuccess = { tiers -> updateMembershipStatus(membership, tiers) },
+                onFailure = Timber::e
             )
         }
 
-        private fun mapping(
+        private fun updateMembershipStatus(
             membership: Membership?,
             tiers: List<MembershipTierData>
         ) {
-            val newStatus = when (membership?.membershipStatusModel) {
-                STATUS_PENDING -> {
-                    MembershipStatus.Pending
-                }
-
-                STATUS_PENDING_FINALIZATION -> {
-                    MembershipStatus.Finalization
-                }
-
-                STATUS_ACTIVE -> {
-                    val tier = tiers.firstOrNull { it.id == membership.tier }
-                    if (tier == null && membership.tier != 0) {
-                        Timber.e("Membership tier ${membership.tier} not found in tiers response")
-                        MembershipStatus.Unknown
-                    }
-                    MembershipStatus.Active(
-                        tier = tier,
-                        status = membership.membershipStatusModel,
-                        dateEnds = membership.dateEnds,
-                        paymentMethod = membership.paymentMethod,
-                        anyName = membership.requestedAnyName
-                    )
-                }
-
-                STATUS_UNKNOWN -> {
-                    Timber.d("Membership status is unknown")
-                    MembershipStatus.Unknown
-                }
-
-                null -> {
-                    Timber.e("Membership status is null")
-                    MembershipStatus.Unknown
-                }
-            }
-            _status.value = newStatus
-        }
-
-        @OptIn(ExperimentalCoroutinesApi::class)
-        private fun observe(): Flow<List<Membership.Event>> {
-            return awaitAccountStartManager.isStarted().flatMapLatest { isStarted ->
-                if (isStarted) {
-                    proceedWithGettingMembership()
-                    membershipChannel.observe()
-                } else {
-                    emptyFlow()
-                }
+            _status.value = mapMembershipToStatus(membership, tiers).also {
+                Timber.d("Membership status updated: $it")
             }
         }
-    }
 
-    companion object {
-        const val DEFAULT_LOCALE = "en"
+        private fun mapMembershipToStatus(
+            membership: Membership?,
+            tiers: List<MembershipTierData>
+        ): MembershipStatus {
+            return when (membership?.membershipStatusModel) {
+                STATUS_PENDING -> MembershipStatus.Pending
+                STATUS_PENDING_FINALIZATION -> MembershipStatus.Finalization
+                STATUS_ACTIVE -> createActiveMembershipStatus(membership, tiers)
+                STATUS_UNKNOWN, null -> {
+                    Timber.e("Invalid or unknown membership status")
+                    MembershipStatus.Unknown
+                }
+                else -> MembershipStatus.Unknown
+            }
+        }
+
+        private fun createActiveMembershipStatus(
+            membership: Membership,
+            tiers: List<MembershipTierData>
+        ): MembershipStatus {
+            val tier = tiers.firstOrNull { it.id == membership.tier }
+            return if (tier != null) {
+                MembershipStatus.Active(
+                    tier = tier,
+                    status = membership.membershipStatusModel,
+                    dateEnds = membership.dateEnds,
+                    paymentMethod = membership.paymentMethod,
+                    anyName = membership.requestedAnyName
+                )
+            } else {
+                Timber.e("Membership tier not found: ${membership.tier}")
+                MembershipStatus.Unknown
+            }
+        }
+
+        companion object {
+            const val DEFAULT_LOCALE = "en"
+        }
     }
 }

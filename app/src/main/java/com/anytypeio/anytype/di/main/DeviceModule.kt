@@ -11,7 +11,6 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.device.FileSharer
 import com.anytypeio.anytype.domain.download.Downloader
 import com.anytypeio.anytype.domain.misc.LocaleProvider
-import com.anytypeio.anytype.providers.DefaultUriFileProvider
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton

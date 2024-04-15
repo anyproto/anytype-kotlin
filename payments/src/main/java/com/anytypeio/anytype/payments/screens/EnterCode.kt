@@ -52,7 +52,7 @@ import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.payments.R
 import com.anytypeio.anytype.payments.viewmodel.PaymentsCodeState
-import com.anytypeio.anytype.payments.viewmodel.TierId
+import com.anytypeio.anytype.presentation.membership.models.TierId
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

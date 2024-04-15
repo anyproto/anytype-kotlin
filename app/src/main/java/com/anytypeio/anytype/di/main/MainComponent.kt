@@ -80,7 +80,7 @@ import javax.inject.Singleton
         TemplatesModule::class,
         NetworkModeModule::class,
         NotificationsModule::class,
-        BillingModule::class
+        MembershipModule::class
     ]
 )
 interface MainComponent :

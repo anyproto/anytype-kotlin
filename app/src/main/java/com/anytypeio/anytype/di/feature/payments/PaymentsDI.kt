@@ -9,7 +9,7 @@ import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.payments.MembershipGetTiers
+import com.anytypeio.anytype.domain.payments.GetMembershipTiers
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
 import com.anytypeio.anytype.ui.payments.PaymentsFragment
 import com.anytypeio.anytype.payments.viewmodel.PaymentsViewModelFactory
@@ -53,7 +53,7 @@ object PaymentsModule {
     fun provideGetTiersUseCase(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
-    ): MembershipGetTiers = MembershipGetTiers(repo = repo, dispatchers = dispatchers)
+    ): GetMembershipTiers = GetMembershipTiers(repo = repo, dispatchers = dispatchers)
 
     @Module
     interface Declarations {

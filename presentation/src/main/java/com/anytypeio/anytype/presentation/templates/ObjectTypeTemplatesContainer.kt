@@ -8,28 +8,35 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
-import com.anytypeio.anytype.domain.workspace.SpaceManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
 interface ObjectTypeTemplatesContainer {
-    suspend fun subscribeToTemplates(type: Id, subId: String): Flow<List<ObjectWrapper.Basic>>
+    suspend fun subscribeToTemplates(
+        type: Id,
+        space: SpaceId,
+        subscription: Id
+    ): Flow<List<ObjectWrapper.Basic>>
     suspend fun unsubscribeFromTemplates(subId: Id)
 }
 
 class DefaultObjectTypeTemplatesContainer(
-    private val storage: StorelessSubscriptionContainer,
-    private val spaceManager: SpaceManager
+    private val storage: StorelessSubscriptionContainer
 ) : ObjectTypeTemplatesContainer {
 
-    override suspend fun subscribeToTemplates(type: Id, subId: String): Flow<List<ObjectWrapper.Basic>> {
+    override suspend fun subscribeToTemplates(
+        type: Id,
+        space: SpaceId,
+        subscription: Id
+    ): Flow<List<ObjectWrapper.Basic>> {
         return if (type.isBlank()) {
             emptyFlow()
         } else {
             val params = StoreSearchParams(
-                subscription = subId,
+                subscription = subscription,
                 sorts = listOf(
                     DVSort(
                         relationKey = Relations.CREATED_DATE,
@@ -60,7 +67,7 @@ class DefaultObjectTypeTemplatesContainer(
                     DVFilter(
                         relation = Relations.SPACE_ID,
                         condition = DVFilterCondition.EQUAL,
-                        value = spaceManager.get()
+                        value = space.id
                     ),
                     DVFilter(
                         relation = Relations.ID,

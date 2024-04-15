@@ -160,7 +160,7 @@ class ShareSpaceViewModel(
                         Timber.d("Successfully made space shareable")
                     },
                     onFailure = {
-                        Timber.e(it, "Error while making space shareabe")
+                        Timber.e(it, "Error while making space shareable")
                     }
                 )
             }
@@ -379,7 +379,9 @@ class ShareSpaceViewModel(
                     params = params.space
                 ).fold(
                     onSuccess = {
-                        Timber.d("Revoked space invite link")
+                        Timber.d("Revoked space invite link").also {
+                            shareLinkViewState.value = ShareLinkViewState.NotGenerated
+                        }
                     },
                     onFailure = { e ->
                         Timber.e(e, "Error while revoking space invite link").also {

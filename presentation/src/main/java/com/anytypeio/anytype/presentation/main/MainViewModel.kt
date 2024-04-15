@@ -26,6 +26,7 @@ import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
+import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
 import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import kotlinx.coroutines.delay
@@ -49,7 +50,8 @@ class MainViewModel(
     private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
     private val localeProvider: LocaleProvider,
     private val userPermissionProvider: UserPermissionProvider,
-    private val notificationsProvider: NotificationsProvider
+    private val notificationsProvider: NotificationsProvider,
+    private val membershipProvider: MembershipProvider
 ) : ViewModel() {
 
     val wallpaper = MutableStateFlow<Wallpaper>(Wallpaper.Default)
@@ -91,6 +93,11 @@ class MainViewModel(
                 notifications.forEach { event ->
                     handleNotification(event)
                 }
+            }
+        }
+        viewModelScope.launch {
+            membershipProvider.status.collect { status ->
+                Timber.d("Membership status: $status")
             }
         }
     }

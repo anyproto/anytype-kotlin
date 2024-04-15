@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
-import com.anytypeio.anytype.domain.payments.MembershipGetTiers
+import com.anytypeio.anytype.domain.payments.GetMembershipTiers
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
 import javax.inject.Inject
 
@@ -12,7 +12,7 @@ class PaymentsViewModelFactory @Inject constructor(
     private val analytics: Analytics,
     private val billingClientLifecycle: BillingClientLifecycle,
     private val getAccount: GetAccount,
-    private val membershipGetTiers: MembershipGetTiers
+    private val getMembershipTiers: GetMembershipTiers
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -20,7 +20,7 @@ class PaymentsViewModelFactory @Inject constructor(
             analytics = analytics,
             billingClientLifecycle = billingClientLifecycle,
             getAccount = getAccount,
-            membershipGetTiers = membershipGetTiers
+            getMembershipTiers = getMembershipTiers
         ) as T
     }
 }

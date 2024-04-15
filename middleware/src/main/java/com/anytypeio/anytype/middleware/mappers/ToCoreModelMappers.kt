@@ -46,7 +46,7 @@ import com.anytypeio.anytype.core_models.membership.EmailVerificationStatus
 import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
-import com.anytypeio.anytype.core_models.membership.MembershipStatus
+import com.anytypeio.anytype.core_models.membership.MembershipStatusModel
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -975,12 +975,12 @@ fun MNotification.toCoreModel(): Notification {
 //endregion
 
 //region MEMBERSHIP
-fun MMembershipStatus.toCoreModel(): MembershipStatus {
+fun MMembershipStatus.toCoreModel(): MembershipStatusModel {
     return when (this) {
-        MMembershipStatus.StatusUnknown -> MembershipStatus.STATUS_UNKNOWN
-        MMembershipStatus.StatusPending -> MembershipStatus.STATUS_PENDING
-        MMembershipStatus.StatusActive -> MembershipStatus.STATUS_ACTIVE
-        MMembershipStatus.StatusPendingRequiresFinalization -> MembershipStatus.STATUS_PENDING_FINALIZATION
+        MMembershipStatus.StatusUnknown -> MembershipStatusModel.STATUS_UNKNOWN
+        MMembershipStatus.StatusPending -> MembershipStatusModel.STATUS_PENDING
+        MMembershipStatus.StatusActive -> MembershipStatusModel.STATUS_ACTIVE
+        MMembershipStatus.StatusPendingRequiresFinalization -> MembershipStatusModel.STATUS_PENDING_FINALIZATION
     }
 }
 
@@ -997,7 +997,7 @@ fun MMembershipPaymentMethod.toCoreModel(): MembershipPaymentMethod {
 fun MMembership.toCoreModel(): Membership {
     return Membership(
         tier = tier,
-        membershipStatus = status.toCoreModel(),
+        membershipStatusModel = status.toCoreModel(),
         dateStarted = dateStarted,
         dateEnds = dateEnds,
         isAutoRenew = isAutoRenew,

@@ -7,14 +7,13 @@ import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.domain.payments.MembershipGetTiers
+import com.anytypeio.anytype.domain.payments.GetMembershipTiers
 import com.anytypeio.anytype.payments.constants.BillingConstants
-import com.anytypeio.anytype.payments.models.Tier
+import com.anytypeio.anytype.presentation.membership.models.Tier
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
-import javax.inject.Inject
+import com.anytypeio.anytype.presentation.membership.models.TierId
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -25,7 +24,7 @@ class PaymentsViewModel(
     private val analytics: Analytics,
     private val billingClientLifecycle: BillingClientLifecycle,
     private val getAccount: GetAccount,
-    private val membershipGetTiers: MembershipGetTiers
+    private val getMembershipTiers: GetMembershipTiers
 ) : ViewModel() {
 
     val viewState = MutableStateFlow<PaymentsMainState>(PaymentsMainState.Loading)
@@ -62,7 +61,7 @@ class PaymentsViewModel(
 
     private fun proceedWithGetTiers() {
         viewModelScope.launch {
-            membershipGetTiers.async(MembershipGetTiers.Params("en", false)).fold(
+            getMembershipTiers.async(GetMembershipTiers.Params("en", false)).fold(
                 onSuccess = { result ->
                     Log.d("Test1983", "proceedWithGetTiers: onSuccess, $result")
                 },

@@ -458,7 +458,13 @@ open class ObjectSetViewModelTestSetup {
         subId: Id = MockDataFactory.randomString()
     ) {
         templatesContainer.stub {
-            onBlocking { subscribeToTemplates(type, subId) }.thenReturn(flowOf(templates))
+            onBlocking {
+                subscribeToTemplates(
+                    type = type,
+                    space = SpaceId(defaultSpace),
+                    subscription = subId
+                )
+            }.thenReturn(flowOf(templates))
         }
     }
 

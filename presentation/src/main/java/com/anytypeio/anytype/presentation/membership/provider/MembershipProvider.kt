@@ -62,6 +62,7 @@ interface MembershipProvider {
                 .collect { events ->
                     events.forEach { event ->
                         if (event is Membership.Event.Update) {
+                            Timber.d("Membership event received: $event")
                             proceedWithGettingTiers(event.membership)
                         }
                     }
@@ -70,6 +71,7 @@ interface MembershipProvider {
 
         private suspend fun proceedWithGettingMembership() {
             val statusParams = GetMembershipStatus.Params(noCache = false)
+            Timber.d("Getting membership status with params: $statusParams")
             getMembershipStatus.async(params = statusParams).fold(
                 onSuccess = { membership -> proceedWithGettingTiers(membership) },
                 onFailure = Timber::e
@@ -81,6 +83,7 @@ interface MembershipProvider {
                 noCache = false,
                 locale = localeProvider.language() ?: DEFAULT_LOCALE
             )
+            Timber.d("Getting membership tiers with params: $tiersParams")
             getTiers.async(params = tiersParams).fold(
                 onSuccess = { tiers -> updateMembershipStatus(membership, tiers) },
                 onFailure = Timber::e

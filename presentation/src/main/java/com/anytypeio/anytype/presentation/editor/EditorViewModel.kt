@@ -47,7 +47,6 @@ import com.anytypeio.anytype.core_models.ext.sortByType
 import com.anytypeio.anytype.core_models.ext.supportNesting
 import com.anytypeio.anytype.core_models.ext.title
 import com.anytypeio.anytype.core_models.ext.updateTextContent
-import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -266,10 +265,8 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -277,7 +274,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.skip
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import com.anytypeio.anytype.presentation.editor.Editor.Mode as EditorMode
@@ -6518,7 +6514,11 @@ class EditorViewModel(
     private fun startTemplatesSubscription(objType: ObjectWrapper.Type) {
         templatesJob += viewModelScope.launch {
             templatesContainer
-                .subscribeToTemplates(type = objType.id, subId = EDITOR_TEMPLATES_SUBSCRIPTION)
+                .subscribeToTemplates(
+                    type = objType.id,
+                    subscription = EDITOR_TEMPLATES_SUBSCRIPTION,
+                    space = params.space
+                )
                 .catch { Timber.e(it, "Error while subscribing to templates") }
                 .collect { templates ->
                     if (templates.isNotEmpty()) {

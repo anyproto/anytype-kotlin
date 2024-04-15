@@ -326,7 +326,7 @@ class ShareSpaceViewModel(
     fun onStopSharingSpaceClicked() {
         Timber.d("onStopSharingClicked")
         viewModelScope.launch {
-            if (isCurrentUserOwner.value && shareLinkViewState.value is ShareLinkViewState.Shared) {
+            if (isCurrentUserOwner.value && spaceAccessType.value == SpaceAccessType.SHARED) {
                 viewModelScope.launch {
                     commands.emit(Command.ShowStopSharingWarning)
                 }
@@ -339,7 +339,7 @@ class ShareSpaceViewModel(
     fun onStopSharingAccepted() {
         Timber.d("onStopSharingAccepted")
         viewModelScope.launch {
-            if (isCurrentUserOwner.value && shareLinkViewState.value is ShareLinkViewState.Shared) {
+            if (isCurrentUserOwner.value && spaceAccessType.value == SpaceAccessType.SHARED) {
                 stopSharingSpace.async(
                     params = params.space
                 ).fold(

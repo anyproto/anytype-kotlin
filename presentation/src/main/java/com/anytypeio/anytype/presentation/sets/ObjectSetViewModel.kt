@@ -2020,7 +2020,8 @@ class ObjectSetViewModel(
                 .flatMapLatest { selectedType ->
                     templatesContainer.subscribeToTemplates(
                         type = selectedType.id,
-                        subId = "$context$SUBSCRIPTION_TEMPLATES_ID"
+                        space = params.space,
+                        subscription = "$context$SUBSCRIPTION_TEMPLATES_ID"
                     )
                 }.map { templates ->
                     val state = stateReducer.state.value

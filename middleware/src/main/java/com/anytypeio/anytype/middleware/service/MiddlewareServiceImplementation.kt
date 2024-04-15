@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.exceptions.AccountIsDeletedException
 import com.anytypeio.anytype.core_models.exceptions.LoginException
 import com.anytypeio.anytype.core_models.exceptions.MigrationNeededException
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
+import com.anytypeio.anytype.core_models.exceptions.SpaceLimitReachedException
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteError
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.data.auth.exception.AnytypeNeedsUpgradeException
@@ -1875,7 +1876,14 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Space.MakeShareable.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Space.MakeShareable.Response.Error.Code.NULL) {
-            throw Exception(error.description)
+            when(error.code) {
+                Rpc.Space.MakeShareable.Response.Error.Code.LIMIT_REACHED -> {
+                    throw SpaceLimitReachedException()
+                }
+                else -> {
+                    throw Exception(error.description)
+                }
+            }
         } else {
             return response
         }

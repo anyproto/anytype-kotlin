@@ -214,6 +214,12 @@ fun ShareSpaceScreen(
                     }
                 }
             }
+            if (members.size > 4) {
+                // Workaround adding footer to prevent content invisible behind link card
+                item {
+                    Spacer(modifier = Modifier.height(324.dp))
+                }
+            }
         }
         AnimatedVisibility(
             visible = shareLinkViewState is ShareLinkViewState.Shared,

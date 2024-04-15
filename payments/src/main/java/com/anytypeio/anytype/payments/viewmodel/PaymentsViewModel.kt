@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.payments.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.billingclient.api.BillingFlowParams
@@ -63,10 +62,9 @@ class PaymentsViewModel(
         viewModelScope.launch {
             getMembershipTiers.async(GetMembershipTiers.Params("en", false)).fold(
                 onSuccess = { result ->
-                    Log.d("Test1983", "proceedWithGetTiers: onSuccess, $result")
+                    ///todo handle the result
                 },
-                onLoading = { viewState.value = PaymentsMainState.Loading },
-                onFailure = { }
+                onFailure = Timber::e
             )
         }
     }

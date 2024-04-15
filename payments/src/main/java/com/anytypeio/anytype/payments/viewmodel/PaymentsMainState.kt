@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.payments.viewmodel
 
-import com.anytypeio.anytype.payments.models.Tier
+import com.anytypeio.anytype.presentation.membership.models.Tier
+import com.anytypeio.anytype.presentation.membership.models.TierId
 
 
 sealed class PaymentsMainState {
@@ -45,6 +46,3 @@ sealed class PaymentsNavigation(val route: String) {
     object Welcome : PaymentsNavigation("welcome")
     object Dismiss : PaymentsNavigation("")
 }
-
-@JvmInline
-value class TierId(val value: String)

@@ -22,7 +22,7 @@ class MembershipMiddlewareChannel(
                             checkNotNull(event)
                             val membership = event.data_
                             if (membership != null) {
-                                Membership.Event.Update(
+                                Membership.Event(
                                     membership = membership.toCoreModel()
                                 )
                             } else {

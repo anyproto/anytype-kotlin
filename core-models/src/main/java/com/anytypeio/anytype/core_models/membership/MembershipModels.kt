@@ -12,13 +12,7 @@ data class Membership(
     val subscribeToNewsletter: Boolean
 ) {
 
-    sealed class Event {
-        abstract val membership: Membership
-
-        data class Update(
-            override val membership: Membership
-        ) : Event()
-    }
+    data class Event(val membership: Membership)
 }
 
 enum class MembershipStatusModel {

@@ -13,11 +13,13 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.workspace.MembershipChannel
 import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.scan
 import timber.log.Timber
 
@@ -33,13 +35,12 @@ interface MembershipProvider {
         private val repo: BlockRepository
     ) : MembershipProvider {
 
+        @OptIn(ExperimentalCoroutinesApi::class)
         override fun status(): Flow<MembershipStatus> {
             return awaitAccountStartManager.isStarted().flatMapLatest { isStarted ->
                 if (isStarted) {
-                    val membership = proceedWithGettingMembership()
-                    val tiers = proceedWithGettingTiers()
                     buildStatusFlow(
-                        initial = toMembershipStatus(membership, tiers)
+                        initial = proceedWithGettingMembership()
                     )
                 } else {
                     emptyFlow()
@@ -49,22 +50,16 @@ interface MembershipProvider {
         }
 
         private fun buildStatusFlow(
-            initial: MembershipStatus
+            initial: Membership?
         ): Flow<MembershipStatus> {
-            val statusFlow = membershipChannel.observe().scan(initial) { status, events ->
-                events.fold(status) { acc, event ->
-                    when (event) {
-                        is Membership.Event.Update -> {
-                            Timber.d("Membership event received: $event")
-                            val membership = event.membership
-                            val tiers = proceedWithGettingTiers()
-                            toMembershipStatus(membership, tiers)
-                        }
-                        else -> acc
-                    }
+            return membershipChannel
+                .observe()
+                .scan(initial) { _, events ->
+                    events.lastOrNull()?.membership
+                }.mapNotNull { status ->
+                    val tiers = proceedWithGettingTiers()
+                    toMembershipStatus(status, tiers)
                 }
-            }
-            return statusFlow
         }
 
         private suspend fun proceedWithGettingMembership(): Membership? {

@@ -111,7 +111,7 @@ class MainViewModel(
                 if (notificator.areNotificationsEnabled) {
                     notificator.notify(notification)
                 } else {
-                    toasts.emit("Incoming notification... Notifications should be allowed in app settings")
+                    toasts.emit("Incoming notification... Notifications aren't enabled in app settings")
                 }
             }
         }

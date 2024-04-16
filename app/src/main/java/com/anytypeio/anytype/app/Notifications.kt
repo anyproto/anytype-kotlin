@@ -44,7 +44,6 @@ class AnytypeNotificationService @Inject constructor(
                     )
 
                 showBasicNotification(
-                    type = PERMISSIONS_CHANGED_TYPE,
                     tag = notification.id,
                     title = title,
                     body = body,
@@ -56,7 +55,6 @@ class AnytypeNotificationService @Inject constructor(
                     R.string.multiplayer_notification_member_removed_from_space
                 )
                 showBasicNotification(
-                    type = MEMBER_REMOVED_TYPE,
                     tag = notification.id,
                     body = body
                 )
@@ -78,7 +76,6 @@ class AnytypeNotificationService @Inject constructor(
                     )
                 }
                 showBasicNotification(
-                    type = REQUEST_APPROVED_TYPE,
                     tag = notification.id,
                     title = title,
                     body = body
@@ -94,7 +91,6 @@ class AnytypeNotificationService @Inject constructor(
                     payload.spaceName.ifEmpty { placeholder }
                 )
                 showBasicNotification(
-                    type = REQUEST_DECLINED_TYPE,
                     tag = notification.id,
                     title = title,
                     body = body
@@ -110,15 +106,6 @@ class AnytypeNotificationService @Inject constructor(
                     payload.spaceName.ifEmpty { placeholder },
                 )
 
-//                val intent = Intent(context, NotificationReceiver::class.java).apply {
-//                    putExtra(Relations.SPACE_ID, payload.spaceId.id)
-//                    putExtra(NOTIFICATION_TYPE, REQUEST_TO_JOIN_TYPE)
-//                    putExtra(NOTIFICATION_ID_KEY, notification.id)
-//                    putExtra(Relations.IDENTITY, payload.identity)
-//                    setType(REQUEST_TO_JOIN_TYPE.toString())
-//                    setAction(Intent.ACTION_VIEW)
-//                }
-
                 val intent = Intent(context, MainActivity::class.java).apply {
                     putExtra(Relations.SPACE_ID, payload.spaceId.id)
                     putExtra(NOTIFICATION_TYPE, REQUEST_TO_JOIN_TYPE)
@@ -128,16 +115,7 @@ class AnytypeNotificationService @Inject constructor(
                     setAction(NOTIFICATION_INTENT_ACTION)
                 }
 
-                Timber.d("Got extras before sending: ${intent.extras}")
-
-//                val broadcast = PendingIntent.getBroadcast(
-//                    context,
-//                    0,
-//                    intent,
-//                    getDefaultFlags()
-//                )
-
-                val broadcast = PendingIntent.getActivity(
+                val activity = PendingIntent.getActivity(
                     context,
                     0,
                     intent,
@@ -145,12 +123,11 @@ class AnytypeNotificationService @Inject constructor(
                 )
 
                 showBasicNotification(
-                    type = REQUEST_TO_JOIN_TYPE,
                     tag = notification.id,
                     title = title,
                     body = body,
                     actions = buildList {
-                        add(NotificationCompat.Action(0, actionTitle, broadcast))
+                        add(NotificationCompat.Action(0, actionTitle, activity))
                     }
                 )
             }
@@ -163,7 +140,6 @@ class AnytypeNotificationService @Inject constructor(
                     payload.spaceName.ifEmpty { placeholder },
                 )
                 showBasicNotification(
-                    type = REQUEST_TO_LEAVE_TYPE,
                     tag = notification.id,
                     title = title,
                     body = body
@@ -181,7 +157,6 @@ class AnytypeNotificationService @Inject constructor(
     }
 
     private fun showBasicNotification(
-        type: Int,
         tag: Id,
         title: String? = null,
         body: String,

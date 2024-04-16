@@ -16,6 +16,7 @@ import androidx.navigation.findNavController
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.app.DefaultAppActionManager
+import com.anytypeio.anytype.app.NotificationActionInterceptor
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_utils.ext.Mimetype
@@ -158,6 +159,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
             if (action == Intent.ACTION_SEND || action == Intent.ACTION_SEND_MULTIPLE) {
                 proceedWithShareIntent(intent)
             }
+        }
+
+        NotificationActionInterceptor.onIntercepted = { action ->
+            vm.onInterceptNotificationAction(action)
         }
     }
 

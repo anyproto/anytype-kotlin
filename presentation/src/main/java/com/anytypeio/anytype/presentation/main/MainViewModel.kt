@@ -12,7 +12,6 @@ import com.anytypeio.anytype.core_models.NotificationPayload
 import com.anytypeio.anytype.core_models.NotificationStatus
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
-import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
@@ -30,6 +29,8 @@ import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
+import com.anytypeio.anytype.presentation.notifications.NotificationAction
+import com.anytypeio.anytype.presentation.notifications.NotificationActionDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
 import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import kotlinx.coroutines.delay
@@ -55,8 +56,9 @@ class MainViewModel(
     private val localeProvider: LocaleProvider,
     private val userPermissionProvider: UserPermissionProvider,
     private val notificationsProvider: NotificationsProvider,
-    private val notificator: SystemNotificationService
-) : ViewModel() {
+    private val notificator: SystemNotificationService,
+    private val notificationActionDelegate: NotificationActionDelegate
+) : ViewModel(), NotificationActionDelegate by notificationActionDelegate {
 
     val wallpaper = MutableStateFlow<Wallpaper>(Wallpaper.Default)
     val commands = MutableSharedFlow<Command>(replay = 0)
@@ -101,11 +103,12 @@ class MainViewModel(
         }
 
         // TODO uncomment to test notifications
-//        viewModelScope.launch {
-//             FakeNotificator.notifications.collect {
-//                 notificator.notify(it)
-//             }
-//        }
+        viewModelScope.launch {
+             FakeNotificator.notifications.collect {
+                 Timber.d("onNewFakeNotification: ${it}")
+                 notificator.notify(it)
+             }
+        }
     }
 
     private suspend fun handleNotification(event: Notification.Event) {
@@ -256,6 +259,12 @@ class MainViewModel(
         }
     }
 
+    fun onInterceptNotificationAction(action: NotificationAction) {
+        viewModelScope.launch {
+            proceedWithNotificationAction(action)
+        }
+    }
+
     sealed class Command {
         data class ShowDeletedAccountScreen(val deadline: Long) : Command()
         data object LogoutDueToAccountDeletion : Command()
@@ -279,91 +288,92 @@ class MainViewModel(
 @Deprecated("Temporary class for testing purposes")
 object FakeNotificator {
     val notifications = flow {
+        val millis = System.currentTimeMillis().toString()
         delay(5000)
         emit(
             Notification(
-                id = "1",
+                id = "notification_id",
                 createTime = System.currentTimeMillis(),
-                space = SpaceId(""),
+                space = SpaceId(millis),
                 isLocal = true,
                 aclHeadId = "",
                 payload = NotificationPayload.RequestToJoin(
                     spaceName = "Android Team",
-                    spaceId = SpaceId(""),
-                    identity = "",
+                    spaceId = SpaceId(millis),
+                    identity = "default_identity_id",
                     identityIcon = "",
                     identityName = "Konstantin"
                 ),
                 status = NotificationStatus.CREATED
             )
         )
-        delay(10000)
-        emit(
-            Notification(
-                id = "2",
-                createTime = System.currentTimeMillis(),
-                space = SpaceId(""),
-                isLocal = true,
-                aclHeadId = "",
-                payload = NotificationPayload.ParticipantRequestApproved(
-                    spaceName = "Android Team",
-                    spaceId = SpaceId(""),
-                    permissions = SpaceMemberPermissions.READER
-                ),
-                status = NotificationStatus.CREATED
-            )
-        )
-        delay(10000)
-        emit(
-            Notification(
-                id = "3",
-                createTime = System.currentTimeMillis(),
-                space = SpaceId(""),
-                isLocal = true,
-                aclHeadId = "",
-                payload = NotificationPayload.ParticipantPermissionsChange(
-                    spaceName = "Android Team",
-                    spaceId = SpaceId(""),
-                    permissions = SpaceMemberPermissions.OWNER
-                ),
-                status = NotificationStatus.CREATED
-            )
-        )
-        delay(10000)
-        emit(
-            Notification(
-                id = "4",
-                createTime = System.currentTimeMillis(),
-                space = SpaceId(""),
-                isLocal = true,
-                aclHeadId = "",
-                payload = NotificationPayload.RequestToLeave(
-                    spaceName = "Android Team",
-                    spaceId = SpaceId(""),
-                    identity = "",
-                    identityIcon = "",
-                    identityName = "Konstantin"
-                ),
-                status = NotificationStatus.CREATED
-            )
-        )
-        delay(10000)
-        emit(
-            Notification(
-                id = "4",
-                createTime = System.currentTimeMillis(),
-                space = SpaceId(""),
-                isLocal = true,
-                aclHeadId = "",
-                payload = NotificationPayload.ParticipantRemove(
-                    spaceName = "Android Team",
-                    spaceId = SpaceId(""),
-                    identity = "",
-                    identityIcon = "",
-                    identityName = "Konstantin"
-                ),
-                status = NotificationStatus.CREATED
-            )
-        )
+//        delay(10000)
+//        emit(
+//            Notification(
+//                id = "2",
+//                createTime = System.currentTimeMillis(),
+//                space = SpaceId(""),
+//                isLocal = true,
+//                aclHeadId = "",
+//                payload = NotificationPayload.ParticipantRequestApproved(
+//                    spaceName = "Android Team",
+//                    spaceId = SpaceId(""),
+//                    permissions = SpaceMemberPermissions.READER
+//                ),
+//                status = NotificationStatus.CREATED
+//            )
+//        )
+//        delay(10000)
+//        emit(
+//            Notification(
+//                id = "3",
+//                createTime = System.currentTimeMillis(),
+//                space = SpaceId(""),
+//                isLocal = true,
+//                aclHeadId = "",
+//                payload = NotificationPayload.ParticipantPermissionsChange(
+//                    spaceName = "Android Team",
+//                    spaceId = SpaceId(""),
+//                    permissions = SpaceMemberPermissions.OWNER
+//                ),
+//                status = NotificationStatus.CREATED
+//            )
+//        )
+//        delay(10000)
+//        emit(
+//            Notification(
+//                id = "4",
+//                createTime = System.currentTimeMillis(),
+//                space = SpaceId(""),
+//                isLocal = true,
+//                aclHeadId = "",
+//                payload = NotificationPayload.RequestToLeave(
+//                    spaceName = "Android Team",
+//                    spaceId = SpaceId(""),
+//                    identity = "",
+//                    identityIcon = "",
+//                    identityName = "Konstantin"
+//                ),
+//                status = NotificationStatus.CREATED
+//            )
+//        )
+//        delay(10000)
+//        emit(
+//            Notification(
+//                id = "4",
+//                createTime = System.currentTimeMillis(),
+//                space = SpaceId(""),
+//                isLocal = true,
+//                aclHeadId = "",
+//                payload = NotificationPayload.ParticipantRemove(
+//                    spaceName = "Android Team",
+//                    spaceId = SpaceId(""),
+//                    identity = "",
+//                    identityIcon = "",
+//                    identityName = "Konstantin"
+//                ),
+//                status = NotificationStatus.CREATED
+//            )
+//        )
     }
 }

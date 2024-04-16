@@ -2,6 +2,8 @@ package com.anytypeio.anytype.other
 
 import android.net.Uri
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 
@@ -19,6 +21,7 @@ const val IMPORT_EXPERIENCE_DEEPLINK =
     "$DEEP_LINK_PATTERN$MAIN_PATH/$IMPORT_PATH/?$TYPE_PARAM=$TYPE_VALUE_EXPERIENCE"
 
 object DefaultDeepLinkResolver : DeepLinkResolver {
+
     override fun resolve(
         deeplink: String
     ): DeepLinkResolver.Action = when {
@@ -41,6 +44,10 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
         }
 
         else -> DeepLinkResolver.Action.Unknown
+    }
+
+    override fun createDeepLink(obj: Id, space: SpaceId): Url {
+        TODO("Not yet implemented")
     }
 }
 

@@ -1,8 +1,14 @@
 package com.anytypeio.anytype.domain.misc
 
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.primitives.SpaceId
+
 interface DeepLinkResolver {
 
     fun resolve(deeplink: String) : Action
+
+    fun createDeepLink(obj: Id, space: SpaceId) : Url
 
     sealed class Action {
         data object Unknown : Action()

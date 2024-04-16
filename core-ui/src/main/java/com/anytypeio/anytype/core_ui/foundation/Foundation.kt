@@ -172,14 +172,14 @@ fun OptionMembership(
                     Text(
                         modifier = Modifier
                             .padding(horizontal = 38.dp),
-                        text = membershipStatus.tier.name,
+                        text = membershipStatus.activeTier.name,
                         color = colorResource(R.color.text_secondary),
                         style = BodyRegular
                     )
                     Arrow()
                 }
             }
-            MembershipStatus.Unknown -> {
+            is MembershipStatus.Unknown -> {
                 Box(modifier = Modifier
                     .weight(1.0f, true),
                     contentAlignment = Alignment.CenterEnd
@@ -360,7 +360,7 @@ fun MyOptionMembership() {
         image = R.drawable.ic_membership,
         text = "Membership",
         membershipStatus = MembershipStatus.Active(
-            tier = MembershipTierData(
+            activeTier = MembershipTierData(
                 id = 1507,
                 name = "Builder",
                 description = "pulvinar",
@@ -382,7 +382,8 @@ fun MyOptionMembership() {
             status = MembershipStatusModel.STATUS_UNKNOWN,
             dateEnds = 2710,
             paymentMethod = MembershipPaymentMethod.METHOD_CRYPTO,
-            anyName = "Rickey Robbins"
+            anyName = "Rickey Robbins",
+            tiers = listOf()
         )
     )
 }

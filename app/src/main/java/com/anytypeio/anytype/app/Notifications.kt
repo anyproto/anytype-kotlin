@@ -2,23 +2,17 @@ package com.anytypeio.anytype.app
 
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.app.AnytypeNotificationService.Companion.NOTIFICATION_ID_KEY
-import com.anytypeio.anytype.app.AnytypeNotificationService.Companion.NOTIFICATION_TYPE
-import com.anytypeio.anytype.app.AnytypeNotificationService.Companion.REQUEST_TO_JOIN_TYPE
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Notification
 import com.anytypeio.anytype.core_models.NotificationPayload
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
-import com.anytypeio.anytype.presentation.notifications.NotificationAction
+import com.anytypeio.anytype.ui.main.MainActivity
 import javax.inject.Inject
 import timber.log.Timber
 
@@ -116,18 +110,34 @@ class AnytypeNotificationService @Inject constructor(
                     payload.spaceName.ifEmpty { placeholder },
                 )
 
-                val intent = Intent(context, NotificationReceiver::class.java).apply {
+//                val intent = Intent(context, NotificationReceiver::class.java).apply {
+//                    putExtra(Relations.SPACE_ID, payload.spaceId.id)
+//                    putExtra(NOTIFICATION_TYPE, REQUEST_TO_JOIN_TYPE)
+//                    putExtra(NOTIFICATION_ID_KEY, notification.id)
+//                    putExtra(Relations.IDENTITY, payload.identity)
+//                    setType(REQUEST_TO_JOIN_TYPE.toString())
+//                    setAction(Intent.ACTION_VIEW)
+//                }
+
+                val intent = Intent(context, MainActivity::class.java).apply {
                     putExtra(Relations.SPACE_ID, payload.spaceId.id)
                     putExtra(NOTIFICATION_TYPE, REQUEST_TO_JOIN_TYPE)
                     putExtra(NOTIFICATION_ID_KEY, notification.id)
                     putExtra(Relations.IDENTITY, payload.identity)
                     setType(REQUEST_TO_JOIN_TYPE.toString())
-                    setAction(Intent.ACTION_VIEW)
+                    setAction(NOTIFICATION_INTENT_ACTION)
                 }
 
                 Timber.d("Got extras before sending: ${intent.extras}")
 
-                val broadcast = PendingIntent.getBroadcast(
+//                val broadcast = PendingIntent.getBroadcast(
+//                    context,
+//                    0,
+//                    intent,
+//                    getDefaultFlags()
+//                )
+
+                val broadcast = PendingIntent.getActivity(
                     context,
                     0,
                     intent,
@@ -216,47 +226,7 @@ class AnytypeNotificationService @Inject constructor(
         const val REQUEST_DECLINED_TYPE = 3
         const val MEMBER_REMOVED_TYPE = 4
         const val PERMISSIONS_CHANGED_TYPE = 5
-    }
-}
 
-class NotificationReceiver : BroadcastReceiver() {
-    override fun onReceive(context: Context?, intent: Intent?) {
-        if (intent != null) {
-            intent.extras?.keySet().orEmpty().forEach { key ->
-                Timber.d("Got key in extras: $key")
-            }
-            when(val type = intent.getIntExtra(NOTIFICATION_TYPE, -1)) {
-                REQUEST_TO_JOIN_TYPE -> {
-                    val space = intent.getStringExtra(Relations.SPACE_ID)
-                    val identity = intent.getStringExtra(Relations.IDENTITY)
-                    if (!space.isNullOrEmpty() && !identity.isNullOrEmpty()) {
-                        val notification = intent.getStringExtra(NOTIFICATION_ID_KEY).orEmpty()
-                        NotificationActionInterceptor.onIntercept(
-                            action = NotificationAction.Multiplayer.ViewSpaceJoinRequest(
-                                notification = notification,
-                                space = SpaceId(space),
-                                identity = identity
-                            )
-                        )
-                    } else {
-                        Timber.w("Missing space or identity")
-                    }
-                }
-                else -> {
-                    context?.toast("Unknown type: $type")
-                }
-            }
-        } else {
-            Timber.w("Got empty intent in broadcast receiver")
-        }
-    }
-}
-
-object NotificationActionInterceptor {
-    var onIntercepted: (NotificationAction) -> Unit = {
-        Timber.w("No interceptor registered")
-    }
-    fun onIntercept(action: NotificationAction) {
-        onIntercepted(action)
+        const val NOTIFICATION_INTENT_ACTION = "io.anytype.app.notification-action"
     }
 }

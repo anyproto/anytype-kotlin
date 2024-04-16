@@ -30,7 +30,6 @@ interface NotificationActionDelegate {
         }
 
         private suspend fun proceedWithSpaceJoinRequest(action: NotificationAction.Multiplayer.ViewSpaceJoinRequest) {
-            systemNotificationService.cancel(action.notification)
             getSpaceMemberByIdentity.async(
                 GetSpaceMemberByIdentity.Params(
                     space = action.space,
@@ -64,6 +63,7 @@ interface NotificationActionDelegate {
                     Timber.e(it, "Error while searching space member by identity")
                 }
             )
+            systemNotificationService.cancel(action.notification)
         }
     }
 }

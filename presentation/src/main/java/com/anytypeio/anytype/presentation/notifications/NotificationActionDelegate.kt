@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.notifications
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceMemberByIdentity
 import com.anytypeio.anytype.domain.notifications.ReplyNotifications
+import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import javax.inject.Inject
 import timber.log.Timber
 
@@ -12,7 +13,8 @@ interface NotificationActionDelegate {
 
     class Default @Inject constructor(
         private val getSpaceMemberByIdentity: GetSpaceMemberByIdentity,
-        private val replyNotifications: ReplyNotifications
+        private val replyNotifications: ReplyNotifications,
+        private val systemNotificationService: SystemNotificationService
     ) : NotificationActionDelegate {
 
         override suspend fun proceedWithNotificationAction(action: NotificationAction) {
@@ -28,6 +30,7 @@ interface NotificationActionDelegate {
         }
 
         private suspend fun proceedWithSpaceJoinRequest(action: NotificationAction.Multiplayer.ViewSpaceJoinRequest) {
+            systemNotificationService.cancel(action.notification)
             getSpaceMemberByIdentity.async(
                 GetSpaceMemberByIdentity.Params(
                     space = action.space,

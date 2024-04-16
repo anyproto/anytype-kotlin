@@ -11,6 +11,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.app.AnytypeNotificationService.Companion.NOTIFICATION_ID_KEY
 import com.anytypeio.anytype.app.AnytypeNotificationService.Companion.NOTIFICATION_TYPE
 import com.anytypeio.anytype.app.AnytypeNotificationService.Companion.REQUEST_TO_JOIN_TYPE
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Notification
 import com.anytypeio.anytype.core_models.NotificationPayload
 import com.anytypeio.anytype.core_models.Relations
@@ -49,7 +50,8 @@ class AnytypeNotificationService @Inject constructor(
                     )
 
                 showBasicNotification(
-                    id = PERMISSIONS_CHANGED_TYPE,
+                    type = PERMISSIONS_CHANGED_TYPE,
+                    tag = notification.id,
                     title = title,
                     body = body,
                     actions = emptyList()
@@ -60,7 +62,8 @@ class AnytypeNotificationService @Inject constructor(
                     R.string.multiplayer_notification_member_removed_from_space
                 )
                 showBasicNotification(
-                    id = MEMBER_REMOVED_TYPE,
+                    type = MEMBER_REMOVED_TYPE,
+                    tag = notification.id,
                     body = body
                 )
             }
@@ -81,7 +84,8 @@ class AnytypeNotificationService @Inject constructor(
                     )
                 }
                 showBasicNotification(
-                    id = REQUEST_APPROVED_TYPE,
+                    type = REQUEST_APPROVED_TYPE,
+                    tag = notification.id,
                     title = title,
                     body = body
                 )
@@ -96,7 +100,8 @@ class AnytypeNotificationService @Inject constructor(
                     payload.spaceName.ifEmpty { placeholder }
                 )
                 showBasicNotification(
-                    id = REQUEST_DECLINED_TYPE,
+                    type = REQUEST_DECLINED_TYPE,
+                    tag = notification.id,
                     title = title,
                     body = body
                 )
@@ -130,7 +135,8 @@ class AnytypeNotificationService @Inject constructor(
                 )
 
                 showBasicNotification(
-                    id = REQUEST_TO_JOIN_TYPE,
+                    type = REQUEST_TO_JOIN_TYPE,
+                    tag = notification.id,
                     title = title,
                     body = body,
                     actions = buildList {
@@ -147,7 +153,8 @@ class AnytypeNotificationService @Inject constructor(
                     payload.spaceName.ifEmpty { placeholder },
                 )
                 showBasicNotification(
-                    id = REQUEST_TO_LEAVE_TYPE,
+                    type = REQUEST_TO_LEAVE_TYPE,
+                    tag = notification.id,
                     title = title,
                     body = body
                 )
@@ -158,8 +165,14 @@ class AnytypeNotificationService @Inject constructor(
         }
     }
 
+    override fun cancel(id: String) {
+        Timber.d("Cancelling notification with id: $id")
+        notificationManager.cancel(id, 0)
+    }
+
     private fun showBasicNotification(
-        id: Int,
+        type: Int,
+        tag: Id,
         title: String? = null,
         body: String,
         actions: List<NotificationCompat.Action> = emptyList()
@@ -184,7 +197,7 @@ class AnytypeNotificationService @Inject constructor(
             build()
         }
 
-        notificationManager.notify(id, notification)
+        notificationManager.notify(tag, 0, notification)
     }
 
     private fun getDefaultFlags(): Int {

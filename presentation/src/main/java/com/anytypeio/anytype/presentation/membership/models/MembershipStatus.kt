@@ -9,7 +9,7 @@ sealed class MembershipStatus {
     object Pending : MembershipStatus()
     object Finalization : MembershipStatus()
     data class Active(
-        val tier: MembershipTierData?,
+        val tier: MembershipTierData,
         val status: MembershipStatusModel,
         val dateEnds: Long,
         val paymentMethod: MembershipPaymentMethod,

@@ -57,6 +57,7 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.ui_settings.BuildConfig
 import com.anytypeio.anytype.ui_settings.R
@@ -77,7 +78,7 @@ fun ProfileSettingsScreen(
     onDataManagementClicked: () -> Unit,
     onAboutClicked: () -> Unit,
     onMembershipClicked: () -> Unit,
-    activeTierName: String?
+    membershipStatus: MembershipStatus?
 ) {
     LazyColumn(
         modifier = Modifier
@@ -131,7 +132,7 @@ fun ProfileSettingsScreen(
                     image = R.drawable.ic_membership,
                     text = stringResource(R.string.settings_membership),
                     onClick = onMembershipClicked,
-                    activeTierName = activeTierName
+                    membershipStatus = membershipStatus
                 )
             }
         }

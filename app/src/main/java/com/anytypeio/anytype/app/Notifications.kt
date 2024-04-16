@@ -14,6 +14,8 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import com.anytypeio.anytype.ui.main.MainActivity
 import javax.inject.Inject
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 import timber.log.Timber
 
 class AnytypeNotificationService @Inject constructor(
@@ -221,5 +223,7 @@ class AnytypeNotificationService @Inject constructor(
         const val PERMISSIONS_CHANGED_TYPE = 5
 
         const val NOTIFICATION_INTENT_ACTION = "io.anytype.app.notification-action"
+
+        val defaultDuration = 5L.toDuration(DurationUnit.MINUTES).inWholeMilliseconds
     }
 }

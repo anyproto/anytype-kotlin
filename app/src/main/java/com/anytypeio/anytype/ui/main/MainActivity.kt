@@ -39,8 +39,11 @@ import com.anytypeio.anytype.presentation.main.MainViewModel.Command
 import com.anytypeio.anytype.presentation.main.MainViewModelFactory
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.notifications.NotificationAction
+import com.anytypeio.anytype.presentation.notifications.NotificationCommand
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
 import com.anytypeio.anytype.ui.editor.CreateObjectFragment
+import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
+import com.anytypeio.anytype.ui.multiplayer.SpaceJoinRequestFragment
 import com.anytypeio.anytype.ui.notifications.NotificationsFragment
 import com.anytypeio.anytype.ui.sharing.SharingFragment
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
@@ -95,6 +98,35 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                 }
                 launch {
                     vm.toasts.collect { toast(it) }
+                }
+                launch {
+                    vm.dispatcher.collect { command ->
+                        when(command) {
+                            is NotificationCommand.ViewSpaceJoinRequest -> {
+                                runCatching {
+                                    findNavController(R.id.fragment).navigate(
+                                        R.id.spaceJoinRequestScreen,
+                                        SpaceJoinRequestFragment.args(
+                                            space = command.space,
+                                            member = command.member
+                                        )
+                                    )
+                                }.onFailure {
+                                    Timber.e(it, "Error while navigation")
+                                }
+                            }
+                            is NotificationCommand.ViewSpaceLeaveRequest -> {
+                                runCatching {
+                                    findNavController(R.id.fragment).navigate(
+                                        R.id.shareSpaceScreen,
+                                        ShareSpaceFragment.args(space = command.space)
+                                    )
+                                }.onFailure {
+                                    Timber.e(it, "Error while navigation")
+                                }
+                            }
+                        }
+                    }
                 }
                 launch {
                     vm.commands.collect { command ->

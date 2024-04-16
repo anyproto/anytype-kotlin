@@ -5,9 +5,13 @@ import com.anytypeio.anytype.domain.multiplayer.GetSpaceMemberByIdentity
 import com.anytypeio.anytype.domain.notifications.ReplyNotifications
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import timber.log.Timber
 
 interface NotificationActionDelegate {
+
+    val dispatcher: SharedFlow<NotificationCommand>
 
     suspend fun proceedWithNotificationAction(action: NotificationAction)
 
@@ -16,6 +20,8 @@ interface NotificationActionDelegate {
         private val replyNotifications: ReplyNotifications,
         private val systemNotificationService: SystemNotificationService
     ) : NotificationActionDelegate {
+
+        override val dispatcher: MutableSharedFlow<NotificationCommand> = MutableSharedFlow()
 
         override suspend fun proceedWithNotificationAction(action: NotificationAction) {
             Timber.d("Proceeding with notification action: $action")
@@ -50,11 +56,12 @@ interface NotificationActionDelegate {
                                 }
                             )
                         }
-                        val command = NotificationsViewModel.Command.ViewSpaceJoinRequest(
-                            space = action.space,
-                            member = member.id
+                        dispatcher.emit(
+                            NotificationCommand.ViewSpaceJoinRequest(
+                                space = action.space,
+                                member = member.id
+                            )
                         )
-                        Timber.d("Command: $command")
                     } else {
                         Timber.w("Space member not found")
                     }

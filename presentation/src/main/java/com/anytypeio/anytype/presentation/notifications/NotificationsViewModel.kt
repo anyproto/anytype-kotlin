@@ -290,3 +290,8 @@ sealed class NotificationAction {
         ) : Multiplayer()
     }
 }
+
+sealed class NotificationCommand {
+    data class ViewSpaceJoinRequest(val space: SpaceId, val member: Id) : NotificationCommand()
+    data class ViewSpaceLeaveRequest(val space: SpaceId) : NotificationCommand()
+}

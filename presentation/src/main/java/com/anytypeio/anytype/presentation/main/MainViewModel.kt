@@ -9,11 +9,8 @@ import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Notification
 import com.anytypeio.anytype.core_models.NotificationPayload
-import com.anytypeio.anytype.core_models.NotificationStatus
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
-import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
-import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.Logout
@@ -37,7 +34,6 @@ import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
@@ -102,14 +98,6 @@ class MainViewModel(
                 }
             }
         }
-
-        // TODO uncomment to test notifications
-//        viewModelScope.launch {
-//             FakeNotificator.notifications.collect {
-//                 Timber.d("onNewFakeNotification: ${it}")
-//                 notificator.notify(it)
-//             }
-//        }
     }
 
     private suspend fun handleNotification(event: Notification.Event) {
@@ -283,98 +271,5 @@ class MainViewModel(
 
     companion object {
         const val DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN = 200L
-    }
-}
-
-@Deprecated("Temporary class for testing purposes")
-object FakeNotificator {
-    val notifications = flow {
-        val millis = System.currentTimeMillis().toString()
-        delay(5000)
-        emit(
-            Notification(
-                id = "notification_id",
-                createTime = System.currentTimeMillis(),
-                space = SpaceId(millis),
-                isLocal = true,
-                aclHeadId = "",
-                payload = NotificationPayload.RequestToJoin(
-                    spaceName = "Android Team",
-                    spaceId = SpaceId(millis),
-                    identity = "default_identity_id",
-                    identityIcon = "",
-                    identityName = "Konstantin"
-                ),
-                status = NotificationStatus.CREATED
-            )
-        )
-        delay(10000)
-        emit(
-            Notification(
-                id = "2",
-                createTime = System.currentTimeMillis(),
-                space = SpaceId(""),
-                isLocal = true,
-                aclHeadId = "",
-                payload = NotificationPayload.ParticipantRequestApproved(
-                    spaceName = "Android Team",
-                    spaceId = SpaceId(""),
-                    permissions = SpaceMemberPermissions.READER
-                ),
-                status = NotificationStatus.CREATED
-            )
-        )
-        delay(10000)
-        emit(
-            Notification(
-                id = "3",
-                createTime = System.currentTimeMillis(),
-                space = SpaceId(""),
-                isLocal = true,
-                aclHeadId = "",
-                payload = NotificationPayload.ParticipantPermissionsChange(
-                    spaceName = "Android Team",
-                    spaceId = SpaceId(""),
-                    permissions = SpaceMemberPermissions.OWNER
-                ),
-                status = NotificationStatus.CREATED
-            )
-        )
-        delay(10000)
-        emit(
-            Notification(
-                id = "4",
-                createTime = System.currentTimeMillis(),
-                space = SpaceId(""),
-                isLocal = true,
-                aclHeadId = "",
-                payload = NotificationPayload.RequestToLeave(
-                    spaceName = "Android Team",
-                    spaceId = SpaceId(""),
-                    identity = "",
-                    identityIcon = "",
-                    identityName = "Konstantin"
-                ),
-                status = NotificationStatus.CREATED
-            )
-        )
-        delay(10000)
-        emit(
-            Notification(
-                id = "4",
-                createTime = System.currentTimeMillis(),
-                space = SpaceId(""),
-                isLocal = true,
-                aclHeadId = "",
-                payload = NotificationPayload.ParticipantRemove(
-                    spaceName = "Android Team",
-                    spaceId = SpaceId(""),
-                    identity = "",
-                    identityIcon = "",
-                    identityName = "Konstantin"
-                ),
-                status = NotificationStatus.CREATED
-            )
-        )
     }
 }

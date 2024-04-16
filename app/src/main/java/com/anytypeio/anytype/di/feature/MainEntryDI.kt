@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
@@ -67,7 +68,8 @@ object MainEntryModule {
         spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
         localeProvider: LocaleProvider,
         userPermissionProvider: UserPermissionProvider,
-        notificationsProvider: NotificationsProvider
+        notificationsProvider: NotificationsProvider,
+        notificator: SystemNotificationService
     ): MainViewModelFactory = MainViewModelFactory(
         resumeAccount = resumeAccount,
         analytics = analytics,
@@ -82,7 +84,8 @@ object MainEntryModule {
         spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
         localeProvider = localeProvider,
         userPermissionProvider = userPermissionProvider,
-        notificationsProvider = notificationsProvider
+        notificationsProvider = notificationsProvider,
+        notificator = notificator
     )
 
     @JvmStatic

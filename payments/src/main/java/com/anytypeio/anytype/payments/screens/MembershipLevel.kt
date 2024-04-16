@@ -644,7 +644,7 @@ private fun ButtonPay(enabled: Boolean, actionPay: () -> Unit) {
 fun MyLevel() {
     MembershipLevels(
         tier = Tier.Explorer(
-            id = TierId("121"),
+            id = TierId(1),
             isCurrent = true,
             price = "$99",
             validUntil = "12/12/2025",

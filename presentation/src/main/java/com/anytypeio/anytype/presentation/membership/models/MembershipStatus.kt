@@ -18,4 +18,4 @@ sealed class MembershipStatus {
 }
 
 @JvmInline
-value class TierId(val value: String)
+value class TierId(val value: Int)

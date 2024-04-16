@@ -58,9 +58,9 @@ import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.payments.R
-import com.anytypeio.anytype.payments.models.Tier
+import com.anytypeio.anytype.presentation.membership.models.Tier
 import com.anytypeio.anytype.payments.viewmodel.PaymentsTierState
-import com.anytypeio.anytype.payments.viewmodel.TierId
+import com.anytypeio.anytype.presentation.membership.models.TierId
 
 
 @OptIn(ExperimentalMaterial3Api::class)

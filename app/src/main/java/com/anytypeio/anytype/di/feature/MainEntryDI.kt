@@ -25,6 +25,7 @@ import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
 import com.anytypeio.anytype.domain.wallpaper.WallpaperStore
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.main.MainViewModelFactory
+import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
 import com.anytypeio.anytype.ui.main.MainActivity
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
@@ -67,7 +68,8 @@ object MainEntryModule {
         spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
         localeProvider: LocaleProvider,
         userPermissionProvider: UserPermissionProvider,
-        notificationsProvider: NotificationsProvider
+        notificationsProvider: NotificationsProvider,
+        membershipProvider: MembershipProvider
     ): MainViewModelFactory = MainViewModelFactory(
         resumeAccount = resumeAccount,
         analytics = analytics,
@@ -82,7 +84,8 @@ object MainEntryModule {
         spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
         localeProvider = localeProvider,
         userPermissionProvider = userPermissionProvider,
-        notificationsProvider = notificationsProvider
+        notificationsProvider = notificationsProvider,
+        membershipProvider = membershipProvider
     )
 
     @JvmStatic

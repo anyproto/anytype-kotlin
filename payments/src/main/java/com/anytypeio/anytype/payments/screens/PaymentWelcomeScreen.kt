@@ -27,9 +27,9 @@ import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.payments.R
-import com.anytypeio.anytype.payments.models.Tier
+import com.anytypeio.anytype.presentation.membership.models.Tier
 import com.anytypeio.anytype.payments.viewmodel.PaymentsWelcomeState
-import com.anytypeio.anytype.payments.viewmodel.TierId
+import com.anytypeio.anytype.presentation.membership.models.TierId
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

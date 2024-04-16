@@ -37,7 +37,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.fontInterSemibold
-import com.anytypeio.anytype.payments.models.Tier
+import com.anytypeio.anytype.presentation.membership.models.Tier
 
 @Composable
 fun TierView(

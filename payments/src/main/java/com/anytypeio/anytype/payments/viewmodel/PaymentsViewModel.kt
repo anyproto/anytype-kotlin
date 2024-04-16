@@ -7,9 +7,12 @@ import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
+import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.payments.GetMembershipTiers
 import com.anytypeio.anytype.payments.constants.BillingConstants
-import com.anytypeio.anytype.payments.models.Tier
+import com.anytypeio.anytype.presentation.membership.models.Tier
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
+import com.anytypeio.anytype.presentation.membership.models.TierId
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -19,7 +22,8 @@ import timber.log.Timber
 class PaymentsViewModel(
     private val analytics: Analytics,
     private val billingClientLifecycle: BillingClientLifecycle,
-    private val getAccount: GetAccount
+    private val getAccount: GetAccount,
+    private val getMembershipTiers: GetMembershipTiers
 ) : ViewModel() {
 
     val viewState = MutableStateFlow<PaymentsMainState>(PaymentsMainState.Loading)
@@ -50,9 +54,19 @@ class PaymentsViewModel(
 
     init {
         Timber.d("PaymentsViewModel init")
-        _tiers.addAll(gertTiers())
+        proceedWithGetTiers()
         setupActiveTierName()
-        viewState.value = PaymentsMainState.Default(_tiers)
+    }
+
+    private fun proceedWithGetTiers() {
+        viewModelScope.launch {
+            getMembershipTiers.async(GetMembershipTiers.Params("en", false)).fold(
+                onSuccess = { result ->
+                    ///todo handle the result
+                },
+                onFailure = Timber::e
+            )
+        }
     }
 
     fun onTierClicked(tierId: TierId) {

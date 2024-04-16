@@ -68,6 +68,9 @@ class AnytypeNotificationService @Inject constructor(
                 val title = context.resources.getString(
                     R.string.multiplayer_notification_member_request_approved
                 )
+                val actionTitle = context.resources.getString(
+                    R.string.multiplayer_notification_go_to_space
+                )
                 val body = if (payload.permissions.isOwnerOrEditor()) {
                     context.resources.getString(
                         R.string.multiplayer_notification_member_request_approved_with_edit_rights,
@@ -79,10 +82,27 @@ class AnytypeNotificationService @Inject constructor(
                         payload.spaceName.ifEmpty { placeholder }
                     )
                 }
+                val intent = Intent(context, MainActivity::class.java).apply {
+                    putExtra(Relations.SPACE_ID, payload.spaceId.id)
+                    putExtra(NOTIFICATION_TYPE, REQUEST_APPROVED_TYPE)
+                    putExtra(NOTIFICATION_ID_KEY, notification.id)
+                    setType(REQUEST_APPROVED_TYPE.toString())
+                    setAction(NOTIFICATION_INTENT_ACTION)
+                }
+
+                val activity = PendingIntent.getActivity(
+                    context,
+                    0,
+                    intent,
+                    getDefaultFlags()
+                )
                 showBasicNotification(
                     tag = notification.id,
                     title = title,
-                    body = body
+                    body = body,
+                    actions = buildList {
+                        add(NotificationCompat.Action(0, actionTitle, activity))
+                    }
                 )
             }
             is NotificationPayload.ParticipantRequestDecline -> {
@@ -224,6 +244,6 @@ class AnytypeNotificationService @Inject constructor(
 
         const val NOTIFICATION_INTENT_ACTION = "io.anytype.app.notification-action"
 
-        val defaultDuration = 5L.toDuration(DurationUnit.MINUTES).inWholeMilliseconds
+        val defaultDuration = 1L.toDuration(DurationUnit.HOURS).inWholeMilliseconds
     }
 }

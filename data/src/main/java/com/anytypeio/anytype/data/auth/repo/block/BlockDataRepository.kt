@@ -906,6 +906,10 @@ class BlockDataRepository(
         return remote.deleteRelationOption(command)
     }
 
+    override suspend fun makeSpaceShareable(space: SpaceId) {
+        remote.makeSpaceShareable(space)
+    }
+
     override suspend fun generateSpaceInviteLink(space: SpaceId): SpaceInviteLink {
         return remote.generateSpaceInviteLink(space)
     }

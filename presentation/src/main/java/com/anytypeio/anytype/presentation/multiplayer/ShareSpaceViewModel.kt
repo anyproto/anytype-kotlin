@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.multiplayer.ApproveLeaveSpaceRequest
 import com.anytypeio.anytype.domain.multiplayer.ChangeSpaceMemberPermissions
 import com.anytypeio.anytype.domain.multiplayer.GenerateSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
+import com.anytypeio.anytype.domain.multiplayer.MakeSpaceShareable
 import com.anytypeio.anytype.domain.multiplayer.RemoveSpaceMembers
 import com.anytypeio.anytype.domain.multiplayer.RevokeSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.StopSharingSpace
@@ -40,6 +41,7 @@ import timber.log.Timber
 
 class ShareSpaceViewModel(
     private val params: Params,
+    private val makeSpaceShareable: MakeSpaceShareable,
     private val getSpaceInviteLink: GetSpaceInviteLink,
     private val generateSpaceInviteLink: GenerateSpaceInviteLink,
     private val revokeSpaceInviteLink: RevokeSpaceInviteLink,
@@ -50,7 +52,7 @@ class ShareSpaceViewModel(
     private val container: StorelessSubscriptionContainer,
     private val permissions: UserPermissionProvider,
     private val getAccount: GetAccount,
-    private val urlBuilder: UrlBuilder,
+    private val urlBuilder: UrlBuilder
 ) : BaseViewModel() {
 
     val members = MutableStateFlow<List<ShareSpaceMemberView>>(emptyList())
@@ -150,6 +152,18 @@ class ShareSpaceViewModel(
 
     private fun proceedWithGeneratingInviteLink() {
         viewModelScope.launch {
+            if (spaceAccessType.value == SpaceAccessType.PRIVATE) {
+                makeSpaceShareable.async(
+                    params = params.space
+                ).fold(
+                    onSuccess = {
+                        Timber.d("Successfully made space shareable")
+                    },
+                    onFailure = {
+                        Timber.e(it, "Error while making space shareable")
+                    }
+                )
+            }
             generateSpaceInviteLink
                 .async(params.space)
                 .fold(
@@ -312,7 +326,7 @@ class ShareSpaceViewModel(
     fun onStopSharingSpaceClicked() {
         Timber.d("onStopSharingClicked")
         viewModelScope.launch {
-            if (isCurrentUserOwner.value && shareLinkViewState.value is ShareLinkViewState.Shared) {
+            if (isCurrentUserOwner.value && spaceAccessType.value == SpaceAccessType.SHARED) {
                 viewModelScope.launch {
                     commands.emit(Command.ShowStopSharingWarning)
                 }
@@ -325,7 +339,7 @@ class ShareSpaceViewModel(
     fun onStopSharingAccepted() {
         Timber.d("onStopSharingAccepted")
         viewModelScope.launch {
-            if (isCurrentUserOwner.value && shareLinkViewState.value is ShareLinkViewState.Shared) {
+            if (isCurrentUserOwner.value && spaceAccessType.value == SpaceAccessType.SHARED) {
                 stopSharingSpace.async(
                     params = params.space
                 ).fold(
@@ -365,7 +379,9 @@ class ShareSpaceViewModel(
                     params = params.space
                 ).fold(
                     onSuccess = {
-                        Timber.d("Revoked space invite link")
+                        Timber.d("Revoked space invite link").also {
+                            shareLinkViewState.value = ShareLinkViewState.NotGenerated
+                        }
                     },
                     onFailure = { e ->
                         Timber.e(e, "Error while revoking space invite link").also {
@@ -403,6 +419,7 @@ class ShareSpaceViewModel(
 
     class Factory @Inject constructor(
         private val params: Params,
+        private val makeSpaceShareable: MakeSpaceShareable,
         private val generateSpaceInviteLink: GenerateSpaceInviteLink,
         private val revokeSpaceInviteLink: RevokeSpaceInviteLink,
         private val changeSpaceMemberPermissions: ChangeSpaceMemberPermissions,
@@ -428,7 +445,8 @@ class ShareSpaceViewModel(
             getAccount = getAccount,
             getSpaceInviteLink = getSpaceInviteLink,
             approveLeaveSpaceRequest = approveLeaveSpaceRequest,
-            permissions = permissions
+            permissions = permissions,
+            makeSpaceShareable = makeSpaceShareable
         ) as T
     }
 

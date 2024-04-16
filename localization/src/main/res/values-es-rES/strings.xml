@@ -48,7 +48,7 @@
     <string name="about_meta_info_for_copy">Dispositivo: %1$s\nVersión de Android: %2$d\nVersión de la aplicación: %3$s\nNúmero de compilación: %4$d\nVersión de la biblioteca: %5$s\nCuenta\u00A0ID:\u00A0%6$s\nDispositivo\u00A0ID:\u00A0%7$s\nAnálisis\u00A0ID:\u00A0%8$s</string>
     <string name="space">Espacio</string>
     <string name="space_name">Nombre del espacio</string>
-    <string name="default_space">Default space</string>
+    <string name="default_space">Espacio predeterminado</string>
     <string name="space_settings_apply_random_gradient">Aplicar degradado aleatorio</string>
     <string name="delete_space">Eliminar \'\' espacio</string>
     <string name="you_can_store">Puede almacenar hasta %1$s de sus archivos en nuestro nodo de copia de seguridad cifrado de forma gratuita. Si alcanza el límite, los archivos se almacenarán sólo localmente.</string>
@@ -825,7 +825,7 @@
     <string name="anytype_update_alert_title">¡Es la hora de actualizar!</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
     <string name="space_type_default">Por defecto</string>
-    <string name="space_type_default_space">Default space</string>
+    <string name="space_type_default_space">Espacio predeterminado</string>
     <string name="space_type_private">Privado</string>
     <string name="space_type_private_space">Espacio privado</string>
     <string name="space_type_shared">Compartido</string>
@@ -1061,7 +1061,7 @@
     <string name="relation_origin_bookmark">Marcador</string>
     <!--endregion-->
     <plurals name="backlinks_count">
-        <item quantity="one">%d backlink</item>
+        <item quantity="one">%d enlace</item>
         <item quantity="other">%d backlinks</item>
     </plurals>
     <plurals name="links_from_count">
@@ -1141,7 +1141,7 @@
     <string name="multiplayer_view_request">Ver solicitud</string>
     <string name="multiplayer_owner">Propietario</string>
     <string name="multiplayer_can_edit">Puede editar</string>
-    <string name="multiplayer_can_view">Can view</string>
+    <string name="multiplayer_can_view">Se puede ver</string>
     <string name="multiplayer_space_add_viewer">Añadir espectador</string>
     <string name="multiplayer_space_add_editor">Agregar editor</string>
     <string name="multiplayer_space_request_reject">Rechazar</string>
@@ -1150,43 +1150,43 @@
     <string name="multiplayer_request_sent_toast">Solicitud enviada</string>
     <string name="multiplayer_space_stop_sharing">Dejar de compartir</string>
     <string name="multiplayer_space_stop_sharing_space">Dejar de compartir el espacio</string>
-    <string name="multiplayer_space_stop_sharing_space_description">Participants will no longer sync to this space and the share link will be deactivated.</string>
-    <string name="multiplayer_more_info">More info</string>
+    <string name="multiplayer_space_stop_sharing_space_description">Los miembros ya no se sincronizarán con este espacio y el enlace compartido se desactivará.</string>
+    <string name="multiplayer_more_info">Más información</string>
     <string name="multiplayer_sharing">Compartir</string>
-    <string name="multiplayer_space_type">Space type</string>
+    <string name="multiplayer_space_type">Tipo de espacio</string>
     <string name="multiplayer_share">Compartir</string>
     <string name="multiplayer_manage">Organizar</string>
     <string name="multiplayer_leave_space">Abandonar espacio</string>
-    <string name="multiplayer_leave_space_warning_subtitle">This space will be removed from your devices  and you will no longer have access to it</string>
+    <string name="multiplayer_leave_space_warning_subtitle">Este espacio será eliminado de tus dispositivos y ya dejarás de tener acceso a él</string>
     <string name="multiplayer_generate_invite_link_description">Crear enlace de invitación para compartir espacio y añadir nuevos miembros</string>
     <string name="multiplayer_generate_invite_link">Generar enlace de invitación</string>
     <string name="multiplayer_show_qr_code">Mostrar el código QR</string>
-    <string name="multiplayer_how_to_share_space">How to share a space?</string>
-    <string name="multiplayer_how_to_share_space_step_1">Please provide the link to the person you\'d like to collaborate with.</string>
-    <string name="multiplayer_how_to_share_space_qr_code">Show this QR code to the person you\'d like to collaborate with.</string>
-    <string name="multiplayer_how_to_share_space_step_2">By clicking the link, a person requests to join the space.</string>
-    <string name="multiplayer_how_to_share_space_step_3">After approving the request, you can choose the access rights for that person.</string>
-    <string name="multiplayer_delete_space_sharing_link">Delete sharing link</string>
+    <string name="multiplayer_how_to_share_space">¿Cómo compartir un espacio?</string>
+    <string name="multiplayer_how_to_share_space_step_1">Por favor, proporciona el enlace a la persona con la que te gustaría colaborar.</string>
+    <string name="multiplayer_how_to_share_space_qr_code">Muestra este código QR a la persona con la que te gustaría colaborar.</string>
+    <string name="multiplayer_how_to_share_space_step_2">Al hacer clic en el enlace, una persona solicita unirse al espacio.</string>
+    <string name="multiplayer_how_to_share_space_step_3">Después de aprobar la solicitud, puedes elegir los derechos de acceso para esa persona.</string>
+    <string name="multiplayer_delete_space_sharing_link">Eliminar enlace compartido</string>
     <string name="multiplayer_delete_link">Eliminar enlace</string>
-    <string name="multiplayer_delete_link_description">New members won’t be able to join the space. You can generate a new link anytime.</string>
-    <string name="multiplayer_already_space_member">You are already a member of this space</string>
+    <string name="multiplayer_delete_link_description">No podrán unirse al espacio nuevos miembros. Puedes generar un nuevo enlace en cualquier momento.</string>
+    <string name="multiplayer_already_space_member">Ya eres miembro de este espacio</string>
     <string name="multiplayer_open_space">Abrir espacio</string>
-    <string name="multiplayer_error_space_deleted">Space deleted</string>
-    <string name="multiplayer_error_space_not_found">Space not found</string>
-    <string name="multiplayer_read_only_access_error">Read-only access. Contact space owner for changes.</string>
-    <string name="multiplayer_notification_member_user_sends_join_request">%1$s requested to join the %2$s space.</string>
-    <string name="multiplayer_notification_member_user_sends_leave_request">%1$s requested to leave the %2$s space.</string>
-    <string name="multiplayer_notification_new_join_request">New join request</string>
-    <string name="multiplayer_notification_member_joined_space_with_read_only_rights">%1$s joined %2$s space with read-only access rights</string>
-    <string name="multiplayer_notification_member_joined_space_with_editor_only_rights">%1$s joined %2$s space with edit access rights</string>
-    <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Your request to join the %1$s space has been approved with read-only access rights. The space will be available on your device soon.</string>
-    <string name="multiplayer_notification_member_request_approved_with_edit_rights">Your request to join the %1$s space has been approved with edit access rights. The space will be available on your device soon.</string>
+    <string name="multiplayer_error_space_deleted">Espacio eliminado</string>
+    <string name="multiplayer_error_space_not_found">Espacio no encontrado</string>
+    <string name="multiplayer_read_only_access_error">Acceso de solo lectura. Contacte al propietario del espacio para cambiarlo.</string>
+    <string name="multiplayer_notification_member_user_sends_join_request">%1$s ha solicitado unirse al espacio %2$s.</string>
+    <string name="multiplayer_notification_member_user_sends_leave_request">%1$s ha solicitado abandonar el espacio %2$s.</string>
+    <string name="multiplayer_notification_new_join_request">Nueva solicitud para unirse</string>
+    <string name="multiplayer_notification_member_joined_space_with_read_only_rights">%1$s se unió al espacio %2$s con derechos de acceso de solo lectura</string>
+    <string name="multiplayer_notification_member_joined_space_with_editor_only_rights">%1$s se unió al espacio %2$s con derechos de acceso de edición</string>
+    <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Tu solicitud para unirte al espacio %1$s ha sido aprobada con derechos de solo lectura. El espacio estará disponible en tu cuenta pronto.</string>
+    <string name="multiplayer_notification_member_request_approved_with_edit_rights">Tu solicitud para unirte al espacio %1$s ha sido aprobada con derechos de acceso de edición. El espacio estará disponible en tu cuenta pronto.</string>
     <string name="multiplayer_notification_member_removed_from_space">Fuiste eliminado del espacio o el espacio ha sido eliminado por el propietario.</string>
-    <string name="multiplayer_notification_member_permission_change_read">Your access rights were changed to read-only in the %1$s space.</string>
-    <string name="multiplayer_notification_member_permission_change_edit">Your access rights were changed to edit in the %1$s space.</string>
-    <string name="multiplayer_notification_member_join_request_declined">Your request to join the %1$s space has been declined.</string>
+    <string name="multiplayer_notification_member_permission_change_read">Se han cambiado tus derechos de acceso a solo lectura en el espacio %1$s.</string>
+    <string name="multiplayer_notification_member_permission_change_edit">Se han cambiado tus derechos de acceso para editar en el espacio %1$s.</string>
+    <string name="multiplayer_notification_member_join_request_declined">Tu solicitud para unirte al espacio %1$s ha sido rechazada.</string>
     <string name="multiplayer_notification_view_request">Ver</string>
-    <string name="multiplayer_toast_permission_not_allowed">Changing permissions is not allowed</string>
+    <string name="multiplayer_toast_permission_not_allowed">No está permitido cambiar permisos</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Membresía</string>
@@ -1262,7 +1262,7 @@
     <string name="payments_code_resend_in">Reenviar en %1$n seg</string>
     <!-- Payments Welcome -->
     <string name="payments_welcome_title">Te damos la bienvenida a la red, %1$s</string>
-    <string name="payments_welcome_subtitle">Big cheers for your curiosity!</string>
+    <string name="payments_welcome_subtitle">¡Enhorabuena por tu curiosidad!</string>
     <string name="payments_welcome_button">Siguiente</string>
     <!-- Notifications -->
     <string name="notifications_alert_error_unknown">Ha ocurrido un error desconocido. Por favor, inténtalo más tarde.</string>

@@ -80,7 +80,8 @@ sealed class ObjectSetCommand {
         ) : Modal()
 
         data class OpenCoverActionMenu(
-            val ctx: Id
+            val ctx: Id,
+            val space: Id
         ) : Modal()
 
         data class OpenDataViewSelectQueryScreen(

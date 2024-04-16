@@ -1,6 +1,8 @@
 package com.anytypeio.anytype.app
 
 import android.app.Application
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.os.StrictMode.VmPolicy
@@ -58,6 +60,7 @@ class AndroidApplication : Application(), HasComponentDependencies {
         setupTimber()
         setupCrashReporter()
         setupLocalNetworkAddressHandler()
+        setupNotificationChannel()
     }
 
     private fun enableStrictMode() {
@@ -94,5 +97,24 @@ class AndroidApplication : Application(), HasComponentDependencies {
     private fun setupLocalNetworkAddressHandler() {
         localNetworkAddressHandler.start()
         discoveryManager.setup()
+    }
+    private fun setupNotificationChannel() {
+        val notificationChannel = NotificationChannel(
+            NOTIFICATION_CHANNEL_ID,
+            NOTIFICATION_CHANNEL_NAME,
+            NotificationManager.IMPORTANCE_HIGH
+        )
+
+        notificationChannel.description = NOTIFICATION_CHANNEL_DESCRIPTION
+
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(notificationChannel)
+    }
+
+
+    companion object {
+        const val NOTIFICATION_CHANNEL_ID = "anytype_notification_channel"
+        const val NOTIFICATION_CHANNEL_NAME = "Local Anytype notifications"
+        const val NOTIFICATION_CHANNEL_DESCRIPTION = "Important notifications from Anytype, including collaboration events in multiplayer mode"
     }
 }

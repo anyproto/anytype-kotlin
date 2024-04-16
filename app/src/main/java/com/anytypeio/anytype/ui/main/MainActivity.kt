@@ -144,7 +144,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                             is Command.Error -> {
                                 toast(command.msg)
                             }
-                            Command.Notifications -> {
+                            is Command.Notifications -> {
                                 NotificationsFragment().show(supportFragmentManager, null)
                             }
                         }

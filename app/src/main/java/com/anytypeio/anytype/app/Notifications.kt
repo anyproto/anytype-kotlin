@@ -180,8 +180,6 @@ class AnytypeNotificationService @Inject constructor(
         actions: List<NotificationCompat.Action> = emptyList()
     ) {
         Timber.d("Attempt to show notification")
-        Timber.d("With actions: $actions")
-
         val builder = NotificationCompat.Builder(
             context,
             AndroidApplication.NOTIFICATION_CHANNEL_ID

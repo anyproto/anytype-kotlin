@@ -30,7 +30,7 @@ interface NotificationActionDelegate {
                     proceedWithSpaceJoinRequest(action)
                 }
                 is NotificationAction.Multiplayer.ViewSpaceLeaveRequest -> {
-                    TODO()
+                    proceedWithSpaceLeaveRequest(action)
                 }
             }
         }
@@ -70,6 +70,21 @@ interface NotificationActionDelegate {
                     Timber.e(it, "Error while searching space member by identity")
                 }
             )
+            systemNotificationService.cancel(action.notification)
+        }
+
+        private suspend fun proceedWithSpaceLeaveRequest(action: NotificationAction.Multiplayer.ViewSpaceLeaveRequest) {
+            replyNotifications.async(
+                params = listOf(action.notification)
+            ).fold(
+                onSuccess = {
+                    Timber.d("Replied notification: ${action.notification}")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while replying notification")
+                }
+            )
+            dispatcher.emit(NotificationCommand.ViewSpaceLeaveRequest(space = action.space,))
             systemNotificationService.cancel(action.notification)
         }
     }

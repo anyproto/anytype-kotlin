@@ -328,6 +328,21 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                     Timber.w("Missing space or identity")
                 }
             }
+            AnytypeNotificationService.REQUEST_TO_LEAVE_TYPE -> {
+                val space = intent.getStringExtra(Relations.SPACE_ID)
+                val identity = intent.getStringExtra(Relations.IDENTITY)
+                if (!space.isNullOrEmpty() && !identity.isNullOrEmpty()) {
+                    val notification = intent.getStringExtra(AnytypeNotificationService.NOTIFICATION_ID_KEY).orEmpty()
+                    vm.onInterceptNotificationAction(
+                        action = NotificationAction.Multiplayer.ViewSpaceLeaveRequest(
+                            notification = notification,
+                            space = SpaceId(space)
+                        )
+                    )
+                } else {
+                    Timber.w("Missing space or identity")
+                }
+            }
             else -> {
                 toast("Unknown type: $type")
             }

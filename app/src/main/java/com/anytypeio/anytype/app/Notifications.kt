@@ -25,7 +25,6 @@ class AnytypeNotificationService @Inject constructor(
     override fun notify(
         notification: Notification
     ) {
-        Timber.d("Notify: $notification")
         when(val payload = notification.payload) {
             is NotificationPayload.ParticipantPermissionsChange -> {
                 val placeholder = context.resources.getString(R.string.untitled)
@@ -134,15 +133,33 @@ class AnytypeNotificationService @Inject constructor(
             is NotificationPayload.RequestToLeave -> {
                 val placeholder = context.resources.getString(R.string.untitled)
                 val title = context.resources.getString(R.string.multiplayer_leave_request)
+                val actionTitle = context.resources.getString(R.string.multiplayer_view_request)
                 val body = context.resources.getString(
                     R.string.multiplayer_notification_member_user_sends_leave_request,
                     payload.identityName.ifEmpty { placeholder },
                     payload.spaceName.ifEmpty { placeholder },
                 )
+                val intent = Intent(context, MainActivity::class.java).apply {
+                    putExtra(Relations.SPACE_ID, payload.spaceId.id)
+                    putExtra(NOTIFICATION_TYPE, REQUEST_TO_LEAVE_TYPE)
+                    putExtra(NOTIFICATION_ID_KEY, notification.id)
+                    putExtra(Relations.IDENTITY, payload.identity)
+                    setType(REQUEST_TO_LEAVE_TYPE.toString())
+                    setAction(NOTIFICATION_INTENT_ACTION)
+                }
+                val activity = PendingIntent.getActivity(
+                    context,
+                    0,
+                    intent,
+                    getDefaultFlags()
+                )
                 showBasicNotification(
                     tag = notification.id,
                     title = title,
-                    body = body
+                    body = body,
+                    actions = buildList {
+                        add(NotificationCompat.Action(0, actionTitle, activity))
+                    }
                 )
             }
             else -> {

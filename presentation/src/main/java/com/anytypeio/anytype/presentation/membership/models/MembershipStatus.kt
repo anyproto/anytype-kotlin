@@ -5,15 +5,23 @@ import com.anytypeio.anytype.core_models.membership.MembershipStatusModel
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
 
 sealed class MembershipStatus {
-    object Unknown : MembershipStatus()
-    object Pending : MembershipStatus()
-    object Finalization : MembershipStatus()
+    abstract val tiers: List<MembershipTierData>
+    data class Unknown(
+        override val tiers: List<MembershipTierData>
+    ) : MembershipStatus()
+    data class Pending(
+        override val tiers: List<MembershipTierData>
+    ) : MembershipStatus()
+    data class Finalization(
+        override val tiers: List<MembershipTierData>
+    ) : MembershipStatus()
     data class Active(
-        val tier: MembershipTierData,
+        val activeTier: MembershipTierData,
         val status: MembershipStatusModel,
         val dateEnds: Long,
         val paymentMethod: MembershipPaymentMethod,
-        val anyName: String
+        val anyName: String,
+        override val tiers: List<MembershipTierData>
     ) : MembershipStatus()
 }
 

@@ -82,15 +82,15 @@ interface MembershipProvider {
             tiers: List<MembershipTierData>
         ): MembershipStatus {
             return when (membership?.membershipStatusModel) {
-                STATUS_PENDING -> MembershipStatus.Pending
-                STATUS_PENDING_FINALIZATION -> MembershipStatus.Finalization
+                STATUS_PENDING -> MembershipStatus.Pending(tiers)
+                STATUS_PENDING_FINALIZATION -> MembershipStatus.Finalization(tiers)
                 STATUS_ACTIVE -> toActiveMembershipStatus(membership, tiers)
                 STATUS_UNKNOWN, null -> {
                     Timber.e("Invalid or unknown membership status")
-                    MembershipStatus.Unknown
+                    MembershipStatus.Unknown(tiers)
                 }
 
-                else -> MembershipStatus.Unknown
+                else -> MembershipStatus.Unknown(tiers)
             }
         }
 
@@ -101,15 +101,16 @@ interface MembershipProvider {
             val tier = tiers.firstOrNull { it.id == membership.tier }
             return if (tier != null) {
                 MembershipStatus.Active(
-                    tier = tier,
+                    activeTier = tier,
                     status = membership.membershipStatusModel,
                     dateEnds = membership.dateEnds,
                     paymentMethod = membership.paymentMethod,
-                    anyName = membership.requestedAnyName
+                    anyName = membership.requestedAnyName,
+                    tiers = tiers
                 )
             } else {
                 Timber.e("Membership tier not found: ${membership.tier}")
-                MembershipStatus.Unknown
+                MembershipStatus.Unknown(tiers)
             }
         }
 

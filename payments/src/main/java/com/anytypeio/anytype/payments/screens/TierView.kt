@@ -21,7 +21,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -37,6 +36,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.fontInterSemibold
+import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.membership.models.Tier
 
 @Composable
@@ -153,9 +153,8 @@ fun mapTierToResources(tier: Tier?): TierResources? {
             subtitle = stringResource(id = R.string.payments_tier_builder_description),
             mediumIcon = R.drawable.logo_builder_96,
             smallIcon = R.drawable.logo_builder_64,
-            colorGradient = Color(0xFFE4E7FF),
-            radialGradient = Color(0xFFA5AEFF),
-            benefits = stringArrayResource(id = R.array.payments_benefits_builder).toList()
+            colors = toValue(tier.color),
+            features = tier.features
         )
 
         is Tier.CoCreator -> TierResources(
@@ -163,18 +162,16 @@ fun mapTierToResources(tier: Tier?): TierResources? {
             subtitle = stringResource(id = R.string.payments_tier_cocreator_description),
             mediumIcon = R.drawable.logo_co_creator_96,
             smallIcon = R.drawable.logo_co_creator_64,
-            colorGradient = Color(0xFFFBEAEA),
-            radialGradient = Color(0xFFF05F5F),
-            benefits = stringArrayResource(id = R.array.payments_benefits_cocreator).toList()
+            colors = toValue(tier.color),
+            features = tier.features
         )
 
         is Tier.Custom -> TierResources(
             title = stringResource(id = R.string.payments_tier_custom),
             subtitle = stringResource(id = R.string.payments_tier_custom_description),
             smallIcon = R.drawable.logo_custom_64,
-            colorGradient = Color(0xFFFBEAFF),
-            radialGradient = Color(0xFFFE86DE3),
-            benefits = emptyList()
+            colors = toValue(tier.color),
+            features = tier.features
         )
 
         is Tier.Explorer -> TierResources(
@@ -182,13 +179,37 @@ fun mapTierToResources(tier: Tier?): TierResources? {
             subtitle = stringResource(id = R.string.payments_tier_explorer_description),
             mediumIcon = R.drawable.logo_explorer_96,
             smallIcon = R.drawable.logo_explorer_64,
-            colorGradient = Color(0xFFCFFAFF),
-            radialGradient = Color(0xFF24BFD4),
-            benefits = stringArrayResource(id = R.array.payments_benefits_explorer).toList()
+            colors = toValue(tier.color),
+            features = tier.features
         )
-
         else -> null
     }
+}
+
+@Composable
+private fun toValue(colorCode: String): TierColors {
+    return TierColors(
+        gradientStart = colorCode.gradientStart(),
+        gradientEnd = colorCode.gradientEnd()
+    )
+}
+
+@Composable
+private fun String.gradientStart(): Color = when (this) {
+    CoverColor.RED.code -> colorResource(id = R.color.tier_gradient_red_start)
+    CoverColor.BLUE.code -> colorResource(id = R.color.tier_gradient_blue_start)
+    CoverColor.GREEN.code -> colorResource(id = R.color.tier_gradient_teal_start)
+    CoverColor.PURPLE.code -> colorResource(id = R.color.tier_gradient_purple_start)
+    else -> colorResource(id = R.color.tier_gradient_blue_start)
+}
+
+@Composable
+private fun String.gradientEnd(): Color = when (this) {
+    CoverColor.RED.code -> colorResource(id = R.color.tier_gradient_red_end)
+    CoverColor.BLUE.code -> colorResource(id = R.color.tier_gradient_blue_end)
+    CoverColor.GREEN.code -> colorResource(id = R.color.tier_gradient_teal_end)
+    CoverColor.PURPLE.code -> colorResource(id = R.color.tier_gradient_purple_end)
+    else -> colorResource(id = R.color.tier_gradient_blue_end)
 }
 
 @Preview
@@ -219,7 +240,11 @@ data class TierResources(
     val subtitle: String,
     val mediumIcon: Int? = null,
     val smallIcon: Int,
-    val colorGradient: Color,
-    val radialGradient: Color,
-    val benefits: List<String>
+    val colors: TierColors,
+    val features: List<String>
+)
+
+data class TierColors(
+    val gradientStart: Color,
+    val gradientEnd: Color
 )

@@ -176,8 +176,8 @@ fun TiersList(tiers: List<Tier>, tierClicked: (TierId) -> Unit) {
                 TierView(
                     title = resources.title,
                     subTitle = resources.subtitle,
-                    colorGradient = resources.colorGradient,
-                    radialGradient = resources.radialGradient,
+                    colorGradient = resources.colors.gradientStart,
+                    radialGradient = resources.colors.gradientEnd,
                     icon = resources.smallIcon,
                     buttonText = stringResource(id = R.string.payments_button_learn),
                     onClick = { tierClicked.invoke(tier.id) },
@@ -288,10 +288,10 @@ fun BottomText() {
 @Composable
 fun MainPaymentsScreenPreview() {
     val tiers = listOf(
-        Tier.Explorer(TierId(1), isCurrent = true, validUntil = "2022-12-31"),
-        Tier.Builder(TierId(2), isCurrent = true, validUntil = "2022-12-31"),
-        Tier.CoCreator(TierId(3), isCurrent = false, validUntil = "2022-12-31"),
-        Tier.Custom(TierId(4), isCurrent = false, validUntil = "2022-12-31")
+        Tier.Explorer(TierId(1), isCurrent = true, validUntil = "2022-12-31", color = "blue", features = listOf("Feature 1", "Feature 2")),
+        Tier.Builder(TierId(2), isCurrent = true, validUntil = "2022-12-31",  color = "red", features = listOf("Feature 1", "Feature 2")),
+        Tier.CoCreator(TierId(3), isCurrent = false, validUntil = "2022-12-31",  color = "green", features = listOf("Feature 1", "Feature 2")),
+        Tier.Custom(TierId(4), isCurrent = false, validUntil = "2022-12-31",  color = "blue", features = listOf("Feature 1", "Feature 2"))
     )
     MainPaymentsScreen(PaymentsMainState.PaymentSuccess(tiers), {})
 }

@@ -101,31 +101,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                 }
                 launch {
                     vm.dispatcher.collect { command ->
-                        when(command) {
-                            is NotificationCommand.ViewSpaceJoinRequest -> {
-                                runCatching {
-                                    findNavController(R.id.fragment).navigate(
-                                        R.id.spaceJoinRequestScreen,
-                                        SpaceJoinRequestFragment.args(
-                                            space = command.space,
-                                            member = command.member
-                                        )
-                                    )
-                                }.onFailure {
-                                    Timber.e(it, "Error while navigation")
-                                }
-                            }
-                            is NotificationCommand.ViewSpaceLeaveRequest -> {
-                                runCatching {
-                                    findNavController(R.id.fragment).navigate(
-                                        R.id.shareSpaceScreen,
-                                        ShareSpaceFragment.args(space = command.space)
-                                    )
-                                }.onFailure {
-                                    Timber.e(it, "Error while navigation")
-                                }
-                            }
-                        }
+                        proceedWithNotificationCommand(command)
                     }
                 }
                 launch {
@@ -343,8 +319,62 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                     Timber.w("Missing space or identity")
                 }
             }
+            AnytypeNotificationService.REQUEST_APPROVED_TYPE -> {
+                val space = intent.getStringExtra(Relations.SPACE_ID)
+                if (!space.isNullOrEmpty()) {
+                    val notification = intent
+                        .getStringExtra(AnytypeNotificationService.NOTIFICATION_ID_KEY)
+                        .orEmpty()
+                    vm.onInterceptNotificationAction(
+                        action = NotificationAction.Multiplayer.GoToSpace(
+                            notification = notification,
+                            space = SpaceId(space)
+                        )
+                    )
+                }
+            }
             else -> {
                 toast("Unknown type: $type")
+            }
+        }
+    }
+
+    private fun proceedWithNotificationCommand(command: NotificationCommand) {
+        when (command) {
+            is NotificationCommand.ViewSpaceJoinRequest -> {
+                runCatching {
+                    findNavController(R.id.fragment).navigate(
+                        R.id.spaceJoinRequestScreen,
+                        SpaceJoinRequestFragment.args(
+                            space = command.space,
+                            member = command.member
+                        )
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while navigation")
+                }
+            }
+
+            is NotificationCommand.ViewSpaceLeaveRequest -> {
+                runCatching {
+                    findNavController(R.id.fragment).navigate(
+                        R.id.shareSpaceScreen,
+                        ShareSpaceFragment.args(space = command.space)
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while navigation")
+                }
+            }
+
+            is NotificationCommand.GoToSpace -> {
+                runCatching {
+                    findNavController(R.id.fragment).popBackStack(
+                        R.id.homeScreen,
+                        inclusive = true
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while navigation")
+                }
             }
         }
     }

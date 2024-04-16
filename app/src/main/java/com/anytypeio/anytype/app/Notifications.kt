@@ -1,7 +1,9 @@
 package com.anytypeio.anytype.app
 
 import android.app.NotificationManager
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
 import androidx.core.app.NotificationCompat
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Notification
@@ -156,5 +158,11 @@ class AnytypeNotificationService @Inject constructor(
         const val REQUEST_DECLINED_ID = 3
         const val MEMBER_REMOVED_ID = 4
         const val PERMISSIONS_CHANGED_ID = 5
+    }
+}
+
+class AnytypeNotificationBroadcastReceiver : BroadcastReceiver() {
+    override fun onReceive(context: Context?, intent: Intent?) {
+        Timber.d("TODO: onReceive")
     }
 }

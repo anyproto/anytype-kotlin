@@ -27,7 +27,7 @@
         android:requestLegacyExternalStorage="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <receiver android:name=".app.NotificationBroadcastReceiver"/>
+        <receiver android:name=".app.AnytypeNotificationBroadcastReceiver"/>
         <activity
             android:name="com.anytypeio.anytype.ui.main.MainActivity"
             android:exported="true"

@@ -22,6 +22,9 @@ class AnytypeNotificationService @Inject constructor(
 
     private val notificationManager = context.getSystemService(NotificationManager::class.java)
 
+    override val areNotificationsEnabled: Boolean
+        get() = notificationManager.areNotificationsEnabled()
+
     override fun notify(
         notification: Notification
     ) {

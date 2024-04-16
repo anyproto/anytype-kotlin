@@ -108,7 +108,11 @@ class MainViewModel(
                 delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
                 commands.emit(Command.Notifications)
             } else {
-                notificator.notify(notification)
+                if (notificator.areNotificationsEnabled) {
+                    notificator.notify(notification)
+                } else {
+                    toasts.emit("Incoming notification... Notifications should be allowed in app settings")
+                }
             }
         }
     }

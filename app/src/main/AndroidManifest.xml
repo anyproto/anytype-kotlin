@@ -27,7 +27,6 @@
         android:requestLegacyExternalStorage="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <receiver android:name=".app.AnytypeNotificationBroadcastReceiver"/>
         <activity
             android:name="com.anytypeio.anytype.ui.main.MainActivity"
             android:exported="true"
@@ -108,7 +107,6 @@
         <meta-data
             android:name="io.sentry.dsn"
             android:value="@string/SENTRY_DSN" />
-
     </application>
 
 </manifest>

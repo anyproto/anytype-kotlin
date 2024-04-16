@@ -15,9 +15,13 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.app.AnytypeNotificationService
+import com.anytypeio.anytype.app.AnytypeNotificationService.Companion.NOTIFICATION_TYPE
 import com.anytypeio.anytype.app.DefaultAppActionManager
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.Wallpaper
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.core_utils.ext.parseActionSendMultipleUris
 import com.anytypeio.anytype.core_utils.ext.parseActionSendUri
@@ -34,8 +38,12 @@ import com.anytypeio.anytype.presentation.main.MainViewModel
 import com.anytypeio.anytype.presentation.main.MainViewModel.Command
 import com.anytypeio.anytype.presentation.main.MainViewModelFactory
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
+import com.anytypeio.anytype.presentation.notifications.NotificationAction
+import com.anytypeio.anytype.presentation.notifications.NotificationCommand
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
 import com.anytypeio.anytype.ui.editor.CreateObjectFragment
+import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
+import com.anytypeio.anytype.ui.multiplayer.SpaceJoinRequestFragment
 import com.anytypeio.anytype.ui.notifications.NotificationsFragment
 import com.anytypeio.anytype.ui.sharing.SharingFragment
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
@@ -90,6 +98,35 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                 }
                 launch {
                     vm.toasts.collect { toast(it) }
+                }
+                launch {
+                    vm.dispatcher.collect { command ->
+                        when(command) {
+                            is NotificationCommand.ViewSpaceJoinRequest -> {
+                                runCatching {
+                                    findNavController(R.id.fragment).navigate(
+                                        R.id.spaceJoinRequestScreen,
+                                        SpaceJoinRequestFragment.args(
+                                            space = command.space,
+                                            member = command.member
+                                        )
+                                    )
+                                }.onFailure {
+                                    Timber.e(it, "Error while navigation")
+                                }
+                            }
+                            is NotificationCommand.ViewSpaceLeaveRequest -> {
+                                runCatching {
+                                    findNavController(R.id.fragment).navigate(
+                                        R.id.shareSpaceScreen,
+                                        ShareSpaceFragment.args(space = command.space)
+                                    )
+                                }.onFailure {
+                                    Timber.e(it, "Error while navigation")
+                                }
+                            }
+                        }
+                    }
                 }
                 launch {
                     vm.commands.collect { command ->
@@ -211,6 +248,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                 Intent.ACTION_SEND_MULTIPLE -> {
                     proceedWithShareIntent(intent)
                 }
+                AnytypeNotificationService.NOTIFICATION_INTENT_ACTION -> {
+                    proceedWithNotificationIntent(intent)
+                }
             }
         }
         if (BuildConfig.DEBUG) {
@@ -266,6 +306,45 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                 vm.onIntentMultipleImageShare(listOf(uri))
             } else {
                 toast("Could not parse URI")
+            }
+        }
+    }
+
+    private fun proceedWithNotificationIntent(intent: Intent) {
+        when(val type = intent.getIntExtra(NOTIFICATION_TYPE, -1)) {
+            AnytypeNotificationService.REQUEST_TO_JOIN_TYPE -> {
+                val space = intent.getStringExtra(Relations.SPACE_ID)
+                val identity = intent.getStringExtra(Relations.IDENTITY)
+                if (!space.isNullOrEmpty() && !identity.isNullOrEmpty()) {
+                    val notification = intent.getStringExtra(AnytypeNotificationService.NOTIFICATION_ID_KEY).orEmpty()
+                    vm.onInterceptNotificationAction(
+                        action = NotificationAction.Multiplayer.ViewSpaceJoinRequest(
+                            notification = notification,
+                            space = SpaceId(space),
+                            identity = identity
+                        )
+                    )
+                } else {
+                    Timber.w("Missing space or identity")
+                }
+            }
+            AnytypeNotificationService.REQUEST_TO_LEAVE_TYPE -> {
+                val space = intent.getStringExtra(Relations.SPACE_ID)
+                val identity = intent.getStringExtra(Relations.IDENTITY)
+                if (!space.isNullOrEmpty() && !identity.isNullOrEmpty()) {
+                    val notification = intent.getStringExtra(AnytypeNotificationService.NOTIFICATION_ID_KEY).orEmpty()
+                    vm.onInterceptNotificationAction(
+                        action = NotificationAction.Multiplayer.ViewSpaceLeaveRequest(
+                            notification = notification,
+                            space = SpaceId(space)
+                        )
+                    )
+                } else {
+                    Timber.w("Missing space or identity")
+                }
+            }
+            else -> {
+                toast("Unknown type: $type")
             }
         }
     }

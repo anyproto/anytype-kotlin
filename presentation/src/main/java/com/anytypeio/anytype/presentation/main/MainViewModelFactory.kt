@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
+import com.anytypeio.anytype.presentation.notifications.NotificationActionDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
 import javax.inject.Inject
 
@@ -35,6 +36,7 @@ class MainViewModelFactory @Inject constructor(
     private val userPermissionProvider: UserPermissionProvider,
     private val notificationsProvider: NotificationsProvider,
     private val notificator: SystemNotificationService,
+    private val notificationActionDelegate: NotificationActionDelegate
     ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -54,6 +56,7 @@ class MainViewModelFactory @Inject constructor(
         localeProvider = localeProvider,
         userPermissionProvider = userPermissionProvider,
         notificationsProvider = notificationsProvider,
-        notificator = notificator
+        notificator = notificator,
+        notificationActionDelegate = notificationActionDelegate
     ) as T
 }

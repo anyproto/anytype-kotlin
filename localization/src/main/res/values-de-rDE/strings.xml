@@ -1186,7 +1186,7 @@
     <string name="multiplayer_notification_member_permission_change_edit">Your access rights were changed to edit in the %1$s space.</string>
     <string name="multiplayer_notification_member_join_request_declined">Your request to join the %1$s space has been declined.</string>
     <string name="multiplayer_notification_view_request">Ansicht</string>
-    <string name="multiplayer_toast_permission_not_allowed">Changing permissions is not allowed</string>
+    <string name="multiplayer_toast_permission_not_allowed">Ändern von Berechtigungen ist nicht erlaubt</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Mitgliedschaft</string>

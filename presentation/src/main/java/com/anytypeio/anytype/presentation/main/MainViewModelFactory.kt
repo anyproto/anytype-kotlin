@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
@@ -32,7 +33,8 @@ class MainViewModelFactory @Inject constructor(
     private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
     private val localeProvider: LocaleProvider,
     private val userPermissionProvider: UserPermissionProvider,
-    private val notificationsProvider: NotificationsProvider
+    private val notificationsProvider: NotificationsProvider,
+    private val notificator: SystemNotificationService,
     ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -51,6 +53,7 @@ class MainViewModelFactory @Inject constructor(
         spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
         localeProvider = localeProvider,
         userPermissionProvider = userPermissionProvider,
-        notificationsProvider = notificationsProvider
+        notificationsProvider = notificationsProvider,
+        notificator = notificator
     ) as T
 }

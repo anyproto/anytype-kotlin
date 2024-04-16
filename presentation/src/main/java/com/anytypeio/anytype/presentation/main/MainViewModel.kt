@@ -9,8 +9,11 @@ import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Notification
 import com.anytypeio.anytype.core_models.NotificationPayload
+import com.anytypeio.anytype.core_models.NotificationStatus
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.Logout
@@ -21,6 +24,7 @@ import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
@@ -31,6 +35,7 @@ import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
@@ -49,7 +54,8 @@ class MainViewModel(
     private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
     private val localeProvider: LocaleProvider,
     private val userPermissionProvider: UserPermissionProvider,
-    private val notificationsProvider: NotificationsProvider
+    private val notificationsProvider: NotificationsProvider,
+    private val notificator: SystemNotificationService
 ) : ViewModel() {
 
     val wallpaper = MutableStateFlow<Wallpaper>(Wallpaper.Default)
@@ -93,42 +99,24 @@ class MainViewModel(
                 }
             }
         }
+
+        // TODO uncomment to test notifications
+//        viewModelScope.launch {
+//             FakeNotificator.notifications.collect {
+//                 notificator.notify(it)
+//             }
+//        }
     }
 
     private suspend fun handleNotification(event: Notification.Event) {
-        when (val payload = event.notification?.payload) {
-            is NotificationPayload.GalleryImport -> {
+        val notification = event.notification
+        if (notification != null) {
+            if (notification.payload is NotificationPayload.GalleryImport) {
+                // TODO migrate to system notifications
                 delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
                 commands.emit(Command.Notifications)
-            }
-            is NotificationPayload.RequestToJoin -> {
-                delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
-                commands.emit(Command.Notifications)
-            }
-            is NotificationPayload.RequestToLeave -> {
-                delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
-                commands.emit(Command.Notifications)
-            }
-            is NotificationPayload.ParticipantRequestApproved -> {
-                delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
-                commands.emit(Command.Notifications)
-            }
-            is NotificationPayload.ParticipantRemove -> {
-                delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
-                commands.emit(Command.Notifications)
-            }
-            is NotificationPayload.ParticipantPermissionsChange -> {
-                delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
-                commands.emit(Command.Notifications)
-            }
-            is NotificationPayload.ParticipantRequestDecline -> {
-                delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
-                commands.emit(Command.Notifications)
-            }
-            else -> {
-                viewModelScope.launch {
-                    toasts.emit(payload.toString())
-                }
+            } else {
+                notificator.notify(notification)
             }
         }
     }
@@ -285,5 +273,97 @@ class MainViewModel(
 
     companion object {
         const val DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN = 200L
+    }
+}
+
+@Deprecated("Temporary class for testing purposes")
+object FakeNotificator {
+    val notifications = flow {
+        delay(5000)
+        emit(
+            Notification(
+                id = "1",
+                createTime = System.currentTimeMillis(),
+                space = SpaceId(""),
+                isLocal = true,
+                aclHeadId = "",
+                payload = NotificationPayload.RequestToJoin(
+                    spaceName = "Android Team",
+                    spaceId = SpaceId(""),
+                    identity = "",
+                    identityIcon = "",
+                    identityName = "Konstantin"
+                ),
+                status = NotificationStatus.CREATED
+            )
+        )
+        delay(10000)
+        emit(
+            Notification(
+                id = "2",
+                createTime = System.currentTimeMillis(),
+                space = SpaceId(""),
+                isLocal = true,
+                aclHeadId = "",
+                payload = NotificationPayload.ParticipantRequestApproved(
+                    spaceName = "Android Team",
+                    spaceId = SpaceId(""),
+                    permissions = SpaceMemberPermissions.READER
+                ),
+                status = NotificationStatus.CREATED
+            )
+        )
+        delay(10000)
+        emit(
+            Notification(
+                id = "3",
+                createTime = System.currentTimeMillis(),
+                space = SpaceId(""),
+                isLocal = true,
+                aclHeadId = "",
+                payload = NotificationPayload.ParticipantPermissionsChange(
+                    spaceName = "Android Team",
+                    spaceId = SpaceId(""),
+                    permissions = SpaceMemberPermissions.OWNER
+                ),
+                status = NotificationStatus.CREATED
+            )
+        )
+        delay(10000)
+        emit(
+            Notification(
+                id = "4",
+                createTime = System.currentTimeMillis(),
+                space = SpaceId(""),
+                isLocal = true,
+                aclHeadId = "",
+                payload = NotificationPayload.RequestToLeave(
+                    spaceName = "Android Team",
+                    spaceId = SpaceId(""),
+                    identity = "",
+                    identityIcon = "",
+                    identityName = "Konstantin"
+                ),
+                status = NotificationStatus.CREATED
+            )
+        )
+        delay(10000)
+        emit(
+            Notification(
+                id = "4",
+                createTime = System.currentTimeMillis(),
+                space = SpaceId(""),
+                isLocal = true,
+                aclHeadId = "",
+                payload = NotificationPayload.ParticipantRemove(
+                    spaceName = "Android Team",
+                    spaceId = SpaceId(""),
+                    identity = "",
+                    identityIcon = "",
+                    identityName = "Konstantin"
+                ),
+                status = NotificationStatus.CREATED
+            )
+        )
     }
 }

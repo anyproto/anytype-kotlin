@@ -54,6 +54,5 @@ class MainViewModelFactory @Inject constructor(
         localeProvider = localeProvider,
         userPermissionProvider = userPermissionProvider,
         notificationsProvider = notificationsProvider,
-        membershipProvider = membershipProvider
     ) as T
 }

@@ -231,7 +231,7 @@ private fun CodeNumber(
 @Composable
 fun EnterCodeModalPreview() {
     ModalCodeContent(
-        state = PaymentsCodeState.Visible.Loading(TierId("123")),
+        state = PaymentsCodeState.Visible.Loading(TierId(1)),
         actionCode = { _ -> }
     )
 }

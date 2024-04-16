@@ -9,10 +9,12 @@ import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.payments.GetMembershipTiers
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
 import com.anytypeio.anytype.ui.payments.PaymentsFragment
 import com.anytypeio.anytype.payments.viewmodel.PaymentsViewModelFactory
+import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import dagger.Binds
 import dagger.Component
 import dagger.Module
@@ -74,4 +76,6 @@ interface PaymentsComponentDependencies : ComponentDependencies {
     fun authRepository(): AuthRepository
     fun blockRepository(): BlockRepository
     fun appCoroutineDispatchers(): AppCoroutineDispatchers
+    fun provideMembershipProvider(): MembershipProvider
+    fun provideLocaleProvider(): LocaleProvider
 }

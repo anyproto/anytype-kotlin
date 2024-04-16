@@ -1372,6 +1372,7 @@
     <string name="multiplayer_notification_member_join_request_declined">Your request to join the %1$s space has been declined.</string>
     <string name="multiplayer_notification_request_declined">Request declined</string>
     <string name="multiplayer_notification_view_request">View</string>
+    <string name="multiplayer_notification_go_to_space">Go to space</string>
     <string name="multiplayer_toast_permission_not_allowed">Changing permissions is not allowed</string>
 
     <!--endregion-->

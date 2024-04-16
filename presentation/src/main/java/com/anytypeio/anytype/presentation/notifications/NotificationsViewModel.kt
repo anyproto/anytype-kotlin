@@ -146,6 +146,9 @@ class NotificationsViewModel(
             is NotificationAction.Multiplayer.ViewSpaceLeaveRequest -> {
                 proceedWithSpaceLeaveRequest(action)
             }
+            is NotificationAction.Multiplayer.GoToSpace -> {
+                // Unsupported
+            }
         }
     }
 
@@ -279,6 +282,10 @@ sealed class NotificationsScreenState {
 
 sealed class NotificationAction {
     sealed class Multiplayer : NotificationAction() {
+        data class GoToSpace(
+            val notification: Id,
+            val space: SpaceId
+        ) : Multiplayer()
         data class ViewSpaceJoinRequest(
             val notification: Id,
             val space: SpaceId,
@@ -292,6 +299,7 @@ sealed class NotificationAction {
 }
 
 sealed class NotificationCommand {
+    data class GoToSpace(val space: SpaceId) : NotificationCommand()
     data class ViewSpaceJoinRequest(val space: SpaceId, val member: Id) : NotificationCommand()
     data class ViewSpaceLeaveRequest(val space: SpaceId) : NotificationCommand()
 }

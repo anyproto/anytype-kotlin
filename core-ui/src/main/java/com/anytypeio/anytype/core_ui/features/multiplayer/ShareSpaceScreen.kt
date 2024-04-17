@@ -51,8 +51,6 @@ import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.extensions.dark
-import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
@@ -504,11 +502,11 @@ private fun SpaceMemberRequest(
             }
             Text(
                 text = text,
-                color = dark(color),
+                color = colorResource(id = R.color.text_label_inversion),
                 modifier = Modifier
                     .wrapContentWidth()
                     .background(
-                        color = light(color),
+                        color = colorResource(id = R.color.background_multiplayer_request),
                         shape = RoundedCornerShape(size = 3.dp)
                     )
                     .padding(start = 6.dp, end = 6.dp),

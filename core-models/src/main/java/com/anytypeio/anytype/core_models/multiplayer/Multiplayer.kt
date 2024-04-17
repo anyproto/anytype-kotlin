@@ -38,6 +38,10 @@ enum class SpaceMemberPermissions(
     fun isOwnerOrEditor() : Boolean {
         return this == OWNER || this == WRITER
     }
+
+    fun isAtLeastReader() : Boolean {
+        return this == OWNER || this == WRITER || this == READER
+    }
 }
 
 enum class SpaceAccessType(val code: Int) {

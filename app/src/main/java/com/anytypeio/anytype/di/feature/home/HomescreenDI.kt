@@ -37,6 +37,7 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.Unsubscriber
+import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
@@ -248,6 +249,12 @@ object HomeScreenModule {
         fun objectWatcherReducer(
             default: DefaultObjectViewReducer
         ): ObjectWatcher.Reducer
+
+        @PerScreen
+        @Binds
+        fun deepLinkToObjectDelegate(
+            default: DeepLinkToObjectDelegate.Default
+        ) : DeepLinkToObjectDelegate
     }
 }
 

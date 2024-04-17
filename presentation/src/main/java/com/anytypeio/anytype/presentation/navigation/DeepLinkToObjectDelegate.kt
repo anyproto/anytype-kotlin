@@ -11,7 +11,14 @@ import javax.inject.Inject
 
 interface DeepLinkToObjectDelegate {
 
-    suspend fun onDeepLinkToObject(obj: Id, space: SpaceId) : Result
+    /**
+     * N.B. Can switch space as side-effect.
+     */
+    suspend fun onDeepLinkToObject(
+        obj: Id,
+        space: SpaceId,
+        switchSpaceIfObjectFound: Boolean = true
+    ) : Result
 
     class Default @Inject constructor(
         private val spaceManager: SpaceManager,
@@ -20,21 +27,28 @@ interface DeepLinkToObjectDelegate {
         private val fetchObject: FetchObject
     ) : DeepLinkToObjectDelegate {
 
-        override suspend fun onDeepLinkToObject(obj: Id, space: SpaceId) : Result {
+        override suspend fun onDeepLinkToObject(
+            obj: Id,
+            space: SpaceId,
+            switchSpaceIfObjectFound: Boolean
+        ) : Result {
             val wrapper = fetchObject.async(params = FetchObject.Params(obj = obj)).getOrNull()
             if (wrapper != null) {
                 val permission = userPermissionProvider.get(space = space)
-                if (permission != null && permission.isAtLeastReader()) {
-                    val result = spaceManager.set(space = space.id)
-                    return if (result.isSuccess) {
-                        saveCurrentSpace.async(SaveCurrentSpace.Params(space = space))
-                        Result.Success(wrapper)
-
+                return if (permission != null && permission.isAtLeastReader()) {
+                    if (switchSpaceIfObjectFound) {
+                        val switchSpaceResult = spaceManager.set(space = space.id)
+                        if (switchSpaceResult.isSuccess) {
+                            saveCurrentSpace.async(SaveCurrentSpace.Params(space = space))
+                            Result.Success(wrapper)
+                        } else {
+                            Result.Error
+                        }
                     } else {
-                        Result.Error
+                        return Result.Success(wrapper)
                     }
                 } else {
-                    return Result.Error
+                    Result.Error
                 }
             } else {
                 return Result.Error

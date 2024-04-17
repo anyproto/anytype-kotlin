@@ -1138,7 +1138,8 @@ class HomeScreenViewModel(
                 viewModelScope.launch {
                     val result = onDeepLinkToObject(
                         obj = deeplink.obj,
-                        space = deeplink.space
+                        space = deeplink.space,
+                        switchSpaceIfObjectFound = true
                     )
                     when(result) {
                         is DeepLinkToObjectDelegate.Result.Error -> {

@@ -1175,13 +1175,17 @@
     <string name="multiplayer_notification_new_join_request">新的加入请求</string>
     <string name="multiplayer_notification_member_joined_space_with_read_only_rights">%1$s 加入了 %2$s 空间并拥有只读访问权限</string>
     <string name="multiplayer_notification_member_joined_space_with_editor_only_rights">%1$s 加入了 %2$s 空间并拥有编辑访问权限</string>
+    <string name="multiplayer_notification_member_request_approved">Request approved</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">您加入 %1$s 空间的请求已获批准并获得了只读访问权限，该空间很快就会在您的设备中显示。</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">您加入 %1$s 空间的请求已获批准并获得了编辑访问权限，该空间很快就会在您的设备中显示。</string>
     <string name="multiplayer_notification_member_removed_from_space">您从空间中被移出，或空间已被所有者删除。</string>
+    <string name="multiplayer_notification_member_permissions_changed">Permissions changed</string>
     <string name="multiplayer_notification_member_permission_change_read">您在 %1$s 空间中的访问权限已更改为只读。</string>
     <string name="multiplayer_notification_member_permission_change_edit">您在 %1$s 空间中的访问权限已更改为可编辑。</string>
     <string name="multiplayer_notification_member_join_request_declined">您加入 %1$s 空间的请求已被拒绝。</string>
+    <string name="multiplayer_notification_request_declined">Request declined</string>
     <string name="multiplayer_notification_view_request">视图</string>
+    <string name="multiplayer_notification_go_to_space">转到空间</string>
     <string name="multiplayer_toast_permission_not_allowed">不允许更改权限</string>
     <!--endregion-->
     <!--region PAYMENTS -->

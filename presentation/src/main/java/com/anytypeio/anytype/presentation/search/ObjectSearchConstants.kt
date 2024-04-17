@@ -13,7 +13,6 @@ import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.library.StoreSearchParams
-import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 
 /**
@@ -1132,11 +1131,13 @@ object ObjectSearchConstants {
         Relations.SPACE_ACCOUNT_STATUS,
         Relations.SPACE_ACCESS_TYPE,
         Relations.SPACE_LOCAL_STATUS,
+        Relations.SHARED_SPACES_LIMIT,
         Relations.READERS_LIMIT,
-        Relations.WRITERS_LIMIT
+        Relations.WRITERS_LIMIT,
     )
 
     //region SPACE VIEW
+
     fun getSpaceViewSearchParams(subscription: String, targetSpaceId: Id): StoreSearchParams {
         return StoreSearchParams(
             subscription = subscription,

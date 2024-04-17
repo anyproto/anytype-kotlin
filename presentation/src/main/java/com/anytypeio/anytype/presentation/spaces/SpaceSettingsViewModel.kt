@@ -107,7 +107,8 @@ class SpaceSettingsViewModel(
                         Relations.TARGET_SPACE_ID,
                         Relations.SPACE_ACCESS_TYPE,
                         Relations.SPACE_LOCAL_STATUS,
-                        Relations.SPACE_ACCOUNT_STATUS
+                        Relations.SPACE_ACCOUNT_STATUS,
+                        Relations.SHARED_SPACES_LIMIT
                     ),
                     limit = 1
                 )

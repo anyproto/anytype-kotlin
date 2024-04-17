@@ -27,6 +27,7 @@ import com.anytypeio.anytype.presentation.util.downloader.DebugGoroutinesShareDo
 import javax.inject.Inject
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class ObjectSetMenuViewModel(
     setObjectIsArchived: SetObjectIsArchived,
@@ -166,6 +167,7 @@ class ObjectSetMenuViewModel(
             add(ObjectAction.DUPLICATE)
         }
         add(ObjectAction.LINK_TO)
+        add(ObjectAction.COPY_LINK)
     }
 
     override fun onActionClicked(ctx: Id, space: Id, action: ObjectAction) {
@@ -196,6 +198,9 @@ class ObjectSetMenuViewModel(
                 val details = objectState.value.dataViewState()?.details?.get(ctx)
                 val wrapper = ObjectWrapper.Basic(details?.map ?: emptyMap())
                 proceedWithCreatingWidget(obj = wrapper)
+            }
+            ObjectAction.COPY_LINK -> {
+                Timber.w("TODO")
             }
             ObjectAction.MOVE_TO,
             ObjectAction.SEARCH_ON_PAGE,

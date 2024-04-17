@@ -134,6 +134,7 @@ class ObjectMenuViewModel(
         }
         if (!isTemplate) {
             add(ObjectAction.LINK_TO)
+            add(ObjectAction.COPY_LINK)
         }
 
         if (!isTemplate) {
@@ -260,6 +261,9 @@ class ObjectMenuViewModel(
             }
             ObjectAction.LINK_TO -> {
                 proceedWithLinkTo()
+            }
+            ObjectAction.COPY_LINK -> {
+                Timber.w("TODO")
             }
             ObjectAction.UNLOCK -> {
                 proceedWithUpdatingLockStatus(ctx, false)

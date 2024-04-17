@@ -14,6 +14,7 @@ enum class ObjectAction {
     LOCK,
     UNLOCK,
     LINK_TO,
+    COPY_LINK,
     DELETE_FILES,
     SET_AS_DEFAULT,
     CREATE_WIDGET

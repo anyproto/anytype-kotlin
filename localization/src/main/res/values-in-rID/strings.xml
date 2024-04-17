@@ -1175,13 +1175,17 @@
     <string name="multiplayer_notification_new_join_request">Permintaan gabung baru</string>
     <string name="multiplayer_notification_member_joined_space_with_read_only_rights">%1$s bergabung ke ruang %2$s dengan akses pembaca</string>
     <string name="multiplayer_notification_member_joined_space_with_editor_only_rights">%1$s bergabung ke ruang %2$s dengan akses penyunting</string>
+    <string name="multiplayer_notification_member_request_approved">Request approved</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Permintaanmu bergabug ke ruang %1$s telah disetujui dengan hak akses pembaca. Ruang ini akan tersedia di perangkatmu sebentar lagi.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Permintaanmu bergabung ke ruang %1$s telah disetujui dengan hak akses penyunting. Ruang ini akan tersedia di perangkatmu sebentar lagi.</string>
     <string name="multiplayer_notification_member_removed_from_space">Kamu telah dikeluarkan dari ruang ini, atau ruang tersebut telah dihapus oleh pemiliknya.</string>
+    <string name="multiplayer_notification_member_permissions_changed">Permissions changed</string>
     <string name="multiplayer_notification_member_permission_change_read">Hak aksesmu di ruang %1$s telah diganti menjadi pembaca.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Hak aksesmu di ruang %1$s telah diganti menjadi penyunting.</string>
     <string name="multiplayer_notification_member_join_request_declined">Permintaanmu bergabung ke ruang %1$s telah ditolak.</string>
+    <string name="multiplayer_notification_request_declined">Request declined</string>
     <string name="multiplayer_notification_view_request">Tampilan</string>
+    <string name="multiplayer_notification_go_to_space">Kunjungi ruang</string>
     <string name="multiplayer_toast_permission_not_allowed">Changing permissions is not allowed</string>
     <!--endregion-->
     <!--region PAYMENTS -->

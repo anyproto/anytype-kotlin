@@ -161,6 +161,7 @@ abstract class ObjectMenuBaseFragment :
                 val intent = Intent().apply {
                     action = Intent.ACTION_SEND
                     putExtra(Intent.EXTRA_TEXT, command.link)
+                    putExtra(Intent.EXTRA_TITLE, getString(R.string.multiplayer_deeplink_to_your_object))
                     type = "text/plain"
                 }
                 startActivity(Intent.createChooser(intent, null))

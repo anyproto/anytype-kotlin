@@ -1187,13 +1187,17 @@
     <string name="multiplayer_notification_new_join_request">Новая заявка на вступление</string>
     <string name="multiplayer_notification_member_joined_space_with_read_only_rights">%1$s присоединился %2$s к пространству с правами доступа только для чтения</string>
     <string name="multiplayer_notification_member_joined_space_with_editor_only_rights">%1$s присоединился %2$s к пространству с правами доступа редактирования</string>
+    <string name="multiplayer_notification_member_request_approved">Request approved</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Ваш запрос на присоединение к пространству %1$s был одобрен с правами доступа только для чтения. Пространство будет доступно на вашем устройстве в ближайшее время.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Ваш запрос на присоединение к пространству %1$s был одобрен с правами на редактирование. Пространство будет доступно в ближайшее время на устройстве.</string>
     <string name="multiplayer_notification_member_removed_from_space">Вы были удалены из пространства, или оно было удалено владельцем.</string>
+    <string name="multiplayer_notification_member_permissions_changed">Permissions changed</string>
     <string name="multiplayer_notification_member_permission_change_read">Ваши права доступа были изменены на только для чтения в пространстве %1$s.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Права доступа были изменены на редактирование в пространстве %1$s.</string>
     <string name="multiplayer_notification_member_join_request_declined">Your request to join the %1$s space has been declined.</string>
+    <string name="multiplayer_notification_request_declined">Request declined</string>
     <string name="multiplayer_notification_view_request">Вид</string>
+    <string name="multiplayer_notification_go_to_space">Перейти в пространство</string>
     <string name="multiplayer_toast_permission_not_allowed">Changing permissions is not allowed</string>
     <!--endregion-->
     <!--region PAYMENTS -->

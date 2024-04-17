@@ -2660,7 +2660,7 @@ class Middleware @Inject constructor(
 
     @Throws
     fun membershipGetTiers(command: Command.Membership.GetTiers): List<MembershipTierData> {
-        val request = Rpc.Membership.Tiers.Get.Request(
+        val request = Rpc.Membership.GetTiers.Request(
             noCache = command.noCache,
             locale = command.locale
         )

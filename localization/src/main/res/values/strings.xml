@@ -1493,5 +1493,6 @@
 
 
     <string name="three_dots_text_placeholder">...</string>
+    <string name="multiplayer_you_as_member">you</string>
 
 </resources>

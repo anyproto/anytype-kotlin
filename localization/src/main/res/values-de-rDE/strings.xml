@@ -1179,13 +1179,17 @@
     <string name="multiplayer_notification_new_join_request">New join request</string>
     <string name="multiplayer_notification_member_joined_space_with_read_only_rights">%1$s joined %2$s space with read-only access rights</string>
     <string name="multiplayer_notification_member_joined_space_with_editor_only_rights">%1$s joined %2$s space with edit access rights</string>
+    <string name="multiplayer_notification_member_request_approved">Request approved</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Your request to join the %1$s space has been approved with read-only access rights. The space will be available on your device soon.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Your request to join the %1$s space has been approved with edit access rights. The space will be available on your device soon.</string>
     <string name="multiplayer_notification_member_removed_from_space">You have been removed from the space, or the space was deleted by the owner.</string>
+    <string name="multiplayer_notification_member_permissions_changed">Permissions changed</string>
     <string name="multiplayer_notification_member_permission_change_read">Your access rights were changed to read-only in the %1$s space.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Your access rights were changed to edit in the %1$s space.</string>
     <string name="multiplayer_notification_member_join_request_declined">Your request to join the %1$s space has been declined.</string>
+    <string name="multiplayer_notification_request_declined">Request declined</string>
     <string name="multiplayer_notification_view_request">Ansicht</string>
+    <string name="multiplayer_notification_go_to_space">Gehe zum Space</string>
     <string name="multiplayer_toast_permission_not_allowed">Ändern von Berechtigungen ist nicht erlaubt</string>
     <!--endregion-->
     <!--region PAYMENTS -->

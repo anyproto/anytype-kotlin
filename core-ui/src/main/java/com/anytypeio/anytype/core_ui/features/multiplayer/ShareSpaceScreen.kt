@@ -51,8 +51,6 @@ import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.extensions.dark
-import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
@@ -192,7 +190,8 @@ fun ShareSpaceScreen(
                                 },
                                 icon = member.icon,
                                 canEditEnabled = member.canEditEnabled,
-                                canReadEnabled = member.canReadEnabled
+                                canReadEnabled = member.canReadEnabled,
+                                isUser = member.isUser
                             )
                         }
                         is ShareSpaceMemberView.Config.Request -> {
@@ -203,9 +202,10 @@ fun ShareSpaceScreen(
                                 onViewRequestClicked = {
                                     onViewRequestClicked(member)
                                 },
-                                onApproveUnjoinRequestClicked = {
+                                onApproveLeaveRequestClicked = {
                                     onApproveLeaveRequestClicked(member)
-                                }
+                                },
+                                isUser = member.isUser
                             )
                         }
                     }
@@ -255,6 +255,7 @@ fun ShareSpaceScreen(
 
 @Composable
 private fun SpaceMember(
+    isUser: Boolean,
     isCurrentUserOwner: Boolean,
     member: ObjectWrapper.SpaceMember,
     icon: SpaceMemberIconView,
@@ -282,11 +283,25 @@ private fun SpaceMember(
                 .align(Alignment.CenterVertically)
                 .weight(1.0f)
         ) {
-            Text(
-                text = member.name.orEmpty().ifEmpty { stringResource(id = R.string.untitled) },
-                style = PreviewTitle2Medium,
-                color = colorResource(id = R.color.text_primary)
-            )
+            Row {
+                Text(
+                    text = member.name.orEmpty().ifEmpty { stringResource(id = R.string.untitled) },
+                    style = PreviewTitle2Medium,
+                    color = colorResource(id = R.color.text_primary),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f, fill = false)
+                )
+                if (isUser) {
+                    Spacer(modifier = Modifier.width(4.dp))
+                    val youAsMemberText = stringResource(id = R.string.multiplayer_you_as_member)
+                    Text(
+                        text = "($youAsMemberText)",
+                        style = PreviewTitle2Medium,
+                        color = colorResource(id = R.color.text_secondary),
+                    )
+                }
+            }
             Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = when(config) {
@@ -433,10 +448,11 @@ fun SpaceMemberIcon(
 @Composable
 private fun SpaceMemberRequest(
     member: ObjectWrapper.SpaceMember,
+    isUser: Boolean,
     icon: SpaceMemberIconView,
     request: ShareSpaceMemberView.Config.Request,
     onViewRequestClicked: () -> Unit,
-    onApproveUnjoinRequestClicked: () -> Unit
+    onApproveLeaveRequestClicked: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -454,11 +470,23 @@ private fun SpaceMemberRequest(
                 .align(Alignment.CenterVertically)
                 .weight(1.0f)
         ) {
-            Text(
-                text = member.name.orEmpty(),
-                style = PreviewTitle2Medium,
-                color = colorResource(id = R.color.text_primary)
-            )
+            Row {
+                Text(
+                    text = member.name.orEmpty().ifEmpty { stringResource(id = R.string.untitled) },
+                    style = PreviewTitle2Medium,
+                    color = colorResource(id = R.color.text_primary),
+                    modifier = Modifier.weight(1f, fill = false)
+                )
+                if (isUser) {
+                    Spacer(modifier = Modifier.width(4.dp))
+                    val youAsMemberText = stringResource(id = R.string.multiplayer_you_as_member)
+                    Text(
+                        text = "($youAsMemberText)",
+                        style = PreviewTitle2Medium,
+                        color = colorResource(id = R.color.text_secondary),
+                    )
+                }
+            }
             Spacer(modifier = Modifier.height(2.dp))
             val color = when(request) {
                 ShareSpaceMemberView.Config.Request.Join -> ThemeColor.PINK
@@ -474,11 +502,11 @@ private fun SpaceMemberRequest(
             }
             Text(
                 text = text,
-                color = dark(color),
+                color = colorResource(id = R.color.text_label_inversion),
                 modifier = Modifier
                     .wrapContentWidth()
                     .background(
-                        color = light(color),
+                        color = colorResource(id = R.color.background_multiplayer_request),
                         shape = RoundedCornerShape(size = 3.dp)
                     )
                     .padding(start = 6.dp, end = 6.dp),
@@ -502,7 +530,7 @@ private fun SpaceMemberRequest(
                 ButtonSecondary(
                     text = stringResource(R.string.multiplayer_approve_request),
                     onClick = throttledClick(
-                        onClick = { onApproveUnjoinRequestClicked() }
+                        onClick = { onApproveLeaveRequestClicked() }
                     ),
                     size = ButtonSize.Small,
                     modifier = Modifier.align(Alignment.CenterVertically)
@@ -526,14 +554,15 @@ fun SpaceJoinRequestPreview() {
         ),
         icon = SpaceMemberIconView.Placeholder(name = "Konstantin"),
         request = ShareSpaceMemberView.Config.Request.Join,
-        onApproveUnjoinRequestClicked = {},
-        onViewRequestClicked = {}
+        onApproveLeaveRequestClicked = {},
+        onViewRequestClicked = {},
+        isUser = false
     )
 }
 
 @Composable
 @Preview
-fun SpaceUnjoinRequestPreview() {
+fun SpaceLeaveRequestPreview() {
     SpaceMemberRequest(
         member = ObjectWrapper.SpaceMember(
             mapOf(
@@ -544,8 +573,9 @@ fun SpaceUnjoinRequestPreview() {
         ),
         icon = SpaceMemberIconView.Placeholder(name = "Konstantin"),
         request = ShareSpaceMemberView.Config.Request.Leave,
-        onApproveUnjoinRequestClicked = {},
-        onViewRequestClicked = {}
+        onApproveLeaveRequestClicked = {},
+        onViewRequestClicked = {},
+        isUser = true
     )
 }
 
@@ -646,7 +676,8 @@ private fun SpaceOwnerMemberPreview() {
         onRemoveMemberClicked = {},
         isCurrentUserOwner = true,
         canEditEnabled = true,
-        canReadEnabled = true
+        canReadEnabled = true,
+        isUser = true
     )
 }
 
@@ -667,6 +698,29 @@ private fun SpaceEditorMemberPreview() {
         onRemoveMemberClicked = {},
         isCurrentUserOwner = true,
         canReadEnabled = true,
-        canEditEnabled = true
+        canEditEnabled = true,
+        isUser = true
+    )
+}
+
+@Composable
+@Preview
+private fun SpaceMemberLongNamePreview() {
+    SpaceMember(
+        member = ObjectWrapper.SpaceMember(
+            mapOf(
+                Relations.ID to "2",
+                Relations.NAME to "Walter Walter Walter Walter Walter Walter"
+            )
+        ),
+        icon = SpaceMemberIconView.Placeholder(name = "Evgenii"),
+        config = ShareSpaceMemberView.Config.Member.Writer,
+        onCanEditClicked = {},
+        onCanViewClicked = {},
+        onRemoveMemberClicked = {},
+        isCurrentUserOwner = true,
+        canReadEnabled = true,
+        canEditEnabled = true,
+        isUser = true
     )
 }

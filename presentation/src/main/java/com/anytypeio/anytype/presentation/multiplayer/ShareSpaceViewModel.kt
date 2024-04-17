@@ -83,6 +83,7 @@ class ShareSpaceViewModel(
 
     private fun proceedWithSubscriptions() {
         viewModelScope.launch {
+            val account = getAccount.async(Unit).getOrNull()?.id
             val spaceSearchParams = getSpaceViewSearchParams(
                 targetSpaceId = params.space.id,
                 subscription = SHARE_SPACE_SPACE_SUBSCRIPTION
@@ -109,7 +110,8 @@ class ShareSpaceViewModel(
                         urlBuilder = urlBuilder,
                         canChangeWriterToReader = canChangeWriterToReader,
                         canChangeReaderToWriter = canChangeReaderToWriter,
-                        includeRequests = isCurrentUserOwner
+                        includeRequests = isCurrentUserOwner,
+                        account = account
                     )
                 }
 
@@ -482,7 +484,8 @@ data class ShareSpaceMemberView(
     val config: Config = Config.Member.Owner,
     val icon: SpaceMemberIconView,
     val canReadEnabled: Boolean = false,
-    val canEditEnabled: Boolean = false
+    val canEditEnabled: Boolean = false,
+    val isUser: Boolean = false
 ) {
     sealed class Config {
         sealed class Request : Config() {
@@ -500,6 +503,7 @@ data class ShareSpaceMemberView(
 
     companion object {
         fun fromObject(
+            account: Id?,
             obj: ObjectWrapper.SpaceMember,
             urlBuilder: UrlBuilder,
             canChangeWriterToReader: Boolean,
@@ -510,6 +514,7 @@ data class ShareSpaceMemberView(
                 obj = obj,
                 urlBuilder = urlBuilder
             )
+            val isUser = obj.identity == account
             return when(obj.status) {
                 ParticipantStatus.ACTIVE -> {
                     when(obj.permissions) {
@@ -518,31 +523,36 @@ data class ShareSpaceMemberView(
                             config = Config.Member.Reader,
                             icon = icon,
                             canReadEnabled = canChangeWriterToReader,
-                            canEditEnabled = canChangeReaderToWriter
+                            canEditEnabled = canChangeReaderToWriter,
+                            isUser = isUser
                         )
                         SpaceMemberPermissions.WRITER -> ShareSpaceMemberView(
                             obj = obj,
                             config = Config.Member.Writer,
                             icon = icon,
                             canReadEnabled = canChangeWriterToReader,
-                            canEditEnabled = canChangeReaderToWriter
+                            canEditEnabled = canChangeReaderToWriter,
+                            isUser = isUser
                         )
                         SpaceMemberPermissions.OWNER -> ShareSpaceMemberView(
                             obj = obj,
                             config = Config.Member.Owner,
                             icon = icon,
                             canReadEnabled = canChangeWriterToReader,
-                            canEditEnabled = canChangeReaderToWriter
+                            canEditEnabled = canChangeReaderToWriter,
+                            isUser = isUser
                         )
                         SpaceMemberPermissions.NO_PERMISSIONS -> ShareSpaceMemberView(
                             obj = obj,
                             config = Config.Member.NoPermissions,
-                            icon = icon
+                            icon = icon,
+                            isUser = isUser
                         )
                         null -> ShareSpaceMemberView(
                             obj = obj,
                             config = Config.Member.Unknown,
-                            icon = icon
+                            icon = icon,
+                            isUser = isUser
                         )
                     }
                 }
@@ -551,7 +561,8 @@ data class ShareSpaceMemberView(
                         ShareSpaceMemberView(
                             obj = obj,
                             config = Config.Request.Join,
-                            icon = icon
+                            icon = icon,
+                            isUser = isUser
                         )
                     else
                         null
@@ -561,7 +572,8 @@ data class ShareSpaceMemberView(
                         ShareSpaceMemberView(
                             obj = obj,
                             config = Config.Request.Leave,
-                            icon = icon
+                            icon = icon,
+                            isUser = isUser
                         )
                     else
                         null

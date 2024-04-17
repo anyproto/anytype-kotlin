@@ -7,12 +7,14 @@
     <color name="text_secondary_widgets">#80F3F2EC</color>
     <color name="text_tertiary">#64635B</color>
     <color name="text_white">#FFFFFF</color>
+    <color name="text_label_inversion">#000000</color>
     <color name="text_button_label">#000000</color>
 
     <color name="background_primary">#000000</color>
     <color name="background_notification_primary">#FFFFFF</color>
     <color name="background_secondary">#1F1E1D</color>
     <color name="background_highlighted">#24DAD7CA</color>
+    <color name="background_multiplayer_request">#F3F2EC</color>
 
     <color name="shape_primary">#3A3935</color>
     <color name="shape_secondary">#302F2B</color>

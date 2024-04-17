@@ -1374,6 +1374,8 @@
     <string name="multiplayer_notification_view_request">View</string>
     <string name="multiplayer_notification_go_to_space">Go to space</string>
     <string name="multiplayer_toast_permission_not_allowed">Changing permissions is not allowed</string>
+    <string name="multiplayer_deeplink_to_your_object">Deeplink to your object</string>
+    <string name="multiplayer_deeplink_to_your_object_error">This deeplink is not working. Object might be deleted or there might be issues with space access.</string>
 
     <!--endregion-->
 

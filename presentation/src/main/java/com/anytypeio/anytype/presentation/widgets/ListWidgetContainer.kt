@@ -83,7 +83,9 @@ class ListWidgetContainer(
                         }
                     }
             } else if (subscription == BundledWidgetSourceIds.RECENT) {
-                val spaceView = getSpaceView.async(config.spaceView).getOrNull()
+                val spaceView = getSpaceView.async(
+                    GetSpaceView.Params.BySpaceViewId(config.spaceView)
+                ).getOrNull()
                 val spaceViewCreationDate = spaceView
                     ?.getValue<Double?>(Relations.CREATED_DATE)
                     ?.toLong()

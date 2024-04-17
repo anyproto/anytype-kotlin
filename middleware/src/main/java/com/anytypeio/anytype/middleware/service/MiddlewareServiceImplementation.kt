@@ -1817,16 +1817,10 @@ class MiddlewareServiceImplementation @Inject constructor(
         val error = response.error
         if (error != null && error.code != Rpc.Space.InviteView.Response.Error.Code.NULL) {
             when(error.code) {
-                Rpc.Space.InviteView.Response.Error.Code.NO_SUCH_SPACE -> {
-                    throw SpaceInviteError.SpaceNotFound()
-                }
-                Rpc.Space.InviteView.Response.Error.Code.SPACE_IS_DELETED -> {
-                    throw SpaceInviteError.SpaceDeleted()
-                }
                 Rpc.Space.InviteView.Response.Error.Code.INVITE_NOT_FOUND -> {
                     throw SpaceInviteError.InvalidInvite()
                 }
-                Rpc.Space.InviteView.Response.Error.Code.INVITE_BAD_SIGNATURE -> {
+                Rpc.Space.InviteView.Response.Error.Code.INVITE_BAD_CONTENT -> {
                     throw SpaceInviteError.InvalidInvite()
                 }
                 else -> {

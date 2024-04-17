@@ -10,10 +10,13 @@ import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 const val DEEP_LINK_PATTERN = "anytype://"
 
 const val MAIN_PATH = "main"
+const val OBJECT_PATH = "object"
 const val IMPORT_PATH = "import"
 const val INVITE_PATH = "invite"
 
 const val TYPE_PARAM = "type"
+const val OBJECT_ID_PARAM = "objectId"
+const val SPACE_ID_PARAM = "spaceId"
 const val SOURCE_PARAM = "source"
 const val TYPE_VALUE_EXPERIENCE = "experience"
 
@@ -46,8 +49,8 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
         else -> DeepLinkResolver.Action.Unknown
     }
 
-    override fun createDeepLink(obj: Id, space: SpaceId): Url {
-        TODO("Not yet implemented")
+    override fun createObjectDeepLink(obj: Id, space: SpaceId): Url {
+        return "${DEEP_LINK_PATTERN}${OBJECT_PATH}?${OBJECT_ID_PARAM}=$obj&${SPACE_ID_PARAM}=${space.id}"
     }
 }
 

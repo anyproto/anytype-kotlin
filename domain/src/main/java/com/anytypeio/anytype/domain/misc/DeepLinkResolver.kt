@@ -8,7 +8,7 @@ interface DeepLinkResolver {
 
     fun resolve(deeplink: String) : Action
 
-    fun createDeepLink(obj: Id, space: SpaceId) : Url
+    fun createObjectDeepLink(obj: Id, space: SpaceId) : Url
 
     sealed class Action {
         data object Unknown : Action()
@@ -16,5 +16,9 @@ interface DeepLinkResolver {
             data class Experience(val type: String, val source: String) : Action()
         }
         data class Invite(val link: String) : Action()
+        data class DeepLinkToObject(
+            val obj: Id,
+            val space: SpaceId
+        ) : Action()
     }
 }

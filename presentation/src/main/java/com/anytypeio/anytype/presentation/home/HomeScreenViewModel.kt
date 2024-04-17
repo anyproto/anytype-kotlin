@@ -1131,6 +1131,9 @@ class HomeScreenViewModel(
                     sendToast("Could not resolve deeplink")
                 }
             }
+            is DeepLinkResolver.Action.DeepLinkToObject -> {
+                Timber.d("Got deeplink to object: $deeplink")
+            }
             else -> {
                 Timber.d("No deep link")
             }

@@ -266,10 +266,11 @@ class ObjectMenuViewModel(
                 proceedWithLinkTo()
             }
             ObjectAction.COPY_LINK -> {
-                val deeplink = deepLinkResolver.createDeepLink(
+                val deeplink = deepLinkResolver.createObjectDeepLink(
                     obj = ctx,
                     space = SpaceId(space)
                 )
+                Timber.d("Got deeplink: $deeplink")
 
             }
             ObjectAction.UNLOCK -> {

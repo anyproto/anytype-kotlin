@@ -1196,7 +1196,7 @@ message Membership {
     
     enum PaymentMethod {
         MethodNone = 0;
-        MethodCard = 1;
+        MethodStripe = 1;
         MethodCrypto = 2;
         MethodInappApple = 3;
         MethodInappGoogle = 4;

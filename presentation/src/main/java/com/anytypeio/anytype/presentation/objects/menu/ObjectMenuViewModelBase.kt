@@ -417,15 +417,16 @@ abstract class ObjectMenuViewModelBase(
     }
 
     sealed class Command {
-        object OpenObjectIcons : Command()
-        object OpenSetIcons : Command()
-        object OpenObjectCover : Command()
-        object OpenSetCover : Command()
-        object OpenObjectLayout : Command()
-        object OpenSetLayout : Command()
-        object OpenObjectRelations : Command()
-        object OpenSetRelations : Command()
-        object OpenLinkToChooser : Command()
+        data object OpenObjectIcons : Command()
+        data object OpenSetIcons : Command()
+        data object OpenObjectCover : Command()
+        data object OpenSetCover : Command()
+        data object OpenObjectLayout : Command()
+        data object OpenSetLayout : Command()
+        data object OpenObjectRelations : Command()
+        data object OpenSetRelations : Command()
+        data object OpenLinkToChooser : Command()
+        data class ShareDeeplinkToObject(val link: String): Command()
         data class ShareDebugTree(val uri: Uri) : Command()
         data class ShareDebugGoroutines(val path: String) : Command()
         data class OpenSnackbar(

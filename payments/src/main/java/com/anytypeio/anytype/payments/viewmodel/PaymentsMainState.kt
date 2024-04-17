@@ -5,9 +5,10 @@ import com.anytypeio.anytype.presentation.membership.models.TierId
 
 
 sealed class PaymentsMainState {
-    object Loading : PaymentsMainState()
-    data class Default(val tiers: List<Tier>) : PaymentsMainState()
-    data class PaymentSuccess(val tiers: List<Tier>) : PaymentsMainState()
+    data object Loading : PaymentsMainState()
+    data class WithBannerState(val tiers: List<Tier>) : PaymentsMainState()
+    data class WithoutBannerState(val tiers: List<Tier>) : PaymentsMainState()
+    data class ErrorState(val message: String) : PaymentsMainState()
 }
 
 sealed class PaymentsTierState {

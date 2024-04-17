@@ -50,6 +50,8 @@ import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.ButtonSecondary
+import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.fontRiccioneRegular
@@ -75,7 +77,7 @@ fun MainPaymentsScreen(state: PaymentsMainState, tierClicked: (TierId) -> Unit) 
                 .padding(bottom = 20.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            if (state is PaymentsMainState.Default) {
+            if (state is PaymentsMainState.WithBannerState) {
                 Title()
                 Spacer(modifier = Modifier.height(7.dp))
                 Subtitle()
@@ -92,7 +94,7 @@ fun MainPaymentsScreen(state: PaymentsMainState, tierClicked: (TierId) -> Unit) 
                 Spacer(modifier = Modifier.height(32.dp))
                 BottomText()
             }
-            if (state is PaymentsMainState.PaymentSuccess) {
+            if (state is PaymentsMainState.WithoutBannerState) {
                 Title()
                 Spacer(modifier = Modifier.height(39.dp))
                 TiersList(tiers = state.tiers, tierClicked = tierClicked)
@@ -104,6 +106,28 @@ fun MainPaymentsScreen(state: PaymentsMainState, tierClicked: (TierId) -> Unit) 
                 LinkButton(text = stringResource(id = R.string.payments_terms_link), action = {})
                 Spacer(modifier = Modifier.height(32.dp))
                 BottomText()
+            }
+            if (state is PaymentsMainState.ErrorState) {
+                Title()
+                Spacer(modifier = Modifier.height(39.dp))
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 40.dp),
+                    text = state.message,
+                    color = colorResource(id = R.color.palette_system_red),
+                    style = BodyRegular,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(32.dp))
+                ButtonSecondary(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
+                    onClick = { /*TODO*/ },
+                    size = ButtonSize.LargeSecondary,
+                    text = stringResource(id = R.string.contact_us)
+                )
             }
         }
     }

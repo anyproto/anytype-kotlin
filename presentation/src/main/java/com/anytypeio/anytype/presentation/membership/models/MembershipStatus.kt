@@ -5,7 +5,7 @@ import com.anytypeio.anytype.core_models.membership.Membership.Status
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
 
 data class MembershipStatus(
-    val activeTier: TierId?,
+    val activeTier: TierId,
     val status: Status,
     val dateEnds: Long,
     val paymentMethod: MembershipPaymentMethod,

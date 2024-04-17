@@ -8,7 +8,9 @@ import com.android.billingclient.api.Purchase
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.payments.constants.BillingConstants
+import com.anytypeio.anytype.payments.constants.TiersConstants.EXPLORER_ID
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
+import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
 import com.anytypeio.anytype.presentation.membership.models.TierId
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -54,14 +56,36 @@ class PaymentsViewModel(
     private fun proceedWithGettingMembershipStatus() {
         viewModelScope.launch {
             membershipProvider.status().collect { status ->
-                viewState.value = PaymentsMainState.PaymentSuccess(status.toTiersView())
+                Timber.d("Membership status: $status")
+                viewState.value = toViewState(status)
+            }
+        }
+    }
+
+    private fun toViewState(membershipStatus: MembershipStatus) : PaymentsMainState {
+        val activeTierId = membershipStatus.activeTier.value
+        if (activeTierId == 0) {
+            Timber.e("Membership has no active tier")
+            return PaymentsMainState.ErrorState("No active subscription found, please contact support.")
+        }
+        val activeTier = membershipStatus.tiers.firstOrNull { it.id == activeTierId }
+        if (activeTier == null) {
+            Timber.e("Active tier $activeTierId not found in tiers list")
+            return PaymentsMainState.ErrorState("No active subscription found, please contact support.")
+        }
+        return when (activeTierId) {
+            EXPLORER_ID -> {
+                PaymentsMainState.WithBannerState(membershipStatus.toTiersView())
+            }
+            else -> {
+                PaymentsMainState.WithoutBannerState(membershipStatus.toTiersView())
             }
         }
     }
 
     fun onTierClicked(tierId: TierId) {
         Timber.d("onTierClicked: tierId:$tierId")
-        val tier = (viewState.value as? PaymentsMainState.PaymentSuccess)?.tiers?.first { it.id == tierId } ?: return
+        val tier = (viewState.value as? PaymentsMainState.WithoutBannerState)?.tiers?.first { it.id == tierId } ?: return
         tierState.value = PaymentsTierState.Visible.Initial(tier = tier)
         command.value = PaymentsNavigation.Tier
     }

@@ -50,7 +50,7 @@ fun MembershipStatus.toTiersView(): List<Tier> {
 
 private fun MembershipStatus.isCurrentTier(tierId: Int): Boolean {
     return when (this.status) {
-        Membership.Status.STATUS_ACTIVE -> activeTier?.value == tierId
+        Membership.Status.STATUS_ACTIVE -> activeTier.value == tierId
         else -> false
     }
 }

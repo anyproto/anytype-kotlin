@@ -223,7 +223,8 @@ object ObjectSetMenuModule {
         addObjectToCollection: AddObjectToCollection,
         debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader,
         createWidget: CreateWidget,
-        spaceManager: SpaceManager
+        spaceManager: SpaceManager,
+        deepLinkResolver: DeepLinkResolver
     ): ObjectSetMenuViewModel.Factory = ObjectSetMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
         addToFavorite = addToFavorite,
@@ -239,7 +240,8 @@ object ObjectSetMenuModule {
         addObjectToCollection = addObjectToCollection,
         debugGoroutinesShareDownloader = debugGoroutinesShareDownloader,
         createWidget = createWidget,
-        spaceManager = spaceManager
+        spaceManager = spaceManager,
+        deepLinkResolver = deepLinkResolver
     )
 
     @JvmStatic

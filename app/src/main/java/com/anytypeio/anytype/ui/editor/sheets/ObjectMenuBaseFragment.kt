@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.editor.sheets
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -155,6 +156,14 @@ abstract class ObjectMenuBaseFragment :
                 }
                 snackbar.anchorView = binding.anchor
                 snackbar.show()
+            }
+            is ObjectMenuViewModelBase.Command.ShareDeeplinkToObject -> {
+                val intent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_TEXT, command.link)
+                    type = "text/plain"
+                }
+                startActivity(Intent.createChooser(intent, null))
             }
         }
     }

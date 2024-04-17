@@ -270,8 +270,7 @@ class ObjectMenuViewModel(
                     obj = ctx,
                     space = SpaceId(space)
                 )
-                Timber.d("Got deeplink: $deeplink")
-
+                viewModelScope.launch { commands.emit(Command.ShareDeeplinkToObject(deeplink)) }
             }
             ObjectAction.UNLOCK -> {
                 proceedWithUpdatingLockStatus(ctx, false)

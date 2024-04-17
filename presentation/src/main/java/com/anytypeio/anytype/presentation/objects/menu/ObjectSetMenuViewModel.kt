@@ -7,10 +7,12 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
+import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
@@ -27,7 +29,6 @@ import com.anytypeio.anytype.presentation.util.downloader.DebugGoroutinesShareDo
 import javax.inject.Inject
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class ObjectSetMenuViewModel(
     setObjectIsArchived: SetObjectIsArchived,
@@ -44,7 +45,8 @@ class ObjectSetMenuViewModel(
     private val objectState: StateFlow<ObjectState>,
     private val analytics: Analytics,
     private val addObjectToCollection: AddObjectToCollection,
-    private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader
+    private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader,
+    private val deepLinkResolver: DeepLinkResolver
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
     addToFavorite = addToFavorite,
@@ -78,7 +80,8 @@ class ObjectSetMenuViewModel(
         private val addObjectToCollection: AddObjectToCollection,
         private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader,
         private val createWidget: CreateWidget,
-        private val spaceManager: SpaceManager
+        private val spaceManager: SpaceManager,
+        private val deepLinkResolver: DeepLinkResolver
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectSetMenuViewModel(
@@ -96,7 +99,8 @@ class ObjectSetMenuViewModel(
                 addObjectToCollection = addObjectToCollection,
                 debugGoroutinesShareDownloader = debugGoroutinesShareDownloader,
                 createWidget = createWidget,
-                spaceManager = spaceManager
+                spaceManager = spaceManager,
+                deepLinkResolver = deepLinkResolver
             ) as T
         }
     }
@@ -200,7 +204,11 @@ class ObjectSetMenuViewModel(
                 proceedWithCreatingWidget(obj = wrapper)
             }
             ObjectAction.COPY_LINK -> {
-                Timber.w("TODO")
+                val deeplink = deepLinkResolver.createObjectDeepLink(
+                    obj = ctx,
+                    space = SpaceId(space)
+                )
+                viewModelScope.launch { commands.emit(Command.ShareDeeplinkToObject(deeplink)) }
             }
             ObjectAction.MOVE_TO,
             ObjectAction.SEARCH_ON_PAGE,

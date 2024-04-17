@@ -37,15 +37,25 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
                     source = source.orEmpty()
                 )
             } catch (e: Exception) {
-                //Timber.e(e, "Error while resolving deeplink: $deeplink")
                 DeepLinkResolver.Action.Unknown
             }
         }
-
         deeplink.contains(INVITE_PATH) -> {
             DeepLinkResolver.Action.Invite(deeplink)
         }
-
+        deeplink.contains(OBJECT_PATH) -> {
+            val uri = Uri.parse(deeplink)
+            val obj = uri.getQueryParameter(OBJECT_ID_PARAM)
+            val space = uri.getQueryParameter(SPACE_ID_PARAM)
+            if (!obj.isNullOrEmpty() && !space.isNullOrEmpty()) {
+                DeepLinkResolver.Action.DeepLinkToObject(
+                    obj = obj,
+                    space = SpaceId(space)
+                )
+            } else {
+                DeepLinkResolver.Action.Unknown
+            }
+        }
         else -> DeepLinkResolver.Action.Unknown
     }
 

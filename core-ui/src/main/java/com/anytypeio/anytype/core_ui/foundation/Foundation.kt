@@ -26,9 +26,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
-import com.anytypeio.anytype.core_models.membership.MembershipStatusModel
+import com.anytypeio.anytype.core_models.membership.Membership.Status
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
@@ -163,8 +164,8 @@ fun OptionMembership(
             ),
             style = BodyRegular
         )
-        when (membershipStatus) {
-            is MembershipStatus.Active -> {
+        when (membershipStatus?.status) {
+            Status.STATUS_ACTIVE -> {
                 Box(
                     modifier = Modifier.weight(1.0f, true),
                     contentAlignment = Alignment.CenterEnd
@@ -172,14 +173,14 @@ fun OptionMembership(
                     Text(
                         modifier = Modifier
                             .padding(horizontal = 38.dp),
-                        text = membershipStatus.activeTier.name,
+                        text = membershipStatus.tiers.firstOrNull { it.id == membershipStatus.activeTier?.value }?.name.orEmpty(),
                         color = colorResource(R.color.text_secondary),
                         style = BodyRegular
                     )
                     Arrow()
                 }
             }
-            is MembershipStatus.Unknown -> {
+            Status.STATUS_UNKNOWN -> {
                 Box(modifier = Modifier
                     .weight(1.0f, true),
                     contentAlignment = Alignment.CenterEnd
@@ -356,36 +357,36 @@ fun Announcement(
 @Preview
 @Composable
 fun MyOptionMembership() {
-    OptionMembership(
-        image = R.drawable.ic_membership,
-        text = "Membership",
-        membershipStatus = MembershipStatus.Active(
-            activeTier = MembershipTierData(
-                id = 1507,
-                name = "Builder",
-                description = "pulvinar",
-                isTest = false,
-                periodType = MembershipPeriodType.PERIOD_TYPE_DAYS,
-                periodValue = 5927,
-                priceStripeUsdCents = 3808,
-                anyNamesCountIncluded = 7517,
-                anyNameMinLength = 2357,
-                features = listOf(),
-                colorStr = "molestie",
-                stripeProductId = null,
-                stripeManageUrl = null,
-                iosProductId = null,
-                iosManageUrl = null,
-                androidProductId = null,
-                androidManageUrl = null
-            ),
-            status = MembershipStatusModel.STATUS_UNKNOWN,
-            dateEnds = 2710,
-            paymentMethod = MembershipPaymentMethod.METHOD_CRYPTO,
-            anyName = "Rickey Robbins",
-            tiers = listOf()
-        )
-    )
+//    OptionMembership(
+//        image = R.drawable.ic_membership,
+//        text = "Membership",
+//        membershipStatus = MembershipStatus(
+//            activeTier = MembershipTierData(
+//                id = 1507,
+//                name = "Builder",
+//                description = "pulvinar",
+//                isTest = false,
+//                periodType = MembershipPeriodType.PERIOD_TYPE_DAYS,
+//                periodValue = 5927,
+//                priceStripeUsdCents = 3808,
+//                anyNamesCountIncluded = 7517,
+//                anyNameMinLength = 2357,
+//                features = listOf(),
+//                colorStr = "molestie",
+//                stripeProductId = null,
+//                stripeManageUrl = null,
+//                iosProductId = null,
+//                iosManageUrl = null,
+//                androidProductId = null,
+//                androidManageUrl = null
+//            ),
+//            status = Membership.Status.STATUS_UNKNOWN,
+//            dateEnds = 2710,
+//            paymentMethod = MembershipPaymentMethod.METHOD_CRYPTO,
+//            anyName = "Rickey Robbins",
+//            tiers = listOf()
+//        )
+//    )
 }
 
 @Preview

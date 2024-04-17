@@ -22,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
@@ -65,7 +66,7 @@ private fun WelcomeContent(tierResources: TierResources, onDismiss: () -> Unit) 
             modifier = Modifier.wrapContentSize(),
             painter = painterResource(id = tierResources.mediumIcon!!),
             contentDescription = "logo",
-            tint = tierResources.radialGradient
+            tint = tierResources.colors.gradientStart
         )
         Spacer(modifier = Modifier.height(14.dp))
         Text(
@@ -105,5 +106,14 @@ private fun WelcomeContent(tierResources: TierResources, onDismiss: () -> Unit) 
 @Composable
 fun PaymentWelcomeScreenPreview() {
     PaymentWelcomeScreen(
-        PaymentsWelcomeState.Initial(Tier.Explorer(TierId(22), true, "01-01-2025")), {})
+        PaymentsWelcomeState.Initial(
+            Tier.Explorer(
+                TierId(22),
+                true,
+                "01-01-2025",
+                color = "green",
+                features = listOf("Feature 1", "Feature 2"),
+                status = Membership.Status.STATUS_ACTIVE
+            )
+        ), {})
 }

@@ -8,9 +8,9 @@ import com.android.billingclient.api.Purchase
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.payments.constants.BillingConstants
-import com.anytypeio.anytype.presentation.membership.models.Tier
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
 import com.anytypeio.anytype.presentation.membership.models.TierId
+import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -31,7 +31,6 @@ class PaymentsViewModel(
 
     val command = MutableStateFlow<PaymentsNavigation?>(null)
 
-    private val _tiers = mutableListOf<Tier>()
     /**
      * Local billing purchase data.
      */
@@ -50,7 +49,6 @@ class PaymentsViewModel(
     init {
         Timber.d("PaymentsViewModel init")
         proceedWithGettingMembershipStatus()
-        setupActiveTierName()
     }
 
     private fun proceedWithGettingMembershipStatus() {
@@ -63,30 +61,31 @@ class PaymentsViewModel(
 
     fun onTierClicked(tierId: TierId) {
         Timber.d("onTierClicked: tierId:$tierId")
-        tierState.value = PaymentsTierState.Visible.Initial(tier = _tiers.first { it.id == tierId })
+        val tier = (viewState.value as? PaymentsMainState.PaymentSuccess)?.tiers?.first { it.id == tierId } ?: return
+        tierState.value = PaymentsTierState.Visible.Initial(tier = tier)
         command.value = PaymentsNavigation.Tier
     }
 
     fun onActionCode(code: String, tierId: TierId) {
-        Timber.d("onActionCode: tierId:$tierId, code:$code, _tiers:${_tiers}")
-        viewModelScope.launch {
-            codeState.value = PaymentsCodeState.Visible.Loading(tierId = tierId)
-            welcomeState.value =
-                PaymentsWelcomeState.Initial(tier = _tiers.first { it.id == tierId })
-            val updatedTiers = _tiers.map {
-                val isCurrent = it.id == tierId
-                when (it) {
-                    is Tier.Builder -> it.copy(isCurrent = isCurrent)
-                    is Tier.CoCreator -> it.copy(isCurrent = isCurrent)
-                    is Tier.Custom -> it.copy(isCurrent = isCurrent)
-                    is Tier.Explorer -> it.copy(isCurrent = isCurrent)
-                }
-            }
-            _tiers.clear()
-            _tiers.addAll(updatedTiers)
-            viewState.value = PaymentsMainState.PaymentSuccess(_tiers)
-            command.value = PaymentsNavigation.Welcome
-        }
+//        Timber.d("onActionCode: tierId:$tierId, code:$code, _tiers:${_tiers}")
+//        viewModelScope.launch {
+//            codeState.value = PaymentsCodeState.Visible.Loading(tierId = tierId)
+//            welcomeState.value =
+//                PaymentsWelcomeState.Initial(tier = _tiers.first { it.id == tierId })
+//            val updatedTiers = _tiers.map {
+//                val isCurrent = it.id == tierId
+//                when (it) {
+//                    is Tier.Builder -> it.copy(isCurrent = isCurrent)
+//                    is Tier.CoCreator -> it.copy(isCurrent = isCurrent)
+//                    is Tier.Custom -> it.copy(isCurrent = isCurrent)
+//                    is Tier.Explorer -> it.copy(isCurrent = isCurrent)
+//                }
+//            }
+//            _tiers.clear()
+//            _tiers.addAll(updatedTiers)
+//            viewState.value = PaymentsMainState.PaymentSuccess(_tiers)
+//            command.value = PaymentsNavigation.Welcome
+//        }
     }
 
     fun onSubmitEmailButtonClicked(tierId: TierId, email: String) {
@@ -97,7 +96,7 @@ class PaymentsViewModel(
 
     fun onPayButtonClicked(tierId: TierId) {
         Timber.d("onPayButtonClicked: tierId:$tierId")
-        buyBasePlans(product = tierId.value, upDowngrade = false)
+        //buyBasePlans(product = tierId.value, upDowngrade = false)
     }
 
     fun onDismissTier() {
@@ -113,19 +112,6 @@ class PaymentsViewModel(
     fun onDismissWelcome() {
         Timber.d("onDismissWelcome")
         command.value = PaymentsNavigation.Dismiss
-    }
-
-    private fun setupActiveTierName() {
-        activeTierName.value = _tiers.firstOrNull { it.isCurrent }?.prettyName
-    }
-
-    private fun gertTiers(): List<Tier> {
-        return listOf(
-            Tier.Explorer(id = TierId("explorer_subscription"), isCurrent = false, validUntil = "Forever"),
-            Tier.Builder(id = TierId("builder_subscription"), isCurrent = false, validUntil = "2022-12-31"),
-            Tier.CoCreator(id = TierId("cocreator_subscription"), isCurrent = false, validUntil = "2022-12-31"),
-            Tier.Custom(id = TierId("idCustom"), isCurrent = false, validUntil = "2022-12-31")
-        )
     }
 
     //region Google Play Billing

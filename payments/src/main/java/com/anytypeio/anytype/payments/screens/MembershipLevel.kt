@@ -46,6 +46,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyBold
@@ -107,7 +108,7 @@ fun MembershipLevels(tier: Tier, actionPay: () -> Unit, actionSubmitEmail: (Stri
         if (tierResources != null) {
             val brush = Brush.verticalGradient(
                 listOf(
-                    tierResources.colorGradient,
+                    tierResources.colors.gradientStart,
                     Color.Transparent
                 )
             )
@@ -117,14 +118,14 @@ fun MembershipLevels(tier: Tier, actionPay: () -> Unit, actionSubmitEmail: (Stri
                         .fillMaxWidth()
                         .height(132.dp)
                         .background(brush = brush, shape = RoundedCornerShape(16.dp)),
-                    contentAlignment = androidx.compose.ui.Alignment.BottomStart
+                    contentAlignment = Alignment.BottomStart
                 ) {
                     Icon(
                         modifier = Modifier
                             .padding(start = 16.dp),
-                        painter = painterResource(id = tierResources.mediumIcon!!),
+                        painter = painterResource(id = tierResources.mediumIcon),
                         contentDescription = "logo",
-                        tint = tierResources.radialGradient
+                        tint = tierResources.colors.gradientEnd
                     )
                 }
                 Spacer(modifier = Modifier.height(14.dp))
@@ -156,7 +157,7 @@ fun MembershipLevels(tier: Tier, actionPay: () -> Unit, actionSubmitEmail: (Stri
                     textAlign = TextAlign.Start
                 )
                 Spacer(modifier = Modifier.height(6.dp))
-                tierResources.benefits.forEach { benefit ->
+                tierResources.features.forEach { benefit ->
                     Benefit(benefit = benefit)
                     Spacer(modifier = Modifier.height(6.dp))
                 }
@@ -648,6 +649,9 @@ fun MyLevel() {
             isCurrent = true,
             price = "$99",
             validUntil = "12/12/2025",
+            color = "green",
+            features = listOf("Feature 1", "Feature 2", "Feature 3"),
+            status = Membership.Status.STATUS_ACTIVE
         ),
         actionPay = {},
         actionSubmitEmail = {}

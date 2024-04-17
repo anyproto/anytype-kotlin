@@ -29,6 +29,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import com.anytypeio.anytype.core_models.membership.Membership
+import com.anytypeio.anytype.core_models.membership.Membership.Status.*
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
@@ -38,9 +40,11 @@ import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.fontInterSemibold
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.membership.models.Tier
+import com.anytypeio.anytype.presentation.membership.models.TierId
 
 @Composable
 fun TierView(
+    tier: Tier,
     title: String,
     subTitle: String,
     colorGradient: Color,
@@ -102,7 +106,10 @@ fun TierView(
                 style = Caption1Regular,
                 textAlign = TextAlign.Start
             )
-            PriceOrOption()
+            PriceOrOption(tier = tier)
+            TierPreviewButton(tier = tier) {
+                onClick()
+            }
             ButtonPrimary(
                 text = buttonText,
                 modifier = Modifier
@@ -136,13 +143,29 @@ fun TierView(
 }
 
 @Composable
-fun PriceOrOption() {
-    Text(
-        modifier = Modifier.padding(start = 16.dp),
-        text = "9.99",
-        style = titleTextStyle,
-        color = colorResource(id = R.color.text_primary)
-    )
+fun PriceOrOption(tier: Tier) {
+    if (tier.isCurrent) {
+        Text(
+            modifier = Modifier.padding(start = 16.dp),
+            text = "9.99",
+            style = titleTextStyle,
+            color = colorResource(id = R.color.text_primary)
+        )
+    } else {
+        Text(
+            modifier = Modifier.padding(start = 16.dp),
+            text = "9.99",
+            style = titleTextStyle,
+            color = colorResource(id = R.color.text_primary)
+        )
+    }
+}
+
+@Composable
+fun TierPreviewButton(tier: Tier, onClick: () -> Unit) {
+    if (tier.status != STATUS_PENDING) {
+
+    }
 }
 
 @Composable
@@ -170,6 +193,7 @@ fun mapTierToResources(tier: Tier?): TierResources? {
             title = stringResource(id = R.string.payments_tier_custom),
             subtitle = stringResource(id = R.string.payments_tier_custom_description),
             smallIcon = R.drawable.logo_custom_64,
+            mediumIcon = R.drawable.logo_custom_64,
             colors = toValue(tier.color),
             features = tier.features
         )
@@ -223,7 +247,14 @@ fun TierPreview() {
         icon = R.drawable.logo_co_creator_64,
         colorGradient = Color(0xFFCFF6CF),
         radialGradient = Color(0xFF24BFD4),
-        isCurrent = true
+        isCurrent = true,
+        tier = Tier.Explorer(
+            id = TierId(1),
+            isCurrent = true,
+            color = CoverColor.BLUE.code,
+            features = listOf("Feature 1", "Feature 2", "Feature 3"),
+            status = Membership.Status.STATUS_ACTIVE
+        )
     )
 }
 
@@ -238,7 +269,7 @@ val titleTextStyle = TextStyle(
 data class TierResources(
     val title: String,
     val subtitle: String,
-    val mediumIcon: Int? = null,
+    val mediumIcon: Int,
     val smallIcon: Int,
     val colors: TierColors,
     val features: List<String>

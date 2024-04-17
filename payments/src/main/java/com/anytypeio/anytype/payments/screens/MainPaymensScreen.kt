@@ -77,7 +77,7 @@ fun MainPaymentsScreen(state: PaymentsMainState, tierClicked: (TierId) -> Unit) 
                 .padding(bottom = 20.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            if (state is PaymentsMainState.WithBannerState) {
+            if (state is PaymentsMainState.Default.WithBanner) {
                 Title()
                 Spacer(modifier = Modifier.height(7.dp))
                 Subtitle()
@@ -94,7 +94,7 @@ fun MainPaymentsScreen(state: PaymentsMainState, tierClicked: (TierId) -> Unit) 
                 Spacer(modifier = Modifier.height(32.dp))
                 BottomText()
             }
-            if (state is PaymentsMainState.WithoutBannerState) {
+            if (state is PaymentsMainState.Default.WithoutBanner) {
                 Title()
                 Spacer(modifier = Modifier.height(39.dp))
                 TiersList(tiers = state.tiers, tierClicked = tierClicked)

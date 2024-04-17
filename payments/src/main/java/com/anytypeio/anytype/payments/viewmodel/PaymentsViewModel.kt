@@ -75,19 +75,19 @@ class PaymentsViewModel(
         }
         return when (activeTierId) {
             EXPLORER_ID -> {
-                PaymentsMainState.WithBannerState(membershipStatus.toTiersView())
+                PaymentsMainState.Default.WithBanner(membershipStatus.toTiersView())
             }
             else -> {
-                PaymentsMainState.WithoutBannerState(membershipStatus.toTiersView())
+                PaymentsMainState.Default.WithoutBanner(membershipStatus.toTiersView())
             }
         }
     }
 
     fun onTierClicked(tierId: TierId) {
         Timber.d("onTierClicked: tierId:$tierId")
-        val tier = (viewState.value as? PaymentsMainState.WithoutBannerState)?.tiers?.first { it.id == tierId } ?: return
-        tierState.value = PaymentsTierState.Visible.Initial(tier = tier)
-        command.value = PaymentsNavigation.Tier
+//        val tier = (viewState.value as? PaymentsMainState.WithoutBannerState)?.tiers?.first { it.id == tierId } ?: return
+//        tierState.value = PaymentsTierState.Visible.Initial(tier = tier)
+//        command.value = PaymentsNavigation.Tier
     }
 
     fun onActionCode(code: String, tierId: TierId) {

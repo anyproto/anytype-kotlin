@@ -1142,7 +1142,7 @@ class HomeScreenViewModel(
                     )
                     when(result) {
                         is DeepLinkToObjectDelegate.Result.Error -> {
-                            sendToast("Something went wrong handling deeplink")
+                            commands.emit(Command.Deeplink.DeepLinkToObjectNotWorking)
                         }
                         is DeepLinkToObjectDelegate.Result.Success -> {
                             proceedWithNavigation(result.obj.navigation())
@@ -1694,6 +1694,7 @@ sealed class Command {
     data class ShareSpace(val space: SpaceId) : Command()
 
     sealed class Deeplink : Command() {
+        data object DeepLinkToObjectNotWorking: Deeplink()
         data object CannotImportExperience : Deeplink()
         data class Invite(val link: String) : Deeplink()
         data class GalleryInstallation(

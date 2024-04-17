@@ -252,6 +252,11 @@ class HomeScreenFragment : BaseComposeFragment() {
                     )
                 )
             }
+            is Command.Deeplink.DeepLinkToObjectNotWorking -> {
+                toast(
+                    getString(R.string.multiplayer_deeplink_to_your_object_error)
+                )
+            }
             is Command.ShareSpace -> {
                 findNavController().navigate(
                     R.id.shareSpaceScreen,

@@ -1632,16 +1632,16 @@ class HomeScreenViewModel(
  * State representing session while working with an object.
  */
 sealed class ObjectViewState {
-    object Idle : ObjectViewState()
-    object Loading : ObjectViewState()
+    data object Idle : ObjectViewState()
+    data object Loading : ObjectViewState()
     data class Success(val obj: ObjectView) : ObjectViewState()
     data class Failure(val e: Throwable) : ObjectViewState()
 }
 
 sealed class InteractionMode {
-    object Default : InteractionMode()
-    object Edit : InteractionMode()
-    object ReadOnly: InteractionMode()
+    data object Default : InteractionMode()
+    data object Edit : InteractionMode()
+    data object ReadOnly: InteractionMode()
 }
 
 sealed class Command {
@@ -1694,7 +1694,7 @@ sealed class Command {
     data class ShareSpace(val space: SpaceId) : Command()
 
     sealed class Deeplink : Command() {
-        object CannotImportExperience : Deeplink()
+        data object CannotImportExperience : Deeplink()
         data class Invite(val link: String) : Deeplink()
         data class GalleryInstallation(
             val deepLinkType: String,

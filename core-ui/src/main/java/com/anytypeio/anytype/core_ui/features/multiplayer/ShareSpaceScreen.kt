@@ -455,7 +455,7 @@ private fun SpaceMemberRequest(
                 .weight(1.0f)
         ) {
             Text(
-                text = member.name.orEmpty(),
+                text = member.name.orEmpty().ifEmpty { stringResource(id = R.string.untitled) },
                 style = PreviewTitle2Medium,
                 color = colorResource(id = R.color.text_primary)
             )

@@ -24,7 +24,7 @@ enum class MembershipStatusModel {
 
 enum class MembershipPaymentMethod {
     METHOD_NONE,
-    METHOD_CARD,
+    METHOD_STRIPE,
     METHOD_CRYPTO,
     METHOD_INAPP_APPLE,
     METHOD_INAPP_GOOGLE

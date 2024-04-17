@@ -987,7 +987,7 @@ fun MMembershipStatus.toCoreModel(): MembershipStatusModel {
 fun MMembershipPaymentMethod.toCoreModel(): MembershipPaymentMethod {
     return when (this) {
         MMembershipPaymentMethod.MethodNone -> MembershipPaymentMethod.METHOD_NONE
-        MMembershipPaymentMethod.MethodCard -> MembershipPaymentMethod.METHOD_CARD
+        MMembershipPaymentMethod.MethodStripe -> MembershipPaymentMethod.METHOD_STRIPE
         MMembershipPaymentMethod.MethodCrypto -> MembershipPaymentMethod.METHOD_CRYPTO
         MMembershipPaymentMethod.MethodInappApple -> MembershipPaymentMethod.METHOD_INAPP_APPLE
         MMembershipPaymentMethod.MethodInappGoogle -> MembershipPaymentMethod.METHOD_INAPP_GOOGLE

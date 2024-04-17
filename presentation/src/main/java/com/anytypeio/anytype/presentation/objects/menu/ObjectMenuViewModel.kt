@@ -12,12 +12,14 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.UpdateFields
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
+import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
@@ -62,7 +64,8 @@ class ObjectMenuViewModel(
     private val createTemplateFromObject: CreateTemplateFromObject,
     private val setObjectDetails: SetObjectDetails,
     private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader,
-    private val spaceManager: SpaceManager
+    private val spaceManager: SpaceManager,
+    private val deepLinkResolver: DeepLinkResolver
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
     addToFavorite = addToFavorite,
@@ -134,6 +137,7 @@ class ObjectMenuViewModel(
         }
         if (!isTemplate) {
             add(ObjectAction.LINK_TO)
+            add(ObjectAction.COPY_LINK)
         }
 
         if (!isTemplate) {
@@ -260,6 +264,13 @@ class ObjectMenuViewModel(
             }
             ObjectAction.LINK_TO -> {
                 proceedWithLinkTo()
+            }
+            ObjectAction.COPY_LINK -> {
+                val deeplink = deepLinkResolver.createObjectDeepLink(
+                    obj = ctx,
+                    space = SpaceId(space)
+                )
+                viewModelScope.launch { commands.emit(Command.ShareDeeplinkToObject(deeplink)) }
             }
             ObjectAction.UNLOCK -> {
                 proceedWithUpdatingLockStatus(ctx, false)
@@ -447,7 +458,8 @@ class ObjectMenuViewModel(
         private val setObjectDetails: SetObjectDetails,
         private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader,
         private val createWidget: CreateWidget,
-        private val spaceManager: SpaceManager
+        private val spaceManager: SpaceManager,
+        private val deepLinkResolver: DeepLinkResolver
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectMenuViewModel(
@@ -469,7 +481,8 @@ class ObjectMenuViewModel(
                 setObjectDetails = setObjectDetails,
                 debugGoroutinesShareDownloader = debugGoroutinesShareDownloader,
                 createWidget = createWidget,
-                spaceManager = spaceManager
+                spaceManager = spaceManager,
+                deepLinkResolver = deepLinkResolver
             ) as T
         }
     }

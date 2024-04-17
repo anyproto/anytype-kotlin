@@ -211,6 +211,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                 Intent.ACTION_VIEW -> {
                     val data = intent.dataString
                     if (data != null && data.contains(DEEP_LINK_PATTERN)) {
+                        Timber.d("Deeplink detected")
                         deepLink = data
                     } else {
                         intent.extras?.getString(DefaultAppActionManager.ACTION_CREATE_NEW_TYPE_KEY)?.let {
@@ -241,6 +242,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                 val raw = intent.getStringExtra(Intent.EXTRA_TEXT)
                 if (raw != null) {
                     if (raw.contains(DEEP_LINK_PATTERN)) {
+                        Timber.d("Deeplink detected in share intent")
                         deepLink = raw
                     } else if (raw.isNotEmpty()) {
                         vm.onIntentTextShare(raw)

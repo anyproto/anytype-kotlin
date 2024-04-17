@@ -7,10 +7,13 @@ import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
+import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.payments.GetMembershipPaymentUrl
 import com.anytypeio.anytype.payments.constants.BillingConstants
 import com.anytypeio.anytype.payments.constants.TiersConstants.EXPLORER_ID
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
 import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
+import com.anytypeio.anytype.presentation.membership.models.Tier
 import com.anytypeio.anytype.presentation.membership.models.TierId
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -23,7 +26,8 @@ class PaymentsViewModel(
     private val analytics: Analytics,
     private val billingClientLifecycle: BillingClientLifecycle,
     private val getAccount: GetAccount,
-    private val membershipProvider: MembershipProvider
+    private val membershipProvider: MembershipProvider,
+    private val getMembershipPaymentUrl: GetMembershipPaymentUrl
 ) : ViewModel() {
 
     val viewState = MutableStateFlow<PaymentsMainState>(PaymentsMainState.Loading)
@@ -48,6 +52,9 @@ class PaymentsViewModel(
     val launchBillingCommand = _launchBillingCommand.asSharedFlow()
 
 
+    private val _membershipStatus = MutableStateFlow<MembershipStatus?>(null)
+
+
     init {
         Timber.d("PaymentsViewModel init")
         proceedWithGettingMembershipStatus()
@@ -57,6 +64,7 @@ class PaymentsViewModel(
         viewModelScope.launch {
             membershipProvider.status().collect { status ->
                 Timber.d("Membership status: $status")
+                _membershipStatus.value = status
                 viewState.value = toViewState(status)
             }
         }
@@ -83,11 +91,10 @@ class PaymentsViewModel(
         }
     }
 
-    fun onTierClicked(tierId: TierId) {
-        Timber.d("onTierClicked: tierId:$tierId")
-//        val tier = (viewState.value as? PaymentsMainState.WithoutBannerState)?.tiers?.first { it.id == tierId } ?: return
-//        tierState.value = PaymentsTierState.Visible.Initial(tier = tier)
-//        command.value = PaymentsNavigation.Tier
+    fun onTierClicked(tier: Tier) {
+        Timber.d("onTierClicked: tierId:$tier")
+        tierState.value = PaymentsTierState.Visible.Initial(tier = tier)
+        command.value = PaymentsNavigation.Tier
     }
 
     fun onActionCode(code: String, tierId: TierId) {
@@ -120,7 +127,32 @@ class PaymentsViewModel(
 
     fun onPayButtonClicked(tierId: TierId) {
         Timber.d("onPayButtonClicked: tierId:$tierId")
-        //buyBasePlans(product = tierId.value, upDowngrade = false)
+        val tier = _membershipStatus.value?.tiers?.firstOrNull { it.id == tierId.value } ?: return
+        val androidProductId = tier.androidProductId
+        if (androidProductId == null) {
+            Timber.e("Tier $tierId has no androidProductId")
+            return
+        }
+        viewModelScope.launch {
+            getMembershipPaymentUrl.async(
+                GetMembershipPaymentUrl.Params(
+                    tierId = tierId.value,
+                    name = ""
+                )
+            ).fold(
+                onSuccess = { url ->
+                    Timber.d("Payment url: $url")
+                    buyBasePlans(
+                        billingId = url.billingId,
+                        product = androidProductId,
+                        upDowngrade = false
+                    )
+                },
+                onFailure = { error ->
+                    Timber.e("Error getting payment url: $error")
+                }
+            )
+        }
     }
 
     fun onDismissTier() {
@@ -148,7 +180,8 @@ class PaymentsViewModel(
      * when converting from one base plan to another.
      *
      */
-    private fun buyBasePlans(tag: String = "", product: String, upDowngrade: Boolean) {
+    private fun buyBasePlans(billingId: String, product: String, upDowngrade: Boolean) {
+        Timber.d("buyBasePlans: billingId:$billingId, product:$product, upDowngrade:$upDowngrade")
         //todo check if the user has already purchased the product
         val isProductOnServer = false//serverHasSubscription(subscriptions.value, product)
         val isProductOnDevice = deviceHasGooglePlaySubscription(purchases.value, product)
@@ -197,8 +230,7 @@ class PaymentsViewModel(
         val builderOffers =
             builderSubProductDetails.subscriptionOfferDetails?.let { offerDetailsList ->
                 retrieveEligibleOffers(
-                    offerDetails = offerDetailsList,
-                    tag = tag
+                    offerDetails = offerDetailsList
                 )
             }
 
@@ -207,7 +239,12 @@ class PaymentsViewModel(
         when (product) {
             BillingConstants.SUBSCRIPTION_BUILDER -> {
                 offerToken = builderOffers?.let { leastPricedOfferToken(it) }.toString()
-                launchFlow(upDowngrade, offerToken, builderSubProductDetails)
+                launchFlow(
+                    billingId = billingId,
+                    upDowngrade = upDowngrade,
+                    offerToken = offerToken,
+                    productDetails = builderSubProductDetails
+                )
             }
         }
     }
@@ -256,7 +293,7 @@ class PaymentsViewModel(
      *
      */
     private fun retrieveEligibleOffers(
-        offerDetails: MutableList<ProductDetails.SubscriptionOfferDetails>, tag: String
+        offerDetails: MutableList<ProductDetails.SubscriptionOfferDetails>, tag: String =""
     ):
             List<ProductDetails.SubscriptionOfferDetails> {
         val eligibleOffers = emptyList<ProductDetails.SubscriptionOfferDetails>().toMutableList()
@@ -278,6 +315,7 @@ class PaymentsViewModel(
      * @return [BillingFlowParams] builder.
      */
     private suspend fun billingFlowParamsBuilder(
+        billingId: String,
         productDetails: ProductDetails,
         offerToken: String
     ):
@@ -285,7 +323,7 @@ class PaymentsViewModel(
         val anyId = getAccount.async(Unit).getOrNull()
         return BillingFlowParams.newBuilder()
             .setObfuscatedAccountId(anyId?.id.orEmpty())
-            .setObfuscatedProfileId("testobfuscatedProfileId")
+            .setObfuscatedProfileId(billingId)
             .setProductDetailsParamsList(
                 listOf(
                     BillingFlowParams.ProductDetailsParams.newBuilder()
@@ -339,6 +377,7 @@ class PaymentsViewModel(
      *
      */
     private fun launchFlow(
+        billingId: String,
         upDowngrade: Boolean,
         offerToken: String,
         productDetails: ProductDetails
@@ -373,7 +412,8 @@ class PaymentsViewModel(
             } else {
                 billingFlowParamsBuilder(
                     productDetails = productDetails,
-                    offerToken = offerToken
+                    offerToken = offerToken,
+                    billingId = billingId
                 )
             }
             _launchBillingCommand.emit(billingParams)

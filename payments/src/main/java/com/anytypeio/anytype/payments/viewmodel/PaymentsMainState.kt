@@ -7,8 +7,9 @@ import com.anytypeio.anytype.presentation.membership.models.TierId
 sealed class PaymentsMainState {
     data object Loading : PaymentsMainState()
     sealed class Default : PaymentsMainState() {
-        data class WithBanner(val tiers: List<Tier>) : Default()
-        data class WithoutBanner(val tiers: List<Tier>) : Default()
+        abstract val tiers: List<Tier>
+        data class WithBanner(override val tiers: List<Tier>) : Default()
+        data class WithoutBanner(override val tiers: List<Tier>) : Default()
     }
     data class ErrorState(val message: String) : PaymentsMainState()
 }

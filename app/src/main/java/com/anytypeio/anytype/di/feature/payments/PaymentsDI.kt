@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.payments.GetMembershipPaymentUrl
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
 import com.anytypeio.anytype.ui.payments.PaymentsFragment
 import com.anytypeio.anytype.payments.viewmodel.PaymentsViewModelFactory
@@ -46,6 +47,14 @@ object PaymentsModule {
         repo: AuthRepository,
         dispatchers: AppCoroutineDispatchers
     ): GetAccount = GetAccount(repo = repo, dispatcher = dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideGetPaymentsUrl(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): GetMembershipPaymentUrl = GetMembershipPaymentUrl(repo = repo, dispatchers = dispatchers)
 
     @Module
     interface Declarations {

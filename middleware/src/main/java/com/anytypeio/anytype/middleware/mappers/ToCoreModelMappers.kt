@@ -52,6 +52,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
+import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.middleware.interactor.toCoreModels
 import com.google.gson.GsonBuilder
 
@@ -1031,12 +1032,12 @@ fun MMembershipTierData.toCoreModel() : MembershipTierData {
         anyNameMinLength = anyNameMinLength,
         features = features,
         colorStr = colorStr,
-        stripeProductId = stripeProductId,
-        stripeManageUrl = stripeManageUrl,
-        iosProductId = iosProductId,
-        iosManageUrl = iosManageUrl,
-        androidProductId = androidProductId,
-        androidManageUrl = androidManageUrl
+        stripeProductId = stripeProductId.ifEmpty { null },
+        stripeManageUrl = stripeManageUrl.ifEmpty { null },
+        iosProductId = iosProductId.ifEmpty { null },
+        iosManageUrl = iosManageUrl.ifEmpty { null },
+        androidProductId = androidProductId.ifEmpty { null },
+        androidManageUrl = androidManageUrl.ifEmpty { null },
     )
 }
 

@@ -1199,6 +1199,8 @@
     <string name="multiplayer_notification_view_request">Вид</string>
     <string name="multiplayer_notification_go_to_space">Перейти в пространство</string>
     <string name="multiplayer_toast_permission_not_allowed">Changing permissions is not allowed</string>
+    <string name="multiplayer_deeplink_to_your_object">Deeplink to your object</string>
+    <string name="multiplayer_deeplink_to_your_object_error">This deeplink is not working. Object might be deleted or there might be issues with space access.</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Членство</string>
@@ -1295,4 +1297,5 @@
     <string name="gallery_experience_alert_button_space">Открыть пространство.</string>
     <string name="gallery_experience_alert_button_error">Закрыть</string>
     <string name="three_dots_text_placeholder">...</string>
+    <string name="multiplayer_you_as_member">you</string>
 </resources>

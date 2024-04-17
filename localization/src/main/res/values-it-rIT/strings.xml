@@ -1192,6 +1192,8 @@
     <string name="multiplayer_notification_view_request">Vista</string>
     <string name="multiplayer_notification_go_to_space">Vai allo spazio</string>
     <string name="multiplayer_toast_permission_not_allowed">Non è consentito modificare i permessi</string>
+    <string name="multiplayer_deeplink_to_your_object">Deeplink to your object</string>
+    <string name="multiplayer_deeplink_to_your_object_error">This deeplink is not working. Object might be deleted or there might be issues with space access.</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Membership</string>
@@ -1288,4 +1290,5 @@
     <string name="gallery_experience_alert_button_space">Open space</string>
     <string name="gallery_experience_alert_button_error">Chiudi</string>
     <string name="three_dots_text_placeholder">...</string>
+    <string name="multiplayer_you_as_member">you</string>
 </resources>

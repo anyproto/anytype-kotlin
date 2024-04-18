@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.MutableLiveData
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingFlowParams
@@ -46,7 +45,7 @@ class BillingClientLifecycle(
     /**
      * ProductDetails for all known products.
      */
-    val builderSubProductWithProductDetails = MutableLiveData<ProductDetails?>()
+    val builderSubProductWithProductDetails = MutableStateFlow<List<ProductDetails>>(emptyList())
 
     /**
      * Instantiate a new BillingClient instance.
@@ -182,16 +181,18 @@ class BillingClientLifecycle(
      *
      */
     private fun postProductDetails(productDetailsList: List<ProductDetails>) {
+        val result = mutableListOf<ProductDetails>()
         productDetailsList.forEach { productDetails ->
             when (productDetails.productType) {
                 BillingClient.ProductType.SUBS -> {
                     if (subscriptionIds.contains(productDetails.productId)) {
                         Timber.d("Subscription ProductDetails: $productDetails")
-                        builderSubProductWithProductDetails.postValue(productDetails)
+                        result.add(productDetails)
                     }
                 }
             }
         }
+        builderSubProductWithProductDetails.value = result
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.payments.viewmodel
 
+import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
 import com.anytypeio.anytype.presentation.membership.models.Tier
 import com.anytypeio.anytype.presentation.membership.models.TierId
 
@@ -8,9 +9,19 @@ sealed class PaymentsMainState {
     data object Loading : PaymentsMainState()
     sealed class Default : PaymentsMainState() {
         abstract val tiers: List<Tier>
-        data class WithBanner(override val tiers: List<Tier>) : Default()
-        data class WithoutBanner(override val tiers: List<Tier>) : Default()
+        abstract val membershipStatus: MembershipStatus
+
+        data class WithBanner(
+            override val membershipStatus: MembershipStatus,
+            override val tiers: List<Tier>
+        ) : Default()
+
+        data class WithoutBanner(
+            override val membershipStatus: MembershipStatus,
+            override val tiers: List<Tier>
+        ) : Default()
     }
+
     data class ErrorState(val message: String) : PaymentsMainState()
 }
 

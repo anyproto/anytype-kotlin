@@ -31,8 +31,16 @@ class ObjectAppearanceChooseDescriptionFragment :
     }
 
     companion object {
-        fun new(ctx: Id, block: Id) = ObjectAppearanceChooseDescriptionFragment().apply {
-            arguments = bundleOf(CONTEXT_ID_KEY to ctx, BLOCK_ID_KEY to block)
+        fun new(
+            ctx: Id,
+            space: Id,
+            block: Id
+        ) = ObjectAppearanceChooseDescriptionFragment().apply {
+            arguments = bundleOf(
+                CONTEXT_ID_KEY to ctx,
+                SPACE_KEY to space,
+                BLOCK_ID_KEY to block
+            )
         }
     }
 }

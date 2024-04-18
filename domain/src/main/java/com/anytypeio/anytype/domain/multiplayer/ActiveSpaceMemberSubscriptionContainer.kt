@@ -86,6 +86,7 @@ interface ActiveSpaceMemberSubscriptionContainer {
                                     Relations.SPACE_ID,
                                     Relations.IDENTITY,
                                     Relations.PARTICIPANT_PERMISSIONS,
+                                    Relations.PARTICIPANT_STATUS,
                                     Relations.LAYOUT,
                                     Relations.NAME,
                                     Relations.ICON_IMAGE,

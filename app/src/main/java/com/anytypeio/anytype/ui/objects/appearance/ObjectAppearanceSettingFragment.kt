@@ -107,7 +107,11 @@ class ObjectAppearanceSettingFragment :
                 )
             }
             ObjectAppearanceSettingViewModel.Command.DescriptionScreen -> {
-                ObjectAppearanceChooseDescriptionFragment.new(block = block, ctx = ctx)
+                ObjectAppearanceChooseDescriptionFragment.new(
+                    block = block,
+                    space = space,
+                    ctx = ctx
+                )
             }
         }
         fr.show(parentFragmentManager, null)

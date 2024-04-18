@@ -1152,7 +1152,7 @@
     <string name="multiplayer_space_stop_sharing">Stop sharing</string>
     <string name="multiplayer_space_stop_sharing_space">Smetti di condividere lo spazio</string>
     <string name="multiplayer_space_stop_sharing_space_description">I partecipanti non si sincronizzeranno più con questo spazio e il link di condivisione verrà disattivato.</string>
-    <string name="multiplayer_more_info">Ulteriori informazioni</string>
+    <string name="multiplayer_more_info">More info</string>
     <string name="multiplayer_sharing">Condivisione</string>
     <string name="multiplayer_space_type">Tipo di spazio</string>
     <string name="multiplayer_share">Condividi</string>

@@ -186,7 +186,7 @@ class PaymentsViewModel(
         val isProductOnServer = false//serverHasSubscription(subscriptions.value, product)
         val isProductOnDevice = deviceHasGooglePlaySubscription(purchases.value, product)
         Timber.d(
-            "Billing", "$product - isProductOnServer: $isProductOnServer," +
+            "Billing product:$product - isProductOnServer: $isProductOnServer," +
                     " isProductOnDevice: $isProductOnDevice"
         )
 

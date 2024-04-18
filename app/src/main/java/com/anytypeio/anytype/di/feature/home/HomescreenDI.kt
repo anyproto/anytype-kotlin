@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
@@ -276,4 +277,5 @@ interface HomeScreenDependencies : ComponentDependencies {
     fun spaceManager(): SpaceManager
     fun userPermissionProvider(): UserPermissionProvider
     fun notificationChannel(): NotificationsChannel
+    fun activeSpaceMembers() : ActiveSpaceMemberSubscriptionContainer
 }

@@ -96,6 +96,7 @@ sealed class WidgetView {
             val space: ObjectWrapper.Basic,
             val icon: SpaceIconView,
             val type: SpaceType,
+            val membersCount: Int
         ) : SpaceWidget() {
             val isShared: Boolean get() = type == SHARED_SPACE_TYPE
         }

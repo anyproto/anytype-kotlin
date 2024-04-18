@@ -1,10 +1,12 @@
 package com.anytypeio.anytype.domain.multiplayer
 
+import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.library.StoreSearchParams
@@ -15,6 +17,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -23,8 +26,10 @@ interface ActiveSpaceMemberSubscriptionContainer {
 
     fun start()
     fun stop()
-    fun observe() : Flow<List<ObjectWrapper.SpaceMember>>
-    fun get() : List<ObjectWrapper.SpaceMember>
+    fun observe() : Flow<Store>
+    fun observe(space: SpaceId) : Flow<Store>
+    fun get() : Store
+    fun get(space: SpaceId) : Store
 
     class Default @Inject constructor(
         private val manager: SpaceManager,
@@ -34,7 +39,7 @@ interface ActiveSpaceMemberSubscriptionContainer {
         private val awaitAccountStart: AwaitAccountStartManager
     ) : ActiveSpaceMemberSubscriptionContainer {
 
-        private val data = MutableStateFlow<List<ObjectWrapper.SpaceMember>>(emptyList())
+        private val data = MutableStateFlow<Store>(Store.Empty)
         private val jobs = mutableListOf<Job>()
 
         init {
@@ -48,12 +53,29 @@ interface ActiveSpaceMemberSubscriptionContainer {
             }
         }
 
-        override fun observe(): Flow<List<ObjectWrapper.SpaceMember>> {
+        override fun observe(): Flow<Store> {
             return data
         }
 
-        override fun get(): List<ObjectWrapper.SpaceMember> {
+        override fun observe(space: SpaceId): Flow<Store> {
+            return data.map { curr ->
+                if (curr is Store.Data && curr.config.space == space.id)
+                    curr
+                else
+                    Store.Empty
+            }
+        }
+
+        override fun get(): Store {
             return data.value
+        }
+
+        override fun get(space: SpaceId): Store {
+            val curr = data.value
+            return if (curr is Store.Data && curr.config.space == space.id)
+                curr
+            else
+                Store.Empty
         }
 
         override fun start() {
@@ -92,10 +114,13 @@ interface ActiveSpaceMemberSubscriptionContainer {
                                     Relations.ICON_IMAGE,
                                 )
                             )
-                        )
-                    }.map { objects ->
-                        objects.map { obj ->
-                            ObjectWrapper.SpaceMember(obj.map)
+                        ).map { objects ->
+                            Store.Data(
+                                members = objects.map { obj ->
+                                    ObjectWrapper.SpaceMember(obj.map)
+                                },
+                                config = config
+                            )
                         }
                     }.collect {
                         data.value = it
@@ -113,5 +138,13 @@ interface ActiveSpaceMemberSubscriptionContainer {
         companion object {
             const val GLOBAL_SUBSCRIPTION = "subscription.global.active-space-members"
         }
+    }
+
+    sealed class Store {
+        data object Empty : Store()
+        data class Data(
+            val config: Config,
+            val members: List<ObjectWrapper.SpaceMember>
+        ) : Store()
     }
 }

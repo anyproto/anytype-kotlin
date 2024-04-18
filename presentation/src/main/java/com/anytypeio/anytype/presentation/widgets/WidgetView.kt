@@ -93,7 +93,7 @@ sealed class WidgetView {
     sealed class SpaceWidget: WidgetView() {
         override val id: Id get() = SpaceWidgetContainer.SPACE_WIDGET_SUBSCRIPTION
         data class View(
-            val space: ObjectWrapper.Basic,
+            val space: ObjectWrapper.SpaceView,
             val icon: SpaceIconView,
             val type: SpaceType,
             val membersCount: Int

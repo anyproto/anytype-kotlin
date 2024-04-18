@@ -103,7 +103,7 @@ fun HomeScreen(
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onSpaceWidgetClicked: () -> Unit,
     onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
-    onSpaceShareIconClicked: (ObjectWrapper.Basic) -> Unit
+    onSpaceShareIconClicked: (ObjectWrapper.SpaceView) -> Unit
 ) {
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -192,7 +192,7 @@ private fun WidgetList(
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onOpenSpacesClicked: () -> Unit,
     onSpaceWidgetClicked: () -> Unit,
-    onSpaceShareIconClicked: (ObjectWrapper.Basic) -> Unit
+    onSpaceShareIconClicked: (ObjectWrapper.SpaceView) -> Unit
 ) {
     val views = remember { mutableStateOf(widgets) }
     views.value = widgets

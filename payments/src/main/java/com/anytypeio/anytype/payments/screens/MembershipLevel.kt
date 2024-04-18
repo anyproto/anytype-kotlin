@@ -15,10 +15,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
@@ -59,8 +61,8 @@ import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.payments.R
-import com.anytypeio.anytype.presentation.membership.models.Tier
 import com.anytypeio.anytype.payments.viewmodel.PaymentsTierState
+import com.anytypeio.anytype.presentation.membership.models.Tier
 import com.anytypeio.anytype.presentation.membership.models.TierId
 
 
@@ -112,7 +114,11 @@ fun MembershipLevels(tier: Tier, actionPay: () -> Unit, actionSubmitEmail: (Stri
                     Color.Transparent
                 )
             )
-            Column {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            ) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -640,18 +646,18 @@ private fun ButtonPay(enabled: Boolean, actionPay: () -> Unit) {
 }
 
 
-@Preview()
+@Preview(showBackground = true, showSystemUi = true, device = "id:pixel_7_pro", backgroundColor = 0xFFFFFFFF)
 @Composable
 fun MyLevel() {
     MembershipLevels(
-        tier = Tier.Explorer(
+        tier = Tier.Builder(
             id = TierId(1),
-            isCurrent = true,
+            isCurrent = false,
             price = "$99",
             validUntil = "12/12/2025",
             color = "green",
-            features = listOf("Feature 1", "Feature 2", "Feature 3"),
-            status = Membership.Status.STATUS_ACTIVE
+            features = listOf("Feature 1", "Feature 2", "Feature 3", "Feature 4", "Feature 5", "Feature 1", "Feature 2", "Feature 3", "Feature 4", "Feature 5"),
+            status = Membership.Status.STATUS_UNKNOWN
         ),
         actionPay = {},
         actionSubmitEmail = {}

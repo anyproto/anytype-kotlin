@@ -1147,7 +1147,7 @@
     <string name="multiplayer_space_stop_sharing">Berhenti berbagi</string>
     <string name="multiplayer_space_stop_sharing_space">Berhenti membagikan ruang</string>
     <string name="multiplayer_space_stop_sharing_space_description">Anggota tidak akan lagi menyinkronkan ruang ini dan tautan pembagian akan dinonaktifkan.</string>
-    <string name="multiplayer_more_info">Informasi lebih lanjut</string>
+    <string name="multiplayer_more_info">More info</string>
     <string name="multiplayer_sharing">Berbagi</string>
     <string name="multiplayer_space_type">Tipe ruang</string>
     <string name="multiplayer_share">Bagikan</string>

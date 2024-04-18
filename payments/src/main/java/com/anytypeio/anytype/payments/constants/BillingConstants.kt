@@ -3,7 +3,7 @@ package com.anytypeio.anytype.payments.constants
 object BillingConstants {
 
     //Tiers IDs
-    const val SUBSCRIPTION_BUILDER = "builder_subscription"
+    const val SUBSCRIPTION_BUILDER = "id_android_sub_builder"
 
     val suscriptionTiers = listOf(SUBSCRIPTION_BUILDER)
 }

@@ -1,13 +1,16 @@
 package com.anytypeio.anytype.di.main
 
 import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
+import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.DefaultUserPermissionProvider
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
@@ -125,5 +128,35 @@ object SubscriptionsModule {
         container = container,
         repo = repo,
         logger = logger
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun spaceViewSubscriptionContainer(
+        dispatchers: AppCoroutineDispatchers,
+        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
+        container: StorelessSubscriptionContainer,
+        awaitAccountStartManager: AwaitAccountStartManager
+    ) : SpaceViewSubscriptionContainer = SpaceViewSubscriptionContainer.Default(
+        dispatchers = dispatchers,
+        scope = scope,
+        container = container,
+        awaitAccountStartManager = awaitAccountStartManager
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun activeSpaceMemberSubscriptionContainer(
+        dispatchers: AppCoroutineDispatchers,
+        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
+        container: StorelessSubscriptionContainer,
+        spaceManager: SpaceManager
+    ) : ActiveSpaceMemberSubscriptionContainer = ActiveSpaceMemberSubscriptionContainer.Default(
+        dispatchers = dispatchers,
+        scope = scope,
+        container = container,
+        manager = spaceManager
     )
 }

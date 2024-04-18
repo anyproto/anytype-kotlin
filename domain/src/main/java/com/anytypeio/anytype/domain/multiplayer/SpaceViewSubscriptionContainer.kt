@@ -7,7 +7,9 @@ import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
+import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -17,6 +19,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 
 interface SpaceViewSubscriptionContainer {
@@ -24,19 +27,38 @@ interface SpaceViewSubscriptionContainer {
     fun start()
     fun stop()
     fun observe(): Flow<List<ObjectWrapper.SpaceView>>
+    fun observe(space: SpaceId) : Flow<ObjectWrapper.SpaceView>
     fun get(): List<ObjectWrapper.SpaceView>
 
     class Default @Inject constructor(
         private val container: StorelessSubscriptionContainer,
         private val scope: CoroutineScope,
         private val dispatchers: AppCoroutineDispatchers,
+        private val awaitAccountStartManager: AwaitAccountStartManager
     ) : SpaceViewSubscriptionContainer {
 
         private val data = MutableStateFlow<List<ObjectWrapper.SpaceView>>(emptyList())
         private val jobs = mutableListOf<Job>()
 
+        init {
+            scope.launch {
+                awaitAccountStartManager.isStarted().collect { isStarted ->
+                    if (isStarted)
+                        start()
+                    else
+                        stop()
+                }
+            }
+        }
+
         override fun observe(): Flow<List<ObjectWrapper.SpaceView>> {
             return data
+        }
+
+        override fun observe(space: SpaceId): Flow<ObjectWrapper.SpaceView> {
+            return data.mapNotNull { all ->
+                all.firstOrNull { spaceView -> spaceView.targetSpaceId == space.id }
+            }
         }
 
         override fun get(): List<ObjectWrapper.SpaceView> {

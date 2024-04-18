@@ -236,7 +236,7 @@ private fun String.gradientEnd(): Color = when (this) {
     else -> colorResource(id = R.color.tier_gradient_blue_end)
 }
 
-@Preview
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun TierPreview() {
     TierView(

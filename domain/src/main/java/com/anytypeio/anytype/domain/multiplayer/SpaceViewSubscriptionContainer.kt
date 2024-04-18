@@ -34,7 +34,7 @@ interface SpaceViewSubscriptionContainer {
         private val container: StorelessSubscriptionContainer,
         private val scope: CoroutineScope,
         private val dispatchers: AppCoroutineDispatchers,
-        private val awaitAccountStartManager: AwaitAccountStartManager
+        private val awaitAccountStart: AwaitAccountStartManager
     ) : SpaceViewSubscriptionContainer {
 
         private val data = MutableStateFlow<List<ObjectWrapper.SpaceView>>(emptyList())
@@ -42,7 +42,7 @@ interface SpaceViewSubscriptionContainer {
 
         init {
             scope.launch {
-                awaitAccountStartManager.isStarted().collect { isStarted ->
+                awaitAccountStart.isStarted().collect { isStarted ->
                     if (isStarted)
                         start()
                     else

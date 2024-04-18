@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -30,10 +31,22 @@ interface ActiveSpaceMemberSubscriptionContainer {
         private val container: StorelessSubscriptionContainer,
         private val scope: CoroutineScope,
         private val dispatchers: AppCoroutineDispatchers,
+        private val awaitAccountStart: AwaitAccountStartManager
     ) : ActiveSpaceMemberSubscriptionContainer {
 
         private val data = MutableStateFlow<List<ObjectWrapper.SpaceMember>>(emptyList())
         private val jobs = mutableListOf<Job>()
+
+        init {
+            scope.launch {
+                awaitAccountStart.isStarted().collect { isStarted ->
+                    if (isStarted)
+                        start()
+                    else
+                        stop()
+                }
+            }
+        }
 
         override fun observe(): Flow<List<ObjectWrapper.SpaceMember>> {
             return data

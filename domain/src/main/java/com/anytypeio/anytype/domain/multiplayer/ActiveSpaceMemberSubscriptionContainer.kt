@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
-interface ActiveSpaceParticipantProvider {
+interface ActiveSpaceMemberSubscriptionContainer {
 
     fun start()
     fun stop()
@@ -30,7 +30,7 @@ interface ActiveSpaceParticipantProvider {
         private val container: StorelessSubscriptionContainer,
         private val scope: CoroutineScope,
         private val dispatchers: AppCoroutineDispatchers,
-    ) : ActiveSpaceParticipantProvider {
+    ) : ActiveSpaceMemberSubscriptionContainer {
 
         private val data = MutableStateFlow<List<ObjectWrapper.SpaceMember>>(emptyList())
         private val jobs = mutableListOf<Job>()

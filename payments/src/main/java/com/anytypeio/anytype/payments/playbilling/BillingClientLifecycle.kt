@@ -17,8 +17,6 @@ import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
-import com.anytypeio.anytype.payments.constants.BillingConstants
-import com.anytypeio.anytype.payments.constants.BillingConstants.suscriptionTiers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -54,6 +52,13 @@ class BillingClientLifecycle(
      * Instantiate a new BillingClient instance.
      */
     private lateinit var billingClient: BillingClient
+
+    private val subscriptionIds = mutableListOf<String>()
+
+    fun setupSubIds(ids: List<String>) {
+        subscriptionIds.clear()
+        subscriptionIds.addAll(ids)
+    }
 
     override fun onCreate(owner: LifecycleOwner) {
         Timber.d("ON_CREATE")
@@ -112,7 +117,7 @@ class BillingClientLifecycle(
         val params = QueryProductDetailsParams.newBuilder()
 
         val productList: MutableList<QueryProductDetailsParams.Product> = arrayListOf()
-        for (product in suscriptionTiers) {
+        for (product in subscriptionIds) {
             productList.add(
                 QueryProductDetailsParams.Product.newBuilder()
                     .setProductId(product)
@@ -160,7 +165,7 @@ class BillingClientLifecycle(
      *
      */
     private fun processProductDetails(productDetailsList: MutableList<ProductDetails>) {
-        val expectedProductDetailsCount = suscriptionTiers.size
+        val expectedProductDetailsCount = subscriptionIds.size
         if (productDetailsList.isEmpty()) {
             Timber.e("Expected ${expectedProductDetailsCount}, Found null ProductDetails.")
             postProductDetails(emptyList())
@@ -180,11 +185,9 @@ class BillingClientLifecycle(
         productDetailsList.forEach { productDetails ->
             when (productDetails.productType) {
                 BillingClient.ProductType.SUBS -> {
-                    when (productDetails.productId) {
-                        BillingConstants.SUBSCRIPTION_BUILDER -> {
-                            Timber.d("Builder Subscription ProductDetails: $productDetails")
-                            builderSubProductWithProductDetails.postValue(productDetails)
-                        }
+                    if (subscriptionIds.contains(productDetails.productId)) {
+                        Timber.d("Subscription ProductDetails: $productDetails")
+                        builderSubProductWithProductDetails.postValue(productDetails)
                     }
                 }
             }
@@ -270,7 +273,7 @@ class BillingClientLifecycle(
             scope.launch(dispatchers.io) {
                 val subscriptionPurchaseList = list.filter { purchase ->
                     purchase.products.any { product ->
-                        product in suscriptionTiers
+                        product in subscriptionIds
                     }
                 }
                 _subscriptionPurchases.emit(subscriptionPurchaseList)

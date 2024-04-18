@@ -8,11 +8,8 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
-import com.anytypeio.anytype.core_models.DVFilter
-import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Filepath
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SpaceType
@@ -25,10 +22,10 @@ import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
-import com.anytypeio.anytype.domain.library.StoreSearchParams
-import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.multiplayer.isSharingLimitReached
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -37,7 +34,6 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -46,14 +42,14 @@ class SpaceSettingsViewModel(
     private val analytics: Analytics,
     private val setSpaceDetails: SetSpaceDetails,
     private val spaceManager: SpaceManager,
-    private val container: StorelessSubscriptionContainer,
     private val gradientProvider: SpaceGradientProvider,
     private val urlBuilder: UrlBuilder,
     private val deleteSpace: DeleteSpace,
     private val configStorage: ConfigStorage,
     private val debugSpaceShareDownloader: DebugSpaceShareDownloader,
     private val spaceGradientProvider: SpaceGradientProvider,
-    private val userPermissionProvider: UserPermissionProvider
+    private val userPermissionProvider: UserPermissionProvider,
+    private val container: SpaceViewSubscriptionContainer
 ): BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>()
@@ -70,68 +66,35 @@ class SpaceSettingsViewModel(
                 eventName = EventsDictionary.screenSettingSpacesSpaceIndex
             )
         }
-        proceedWithFetchingSpaceMetaData()
+        proceedWithObservingSpaceView()
     }
 
-    private fun proceedWithFetchingSpaceMetaData() {
+    private fun proceedWithObservingSpaceView() {
         viewModelScope.launch {
             val config = spaceManager.getConfig(params.space)
-            container.subscribe(
-                StoreSearchParams(
-                    subscription = SPACE_SETTINGS_SUBSCRIPTION,
-                    filters = buildList {
-                        add(
-                            DVFilter(
-                                relation = Relations.TARGET_SPACE_ID,
-                                value = params.space.id,
-                                condition = DVFilterCondition.EQUAL
-                            )
-                        )
-                        add(
-                            DVFilter(
-                                relation = Relations.LAYOUT,
-                                value = ObjectType.Layout.SPACE_VIEW.code.toDouble(),
-                                condition = DVFilterCondition.EQUAL
-                            )
-                        )
-                    },
-                    keys = listOf(
-                        Relations.ID,
-                        Relations.SPACE_ID,
-                        Relations.NAME,
-                        Relations.ICON_EMOJI,
-                        Relations.ICON_IMAGE,
-                        Relations.ICON_OPTION,
-                        Relations.CREATED_DATE,
-                        Relations.CREATOR,
-                        Relations.TARGET_SPACE_ID,
-                        Relations.SPACE_ACCESS_TYPE,
-                        Relations.SPACE_LOCAL_STATUS,
-                        Relations.SPACE_ACCOUNT_STATUS
-                    ),
-                    limit = 1
-                )
-            ).mapNotNull { results ->
-                results.firstOrNull()
-            }.combine(userPermissionProvider.observe(params.space)) { wrapper, permission ->
-                val spaceView = ObjectWrapper.SpaceView(wrapper.map)
+            combine(
+                container.observe(params.space),
+                userPermissionProvider.observe(params.space),
+                container.isSharingLimitReached()
+            ) { spaceView, permission, shareLimitReached ->
                 SpaceData(
-                    name = wrapper.name.orEmpty(),
-                    icon = wrapper.spaceIcon(
+                    name = spaceView.name.orEmpty(),
+                    icon = spaceView.spaceIcon(
                         builder = urlBuilder,
                         spaceGradientProvider = gradientProvider
                     ),
-                    createdDateInMillis = wrapper
+                    createdDateInMillis = spaceView
                         .getValue<Double?>(Relations.CREATED_DATE)
                         ?.let { timeInSeconds -> (timeInSeconds * 1000L).toLong() },
-                    createdBy = wrapper
+                    createdBy = spaceView
                         .getValue<Id?>(Relations.CREATOR)
                         .toString(),
                     spaceId = params.space.id,
                     network = config?.network.orEmpty(),
                     isDeletable = resolveIsSpaceDeletable(spaceView),
                     spaceType = spaceView.spaceAccessType?.asSpaceType() ?: UNKNOWN_SPACE_TYPE,
-                    permissions = permission ?: SpaceMemberPermissions.NO_PERMISSIONS
+                    permissions = permission ?: SpaceMemberPermissions.NO_PERMISSIONS,
+                    shareLimitReached = shareLimitReached
                 )
             }.collect { spaceData ->
                 spaceViewState.value = ViewState.Success(spaceData)
@@ -297,9 +260,12 @@ class SpaceSettingsViewModel(
 
     fun onSharePrivateSpaceClicked() {
         viewModelScope.launch {
-            commands.emit(
-                Command.SharePrivateSpace(params.space)
-            )
+            val data = spaceViewState.value
+            if (data is ViewState.Success && !data.data.shareLimitReached) {
+                commands.emit(
+                    Command.SharePrivateSpace(params.space)
+                )
+            }
         }
     }
 
@@ -312,7 +278,8 @@ class SpaceSettingsViewModel(
         val icon: SpaceIconView,
         val isDeletable: Boolean = false,
         val spaceType: SpaceType,
-        val permissions: SpaceMemberPermissions
+        val permissions: SpaceMemberPermissions,
+        val shareLimitReached: Boolean = false
     )
 
     sealed class Command {
@@ -326,7 +293,7 @@ class SpaceSettingsViewModel(
     class Factory @Inject constructor(
         private val params: Params,
         private val analytics: Analytics,
-        private val container: StorelessSubscriptionContainer,
+        private val container: SpaceViewSubscriptionContainer,
         private val urlBuilder: UrlBuilder,
         private val setSpaceDetails: SetSpaceDetails,
         private val gradientProvider: SpaceGradientProvider,
@@ -360,6 +327,5 @@ class SpaceSettingsViewModel(
 
     companion object {
         const val SPACE_DEBUG_MSG = "Kindly share this debug logs with Anytype developers."
-        const val SPACE_SETTINGS_SUBSCRIPTION = "subscription.space-settings.space-views"
     }
 }

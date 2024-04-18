@@ -9,7 +9,6 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.payments.GetMembershipPaymentUrl
-import com.anytypeio.anytype.payments.constants.BillingConstants
 import com.anytypeio.anytype.payments.constants.TiersConstants.EXPLORER_ID
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
 import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
@@ -53,7 +52,7 @@ class PaymentsViewModel(
 
 
     private val _membershipStatus = MutableStateFlow<MembershipStatus?>(null)
-
+    val initBillingClient = MutableStateFlow(false)
 
     init {
         Timber.d("PaymentsViewModel init")
@@ -64,9 +63,18 @@ class PaymentsViewModel(
         viewModelScope.launch {
             membershipProvider.status().collect { status ->
                 Timber.d("Membership status: $status")
+                setupBillingClient(status)
                 _membershipStatus.value = status
                 viewState.value = toViewState(status)
             }
+        }
+    }
+
+    private fun setupBillingClient(membershipStatus: MembershipStatus) {
+        val androidProductIds = membershipStatus.tiers.mapNotNull { it.androidProductId }
+        if (androidProductIds.isNotEmpty()) {
+            billingClientLifecycle.setupSubIds(androidProductIds)
+            initBillingClient.value = true
         }
     }
 
@@ -234,19 +242,13 @@ class PaymentsViewModel(
                 )
             }
 
-        val offerToken: String
-
-        when (product) {
-            BillingConstants.SUBSCRIPTION_BUILDER -> {
-                offerToken = builderOffers?.let { leastPricedOfferToken(it) }.toString()
-                launchFlow(
-                    billingId = billingId,
-                    upDowngrade = upDowngrade,
-                    offerToken = offerToken,
-                    productDetails = builderSubProductDetails
-                )
-            }
-        }
+        val offerToken: String = builderOffers?.let { leastPricedOfferToken(it) }.toString()
+        launchFlow(
+            billingId = billingId,
+            upDowngrade = upDowngrade,
+            offerToken = offerToken,
+            productDetails = builderSubProductDetails
+        )
     }
 
     /**
@@ -383,11 +385,7 @@ class PaymentsViewModel(
         productDetails: ProductDetails
     ) {
 
-        val currentSubscriptionPurchaseCount = purchases.value.count {
-            it.products.contains(BillingConstants.SUBSCRIPTION_BUILDER)
-        }
-
-        if (currentSubscriptionPurchaseCount > EXPECTED_SUBSCRIPTION_PURCHASE_LIST_SIZE) {
+        if (purchases.value.size > EXPECTED_SUBSCRIPTION_PURCHASE_LIST_SIZE) {
             Timber.e("There are more than one subscription purchases on the device.")
             return
 
@@ -397,10 +395,7 @@ class PaymentsViewModel(
             )
         }
 
-        val oldToken = purchases.value.filter {
-            it.products.contains(BillingConstants.SUBSCRIPTION_BUILDER)
-        }.firstOrNull { it.purchaseToken.isNotEmpty() }?.purchaseToken ?: ""
-
+        val oldToken = purchases.value.firstOrNull { it.purchaseToken.isNotEmpty() }?.purchaseToken ?: ""
 
         viewModelScope.launch {
             val billingParams: BillingFlowParams = if (upDowngrade) {

@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -45,7 +46,11 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        lifecycle.addObserver(billingClientLifecycle)
+        lifecycleScope.subscribe(vm.initBillingClient) { init ->
+            if (init) {
+                lifecycle.addObserver(billingClientLifecycle)
+            }
+        }
     }
 
     @OptIn(ExperimentalMaterialNavigationApi::class)

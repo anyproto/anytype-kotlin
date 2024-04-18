@@ -1497,7 +1497,7 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onSpaceShareIconClicked(spaceView: ObjectWrapper.Basic) {
+    fun onSpaceShareIconClicked(spaceView: ObjectWrapper.SpaceView) {
         viewModelScope.launch {
             val space = spaceView.targetSpaceId
             if (space != null) {

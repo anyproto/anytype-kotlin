@@ -22,6 +22,7 @@ import com.anytypeio.anytype.core_models.StubLinkToObjectBlock
 import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.StubObjectView
 import com.anytypeio.anytype.core_models.StubSmartBlock
+import com.anytypeio.anytype.core_models.StubSpaceView
 import com.anytypeio.anytype.core_models.StubWidgetBlock
 import com.anytypeio.anytype.core_models.UNKNOWN_SPACE_TYPE
 import com.anytypeio.anytype.core_models.WidgetSession
@@ -228,9 +229,10 @@ class HomeScreenViewModelTest {
     )
 
     private val defaultSpaceWidgetView = WidgetView.SpaceWidget.View(
-        space = StubObject(),
+        space = StubSpaceView(),
         icon = SpaceIconView.Placeholder,
-        type = UNKNOWN_SPACE_TYPE
+        type = UNKNOWN_SPACE_TYPE,
+        membersCount = 0
     )
 
     private lateinit var urlBuilder: UrlBuilder

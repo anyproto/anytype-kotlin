@@ -25,6 +25,7 @@ import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.multiplayer.isSharingLimitReached
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -33,7 +34,6 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -72,27 +72,10 @@ class SpaceSettingsViewModel(
     private fun proceedWithObservingSpaceView() {
         viewModelScope.launch {
             val config = spaceManager.getConfig(params.space)
-            val sharedSpacesCount = container.observe().map { spaceViews ->
-                spaceViews.count { spaceView ->
-                    spaceView.spaceAccessType == SpaceAccessType.SHARED
-                }
-            }
-            val sharedSpaceLimit = container.observe().map { spaceViews ->
-                val defaultSpace = spaceViews.firstOrNull { space ->
-                    space.spaceAccessType == SpaceAccessType.DEFAULT
-                }
-                defaultSpace?.sharedSpaceLimit ?: 0
-            }
-            val limitReached = combine(
-                sharedSpaceLimit,
-                sharedSpacesCount
-            ) { limit, count ->
-                count >= limit
-            }
             combine(
                 container.observe(params.space),
                 userPermissionProvider.observe(params.space),
-                limitReached
+                container.isSharingLimitReached()
             ) { spaceView, permission, shareLimitReached ->
                 SpaceData(
                     name = spaceView.name.orEmpty(),

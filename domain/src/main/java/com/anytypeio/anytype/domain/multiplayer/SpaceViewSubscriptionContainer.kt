@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
@@ -18,6 +19,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
@@ -28,6 +30,7 @@ interface SpaceViewSubscriptionContainer {
     fun stop()
     fun observe(): Flow<List<ObjectWrapper.SpaceView>>
     fun observe(space: SpaceId) : Flow<ObjectWrapper.SpaceView>
+
     fun get(): List<ObjectWrapper.SpaceView>
 
     class Default @Inject constructor(
@@ -133,5 +136,25 @@ interface SpaceViewSubscriptionContainer {
         companion object {
             const val GLOBAL_SUBSCRIPTION = "subscription.global.space-views"
         }
+    }
+}
+
+fun SpaceViewSubscriptionContainer.isSharingLimitReached() : Flow<Boolean> {
+    val sharedSpacesCount = observe().map { spaceViews ->
+        spaceViews.count { spaceView ->
+            spaceView.spaceAccessType == SpaceAccessType.SHARED
+        }
+    }
+    val sharedSpaceLimit = observe().map { spaceViews ->
+        val defaultSpace = spaceViews.firstOrNull { space ->
+            space.spaceAccessType == SpaceAccessType.DEFAULT
+        }
+        defaultSpace?.sharedSpaceLimit ?: 0
+    }
+    return combine(
+        sharedSpaceLimit,
+        sharedSpacesCount
+    ) { limit, count ->
+        limit == 0 || count >= limit
     }
 }

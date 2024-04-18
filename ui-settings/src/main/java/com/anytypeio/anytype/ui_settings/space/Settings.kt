@@ -107,7 +107,8 @@ fun SpaceSettingsScreen(
                     }
                     PRIVATE_SPACE_TYPE -> {
                         PrivateSpaceSharing(
-                            onSharePrivateSpaceClicked = onSharePrivateSpaceClicked
+                            onSharePrivateSpaceClicked = onSharePrivateSpaceClicked,
+                            shareLimitReached = state.data.shareLimitReached
                         )
                     }
                     SHARED_SPACE_TYPE -> {
@@ -344,7 +345,8 @@ fun SpaceSettingsScreenPreview() {
 
 @Composable
 fun PrivateSpaceSharing(
-    onSharePrivateSpaceClicked: () -> Unit
+    onSharePrivateSpaceClicked: () -> Unit,
+    shareLimitReached: Boolean
 ) {
     Box(
         modifier = Modifier
@@ -367,12 +369,14 @@ fun PrivateSpaceSharing(
         Row(
             modifier = Modifier.align(Alignment.CenterEnd)
         ) {
-            Text(
-                modifier = Modifier.align(Alignment.CenterVertically),
-                text = stringResource(id = R.string.multiplayer_share),
-                color = colorResource(id = R.color.text_secondary),
-                style = BodyRegular
-            )
+            if (!shareLimitReached) {
+                Text(
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                    text = stringResource(id = R.string.multiplayer_share),
+                    color = colorResource(id = R.color.text_secondary),
+                    style = BodyRegular
+                )
+            }
             Spacer(Modifier.width(10.dp))
             Image(
                 painter = painterResource(R.drawable.ic_arrow_forward),
@@ -469,7 +473,8 @@ fun TypeOfSpace(spaceType: SpaceType?) {
 @Composable
 private fun PrivateSpaceSharingPreview() {
     PrivateSpaceSharing(
-        onSharePrivateSpaceClicked = {}
+        onSharePrivateSpaceClicked = {},
+        shareLimitReached = false
     )
 }
 

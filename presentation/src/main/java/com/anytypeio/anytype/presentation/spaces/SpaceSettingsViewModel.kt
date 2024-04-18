@@ -33,6 +33,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -71,31 +72,50 @@ class SpaceSettingsViewModel(
     private fun proceedWithObservingSpaceView() {
         viewModelScope.launch {
             val config = spaceManager.getConfig(params.space)
-            val permissions = userPermissionProvider.observe(params.space)
-            container
-                .observe(params.space)
-                .combine(permissions) { spaceView, permission ->
-                    SpaceData(
-                        name = spaceView.name.orEmpty(),
-                        icon = spaceView.spaceIcon(
-                            builder = urlBuilder,
-                            spaceGradientProvider = gradientProvider
-                        ),
-                        createdDateInMillis = spaceView
-                            .getValue<Double?>(Relations.CREATED_DATE)
-                            ?.let { timeInSeconds -> (timeInSeconds * 1000L).toLong() },
-                        createdBy = spaceView
-                            .getValue<Id?>(Relations.CREATOR)
-                            .toString(),
-                        spaceId = params.space.id,
-                        network = config?.network.orEmpty(),
-                        isDeletable = resolveIsSpaceDeletable(spaceView),
-                        spaceType = spaceView.spaceAccessType?.asSpaceType() ?: UNKNOWN_SPACE_TYPE,
-                        permissions = permission ?: SpaceMemberPermissions.NO_PERMISSIONS
-                    )
-                }.collect { spaceData ->
-                    spaceViewState.value = ViewState.Success(spaceData)
+            val sharedSpacesCount = container.observe().map { spaceViews ->
+                spaceViews.count { spaceView ->
+                    spaceView.spaceAccessType == SpaceAccessType.SHARED
                 }
+            }
+            val sharedSpaceLimit = container.observe().map { spaceViews ->
+                val defaultSpace = spaceViews.firstOrNull { space ->
+                    space.spaceAccessType == SpaceAccessType.DEFAULT
+                }
+                defaultSpace?.sharedSpaceLimit ?: 0
+            }
+            val limitReached = combine(
+                sharedSpaceLimit,
+                sharedSpacesCount
+            ) { limit, count ->
+                count >= limit
+            }
+            combine(
+                container.observe(params.space),
+                userPermissionProvider.observe(params.space),
+                limitReached
+            ) { spaceView, permission, shareLimitReached ->
+                SpaceData(
+                    name = spaceView.name.orEmpty(),
+                    icon = spaceView.spaceIcon(
+                        builder = urlBuilder,
+                        spaceGradientProvider = gradientProvider
+                    ),
+                    createdDateInMillis = spaceView
+                        .getValue<Double?>(Relations.CREATED_DATE)
+                        ?.let { timeInSeconds -> (timeInSeconds * 1000L).toLong() },
+                    createdBy = spaceView
+                        .getValue<Id?>(Relations.CREATOR)
+                        .toString(),
+                    spaceId = params.space.id,
+                    network = config?.network.orEmpty(),
+                    isDeletable = resolveIsSpaceDeletable(spaceView),
+                    spaceType = spaceView.spaceAccessType?.asSpaceType() ?: UNKNOWN_SPACE_TYPE,
+                    permissions = permission ?: SpaceMemberPermissions.NO_PERMISSIONS,
+                    shareLimitReached = shareLimitReached
+                )
+            }.collect { spaceData ->
+                spaceViewState.value = ViewState.Success(spaceData)
+            }
         }
     }
 
@@ -272,7 +292,8 @@ class SpaceSettingsViewModel(
         val icon: SpaceIconView,
         val isDeletable: Boolean = false,
         val spaceType: SpaceType,
-        val permissions: SpaceMemberPermissions
+        val permissions: SpaceMemberPermissions,
+        val shareLimitReached: Boolean = false
     )
 
     sealed class Command {

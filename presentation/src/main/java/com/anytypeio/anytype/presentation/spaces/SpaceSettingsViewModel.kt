@@ -260,9 +260,12 @@ class SpaceSettingsViewModel(
 
     fun onSharePrivateSpaceClicked() {
         viewModelScope.launch {
-            commands.emit(
-                Command.SharePrivateSpace(params.space)
-            )
+            val data = spaceViewState.value
+            if (data is ViewState.Success && !data.data.shareLimitReached) {
+                commands.emit(
+                    Command.SharePrivateSpace(params.space)
+                )
+            }
         }
     }
 

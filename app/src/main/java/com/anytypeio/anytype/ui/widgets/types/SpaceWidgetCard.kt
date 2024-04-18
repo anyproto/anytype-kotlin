@@ -104,7 +104,7 @@ fun SpaceWidgetCard(
             color = colorResource(id = R.color.text_primary),
             maxLines = 1
         )
-        val spaceTypeName = when(spaceType) {
+        val spaceTypeText = when(spaceType) {
             DEFAULT_SPACE_TYPE -> stringResource(id = R.string.space_type_default_space)
             PRIVATE_SPACE_TYPE -> stringResource(id = R.string.space_type_private_space)
             SHARED_SPACE_TYPE -> pluralStringResource(
@@ -121,7 +121,7 @@ fun SpaceWidgetCard(
                 .align(Alignment.BottomStart)
                 .padding(start = 71.dp, bottom = 16.dp)
             ,
-            text = spaceTypeName,
+            text = spaceTypeText,
             style = Relations3,
             color = colorResource(id = R.color.text_secondary),
             maxLines = 1

@@ -18,6 +18,7 @@ import com.android.billingclient.api.QueryPurchasesParams
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -45,7 +46,8 @@ class BillingClientLifecycle(
     /**
      * ProductDetails for all known products.
      */
-    val builderSubProductWithProductDetails = MutableStateFlow<List<ProductDetails>>(emptyList())
+    private val _builderSubProductWithProductDetails = MutableStateFlow<List<ProductDetails>>(emptyList())
+    val builderSubProductWithProductDetails: StateFlow<List<ProductDetails>> = _builderSubProductWithProductDetails
 
     /**
      * Instantiate a new BillingClient instance.
@@ -192,7 +194,7 @@ class BillingClientLifecycle(
                 }
             }
         }
-        builderSubProductWithProductDetails.value = result
+        _builderSubProductWithProductDetails.value = result
     }
 
     /**

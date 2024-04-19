@@ -95,6 +95,7 @@ message Event {
             File.LimitReached fileLimitReached = 111;
             File.SpaceUsage fileSpaceUsage = 112;
             File.LocalUsage fileLocalUsage = 113;
+            File.LimitUpdated fileLimitUpdated = 118;
 
             Notification.Send notificationSend = 114;
             Notification.Update notificationUpdate = 115;
@@ -1033,6 +1034,10 @@ message Event {
 
         message LocalUsage {
             uint64 localBytesUsage = 1;
+        }
+
+        message LimitUpdated {
+            uint64 bytesLimit = 1;
         }
     }
 

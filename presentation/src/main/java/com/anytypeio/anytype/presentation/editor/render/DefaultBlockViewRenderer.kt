@@ -2111,7 +2111,7 @@ class DefaultBlockViewRenderer @Inject constructor(
     ): BlockView.FeaturedRelation {
         val map = details.details[ctx]?.map ?: emptyMap()
         val obj = ObjectWrapper.Basic(map)
-        val featuredKeys = hackGlobalNameOrIdentityRelations(obj.featuredRelations, map)
+        val featuredKeys = workaroundGlobalNameOrIdentityRelation(obj.featuredRelations, map)
         val views = mapFeaturedRelations(
             ctx = ctx,
             keys = featuredKeys,
@@ -2126,7 +2126,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         )
     }
 
-    private fun hackGlobalNameOrIdentityRelations(
+    private fun workaroundGlobalNameOrIdentityRelation(
         featured: List<Key>,
         values: Map<String, Any?>
     ): List<Key> {

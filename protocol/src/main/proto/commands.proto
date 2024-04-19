@@ -1341,6 +1341,7 @@ message Rpc {
 
                         NOT_FOUND = 3;
                         ANYTYPE_NEEDS_UPGRADE = 10; // failed to read unknown data format – need to upgrade anytype
+                        OBJECT_DELETED = 4;
                         // ...
                     }
                 }
@@ -1394,7 +1395,9 @@ message Rpc {
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
                         NOT_FOUND = 3;
+                        OBJECT_DELETED = 4;
                         ANYTYPE_NEEDS_UPGRADE = 10; // failed to read unknown data format – need to upgrade anytype
+
                         // ...
                     }
                 }
@@ -1764,12 +1767,14 @@ message Rpc {
 
         message Graph {
             message Request {
-                string spaceId = 5;
                 repeated anytype.model.Block.Content.Dataview.Filter filters = 1;
                 int32 limit = 2;
                 // additional filter by objectTypes
                 repeated string objectTypeFilter = 3; // DEPRECATED, GO-1926
                 repeated string keys = 4;
+                string spaceId = 5;
+                string collectionId = 6;
+                repeated string setSource = 7;
             }
 
             message Edge {
@@ -6487,6 +6492,8 @@ message Rpc {
                         NOT_LOGGED_IN = 8;
                         PAYMENT_NODE_ERROR = 9;
                         CACHE_ERROR = 10;
+                        // for some probable future use (if needed)
+                        IN_BLACKLIST = 11;
                     }
                 }
             }

@@ -60,4 +60,5 @@ message ObjectStoreChecksums {
     int32 bundledObjects = 9; // anytypeProfile and maybe some others in the feature
     int32 filestoreKeysForceReindexCounter = 10;
     bool areOldFilesRemoved = 12;
+    bool areDeletedObjectsReindexed = 13;
 }

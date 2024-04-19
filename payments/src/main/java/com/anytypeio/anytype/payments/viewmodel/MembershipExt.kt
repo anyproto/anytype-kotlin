@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.payments.viewmodel
 
+import com.android.billingclient.api.ProductDetails
 import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.payments.constants.TiersConstants.BUILDER_ID
 import com.anytypeio.anytype.payments.constants.TiersConstants.CO_CREATOR_ID
@@ -8,7 +9,9 @@ import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
 import com.anytypeio.anytype.presentation.membership.models.Tier
 import com.anytypeio.anytype.presentation.membership.models.TierId
 
-fun MembershipStatus.toTiersView(): List<Tier> {
+fun MembershipStatus.toTiersView(
+    products: List<ProductDetails>
+): List<Tier> {
     return this.tiers.map { tier ->
         when (tier.id) {
             EXPLORER_ID -> Tier.Explorer(
@@ -17,7 +20,7 @@ fun MembershipStatus.toTiersView(): List<Tier> {
                 prettyName = tier.name,
                 color = tier.colorStr,
                 features = tier.features,
-                status = status
+                androidTierId = null
             )
             BUILDER_ID -> Tier.Builder(
                 id = TierId(tier.id),
@@ -25,7 +28,7 @@ fun MembershipStatus.toTiersView(): List<Tier> {
                 prettyName = tier.name,
                 color = tier.colorStr,
                 features = tier.features,
-                status = status
+                androidTierId = null
             )
             CO_CREATOR_ID -> Tier.CoCreator(
                 id = TierId(tier.id),
@@ -33,8 +36,7 @@ fun MembershipStatus.toTiersView(): List<Tier> {
                 prettyName = tier.name,
                 color = tier.colorStr,
                 features = tier.features,
-                status = status
-
+                androidTierId = null
             )
             else -> Tier.Custom(
                 id = TierId(tier.id),
@@ -42,7 +44,7 @@ fun MembershipStatus.toTiersView(): List<Tier> {
                 prettyName = tier.name,
                 color = tier.colorStr,
                 features = tier.features,
-                status = status
+                androidTierId = null
             )
         }
     }

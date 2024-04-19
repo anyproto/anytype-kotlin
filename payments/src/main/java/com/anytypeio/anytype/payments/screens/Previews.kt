@@ -16,37 +16,29 @@ fun MainPaymentsScreenPreview() {
         Tier.Explorer(
             TierId(1),
             isCurrent = true,
-            validUntil = "2022-12-31",
             color = "blue",
             features = listOf("Feature 1", "Feature 2"),
-            status = Membership.Status.STATUS_ACTIVE,
             androidTierId = null
         ),
         Tier.Builder(
             TierId(2),
             isCurrent = true,
-            validUntil = "5 Feb 2025",
             color = "red",
             features = listOf("Feature 1", "Feature 2"),
-            status = Membership.Status.STATUS_ACTIVE,
             androidTierId = null
         ),
         Tier.CoCreator(
             TierId(3),
             isCurrent = false,
-            validUntil = "2022-12-31",
             color = "green",
             features = listOf("Feature 1", "Feature 2"),
-            status = Membership.Status.STATUS_ACTIVE,
             androidTierId = null
         ),
         Tier.Custom(
             TierId(4),
             isCurrent = false,
-            validUntil = "2022-12-31",
             color = "blue",
             features = listOf("Feature 1", "Feature 2"),
-            status = Membership.Status.STATUS_ACTIVE,
             androidTierId = null
         )
     )
@@ -57,6 +49,7 @@ fun MainPaymentsScreenPreview() {
             dateEnds = 6570,
             paymentMethod = MembershipPaymentMethod.METHOD_CRYPTO,
             anyName = "Ofelia Conrad",
-            tiers = listOf()
+            tiers = listOf(),
+            formattedDateEnds = "2022-01-01"
         )), {})
 }

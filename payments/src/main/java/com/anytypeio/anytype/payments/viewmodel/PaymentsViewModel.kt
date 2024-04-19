@@ -54,10 +54,10 @@ class PaymentsViewModel(
 
     init {
         Timber.d("PaymentsViewModel init")
-        proceedWithGettingMembershipStatus()
+        proceedWithGettingMembershipAndProducts()
     }
 
-    private fun proceedWithGettingMembershipStatus() {
+    private fun proceedWithGettingMembershipAndProducts() {
         viewModelScope.launch {
             combine(
                 membershipProvider.status(),
@@ -96,25 +96,19 @@ class PaymentsViewModel(
             Timber.e("Active tier $activeTierId not found in tiers list")
             return PaymentsMainState.ErrorState("No active subscription found, please contact support.")
         }
-        return when (activeTierId) {
-            EXPLORER_ID -> {
-                PaymentsMainState.Default.WithBanner(
-                    membershipStatus = membershipStatus,
-                    tiers = membershipStatus.toTiersView(
-                        activeTierId = activeTierId,
-                        products = products
-                    )
-                )
-            }
-            else -> {
-                PaymentsMainState.Default.WithoutBanner(
-                    membershipStatus = membershipStatus,
-                    membershipStatus.toTiersView(
-                        activeTierId = activeTierId,
-                        products = products
-                    )
-                )
-            }
+        val tiers = membershipStatus.toTiersView(
+            products = products
+        )
+        return if (hasBanner(activeTierId)) {
+            PaymentsMainState.Default.WithBanner(
+                membershipStatus = membershipStatus,
+                tiers = tiers
+            )
+        } else {
+            PaymentsMainState.Default.WithoutBanner(
+                membershipStatus = membershipStatus,
+                tiers = tiers
+            )
         }
     }
 
@@ -196,6 +190,8 @@ class PaymentsViewModel(
         Timber.d("onDismissWelcome")
         command.value = PaymentsNavigation.Dismiss
     }
+
+    private fun hasBanner(activeTierId: Int) = activeTierId == EXPLORER_ID
 
     //region Google Play Billing
     /**

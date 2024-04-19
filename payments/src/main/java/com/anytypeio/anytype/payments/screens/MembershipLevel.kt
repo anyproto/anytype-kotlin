@@ -186,7 +186,7 @@ fun MembershipLevels(tier: Tier, actionPay: () -> Unit, actionSubmitEmail: (Stri
                             nameIsTaken = tier.nameIsTaken,
                             nameIsFree = tier.nameIsFree,
                             price = tier.price,
-                            interval = tier.interval,
+                            interval = "ПОПРАВИТЬ ТУТ:203",
                             actionPay = actionPay
                         )
                     }
@@ -200,7 +200,7 @@ fun MembershipLevels(tier: Tier, actionPay: () -> Unit, actionSubmitEmail: (Stri
                             nameIsTaken = tier.nameIsTaken,
                             nameIsFree = tier.nameIsFree,
                             price = tier.price,
-                            interval = tier.interval,
+                            interval = "ПОПРАВИТЬ ТУТ:203",
                             actionPay = actionPay
                         )
                     }
@@ -376,7 +376,7 @@ private fun StatusSubscribed(tier: Tier, actionManage: () -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 4.dp),
-                text = tier.validUntil,
+                text = "",
                 color = colorResource(id = R.color.text_primary),
                 style = HeadlineTitle,
                 textAlign = TextAlign.Center
@@ -450,7 +450,7 @@ private fun StatusSubscribedExplorer(tier: Tier) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 4.dp, bottom = 56.dp),
-                text = tier.validUntil,
+                text = "",//,tier.validUntil,
                 color = colorResource(id = R.color.text_primary),
                 style = HeadlineTitle,
                 textAlign = TextAlign.Center
@@ -654,10 +654,9 @@ fun MyLevel() {
             id = TierId(1),
             isCurrent = false,
             price = "$99",
-            validUntil = "12/12/2025",
             color = "green",
             features = listOf("Feature 1", "Feature 2", "Feature 3", "Feature 4", "Feature 5", "Feature 1", "Feature 2", "Feature 3", "Feature 4", "Feature 5"),
-            status = Membership.Status.STATUS_UNKNOWN
+            androidTierId = null,
         ),
         actionPay = {},
         actionSubmitEmail = {}

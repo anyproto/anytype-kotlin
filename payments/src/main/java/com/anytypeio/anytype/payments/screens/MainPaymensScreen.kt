@@ -41,11 +41,9 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
@@ -58,7 +56,7 @@ import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.fontRiccioneRegular
 import com.anytypeio.anytype.presentation.membership.models.Tier
 import com.anytypeio.anytype.payments.viewmodel.PaymentsMainState
-import com.anytypeio.anytype.presentation.membership.models.TierId
+import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
 
 @Composable
 fun MainPaymentsScreen(state: PaymentsMainState, tierClicked: (Tier) -> Unit) {
@@ -85,7 +83,7 @@ fun MainPaymentsScreen(state: PaymentsMainState, tierClicked: (Tier) -> Unit) {
                 Spacer(modifier = Modifier.height(32.dp))
                 InfoCards()
                 Spacer(modifier = Modifier.height(32.dp))
-                TiersList(tiers = state.tiers, tierClicked = tierClicked)
+                TiersList(tiers = state.tiers, onClick = tierClicked, membershipStatus = state.membershipStatus)
                 Spacer(modifier = Modifier.height(32.dp))
                 LinkButton(text = stringResource(id = R.string.payments_member_link), action = {})
                 Divider()
@@ -98,7 +96,7 @@ fun MainPaymentsScreen(state: PaymentsMainState, tierClicked: (Tier) -> Unit) {
             if (state is PaymentsMainState.Default.WithoutBanner) {
                 Title()
                 Spacer(modifier = Modifier.height(39.dp))
-                TiersList(tiers = state.tiers, tierClicked = tierClicked)
+                TiersList(tiers = state.tiers, onClick = tierClicked, membershipStatus = state.membershipStatus)
                 Spacer(modifier = Modifier.height(32.dp))
                 LinkButton(text = stringResource(id = R.string.payments_member_link), action = {})
                 Divider()
@@ -185,8 +183,8 @@ private fun Subtitle() {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TiersList(tiers: List<Tier>, tierClicked: (Tier) -> Unit) {
-    val itemsScroll = rememberLazyListState(initialFirstVisibleItemIndex = 1)
+fun TiersList(membershipStatus: MembershipStatus, tiers: List<Tier>, onClick: (Tier) -> Unit) {
+    val itemsScroll = rememberLazyListState()
     LazyRow(
         state = itemsScroll,
         modifier = Modifier
@@ -196,20 +194,11 @@ fun TiersList(tiers: List<Tier>, tierClicked: (Tier) -> Unit) {
         flingBehavior = rememberSnapFlingBehavior(lazyListState = itemsScroll)
     ) {
         itemsIndexed(tiers) { _, tier ->
-            val resources = mapTierToResources(tier)
-            if (resources != null) {
-                TierView(
-                    title = resources.title,
-                    subTitle = resources.subtitle,
-                    colorGradient = resources.colors.gradientStart,
-                    radialGradient = resources.colors.gradientEnd,
-                    icon = resources.smallIcon,
-                    buttonText = stringResource(id = R.string.payments_button_learn),
-                    onClick = { tierClicked.invoke(tier) },
-                    isCurrent = tier.isCurrent,
-                    tier = tier
-                )
-            }
+            TierView(
+                onClick = onClick,
+                tier = tier,
+                membershipStatus = membershipStatus
+            )
         }
     }
 }
@@ -308,20 +297,6 @@ fun BottomText() {
         style = Caption1Regular,
         color = colorResource(id = R.color.text_primary)
     )
-}
-
-@Preview
-@Composable
-fun MainPaymentsScreenPreview() {
-    val tiers = listOf(
-        Tier.Explorer(TierId(1), isCurrent = true, validUntil = "2022-12-31", color = "blue", features = listOf("Feature 1", "Feature 2"),
-            status = Membership.Status.STATUS_ACTIVE
-        ),
-        Tier.Builder(TierId(2), isCurrent = true, validUntil = "2022-12-31",  color = "red", features = listOf("Feature 1", "Feature 2"), status = Membership.Status.STATUS_ACTIVE),
-        Tier.CoCreator(TierId(3), isCurrent = false, validUntil = "2022-12-31",  color = "green", features = listOf("Feature 1", "Feature 2"), status = Membership.Status.STATUS_ACTIVE),
-        Tier.Custom(TierId(4), isCurrent = false, validUntil = "2022-12-31",  color = "blue", features = listOf("Feature 1", "Feature 2"), status = Membership.Status.STATUS_ACTIVE)
-    )
-    MainPaymentsScreen(PaymentsMainState.Default.WithBanner(tiers), {})
 }
 
 val headerTextStyle = TextStyle(

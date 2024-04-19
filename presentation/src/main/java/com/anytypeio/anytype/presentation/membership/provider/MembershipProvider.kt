@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.membership.provider
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
+import com.anytypeio.anytype.core_utils.ext.formatToDateString
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -57,7 +58,10 @@ interface MembershipProvider {
                 }.filterNotNull()
                 .map { membership ->
                     val tiers = proceedWithGettingTiers().filter { SHOW_TEST_TIERS || !it.isTest }
-                    toMembershipStatus(membership, tiers)
+                    toMembershipStatus(
+                        membership = membership,
+                        tiers = tiers
+                    )
                 }
         }
 
@@ -71,7 +75,7 @@ interface MembershipProvider {
         private suspend fun proceedWithGettingTiers(): List<MembershipTierData> {
             val tiersParams = Command.Membership.GetTiers(
                 noCache = false,
-                locale = localeProvider.language() ?: DEFAULT_LOCALE
+                locale = localeProvider.language()
             )
             return repo.membershipGetTiers(tiersParams)
         }
@@ -87,12 +91,17 @@ interface MembershipProvider {
                 paymentMethod = membership.paymentMethod,
                 anyName = membership.requestedAnyName,
                 tiers = tiers,
+                formattedDateEnds = membership.dateEnds.formatToDateString(
+                    pattern = DATE_FORMAT,
+                    locale = localeProvider.locale()
+                )
             )
         }
 
         companion object {
             const val DEFAULT_LOCALE = "en"
             const val SHOW_TEST_TIERS = false
+            const val DATE_FORMAT = "d MMM yyyy"
         }
     }
 }

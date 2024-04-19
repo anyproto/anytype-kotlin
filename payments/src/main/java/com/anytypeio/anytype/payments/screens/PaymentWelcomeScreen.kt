@@ -113,7 +113,7 @@ fun PaymentWelcomeScreenPreview() {
                 "01-01-2025",
                 color = "green",
                 features = listOf("Feature 1", "Feature 2"),
-                status = Membership.Status.STATUS_ACTIVE
+                androidTierId = null
             )
         ), {})
 }

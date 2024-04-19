@@ -268,10 +268,6 @@
         android:name="com.anytypeio.anytype.ui.auth.account.DeleteAccountWarning"/>
 
     <dialog
-        android:id="@+id/paymentsScreen"
-        android:name="com.anytypeio.anytype.ui.payments.PaymentsFragment" />
-
-    <dialog
         android:id="@+id/galleryInstallationScreen"
         android:name="com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment" />
 

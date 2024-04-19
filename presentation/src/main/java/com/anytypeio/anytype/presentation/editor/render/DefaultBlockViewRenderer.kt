@@ -37,7 +37,6 @@ import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
 import com.anytypeio.anytype.presentation.relations.BlockFieldsCoverWrapper
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.getCover
-import com.anytypeio.anytype.presentation.relations.identityRelation
 import com.anytypeio.anytype.presentation.relations.linksFeaturedRelation
 import com.anytypeio.anytype.presentation.relations.objectTypeRelation
 import com.anytypeio.anytype.presentation.relations.view
@@ -2110,14 +2109,15 @@ class DefaultBlockViewRenderer @Inject constructor(
         block: Block,
         details: Block.Details
     ): BlockView.FeaturedRelation {
-        val obj = ObjectWrapper.Basic(details.details[ctx]?.map ?: emptyMap())
+        val map = details.details[ctx]?.map ?: emptyMap()
+        val obj = ObjectWrapper.Basic(map)
+        val featuredKeys = hackGlobalNameOrIdentityRelations(obj.featuredRelations, map)
         val views = mapFeaturedRelations(
             ctx = ctx,
-            keys = obj.featuredRelations,
+            keys = featuredKeys,
             details = details,
-            objLayout = obj.layout
 
-        ).sortedByDescending { it.key == Relations.TYPE }
+        ).sortedByDescending { it.key == Relations.TYPE || it.key == Relations.GLOBAL_NAME || it.key == Relations.IDENTITY }
         return BlockView.FeaturedRelation(
             id = block.id,
             relations = views,
@@ -2126,11 +2126,33 @@ class DefaultBlockViewRenderer @Inject constructor(
         )
     }
 
+    private fun hackGlobalNameOrIdentityRelations(
+        featured: List<Key>,
+        values: Map<String, Any?>
+    ): List<Key> {
+        val result = featured.toMutableList()
+
+        // Check if `GLOBAL_NAME` is present and has a non-blank value
+        val isGlobalNameHasValue = (values[Relations.GLOBAL_NAME] as? String).isNullOrBlank().not()
+        if (isGlobalNameHasValue && !result.contains(Relations.GLOBAL_NAME)) {
+            result.add(Relations.GLOBAL_NAME)
+            return result
+        }
+
+        // Check if `IDENTITY` is present and has a non-blank value
+        val isIdentityHasValue = (values[Relations.IDENTITY] as? String).isNullOrBlank().not()
+        if (isIdentityHasValue && !result.contains(Relations.IDENTITY)) {
+            result.add(Relations.IDENTITY)
+            return result
+        }
+
+        return result
+    }
+
     private suspend fun mapFeaturedRelations(
         ctx: Id,
         keys: List<Key>,
         details: Block.Details,
-        objLayout: ObjectType.Layout?
     ): List<ObjectRelationView> = keys.mapNotNull { key ->
         when (key) {
             Relations.DESCRIPTION -> null
@@ -2152,15 +2174,6 @@ class DefaultBlockViewRenderer @Inject constructor(
                     ctx = ctx,
                     relationKey = key,
                     isFeatured = true
-                )
-            }
-            Relations.IDENTITY -> {
-                val relation = storeOfRelations.getByKey(key)
-                identityRelation(
-                    relationDetails = relation,
-                    isFeatured = true,
-                    values = details.details[ctx]?.map ?: emptyMap(),
-                    objLayout = objLayout
                 )
             }
             else -> {

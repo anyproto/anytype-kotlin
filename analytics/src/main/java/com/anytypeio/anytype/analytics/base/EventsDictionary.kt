@@ -188,6 +188,27 @@ object EventsDictionary {
     const val CLICK_ONBOARDING_TOOLTIP_TYPE_SHARING_MENU = "ShareMenu"
     const val CLICK_ONBOARDING_TOOLTIP_TYPE_CLOSE = "Close"
 
+    // Sharing spaces
+    const val screenSettingsSpaceShare = "ScreenSettingsSpaceShare"
+    const val clickShareSpaceCopyLink = "ClickShareSpaceCopyLink"
+    const val screenStopShare = "ScreenStopShare"
+    const val stopSpaceShare = "StopSpaceShare"
+    const val clickSettingsSpaceShare = "ClickSettingsSpaceShare"
+    const val screenRevokeShareLink = "ScreenRevokeShareLink"
+    const val revokeShareLink = "RevokeShareLink"
+    const val screenInviteConfirm = "ScreenInviteConfirm"
+    const val approveInviteRequest = "ApproveInviteRequest"
+    const val rejectInviteRequest = "RejectInviteRequest"
+    const val changeSpaceMemberPermissions = "ChangeSpaceMemberPermissions"
+    const val removeSpaceMember = "RemoveSpaceMember"
+    const val screenInviteRequest = "ScreenInviteRequest"
+    const val screenRequestSent = "ScreenRequestSent"
+    const val screenSettingsSpaceList = "ScreenSettingsSpaceList"
+    const val screenSettingsSpaceMembers = "ScreenSettingsSpaceMembers"
+    const val screenLeaveSpace = "ScreenLeaveSpace"
+    const val leaveSpace = "LeaveSpace"
+    const val approveLeaveRequest = "ApproveLeaveRequest"
+
     // Network mode
     const val selectNetwork = "SelectNetwork"
     const val uploadNetworkConfiguration = "UploadNetworkConfiguration"

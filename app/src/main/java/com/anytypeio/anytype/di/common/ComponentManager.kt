@@ -73,7 +73,6 @@ import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingStartComponen
 import com.anytypeio.anytype.di.feature.onboarding.login.DaggerOnboardingMnemonicLoginComponent
 import com.anytypeio.anytype.di.feature.onboarding.signup.DaggerOnboardingMnemonicComponent
 import com.anytypeio.anytype.di.feature.onboarding.signup.DaggerOnboardingSoulCreationComponent
-import com.anytypeio.anytype.di.feature.payments.DaggerPaymentsComponent
 import com.anytypeio.anytype.di.feature.relations.DaggerRelationCreateFromLibraryComponent
 import com.anytypeio.anytype.di.feature.relations.DaggerRelationEditComponent
 import com.anytypeio.anytype.di.feature.relations.LimitObjectTypeModule
@@ -1123,10 +1122,6 @@ class ComponentManager(
             .withDependencies(findComponentDependencies())
             .withParams(params = params)
             .build()
-    }
-
-    val paymentsComponent = Component {
-        DaggerPaymentsComponent.factory().create(findComponentDependencies())
     }
 
     val galleryInstallationsComponent =

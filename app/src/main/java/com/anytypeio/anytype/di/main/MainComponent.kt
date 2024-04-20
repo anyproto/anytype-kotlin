@@ -32,7 +32,6 @@ import com.anytypeio.anytype.di.feature.onboarding.OnboardingStartDependencies
 import com.anytypeio.anytype.di.feature.onboarding.login.OnboardingMnemonicLoginDependencies
 import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingMnemonicDependencies
 import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingSoulCreationDependencies
-import com.anytypeio.anytype.di.feature.payments.PaymentsComponentDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromLibraryDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationEditDependencies
 import com.anytypeio.anytype.di.feature.settings.AboutAppDependencies
@@ -80,7 +79,6 @@ import javax.inject.Singleton
         TemplatesModule::class,
         NetworkModeModule::class,
         NotificationsModule::class,
-        BillingModule::class
     ]
 )
 interface MainComponent :
@@ -116,7 +114,6 @@ interface MainComponent :
     ShareSpaceDependencies,
     SpaceJoinRequestDependencies,
     RequestJoinSpaceDependencies,
-    PaymentsComponentDependencies,
     GalleryInstallationComponentDependencies,
     NotificationDependencies
 {
@@ -304,11 +301,6 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(SpaceJoinRequestDependencies::class)
     abstract fun provideSpaceJoinRequestDependencies(component: MainComponent): ComponentDependencies
-
-    @Binds
-    @IntoMap
-    @ComponentDependenciesKey(PaymentsComponentDependencies::class)
-    abstract fun providePaymentsComponentDependencies(component: MainComponent): ComponentDependencies
 
     @Binds
     @IntoMap

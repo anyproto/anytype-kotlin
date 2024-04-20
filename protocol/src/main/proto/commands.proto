@@ -546,6 +546,8 @@ message Rpc {
                 Error error = 1;
                 string token = 2;
                 string appToken = 3; // in case of mnemonic auth, need to be persisted by client
+                string accountId = 4; // temp, should be replaced with AccountInfo message
+
                 message Error {
                     Code code = 1;
                     string description = 2;
@@ -579,7 +581,6 @@ message Rpc {
                 }
             }
         }
-
 
     }
 
@@ -2464,6 +2465,7 @@ message Rpc {
                         IMPORT_IS_CANCELED = 6;
                         LIMIT_OF_ROWS_OR_RELATIONS_EXCEEDED = 7;
                         FILE_LOAD_ERROR = 8;
+                        INSUFFICIENT_PERMISSIONS = 9;
                     }
                 }
             }
@@ -2581,12 +2583,12 @@ message Rpc {
                         NULL = 0;
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
+                        INSUFFICIENT_PERMISSION = 3;
                     }
                 }
             }
         }
     }
-
 
     message ObjectCollection {
         message Add {

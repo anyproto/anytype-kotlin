@@ -26,6 +26,7 @@ import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
 import com.anytypeio.anytype.domain.wallpaper.WallpaperStore
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.main.MainViewModelFactory
+import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationActionDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
 import com.anytypeio.anytype.ui.main.MainActivity
@@ -71,7 +72,9 @@ object MainEntryModule {
         userPermissionProvider: UserPermissionProvider,
         notificationsProvider: NotificationsProvider,
         notificator: SystemNotificationService,
-        notificationActionDelegate: NotificationActionDelegate
+        notificationActionDelegate: NotificationActionDelegate,
+        deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
+        awaitAccountStartManager: AwaitAccountStartManager
     ): MainViewModelFactory = MainViewModelFactory(
         resumeAccount = resumeAccount,
         analytics = analytics,
@@ -88,7 +91,9 @@ object MainEntryModule {
         userPermissionProvider = userPermissionProvider,
         notificationsProvider = notificationsProvider,
         notificator = notificator,
-        notificationActionDelegate = notificationActionDelegate
+        notificationActionDelegate = notificationActionDelegate,
+        deepLinkToObjectDelegate = deepLinkToObjectDelegate,
+        awaitAccountStartManager = awaitAccountStartManager
     )
 
     @JvmStatic
@@ -186,4 +191,11 @@ object MainEntryModule {
     fun provideNotificationActionDelegate(
         default: NotificationActionDelegate.Default
     ) : NotificationActionDelegate = default
+
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun provideDeepLinkToObjectDelegate(
+        default: DeepLinkToObjectDelegate.Default
+    ): DeepLinkToObjectDelegate = default
 }

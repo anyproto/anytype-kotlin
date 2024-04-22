@@ -1512,5 +1512,6 @@
     <string name="notifications_prompt_primary_button_text">Enable</string>
 
     <string name="clipboard_panel_create_bookmark_from_clipboard">Create bookmark from clipboard</string>
+    <string name="error_unexpected_layout">Error: unexpected layout</string>
 
 </resources>

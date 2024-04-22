@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.Notification
 import com.anytypeio.anytype.core_models.NotificationPayload
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
+import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.Logout
@@ -19,6 +20,7 @@ import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
@@ -27,6 +29,9 @@ import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
+import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
+import com.anytypeio.anytype.presentation.home.navigation
+import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationAction
 import com.anytypeio.anytype.presentation.notifications.NotificationActionDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
@@ -34,6 +39,8 @@ import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
@@ -54,8 +61,12 @@ class MainViewModel(
     private val userPermissionProvider: UserPermissionProvider,
     private val notificationsProvider: NotificationsProvider,
     private val notificator: SystemNotificationService,
-    private val notificationActionDelegate: NotificationActionDelegate
-) : ViewModel(), NotificationActionDelegate by notificationActionDelegate {
+    private val notificationActionDelegate: NotificationActionDelegate,
+    private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
+    private val awaitAccountStartManager: AwaitAccountStartManager
+) : ViewModel(),
+    NotificationActionDelegate by notificationActionDelegate,
+    DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
     val wallpaper = MutableStateFlow<Wallpaper>(Wallpaper.Default)
     val commands = MutableSharedFlow<Command>(replay = 0)
@@ -272,6 +283,59 @@ class MainViewModel(
         }
     }
 
+    fun onNewDeepLink(deeplink: DeepLinkResolver.Action) {
+        viewModelScope.launch {
+            awaitAccountStartManager
+                .isStarted()
+                .filter { isStarted -> isStarted }
+                .take(1)
+                .collect { isStarted ->
+                    if (isStarted) {
+                        proceedWithNewDeepLink(deeplink)
+                    } else {
+                        Timber.w("Account not started")
+                    }
+                }
+        }
+    }
+
+    private suspend fun proceedWithNewDeepLink(deeplink: DeepLinkResolver.Action) {
+        Timber.d("Proceeding with the new deep link")
+        when (deeplink) {
+            is DeepLinkResolver.Action.Import.Experience -> {
+                commands.emit(
+                    Command.Deeplink.GalleryInstallation(
+                        deepLinkType = deeplink.type,
+                        deepLinkSource = deeplink.source
+                    )
+                )
+            }
+            is DeepLinkResolver.Action.Invite -> {
+                commands.emit(Command.Deeplink.Invite(deeplink.link))
+            }
+            is DeepLinkResolver.Action.DeepLinkToObject -> {
+                val result = onDeepLinkToObject(
+                    obj = deeplink.obj,
+                    space = deeplink.space,
+                    switchSpaceIfObjectFound = true
+                )
+                when (result) {
+                    is DeepLinkToObjectDelegate.Result.Error -> {
+                        toasts.emit("Error: $result")
+                    }
+                    is DeepLinkToObjectDelegate.Result.Success -> {
+                        commands.emit(
+                            Command.Navigate(result.obj.navigation())
+                        )
+                    }
+                }
+            }
+            else -> {
+                Timber.d("No deep link")
+            }
+        }
+    }
+
     sealed class Command {
         data class ShowDeletedAccountScreen(val deadline: Long) : Command()
         data object LogoutDueToAccountDeletion : Command()
@@ -286,6 +350,17 @@ class MainViewModel(
         }
         data object Notifications: Command()
         data object RequestNotificationPermission: Command()
+
+        data class Navigate(val destination: OpenObjectNavigation): Command()
+
+        sealed class Deeplink : Command() {
+            data object DeepLinkToObjectNotWorking: Deeplink()
+            data class Invite(val link: String) : Deeplink()
+            data class GalleryInstallation(
+                val deepLinkType: String,
+                val deepLinkSource: String
+            ) : Deeplink()
+        }
     }
 
     companion object {

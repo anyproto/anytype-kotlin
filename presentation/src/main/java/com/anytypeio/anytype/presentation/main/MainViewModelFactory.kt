@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.Logout
@@ -16,6 +17,7 @@ import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
+import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationActionDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
 import javax.inject.Inject
@@ -36,7 +38,9 @@ class MainViewModelFactory @Inject constructor(
     private val userPermissionProvider: UserPermissionProvider,
     private val notificationsProvider: NotificationsProvider,
     private val notificator: SystemNotificationService,
-    private val notificationActionDelegate: NotificationActionDelegate
+    private val notificationActionDelegate: NotificationActionDelegate,
+    private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
+    private val awaitAccountStartManager: AwaitAccountStartManager
     ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -57,6 +61,8 @@ class MainViewModelFactory @Inject constructor(
         userPermissionProvider = userPermissionProvider,
         notificationsProvider = notificationsProvider,
         notificator = notificator,
-        notificationActionDelegate = notificationActionDelegate
+        notificationActionDelegate = notificationActionDelegate,
+        deepLinkToObjectDelegate = deepLinkToObjectDelegate,
+        awaitAccountStartManager = awaitAccountStartManager
     ) as T
 }

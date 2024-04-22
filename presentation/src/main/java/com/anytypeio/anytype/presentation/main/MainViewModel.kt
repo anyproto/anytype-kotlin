@@ -127,7 +127,7 @@ class MainViewModel(
 
     fun onNotificationPermissionDenied() {
         viewModelScope.launch {
-            notificator.notifyIfPending()
+            notificator.clearPendingNotification()
         }
     }
 

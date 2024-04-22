@@ -224,12 +224,7 @@ class HomeScreenFragment : BaseComposeFragment() {
                     Timber.e(it, "Error while navigation")
                 }
             }
-            is Command.Deeplink.CannotImportExperience -> {
-                arguments?.putString(DEEP_LINK_KEY, null)
-                findNavController().navigate(R.id.alertImportExperienceUnsupported)
-            }
             is Command.Deeplink.Invite -> {
-                arguments?.putString(DEEP_LINK_KEY, null)
                 findNavController().navigate(
                     R.id.requestJoinSpaceScreen,
                     RequestJoinSpaceFragment.args(link = command.link)

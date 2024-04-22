@@ -1700,7 +1700,6 @@ sealed class Command {
 
     sealed class Deeplink : Command() {
         data object DeepLinkToObjectNotWorking: Deeplink()
-        data object CannotImportExperience : Deeplink()
         data class Invite(val link: String) : Deeplink()
         data class GalleryInstallation(
             val deepLinkType: String,

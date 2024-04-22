@@ -1,7 +1,9 @@
 package com.anytypeio.anytype.ui.main
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -159,6 +161,15 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                             }
                             is Command.Notifications -> {
                                 NotificationsFragment().show(supportFragmentManager, null)
+                            }
+                            is Command.RequestNotificationPermission -> {
+                                runCatching {
+                                    findNavController(R.id.fragment).navigate(
+                                        R.id.requestNotificationPermissionDialog
+                                    )
+                                }.onFailure {
+                                    Timber.e(it, "Error while navigation")
+                                }
                             }
                         }
                     }
@@ -430,6 +441,29 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         super.onDestroy()
         mdnsProvider.stop()
         release()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        runCatching {
+            permissions.forEachIndexed { index, permission ->
+                when(permission) {
+                    Manifest.permission.POST_NOTIFICATIONS -> {
+                        val result = grantResults[index]
+                        if (result == PackageManager.PERMISSION_GRANTED)
+                            vm.onNotificationPermissionGranted()
+                        else
+                            vm.onNotificationPermissionDenied()
+                    }
+                }
+            }
+        }.onFailure {
+            Timber.e(it, "Error while handling permission results")
+        }
     }
 
     override fun nav(): AppNavigation = navigator

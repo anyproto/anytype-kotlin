@@ -1159,7 +1159,7 @@
     <string name="multiplayer_space_stop_sharing">Закрыть доступ</string>
     <string name="multiplayer_space_stop_sharing_space">Прекратить совместное использование пространства</string>
     <string name="multiplayer_space_stop_sharing_space_description">Участники больше не будут синхронизироваться с этим пространством, и ссылка на общий доступ будет отключена.</string>
-    <string name="multiplayer_more_info">Подробнее</string>
+    <string name="multiplayer_more_info">More info</string>
     <string name="multiplayer_sharing">Совместное использование</string>
     <string name="multiplayer_space_type">Space type</string>
     <string name="multiplayer_share">Поделиться</string>
@@ -1187,14 +1187,26 @@
     <string name="multiplayer_notification_new_join_request">Новая заявка на вступление</string>
     <string name="multiplayer_notification_member_joined_space_with_read_only_rights">%1$s присоединился %2$s к пространству с правами доступа только для чтения</string>
     <string name="multiplayer_notification_member_joined_space_with_editor_only_rights">%1$s присоединился %2$s к пространству с правами доступа редактирования</string>
+    <string name="multiplayer_notification_member_request_approved">Request approved</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Ваш запрос на присоединение к пространству %1$s был одобрен с правами доступа только для чтения. Пространство будет доступно на вашем устройстве в ближайшее время.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Ваш запрос на присоединение к пространству %1$s был одобрен с правами на редактирование. Пространство будет доступно в ближайшее время на устройстве.</string>
     <string name="multiplayer_notification_member_removed_from_space">Вы были удалены из пространства, или оно было удалено владельцем.</string>
+    <string name="multiplayer_notification_member_permissions_changed">Permissions changed</string>
     <string name="multiplayer_notification_member_permission_change_read">Ваши права доступа были изменены на только для чтения в пространстве %1$s.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Права доступа были изменены на редактирование в пространстве %1$s.</string>
     <string name="multiplayer_notification_member_join_request_declined">Your request to join the %1$s space has been declined.</string>
+    <string name="multiplayer_notification_request_declined">Request declined</string>
     <string name="multiplayer_notification_view_request">Вид</string>
+    <string name="multiplayer_notification_go_to_space">Перейти в пространство</string>
     <string name="multiplayer_toast_permission_not_allowed">Changing permissions is not allowed</string>
+    <string name="multiplayer_deeplink_to_your_object">Deeplink to your object</string>
+    <string name="multiplayer_deeplink_to_your_object_error">This deeplink is not working. Object might be deleted or there might be issues with space access.</string>
+    <plurals name="multiplayer_number_of_space_members">
+        <item quantity="one">%1$d member</item>
+        <item quantity="few">%1$d members</item>
+        <item quantity="many">%1$d members</item>
+        <item quantity="other">%1$d members</item>
+    </plurals>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Членство</string>
@@ -1291,4 +1303,5 @@
     <string name="gallery_experience_alert_button_space">Открыть пространство.</string>
     <string name="gallery_experience_alert_button_error">Закрыть</string>
     <string name="three_dots_text_placeholder">...</string>
+    <string name="multiplayer_you_as_member">you</string>
 </resources>

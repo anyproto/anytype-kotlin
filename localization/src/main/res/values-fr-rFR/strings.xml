@@ -1147,6 +1147,7 @@
     <string name="multiplayer_space_request_reject">Rejeter</string>
     <string name="multiplayer_space_join_request_header">%1$s a demandé à rejoindre l\'espace %2$s</string>
     <string name="multiplayer_remove_member">Supprimer un membre</string>
+    <string name="multiplayer_remove_member_warning_text">%1$s sera retiré de l\'espace</string>
     <string name="multiplayer_request_sent_toast">Demande envoyée</string>
     <string name="multiplayer_space_stop_sharing">Arrêter le partage</string>
     <string name="multiplayer_space_stop_sharing_space">Arrêter le partage de l\'espace</string>
@@ -1197,6 +1198,7 @@
         <item quantity="one">%1$d membre</item>
         <item quantity="other">%1$d members</item>
     </plurals>
+    <string name="multiplayer_you_as_member">vous</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Adhésion</string>
@@ -1293,5 +1295,10 @@
     <string name="gallery_experience_alert_button_space">Espace ouvert</string>
     <string name="gallery_experience_alert_button_error">Fermer</string>
     <string name="three_dots_text_placeholder">...</string>
-    <string name="multiplayer_you_as_member">vous</string>
+    <string name="notifications_prompt_get_notified">Recevoir une alerte</string>
+    <string name="notifications_prompt_secondary_button_text">Plus tard</string>
+    <string name="notifications_prompt_description">Veuillez activer les notifications pour rester informé de toute demande d\'adhésion ou de sortie d\'espace.</string>
+    <string name="notifications_prompt_primary_button_text">Activé</string>
+    <string name="clipboard_panel_create_bookmark_from_clipboard">Créer un favori depuis le presse-papiers</string>
+    <string name="error_unexpected_layout">Erreur: mise en page inattendue</string>
 </resources>

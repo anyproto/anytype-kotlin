@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.UNKNOWN_SPACE_TYPE
 import com.anytypeio.anytype.core_models.asSpaceType
+import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -53,7 +54,9 @@ class SpaceWidgetContainer @Inject constructor(
                 members.observe(SpaceId(config.space)).map { store ->
                     when (store) {
                         is Store.Empty -> 0
-                        is Store.Data -> store.members.size
+                        is Store.Data -> store.members.count { member ->
+                            member.status == ParticipantStatus.ACTIVE
+                        }
                     }
                 }
             ) { spaceView, membersCount ->

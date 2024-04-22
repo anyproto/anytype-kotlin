@@ -33,7 +33,7 @@ class NotificationPermissionPromptDialog : BaseBottomSheetComposeFragment() {
                 ) { isGranted: Boolean ->
                     Timber.d("Permission granted: $isGranted")
                     activity?.onRequestPermissionsResult(
-                        1,
+                        REQUEST_CODE,
                         arrayOf(Manifest.permission.POST_NOTIFICATIONS),
                         if (isGranted)
                             intArrayOf(PackageManager.PERMISSION_GRANTED)
@@ -67,5 +67,9 @@ class NotificationPermissionPromptDialog : BaseBottomSheetComposeFragment() {
 
     override fun releaseDependencies() {
         // Do nothing
+    }
+
+    companion object {
+        const val REQUEST_CODE = 0
     }
 }

@@ -1194,7 +1194,7 @@
     <string name="multiplayer_deeplink_to_your_object">Deeplink to your object</string>
     <string name="multiplayer_deeplink_to_your_object_error">This deeplink is not working. Object might be deleted or there might be issues with space access.</string>
     <plurals name="multiplayer_number_of_space_members">
-        <item quantity="one">%1$d member</item>
+        <item quantity="one">%1$d membre</item>
         <item quantity="other">%1$d members</item>
     </plurals>
     <!--endregion-->

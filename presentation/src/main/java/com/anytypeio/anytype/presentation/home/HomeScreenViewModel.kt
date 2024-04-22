@@ -1528,9 +1528,13 @@ class HomeScreenViewModel(
     fun onLibraryClicked() {
         viewModelScope.launch {
             val space = spaceManager.get()
-            navigation(
-                Navigation.OpenLibrary(space)
-            )
+            if (space.isNotEmpty()) {
+                navigation(
+                    Navigation.OpenLibrary(space)
+                )
+            } else {
+                Timber.w("Space is missing: ${space}")
+            }
         }
     }
 

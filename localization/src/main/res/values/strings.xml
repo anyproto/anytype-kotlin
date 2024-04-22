@@ -1330,6 +1330,7 @@
     <string name="multiplayer_space_request_reject">Reject</string>
     <string name="multiplayer_space_join_request_header">%1$s requested to join %2$s space</string>
     <string name="multiplayer_remove_member">Remove member</string>
+    <string name="multiplayer_remove_member_warning_text">%1$s will be removed from space</string>
     <string name="multiplayer_request_sent_toast">Request sent</string>
     <string name="multiplayer_space_stop_sharing">Stop sharing</string>
     <string name="multiplayer_space_stop_sharing_space">Stop sharing the space</string>

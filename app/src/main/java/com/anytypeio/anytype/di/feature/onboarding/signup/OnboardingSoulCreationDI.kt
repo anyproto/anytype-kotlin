@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
 import com.anytypeio.anytype.domain.auth.interactor.SetupWallet
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
@@ -61,12 +62,16 @@ object OnboardingSoulCreationModule {
         authRepository: AuthRepository,
         configStorage: ConfigStorage,
         metricsProvider: MetricsProvider,
+        awaitAccountStartManager: AwaitAccountStartManager,
+        spaceManager: SpaceManager,
         dispatchers: AppCoroutineDispatchers
     ): CreateAccount = CreateAccount(
         repository = authRepository,
         configStorage = configStorage,
         metricsProvider = metricsProvider,
-        dispatcher = dispatchers
+        dispatcher = dispatchers,
+        awaitAccountStartManager = awaitAccountStartManager,
+        spaceManager = spaceManager
     )
 
     @JvmStatic
@@ -113,6 +118,7 @@ interface OnboardingSoulCreationDependencies : ComponentDependencies {
     fun spaceStatusWatcher(): SpaceDeletedStatusWatcher
     fun localeProvider(): LocaleProvider
     fun userPermissionProvider(): UserPermissionProvider
+    fun awaitAccountStartManager(): AwaitAccountStartManager
 }
 
 @Scope

@@ -152,10 +152,10 @@ class HomeScreenFragment : BaseComposeFragment() {
     }
 
     private fun proceedWithDeepLinks() {
-        val deepLinkFromFragment = deepLink
-        if (deepLinkFromFragment != null) {
+        val deepLinkFromFragmentArgs = deepLink
+        if (deepLinkFromFragmentArgs != null) {
             Timber.d("Deeplink  from fragment args")
-            vm.onResume(DefaultDeepLinkResolver.resolve(deepLinkFromFragment))
+            vm.onResume(DefaultDeepLinkResolver.resolve(deepLinkFromFragmentArgs))
             arguments?.putString(DEEP_LINK_KEY, null)
         }
     }

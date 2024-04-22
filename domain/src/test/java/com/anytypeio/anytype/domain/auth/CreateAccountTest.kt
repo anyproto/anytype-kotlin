@@ -1,16 +1,17 @@
 package com.anytypeio.anytype.domain.auth
 
 import com.anytypeio.anytype.core_models.Command
-import com.anytypeio.anytype.core_models.CoroutineTestRule
 import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.core_models.StubAccountSetup
+import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.common.DefaultCoroutineTestRule
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.platform.MetricsProvider
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -41,6 +42,12 @@ class CreateAccountTest {
     @Mock
     lateinit var metricsProvider: MetricsProvider
 
+    @Mock
+    lateinit var awaitAccountStartManager: AwaitAccountStartManager
+
+    @Mock
+    lateinit var spaceManager: SpaceManager
+
     private lateinit var createAccount: CreateAccount
 
 
@@ -57,12 +64,14 @@ class CreateAccountTest {
             repository = repo,
             configStorage = configStorage,
             metricsProvider = metricsProvider,
-            dispatcher = dispatchers
+            dispatcher = dispatchers,
+            awaitAccountStartManager = awaitAccountStartManager,
+            spaceManager = spaceManager
         )
     }
 
     @Test
-    fun `should create account and save it and set as current user account and save config in storage`() =
+    fun `should create account and save it and set as current user account and save config in storage and set default space`() =
         runTest {
             val name = MockDataFactory.randomString()
             val path = null
@@ -117,6 +126,8 @@ class CreateAccountTest {
             )
             verifyNoMoreInteractions(repo)
             verify(configStorage, times(1)).set(setup.config)
+            verify(spaceManager, times(1)).set(setup.config.space)
+            verify(awaitAccountStartManager, times(1)).setIsStarted(true)
         }
 
     private fun stubMetricsProvider(version: String, platform: String) {

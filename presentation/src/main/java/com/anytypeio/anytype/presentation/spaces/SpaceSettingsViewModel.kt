@@ -49,7 +49,7 @@ class SpaceSettingsViewModel(
     private val debugSpaceShareDownloader: DebugSpaceShareDownloader,
     private val spaceGradientProvider: SpaceGradientProvider,
     private val userPermissionProvider: UserPermissionProvider,
-    private val container: SpaceViewSubscriptionContainer
+    private val spaceViewContainer: SpaceViewSubscriptionContainer
 ): BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>()
@@ -73,9 +73,9 @@ class SpaceSettingsViewModel(
         viewModelScope.launch {
             val config = spaceManager.getConfig(params.space)
             combine(
-                container.observe(params.space),
+                spaceViewContainer.observe(params.space),
                 userPermissionProvider.observe(params.space),
-                container.isSharingLimitReached()
+                spaceViewContainer.isSharingLimitReached()
             ) { spaceView, permission, shareLimitReached ->
                 SpaceData(
                     name = spaceView.name.orEmpty(),
@@ -97,6 +97,7 @@ class SpaceSettingsViewModel(
                     shareLimitReached = shareLimitReached
                 )
             }.collect { spaceData ->
+                Timber.d("Space data: ${spaceData}")
                 spaceViewState.value = ViewState.Success(spaceData)
             }
         }
@@ -308,7 +309,7 @@ class SpaceSettingsViewModel(
         override fun <T : ViewModel> create(
             modelClass: Class<T>
         ): T = SpaceSettingsViewModel(
-            container = container,
+            spaceViewContainer = container,
             urlBuilder = urlBuilder,
             spaceManager = spaceManager,
             setSpaceDetails = setSpaceDetails,

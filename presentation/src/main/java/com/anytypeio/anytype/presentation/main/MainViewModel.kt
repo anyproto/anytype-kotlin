@@ -344,7 +344,6 @@ class MainViewModel(
         }
         data object Notifications: Command()
         data object RequestNotificationPermission: Command()
-        data object CheckNavStack : Command()
 
         data class Navigate(val destination: OpenObjectNavigation): Command()
 

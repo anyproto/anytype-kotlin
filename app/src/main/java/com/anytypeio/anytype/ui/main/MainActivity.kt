@@ -178,45 +178,47 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                     Timber.e(it, "Error while navigation")
                                 }
                             }
-                            is Command.CheckNavStack -> {
-                                val entry = findNavController(R.id.fragment).currentBackStackEntry
-                                if (entry != null) {
-                                    Timber.d("Nav stack entry: $entry")
-                                }
-                            }
                             is Command.Navigate -> {
                                 when(val dest = command.destination) {
                                     is OpenObjectNavigation.OpenDataView -> {
-                                        findNavController(R.id.fragment).navigate(
-                                            R.id.dataViewNavigation,
-                                            args = ObjectSetFragment.args(
-                                                ctx = dest.target,
-                                                space = dest.space
-                                            ),
-                                            navOptions = NavOptions.Builder()
-                                                .setPopUpTo(R.id.homeScreen, true)
-                                                .build()
-                                        )
+                                        runCatching {
+                                            findNavController(R.id.fragment).navigate(
+                                                R.id.dataViewNavigation,
+                                                args = ObjectSetFragment.args(
+                                                    ctx = dest.target,
+                                                    space = dest.space
+                                                ),
+                                                navOptions = NavOptions.Builder()
+                                                    .setPopUpTo(R.id.homeScreen, true)
+                                                    .build()
+                                            )
+                                        }.onFailure {
+                                            Timber.e(it, "Error while data view navigation")
+                                        }
                                     }
                                     is OpenObjectNavigation.OpenEditor -> {
-                                        findNavController(R.id.fragment).navigate(
-                                            R.id.objectNavigation,
-                                            args = EditorFragment.args(
-                                                ctx = dest.target,
-                                                space = dest.space
-                                            ),
-                                            navOptions = NavOptions.Builder()
-                                                .setPopUpTo(R.id.homeScreen, true)
-                                                .build()
-                                        )
+                                        runCatching {
+                                            findNavController(R.id.fragment).navigate(
+                                                R.id.objectNavigation,
+                                                args = EditorFragment.args(
+                                                    ctx = dest.target,
+                                                    space = dest.space
+                                                ),
+                                                navOptions = NavOptions.Builder()
+                                                    .setPopUpTo(R.id.homeScreen, true)
+                                                    .build()
+                                            )
+                                        }.onFailure {
+                                            Timber.e(it, "Error while editor navigation")
+                                        }
                                     }
-                                    is OpenObjectNavigation.UnexpectedLayoutError -> TODO()
+                                    is OpenObjectNavigation.UnexpectedLayoutError -> {
+                                        toast(getString(R.string.error_unexpected_layout))
+                                    }
                                 }
                             }
                             is Command.Deeplink.DeepLinkToObjectNotWorking -> {
-                                toast(
-                                    getString(R.string.multiplayer_deeplink_to_your_object_error)
-                                )
+                                toast(getString(R.string.multiplayer_deeplink_to_your_object_error))
                             }
                             is Command.Deeplink.GalleryInstallation -> {
                                 runCatching {

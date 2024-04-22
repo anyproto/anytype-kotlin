@@ -160,6 +160,15 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                             is Command.Notifications -> {
                                 NotificationsFragment().show(supportFragmentManager, null)
                             }
+                            is Command.RequestNotificationPermission -> {
+                                runCatching {
+                                    findNavController(R.id.fragment).navigate(
+                                        R.id.requestNotificationPermissionDialog
+                                    )
+                                }.onFailure {
+                                    Timber.e(it, "Error while navigation")
+                                }
+                            }
                         }
                     }
                 }
@@ -430,6 +439,15 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         super.onDestroy()
         mdnsProvider.stop()
         release()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        Timber.d("Result called")
     }
 
     override fun nav(): AppNavigation = navigator

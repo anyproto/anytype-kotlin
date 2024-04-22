@@ -111,10 +111,16 @@ class MainViewModel(
                 if (notificator.areNotificationsEnabled) {
                     notificator.notify(notification)
                 } else {
-                    toasts.emit("Incoming notification... Notifications aren't enabled in app settings")
+                    commands.emit(
+                        Command.Notifications
+                    )
                 }
             }
         }
+    }
+
+    fun onNotificationPermissionGranted() {
+
     }
 
     private fun proceedWithLogoutDueToAccountDeletion() {
@@ -270,7 +276,8 @@ class MainViewModel(
             data class File(val uri: String): Sharing()
             data class Files(val uris: List<String>): Sharing()
         }
-        data object Notifications : Command()
+        data object Notifications: Command()
+        data object RequestNotificationPermission: Command()
     }
 
     companion object {

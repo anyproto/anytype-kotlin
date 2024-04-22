@@ -1384,6 +1384,8 @@
         <item quantity="other">%1$d members</item>
     </plurals>
 
+    <string name="multiplayer_you_as_member">you</string>
+
 
     <!--endregion-->
 
@@ -1503,6 +1505,12 @@
 
 
     <string name="three_dots_text_placeholder">...</string>
-    <string name="multiplayer_you_as_member">you</string>
+
+    <string name="notifications_prompt_get_notified">Get notified</string>
+    <string name="notifications_prompt_secondary_button_text">Not now</string>
+    <string name="notifications_prompt_description">Please enable notifications to stay informed about any requests to join or leave spaces.</string>
+    <string name="notifications_prompt_primary_button_text">Enable</string>
+
+    <string name="clipboard_panel_create_bookmark_from_clipboard">Create bookmark from clipboard</string>
 
 </resources>

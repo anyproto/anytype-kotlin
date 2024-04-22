@@ -35,6 +35,8 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.extensions.throttledClick
+import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
@@ -326,6 +328,82 @@ private fun AlertButtons(
             }
         }
     }
+}
+
+@Composable
+fun Prompt(
+    title: String,
+    description: String,
+    primaryButtonText: String,
+    secondaryButtonText: String,
+    onPrimaryButtonClicked: () -> Unit,
+    onSecondaryButtonClicked: () -> Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Dragger(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(vertical = 6.dp)
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+        Text(
+            text = title,
+            style = HeadlineHeading,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
+            color = colorResource(id = R.color.text_primary),
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = description,
+            style = BodyCalloutRegular,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
+            color = colorResource(id = R.color.text_primary),
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+        ButtonPrimary(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+            text = primaryButtonText,
+            onClick = throttledClick(
+                onClick = {
+                    onPrimaryButtonClicked()
+                }
+            ),
+            size = ButtonSize.Large
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        ButtonSecondary(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+            text = secondaryButtonText,
+            onClick = throttledClick(
+                onClick = {
+                    onSecondaryButtonClicked()
+                }
+            ),
+            size = ButtonSize.Large
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+}
+
+@Preview
+@Composable
+fun PromptPreview() {
+    Prompt(
+        title = "Get notified",
+        description = "Please enable notifications to stay informed about any requests to join or leave spaces.",
+        primaryButtonText = "Enable",
+        secondaryButtonText = "Not now",
+        onPrimaryButtonClicked = {},
+        onSecondaryButtonClicked = {}
+    )
 }
 
 sealed class AlertConfig {

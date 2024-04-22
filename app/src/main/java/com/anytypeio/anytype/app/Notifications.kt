@@ -24,9 +24,8 @@ class AnytypeNotificationService @Inject constructor(
     private val context: Context
 ) : SystemNotificationService {
 
-    private var pending: Notification? = null
-
     private val mutex = Mutex()
+    private var pending: Notification? = null
 
     private val notificationManager = context.getSystemService(NotificationManager::class.java)
 

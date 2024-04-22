@@ -137,8 +137,6 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                 if (intent != null && intent.action == Intent.ACTION_VIEW) {
                     val data = intent.dataString
                     if (data != null && data.contains(DEEP_LINK_PATTERN)) {
-                        Timber.d("Got deeplink when checking app intent in splash")
-//                        vm.onIntentActionNotFound()
                         vm.onDeepLinkLaunch(data)
                     } else {
                         val bundle = intent.extras

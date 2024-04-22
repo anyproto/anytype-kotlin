@@ -204,6 +204,7 @@ class SplashViewModel(
     }
 
     fun onDeepLinkLaunch(deeplink: String) {
+        Timber.d("onDeepLinkLaunch")
         viewModelScope.launch {
             proceedWithDashboardNavigation(deeplink)
         }

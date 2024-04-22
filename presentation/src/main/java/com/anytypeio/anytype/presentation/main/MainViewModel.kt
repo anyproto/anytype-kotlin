@@ -111,9 +111,23 @@ class MainViewModel(
                 if (notificator.areNotificationsEnabled) {
                     notificator.notify(notification)
                 } else {
-                    toasts.emit("Incoming notification... Notifications aren't enabled in app settings")
+                    commands.emit(Command.RequestNotificationPermission).also {
+                        notificator.setPendingNotification(notification)
+                    }
                 }
             }
+        }
+    }
+
+    fun onNotificationPermissionGranted() {
+        viewModelScope.launch {
+            notificator.notifyIfPending()
+        }
+    }
+
+    fun onNotificationPermissionDenied() {
+        viewModelScope.launch {
+            notificator.clearPendingNotification()
         }
     }
 
@@ -270,7 +284,8 @@ class MainViewModel(
             data class File(val uri: String): Sharing()
             data class Files(val uris: List<String>): Sharing()
         }
-        data object Notifications : Command()
+        data object Notifications: Command()
+        data object RequestNotificationPermission: Command()
     }
 
     companion object {

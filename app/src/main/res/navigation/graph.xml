@@ -554,4 +554,8 @@
         android:id="@+id/shareSpaceInviteQrCodeScreen"
         android:name="com.anytypeio.anytype.ui.multiplayer.ShareQrCodeSpaceInviteFragment"/>
 
+    <dialog
+        android:id="@+id/requestNotificationPermissionDialog"
+        android:name="com.anytypeio.anytype.ui.notifications.NotificationPermissionPromptDialog"/>
+
 </navigation>

@@ -203,7 +203,7 @@ class SplashViewModel(
         proceedWithNavigation()
     }
 
-    fun onDeepLink(deeplink: String) {
+    fun onDeepLinkLaunch(deeplink: String) {
         viewModelScope.launch {
             proceedWithDashboardNavigation(deeplink)
         }
@@ -252,11 +252,7 @@ class SplashViewModel(
     }
 
     private suspend fun proceedWithDashboardNavigation(deeplink: String? = null) {
-        if (BuildConfig.ENABLE_WIDGETS) {
-            commands.emit(Command.NavigateToWidgets)
-        } else {
-            commands.emit(Command.NavigateToDashboard(deeplink))
-        }
+        commands.emit(Command.NavigateToDashboard(deeplink))
     }
 
     private fun updateUserProps(id: String) {
@@ -285,10 +281,10 @@ class SplashViewModel(
 
     sealed class Command {
         data class NavigateToDashboard(val deeplink: String? = null) : Command()
-        object NavigateToWidgets : Command()
-        object NavigateToAuthStart : Command()
-        object NavigateToMigration: Command()
-        object CheckAppStartIntent : Command()
+        data object NavigateToWidgets : Command()
+        data object NavigateToAuthStart : Command()
+        data object NavigateToMigration: Command()
+        data object CheckAppStartIntent : Command()
         data class NavigateToObject(val id: Id, val space: Id) : Command()
         data class NavigateToObjectSet(val id: Id, val space: Id) : Command()
     }

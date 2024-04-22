@@ -1148,6 +1148,7 @@
     <string name="multiplayer_space_request_reject">Rifiuta</string>
     <string name="multiplayer_space_join_request_header">%1$s ha richiesto di unirsi allo spazio %2$s</string>
     <string name="multiplayer_remove_member">Remove member</string>
+    <string name="multiplayer_remove_member_warning_text">%1$s will be removed from space</string>
     <string name="multiplayer_request_sent_toast">Richiesta inviata</string>
     <string name="multiplayer_space_stop_sharing">Stop sharing</string>
     <string name="multiplayer_space_stop_sharing_space">Smetti di condividere lo spazio</string>
@@ -1198,6 +1199,7 @@
         <item quantity="one">%1$d member</item>
         <item quantity="other">%1$d members</item>
     </plurals>
+    <string name="multiplayer_you_as_member">you</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Membership</string>
@@ -1294,5 +1296,10 @@
     <string name="gallery_experience_alert_button_space">Open space</string>
     <string name="gallery_experience_alert_button_error">Chiudi</string>
     <string name="three_dots_text_placeholder">...</string>
-    <string name="multiplayer_you_as_member">you</string>
+    <string name="notifications_prompt_get_notified">Get notified</string>
+    <string name="notifications_prompt_secondary_button_text">Not now</string>
+    <string name="notifications_prompt_description">Please enable notifications to stay informed about any requests to join or leave spaces.</string>
+    <string name="notifications_prompt_primary_button_text">Enable</string>
+    <string name="clipboard_panel_create_bookmark_from_clipboard">Create bookmark from clipboard</string>
+    <string name="error_unexpected_layout">Error: unexpected layout</string>
 </resources>

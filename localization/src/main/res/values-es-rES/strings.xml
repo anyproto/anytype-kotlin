@@ -1151,7 +1151,7 @@
     <string name="multiplayer_space_stop_sharing">Dejar de compartir</string>
     <string name="multiplayer_space_stop_sharing_space">Dejar de compartir el espacio</string>
     <string name="multiplayer_space_stop_sharing_space_description">Los miembros ya no se sincronizarán con este espacio y el enlace compartido se desactivará.</string>
-    <string name="multiplayer_more_info">Más información</string>
+    <string name="multiplayer_more_info">Más info.</string>
     <string name="multiplayer_sharing">Compartir</string>
     <string name="multiplayer_space_type">Tipo de espacio</string>
     <string name="multiplayer_share">Compartir</string>
@@ -1179,14 +1179,24 @@
     <string name="multiplayer_notification_new_join_request">Nueva solicitud para unirse</string>
     <string name="multiplayer_notification_member_joined_space_with_read_only_rights">%1$s se unió al espacio %2$s con derechos de acceso de solo lectura</string>
     <string name="multiplayer_notification_member_joined_space_with_editor_only_rights">%1$s se unió al espacio %2$s con derechos de acceso de edición</string>
+    <string name="multiplayer_notification_member_request_approved">Request approved</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Tu solicitud para unirte al espacio %1$s ha sido aprobada con derechos de solo lectura. El espacio estará disponible en tu cuenta pronto.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Tu solicitud para unirte al espacio %1$s ha sido aprobada con derechos de acceso de edición. El espacio estará disponible en tu cuenta pronto.</string>
     <string name="multiplayer_notification_member_removed_from_space">Fuiste eliminado del espacio o el espacio ha sido eliminado por el propietario.</string>
+    <string name="multiplayer_notification_member_permissions_changed">Permissions changed</string>
     <string name="multiplayer_notification_member_permission_change_read">Se han cambiado tus derechos de acceso a solo lectura en el espacio %1$s.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Se han cambiado tus derechos de acceso para editar en el espacio %1$s.</string>
     <string name="multiplayer_notification_member_join_request_declined">Tu solicitud para unirte al espacio %1$s ha sido rechazada.</string>
+    <string name="multiplayer_notification_request_declined">Solicitud declinada</string>
     <string name="multiplayer_notification_view_request">Ver</string>
+    <string name="multiplayer_notification_go_to_space">Ir al espacio</string>
     <string name="multiplayer_toast_permission_not_allowed">No está permitido cambiar permisos</string>
+    <string name="multiplayer_deeplink_to_your_object">Enlace-fuerte al objeto</string>
+    <string name="multiplayer_deeplink_to_your_object_error">Este enlace-fuerte no funciona. El objeto puedo ser eliminado o puede haber inconvenientes con el acceso al espacio.</string>
+    <plurals name="multiplayer_number_of_space_members">
+        <item quantity="one">%1$d member</item>
+        <item quantity="other">%1$d members</item>
+    </plurals>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Membresía</string>
@@ -1283,4 +1293,5 @@
     <string name="gallery_experience_alert_button_space">Abrir espacio</string>
     <string name="gallery_experience_alert_button_error">Cerrar</string>
     <string name="three_dots_text_placeholder">...</string>
+    <string name="multiplayer_you_as_member">you</string>
 </resources>

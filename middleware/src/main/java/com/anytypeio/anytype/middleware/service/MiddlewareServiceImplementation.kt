@@ -1817,16 +1817,10 @@ class MiddlewareServiceImplementation @Inject constructor(
         val error = response.error
         if (error != null && error.code != Rpc.Space.InviteView.Response.Error.Code.NULL) {
             when(error.code) {
-                Rpc.Space.InviteView.Response.Error.Code.NO_SUCH_SPACE -> {
-                    throw SpaceInviteError.SpaceNotFound()
-                }
-                Rpc.Space.InviteView.Response.Error.Code.SPACE_IS_DELETED -> {
-                    throw SpaceInviteError.SpaceDeleted()
-                }
                 Rpc.Space.InviteView.Response.Error.Code.INVITE_NOT_FOUND -> {
                     throw SpaceInviteError.InvalidInvite()
                 }
-                Rpc.Space.InviteView.Response.Error.Code.INVITE_BAD_SIGNATURE -> {
+                Rpc.Space.InviteView.Response.Error.Code.INVITE_BAD_CONTENT -> {
                     throw SpaceInviteError.InvalidInvite()
                 }
                 else -> {
@@ -2097,13 +2091,13 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
-    override fun membershipGetTiers(request: Rpc.Membership.Tiers.Get.Request): Rpc.Membership.Tiers.Get.Response {
+    override fun membershipGetTiers(request: Rpc.Membership.GetTiers.Request): Rpc.Membership.GetTiers.Response {
         val encoded = Service.membershipGetTiers(
-            Rpc.Membership.Tiers.Get.Request.ADAPTER.encode(request)
+            Rpc.Membership.GetTiers.Request.ADAPTER.encode(request)
         )
-        val response = Rpc.Membership.Tiers.Get.Response.ADAPTER.decode(encoded)
+        val response = Rpc.Membership.GetTiers.Response.ADAPTER.decode(encoded)
         val error = response.error
-        if (error != null && error.code != Rpc.Membership.Tiers.Get.Response.Error.Code.NULL) {
+        if (error != null && error.code != Rpc.Membership.GetTiers.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response

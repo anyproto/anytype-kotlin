@@ -21,11 +21,14 @@ import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
+import com.anytypeio.anytype.presentation.notifications.NotificationAction
+import com.anytypeio.anytype.presentation.notifications.NotificationActionDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
 import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import kotlinx.coroutines.delay
@@ -49,8 +52,10 @@ class MainViewModel(
     private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
     private val localeProvider: LocaleProvider,
     private val userPermissionProvider: UserPermissionProvider,
-    private val notificationsProvider: NotificationsProvider
-) : ViewModel() {
+    private val notificationsProvider: NotificationsProvider,
+    private val notificator: SystemNotificationService,
+    private val notificationActionDelegate: NotificationActionDelegate
+) : ViewModel(), NotificationActionDelegate by notificationActionDelegate {
 
     val wallpaper = MutableStateFlow<Wallpaper>(Wallpaper.Default)
     val commands = MutableSharedFlow<Command>(replay = 0)
@@ -96,38 +101,17 @@ class MainViewModel(
     }
 
     private suspend fun handleNotification(event: Notification.Event) {
-        when (val payload = event.notification?.payload) {
-            is NotificationPayload.GalleryImport -> {
+        val notification = event.notification
+        if (notification != null) {
+            if (notification.payload is NotificationPayload.GalleryImport) {
+                // TODO migrate to system notifications
                 delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
                 commands.emit(Command.Notifications)
-            }
-            is NotificationPayload.RequestToJoin -> {
-                delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
-                commands.emit(Command.Notifications)
-            }
-            is NotificationPayload.RequestToLeave -> {
-                delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
-                commands.emit(Command.Notifications)
-            }
-            is NotificationPayload.ParticipantRequestApproved -> {
-                delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
-                commands.emit(Command.Notifications)
-            }
-            is NotificationPayload.ParticipantRemove -> {
-                delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
-                commands.emit(Command.Notifications)
-            }
-            is NotificationPayload.ParticipantPermissionsChange -> {
-                delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
-                commands.emit(Command.Notifications)
-            }
-            is NotificationPayload.ParticipantRequestDecline -> {
-                delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
-                commands.emit(Command.Notifications)
-            }
-            else -> {
-                viewModelScope.launch {
-                    toasts.emit(payload.toString())
+            } else {
+                if (notificator.areNotificationsEnabled) {
+                    notificator.notify(notification)
+                } else {
+                    toasts.emit("Incoming notification... Notifications aren't enabled in app settings")
                 }
             }
         }
@@ -265,6 +249,12 @@ class MainViewModel(
                     }
                 }
             )
+        }
+    }
+
+    fun onInterceptNotificationAction(action: NotificationAction) {
+        viewModelScope.launch {
+            proceedWithNotificationAction(action)
         }
     }
 

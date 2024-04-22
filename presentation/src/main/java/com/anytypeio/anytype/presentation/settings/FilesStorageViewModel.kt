@@ -146,6 +146,9 @@ class FilesStorageViewModel(
                 is FileLimitsEvent.SpaceUsage -> newState.copy(
                     bytesUsage = event.bytesUsage
                 )
+                is FileLimitsEvent.FileLimitUpdated -> newState.copy(
+                    bytesLimit = event.bytesLimit
+                )
                 else -> newState
             }
         }

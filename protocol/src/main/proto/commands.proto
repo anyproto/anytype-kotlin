@@ -114,7 +114,9 @@ message Rpc {
                         NO_SUCH_SPACE = 101;
                         SPACE_IS_DELETED = 102;
                         REQUEST_FAILED = 103;
-                        NO_APPROVE_REQUESTS = 104;
+                        LIMIT_REACHED = 104;
+                        NO_APPROVE_REQUESTS = 105;
+                        NOT_SHAREABLE = 106;
                     }
                 }
             }
@@ -168,6 +170,8 @@ message Rpc {
                         NO_SUCH_SPACE = 101;
                         SPACE_IS_DELETED = 102;
                         REQUEST_FAILED = 103;
+                        LIMIT_REACHED = 104;
+                        NOT_SHAREABLE = 105;
                     }
                 }
             }
@@ -193,6 +197,7 @@ message Rpc {
                         NO_SUCH_SPACE = 101;
                         SPACE_IS_DELETED = 102;
                         REQUEST_FAILED = 103;
+                        LIMIT_REACHED = 104;
                     }
                 }
             }
@@ -217,9 +222,7 @@ message Rpc {
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
 
-                        NO_SUCH_SPACE = 101;
-                        SPACE_IS_DELETED = 102;
-                        NO_ACTIVE_INVITE = 103;
+                        NO_ACTIVE_INVITE = 101;
                     }
                 }
             }
@@ -244,8 +247,9 @@ message Rpc {
 
                         NO_SUCH_SPACE = 101;
                         SPACE_IS_DELETED = 102;
-                        NO_ACTIVE_INVITE = 103;
-                        REQUEST_FAILED = 105;
+                        LIMIT_REACHED = 103;
+                        REQUEST_FAILED = 104;
+                        NOT_SHAREABLE = 105;
                     }
                 }
             }
@@ -273,10 +277,8 @@ message Rpc {
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
 
-                        NO_SUCH_SPACE = 101;
-                        SPACE_IS_DELETED = 102;
-                        INVITE_NOT_FOUND = 103;
-                        INVITE_BAD_SIGNATURE = 104;
+                        INVITE_NOT_FOUND = 101;
+                        INVITE_BAD_CONTENT = 102;
                     }
                 }
             }
@@ -305,8 +307,10 @@ message Rpc {
                         NO_SUCH_SPACE = 101;
                         SPACE_IS_DELETED = 102;
                         INVITE_NOT_FOUND = 103;
-                        INVITE_BAD_SIGNATURE = 104;
+                        INVITE_BAD_CONTENT = 104;
                         REQUEST_FAILED = 105;
+                        LIMIT_REACHED = 106;
+                        NOT_SHAREABLE = 107;
                     }
                 }
             }
@@ -332,6 +336,9 @@ message Rpc {
                         NO_SUCH_SPACE = 101;
                         SPACE_IS_DELETED = 102;
                         REQUEST_FAILED = 103;
+                        LIMIT_REACHED = 104;
+                        NO_SUCH_REQUEST = 105;
+                        NOT_SHAREABLE = 106;
                     }
                 }
             }
@@ -358,9 +365,11 @@ message Rpc {
 
                         NO_SUCH_SPACE = 101;
                         SPACE_IS_DELETED = 102;
-                        NO_SUCH_IDENTITY = 103;
+                        NO_SUCH_REQUEST = 103;
                         INCORRECT_PERMISSIONS = 104;
                         REQUEST_FAILED = 105;
+                        LIMIT_REACHED = 106;
+                        NOT_SHAREABLE = 107;
                     }
                 }
             }
@@ -387,6 +396,9 @@ message Rpc {
                         NO_SUCH_SPACE = 101;
                         SPACE_IS_DELETED = 102;
                         REQUEST_FAILED = 103;
+                        LIMIT_REACHED = 104;
+                        NO_SUCH_REQUEST = 105;
+                        NOT_SHAREABLE = 106;
                     }
                 }
             }
@@ -414,6 +426,8 @@ message Rpc {
                         SPACE_IS_DELETED = 102;
                         PARTICIPANT_NOT_FOUND = 103;
                         REQUEST_FAILED = 104;
+                        LIMIT_REACHED = 105;
+                        NOT_SHAREABLE = 106;
                     }
                 }
             }
@@ -440,6 +454,10 @@ message Rpc {
                         NO_SUCH_SPACE = 101;
                         SPACE_IS_DELETED = 102;
                         REQUEST_FAILED = 103;
+                        LIMIT_REACHED = 104;
+                        PARTICIPANT_NOT_FOUND = 105;
+                        INCORRECT_PERMISSIONS = 106;
+                        NOT_SHAREABLE = 107;
                     }
                 }
             }
@@ -465,6 +483,9 @@ message Rpc {
 
                         NO_SUCH_SPACE = 101;
                         SPACE_IS_DELETED = 102;
+                        REQUEST_FAILED = 103;
+                        LIMIT_REACHED = 104;
+                        NOT_SHAREABLE = 105;
                     }
                 }
             }
@@ -1320,6 +1341,7 @@ message Rpc {
 
                         NOT_FOUND = 3;
                         ANYTYPE_NEEDS_UPGRADE = 10; // failed to read unknown data format – need to upgrade anytype
+                        OBJECT_DELETED = 4;
                         // ...
                     }
                 }
@@ -1373,7 +1395,9 @@ message Rpc {
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
                         NOT_FOUND = 3;
+                        OBJECT_DELETED = 4;
                         ANYTYPE_NEEDS_UPGRADE = 10; // failed to read unknown data format – need to upgrade anytype
+
                         // ...
                     }
                 }
@@ -1743,12 +1767,14 @@ message Rpc {
 
         message Graph {
             message Request {
-                string spaceId = 5;
                 repeated anytype.model.Block.Content.Dataview.Filter filters = 1;
                 int32 limit = 2;
                 // additional filter by objectTypes
                 repeated string objectTypeFilter = 3; // DEPRECATED, GO-1926
                 repeated string keys = 4;
+                string spaceId = 5;
+                string collectionId = 6;
+                repeated string setSource = 7;
             }
 
             message Edge {
@@ -6425,6 +6451,7 @@ message Rpc {
 
                         MEMBERSHIP_NOT_FOUND = 6;
                         MEMBERSHIP_WRONG_STATE = 7;
+                        CAN_NOT_CONNECT = 8;
                     }
                 }
             }
@@ -6466,6 +6493,9 @@ message Rpc {
                         NOT_LOGGED_IN = 8;
                         PAYMENT_NODE_ERROR = 9;
                         CACHE_ERROR = 10;
+                        // for some probable future use (if needed)
+                        CAN_NOT_RESERVE = 11;
+                        CAN_NOT_CONNECT = 12;
                     }
                 }
             }
@@ -6515,6 +6545,7 @@ message Rpc {
                         PAYMENT_METHOD_INVALID = 8;
                         BAD_ANYNAME = 9;
                         MEMBERSHIP_ALREADY_EXISTS = 10;
+                        CAN_NOT_CONNECT = 11;
                     }
                 }
             }
@@ -6548,6 +6579,7 @@ message Rpc {
                         NOT_LOGGED_IN = 3;
                         PAYMENT_NODE_ERROR = 4;
                         CACHE_ERROR = 5;
+                        CAN_NOT_CONNECT = 6;
                     }
                 }
             }
@@ -6582,6 +6614,8 @@ message Rpc {
                         MEMBERSHIP_WRONG_STATE = 7;
 
                         BAD_ANYNAME = 8;
+
+                        CAN_NOT_CONNECT = 9;
                     }
                 }
             }
@@ -6611,6 +6645,7 @@ message Rpc {
 
                         NOT_LOGGED_IN = 3;
                         PAYMENT_NODE_ERROR = 4;
+                        CAN_NOT_CONNECT = 12;
                     }
                 }
             }
@@ -6648,7 +6683,8 @@ message Rpc {
                         EMAIL_ALREDY_SENT = 8;
                         EMAIL_FAILED_TO_SEND = 9;
                         
-                        MEMBERSHIP_ALREADY_EXISTS = 10;                        
+                        MEMBERSHIP_ALREADY_EXISTS = 10;  
+                        CAN_NOT_CONNECT = 11;                      
                     }
                 }
             }
@@ -6685,6 +6721,7 @@ message Rpc {
 
                         MEMBERSHIP_NOT_FOUND = 9;
                         MEMBERSHIP_ALREADY_ACTIVE = 10;
+                        CAN_NOT_CONNECT = 11;
                     }
                 }
             }
@@ -6694,33 +6731,32 @@ message Rpc {
         * Tiers can change on the backend so if you want to show users the latest data
         * you can call this method to get the latest tiers
         */
-        message Tiers {
-            message Get {
-                message Request {
-                    // pass true to force the cache update
-                    // by default this is false
-                    bool noCache = 1;
+        message GetTiers {
+            message Request {
+                // pass true to force the cache update
+                // by default this is false
+                bool noCache = 1;
 
-                    string locale = 2;
-                }
-    
-                message Response {
-                    Error error = 1;
-                    repeated anytype.model.MembershipTierData tiers = 2;
+                string locale = 2;
+            }
 
-                    message Error {
-                        Code code = 1;
-                        string description = 2;
+            message Response {
+                Error error = 1;
+                repeated anytype.model.MembershipTierData tiers = 2;
 
-                        enum Code {
-                            NULL = 0;
-                            UNKNOWN_ERROR = 1;
-                            BAD_INPUT = 2;
+                message Error {
+                    Code code = 1;
+                    string description = 2;
 
-                            NOT_LOGGED_IN = 3;
-                            PAYMENT_NODE_ERROR = 4;
-                            CACHE_ERROR = 5;
-                        }
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        NOT_LOGGED_IN = 3;
+                        PAYMENT_NODE_ERROR = 4;
+                        CACHE_ERROR = 5;
+                        CAN_NOT_CONNECT = 6;
                     }
                 }
             }
@@ -6766,6 +6802,7 @@ message Rpc {
                         NULL = 0;
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
+                        CAN_NOT_CONNECT = 3;
                     }
                 }
             }
@@ -6781,8 +6818,10 @@ message Rpc {
 
                 bool found = 2;
                 
-                // including ".any" suffix
-                string fullName = 3;
+                // not including suffix
+                string nsName = 3;
+                
+                anytype.model.NameserviceNameType nsNameType = 4;
 
                 message Error {
                     Code code = 1;
@@ -6792,6 +6831,7 @@ message Rpc {
                         NULL = 0;
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
+                        CAN_NOT_CONNECT = 3;
                     }
                 }
             }
@@ -6807,8 +6847,10 @@ message Rpc {
 
                 bool found = 2;
                 
-                // including ".any" suffix
-                string fullName = 3;
+                // not including suffix
+                string nsName = 3;
+                
+                anytype.model.NameserviceNameType nsNameType = 4;
 
                 message Error {
                     Code code = 1;
@@ -6818,6 +6860,7 @@ message Rpc {
                         NULL = 0;
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
+                        CAN_NOT_CONNECT = 3;
                     }
                 }
             }
@@ -6835,13 +6878,15 @@ message Rpc {
                     // this will use ReverseResolve to get current name
                     // user can buy many names, but
                     // only 1 name can be set as "current": ETH address <-> name
-                    string anyNameAttached = 2;
+                    string nsNameAttached = 2;
+                
+                    anytype.model.NameserviceNameType nsNameType = 3;
 
                     // Number of names that the user can reserve
-                    uint64 namesCountLeft = 3;
+                    uint64 namesCountLeft = 4;
 
                     // Number of operations: update name, add new data, etc
-                    uint64 operationsCountLeft = 4;
+                    uint64 operationsCountLeft = 5;
 
                     // TODO: all operations list
 
@@ -6855,6 +6900,7 @@ message Rpc {
                             BAD_INPUT = 2;
                             NOT_LOGGED_IN = 3;
                             BAD_NAME_RESOLVE = 4;
+                            CAN_NOT_CONNECT = 5;
                         }
                     }
                 }

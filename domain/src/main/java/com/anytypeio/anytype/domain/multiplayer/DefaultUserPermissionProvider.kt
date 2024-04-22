@@ -53,6 +53,9 @@ class DefaultUserPermissionProvider @Inject constructor(
     private val logger: Logger
 ) : UserPermissionProvider {
 
+    /**
+     * User-as-member in all available spaces
+     */
     private val members = MutableStateFlow<List<ObjectWrapper.SpaceMember>>(emptyList())
     private val jobs = mutableListOf<Job>()
 

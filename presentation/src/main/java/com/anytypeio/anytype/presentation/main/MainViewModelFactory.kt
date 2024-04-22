@@ -10,12 +10,13 @@ import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
-import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
+import com.anytypeio.anytype.presentation.notifications.NotificationActionDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
 import javax.inject.Inject
 
@@ -34,7 +35,8 @@ class MainViewModelFactory @Inject constructor(
     private val localeProvider: LocaleProvider,
     private val userPermissionProvider: UserPermissionProvider,
     private val notificationsProvider: NotificationsProvider,
-    private val membershipProvider: MembershipProvider
+    private val notificator: SystemNotificationService,
+    private val notificationActionDelegate: NotificationActionDelegate
     ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -54,6 +56,7 @@ class MainViewModelFactory @Inject constructor(
         localeProvider = localeProvider,
         userPermissionProvider = userPermissionProvider,
         notificationsProvider = notificationsProvider,
-        membershipProvider = membershipProvider
+        notificator = notificator,
+        notificationActionDelegate = notificationActionDelegate
     ) as T
 }

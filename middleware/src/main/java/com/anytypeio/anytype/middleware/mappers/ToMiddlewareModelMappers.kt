@@ -524,7 +524,7 @@ fun NameServiceNameType.toMw(): MNameServiceNameType = when (this) {
 
 fun MembershipPaymentMethod.toMw(): MMembershipPaymentMethod = when (this) {
     MembershipPaymentMethod.METHOD_NONE -> MMembershipPaymentMethod.MethodNone
-    MembershipPaymentMethod.METHOD_CARD -> MMembershipPaymentMethod.MethodCard
+    MembershipPaymentMethod.METHOD_STRIPE -> MMembershipPaymentMethod.MethodStripe
     MembershipPaymentMethod.METHOD_CRYPTO -> MMembershipPaymentMethod.MethodCrypto
     MembershipPaymentMethod.METHOD_INAPP_APPLE -> MMembershipPaymentMethod.MethodInappApple
     MembershipPaymentMethod.METHOD_INAPP_GOOGLE -> MMembershipPaymentMethod.MethodInappGoogle

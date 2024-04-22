@@ -67,6 +67,7 @@ import com.anytypeio.anytype.presentation.extension.sendEditWidgetsEvent
 import com.anytypeio.anytype.presentation.extension.sendReorderWidgetEvent
 import com.anytypeio.anytype.presentation.extension.sendSelectHomeTabEvent
 import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companion.UNDEFINED_LAYOUT_CODE
+import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
@@ -163,12 +164,14 @@ class HomeScreenViewModel(
     private val getSpaceView: GetSpaceView,
     private val searchObjects: SearchObjects,
     private val getPinnedObjectTypes: GetPinnedObjectTypes,
-    private val userPermissionProvider: UserPermissionProvider
+    private val userPermissionProvider: UserPermissionProvider,
+    private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
     WidgetSessionStateHolder by widgetSessionStateHolder,
     CollapsedWidgetStateHolder by collapsedWidgetStateHolder,
+    DeepLinkToObjectDelegate by deepLinkToObjectDelegate,
     Unsubscriber by unsubscriber {
 
     private val jobs = mutableListOf<Job>()
@@ -1131,6 +1134,23 @@ class HomeScreenViewModel(
                     sendToast("Could not resolve deeplink")
                 }
             }
+            is DeepLinkResolver.Action.DeepLinkToObject -> {
+                viewModelScope.launch {
+                    val result = onDeepLinkToObject(
+                        obj = deeplink.obj,
+                        space = deeplink.space,
+                        switchSpaceIfObjectFound = true
+                    )
+                    when(result) {
+                        is DeepLinkToObjectDelegate.Result.Error -> {
+                            commands.emit(Command.Deeplink.DeepLinkToObjectNotWorking)
+                        }
+                        is DeepLinkToObjectDelegate.Result.Success -> {
+                            proceedWithNavigation(result.obj.navigation())
+                        }
+                    }
+                }
+            }
             else -> {
                 Timber.d("No deep link")
             }
@@ -1162,7 +1182,11 @@ class HomeScreenViewModel(
     }
 
     private fun proceedWithOpeningObject(obj: ObjectWrapper.Basic) {
-        when(val navigation = obj.navigation()) {
+        proceedWithNavigation(obj.navigation())
+    }
+
+    private fun proceedWithNavigation(navigation: OpenObjectNavigation) {
+        when(navigation) {
             is OpenObjectNavigation.OpenDataView -> {
                 navigate(
                     Navigation.OpenSet(
@@ -1473,7 +1497,7 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onSpaceShareIconClicked(spaceView: ObjectWrapper.Basic) {
+    fun onSpaceShareIconClicked(spaceView: ObjectWrapper.SpaceView) {
         viewModelScope.launch {
             val space = spaceView.targetSpaceId
             if (space != null) {
@@ -1552,7 +1576,8 @@ class HomeScreenViewModel(
         private val getSpaceView: GetSpaceView,
         private val searchObjects: SearchObjects,
         private val getPinnedObjectTypes: GetPinnedObjectTypes,
-        private val userPermissionProvider: UserPermissionProvider
+        private val userPermissionProvider: UserPermissionProvider,
+        private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -1590,7 +1615,8 @@ class HomeScreenViewModel(
             getSpaceView = getSpaceView,
             searchObjects = searchObjects,
             getPinnedObjectTypes = getPinnedObjectTypes,
-            userPermissionProvider = userPermissionProvider
+            userPermissionProvider = userPermissionProvider,
+            deepLinkToObjectDelegate = deepLinkToObjectDelegate
         ) as T
     }
 
@@ -1607,16 +1633,16 @@ class HomeScreenViewModel(
  * State representing session while working with an object.
  */
 sealed class ObjectViewState {
-    object Idle : ObjectViewState()
-    object Loading : ObjectViewState()
+    data object Idle : ObjectViewState()
+    data object Loading : ObjectViewState()
     data class Success(val obj: ObjectView) : ObjectViewState()
     data class Failure(val e: Throwable) : ObjectViewState()
 }
 
 sealed class InteractionMode {
-    object Default : InteractionMode()
-    object Edit : InteractionMode()
-    object ReadOnly: InteractionMode()
+    data object Default : InteractionMode()
+    data object Edit : InteractionMode()
+    data object ReadOnly: InteractionMode()
 }
 
 sealed class Command {
@@ -1669,7 +1695,8 @@ sealed class Command {
     data class ShareSpace(val space: SpaceId) : Command()
 
     sealed class Deeplink : Command() {
-        object CannotImportExperience : Deeplink()
+        data object DeepLinkToObjectNotWorking: Deeplink()
+        data object CannotImportExperience : Deeplink()
         data class Invite(val link: String) : Deeplink()
         data class GalleryInstallation(
             val deepLinkType: String,

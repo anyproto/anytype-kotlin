@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.NEARBY_WIFI_DEVICES"
         android:usesPermissionFlags="neverForLocation" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
@@ -59,6 +60,13 @@
                 <data android:scheme="anytype"
                     android:host="invite" />
             </intent-filter>
+            <intent-filter android:label="Anytype DEEP LINK to an object">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="anytype"
+                    android:host="object" />
+            </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -106,7 +114,6 @@
         <meta-data
             android:name="io.sentry.dsn"
             android:value="@string/SENTRY_DSN" />
-
     </application>
 
 </manifest>

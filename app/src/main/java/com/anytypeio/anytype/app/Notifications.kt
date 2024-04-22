@@ -16,16 +16,45 @@ import com.anytypeio.anytype.ui.main.MainActivity
 import javax.inject.Inject
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import timber.log.Timber
 
 class AnytypeNotificationService @Inject constructor(
     private val context: Context
 ) : SystemNotificationService {
 
+    private var pending: Notification? = null
+
+    private val mutex = Mutex()
+
     private val notificationManager = context.getSystemService(NotificationManager::class.java)
 
     override val areNotificationsEnabled: Boolean
         get() = notificationManager.areNotificationsEnabled()
+
+    override suspend fun setPendingNotification(notification: Notification) {
+        mutex.withLock {
+            pending = notification
+        }
+    }
+
+    override suspend fun clearPendingNotification() {
+        mutex.withLock {
+            pending = null
+        }
+    }
+
+    override suspend fun notifyIfPending() {
+        mutex.withLock {
+            val notification = pending
+            if (notification != null) {
+                notify(notification).also {
+                    pending = null
+                }
+            }
+        }
+    }
 
     override fun notify(
         notification: Notification

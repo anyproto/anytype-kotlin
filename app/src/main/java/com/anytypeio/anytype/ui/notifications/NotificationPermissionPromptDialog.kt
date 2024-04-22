@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.ui.notifications
 
 import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -31,14 +32,16 @@ class NotificationPermissionPromptDialog : BaseBottomSheetComposeFragment() {
                     ActivityResultContracts.RequestPermission()
                 ) { isGranted: Boolean ->
                     Timber.d("Permission granted: $isGranted")
-                    if (isGranted) {
-                        dismiss()
-                    } else {
-                        dismiss()
-                    }
+                    activity?.onRequestPermissionsResult(
+                        1,
+                        arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                        if (isGranted)
+                            intArrayOf(PackageManager.PERMISSION_GRANTED)
+                        else
+                            intArrayOf(PackageManager.PERMISSION_DENIED)
+                    )
+                    dismiss()
                 }
-
-
                 MaterialTheme(typography = typography) {
                     Prompt(
                         title = stringResource(R.string.notifications_prompt_get_notified),
@@ -46,9 +49,7 @@ class NotificationPermissionPromptDialog : BaseBottomSheetComposeFragment() {
                         primaryButtonText = stringResource(R.string.notifications_prompt_primary_button_text),
                         secondaryButtonText = stringResource(R.string.notifications_prompt_secondary_button_text),
                         onPrimaryButtonClicked = {
-                            launcher.launch(
-                                Manifest.permission.POST_NOTIFICATIONS
-                            )
+                            launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
                         },
                         onSecondaryButtonClicked = {
                             dismiss()

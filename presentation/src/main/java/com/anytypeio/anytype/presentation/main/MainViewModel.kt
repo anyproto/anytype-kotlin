@@ -111,16 +111,24 @@ class MainViewModel(
                 if (notificator.areNotificationsEnabled) {
                     notificator.notify(notification)
                 } else {
-                    commands.emit(
-                        Command.Notifications
-                    )
+                    commands.emit(Command.RequestNotificationPermission).also {
+                        notificator.setPendingNotification(notification)
+                    }
                 }
             }
         }
     }
 
     fun onNotificationPermissionGranted() {
+        viewModelScope.launch {
+            notificator.notifyIfPending()
+        }
+    }
 
+    fun onNotificationPermissionDenied() {
+        viewModelScope.launch {
+            notificator.notifyIfPending()
+        }
     }
 
     private fun proceedWithLogoutDueToAccountDeletion() {

@@ -1187,7 +1187,7 @@
     <string name="multiplayer_notification_member_permission_change_read">Se han cambiado tus derechos de acceso a solo lectura en el espacio %1$s.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Se han cambiado tus derechos de acceso para editar en el espacio %1$s.</string>
     <string name="multiplayer_notification_member_join_request_declined">Tu solicitud para unirte al espacio %1$s ha sido rechazada.</string>
-    <string name="multiplayer_notification_request_declined">Request declined</string>
+    <string name="multiplayer_notification_request_declined">Solicitud declinada</string>
     <string name="multiplayer_notification_view_request">Ver</string>
     <string name="multiplayer_notification_go_to_space">Ir al espacio</string>
     <string name="multiplayer_toast_permission_not_allowed">No está permitido cambiar permisos</string>

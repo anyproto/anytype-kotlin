@@ -319,6 +319,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         }
     }
 
+    /**
+     * Main activity is responsible only for checking new deep links.
+     * Launch deep links are handled by SplashFragment.
+     */
     private fun proceedWithShareIntent(intent: Intent, checkDeepLink: Boolean = false) {
         if (BuildConfig.DEBUG) Timber.d("Proceeding with share intent: $intent")
         when {

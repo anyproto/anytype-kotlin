@@ -1154,7 +1154,7 @@
     <string name="multiplayer_space_stop_sharing_space_description">Los miembros ya no se sincronizarán con este espacio y el enlace compartido se desactivará.</string>
     <string name="multiplayer_more_info">More info</string>
     <string name="multiplayer_sharing">Compartir</string>
-    <string name="multiplayer_space_type">Tipo de espacio</string>
+    <string name="multiplayer_space_type">Tipo</string>
     <string name="multiplayer_share">Compartir</string>
     <string name="multiplayer_manage">Organizar</string>
     <string name="multiplayer_leave_space">Abandonar espacio</string>

@@ -3,6 +3,7 @@ package com.anytypeio.anytype.domain.multiplayer
 import app.cash.turbine.test
 import com.anytypeio.anytype.core_models.StubSpaceView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import kotlin.test.assertEquals
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -37,6 +38,11 @@ class SpaceViewSubscriptionContainerTest {
             spaceAccessType = SpaceAccessType.PRIVATE
         )
 
+        val permissions = mapOf(
+            defaultSpaceView.targetSpaceId!! to SpaceMemberPermissions.OWNER,
+            privateSpaceView.targetSpaceId!! to SpaceMemberPermissions.OWNER
+        )
+
         container.stub {
             on {
                 observe()
@@ -45,7 +51,7 @@ class SpaceViewSubscriptionContainerTest {
             )
         }
 
-        container.isSharingLimitReached().test {
+        container.isSharingLimitReached(flowOf(permissions)).test {
             val result = awaitItem()
             assertEquals(
                 expected = true,
@@ -68,6 +74,11 @@ class SpaceViewSubscriptionContainerTest {
             spaceAccessType = SpaceAccessType.PRIVATE
         )
 
+        val permissions = mapOf(
+            defaultSpaceView.targetSpaceId!! to SpaceMemberPermissions.OWNER,
+            privateSpaceView.targetSpaceId!! to SpaceMemberPermissions.OWNER
+        )
+
         container.stub {
             on {
                 observe()
@@ -76,7 +87,7 @@ class SpaceViewSubscriptionContainerTest {
             )
         }
 
-        container.isSharingLimitReached().test {
+        container.isSharingLimitReached(flowOf(permissions)).test {
             val result = awaitItem()
             assertEquals(
                 expected = false,
@@ -87,27 +98,32 @@ class SpaceViewSubscriptionContainerTest {
     }
 
     @Test
-    fun `should reach limit if limit is 1 and there is one shared space already`() = runTest {
+    fun `should reach limit if limit is 1 and there is one shared space already where user is owner`() = runTest {
 
         val defaultSpaceView = StubSpaceView(
             sharedSpaceLimit = 1,
             spaceAccessType = SpaceAccessType.DEFAULT
         )
 
-        val privateSpaceView = StubSpaceView(
+        val sharedSpaceView = StubSpaceView(
             sharedSpaceLimit = 0,
             spaceAccessType = SpaceAccessType.SHARED
+        )
+
+        val permissions = mapOf(
+            defaultSpaceView.targetSpaceId!! to SpaceMemberPermissions.OWNER,
+            sharedSpaceView.targetSpaceId!! to SpaceMemberPermissions.OWNER
         )
 
         container.stub {
             on {
                 observe()
             } doReturn flowOf(
-                listOf(defaultSpaceView, privateSpaceView)
+                listOf(defaultSpaceView, sharedSpaceView)
             )
         }
 
-        container.isSharingLimitReached().test {
+        container.isSharingLimitReached(flowOf(permissions)).test {
             val result = awaitItem()
             assertEquals(
                 expected = true,
@@ -118,7 +134,43 @@ class SpaceViewSubscriptionContainerTest {
     }
 
     @Test
-    fun `should not reach limit if limit is 2 and there is one shared space already`() = runTest {
+    fun `should not reach limit if limit is 1 and there is one shared space already where user is owner`() = runTest {
+
+        val defaultSpaceView = StubSpaceView(
+            sharedSpaceLimit = 1,
+            spaceAccessType = SpaceAccessType.DEFAULT
+        )
+
+        val sharedSpaceView = StubSpaceView(
+            sharedSpaceLimit = 0,
+            spaceAccessType = SpaceAccessType.SHARED
+        )
+
+        val permissions = mapOf(
+            defaultSpaceView.targetSpaceId!! to SpaceMemberPermissions.OWNER,
+            sharedSpaceView.targetSpaceId!! to SpaceMemberPermissions.READER
+        )
+
+        container.stub {
+            on {
+                observe()
+            } doReturn flowOf(
+                listOf(defaultSpaceView, sharedSpaceView)
+            )
+        }
+
+        container.isSharingLimitReached(flowOf(permissions)).test {
+            val result = awaitItem()
+            assertEquals(
+                expected = false,
+                actual = result
+            )
+            awaitComplete()
+        }
+    }
+
+    @Test
+    fun `should not reach limit if limit is 2 and there is one shared space already where user is owner`() = runTest {
 
         val defaultSpaceView = StubSpaceView(
             sharedSpaceLimit = 2,
@@ -130,6 +182,11 @@ class SpaceViewSubscriptionContainerTest {
             spaceAccessType = SpaceAccessType.SHARED
         )
 
+        val permissions = mapOf(
+            defaultSpaceView.targetSpaceId!! to SpaceMemberPermissions.OWNER,
+            privateSpaceView.targetSpaceId!! to SpaceMemberPermissions.OWNER
+        )
+
         container.stub {
             on {
                 observe()
@@ -138,7 +195,7 @@ class SpaceViewSubscriptionContainerTest {
             )
         }
 
-        container.isSharingLimitReached().test {
+        container.isSharingLimitReached(flowOf(permissions)).test {
             val result = awaitItem()
             assertEquals(
                 expected = false,
@@ -161,6 +218,11 @@ class SpaceViewSubscriptionContainerTest {
             spaceAccessType = SpaceAccessType.PRIVATE
         )
 
+        val permissions = mapOf(
+            defaultSpaceView.targetSpaceId!! to SpaceMemberPermissions.OWNER,
+            privateSpaceView.targetSpaceId!! to SpaceMemberPermissions.OWNER
+        )
+
         container.stub {
             on {
                 observe()
@@ -169,7 +231,7 @@ class SpaceViewSubscriptionContainerTest {
             )
         }
 
-        container.isSharingLimitReached().test {
+        container.isSharingLimitReached(flowOf(permissions)).test {
             val result = awaitItem()
             assertEquals(
                 expected = true,

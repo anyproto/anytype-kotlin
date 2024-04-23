@@ -2,6 +2,7 @@ package com.anytypeio.anytype.domain.multiplayer
 
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
@@ -43,6 +44,11 @@ interface UserPermissionProvider  {
      * @return [SpaceMemberPermissions] for [space] or null if user permission could not be defined.
      */
     fun observe(space: SpaceId) : Flow<SpaceMemberPermissions?>
+
+    /**
+     * Provide all space members (including permissions info) representing this user in all available spaces
+     */
+    fun all() : Flow<Map<Id, SpaceMemberPermissions>>
 }
 
 class DefaultUserPermissionProvider @Inject constructor(
@@ -103,6 +109,16 @@ class DefaultUserPermissionProvider @Inject constructor(
                 members.value = results.map {
                     ObjectWrapper.SpaceMember(it.map)
                 }
+            }
+        }
+    }
+
+    override fun all(): Flow<Map<Id, SpaceMemberPermissions>> {
+        return members.map { all ->
+            all.associate { member ->
+                val space = member.spaceId.orEmpty()
+                val permissions = member.permissions ?: SpaceMemberPermissions.NO_PERMISSIONS
+                space to permissions
             }
         }
     }

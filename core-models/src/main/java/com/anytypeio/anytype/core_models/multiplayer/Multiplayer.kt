@@ -6,7 +6,7 @@ data class SpaceInviteLink(
     val fileKey: String,
     val contentId: String
 ) {
-    val scheme = "anytype://invite/?cid=$contentId&key=$fileKey"
+    val scheme = "https://invite.any.coop/$contentId#$fileKey"
 }
 
 data class SpaceInviteView(

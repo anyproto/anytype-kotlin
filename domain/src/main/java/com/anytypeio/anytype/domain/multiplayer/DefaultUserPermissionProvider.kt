@@ -116,8 +116,10 @@ class DefaultUserPermissionProvider @Inject constructor(
 
     override fun all(): Flow<Map<Id, SpaceMemberPermissions>> {
         return members.map { all ->
-            all.associate { member ->
-                val space = member.spaceId.orEmpty()
+            all.filter { member ->
+                !member.spaceId.isNullOrEmpty()
+            }.associate { member ->
+                val space = requireNotNull(member.spaceId)
                 val permissions = member.permissions ?: SpaceMemberPermissions.NO_PERMISSIONS
                 space to permissions
             }

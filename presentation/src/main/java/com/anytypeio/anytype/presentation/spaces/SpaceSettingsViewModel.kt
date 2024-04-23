@@ -86,7 +86,7 @@ class SpaceSettingsViewModel(
                 } else {
                     null
                 }
-                val createdBy = spaceMember?.globalName?.ifEmpty { spaceMember.identity }
+                val createdBy = spaceMember?.globalName?.takeIf { it.isNotEmpty() } ?: spaceMember?.identity
                 SpaceData(
                     name = spaceView.name.orEmpty(),
                     icon = spaceView.spaceIcon(

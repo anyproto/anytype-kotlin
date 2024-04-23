@@ -1150,7 +1150,7 @@
     <string name="multiplayer_space_stop_sharing_space_description">Anggota tidak akan lagi menyinkronkan ruang ini dan tautan pembagian akan dinonaktifkan.</string>
     <string name="multiplayer_more_info">Lebih lanjut</string>
     <string name="multiplayer_sharing">Berbagi</string>
-    <string name="multiplayer_space_type">Tipe ruang</string>
+    <string name="multiplayer_space_type">Tipe</string>
     <string name="multiplayer_share">Bagikan</string>
     <string name="multiplayer_manage">Kelola</string>
     <string name="multiplayer_leave_space">Tinggalkan ruang</string>

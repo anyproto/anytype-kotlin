@@ -37,35 +37,47 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <intent-filter android:label="filter">
+            <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data
-                    android:host="https://anytype.io"
-                    android:pathPrefix="/main"
-                    android:scheme="http" />
+                <data android:scheme="https" />
+                <data android:scheme="http" />
+                <data android:host="anytype.io" />
+                <data android:pathPrefix="/main" />
             </intent-filter>
-            <intent-filter android:label="Anytype DEEP LINK">
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="anytype"
-                    android:host="main" />
+                <data android:scheme="anytype" />
+                <data android:host="main" />
             </intent-filter>
-            <intent-filter android:label="Anytype DEEP LINK for invites">
+            <intent-filter android:label="Anytype Invite" android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="anytype"
-                    android:host="invite" />
+                <data android:scheme="https"/>
+                <data android:scheme="http"/>
+                <data android:host="invite.any.coop" />
             </intent-filter>
-            <intent-filter android:label="Anytype DEEP LINK to an object">
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="anytype"
-                    android:host="object" />
+
+                <data android:scheme="anytype" />
+                <data android:host="invite" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="anytype" />
+                <data android:host="object" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />

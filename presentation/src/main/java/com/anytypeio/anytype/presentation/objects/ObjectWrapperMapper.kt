@@ -17,14 +17,12 @@ import com.anytypeio.anytype.presentation.linking.LinkToItemView
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
-import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView
 
 @Deprecated("To be deleted")
 fun List<ObjectWrapper.Basic>.toView(
     urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectWrapper.Type>,
-    gradientProvider: SpaceGradientProvider = SpaceGradientProvider.Default
+    objectTypes: List<ObjectWrapper.Type>
 ): List<DefaultObjectView> =
     this.map { obj ->
         val typeUrl = obj.getProperType()
@@ -50,16 +48,14 @@ fun List<ObjectWrapper.Basic>.toView(
 
 fun List<ObjectWrapper.Basic>.toViews(
     urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectWrapper.Type>,
-    gradientProvider: SpaceGradientProvider = SpaceGradientProvider.Default
+    objectTypes: List<ObjectWrapper.Type>
 ): List<DefaultObjectView> = map { obj ->
-    obj.toView(urlBuilder, objectTypes, gradientProvider)
+    obj.toView(urlBuilder, objectTypes)
 }
 
 fun ObjectWrapper.Basic.toView(
     urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectWrapper.Type>,
-    gradientProvider: SpaceGradientProvider = SpaceGradientProvider.Default
+    objectTypes: List<ObjectWrapper.Type>
 ): DefaultObjectView {
     val obj = this
     val typeUrl = obj.getProperType()
@@ -81,8 +77,7 @@ fun ObjectWrapper.Basic.toView(
         icon = ObjectIcon.from(
             obj = obj,
             layout = layout,
-            builder = urlBuilder,
-            gradientProvider = gradientProvider
+            builder = urlBuilder
         ),
         lastModifiedDate = DateParser.parseInMillis(obj.lastModifiedDate) ?: 0L,
         lastOpenedDate = DateParser.parseInMillis(obj.lastOpenedDate) ?: 0L,
@@ -92,8 +87,7 @@ fun ObjectWrapper.Basic.toView(
 }
 
 fun List<ObjectWrapper.Basic>.toLibraryViews(
-    urlBuilder: UrlBuilder,
-    gradientProvider: SpaceGradientProvider = SpaceGradientProvider.Default,
+    urlBuilder: UrlBuilder
 ): List<LibraryView> = map { obj ->
     val space = obj.getValue<Id?>(Relations.SPACE_ID)
     when (obj.layout) {
@@ -105,8 +99,7 @@ fun List<ObjectWrapper.Basic>.toLibraryViews(
                     icon = ObjectIcon.from(
                         obj = obj,
                         layout = obj.getProperLayout(),
-                        builder = urlBuilder,
-                        gradientProvider = gradientProvider
+                        builder = urlBuilder
                     ),
                     uniqueKey = obj.uniqueKey
                 )
@@ -117,8 +110,7 @@ fun List<ObjectWrapper.Basic>.toLibraryViews(
                     icon = ObjectIcon.from(
                         obj = obj,
                         layout = obj.getProperLayout(),
-                        builder = urlBuilder,
-                    gradientProvider = gradientProvider
+                        builder = urlBuilder
                     ),
                     sourceObject = obj.map[SOURCE_OBJECT]?.toString(),
                     uniqueKey = obj.uniqueKey,
@@ -155,8 +147,7 @@ fun List<ObjectWrapper.Basic>.toLibraryViews(
 
 fun List<ObjectWrapper.Basic>.toLinkToView(
     urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectWrapper.Type>,
-    gradientProvider: SpaceGradientProvider = SpaceGradientProvider.Default,
+    objectTypes: List<ObjectWrapper.Type>
 ): List<LinkToItemView.Object> =
     this.mapIndexed { index, obj ->
         val typeUrl = obj.getProperType()
@@ -170,8 +161,7 @@ fun List<ObjectWrapper.Basic>.toLinkToView(
             icon = ObjectIcon.from(
                 obj = obj,
                 layout = layout,
-                builder = urlBuilder,
-                gradientProvider = gradientProvider
+                builder = urlBuilder
             ),
             position = index
         )
@@ -179,7 +169,6 @@ fun List<ObjectWrapper.Basic>.toLinkToView(
 
 fun ObjectWrapper.Basic.toLinkToObjectView(
     urlBuilder: UrlBuilder,
-    gradientProvider: SpaceGradientProvider = SpaceGradientProvider.Default,
     objectTypes: List<ObjectWrapper.Type>
 ): LinkToItemView.LinkedTo.Object {
     val typeUrl = this.getProperType()
@@ -193,8 +182,7 @@ fun ObjectWrapper.Basic.toLinkToObjectView(
         icon = ObjectIcon.from(
             obj = this,
             layout = layout,
-            builder = urlBuilder,
-            gradientProvider = gradientProvider
+            builder = urlBuilder
         )
     )
 }
@@ -202,8 +190,7 @@ fun ObjectWrapper.Basic.toLinkToObjectView(
 fun List<ObjectWrapper.Basic>.toCreateFilterObjectView(
     ids: List<*>? = null,
     urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectWrapper.Type>,
-    gradientProvider: SpaceGradientProvider = SpaceGradientProvider.Default,
+    objectTypes: List<ObjectWrapper.Type>
 ): List<CreateFilterView.Object> =
     this.map { obj ->
         CreateFilterView.Object(
@@ -217,7 +204,6 @@ fun List<ObjectWrapper.Basic>.toCreateFilterObjectView(
                 obj = obj,
                 layout = obj.getProperLayout(),
                 builder = urlBuilder,
-                gradientProvider = gradientProvider
             ),
             isSelected = ids?.contains(obj.id) ?: false
         )
@@ -226,8 +212,7 @@ fun List<ObjectWrapper.Basic>.toCreateFilterObjectView(
 fun List<ObjectWrapper.Basic>.toRelationObjectValueView(
     excluded: List<Id>,
     urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectWrapper.Type>,
-    gradientProvider: SpaceGradientProvider = SpaceGradientProvider.Default
+    objectTypes: List<ObjectWrapper.Type>
 ): List<RelationValueView.Object> =
     this.mapNotNull { obj ->
         val typeUrl = obj.getProperType()
@@ -248,7 +233,6 @@ fun List<ObjectWrapper.Basic>.toRelationObjectValueView(
                         obj = obj,
                         layout = layout,
                         builder = urlBuilder,
-                        gradientProvider = gradientProvider
                     ),
                     isSelected = false,
                     removable = false

@@ -244,8 +244,7 @@ class TreeWidgetContainer(
                             currentLinkPath = currentLinkPath
                         ),
                         objectIcon = obj.widgetElementIcon(
-                            builder = urlBuilder,
-                            gradientProvider = spaceGradientProvider
+                            builder = urlBuilder
                         ),
                         indent = level,
                         obj = obj,

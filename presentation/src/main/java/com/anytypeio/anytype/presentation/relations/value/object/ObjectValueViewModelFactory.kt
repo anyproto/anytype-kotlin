@@ -28,7 +28,6 @@ class ObjectValueViewModelFactory @Inject constructor(
     private val objectSearch: SearchObjects,
     private val urlBuilder: UrlBuilder,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val gradientProvider: SpaceGradientProvider,
     private val objectListIsArchived: SetObjectListIsArchived,
     private val duplicateObject: DuplicateObject,
 ) : ViewModelProvider.Factory {
@@ -46,7 +45,6 @@ class ObjectValueViewModelFactory @Inject constructor(
         objectSearch = objectSearch,
         urlBuilder = urlBuilder,
         storeOfObjectTypes = storeOfObjectTypes,
-        gradientProvider = gradientProvider,
         objectListIsArchived = objectListIsArchived,
         duplicateObject = duplicateObject
     ) as T

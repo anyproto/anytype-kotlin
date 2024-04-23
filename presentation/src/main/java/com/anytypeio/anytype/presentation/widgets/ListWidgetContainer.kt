@@ -118,8 +118,7 @@ class ListWidgetContainer(
             WidgetView.ListOfObjects.Element(
                 obj = obj,
                 objectIcon = obj.widgetElementIcon(
-                    builder = urlBuilder,
-                    gradientProvider = spaceGradientProvider
+                    builder = urlBuilder
                 )
             )
         },

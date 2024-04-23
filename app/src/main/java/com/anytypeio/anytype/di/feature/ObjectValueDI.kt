@@ -72,7 +72,6 @@ object ObjectValueObjectModule {
         objectSearch: SearchObjects,
         urlBuilder: UrlBuilder,
         storeOfObjectTypes: StoreOfObjectTypes,
-        gradientProvider: SpaceGradientProvider,
         objectListIsArchived: SetObjectListIsArchived,
         duplicateObject: DuplicateObject
     ): ObjectValueViewModelFactory = ObjectValueViewModelFactory(
@@ -86,7 +85,6 @@ object ObjectValueObjectModule {
         objectSearch = objectSearch,
         urlBuilder = urlBuilder,
         storeOfObjectTypes = storeOfObjectTypes,
-        gradientProvider = gradientProvider,
         objectListIsArchived = objectListIsArchived,
         duplicateObject = duplicateObject
     )
@@ -132,7 +130,6 @@ object ObjectValueSetModule {
         objectSearch: SearchObjects,
         urlBuilder: UrlBuilder,
         storeOfObjectTypes: StoreOfObjectTypes,
-        gradientProvider: SpaceGradientProvider,
         objectListIsArchived: SetObjectListIsArchived,
         duplicateObject: DuplicateObject
     ): ObjectValueViewModelFactory = ObjectValueViewModelFactory(
@@ -146,7 +143,6 @@ object ObjectValueSetModule {
         objectSearch = objectSearch,
         urlBuilder = urlBuilder,
         storeOfObjectTypes = storeOfObjectTypes,
-        gradientProvider = gradientProvider,
         objectListIsArchived = objectListIsArchived,
         duplicateObject = duplicateObject
     )
@@ -192,7 +188,6 @@ object ObjectValueDataViewModule {
         objectSearch: SearchObjects,
         urlBuilder: UrlBuilder,
         storeOfObjectTypes: StoreOfObjectTypes,
-        gradientProvider: SpaceGradientProvider,
         objectListIsArchived: SetObjectListIsArchived,
         duplicateObject: DuplicateObject
     ): ObjectValueViewModelFactory = ObjectValueViewModelFactory(
@@ -206,7 +201,6 @@ object ObjectValueDataViewModule {
         objectSearch = objectSearch,
         urlBuilder = urlBuilder,
         storeOfObjectTypes = storeOfObjectTypes,
-        gradientProvider = gradientProvider,
         objectListIsArchived = objectListIsArchived,
         duplicateObject = duplicateObject
     )

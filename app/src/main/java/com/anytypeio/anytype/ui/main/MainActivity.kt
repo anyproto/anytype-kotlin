@@ -36,7 +36,6 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.theme.GetTheme
 import com.anytypeio.anytype.middleware.discovery.MDNSProvider
 import com.anytypeio.anytype.navigation.Navigator
-import com.anytypeio.anytype.other.DEEP_LINK_PATTERN
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
@@ -296,7 +295,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
             when(intent.action) {
                 Intent.ACTION_VIEW -> {
                     val data = intent.dataString
-                    if (data != null && data.contains(DEEP_LINK_PATTERN)) {
+                    if (data != null && DefaultDeepLinkResolver.isDeepLink(data)) {
                         vm.onNewDeepLink(DefaultDeepLinkResolver.resolve(data))
                     } else {
                         intent.extras?.getString(DefaultAppActionManager.ACTION_CREATE_NEW_TYPE_KEY)?.let {
@@ -330,7 +329,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
             intent.type == Mimetype.MIME_TEXT_PLAIN.value -> {
                 val raw = intent.getStringExtra(Intent.EXTRA_TEXT)
                 if (raw != null) {
-                    if (checkDeepLink && raw.contains(DEEP_LINK_PATTERN)) {
+                    if (checkDeepLink && DefaultDeepLinkResolver.isDeepLink(raw)) {
                         vm.onNewDeepLink(DefaultDeepLinkResolver.resolve(raw))
                     } else if (raw.isNotEmpty()) {
                         vm.onIntentTextShare(raw)

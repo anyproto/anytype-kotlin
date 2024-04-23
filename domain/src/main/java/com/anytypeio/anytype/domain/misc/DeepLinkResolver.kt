@@ -10,6 +10,8 @@ interface DeepLinkResolver {
 
     fun createObjectDeepLink(obj: Id, space: SpaceId) : Url
 
+    fun isDeepLink(link: String) : Boolean
+
     sealed class Action {
         data object Unknown : Action()
         sealed class Import : Action() {

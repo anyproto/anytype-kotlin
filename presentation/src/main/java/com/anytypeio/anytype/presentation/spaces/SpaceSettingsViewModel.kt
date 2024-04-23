@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsDictionary.screenLeaveSpace
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
@@ -163,13 +164,14 @@ class SpaceSettingsViewModel(
             if (state is ViewState.Success) {
                 if (state.data.permissions.isOwnerOrEditor()) {
                     commands.emit(Command.ShowDeleteSpaceWarning)
+                    analytics.sendEvent(
+                        eventName = EventsDictionary.clickDeleteSpace,
+                        props = Props(mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.settings))
+                    )
                 } else {
                     commands.emit(Command.ShowLeaveSpaceWarning)
+                    analytics.sendEvent(eventName = screenLeaveSpace)
                 }
-                analytics.sendEvent(
-                    eventName = EventsDictionary.clickDeleteSpace,
-                    props = Props(mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.settings))
-                )
             }
         }
     }
@@ -197,6 +199,13 @@ class SpaceSettingsViewModel(
                     )
                 )
             )
+        }
+        proceedWithSpaceDeletion()
+    }
+
+    fun onLeaveSpaceAcceptedClicked() {
+        viewModelScope.launch {
+            analytics.sendEvent(eventName = EventsDictionary.leaveSpace)
         }
         proceedWithSpaceDeletion()
     }

@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_ui.notifications.NotificationsScreen
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
@@ -64,7 +65,8 @@ class NotificationsFragment : BaseBottomSheetComposeFragment() {
                             R.id.spaceJoinRequestScreen,
                             SpaceJoinRequestFragment.args(
                                 space = command.space,
-                                member = command.member
+                                member = command.member,
+                                route = EventsDictionary.Routes.notification
                             )
                         )
                     }.onFailure {

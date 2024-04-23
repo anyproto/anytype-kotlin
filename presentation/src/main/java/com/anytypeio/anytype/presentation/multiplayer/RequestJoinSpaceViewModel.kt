@@ -3,6 +3,10 @@ package com.anytypeio.anytype.presentation.multiplayer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary.screenInviteRequest
+import com.anytypeio.anytype.analytics.base.EventsDictionary.screenRequestSent
+import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteError
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -30,7 +34,8 @@ class RequestJoinSpaceViewModel(
     private val spaceInviteResolver: SpaceInviteResolver,
     private val checkIsUserSpaceMember: CheckIsUserSpaceMember,
     private val spaceManager: SpaceManager,
-    private val saveCurrentSpace: SaveCurrentSpace
+    private val saveCurrentSpace: SaveCurrentSpace,
+    private val analytics: Analytics
 ) : BaseViewModel() {
 
     val state = MutableStateFlow<TypedViewState<SpaceInviteView, ErrorView>>(TypedViewState.Loading)
@@ -90,6 +95,9 @@ class RequestJoinSpaceViewModel(
             Timber.w("Could not parse invite link: ${params.link}")
             state.value = TypedViewState.Error(ErrorView.InvalidLink)
         }
+        viewModelScope.launch {
+            analytics.sendEvent(eventName = screenInviteRequest)
+        }
     }
 
     fun onRequestToJoinClicked() {
@@ -114,6 +122,7 @@ class RequestJoinSpaceViewModel(
                                 }
                             },
                             onSuccess = {
+                                analytics.sendEvent(eventName = screenRequestSent)
                                 commands.emit(Command.Toast.RequestSent)
                                 commands.emit(Command.Dismiss)
                             }
@@ -148,7 +157,8 @@ class RequestJoinSpaceViewModel(
         private val spaceInviteResolver: SpaceInviteResolver,
         private val checkIsUserSpaceMember: CheckIsUserSpaceMember,
         private val saveCurrentSpace: SaveCurrentSpace,
-        private val spaceManager: SpaceManager
+        private val spaceManager: SpaceManager,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = RequestJoinSpaceViewModel(
@@ -158,7 +168,8 @@ class RequestJoinSpaceViewModel(
             spaceInviteResolver = spaceInviteResolver,
             checkIsUserSpaceMember = checkIsUserSpaceMember,
             saveCurrentSpace = saveCurrentSpace,
-            spaceManager = spaceManager
+            spaceManager = spaceManager,
+            analytics = analytics
         ) as T
     }
 

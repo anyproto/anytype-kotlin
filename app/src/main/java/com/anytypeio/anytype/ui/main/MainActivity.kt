@@ -15,6 +15,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.app.AnytypeNotificationService
 import com.anytypeio.anytype.app.AnytypeNotificationService.Companion.NOTIFICATION_TYPE
 import com.anytypeio.anytype.app.DefaultAppActionManager
@@ -349,7 +350,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                         R.id.spaceJoinRequestScreen,
                         SpaceJoinRequestFragment.args(
                             space = command.space,
-                            member = command.member
+                            member = command.member,
+                            route = EventsDictionary.Routes.notification
                         )
                     )
                 }.onFailure {

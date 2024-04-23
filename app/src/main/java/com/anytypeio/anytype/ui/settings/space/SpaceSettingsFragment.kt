@@ -166,7 +166,7 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                     val dialog = LeaveSpaceWarning.new()
                     dialog.onLeaveSpaceAccepted = {
                         dialog.dismiss()
-                        vm.onDeleteSpaceAcceptedClicked()
+                        vm.onLeaveSpaceAcceptedClicked()
                     }
                     dialog.onLeaveSpaceCancelled = {
                         vm.onDeleteSpaceWarningCancelled()

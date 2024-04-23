@@ -48,7 +48,7 @@
     <string name="about_meta_info_for_copy">Dispositivo: %1$s\nVersione di Android: %2$d\nVersione app: %3$s\nNumero di build: %4$d\nVersione libreria: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDispositivo\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s</string>
     <string name="space">Spazio</string>
     <string name="space_name">Nome dello Spazio</string>
-    <string name="default_space">Entry space</string>
+    <string name="default_space">Spazio d\'ingresso</string>
     <string name="space_settings_apply_random_gradient">Applica gradiente casuale</string>
     <string name="delete_space">Elimina spazio</string>
     <string name="you_can_store">Puoi archiviare gratuitamente fino a %1$s di file personali sul nostro nodo di backup crittografato. Se raggiungi il limite, i file verranno archiviati solo localmente.</string>
@@ -824,8 +824,8 @@
     <string name="anytype_update_alert_description">Some of your data was managed in a newer version of Anytype. Please update the app to work with all your docs and the latest features.</string>
     <string name="anytype_update_alert_title">È ora di aggiornare</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
-    <string name="space_type_default">Entry</string>
-    <string name="space_type_default_space">Entry space</string>
+    <string name="space_type_default">Ingresso</string>
+    <string name="space_type_default_space">Spazio d\'ingresso</string>
     <string name="space_type_private">Privato</string>
     <string name="space_type_private_space">Private space</string>
     <string name="space_type_shared">Condiviso</string>

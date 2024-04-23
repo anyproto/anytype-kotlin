@@ -115,7 +115,7 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                         args = SpaceJoinRequestFragment.args(
                             space = command.space,
                             member = command.member,
-                            route = EventsDictionary.Routes.settings
+                            analyticsRoute = EventsDictionary.Routes.settings
                         )
                     )
                 }.onFailure {

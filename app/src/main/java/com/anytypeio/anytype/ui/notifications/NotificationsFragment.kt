@@ -66,7 +66,7 @@ class NotificationsFragment : BaseBottomSheetComposeFragment() {
                             SpaceJoinRequestFragment.args(
                                 space = command.space,
                                 member = command.member,
-                                route = EventsDictionary.Routes.notification
+                                analyticsRoute = EventsDictionary.Routes.notification
                             )
                         )
                     }.onFailure {

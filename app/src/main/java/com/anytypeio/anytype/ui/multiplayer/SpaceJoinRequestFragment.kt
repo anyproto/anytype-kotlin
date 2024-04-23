@@ -26,7 +26,7 @@ class SpaceJoinRequestFragment : BaseBottomSheetComposeFragment() {
 
     private val space get() = arg<Id>(SPACE_ID_KEY)
     private val member get() = arg<Id>(MEMBER_ID_KEY)
-    private val route get() = arg<String>(ROUTE_KEY)
+    private val analyticsRoute get() = arg<String>(ANALYTICS_ROUTE_KEY)
 
     @Inject
     lateinit var factory: SpaceJoinRequestViewModel.Factory
@@ -76,7 +76,7 @@ class SpaceJoinRequestFragment : BaseBottomSheetComposeFragment() {
             SpaceJoinRequestViewModel.Params(
                 space = SpaceId(space),
                 member = member,
-                route = route
+                route = analyticsRoute
             )
         ).inject(fragment = this)
     }
@@ -88,15 +88,15 @@ class SpaceJoinRequestFragment : BaseBottomSheetComposeFragment() {
     companion object {
         const val SPACE_ID_KEY = "arg.space-join-request.space-id-key"
         const val MEMBER_ID_KEY = "arg.space-join-request.member-id-key"
-        const val ROUTE_KEY = "arg.space-join-request.route-key"
+        const val ANALYTICS_ROUTE_KEY = "arg.space-join-request.analytics-route-key"
         fun args(
             space: SpaceId,
             member: Id,
-            route: String
+            analyticsRoute: String
         ): Bundle = bundleOf(
             SPACE_ID_KEY to space.id,
             MEMBER_ID_KEY to member,
-            ROUTE_KEY to route
+            ANALYTICS_ROUTE_KEY to analyticsRoute
         )
     }
 }

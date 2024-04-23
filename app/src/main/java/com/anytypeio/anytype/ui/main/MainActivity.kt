@@ -438,7 +438,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                         SpaceJoinRequestFragment.args(
                             space = command.space,
                             member = command.member,
-                            route = EventsDictionary.Routes.notification
+                            analyticsRoute = EventsDictionary.Routes.notification
                         )
                     )
                 }.onFailure {

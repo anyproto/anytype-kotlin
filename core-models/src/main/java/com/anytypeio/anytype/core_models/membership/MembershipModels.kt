@@ -7,7 +7,8 @@ data class Membership(
     val dateEnds: Long,
     val isAutoRenew: Boolean,
     val paymentMethod: MembershipPaymentMethod,
-    val requestedAnyName: String,
+    val nameServiceName: String,
+    val nameServiceType: NameServiceNameType,
     val userEmail: String,
     val subscribeToNewsletter: Boolean
 ) {

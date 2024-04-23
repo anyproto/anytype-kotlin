@@ -48,7 +48,7 @@
     <string name="about_meta_info_for_copy">Perangkat: %1$s\nVersi Android: %2$d\nVersi Aplikasi: %3$s\nPembuatan Nomor: %4$d\nVersi Pustaka: %5$s\nAkun\u00A0ID:\u00A0%6$s\nPerangkat\u00A0ID:\u00A0%7$s\nAnalisis\u00A0ID:\u00A0%8$s</string>
     <string name="space">Ruang</string>
     <string name="space_name">Nama Ruang</string>
-    <string name="default_space">Ruang bawaan</string>
+    <string name="default_space">Entry space</string>
     <string name="space_settings_apply_random_gradient">Terapkan gradasi acak</string>
     <string name="delete_space">Hapus ruang</string>
     <string name="you_can_store">Kamu bisa menyimpan berkasmu hingga %1$s di simpul cadangan terenkripsi kami secara gratis. Jika melewati batas, berkasmu hanya akan disimpan secara lokal.</string>
@@ -822,8 +822,8 @@
     <string name="anytype_update_alert_description">Some of your data was managed in a newer version of Anytype. Please update the app to work with all your docs and the latest features.</string>
     <string name="anytype_update_alert_title">Waktunya memperbarui</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
-    <string name="space_type_default">Bawaan</string>
-    <string name="space_type_default_space">Ruang bawaan</string>
+    <string name="space_type_default">Entry</string>
+    <string name="space_type_default_space">Entry space</string>
     <string name="space_type_private">Pribadi</string>
     <string name="space_type_private_space">Ruang pribadi</string>
     <string name="space_type_shared">Berbagi</string>
@@ -1143,7 +1143,7 @@
     <string name="multiplayer_space_request_reject">Tolak</string>
     <string name="multiplayer_space_join_request_header">%1$s meminta bergabung ke ruang %2$s</string>
     <string name="multiplayer_remove_member">Hapus anggota</string>
-    <string name="multiplayer_remove_member_warning_text">%1$s will be removed from space</string>
+    <string name="multiplayer_remove_member_warning_text">%1$s akan dihapus dari ruang</string>
     <string name="multiplayer_request_sent_toast">Permintaan terkirim</string>
     <string name="multiplayer_space_stop_sharing">Berhenti berbagi</string>
     <string name="multiplayer_space_stop_sharing_space">Berhenti membagikan ruang</string>
@@ -1290,10 +1290,10 @@
     <string name="gallery_experience_alert_button_space">Buka ruang</string>
     <string name="gallery_experience_alert_button_error">Tutup</string>
     <string name="three_dots_text_placeholder">...</string>
-    <string name="notifications_prompt_get_notified">Get notified</string>
-    <string name="notifications_prompt_secondary_button_text">Not now</string>
-    <string name="notifications_prompt_description">Please enable notifications to stay informed about any requests to join or leave spaces.</string>
-    <string name="notifications_prompt_primary_button_text">Enable</string>
-    <string name="clipboard_panel_create_bookmark_from_clipboard">Create bookmark from clipboard</string>
-    <string name="error_unexpected_layout">Error: unexpected layout</string>
+    <string name="notifications_prompt_get_notified">Dapatkan pemberitahuan</string>
+    <string name="notifications_prompt_secondary_button_text">Tidak dulu</string>
+    <string name="notifications_prompt_description">Nyalakan pemberitahuan permintaan bergabung atau keluar dari ruangan.</string>
+    <string name="notifications_prompt_primary_button_text">Nyalakan</string>
+    <string name="clipboard_panel_create_bookmark_from_clipboard">Buat markah dari papan kerani</string>
+    <string name="error_unexpected_layout">Galat: tata letak tak terduga</string>
 </resources>

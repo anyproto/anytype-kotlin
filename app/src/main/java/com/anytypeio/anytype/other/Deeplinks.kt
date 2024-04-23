@@ -31,7 +31,7 @@ const val IMPORT_EXPERIENCE_DEEPLINK = "$DEEP_LINK_PATTERN$MAIN_PATH/$IMPORT_PAT
 
 object DefaultDeepLinkResolver : DeepLinkResolver {
 
-    private val regex = Regex(DEEP_LINK_INVITE_REG_EXP)
+    private val defaultInviteRegex = Regex(DEEP_LINK_INVITE_REG_EXP)
 
     override fun resolve(
         deeplink: String
@@ -51,7 +51,7 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
         deeplink.contains(INVITE_PATH) -> {
             DeepLinkResolver.Action.Invite(deeplink)
         }
-        regex.containsMatchIn(deeplink) -> {
+        defaultInviteRegex.containsMatchIn(deeplink) -> {
             DeepLinkResolver.Action.Invite(deeplink)
         }
         deeplink.contains(OBJECT_PATH) -> {
@@ -75,7 +75,7 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
     }
 
     override fun isDeepLink(link: String): Boolean {
-        return link.contains(regex) || link.contains(DEEP_LINK_PATTERN)
+        return link.contains(defaultInviteRegex) || link.contains(DEEP_LINK_PATTERN)
     }
 }
 

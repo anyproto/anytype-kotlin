@@ -14,9 +14,12 @@ const val DEEP_LINK_PATTERN = "anytype://"
  */
 const val DEEP_LINK_INVITE_REG_EXP = "invite.any.coop/([a-zA-Z0-9]+)#([a-zA-Z0-9]+)"
 
+const val DEE_LINK_INVITE_CUSTOM_REG_EXP = "anytype://invite/\\?cid=([a-zA-Z0-9]+)&key=([a-zA-Z0-9]+)"
+
 const val MAIN_PATH = "main"
 const val OBJECT_PATH = "object"
 const val IMPORT_PATH = "import"
+const val INVITE_PATH = "invite"
 
 const val TYPE_PARAM = "type"
 const val OBJECT_ID_PARAM = "objectId"
@@ -44,6 +47,9 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
             } catch (e: Exception) {
                 DeepLinkResolver.Action.Unknown
             }
+        }
+        deeplink.contains(INVITE_PATH) -> {
+            DeepLinkResolver.Action.Invite(deeplink)
         }
         regex.containsMatchIn(deeplink) -> {
             DeepLinkResolver.Action.Invite(deeplink)
@@ -75,18 +81,31 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
 
 object DefaultSpaceInviteResolver : SpaceInviteResolver {
 
-    private val regex = Regex(DEEP_LINK_INVITE_REG_EXP)
+    private val customRegex = Regex(DEE_LINK_INVITE_CUSTOM_REG_EXP)
+    private val defaultRegex = Regex(DEEP_LINK_INVITE_REG_EXP)
 
     override fun parseContentId(link: String): Id? {
-        val result = regex.find(link)
-        return result?.groupValues?.getOrNull(CONTENT_INDEX)
+        return if (link.matches(customRegex)) {
+            val uri = Uri.parse(link)
+            uri.getQueryParameter(CONTENT_ID_KEY)
+        } else {
+            val result = defaultRegex.find(link)
+            result?.groupValues?.getOrNull(CONTENT_INDEX)
+        }
     }
 
     override fun parseFileKey(link: String): Id? {
-        val result = regex.find(link)
-        return result?.groupValues?.getOrNull(KEY_INDEX)
+        return if (link.matches(customRegex)) {
+            val uri = Uri.parse(link)
+            uri.getQueryParameter(FILE_KEY_KEY)
+        } else {
+            val result = defaultRegex.find(link)
+            result?.groupValues?.getOrNull(KEY_INDEX)
+        }
     }
 
     private const val CONTENT_INDEX = 1
     private const val KEY_INDEX = 2
+    private const val CONTENT_ID_KEY = "cid"
+    private const val FILE_KEY_KEY = "key"
 }

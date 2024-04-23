@@ -48,7 +48,7 @@
     <string name="about_meta_info_for_copy">Gerät: %1$s\nAndroid Version: %2$d\nApp Version: %3$s\nBuild Nummer: %4$d\nLibrary Version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nGeräte\u00A0ID:\u00A0%7$s\nAnalyse\u00A0ID:\u00A0%8$s</string>
     <string name="space">Space</string>
     <string name="space_name">Space-Name</string>
-    <string name="default_space">Default space</string>
+    <string name="default_space">Entry space</string>
     <string name="space_settings_apply_random_gradient">Zufälligen Farbverlauf anwenden</string>
     <string name="delete_space">Space löschen</string>
     <string name="you_can_store">Du kannst bis zu %1$s deiner Dateien auf unserem verschlüsselten und kostenlosen Backup-Knoten speichern. Wenn das Limit erreicht wurde, werden Dateien nur noch lokal gespeichert.</string>
@@ -824,8 +824,8 @@
     <string name="anytype_update_alert_description">Einige deiner Daten wurden in einer neueren Version von Anytype verwaltet. Bitte aktualisiere die App, um mit allen Dokumenten und neuesten Funktionen zu arbeiten.</string>
     <string name="anytype_update_alert_title">Es ist Zeit für ein Update</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
-    <string name="space_type_default">Standard</string>
-    <string name="space_type_default_space">Default space</string>
+    <string name="space_type_default">Entry</string>
+    <string name="space_type_default_space">Entry space</string>
     <string name="space_type_private">Privat</string>
     <string name="space_type_private_space">privater Bereich</string>
     <string name="space_type_shared">Geteilt</string>

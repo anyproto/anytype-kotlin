@@ -363,20 +363,21 @@ fun PrivateSpaceSharing(
                 .padding(start = 20.dp)
                 .align(Alignment.CenterStart),
             text = stringResource(id = R.string.space_type_private_space),
-            color = colorResource(id = R.color.text_primary),
+            color = if (shareLimitReached)
+                colorResource(id = R.color.text_secondary)
+            else
+                colorResource(id = R.color.text_primary),
             style = BodyRegular
         )
         Row(
             modifier = Modifier.align(Alignment.CenterEnd)
         ) {
-            if (!shareLimitReached) {
-                Text(
-                    modifier = Modifier.align(Alignment.CenterVertically),
-                    text = stringResource(id = R.string.multiplayer_share),
-                    color = colorResource(id = R.color.text_secondary),
-                    style = BodyRegular
-                )
-            }
+            Text(
+                modifier = Modifier.align(Alignment.CenterVertically),
+                text = stringResource(id = R.string.multiplayer_share),
+                color = colorResource(id = R.color.text_secondary),
+                style = BodyRegular
+            )
             Spacer(Modifier.width(10.dp))
             Image(
                 painter = painterResource(R.drawable.ic_arrow_forward),

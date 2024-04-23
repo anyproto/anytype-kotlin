@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsDictionary.screenLeaveSpace
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
@@ -49,7 +50,7 @@ class SpaceSettingsViewModel(
     private val debugSpaceShareDownloader: DebugSpaceShareDownloader,
     private val spaceGradientProvider: SpaceGradientProvider,
     private val userPermissionProvider: UserPermissionProvider,
-    private val container: SpaceViewSubscriptionContainer
+    private val spaceViewContainer: SpaceViewSubscriptionContainer
 ): BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>()
@@ -73,9 +74,9 @@ class SpaceSettingsViewModel(
         viewModelScope.launch {
             val config = spaceManager.getConfig(params.space)
             combine(
-                container.observe(params.space),
+                spaceViewContainer.observe(params.space),
                 userPermissionProvider.observe(params.space),
-                container.isSharingLimitReached()
+                spaceViewContainer.isSharingLimitReached(userPermissionProvider.all())
             ) { spaceView, permission, shareLimitReached ->
                 SpaceData(
                     name = spaceView.name.orEmpty(),
@@ -97,6 +98,7 @@ class SpaceSettingsViewModel(
                     shareLimitReached = shareLimitReached
                 )
             }.collect { spaceData ->
+                Timber.d("Space data: ${spaceData}")
                 spaceViewState.value = ViewState.Success(spaceData)
             }
         }
@@ -163,13 +165,14 @@ class SpaceSettingsViewModel(
             if (state is ViewState.Success) {
                 if (state.data.permissions.isOwnerOrEditor()) {
                     commands.emit(Command.ShowDeleteSpaceWarning)
+                    analytics.sendEvent(
+                        eventName = EventsDictionary.clickDeleteSpace,
+                        props = Props(mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.settings))
+                    )
                 } else {
                     commands.emit(Command.ShowLeaveSpaceWarning)
+                    analytics.sendEvent(eventName = screenLeaveSpace)
                 }
-                analytics.sendEvent(
-                    eventName = EventsDictionary.clickDeleteSpace,
-                    props = Props(mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.settings))
-                )
             }
         }
     }
@@ -197,6 +200,13 @@ class SpaceSettingsViewModel(
                     )
                 )
             )
+        }
+        proceedWithSpaceDeletion()
+    }
+
+    fun onLeaveSpaceAcceptedClicked() {
+        viewModelScope.launch {
+            analytics.sendEvent(eventName = EventsDictionary.leaveSpace)
         }
         proceedWithSpaceDeletion()
     }
@@ -308,7 +318,7 @@ class SpaceSettingsViewModel(
         override fun <T : ViewModel> create(
             modelClass: Class<T>
         ): T = SpaceSettingsViewModel(
-            container = container,
+            spaceViewContainer = container,
             urlBuilder = urlBuilder,
             spaceManager = spaceManager,
             setSpaceDetails = setSpaceDetails,

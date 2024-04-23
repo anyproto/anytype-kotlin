@@ -4,10 +4,14 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
+import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType.SHARED
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions.OWNER
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
@@ -139,10 +143,16 @@ interface SpaceViewSubscriptionContainer {
     }
 }
 
-fun SpaceViewSubscriptionContainer.isSharingLimitReached() : Flow<Boolean> {
-    val sharedSpacesCount = observe().map { spaceViews ->
+fun SpaceViewSubscriptionContainer.isSharingLimitReached(
+    spaceToUserPermissions: Flow<Map<Id, SpaceMemberPermissions>>
+) : Flow<Boolean> {
+    val sharedSpacesCount = combine(
+        observe(),
+        spaceToUserPermissions
+    ) { spaceViews, permissions ->
         spaceViews.count { spaceView ->
-            spaceView.spaceAccessType == SpaceAccessType.SHARED
+            val permission = permissions[spaceView.targetSpaceId]
+            spaceView.spaceAccessType == SHARED && permission == OWNER
         }
     }
     val sharedSpaceLimit = observe().map { spaceViews ->

@@ -58,7 +58,7 @@
     <string name="about_meta_info_for_copy">Device: %1$s\nAndroid version: %2$d\nApp version: %3$s\nBuild number: %4$d\nLibrary version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDevice\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s</string>
     <string name="space">Space</string>
     <string name="space_name">Space name</string>
-    <string name="default_space">Default space</string>
+    <string name="default_space">Entry space</string>
     <string name="space_settings_apply_random_gradient">Apply random gradient</string>
     <string name="delete_space">Delete space</string>
     <string name="you_can_store">You can store up to %1$s of your files on our encrypted backup node for free. If you reach the limit, files will be stored only locally.</string>
@@ -912,8 +912,8 @@
     <string name="anytype_update_alert_title">It\'s time to update</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
 
-    <string name="space_type_default">Default</string>
-    <string name="space_type_default_space">Default space</string>
+    <string name="space_type_default">Entry</string>
+    <string name="space_type_default_space">Entry space</string>
     <string name="space_type_private">Private</string>
     <string name="space_type_private_space">Private space</string>
     <string name="space_type_shared">Shared</string>

@@ -105,7 +105,7 @@ interface MembershipProvider {
                     status = membership.membershipStatusModel,
                     dateEnds = membership.dateEnds,
                     paymentMethod = membership.paymentMethod,
-                    anyName = membership.requestedAnyName
+                    anyName = membership.nameServiceName
                 )
             } else {
                 Timber.e("Membership tier not found: ${membership.tier}")

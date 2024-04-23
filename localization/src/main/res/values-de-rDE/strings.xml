@@ -1154,7 +1154,7 @@
     <string name="multiplayer_space_stop_sharing_space_description">Teilnehmende werden nicht länger mit diesem Bereich synchronisieren und der \"Teilen\" -Link wird deaktiviert.</string>
     <string name="multiplayer_more_info">Mehr Informationen</string>
     <string name="multiplayer_sharing">Sharing</string>
-    <string name="multiplayer_space_type">Space type</string>
+    <string name="multiplayer_space_type">Typ</string>
     <string name="multiplayer_share">Teilen</string>
     <string name="multiplayer_manage">Verwalten</string>
     <string name="multiplayer_leave_space">Bereich verlassen</string>

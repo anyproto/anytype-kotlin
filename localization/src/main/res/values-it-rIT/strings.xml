@@ -1181,25 +1181,25 @@
     <string name="multiplayer_notification_new_join_request">Nuova richiesta di partecipazione</string>
     <string name="multiplayer_notification_member_joined_space_with_read_only_rights">%1$s si è unito allo spazio %2$s con diritti di accesso in sola lettura</string>
     <string name="multiplayer_notification_member_joined_space_with_editor_only_rights">%1$s si è unito allo spazio %2$s con diritti di accesso di modifica</string>
-    <string name="multiplayer_notification_member_request_approved">Request approved</string>
+    <string name="multiplayer_notification_member_request_approved">Richiesta approvata</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">La tua richiesta di unirti allo spazio %1$s è stata approvata con diritti di accesso in sola lettura. Lo spazio sarà disponibile sul tuo dispositivo a breve.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">La tua richiesta di unirti allo spazio %1$s è stata approvata con diritti di accesso per la modifica. Lo spazio sarà disponibile sul tuo dispositivo a breve.</string>
     <string name="multiplayer_notification_member_removed_from_space">Sei stato rimosso dallo spazio, oppure lo spazio è stato eliminato dal proprietario.</string>
-    <string name="multiplayer_notification_member_permissions_changed">Permissions changed</string>
+    <string name="multiplayer_notification_member_permissions_changed">Autorizzazioni cambiate</string>
     <string name="multiplayer_notification_member_permission_change_read">I tuoi diritti di accesso sono stati impostati in sola lettura nello spazio %1$s.</string>
     <string name="multiplayer_notification_member_permission_change_edit">I tuoi diritti di accesso sono stati impostati per la modifica nello spazio %1$s.</string>
     <string name="multiplayer_notification_member_join_request_declined">La tua richiesta di unirti allo spazio %1$s è stata rifiutata.</string>
-    <string name="multiplayer_notification_request_declined">Request declined</string>
+    <string name="multiplayer_notification_request_declined">Richiesta non approvata</string>
     <string name="multiplayer_notification_view_request">Vista</string>
     <string name="multiplayer_notification_go_to_space">Vai allo spazio</string>
     <string name="multiplayer_toast_permission_not_allowed">Non è consentito modificare i permessi</string>
-    <string name="multiplayer_deeplink_to_your_object">Deeplink to your object</string>
-    <string name="multiplayer_deeplink_to_your_object_error">This deeplink is not working. Object might be deleted or there might be issues with space access.</string>
+    <string name="multiplayer_deeplink_to_your_object">Collegamento profondo al tuo oggetto</string>
+    <string name="multiplayer_deeplink_to_your_object_error">Questo collegamento profondo non funziona. L\'oggetto potrebbe essere eliminato o potrebbero esserci problemi con l\'accesso allo spazio.</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="one">%1$d member</item>
         <item quantity="other">%1$d members</item>
     </plurals>
-    <string name="multiplayer_you_as_member">you</string>
+    <string name="multiplayer_you_as_member">tu</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Membership</string>

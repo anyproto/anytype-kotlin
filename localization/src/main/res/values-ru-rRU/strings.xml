@@ -1162,7 +1162,7 @@
     <string name="multiplayer_space_stop_sharing_space_description">Участники больше не будут синхронизироваться с этим пространством, и ссылка на общий доступ будет отключена.</string>
     <string name="multiplayer_more_info">More info</string>
     <string name="multiplayer_sharing">Совместное использование</string>
-    <string name="multiplayer_space_type">Space type</string>
+    <string name="multiplayer_space_type">Тип</string>
     <string name="multiplayer_share">Поделиться</string>
     <string name="multiplayer_manage">Управление</string>
     <string name="multiplayer_leave_space">Покинуть пространство</string>

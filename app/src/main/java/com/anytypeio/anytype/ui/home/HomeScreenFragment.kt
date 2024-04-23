@@ -31,7 +31,6 @@ import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
-import com.anytypeio.anytype.ui.main.MainActivity
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.creation.SelectObjectTypeFragment
@@ -153,18 +152,11 @@ class HomeScreenFragment : BaseComposeFragment() {
     }
 
     private fun proceedWithDeepLinks() {
-        val deepLinkFromFragment = deepLink
-        val deepLinkFromActivity = (requireActivity() as? MainActivity)?.deepLink
-
-        when {
-            deepLinkFromFragment != null -> {
-                vm.onResume(DefaultDeepLinkResolver.resolve(deepLinkFromFragment))
-                arguments?.putString(DEEP_LINK_KEY, null)
-            }
-            deepLinkFromActivity != null -> {
-                vm.onResume(DefaultDeepLinkResolver.resolve(deepLinkFromActivity))
-                (requireActivity() as? MainActivity)?.deepLink = null
-            }
+        val deepLinkFromFragmentArgs = deepLink
+        if (deepLinkFromFragmentArgs != null) {
+            Timber.d("Deeplink  from fragment args")
+            vm.onResume(DefaultDeepLinkResolver.resolve(deepLinkFromFragmentArgs))
+            arguments?.putString(DEEP_LINK_KEY, null)
         }
     }
 
@@ -232,12 +224,7 @@ class HomeScreenFragment : BaseComposeFragment() {
                     Timber.e(it, "Error while navigation")
                 }
             }
-            is Command.Deeplink.CannotImportExperience -> {
-                arguments?.putString(DEEP_LINK_KEY, null)
-                findNavController().navigate(R.id.alertImportExperienceUnsupported)
-            }
             is Command.Deeplink.Invite -> {
-                arguments?.putString(DEEP_LINK_KEY, null)
                 findNavController().navigate(
                     R.id.requestJoinSpaceScreen,
                     RequestJoinSpaceFragment.args(link = command.link)

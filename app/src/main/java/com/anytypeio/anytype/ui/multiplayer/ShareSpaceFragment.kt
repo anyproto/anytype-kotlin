@@ -129,6 +129,19 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     Timber.e(it, "Error while navigation")
                 }
             }
+            is Command.ShowRemoveMemberWarning -> {
+                runCatching {
+                    val dialog = RemoveMemberWarning.new(name = command.name)
+                    dialog.onAccepted = {
+                        vm.onRemoveMemberAccepted(command.identity).also {
+                            dialog.dismiss()
+                        }
+                    }
+                    dialog.show(childFragmentManager, null)
+                }.onFailure {
+                    Timber.e(it, "Error while navigation")
+                }
+            }
             is Command.ShowStopSharingWarning -> {
                 runCatching {
                     val dialog = StopSharingWarning()

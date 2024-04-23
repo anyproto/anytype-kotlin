@@ -355,10 +355,24 @@ class ShareSpaceViewModel(
     ) {
         Timber.d("onRemoveMemberClicked")
         viewModelScope.launch {
+            viewModelScope.launch {
+                commands.emit(
+                    Command.ShowRemoveMemberWarning(
+                        identity = view.obj.identity,
+                        name = view.obj.name.orEmpty()
+                    )
+                )
+            }
+        }
+    }
+
+    fun onRemoveMemberAccepted(identity: Id) {
+        Timber.d("onRemoveMemberAccepted")
+        viewModelScope.launch {
             removeSpaceMembers.async(
                 RemoveSpaceMembers.Params(
                     space = params.space,
-                    identities = listOf(view.obj.identity)
+                    identities = listOf(identity)
                 )
             ).fold(
                 onFailure = { e ->
@@ -529,6 +543,7 @@ class ShareSpaceViewModel(
         data class ShareInviteLink(val link: String) : Command()
         data class ShareQrCode(val link: String) : Command()
         data class ViewJoinRequest(val space: SpaceId, val member: Id) : Command()
+        data class ShowRemoveMemberWarning(val identity: Id, val name: String): Command()
         data object ShowHowToShareSpace: Command()
         data object ShowStopSharingWarning: Command()
         data object ShowDeleteLinkWarning: Command()

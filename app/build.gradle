@@ -161,7 +161,6 @@ dependencies {
     implementation project(':analytics')
     implementation project(':ui-settings')
     implementation project(':crash-reporting')
-    implementation project(':payments')
     implementation project(':gallery-experience')
 
     //Compile time dependencies
@@ -188,7 +187,6 @@ dependencies {
     implementation libs.pickT
     implementation libs.emojiCompat
     implementation libs.navigationCompose
-    implementation libs.playBilling
 
     implementation libs.lifecycleViewModel
     implementation libs.lifecycleRuntime

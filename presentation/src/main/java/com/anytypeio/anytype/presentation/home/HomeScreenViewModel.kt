@@ -1528,9 +1528,13 @@ class HomeScreenViewModel(
     fun onLibraryClicked() {
         viewModelScope.launch {
             val space = spaceManager.get()
-            navigation(
-                Navigation.OpenLibrary(space)
-            )
+            if (space.isNotEmpty()) {
+                navigation(
+                    Navigation.OpenLibrary(space)
+                )
+            } else {
+                Timber.w("Space is missing: ${space}")
+            }
         }
     }
 
@@ -1696,7 +1700,6 @@ sealed class Command {
 
     sealed class Deeplink : Command() {
         data object DeepLinkToObjectNotWorking: Deeplink()
-        data object CannotImportExperience : Deeplink()
         data class Invite(val link: String) : Deeplink()
         data class GalleryInstallation(
             val deepLinkType: String,

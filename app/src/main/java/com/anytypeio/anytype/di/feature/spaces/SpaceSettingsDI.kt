@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.debugging.DebugSpaceContentSaver
 import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -101,4 +102,5 @@ interface SpaceSettingsDependencies : ComponentDependencies {
     fun context(): Context
     fun userPermission(): UserPermissionProvider
     fun spaceViewSubscriptionContainer(): SpaceViewSubscriptionContainer
+    fun activeSpaceMemberSubscriptionContainer(): ActiveSpaceMemberSubscriptionContainer
 }

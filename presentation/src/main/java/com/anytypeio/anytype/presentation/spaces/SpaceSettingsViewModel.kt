@@ -24,6 +24,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.multiplayer.isSharingLimitReached
@@ -50,7 +51,8 @@ class SpaceSettingsViewModel(
     private val debugSpaceShareDownloader: DebugSpaceShareDownloader,
     private val spaceGradientProvider: SpaceGradientProvider,
     private val userPermissionProvider: UserPermissionProvider,
-    private val spaceViewContainer: SpaceViewSubscriptionContainer
+    private val spaceViewContainer: SpaceViewSubscriptionContainer,
+    private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer
 ): BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>()
@@ -78,6 +80,13 @@ class SpaceSettingsViewModel(
                 userPermissionProvider.observe(params.space),
                 spaceViewContainer.isSharingLimitReached(userPermissionProvider.all())
             ) { spaceView, permission, shareLimitReached ->
+                val store = activeSpaceMemberSubscriptionContainer.get(params.space)
+                val spaceMember = if (store is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
+                    store.members.find { it.id == spaceView.getValue<Id>(Relations.CREATOR) }
+                } else {
+                    null
+                }
+                val createdBy = spaceMember?.globalName?.ifEmpty { spaceMember.identity }
                 SpaceData(
                     name = spaceView.name.orEmpty(),
                     icon = spaceView.spaceIcon(
@@ -87,9 +96,7 @@ class SpaceSettingsViewModel(
                     createdDateInMillis = spaceView
                         .getValue<Double?>(Relations.CREATED_DATE)
                         ?.let { timeInSeconds -> (timeInSeconds * 1000L).toLong() },
-                    createdBy = spaceView
-                        .getValue<Id?>(Relations.CREATOR)
-                        .toString(),
+                    createdBy = createdBy,
                     spaceId = params.space.id,
                     network = config?.network.orEmpty(),
                     isDeletable = resolveIsSpaceDeletable(spaceView),
@@ -312,7 +319,8 @@ class SpaceSettingsViewModel(
         private val configStorage: ConfigStorage,
         private val debugFileShareDownloader: DebugSpaceShareDownloader,
         private val spaceGradientProvider: SpaceGradientProvider,
-        private val userPermissionProvider: UserPermissionProvider
+        private val userPermissionProvider: UserPermissionProvider,
+        private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -329,7 +337,8 @@ class SpaceSettingsViewModel(
             debugSpaceShareDownloader = debugFileShareDownloader,
             spaceGradientProvider = spaceGradientProvider,
             params = params,
-            userPermissionProvider = userPermissionProvider
+            userPermissionProvider = userPermissionProvider,
+            activeSpaceMemberSubscriptionContainer = activeSpaceMemberSubscriptionContainer
         ) as T
     }
 

@@ -28,6 +28,4 @@ class UserPermissionProviderStub : UserPermissionProvider {
     override fun all(): Flow<Map<Id, SpaceMemberPermissions>> {
         return flowOf(emptyMap())
     }
-
-
 }

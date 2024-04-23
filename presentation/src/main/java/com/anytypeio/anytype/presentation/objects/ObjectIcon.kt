@@ -70,7 +70,10 @@ sealed class ObjectIcon {
                 }
                 ObjectType.Layout.TODO -> Task(isChecked = obj.done ?: false)
                 ObjectType.Layout.NOTE -> Basic.Avatar(obj.snippet.orEmpty())
-                ObjectType.Layout.FILE -> {
+                ObjectType.Layout.FILE,
+                ObjectType.Layout.AUDIO,
+                ObjectType.Layout.VIDEO,
+                ObjectType.Layout.PDF -> {
                     if (img.isNullOrBlank()) {
                         File(mime = obj.fileMimeType, fileName = obj.name)
                     } else {

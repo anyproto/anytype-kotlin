@@ -48,7 +48,7 @@
     <string name="about_meta_info_for_copy">设备：%1$s\nAndroid 版本：%2$d\n应用版本：%3$s\n构建号：%4$d\n库版本：%5$s\n账户\u00A0 ID：\u00A0%6$s\n设备\u00A0 ID：\u00A0%7$s\n分析\u00A0 ID：\u00A0%8$s</string>
     <string name="space">空间</string>
     <string name="space_name">空间名称</string>
-    <string name="default_space">默认空间</string>
+    <string name="default_space">Entry space</string>
     <string name="space_settings_apply_random_gradient">应用随机渐变色</string>
     <string name="delete_space">删除空间</string>
     <string name="you_can_store">您可以在我们的节点上免费加密备份存储多达 %1$s 的文件。如果达到限制，文件将仅存储在本地。</string>
@@ -822,8 +822,8 @@
     <string name="anytype_update_alert_description">您的某些数据是在 Anytype 的较新版本中管理的。请更新应用程序，以便使用您的所有文档和最新功能。</string>
     <string name="anytype_update_alert_title">是时候更新了</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
-    <string name="space_type_default">默认</string>
-    <string name="space_type_default_space">默认空间</string>
+    <string name="space_type_default">Entry</string>
+    <string name="space_type_default_space">Entry space</string>
     <string name="space_type_private">私人</string>
     <string name="space_type_private_space">私人空间</string>
     <string name="space_type_shared">共享</string>
@@ -1143,6 +1143,7 @@
     <string name="multiplayer_space_request_reject">拒绝</string>
     <string name="multiplayer_space_join_request_header">%1$s requested to join %2$s space</string>
     <string name="multiplayer_remove_member">Remove member</string>
+    <string name="multiplayer_remove_member_warning_text">%1$s 将从空间中移除。</string>
     <string name="multiplayer_request_sent_toast">已发送申请</string>
     <string name="multiplayer_space_stop_sharing">停止共享</string>
     <string name="multiplayer_space_stop_sharing_space">停止共享此空间</string>
@@ -1175,23 +1176,24 @@
     <string name="multiplayer_notification_new_join_request">新的加入请求</string>
     <string name="multiplayer_notification_member_joined_space_with_read_only_rights">%1$s 加入了 %2$s 空间并拥有只读访问权限</string>
     <string name="multiplayer_notification_member_joined_space_with_editor_only_rights">%1$s 加入了 %2$s 空间并拥有编辑访问权限</string>
-    <string name="multiplayer_notification_member_request_approved">Request approved</string>
+    <string name="multiplayer_notification_member_request_approved">请求已批准</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">您加入 %1$s 空间的请求已获批准并获得了只读访问权限，该空间很快就会在您的设备中显示。</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">您加入 %1$s 空间的请求已获批准并获得了编辑访问权限，该空间很快就会在您的设备中显示。</string>
     <string name="multiplayer_notification_member_removed_from_space">您从空间中被移出，或空间已被所有者删除。</string>
-    <string name="multiplayer_notification_member_permissions_changed">Permissions changed</string>
+    <string name="multiplayer_notification_member_permissions_changed">权限更改成功</string>
     <string name="multiplayer_notification_member_permission_change_read">您在 %1$s 空间中的访问权限已更改为只读。</string>
     <string name="multiplayer_notification_member_permission_change_edit">您在 %1$s 空间中的访问权限已更改为可编辑。</string>
     <string name="multiplayer_notification_member_join_request_declined">您加入 %1$s 空间的请求已被拒绝。</string>
-    <string name="multiplayer_notification_request_declined">Request declined</string>
+    <string name="multiplayer_notification_request_declined">请求被拒绝</string>
     <string name="multiplayer_notification_view_request">视图</string>
     <string name="multiplayer_notification_go_to_space">转到空间</string>
     <string name="multiplayer_toast_permission_not_allowed">不允许更改权限</string>
-    <string name="multiplayer_deeplink_to_your_object">Deeplink to your object</string>
-    <string name="multiplayer_deeplink_to_your_object_error">This deeplink is not working. Object might be deleted or there might be issues with space access.</string>
+    <string name="multiplayer_deeplink_to_your_object">深度链接到您的对象</string>
+    <string name="multiplayer_deeplink_to_your_object_error">这个深度链接不可用。对象可能被删除，或者可能存在空间访问问题。</string>
     <plurals name="multiplayer_number_of_space_members">
-        <item quantity="other">%1$d members</item>
+        <item quantity="other">%1$d 成员</item>
     </plurals>
+    <string name="multiplayer_you_as_member">您</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">会员</string>
@@ -1288,5 +1290,10 @@
     <string name="gallery_experience_alert_button_space">打开空间</string>
     <string name="gallery_experience_alert_button_error">关闭</string>
     <string name="three_dots_text_placeholder">...</string>
-    <string name="multiplayer_you_as_member">you</string>
+    <string name="notifications_prompt_get_notified">获取通知！</string>
+    <string name="notifications_prompt_secondary_button_text">暂不</string>
+    <string name="notifications_prompt_description">请启用通知以随时获知任何加入或离开空间的请求。</string>
+    <string name="notifications_prompt_primary_button_text">启用</string>
+    <string name="clipboard_panel_create_bookmark_from_clipboard">从剪贴板创建书签</string>
+    <string name="error_unexpected_layout">错误: 异常布局</string>
 </resources>

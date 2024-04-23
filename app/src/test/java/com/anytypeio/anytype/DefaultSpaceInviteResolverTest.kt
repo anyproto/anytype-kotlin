@@ -68,4 +68,23 @@ class DefaultSpaceInviteResolverTest {
             actual = DefaultSpaceInviteResolver.parseFileKey(link)
         )
     }
+
+    @Test
+    fun `should parse file key and content id`() {
+        val fileKeyValue = "ae62abf2a19e"
+        val cidValue = "75538c6c50351eca"
+
+        val link = "anytype://invite/?cid=$cidValue&key=$fileKeyValue"
+
+        assertEquals(
+            expected = cidValue,
+            actual = DefaultSpaceInviteResolver.parseContentId(link)
+        )
+
+        assertEquals(
+            expected = fileKeyValue,
+            actual = DefaultSpaceInviteResolver.parseFileKey(link)
+        )
+    }
+
 }

@@ -1150,7 +1150,7 @@
     <string name="multiplayer_space_stop_sharing_space_description">参与者将不再同步到此空间，共享链接也将被停用。</string>
     <string name="multiplayer_more_info">More info</string>
     <string name="multiplayer_sharing">分享</string>
-    <string name="multiplayer_space_type">空间类型</string>
+    <string name="multiplayer_space_type">类型</string>
     <string name="multiplayer_share">分享</string>
     <string name="multiplayer_manage">管理</string>
     <string name="multiplayer_leave_space">离开空间</string>

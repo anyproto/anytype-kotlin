@@ -188,6 +188,36 @@ object EventsDictionary {
     const val CLICK_ONBOARDING_TOOLTIP_TYPE_SHARING_MENU = "ShareMenu"
     const val CLICK_ONBOARDING_TOOLTIP_TYPE_CLOSE = "Close"
 
+    // Sharing spaces
+    const val shareSpace = "ShareSpace"
+    const val screenSettingsSpaceShare = "ScreenSettingsSpaceShare"
+    const val clickShareSpaceCopyLink = "ClickShareSpaceCopyLink"
+    const val screenStopShare = "ScreenStopShare"
+    const val stopSpaceShare = "StopSpaceShare"
+    const val clickSettingsSpaceShare = "ClickSettingsSpaceShare"
+    const val screenRevokeShareLink = "ScreenRevokeShareLink"
+    const val revokeShareLink = "RevokeShareLink"
+    const val screenInviteConfirm = "ScreenInviteConfirm"
+    const val approveInviteRequest = "ApproveInviteRequest"
+    const val rejectInviteRequest = "RejectInviteRequest"
+    const val changeSpaceMemberPermissions = "ChangeSpaceMemberPermissions"
+    const val removeSpaceMember = "RemoveSpaceMember"
+    const val screenInviteRequest = "ScreenInviteRequest"
+    const val screenRequestSent = "ScreenRequestSent"
+    const val screenSettingsSpaceList = "ScreenSettingsSpaceList"
+    const val screenSettingsSpaceMembers = "ScreenSettingsSpaceMembers"
+    const val screenLeaveSpace = "ScreenLeaveSpace"
+    const val leaveSpace = "LeaveSpace"
+    const val approveLeaveRequest = "ApproveLeaveRequest"
+
+    object SharingSpacesTypes {
+        const val shareTypeQR = "Qr"
+        const val shareTypeMoreInfo = "MoreInfo"
+        const val shareTypeRevoke = "Revoke"
+        const val shareTypeShareLink = "ShareLink"
+        const val shareTypeShareQr = "ShareQr"
+    }
+
     // Network mode
     const val selectNetwork = "SelectNetwork"
     const val uploadNetworkConfiguration = "UploadNetworkConfiguration"
@@ -235,6 +265,7 @@ object EventsDictionary {
         const val longTap = "LongTap"
         const val sharingExtension = "SharingExtension"
         const val gallery = "Gallery"
+        const val notification = "Notification"
     }
 
     object Type {

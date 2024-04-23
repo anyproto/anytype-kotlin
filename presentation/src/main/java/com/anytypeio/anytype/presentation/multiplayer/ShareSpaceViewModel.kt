@@ -3,6 +3,23 @@ package com.anytypeio.anytype.presentation.multiplayer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsDictionary.SharingSpacesTypes.shareTypeMoreInfo
+import com.anytypeio.anytype.analytics.base.EventsDictionary.SharingSpacesTypes.shareTypeQR
+import com.anytypeio.anytype.analytics.base.EventsDictionary.SharingSpacesTypes.shareTypeRevoke
+import com.anytypeio.anytype.analytics.base.EventsDictionary.SharingSpacesTypes.shareTypeShareLink
+import com.anytypeio.anytype.analytics.base.EventsDictionary.SharingSpacesTypes.shareTypeShareQr
+import com.anytypeio.anytype.analytics.base.EventsDictionary.clickSettingsSpaceShare
+import com.anytypeio.anytype.analytics.base.EventsDictionary.removeSpaceMember
+import com.anytypeio.anytype.analytics.base.EventsDictionary.screenRevokeShareLink
+import com.anytypeio.anytype.analytics.base.EventsDictionary.screenSettingsSpaceMembers
+import com.anytypeio.anytype.analytics.base.EventsDictionary.screenSettingsSpaceShare
+import com.anytypeio.anytype.analytics.base.EventsDictionary.screenStopShare
+import com.anytypeio.anytype.analytics.base.EventsDictionary.stopSpaceShare
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
+import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
@@ -52,7 +69,8 @@ class ShareSpaceViewModel(
     private val container: StorelessSubscriptionContainer,
     private val permissions: UserPermissionProvider,
     private val getAccount: GetAccount,
-    private val urlBuilder: UrlBuilder
+    private val urlBuilder: UrlBuilder,
+    private val analytics: Analytics
 ) : BaseViewModel() {
 
     val members = MutableStateFlow<List<ShareSpaceMemberView>>(emptyList())
@@ -68,7 +86,6 @@ class ShareSpaceViewModel(
         Timber.d("Share-space init with params: $params")
         proceedWithUserPermissions()
         proceedWithSubscriptions()
-
     }
 
     private fun proceedWithUserPermissions() {
@@ -77,6 +94,11 @@ class ShareSpaceViewModel(
                 .observe(space = params.space)
                 .collect { permission ->
                     isCurrentUserOwner.value = permission == OWNER
+                    if (permission == OWNER) {
+                        analytics.sendEvent(eventName = screenSettingsSpaceShare)
+                    } else {
+                        analytics.sendEvent(eventName = screenSettingsSpaceMembers)
+                    }
                 }
         }
     }
@@ -159,6 +181,7 @@ class ShareSpaceViewModel(
                     params = params.space
                 ).fold(
                     onSuccess = {
+                        analytics.sendEvent(eventName = EventsDictionary.shareSpace)
                         Timber.d("Successfully made space shareable")
                     },
                     onFailure = {
@@ -184,6 +207,12 @@ class ShareSpaceViewModel(
             when (val value = shareLinkViewState.value) {
                 is ShareLinkViewState.Shared -> {
                     commands.emit(Command.ShareInviteLink(value.link))
+                    analytics.sendEvent(
+                        eventName = clickSettingsSpaceShare,
+                        props = Props(
+                            mapOf(EventsPropertiesKey.type to shareTypeShareLink)
+                        )
+                    )
                 }
                 else -> {
                     Timber.w("Ignoring share-invite click while in state: $value")
@@ -197,6 +226,12 @@ class ShareSpaceViewModel(
             when(val value = shareLinkViewState.value) {
                 is ShareLinkViewState.Shared -> {
                     commands.emit(Command.ShareQrCode(value.link))
+                    analytics.sendEvent(
+                        eventName = clickSettingsSpaceShare,
+                        props = Props(
+                            mapOf(EventsPropertiesKey.type to shareTypeQR)
+                        )
+                    )
                 }
                 else -> {
                     Timber.w("Ignoring QR-code click while in state: $value")
@@ -230,6 +265,7 @@ class ShareSpaceViewModel(
                     }
                 },
                 onSuccess = {
+                    analytics.sendEvent(eventName = EventsDictionary.approveLeaveRequest)
                     Timber.d("Successfully removed space member")
                 }
             )
@@ -263,6 +299,12 @@ class ShareSpaceViewModel(
                     },
                     onSuccess = {
                         Timber.d("Successfully updated space member permissions")
+                        analytics.sendEvent(
+                            eventName = EventsDictionary.changeSpaceMemberPermissions,
+                            props = Props(
+                                mapOf(EventsPropertiesKey.type to "Write")
+                            )
+                        )
                     }
                 )
             }
@@ -296,6 +338,12 @@ class ShareSpaceViewModel(
                     },
                     onSuccess = {
                         Timber.d("Successfully updated space member permissions")
+                        analytics.sendEvent(
+                            eventName = EventsDictionary.changeSpaceMemberPermissions,
+                            props = Props(
+                                mapOf(EventsPropertiesKey.type to "Read")
+                            )
+                        )
                     }
                 )
             }
@@ -334,6 +382,7 @@ class ShareSpaceViewModel(
                 },
                 onSuccess = {
                     Timber.d("Successfully removed space member")
+                    analytics.sendEvent(eventName = removeSpaceMember)
                 }
             )
         }
@@ -343,9 +392,8 @@ class ShareSpaceViewModel(
         Timber.d("onStopSharingClicked")
         viewModelScope.launch {
             if (isCurrentUserOwner.value && spaceAccessType.value == SpaceAccessType.SHARED) {
-                viewModelScope.launch {
-                    commands.emit(Command.ShowStopSharingWarning)
-                }
+                commands.emit(Command.ShowStopSharingWarning)
+                analytics.sendEvent(eventName = screenStopShare)
             } else {
                 Timber.w("Something wrong with permissions.")
             }
@@ -361,6 +409,7 @@ class ShareSpaceViewModel(
                 ).fold(
                     onSuccess = {
                         Timber.d("Stopped sharing space")
+                        analytics.sendEvent(eventName = stopSpaceShare)
                     },
                     onFailure = { e ->
                         Timber.e(e, "Error while sharing space").also {
@@ -378,9 +427,14 @@ class ShareSpaceViewModel(
         Timber.d("onDeleteLinkClicked")
         viewModelScope.launch {
             if (isCurrentUserOwner.value) {
-                viewModelScope.launch {
-                    commands.emit(Command.ShowDeleteLinkWarning)
-                }
+                commands.emit(Command.ShowDeleteLinkWarning)
+                analytics.sendEvent(
+                    eventName = clickSettingsSpaceShare,
+                    props = Props(
+                        mapOf(EventsPropertiesKey.type to shareTypeRevoke)
+                    )
+                )
+                analytics.sendEvent(eventName = screenRevokeShareLink)
             } else {
                 Timber.w("Something wrong with permissions.")
             }
@@ -398,6 +452,7 @@ class ShareSpaceViewModel(
                         Timber.d("Revoked space invite link").also {
                             shareLinkViewState.value = ShareLinkViewState.NotGenerated
                         }
+                        analytics.sendEvent(eventName = EventsDictionary.revokeShareLink)
                     },
                     onFailure = { e ->
                         Timber.e(e, "Error while revoking space invite link").also {
@@ -418,6 +473,12 @@ class ShareSpaceViewModel(
     fun onMoreInfoClicked() {
         viewModelScope.launch {
             commands.emit(Command.ShowHowToShareSpace)
+            analytics.sendEvent(
+                eventName = clickSettingsSpaceShare,
+                props = Props(
+                    mapOf(EventsPropertiesKey.type to shareTypeMoreInfo)
+                )
+            )
         }
     }
 
@@ -446,7 +507,8 @@ class ShareSpaceViewModel(
         private val container: StorelessSubscriptionContainer,
         private val urlBuilder: UrlBuilder,
         private val getSpaceInviteLink: GetSpaceInviteLink,
-        private val permissions: UserPermissionProvider
+        private val permissions: UserPermissionProvider,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = ShareSpaceViewModel(
@@ -462,7 +524,8 @@ class ShareSpaceViewModel(
             getSpaceInviteLink = getSpaceInviteLink,
             approveLeaveSpaceRequest = approveLeaveSpaceRequest,
             permissions = permissions,
-            makeSpaceShareable = makeSpaceShareable
+            makeSpaceShareable = makeSpaceShareable,
+            analytics = analytics
         ) as T
     }
 

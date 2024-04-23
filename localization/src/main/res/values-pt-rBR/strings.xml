@@ -1154,7 +1154,7 @@
     <string name="multiplayer_space_stop_sharing_space_description">Participants will no longer sync to this space and the share link will be deactivated.</string>
     <string name="multiplayer_more_info">More info</string>
     <string name="multiplayer_sharing">Sharing</string>
-    <string name="multiplayer_space_type">Space type</string>
+    <string name="multiplayer_space_type">Tipo</string>
     <string name="multiplayer_share">Compartilhar</string>
     <string name="multiplayer_manage">Manage</string>
     <string name="multiplayer_leave_space">Leave space</string>

@@ -16,7 +16,6 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProv
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueViewModel
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueViewModelFactory
-import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.relations.value.ObjectValueFragment
 import dagger.BindsInstance
@@ -44,11 +43,6 @@ interface ObjectValueObjectComponent {
 
 @Module
 object ObjectValueObjectModule {
-
-    @JvmStatic
-    @Provides
-    @PerModal
-    fun provideSpaceGradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Default
 
     @JvmStatic
     @PerModal
@@ -114,11 +108,6 @@ object ObjectValueSetModule {
     @JvmStatic
     @Provides
     @PerModal
-    fun provideSpaceGradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Default
-
-    @JvmStatic
-    @Provides
-    @PerModal
     fun provideFactory(
         @Named(ObjectRelationProvider.INTRINSIC_PROVIDER_TYPE) relations: ObjectRelationProvider,
         @Named(ObjectRelationProvider.INTRINSIC_PROVIDER_TYPE) values: ObjectValueProvider,
@@ -168,11 +157,6 @@ interface ObjectValueDataViewComponent {
 
 @Module
 object ObjectValueDataViewModule {
-
-    @JvmStatic
-    @Provides
-    @PerModal
-    fun provideSpaceGradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Default
 
     @JvmStatic
     @Provides

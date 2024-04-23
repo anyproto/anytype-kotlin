@@ -46,7 +46,8 @@ interface UserPermissionProvider  {
     fun observe(space: SpaceId) : Flow<SpaceMemberPermissions?>
 
     /**
-     * Provide all space members (including permissions info) representing this user in all available spaces
+     * Provide permissions of the current user in all available spaces.
+     * Maps space to permissions.
      */
     fun all() : Flow<Map<Id, SpaceMemberPermissions>>
 }

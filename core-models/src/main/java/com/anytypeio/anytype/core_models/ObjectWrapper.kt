@@ -356,6 +356,8 @@ sealed class ObjectWrapper {
                 .let { code ->
                     SpaceMemberPermissions.values().firstOrNull { it.code == code?.toInt() }
                 }
+
+        val globalName: String? by default
     }
 }
 

@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.library.LibraryView
 import com.anytypeio.anytype.presentation.linking.LinkToItemView
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
+import com.anytypeio.anytype.presentation.objects.SupportedLayouts.fileLayouts
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView
@@ -283,10 +284,16 @@ private fun ObjectWrapper.Basic.getProperFileImage(urlBuilder: UrlBuilder): Stri
     iconImage?.let { if (it.isBlank()) null else urlBuilder.thumbnail(it) }
 
 fun ObjectWrapper.Basic.getProperName(): String {
-    return if (layout == ObjectType.Layout.NOTE) {
-        snippet?.replace("\n", " ")?.take(30).orEmpty()
-    } else {
-        name.orEmpty()
+    return when (layout) {
+        ObjectType.Layout.NOTE -> {
+            snippet?.replace("\n", " ")?.take(30).orEmpty()
+        }
+        in fileLayouts -> {
+            "${name.orEmpty()}.$fileExt"
+        }
+        else -> {
+            name.orEmpty()
+        }
     }
 }
 

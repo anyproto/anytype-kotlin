@@ -75,7 +75,7 @@ class SpaceSettingsViewModel(
             combine(
                 spaceViewContainer.observe(params.space),
                 userPermissionProvider.observe(params.space),
-                spaceViewContainer.isSharingLimitReached()
+                spaceViewContainer.isSharingLimitReached(userPermissionProvider.all())
             ) { spaceView, permission, shareLimitReached ->
                 SpaceData(
                     name = spaceView.name.orEmpty(),

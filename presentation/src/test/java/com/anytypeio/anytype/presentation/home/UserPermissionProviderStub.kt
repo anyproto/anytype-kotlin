@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.home
 
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -23,9 +22,5 @@ class UserPermissionProviderStub : UserPermissionProvider {
     fun stubObserve(spaceId: SpaceId, permission: SpaceMemberPermissions) {
         this.spaceId = spaceId
         this.permission = permission
-    }
-
-    override fun all(): Flow<Map<Id, SpaceMemberPermissions>> {
-        return flowOf(mapOf())
     }
 }

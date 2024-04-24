@@ -352,17 +352,27 @@ class OnboardingFragment : Fragment() {
                     OnboardingMnemonicLoginViewModel.Navigation.Exit -> {
                         navController.popBackStack()
                     }
-
                     OnboardingMnemonicLoginViewModel.Navigation.NavigateToHomeScreen -> {
-                        findNavController().navigate(R.id.action_openHome)
+                        runCatching {
+                            findNavController().navigate(R.id.action_openHome)
+                        }.onFailure {
+                            Timber.e(it, "Error while trying to open home screen from onboarding")
+                        }
                     }
-
                     OnboardingMnemonicLoginViewModel.Navigation.NavigateToMigrationErrorScreen -> {
-                        findNavController().navigate(R.id.migrationNeededScreen, null, navOptions {
-                            popUpTo(R.id.onboarding_nav) {
-                                inclusive = false
-                            }
-                        })
+                        runCatching {
+                            findNavController().navigate(
+                                R.id.migrationNeededScreen,
+                                null,
+                                navOptions {
+                                    popUpTo(R.id.onboarding_nav) {
+                                        inclusive = false
+                                    }
+                                }
+                            )
+                        }.onFailure {
+                            Timber.e(it, "Error while trying to open migration screen from onboarding")
+                        }
                     }
                 }
             }

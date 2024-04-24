@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.ext.readableFileSize
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.extension.getProperObjectName
 import com.anytypeio.anytype.presentation.library.LibraryView
 import com.anytypeio.anytype.presentation.linking.LinkToItemView
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
@@ -284,17 +285,7 @@ private fun ObjectWrapper.Basic.getProperFileImage(urlBuilder: UrlBuilder): Stri
     iconImage?.let { if (it.isBlank()) null else urlBuilder.thumbnail(it) }
 
 fun ObjectWrapper.Basic.getProperName(): String {
-    return when (layout) {
-        ObjectType.Layout.NOTE -> {
-            snippet?.replace("\n", " ")?.take(30).orEmpty()
-        }
-        in fileLayouts -> {
-            "${name.orEmpty()}.$fileExt"
-        }
-        else -> {
-            name.orEmpty()
-        }
-    }
+    return getProperObjectName().orEmpty()
 }
 
 fun ObjectWrapper.Basic.mapFileObjectToView(): CollectionView.ObjectView {

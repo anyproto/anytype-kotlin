@@ -48,7 +48,7 @@
     <string name="about_meta_info_for_copy">Dispositivo: %1$s\nVersión de Android: %2$d\nVersión de la aplicación: %3$s\nNúmero de compilación: %4$d\nVersión de la biblioteca: %5$s\nCuenta\u00A0ID:\u00A0%6$s\nDispositivo\u00A0ID:\u00A0%7$s\nAnálisis\u00A0ID:\u00A0%8$s</string>
     <string name="space">Espacio</string>
     <string name="space_name">Nombre del espacio</string>
-    <string name="default_space">Espacio predeterminado</string>
+    <string name="default_space">Entry space</string>
     <string name="space_settings_apply_random_gradient">Aplicar degradado aleatorio</string>
     <string name="delete_space">Eliminar \'\' espacio</string>
     <string name="you_can_store">Puede almacenar hasta %1$s de sus archivos en nuestro nodo de copia de seguridad cifrado de forma gratuita. Si alcanza el límite, los archivos se almacenarán sólo localmente.</string>
@@ -824,8 +824,8 @@
     <string name="anytype_update_alert_description">Algunos de tus datos se gestionaron en una versión más reciente de Anytype. Actualiza la aplicación para que funcione con todos tus documentos y las últimas funciones.</string>
     <string name="anytype_update_alert_title">¡Es la hora de actualizar!</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
-    <string name="space_type_default">Por defecto</string>
-    <string name="space_type_default_space">Espacio predeterminado</string>
+    <string name="space_type_default">Entry</string>
+    <string name="space_type_default_space">Entry space</string>
     <string name="space_type_private">Privado</string>
     <string name="space_type_private_space">Espacio privado</string>
     <string name="space_type_shared">Compartido</string>
@@ -1147,11 +1147,12 @@
     <string name="multiplayer_space_request_reject">Rechazar</string>
     <string name="multiplayer_space_join_request_header">%1$s ha solicitado unirse al espacio %2$s</string>
     <string name="multiplayer_remove_member">Eliminar miembro</string>
+    <string name="multiplayer_remove_member_warning_text">%1$s will be removed from space</string>
     <string name="multiplayer_request_sent_toast">Solicitud enviada</string>
     <string name="multiplayer_space_stop_sharing">Dejar de compartir</string>
     <string name="multiplayer_space_stop_sharing_space">Dejar de compartir el espacio</string>
     <string name="multiplayer_space_stop_sharing_space_description">Los miembros ya no se sincronizarán con este espacio y el enlace compartido se desactivará.</string>
-    <string name="multiplayer_more_info">Más info.</string>
+    <string name="multiplayer_more_info">More info</string>
     <string name="multiplayer_sharing">Compartir</string>
     <string name="multiplayer_space_type">Tipo de espacio</string>
     <string name="multiplayer_share">Compartir</string>
@@ -1187,16 +1188,17 @@
     <string name="multiplayer_notification_member_permission_change_read">Se han cambiado tus derechos de acceso a solo lectura en el espacio %1$s.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Se han cambiado tus derechos de acceso para editar en el espacio %1$s.</string>
     <string name="multiplayer_notification_member_join_request_declined">Tu solicitud para unirte al espacio %1$s ha sido rechazada.</string>
-    <string name="multiplayer_notification_request_declined">Solicitud declinada</string>
+    <string name="multiplayer_notification_request_declined">Request declined</string>
     <string name="multiplayer_notification_view_request">Ver</string>
     <string name="multiplayer_notification_go_to_space">Ir al espacio</string>
     <string name="multiplayer_toast_permission_not_allowed">No está permitido cambiar permisos</string>
-    <string name="multiplayer_deeplink_to_your_object">Enlace-fuerte al objeto</string>
-    <string name="multiplayer_deeplink_to_your_object_error">Este enlace-fuerte no funciona. El objeto puedo ser eliminado o puede haber inconvenientes con el acceso al espacio.</string>
+    <string name="multiplayer_deeplink_to_your_object">Deeplink to your object</string>
+    <string name="multiplayer_deeplink_to_your_object_error">This deeplink is not working. Object might be deleted or there might be issues with space access.</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="one">%1$d member</item>
         <item quantity="other">%1$d members</item>
     </plurals>
+    <string name="multiplayer_you_as_member">you</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Membresía</string>
@@ -1293,5 +1295,10 @@
     <string name="gallery_experience_alert_button_space">Abrir espacio</string>
     <string name="gallery_experience_alert_button_error">Cerrar</string>
     <string name="three_dots_text_placeholder">...</string>
-    <string name="multiplayer_you_as_member">you</string>
+    <string name="notifications_prompt_get_notified">Get notified</string>
+    <string name="notifications_prompt_secondary_button_text">Not now</string>
+    <string name="notifications_prompt_description">Please enable notifications to stay informed about any requests to join or leave spaces.</string>
+    <string name="notifications_prompt_primary_button_text">Enable</string>
+    <string name="clipboard_panel_create_bookmark_from_clipboard">Create bookmark from clipboard</string>
+    <string name="error_unexpected_layout">Error: unexpected layout</string>
 </resources>

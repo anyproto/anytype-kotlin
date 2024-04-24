@@ -48,7 +48,7 @@
     <string name="about_meta_info_for_copy">Устройство: %1$s\nAndroid версия: %2$d\nВерсия приложения: %3$s\nНомер сборки: %4$d\nВерсия библиотеки: %5$s\nАккаунт\u00A0ID:\u00A0%6$s\nУстройство\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s</string>
     <string name="space">Пространство</string>
     <string name="space_name">Название пространства</string>
-    <string name="default_space">Пространство по умолчанию</string>
+    <string name="default_space">Entry space</string>
     <string name="space_settings_apply_random_gradient">Применить случайный градиент</string>
     <string name="delete_space">Удалить пространство</string>
     <string name="you_can_store">Вы можете бесплатно хранить до %1$s ваших файлов на нашем узле резервного копирования. При достижении лимита файлы будут храниться только локально.</string>
@@ -828,8 +828,8 @@
     <string name="anytype_update_alert_description">Некоторые из ваших данных были изменены в более новой версии Anytype. Пожалуйста, обновите текущее приложение для работы со всеми вашими документами и последними функциями.</string>
     <string name="anytype_update_alert_title">Пришло время обновить приложение</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
-    <string name="space_type_default">По умолчанию</string>
-    <string name="space_type_default_space">Пространство по умолчанию</string>
+    <string name="space_type_default">Entry</string>
+    <string name="space_type_default_space">Entry space</string>
     <string name="space_type_private">Приватный</string>
     <string name="space_type_private_space">Личное пространство</string>
     <string name="space_type_shared">Общие</string>
@@ -1155,6 +1155,7 @@
     <string name="multiplayer_space_request_reject">Отклонить</string>
     <string name="multiplayer_space_join_request_header">%1$s requested to join %2$s space</string>
     <string name="multiplayer_remove_member">Remove member</string>
+    <string name="multiplayer_remove_member_warning_text">%1$s will be removed from space</string>
     <string name="multiplayer_request_sent_toast">Запрос отправлен</string>
     <string name="multiplayer_space_stop_sharing">Закрыть доступ</string>
     <string name="multiplayer_space_stop_sharing_space">Прекратить совместное использование пространства</string>
@@ -1207,6 +1208,7 @@
         <item quantity="many">%1$d members</item>
         <item quantity="other">%1$d members</item>
     </plurals>
+    <string name="multiplayer_you_as_member">you</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Членство</string>
@@ -1303,5 +1305,10 @@
     <string name="gallery_experience_alert_button_space">Открыть пространство.</string>
     <string name="gallery_experience_alert_button_error">Закрыть</string>
     <string name="three_dots_text_placeholder">...</string>
-    <string name="multiplayer_you_as_member">you</string>
+    <string name="notifications_prompt_get_notified">Get notified</string>
+    <string name="notifications_prompt_secondary_button_text">Not now</string>
+    <string name="notifications_prompt_description">Please enable notifications to stay informed about any requests to join or leave spaces.</string>
+    <string name="notifications_prompt_primary_button_text">Enable</string>
+    <string name="clipboard_panel_create_bookmark_from_clipboard">Create bookmark from clipboard</string>
+    <string name="error_unexpected_layout">Error: unexpected layout</string>
 </resources>

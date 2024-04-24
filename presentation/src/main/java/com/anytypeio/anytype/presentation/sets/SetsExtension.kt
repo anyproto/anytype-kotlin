@@ -236,18 +236,18 @@ fun Struct.buildFileViews(
     val ids = getOrDefault(relationKey, null) ?: return emptyList()
     if (ids is Id) {
         val map = details[ids]?.map ?: return emptyList()
-        files.add(map.mapToFileView())
+        val file = ObjectWrapper.File(map)
+        if (file.map.isEmpty() || file.isDeleted == true || file.isArchived == true) return emptyList()
+        files.add(file.toView())
     } else if (ids is List<*>) {
         ids.filterIsInstance<Id>().forEach { id ->
             val map = details[id]?.map ?: return@forEach
-            files.add(map.mapToFileView())
+            val file = ObjectWrapper.File(map)
+            if (file.map.isEmpty() || file.isDeleted == true || file.isArchived == true) return@forEach
+            files.add(file.toView())
         }
     }
     return files
-}
-
-private fun Struct.mapToFileView(): FileView {
-    return ObjectWrapper.File(this).toView()
 }
 
 private fun ObjectWrapper.File.toView() : FileView {

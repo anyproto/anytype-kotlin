@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.types.CreateObjectType
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import javax.inject.Inject
@@ -32,8 +33,10 @@ class CreateObjectTypeViewModel(
     private val urlBuilder: UrlBuilder,
     private val emojiProvider: EmojiProvider,
     private val analytics: Analytics,
-    private val spaceManager: SpaceManager
-) : NavigationViewModel<CreateObjectTypeViewModel.Navigation>() {
+    private val spaceManager: SpaceManager,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+) : NavigationViewModel<CreateObjectTypeViewModel.Navigation>(),
+    AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val unicodeIconFlow = MutableStateFlow("")
 
@@ -109,7 +112,8 @@ class CreateObjectTypeViewModel(
         private val urlBuilder: UrlBuilder,
         private val emojiProvider: EmojiProvider,
         private val analytics: Analytics,
-        private val spaceManager: SpaceManager
+        private val spaceManager: SpaceManager,
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -118,7 +122,8 @@ class CreateObjectTypeViewModel(
                 urlBuilder = urlBuilder,
                 emojiProvider = emojiProvider,
                 analytics = analytics,
-                spaceManager = spaceManager
+                spaceManager = spaceManager,
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
             ) as T
         }
     }

@@ -6,12 +6,14 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.AddRelationToDataView
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.CreateRelation
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsCreateRelationEvent
 import com.anytypeio.anytype.presentation.relations.model.CreateFromScratchState
@@ -87,8 +89,10 @@ class RelationCreateFromScratchForObjectViewModel(
     private val addRelationToObject: AddRelationToObject,
     private val dispatcher: Dispatcher<Payload>,
     private val analytics: Analytics,
-    private val spaceManager: SpaceManager
-) : RelationCreateFromScratchBaseViewModel() {
+    private val spaceManager: SpaceManager,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+) : RelationCreateFromScratchBaseViewModel(),
+    AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     override val createFromScratchSession get() = createFromScratchState.state
 
@@ -117,7 +121,8 @@ class RelationCreateFromScratchForObjectViewModel(
                         sendAnalyticsCreateRelationEvent(
                             analytics = analytics,
                             type = EventsDictionary.Type.menu,
-                            format = format.name
+                            format = format.name,
+                            spaceParams = provideParams(SpaceId(spaceManager.get()))
                         )
                     }
                 },
@@ -152,7 +157,8 @@ class RelationCreateFromScratchForObjectViewModel(
         private val addRelationToObject: AddRelationToObject,
         private val dispatcher: Dispatcher<Payload>,
         private val analytics: Analytics,
-        private val spaceManager: SpaceManager
+        private val spaceManager: SpaceManager,
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -162,7 +168,8 @@ class RelationCreateFromScratchForObjectViewModel(
                 createFromScratchState = createFromScratchState,
                 createRelation = createRelation,
                 addRelationToObject = addRelationToObject,
-                spaceManager = spaceManager
+                spaceManager = spaceManager,
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
             ) as T
         }
     }
@@ -174,8 +181,10 @@ class RelationCreateFromScratchForObjectBlockViewModel(
     private val analytics: Analytics,
     private val createFromScratchState: StateHolder<CreateFromScratchState>,
     private val createRelation: CreateRelation,
-    private val spaceManager: SpaceManager
-) : RelationCreateFromScratchBaseViewModel() {
+    private val spaceManager: SpaceManager,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+) : RelationCreateFromScratchBaseViewModel(),
+    AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     override val createFromScratchSession get() = createFromScratchState.state
 
@@ -207,7 +216,10 @@ class RelationCreateFromScratchForObjectBlockViewModel(
                         sendAnalyticsCreateRelationEvent(
                             analytics = analytics,
                             type = EventsDictionary.Type.block,
-                            format = format.name
+                            format = format.name,
+                            spaceParams = provideParams(
+                                SpaceId(spaceManager.get())
+                            )
                         )
                     }
                 },
@@ -242,7 +254,8 @@ class RelationCreateFromScratchForObjectBlockViewModel(
         private val analytics: Analytics,
         private val createFromScratchState: StateHolder<CreateFromScratchState>,
         private val createRelation: CreateRelation,
-        private val spaceManager: SpaceManager
+        private val spaceManager: SpaceManager,
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -252,7 +265,8 @@ class RelationCreateFromScratchForObjectBlockViewModel(
                 analytics = analytics,
                 createFromScratchState = createFromScratchState,
                 createRelation = createRelation,
-                spaceManager = spaceManager
+                spaceManager = spaceManager,
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
             ) as T
         }
     }
@@ -270,8 +284,10 @@ class RelationCreateFromScratchForDataViewViewModel(
     private val analytics: Analytics,
     private val createFromScratchState: StateHolder<CreateFromScratchState>,
     private val createRelation: CreateRelation,
-    private val spaceManager: SpaceManager
-) : RelationCreateFromScratchBaseViewModel() {
+    private val spaceManager: SpaceManager,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+) : RelationCreateFromScratchBaseViewModel(),
+    AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     override val createFromScratchSession: Flow<CreateFromScratchState> get() = createFromScratchState.state
 
@@ -302,7 +318,8 @@ class RelationCreateFromScratchForDataViewViewModel(
                         sendAnalyticsCreateRelationEvent(
                             analytics = analytics,
                             type = EventsDictionary.Type.dataView,
-                            format = format.name
+                            format = format.name,
+                            spaceParams = provideParams(SpaceId(spaceManager.get()))
                         )
                     }
                 },
@@ -365,7 +382,8 @@ class RelationCreateFromScratchForDataViewViewModel(
         private val createRelation: CreateRelation,
         private val dispatcher: Dispatcher<Payload>,
         private val analytics: Analytics,
-        private val spaceManager: SpaceManager
+        private val spaceManager: SpaceManager,
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -377,7 +395,8 @@ class RelationCreateFromScratchForDataViewViewModel(
                 analytics = analytics,
                 createFromScratchState = createFromScratchState,
                 createRelation = createRelation,
-                addRelationToDataView = addRelationToDataView
+                addRelationToDataView = addRelationToDataView,
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
             ) as T
         }
     }

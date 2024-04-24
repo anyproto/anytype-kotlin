@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.AddRelationToDataView
@@ -16,6 +17,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.relations.GetRelations
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.getPropName
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddRelationEvent
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
@@ -37,7 +39,8 @@ class RelationAddToDataViewViewModel(
     private val analytics: Analytics,
     private val addObjectToWorkspace: AddObjectToWorkspace,
     private val appCoroutineDispatchers: AppCoroutineDispatchers,
-    spaceManager: SpaceManager
+    private val spaceManager: SpaceManager,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
 ) : RelationAddViewModelBase(
     relationsProvider = relationsProvider,
     appCoroutineDispatchers = appCoroutineDispatchers,
@@ -73,7 +76,8 @@ class RelationAddToDataViewViewModel(
                     sendAnalyticsAddRelationEvent(
                         analytics = analytics,
                         type = screenType,
-                        format = format.getPropName()
+                        format = format.getPropName(),
+                        spaceParams = analyticSpaceHelperDelegate.provideParams(SpaceId(spaceManager.get()))
                     )
                 },
                 failure = {
@@ -114,7 +118,8 @@ class RelationAddToDataViewViewModel(
         private val appCoroutineDispatchers: AppCoroutineDispatchers,
         private val getRelations: GetRelations,
         private val addObjectToWorkspace: AddObjectToWorkspace,
-        private val spaceManager: SpaceManager
+        private val spaceManager: SpaceManager,
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -128,7 +133,8 @@ class RelationAddToDataViewViewModel(
                 appCoroutineDispatchers = appCoroutineDispatchers,
                 getRelations = getRelations,
                 addObjectToWorkspace = addObjectToWorkspace,
-                spaceManager = spaceManager
+                spaceManager = spaceManager,
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
             ) as T
         }
     }

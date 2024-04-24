@@ -279,6 +279,7 @@ message Rpc {
 
                         INVITE_NOT_FOUND = 101;
                         INVITE_BAD_CONTENT = 102;
+                        SPACE_IS_DELETED = 103;
                     }
                 }
             }

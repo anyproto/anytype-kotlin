@@ -3,7 +3,9 @@ package com.anytypeio.anytype.di.feature.spaces
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceListViewModel
 import com.anytypeio.anytype.ui.spaces.SpaceListFragment
 import dagger.Binds
@@ -38,4 +40,6 @@ object SpaceListModule {
 
 interface SpaceListDependencies : ComponentDependencies {
     fun spaceViewContainer(): SpaceViewSubscriptionContainer
+    fun permissions(): UserPermissionProvider
+    fun urlBuilder(): UrlBuilder
 }

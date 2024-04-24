@@ -10,13 +10,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -28,6 +29,7 @@ import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Header
@@ -35,8 +37,8 @@ import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.core_utils.ui.ViewState
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.SpaceListViewModel.SpaceListItemView
-import timber.log.Timber
 
 @Composable
 fun SpaceListScreen(
@@ -50,16 +52,29 @@ fun SpaceListScreen(
                 .padding(vertical = 6.dp)
                 .align(Alignment.CenterHorizontally)
         )
-        Header(text = "Spaces")
+        Header(text = stringResource(id = R.string.multiplayer_spaces))
         if (state is ViewState.Success) {
-            Timber.d("Got spaces: ${state.data}")
-            state.data.forEach { 
-                SpaceListCardItem(
-                    spaceName = it.space.name.orEmpty(),
-                    spaceStatus = SpaceStatus.SPACE_DELETED,
-                    permissions = SpaceMemberPermissions.READER
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1.0f)
+            ) {
+                itemsIndexed(
+                    items = state.data,
+                    itemContent = { idx, item ->
+                        SpaceListCardItem(
+                            spaceName = item.space.name.orEmpty(),
+                            spaceStatus = item.space.spaceAccountStatus,
+                            permissions = item.permissions,
+                            spaceIcon = item.icon,
+                            modifier = Modifier.padding(
+                                horizontal = 10.dp,
+                                vertical = 7.dp
+                            )
+                        )
+                    },
+                    key = { _, item -> item.space.id }
                 )
-                Spacer(modifier = Modifier.height(12.dp))
             }
         }
     }
@@ -69,13 +84,12 @@ fun SpaceListScreen(
 fun SpaceListCardItem(
     spaceName: String,
     spaceStatus: SpaceStatus,
-    permissions: SpaceMemberPermissions
+    spaceIcon: SpaceIconView,
+    permissions: SpaceMemberPermissions,
+    modifier: Modifier = Modifier
 ) {
     ConstraintLayout(
-        modifier = Modifier
-            .padding(
-                horizontal = 10.dp,
-            )
+        modifier = modifier
             .border(
                 width = 0.5.dp,
                 color = colorResource(id = R.color.shape_primary),
@@ -85,20 +99,23 @@ fun SpaceListCardItem(
 
     ) {
         val (icon, title, subtitle, divider, dots, circle, network, status, footer) = createRefs()
-        Box(
+
+        SpaceIconView(
+            icon = spaceIcon,
+            onSpaceIconClick = {},
             modifier = Modifier
-                .size(48.dp)
-                .background(Color.Red)
                 .constrainAs(icon) {
                     top.linkTo(parent.top, margin = 16.dp)
                     start.linkTo(parent.start, margin = 16.dp)
-                }
+                },
+            mainSize = 48.dp,
+            gradientSize = 32.dp,
+            gradientCornerRadius = 4.dp
         )
 
         Box(
             modifier = Modifier
                 .size(24.dp)
-                .background(Color.Blue)
                 .constrainAs(dots) {
                     top.linkTo(parent.top, margin = 24.dp)
                     end.linkTo(parent.end, margin = 12.dp)
@@ -149,7 +166,26 @@ fun SpaceListCardItem(
         Box(
             modifier = Modifier
                 .size(8.dp)
-                .background(Color.Green, CircleShape)
+                .background(
+                    color = when (spaceStatus) {
+                        SpaceStatus.SPACE_ACTIVE, SpaceStatus.UNKNOWN -> colorResource(
+                            id = R.color.palette_system_green
+                        )
+
+                        SpaceStatus.SPACE_JOINING -> colorResource(
+                            id = R.color.palette_system_amber_100
+                        )
+
+                        SpaceStatus.SPACE_REMOVING -> colorResource(
+                            id = R.color.palette_system_red
+                        )
+
+                        else -> colorResource(
+                            id = R.color.palette_dark_grey
+                        )
+                    },
+                    shape = CircleShape
+                )
                 .constrainAs(circle) {
                     start.linkTo(parent.start, margin = 16.dp)
                     top.linkTo(network.top)
@@ -168,7 +204,18 @@ fun SpaceListCardItem(
         )
 
         Text(
-            text = spaceStatus.toString().lowercase(),
+            text = when(spaceStatus) {
+                SpaceStatus.SPACE_ACTIVE, SpaceStatus.UNKNOWN -> stringResource(
+                    id = R.string.multiplayer_space_status_active
+                )
+                SpaceStatus.SPACE_JOINING -> stringResource(
+                    id = R.string.multiplayer_space_status_joining
+                )
+                SpaceStatus.SPACE_REMOVING -> stringResource(
+                    id = R.string.multiplayer_space_status_removing
+                )
+                else -> spaceStatus.code.toString()
+            },
             style = Relations3,
             color = colorResource(id = R.color.text_primary),
             modifier = Modifier.constrainAs(status) {
@@ -199,7 +246,8 @@ private fun SpaceCardItemPreview() {
     SpaceListCardItem(
         spaceName = "Architecture",
         spaceStatus = SpaceStatus.SPACE_ACTIVE,
-        permissions = SpaceMemberPermissions.OWNER
+        permissions = SpaceMemberPermissions.OWNER,
+        spaceIcon = SpaceIconView.Placeholder
     )
 }
 

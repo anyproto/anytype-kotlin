@@ -44,7 +44,6 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.Title1
-import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.ui_settings.R
 import kotlinx.coroutines.FlowPreview
@@ -117,38 +116,15 @@ fun SpaceNameBlock() {
 }
 
 @Composable
-fun SpaceImageBlock(
+fun SpaceIconView(
     icon: SpaceIconView?,
     onSpaceIconClick: () -> Unit,
     mainSize: Dp = 96.dp,
-    emojiSize: Dp = 48.dp,
     gradientSize: Dp = 64.dp,
     gradientBackground: Color = colorResource(id = R.color.default_gradient_background),
     gradientCornerRadius: Dp = 8.dp
 ) {
     when (icon) {
-        is SpaceIconView.Emoji -> {
-            Box(
-                modifier = Modifier
-                    .size(mainSize)
-                    .clip(RoundedCornerShape(16.dp))
-                    .noRippleClickable { onSpaceIconClick.invoke() }
-                    .background(color = colorResource(id = R.color.glyph_selected))
-            ) {
-                Image(
-                    painter = rememberAsyncImagePainter(
-                        model = Emojifier.safeUri(icon.unicode),
-                        error = painterResource(id = R.drawable.ic_home_widget_space)
-                    ),
-                    contentDescription = "Emoji space icon",
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .size(emojiSize)
-                        .clip(RoundedCornerShape(16.dp)),
-                    contentScale = ContentScale.Crop
-                )
-            }
-        }
         is SpaceIconView.Image -> {
             Image(
                 painter = rememberAsyncImagePainter(

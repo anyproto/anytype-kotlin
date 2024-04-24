@@ -44,7 +44,7 @@ import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.spaces.SelectSpaceView
 import com.anytypeio.anytype.presentation.spaces.WorkspaceView
-import com.anytypeio.anytype.ui_settings.main.SpaceImageBlock
+import com.anytypeio.anytype.ui_settings.main.SpaceIconView
 
 @Composable
 fun SelectSpaceScreen(
@@ -153,7 +153,7 @@ private fun SelectSpaceSpaceItem(
                         Modifier
                 )
         ) {
-            SpaceImageBlock(
+            SpaceIconView(
                 icon = item.view.icon,
                 onSpaceIconClick = throttledClick(
                     onClick = { onSpaceClicked(item.view) }

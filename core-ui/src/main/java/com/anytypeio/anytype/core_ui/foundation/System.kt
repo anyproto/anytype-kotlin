@@ -43,10 +43,11 @@ fun Section(
 
 @Composable
 fun Header(
-    text: String
+    text: String,
+    modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .height(48.dp)
             .fillMaxWidth()
     ) {

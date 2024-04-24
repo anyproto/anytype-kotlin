@@ -47,7 +47,7 @@ import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
-import com.anytypeio.anytype.ui_settings.main.SpaceImageBlock
+import com.anytypeio.anytype.ui_settings.main.SpaceIconView
 import com.anytypeio.anytype.ui_settings.space.TypeOfSpace
 
 @Composable
@@ -163,7 +163,7 @@ fun SpaceIcon(
     onSpaceIconClicked: () -> Unit
 ) {
     Box(modifier = modifier.wrapContentSize()) {
-        SpaceImageBlock(
+        SpaceIconView(
             icon = spaceIconView,
             onSpaceIconClick = onSpaceIconClicked
         )

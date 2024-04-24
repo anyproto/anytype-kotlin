@@ -44,7 +44,7 @@ import com.anytypeio.anytype.presentation.settings.FilesStorageViewModel.ScreenS
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.ui_settings.R
 import com.anytypeio.anytype.ui_settings.fstorage.MockFileStorage.mockData
-import com.anytypeio.anytype.ui_settings.main.SpaceImageBlock
+import com.anytypeio.anytype.ui_settings.main.SpaceIconView
 
 @Composable
 fun LocalStorageScreen(
@@ -209,11 +209,10 @@ fun RemoteStorageScreen(
                 modifier = Modifier
                     .height(48.dp)
             ) {
-                SpaceImageBlock(
+                SpaceIconView(
                     icon = data.spaceIcon,
                     onSpaceIconClick = {},
                     mainSize = 48.dp,
-                    emojiSize = 24.dp,
                     gradientSize = 36.dp
                 )
                 Column(

@@ -46,7 +46,7 @@ fun SpaceHeader(
     }
     Box(modifier = modifier.padding(bottom = 16.dp)) {
         if (icon != null) {
-            SpaceImageBlock(
+            SpaceIconView(
                 icon = icon,
                 onSpaceIconClick = {
                     if (isEditEnabled) {

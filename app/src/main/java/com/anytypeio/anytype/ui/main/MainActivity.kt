@@ -1,7 +1,9 @@
 package com.anytypeio.anytype.ui.main
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -12,12 +14,18 @@ import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.app.AnytypeNotificationService
+import com.anytypeio.anytype.app.AnytypeNotificationService.Companion.NOTIFICATION_TYPE
 import com.anytypeio.anytype.app.DefaultAppActionManager
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.Wallpaper
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.core_utils.ext.parseActionSendMultipleUris
 import com.anytypeio.anytype.core_utils.ext.parseActionSendUri
@@ -28,15 +36,24 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.theme.GetTheme
 import com.anytypeio.anytype.middleware.discovery.MDNSProvider
 import com.anytypeio.anytype.navigation.Navigator
-import com.anytypeio.anytype.other.DEEP_LINK_PATTERN
+import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
+import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.main.MainViewModel
 import com.anytypeio.anytype.presentation.main.MainViewModel.Command
 import com.anytypeio.anytype.presentation.main.MainViewModelFactory
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
+import com.anytypeio.anytype.presentation.notifications.NotificationAction
+import com.anytypeio.anytype.presentation.notifications.NotificationCommand
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
 import com.anytypeio.anytype.ui.editor.CreateObjectFragment
+import com.anytypeio.anytype.ui.editor.EditorFragment
+import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
+import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
+import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
+import com.anytypeio.anytype.ui.multiplayer.SpaceJoinRequestFragment
 import com.anytypeio.anytype.ui.notifications.NotificationsFragment
+import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.sharing.SharingFragment
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
 import com.github.javiersantos.appupdater.AppUpdater
@@ -92,6 +109,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                     vm.toasts.collect { toast(it) }
                 }
                 launch {
+                    vm.dispatcher.collect { command ->
+                        proceedWithNotificationCommand(command)
+                    }
+                }
+                launch {
                     vm.commands.collect { command ->
                         when (command) {
                             is Command.ShowDeletedAccountScreen -> {
@@ -144,8 +166,82 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                             is Command.Error -> {
                                 toast(command.msg)
                             }
-                            Command.Notifications -> {
+                            is Command.Notifications -> {
                                 NotificationsFragment().show(supportFragmentManager, null)
+                            }
+                            is Command.RequestNotificationPermission -> {
+                                runCatching {
+                                    findNavController(R.id.fragment).navigate(
+                                        R.id.requestNotificationPermissionDialog
+                                    )
+                                }.onFailure {
+                                    Timber.e(it, "Error while navigation")
+                                }
+                            }
+                            is Command.Navigate -> {
+                                when(val dest = command.destination) {
+                                    is OpenObjectNavigation.OpenDataView -> {
+                                        runCatching {
+                                            findNavController(R.id.fragment).navigate(
+                                                R.id.dataViewNavigation,
+                                                args = ObjectSetFragment.args(
+                                                    ctx = dest.target,
+                                                    space = dest.space
+                                                ),
+                                                navOptions = NavOptions.Builder()
+                                                    .setPopUpTo(R.id.homeScreen, true)
+                                                    .build()
+                                            )
+                                        }.onFailure {
+                                            Timber.e(it, "Error while data view navigation")
+                                        }
+                                    }
+                                    is OpenObjectNavigation.OpenEditor -> {
+                                        runCatching {
+                                            findNavController(R.id.fragment).navigate(
+                                                R.id.objectNavigation,
+                                                args = EditorFragment.args(
+                                                    ctx = dest.target,
+                                                    space = dest.space
+                                                ),
+                                                navOptions = NavOptions.Builder()
+                                                    .setPopUpTo(R.id.homeScreen, true)
+                                                    .build()
+                                            )
+                                        }.onFailure {
+                                            Timber.e(it, "Error while editor navigation")
+                                        }
+                                    }
+                                    is OpenObjectNavigation.UnexpectedLayoutError -> {
+                                        toast(getString(R.string.error_unexpected_layout))
+                                    }
+                                }
+                            }
+                            is Command.Deeplink.DeepLinkToObjectNotWorking -> {
+                                toast(getString(R.string.multiplayer_deeplink_to_your_object_error))
+                            }
+                            is Command.Deeplink.GalleryInstallation -> {
+                                runCatching {
+                                    findNavController(R.id.fragment).navigate(
+                                        R.id.galleryInstallationScreen,
+                                        GalleryInstallationFragment.args(
+                                            deepLinkType = command.deepLinkType,
+                                            deepLinkSource = command.deepLinkSource
+                                        )
+                                    )
+                                }.onFailure {
+                                    Timber.e(it, "Error while navigation for deep link gallery installation")
+                                }
+                            }
+                            is Command.Deeplink.Invite -> {
+                                runCatching {
+                                    findNavController(R.id.fragment).navigate(
+                                        R.id.requestJoinSpaceScreen,
+                                        RequestJoinSpaceFragment.args(link = command.link)
+                                    )
+                                }.onFailure {
+                                    Timber.e(it, "Error while navigation for deep link invite")
+                                }
                             }
                         }
                     }
@@ -153,11 +249,13 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
             }
         }
         if (savedInstanceState == null) {
-            Timber.d("onSaveInstanceStateNotNull")
+            Timber.d("onSaveInstanceStateNull")
             val action = intent.action
             if (action == Intent.ACTION_SEND || action == Intent.ACTION_SEND_MULTIPLE) {
                 proceedWithShareIntent(intent)
             }
+        } else {
+            Timber.d("onSaveInstanceStateNotNull")
         }
     }
 
@@ -191,14 +289,14 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     }
 
     override fun onNewIntent(intent: Intent?) {
-        Timber.d("onNewIntent")
         super.onNewIntent(intent)
+        Timber.d("onNewIntent")
         if (intent != null) {
             when(intent.action) {
                 Intent.ACTION_VIEW -> {
                     val data = intent.dataString
-                    if (data != null && data.contains(DEEP_LINK_PATTERN)) {
-                        deepLink = data
+                    if (data != null && DefaultDeepLinkResolver.isDeepLink(data)) {
+                        vm.onNewDeepLink(DefaultDeepLinkResolver.resolve(data))
                     } else {
                         intent.extras?.getString(DefaultAppActionManager.ACTION_CREATE_NEW_TYPE_KEY)?.let {
                             vm.onIntentCreateObject(it)
@@ -206,10 +304,13 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                     }
                 }
                 Intent.ACTION_SEND -> {
-                    proceedWithShareIntent(intent)
+                    proceedWithShareIntent(intent, checkDeepLink = true)
                 }
                 Intent.ACTION_SEND_MULTIPLE -> {
-                    proceedWithShareIntent(intent)
+                    proceedWithShareIntent(intent, checkDeepLink = true)
+                }
+                AnytypeNotificationService.NOTIFICATION_INTENT_ACTION -> {
+                    proceedWithNotificationIntent(intent)
                 }
             }
         }
@@ -218,14 +319,18 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         }
     }
 
-    private fun proceedWithShareIntent(intent: Intent) {
+    /**
+     * Main activity is responsible only for checking new deep links.
+     * Launch deep links are handled by SplashFragment.
+     */
+    private fun proceedWithShareIntent(intent: Intent, checkDeepLink: Boolean = false) {
         if (BuildConfig.DEBUG) Timber.d("Proceeding with share intent: $intent")
         when {
             intent.type == Mimetype.MIME_TEXT_PLAIN.value -> {
                 val raw = intent.getStringExtra(Intent.EXTRA_TEXT)
                 if (raw != null) {
-                    if (raw.contains(DEEP_LINK_PATTERN)) {
-                        deepLink = raw
+                    if (checkDeepLink && DefaultDeepLinkResolver.isDeepLink(raw)) {
+                        vm.onNewDeepLink(DefaultDeepLinkResolver.resolve(raw))
                     } else if (raw.isNotEmpty()) {
                         vm.onIntentTextShare(raw)
                     }
@@ -266,6 +371,100 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                 vm.onIntentMultipleImageShare(listOf(uri))
             } else {
                 toast("Could not parse URI")
+            }
+        }
+    }
+
+    private fun proceedWithNotificationIntent(intent: Intent) {
+        when(val type = intent.getIntExtra(NOTIFICATION_TYPE, -1)) {
+            AnytypeNotificationService.REQUEST_TO_JOIN_TYPE -> {
+                val space = intent.getStringExtra(Relations.SPACE_ID)
+                val identity = intent.getStringExtra(Relations.IDENTITY)
+                if (!space.isNullOrEmpty() && !identity.isNullOrEmpty()) {
+                    val notification = intent.getStringExtra(AnytypeNotificationService.NOTIFICATION_ID_KEY).orEmpty()
+                    vm.onInterceptNotificationAction(
+                        action = NotificationAction.Multiplayer.ViewSpaceJoinRequest(
+                            notification = notification,
+                            space = SpaceId(space),
+                            identity = identity
+                        )
+                    )
+                } else {
+                    Timber.w("Missing space or identity")
+                }
+            }
+            AnytypeNotificationService.REQUEST_TO_LEAVE_TYPE -> {
+                val space = intent.getStringExtra(Relations.SPACE_ID)
+                val identity = intent.getStringExtra(Relations.IDENTITY)
+                if (!space.isNullOrEmpty() && !identity.isNullOrEmpty()) {
+                    val notification = intent.getStringExtra(AnytypeNotificationService.NOTIFICATION_ID_KEY).orEmpty()
+                    vm.onInterceptNotificationAction(
+                        action = NotificationAction.Multiplayer.ViewSpaceLeaveRequest(
+                            notification = notification,
+                            space = SpaceId(space)
+                        )
+                    )
+                } else {
+                    Timber.w("Missing space or identity")
+                }
+            }
+            AnytypeNotificationService.REQUEST_APPROVED_TYPE -> {
+                val space = intent.getStringExtra(Relations.SPACE_ID)
+                if (!space.isNullOrEmpty()) {
+                    val notification = intent
+                        .getStringExtra(AnytypeNotificationService.NOTIFICATION_ID_KEY)
+                        .orEmpty()
+                    vm.onInterceptNotificationAction(
+                        action = NotificationAction.Multiplayer.GoToSpace(
+                            notification = notification,
+                            space = SpaceId(space)
+                        )
+                    )
+                }
+            }
+            else -> {
+                toast("Unknown type: $type")
+            }
+        }
+    }
+
+    private fun proceedWithNotificationCommand(command: NotificationCommand) {
+        when (command) {
+            is NotificationCommand.ViewSpaceJoinRequest -> {
+                runCatching {
+                    findNavController(R.id.fragment).navigate(
+                        R.id.spaceJoinRequestScreen,
+                        SpaceJoinRequestFragment.args(
+                            space = command.space,
+                            member = command.member,
+                            analyticsRoute = EventsDictionary.Routes.notification
+                        )
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while navigation")
+                }
+            }
+
+            is NotificationCommand.ViewSpaceLeaveRequest -> {
+                runCatching {
+                    findNavController(R.id.fragment).navigate(
+                        R.id.shareSpaceScreen,
+                        ShareSpaceFragment.args(space = command.space)
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while navigation")
+                }
+            }
+
+            is NotificationCommand.GoToSpace -> {
+                runCatching {
+                    findNavController(R.id.fragment).popBackStack(
+                        R.id.homeScreen,
+                        inclusive = true
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while navigation")
+                }
             }
         }
     }
@@ -319,6 +518,29 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         super.onDestroy()
         mdnsProvider.stop()
         release()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        runCatching {
+            permissions.forEachIndexed { index, permission ->
+                when(permission) {
+                    Manifest.permission.POST_NOTIFICATIONS -> {
+                        val result = grantResults[index]
+                        if (result == PackageManager.PERMISSION_GRANTED)
+                            vm.onNotificationPermissionGranted()
+                        else
+                            vm.onNotificationPermissionDenied()
+                    }
+                }
+            }
+        }.onFailure {
+            Timber.e(it, "Error while handling permission results")
+        }
     }
 
     override fun nav(): AppNavigation = navigator

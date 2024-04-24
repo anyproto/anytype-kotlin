@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.NEARBY_WIFI_DEVICES"
         android:usesPermissionFlags="neverForLocation" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
@@ -36,28 +37,34 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <intent-filter android:label="filter">
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data
-                    android:host="https://anytype.io"
-                    android:pathPrefix="/main"
-                    android:scheme="http" />
+                <data android:scheme="anytype" />
+                <data android:host="main" />
             </intent-filter>
-            <intent-filter android:label="Anytype DEEP LINK">
+            <intent-filter android:label="Anytype Invite" android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="anytype"
-                    android:host="main" />
+                <data android:scheme="https"/>
+                <data android:scheme="http"/>
+                <data android:host="invite.any.coop" />
             </intent-filter>
-            <intent-filter android:label="Anytype DEEP LINK for invites">
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="anytype"
-                    android:host="invite" />
+                <data android:scheme="anytype" />
+                <data android:host="invite" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="anytype" />
+                <data android:host="object" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -106,7 +113,6 @@
         <meta-data
             android:name="io.sentry.dsn"
             android:value="@string/SENTRY_DSN" />
-
     </application>
 
 </manifest>

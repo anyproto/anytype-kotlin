@@ -3,6 +3,12 @@ package com.anytypeio.anytype.presentation.multiplayer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsDictionary.rejectInviteRequest
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
+import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
@@ -36,7 +42,8 @@ class SpaceJoinRequestViewModel(
     private val declineSpaceJoinRequest: DeclineSpaceJoinRequest,
     private val searchObjects: SearchObjects,
     private val spaceManager: SpaceManager,
-    private val urlBuilder: UrlBuilder
+    private val urlBuilder: UrlBuilder,
+    private val analytics: Analytics
 ): BaseViewModel() {
 
     val isDismissed = MutableStateFlow(false)
@@ -129,6 +136,15 @@ class SpaceJoinRequestViewModel(
                 }
             }
         }
+
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.screenInviteConfirm,
+                props = Props(
+                    mapOf(EventsPropertiesKey.route to params.route)
+                )
+            )
+        }
     }
 
     private suspend fun getMembers(config: Config) {
@@ -172,6 +188,7 @@ class SpaceJoinRequestViewModel(
                         )
                     ).fold(
                         onSuccess = {
+                            analytics.sendEvent(eventName = rejectInviteRequest)
                             isDismissed.value = true
                         },
                         onFailure = { e ->
@@ -204,6 +221,14 @@ class SpaceJoinRequestViewModel(
                         )
                     ).fold(
                         onSuccess = {
+                            analytics.sendEvent(
+                                eventName = EventsDictionary.approveInviteRequest,
+                                props = Props(
+                                    mapOf(
+                                        EventsPropertiesKey.type to "Read"
+                                    )
+                                )
+                            )
                             isDismissed.value = true
                         },
                         onFailure = { e ->
@@ -236,6 +261,14 @@ class SpaceJoinRequestViewModel(
                         )
                     ).fold(
                         onSuccess = {
+                            analytics.sendEvent(
+                                eventName = EventsDictionary.approveInviteRequest,
+                                props = Props(
+                                    mapOf(
+                                        EventsPropertiesKey.type to "Write"
+                                    )
+                                )
+                            )
                             isDismissed.value = true
                         },
                         onFailure = { e ->
@@ -255,7 +288,8 @@ class SpaceJoinRequestViewModel(
         private val declineSpaceJoinRequest: DeclineSpaceJoinRequest,
         private val searchObjects: SearchObjects,
         private val spaceManager: SpaceManager,
-        private val urlBuilder: UrlBuilder
+        private val urlBuilder: UrlBuilder,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = SpaceJoinRequestViewModel(
@@ -264,11 +298,12 @@ class SpaceJoinRequestViewModel(
             approveJoinSpaceRequest = approveJoinSpaceRequest,
             searchObjects = searchObjects,
             spaceManager = spaceManager,
-            urlBuilder = urlBuilder
+            urlBuilder = urlBuilder,
+            analytics = analytics
         ) as T
     }
 
-    data class Params(val space: SpaceId, val member: Id)
+    data class Params(val space: SpaceId, val member: Id, val route: String)
 
     sealed class State {
         object Init : State()

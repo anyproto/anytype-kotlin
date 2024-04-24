@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.objects
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
@@ -351,4 +352,8 @@ suspend fun ObjectWrapper.Basic.objects(
         result.add(wrapper.toObjectView(urlBuilder))
     }
     return result
+}
+
+fun ObjectWrapper.File.getProperName(): String {
+    return "${name.orEmpty()}.$fileExt"
 }

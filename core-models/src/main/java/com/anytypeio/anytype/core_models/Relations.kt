@@ -89,6 +89,8 @@ object Relations {
     const val READERS_LIMIT = "readersLimit"
     const val WRITERS_LIMIT = "writersLimit"
 
+    const val SHARED_SPACES_LIMIT = "sharedSpacesLimit"
+
     val systemRelationKeys = listOf(
         "id",
         "name",
@@ -146,6 +148,7 @@ object Relations {
         "relationReadonlyValue",
         "relationDefaultValue",
         "relationFormatObjectTypes",
-        "relationOptionColor"
+        "relationOptionColor",
+        "sharedSpacesLimit"
     )
 }

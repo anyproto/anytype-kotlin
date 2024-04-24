@@ -1159,7 +1159,10 @@ open class ObjectSetFragment :
                 findNavController().safeNavigate(
                     R.id.objectSetScreen,
                     R.id.action_objectSetScreen_to_objectSetCoverScreen,
-                    bundleOf(SelectCoverObjectSetFragment.CTX_KEY to command.ctx)
+                    SelectCoverObjectSetFragment.args(
+                        ctx = command.ctx,
+                        space = command.space
+                    )
                 )
             }
             is ObjectSetCommand.Modal.CreateBookmark -> {

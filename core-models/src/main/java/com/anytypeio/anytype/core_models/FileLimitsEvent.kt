@@ -10,4 +10,7 @@ sealed class FileLimitsEvent {
         val spaceId: String,
         val fileId: String
     ) : FileLimitsEvent()
+    data class FileLimitUpdated(
+        val bytesLimit: Long
+    ) : FileLimitsEvent()
 }

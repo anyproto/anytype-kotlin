@@ -33,7 +33,6 @@ import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.sets.RelationTextValueView
 import com.anytypeio.anytype.presentation.sets.RelationTextValueViewModel
 import com.anytypeio.anytype.presentation.sets.RelationValueAction
-import com.google.android.material.R.id.spacer
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import javax.inject.Inject
 import timber.log.Timber
@@ -84,22 +83,18 @@ open class RelationTextValueFragment :
             val parsed = input?.text?.toString().orEmpty()
             // Workaround for updating relation value when before reloading content
             if (action is RelationValueAction.Url.Reload) {
-                if (parsed != action.url) {
-                    withParent<TextValueEditReceiver> {
-                        onTextValueChanged(
-                            ctx = ctx,
-                            relationKey = relationKey,
-                            objectId = objectId,
-                            text = parsed
-                        )
-                    }
-                    vm.onAction(
-                        target = objectId,
-                        action = action.copy(url = parsed)
+                withParent<TextValueEditReceiver> {
+                    onTextValueChanged(
+                        ctx = ctx,
+                        relationKey = relationKey,
+                        objectId = objectId,
+                        text = parsed
                     )
-                } else {
-                    toast(getString(R.string.enter_value))
                 }
+                vm.onAction(
+                    target = objectId,
+                    action = action.copy(url = parsed)
+                )
             } else {
                 vm.onAction(
                     target = objectId,

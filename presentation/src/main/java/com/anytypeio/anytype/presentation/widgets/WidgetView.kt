@@ -8,7 +8,6 @@ import com.anytypeio.anytype.core_models.SpaceType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.model.Indent
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
 sealed class WidgetView {
@@ -93,9 +92,10 @@ sealed class WidgetView {
     sealed class SpaceWidget: WidgetView() {
         override val id: Id get() = SpaceWidgetContainer.SPACE_WIDGET_SUBSCRIPTION
         data class View(
-            val space: ObjectWrapper.Basic,
+            val space: ObjectWrapper.SpaceView,
             val icon: SpaceIconView,
             val type: SpaceType,
+            val membersCount: Int
         ) : SpaceWidget() {
             val isShared: Boolean get() = type == SHARED_SPACE_TYPE
         }
@@ -132,8 +132,7 @@ fun ObjectWrapper.Basic.getWidgetObjectName(): String? {
 }
 
 fun ObjectWrapper.Basic.widgetElementIcon(
-    builder: UrlBuilder,
-    gradientProvider: SpaceGradientProvider
+    builder: UrlBuilder
 ) : ObjectIcon {
     val img = iconImage
     val emoji = iconEmoji

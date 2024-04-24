@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -21,7 +20,7 @@ import com.anytypeio.anytype.core_utils.ui.BaseFragment
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.databinding.FragmentSplashBinding
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.other.DEEP_LINK_PATTERN
+import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import com.anytypeio.anytype.presentation.splash.SplashViewModelFactory
 import com.anytypeio.anytype.ui.editor.EditorFragment
@@ -137,8 +136,8 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                 Timber.d("Timber intent: ${intent}")
                 if (intent != null && intent.action == Intent.ACTION_VIEW) {
                     val data = intent.dataString
-                    if (data != null && data.contains(DEEP_LINK_PATTERN)) {
-                        vm.onDeepLink(data)
+                    if (data != null && DefaultDeepLinkResolver.isDeepLink(data)) {
+                        vm.onDeepLinkLaunch(data)
                     } else {
                         val bundle = intent.extras
                         if (bundle != null) {

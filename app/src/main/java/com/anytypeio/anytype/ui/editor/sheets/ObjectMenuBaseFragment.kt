@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.editor.sheets
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -156,6 +157,15 @@ abstract class ObjectMenuBaseFragment :
                 snackbar.anchorView = binding.anchor
                 snackbar.show()
             }
+            is ObjectMenuViewModelBase.Command.ShareDeeplinkToObject -> {
+                val intent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_TEXT, command.link)
+                    putExtra(Intent.EXTRA_TITLE, getString(R.string.multiplayer_deeplink_to_your_object))
+                    type = "text/plain"
+                }
+                startActivity(Intent.createChooser(intent, null))
+            }
         }
     }
 
@@ -226,7 +236,10 @@ abstract class ObjectMenuBaseFragment :
     private fun openSetCover() {
         findNavController().navigate(
             R.id.objectSetCoverScreen,
-            bundleOf(SelectCoverObjectSetFragment.CTX_KEY to ctx)
+            SelectCoverObjectSetFragment.args(
+                ctx = ctx,
+                space = space
+            )
         )
     }
 

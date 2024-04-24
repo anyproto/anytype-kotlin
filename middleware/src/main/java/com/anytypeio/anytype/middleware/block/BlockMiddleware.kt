@@ -864,6 +864,10 @@ class BlockMiddleware(
         return middleware.deleteRelationOptions(command)
     }
 
+    override suspend fun makeSpaceShareable(space: SpaceId) {
+        middleware.makeSpaceShareable(space = space)
+    }
+
     override suspend fun generateSpaceInviteLink(space: SpaceId): SpaceInviteLink {
         return middleware.generateSpaceInviteLink(space)
     }

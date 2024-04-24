@@ -1,5 +1,4 @@
 <resources>
-    <string name="amplitude_api_key">1ba981d1a9afb8af8c81847ef3383a20</string>
-    <string name="amplitude_api_key_debug">b9791dd64a1e9f07a330a4ac9feb1f10</string>
-    <string name="clipboard_panel_create_bookmark_from_clipboard">Create bookmark from clipboard</string>
+    <string name="amplitude_api_key" translatable="false">1ba981d1a9afb8af8c81847ef3383a20</string>
+    <string name="amplitude_api_key_debug" translatable="false">b9791dd64a1e9f07a330a4ac9feb1f10</string>
 </resources>

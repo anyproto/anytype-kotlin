@@ -1353,7 +1353,12 @@ class ObjectSetViewModel(
 
     fun onCoverClicked() {
         Timber.d("onCoverClicked, ")
-        dispatch(ObjectSetCommand.Modal.OpenCoverActionMenu(ctx = context))
+        dispatch(
+            ObjectSetCommand.Modal.OpenCoverActionMenu(
+                ctx = params.ctx,
+                space = params.space.id
+            )
+        )
     }
 
     fun onViewerSettingsClicked(viewer: Id) {
@@ -2015,7 +2020,8 @@ class ObjectSetViewModel(
                 .flatMapLatest { selectedType ->
                     templatesContainer.subscribeToTemplates(
                         type = selectedType.id,
-                        subId = "$context$SUBSCRIPTION_TEMPLATES_ID"
+                        space = params.space,
+                        subscription = "$context$SUBSCRIPTION_TEMPLATES_ID"
                     )
                 }.map { templates ->
                     val state = stateReducer.state.value

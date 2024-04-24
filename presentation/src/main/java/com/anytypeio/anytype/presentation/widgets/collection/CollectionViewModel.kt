@@ -261,7 +261,9 @@ class CollectionViewModel(
                 Subscription.Recent -> {
                     val config = spaceManager.getConfig()
                     if (config != null) {
-                        val spaceView = getSpaceView.async(params = config.spaceView)
+                        val spaceView = getSpaceView.async(
+                            params = GetSpaceView.Params.BySpaceViewId(config.spaceView)
+                        )
                         val spaceCreationDateInSeconds = spaceView
                             .getOrNull()
                             ?.getValue<Double?>(Relations.CREATED_DATE)

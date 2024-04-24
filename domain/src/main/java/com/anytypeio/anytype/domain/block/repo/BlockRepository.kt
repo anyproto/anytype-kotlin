@@ -433,6 +433,7 @@ interface BlockRepository {
     suspend fun debugStackGoroutines(path: String)
     suspend fun deleteRelationOption(command: Command.DeleteRelationOptions)
 
+    suspend fun makeSpaceShareable(space: SpaceId)
     suspend fun generateSpaceInviteLink(space: SpaceId) : SpaceInviteLink
     suspend fun revokeSpaceInviteLink(space: SpaceId)
     suspend fun approveSpaceRequest(

@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
@@ -37,6 +38,7 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.Unsubscriber
+import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
@@ -248,6 +250,12 @@ object HomeScreenModule {
         fun objectWatcherReducer(
             default: DefaultObjectViewReducer
         ): ObjectWatcher.Reducer
+
+        @PerScreen
+        @Binds
+        fun deepLinkToObjectDelegate(
+            default: DeepLinkToObjectDelegate.Default
+        ) : DeepLinkToObjectDelegate
     }
 }
 
@@ -269,4 +277,5 @@ interface HomeScreenDependencies : ComponentDependencies {
     fun spaceManager(): SpaceManager
     fun userPermissionProvider(): UserPermissionProvider
     fun notificationChannel(): NotificationsChannel
+    fun activeSpaceMembers() : ActiveSpaceMemberSubscriptionContainer
 }

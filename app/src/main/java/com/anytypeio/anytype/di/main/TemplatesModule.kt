@@ -5,7 +5,6 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
-import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.templates.DefaultObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import dagger.Module
@@ -30,11 +29,9 @@ object TemplatesModule {
     @Provides
     @Singleton
     fun provideTemplatesContainer(
-        storage: StorelessSubscriptionContainer,
-        spaceManager: SpaceManager
+        storage: StorelessSubscriptionContainer
     ): ObjectTypeTemplatesContainer =
         DefaultObjectTypeTemplatesContainer(
-            storage = storage,
-            spaceManager = spaceManager
+            storage = storage
         )
 }

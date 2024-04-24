@@ -48,7 +48,7 @@
     <string name="about_meta_info_for_copy">Gerät: %1$s\nAndroid Version: %2$d\nApp Version: %3$s\nBuild Nummer: %4$d\nLibrary Version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nGeräte\u00A0ID:\u00A0%7$s\nAnalyse\u00A0ID:\u00A0%8$s</string>
     <string name="space">Space</string>
     <string name="space_name">Space-Name</string>
-    <string name="default_space">Default space</string>
+    <string name="default_space">Entry space</string>
     <string name="space_settings_apply_random_gradient">Zufälligen Farbverlauf anwenden</string>
     <string name="delete_space">Space löschen</string>
     <string name="you_can_store">Du kannst bis zu %1$s deiner Dateien auf unserem verschlüsselten und kostenlosen Backup-Knoten speichern. Wenn das Limit erreicht wurde, werden Dateien nur noch lokal gespeichert.</string>
@@ -824,8 +824,8 @@
     <string name="anytype_update_alert_description">Einige deiner Daten wurden in einer neueren Version von Anytype verwaltet. Bitte aktualisiere die App, um mit allen Dokumenten und neuesten Funktionen zu arbeiten.</string>
     <string name="anytype_update_alert_title">Es ist Zeit für ein Update</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
-    <string name="space_type_default">Standard</string>
-    <string name="space_type_default_space">Default space</string>
+    <string name="space_type_default">Entry</string>
+    <string name="space_type_default_space">Entry space</string>
     <string name="space_type_private">Privat</string>
     <string name="space_type_private_space">privater Bereich</string>
     <string name="space_type_shared">Geteilt</string>
@@ -1065,8 +1065,8 @@
         <item quantity="other">%d backlinks</item>
     </plurals>
     <plurals name="links_from_count">
-        <item quantity="one">%d link</item>
-        <item quantity="other">%d links</item>
+        <item quantity="one">%d Link</item>
+        <item quantity="other">%d Links</item>
     </plurals>
     <!--region ORIGIN RELATION VALUES -->
     <string name="date_type_tomorrow">Morgen</string>
@@ -1141,12 +1141,13 @@
     <string name="multiplayer_view_request">Anfrage ansehen</string>
     <string name="multiplayer_owner">Eigentümer</string>
     <string name="multiplayer_can_edit">Darf bearbeiten</string>
-    <string name="multiplayer_can_view">Can view</string>
+    <string name="multiplayer_can_view">Darf ansehen</string>
     <string name="multiplayer_space_add_viewer">Viewer hinzufügen</string>
     <string name="multiplayer_space_add_editor">Editor hinzufügen</string>
     <string name="multiplayer_space_request_reject">Ablehnen</string>
     <string name="multiplayer_space_join_request_header">%1$s beantragte den Beitritt zu %2$s</string>
     <string name="multiplayer_remove_member">Mitglied entfernen</string>
+    <string name="multiplayer_remove_member_warning_text">%1$s will be removed from space</string>
     <string name="multiplayer_request_sent_toast">Anfrage gesendet</string>
     <string name="multiplayer_space_stop_sharing">Beende Teilen</string>
     <string name="multiplayer_space_stop_sharing_space">Stop sharing the space</string>
@@ -1179,14 +1180,25 @@
     <string name="multiplayer_notification_new_join_request">New join request</string>
     <string name="multiplayer_notification_member_joined_space_with_read_only_rights">%1$s joined %2$s space with read-only access rights</string>
     <string name="multiplayer_notification_member_joined_space_with_editor_only_rights">%1$s joined %2$s space with edit access rights</string>
+    <string name="multiplayer_notification_member_request_approved">Anfrage genehmigt</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Your request to join the %1$s space has been approved with read-only access rights. The space will be available on your device soon.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Your request to join the %1$s space has been approved with edit access rights. The space will be available on your device soon.</string>
     <string name="multiplayer_notification_member_removed_from_space">You have been removed from the space, or the space was deleted by the owner.</string>
+    <string name="multiplayer_notification_member_permissions_changed">Berechtigungen geändert</string>
     <string name="multiplayer_notification_member_permission_change_read">Your access rights were changed to read-only in the %1$s space.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Your access rights were changed to edit in the %1$s space.</string>
     <string name="multiplayer_notification_member_join_request_declined">Your request to join the %1$s space has been declined.</string>
+    <string name="multiplayer_notification_request_declined">Anfrage abgelehnt</string>
     <string name="multiplayer_notification_view_request">Ansicht</string>
-    <string name="multiplayer_toast_permission_not_allowed">Changing permissions is not allowed</string>
+    <string name="multiplayer_notification_go_to_space">Gehe zum Space</string>
+    <string name="multiplayer_toast_permission_not_allowed">Ändern von Berechtigungen ist nicht erlaubt</string>
+    <string name="multiplayer_deeplink_to_your_object">Deeplink to your object</string>
+    <string name="multiplayer_deeplink_to_your_object_error">This deeplink is not working. Object might be deleted or there might be issues with space access.</string>
+    <plurals name="multiplayer_number_of_space_members">
+        <item quantity="one">%1$d Mitglied</item>
+        <item quantity="other">%1$d Mitglieder</item>
+    </plurals>
+    <string name="multiplayer_you_as_member">du</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Mitgliedschaft</string>
@@ -1283,4 +1295,10 @@
     <string name="gallery_experience_alert_button_space">Open space</string>
     <string name="gallery_experience_alert_button_error">Schließen</string>
     <string name="three_dots_text_placeholder">...</string>
+    <string name="notifications_prompt_get_notified">Benachrichtigung erhalten</string>
+    <string name="notifications_prompt_secondary_button_text">Nicht jetzt</string>
+    <string name="notifications_prompt_description">Please enable notifications to stay informed about any requests to join or leave spaces.</string>
+    <string name="notifications_prompt_primary_button_text">Aktivieren</string>
+    <string name="clipboard_panel_create_bookmark_from_clipboard">Lesezeichen aus der Zwischenablage erstellen</string>
+    <string name="error_unexpected_layout">Error: unexpected layout</string>
 </resources>

@@ -48,7 +48,7 @@
     <string name="about_meta_info_for_copy">Apparaat: %1$s\nAndroid versie: %2$d\nApp versie: %3$s\nBuild nummer: %4$d\nbibliotheek versie: %5$s\nAccount:\u00A0ID:\u00A0%6$s\nApparaat\u00A0ID:\u00A0%7$s\nAnalyse\u00A0ID:\u00A0%8$s</string>
     <string name="space">Ruimte</string>
     <string name="space_name">Naam ruimte</string>
-    <string name="default_space">Default space</string>
+    <string name="default_space">Entry space</string>
     <string name="space_settings_apply_random_gradient">Pas willekeurig verloop toe</string>
     <string name="delete_space">Verwijder ruimte</string>
     <string name="you_can_store">Je kunt maximaal %1$s van je bestanden gratis opslaan op onze versleutelde back-up node. Als de limiet is bereikt, zullen bestanden alleen lokaal worden opgeslagen.</string>
@@ -824,8 +824,8 @@
     <string name="anytype_update_alert_description">Een deel van je gegevens werd beheerd door een nieuwere versie van Anytype. Update de app alsjeblieft om met al je documenten en de nieuwe functies te werken.</string>
     <string name="anytype_update_alert_title">Het is tijd om te updaten</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
-    <string name="space_type_default">Standaard</string>
-    <string name="space_type_default_space">Default space</string>
+    <string name="space_type_default">Entry</string>
+    <string name="space_type_default_space">Entry space</string>
     <string name="space_type_private">Persoonlijk</string>
     <string name="space_type_private_space">Privé ruimte</string>
     <string name="space_type_shared">Gedeeld</string>
@@ -1147,6 +1147,7 @@
     <string name="multiplayer_space_request_reject">Weiger</string>
     <string name="multiplayer_space_join_request_header">%1$s heeft verzocht om deel te nemen aan de ruimte %2$s</string>
     <string name="multiplayer_remove_member">Verwijder lid</string>
+    <string name="multiplayer_remove_member_warning_text">%1$s will be removed from space</string>
     <string name="multiplayer_request_sent_toast">Verzoek verzonden</string>
     <string name="multiplayer_space_stop_sharing">Stop met delen</string>
     <string name="multiplayer_space_stop_sharing_space">Stop sharing the space</string>
@@ -1179,14 +1180,25 @@
     <string name="multiplayer_notification_new_join_request">New join request</string>
     <string name="multiplayer_notification_member_joined_space_with_read_only_rights">%1$s joined %2$s space with read-only access rights</string>
     <string name="multiplayer_notification_member_joined_space_with_editor_only_rights">%1$s joined %2$s space with edit access rights</string>
+    <string name="multiplayer_notification_member_request_approved">Request approved</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Your request to join the %1$s space has been approved with read-only access rights. The space will be available on your device soon.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Your request to join the %1$s space has been approved with edit access rights. The space will be available on your device soon.</string>
     <string name="multiplayer_notification_member_removed_from_space">You have been removed from the space, or the space was deleted by the owner.</string>
+    <string name="multiplayer_notification_member_permissions_changed">Permissions changed</string>
     <string name="multiplayer_notification_member_permission_change_read">Your access rights were changed to read-only in the %1$s space.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Your access rights were changed to edit in the %1$s space.</string>
     <string name="multiplayer_notification_member_join_request_declined">Your request to join the %1$s space has been declined.</string>
+    <string name="multiplayer_notification_request_declined">Request declined</string>
     <string name="multiplayer_notification_view_request">Weergave</string>
+    <string name="multiplayer_notification_go_to_space">Ga naar ruimte</string>
     <string name="multiplayer_toast_permission_not_allowed">Changing permissions is not allowed</string>
+    <string name="multiplayer_deeplink_to_your_object">Deeplink to your object</string>
+    <string name="multiplayer_deeplink_to_your_object_error">This deeplink is not working. Object might be deleted or there might be issues with space access.</string>
+    <plurals name="multiplayer_number_of_space_members">
+        <item quantity="one">%1$d member</item>
+        <item quantity="other">%1$d members</item>
+    </plurals>
+    <string name="multiplayer_you_as_member">you</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Lidmaatschap</string>
@@ -1283,4 +1295,10 @@
     <string name="gallery_experience_alert_button_space">Open ruimte</string>
     <string name="gallery_experience_alert_button_error">Sluit</string>
     <string name="three_dots_text_placeholder">...</string>
+    <string name="notifications_prompt_get_notified">Get notified</string>
+    <string name="notifications_prompt_secondary_button_text">Not now</string>
+    <string name="notifications_prompt_description">Please enable notifications to stay informed about any requests to join or leave spaces.</string>
+    <string name="notifications_prompt_primary_button_text">Enable</string>
+    <string name="clipboard_panel_create_bookmark_from_clipboard">Create bookmark from clipboard</string>
+    <string name="error_unexpected_layout">Error: unexpected layout</string>
 </resources>

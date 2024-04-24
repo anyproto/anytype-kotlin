@@ -2,7 +2,6 @@ package com.anytypeio.anytype.domain.spaces
 
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.Logger
@@ -78,6 +77,6 @@ class SpaceDeletedStatusWatcher @Inject constructor(
     }
 
     companion object {
-        const val GLOBAL_SPACE_VIEW_SUBSCRIPTION = "subscription.global.space-view"
+        const val GLOBAL_SPACE_VIEW_SUBSCRIPTION = "subscription.global.space-view-deleted-status-watcher"
     }
 }

@@ -237,7 +237,7 @@ import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.getObjectTypeViewsForSBPage
 import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
-import com.anytypeio.anytype.presentation.objects.toView
+import com.anytypeio.anytype.presentation.objects.toViews
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
@@ -246,7 +246,6 @@ import com.anytypeio.anytype.presentation.relations.getObjectRelations
 import com.anytypeio.anytype.presentation.relations.views
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
-import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.sync.SyncStatusView
 import com.anytypeio.anytype.presentation.sync.toView
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
@@ -6049,10 +6048,9 @@ class EditorViewModel(
                 searchObjects(params).process(
                     success = { result ->
                         val objects = result
-                            .toView(
+                            .toViews(
                                 urlBuilder = urlBuilder,
-                                objectTypes = storeOfObjectTypes.getAll(),
-                                gradientProvider = SpaceGradientProvider.Default
+                                objectTypes = storeOfObjectTypes.getAll()
                             )
                             .filter {
                                 SupportedLayouts.layouts.contains(it.layout)

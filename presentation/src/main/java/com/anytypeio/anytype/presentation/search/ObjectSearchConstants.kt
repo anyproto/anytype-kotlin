@@ -597,7 +597,10 @@ object ObjectSearchConstants {
         Relations.SNIPPET,
         Relations.DONE,
         Relations.IDENTITY_PROFILE_LINK,
-        Relations.RESTRICTIONS
+        Relations.RESTRICTIONS,
+        Relations.SIZE_IN_BYTES,
+        Relations.FILE_MIME_TYPE,
+        Relations.FILE_EXT
     )
 
     val defaultOptionKeys = listOf(

@@ -16,7 +16,6 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProv
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueViewModel
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueViewModelFactory
-import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.relations.value.ObjectValueFragment
 import dagger.BindsInstance
@@ -46,11 +45,6 @@ interface ObjectValueObjectComponent {
 object ObjectValueObjectModule {
 
     @JvmStatic
-    @Provides
-    @PerModal
-    fun provideSpaceGradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Default
-
-    @JvmStatic
     @PerModal
     @Provides
     fun getSetObjectListIsArchived(
@@ -72,7 +66,6 @@ object ObjectValueObjectModule {
         objectSearch: SearchObjects,
         urlBuilder: UrlBuilder,
         storeOfObjectTypes: StoreOfObjectTypes,
-        gradientProvider: SpaceGradientProvider,
         objectListIsArchived: SetObjectListIsArchived,
         duplicateObject: DuplicateObject
     ): ObjectValueViewModelFactory = ObjectValueViewModelFactory(
@@ -86,7 +79,6 @@ object ObjectValueObjectModule {
         objectSearch = objectSearch,
         urlBuilder = urlBuilder,
         storeOfObjectTypes = storeOfObjectTypes,
-        gradientProvider = gradientProvider,
         objectListIsArchived = objectListIsArchived,
         duplicateObject = duplicateObject
     )
@@ -116,11 +108,6 @@ object ObjectValueSetModule {
     @JvmStatic
     @Provides
     @PerModal
-    fun provideSpaceGradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Default
-
-    @JvmStatic
-    @Provides
-    @PerModal
     fun provideFactory(
         @Named(ObjectRelationProvider.INTRINSIC_PROVIDER_TYPE) relations: ObjectRelationProvider,
         @Named(ObjectRelationProvider.INTRINSIC_PROVIDER_TYPE) values: ObjectValueProvider,
@@ -132,7 +119,6 @@ object ObjectValueSetModule {
         objectSearch: SearchObjects,
         urlBuilder: UrlBuilder,
         storeOfObjectTypes: StoreOfObjectTypes,
-        gradientProvider: SpaceGradientProvider,
         objectListIsArchived: SetObjectListIsArchived,
         duplicateObject: DuplicateObject
     ): ObjectValueViewModelFactory = ObjectValueViewModelFactory(
@@ -146,7 +132,6 @@ object ObjectValueSetModule {
         objectSearch = objectSearch,
         urlBuilder = urlBuilder,
         storeOfObjectTypes = storeOfObjectTypes,
-        gradientProvider = gradientProvider,
         objectListIsArchived = objectListIsArchived,
         duplicateObject = duplicateObject
     )
@@ -176,11 +161,6 @@ object ObjectValueDataViewModule {
     @JvmStatic
     @Provides
     @PerModal
-    fun provideSpaceGradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Default
-
-    @JvmStatic
-    @Provides
-    @PerModal
     fun provideFactory(
         @Named(ObjectRelationProvider.DATA_VIEW_PROVIDER_TYPE) relations: ObjectRelationProvider,
         @Named(ObjectRelationProvider.DATA_VIEW_PROVIDER_TYPE) values: ObjectValueProvider,
@@ -192,7 +172,6 @@ object ObjectValueDataViewModule {
         objectSearch: SearchObjects,
         urlBuilder: UrlBuilder,
         storeOfObjectTypes: StoreOfObjectTypes,
-        gradientProvider: SpaceGradientProvider,
         objectListIsArchived: SetObjectListIsArchived,
         duplicateObject: DuplicateObject
     ): ObjectValueViewModelFactory = ObjectValueViewModelFactory(
@@ -206,7 +185,6 @@ object ObjectValueDataViewModule {
         objectSearch = objectSearch,
         urlBuilder = urlBuilder,
         storeOfObjectTypes = storeOfObjectTypes,
-        gradientProvider = gradientProvider,
         objectListIsArchived = objectListIsArchived,
         duplicateObject = duplicateObject
     )

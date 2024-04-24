@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.extensions.getMimeIcon
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -41,6 +42,14 @@ fun ListWidgetObjectIcon(
         is ObjectIcon.Basic.Image -> DefaultObjectImageIcon(icon.hash, modifier, iconSize)
         is ObjectIcon.Bookmark -> DefaultObjectBookmarkIcon(icon.image, modifier, iconSize)
         is ObjectIcon.Task -> DefaultTaskObjectIcon(modifier, iconSize, icon, onTaskIconClicked)
+        is ObjectIcon.File -> {
+            DefaultFileObjectImageIcon(
+                fileName = icon.fileName.orEmpty(),
+                mime = icon.mime.orEmpty(),
+                modifier = modifier,
+                iconSize = iconSize
+            )
+        }
         else -> {
             // Draw nothing.
         }
@@ -172,4 +181,22 @@ private fun DefaultEmojiObjectIcon(
                 .align(Alignment.Center)
         )
     }
+}
+
+@Composable
+private fun DefaultFileObjectImageIcon(
+    fileName: String,
+    mime: String,
+    modifier: Modifier,
+    iconSize: Dp
+) {
+    val mimeIcon = mime.getMimeIcon(fileName)
+    Image(
+        painter = painterResource(id = mimeIcon),
+        contentDescription = "File icon",
+        contentScale = ContentScale.Crop,
+        modifier = modifier
+            .size(iconSize)
+            .clip(RoundedCornerShape(2.dp))
+    )
 }

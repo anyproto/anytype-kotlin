@@ -31,6 +31,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
@@ -44,7 +45,6 @@ import com.anytypeio.anytype.presentation.settings.FilesStorageViewModel.ScreenS
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.ui_settings.R
 import com.anytypeio.anytype.ui_settings.fstorage.MockFileStorage.mockData
-import com.anytypeio.anytype.ui_settings.main.SpaceImageBlock
 
 @Composable
 fun LocalStorageScreen(
@@ -209,11 +209,10 @@ fun RemoteStorageScreen(
                 modifier = Modifier
                     .height(48.dp)
             ) {
-                SpaceImageBlock(
-                    icon = data.spaceIcon,
+                SpaceIconView(
+                    icon = data.spaceIcon ?: SpaceIconView.Placeholder,
                     onSpaceIconClick = {},
                     mainSize = 48.dp,
-                    emojiSize = 24.dp,
                     gradientSize = 36.dp
                 )
                 Column(

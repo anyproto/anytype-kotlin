@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
+import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
@@ -46,7 +47,7 @@ fun SpaceHeader(
     }
     Box(modifier = modifier.padding(bottom = 16.dp)) {
         if (icon != null) {
-            SpaceImageBlock(
+            SpaceIconView(
                 icon = icon,
                 onSpaceIconClick = {
                     if (isEditEnabled) {

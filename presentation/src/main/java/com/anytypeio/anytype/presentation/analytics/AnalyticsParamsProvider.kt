@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.presentation.analytics
 
+import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -25,10 +27,21 @@ class DefaultAnalyticsParamsProvider constructor(
 
     private fun proceedWithObservingSpaceView(spaceId: SpaceId): AnalyticsParamsProvider.Params {
         val permissions = userPermissionProvider.get(spaceId)
-        val space = spaceViewContainer.get(spaceId)
+        val spaceType = spaceViewContainer.get(spaceId)?.spaceAccessType
         return AnalyticsParamsProvider.Params(
-            permission = permissions?.prettyName.orEmpty(),
-            spaceType = space?.spaceAccessType?.prettyName.orEmpty()
+            permission = when (permissions) {
+                SpaceMemberPermissions.READER -> "Reader"
+                SpaceMemberPermissions.WRITER -> "Writer"
+                SpaceMemberPermissions.OWNER -> "Owner"
+                SpaceMemberPermissions.NO_PERMISSIONS -> "NoPermissions"
+                null -> ""
+            },
+            spaceType = when (spaceType) {
+                SpaceAccessType.DEFAULT -> "Personal"
+                SpaceAccessType.PRIVATE -> "Private"
+                SpaceAccessType.SHARED -> "Shared"
+                else -> ""
+            }
         )
     }
 }

@@ -28,13 +28,12 @@ enum class ParticipantStatus(
 }
 
 enum class SpaceMemberPermissions(
-    val code: Int,
-    val prettyName: String
+    val code: Int
 ) {
-    READER(0, "Reader"),
-    WRITER(1, "Writer"),
-    OWNER(2, "Owner"),
-    NO_PERMISSIONS(3, "NoPermissions");
+    READER(0),
+    WRITER(1),
+    OWNER(2),
+    NO_PERMISSIONS(3);
 
     fun isOwnerOrEditor() : Boolean {
         return this == OWNER || this == WRITER
@@ -45,10 +44,10 @@ enum class SpaceMemberPermissions(
     }
 }
 
-enum class SpaceAccessType(val code: Int, val prettyName: String) {
-    PRIVATE(0, "Private"),
-    DEFAULT(1, "Personal"),
-    SHARED(2, "Shared")
+enum class SpaceAccessType(val code: Int) {
+    PRIVATE(0),
+    DEFAULT(1),
+    SHARED(2)
 }
 
 sealed class SpaceInviteError : Exception() {

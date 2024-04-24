@@ -30,7 +30,6 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvide
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.filterIdsById
-import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -53,7 +52,6 @@ class ObjectValueViewModel(
     private val objectSearch: SearchObjects,
     private val urlBuilder: UrlBuilder,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val gradientProvider: SpaceGradientProvider,
     private val objectListIsArchived: SetObjectListIsArchived,
     private val duplicateObject: DuplicateObject
 ) : BaseViewModel() {
@@ -224,8 +222,7 @@ class ObjectValueViewModel(
         ObjectValueItem.Object(
             view = obj.toView(
                 urlBuilder = urlBuilder,
-                objectTypes = storeOfObjectTypes.getAll(),
-                gradientProvider = gradientProvider
+                objectTypes = storeOfObjectTypes.getAll()
             ),
             isSelected = isSelected,
             number = number,

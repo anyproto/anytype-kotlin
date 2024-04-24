@@ -8,7 +8,6 @@ import com.anytypeio.anytype.core_models.SpaceType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.model.Indent
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
 sealed class WidgetView {
@@ -133,8 +132,7 @@ fun ObjectWrapper.Basic.getWidgetObjectName(): String? {
 }
 
 fun ObjectWrapper.Basic.widgetElementIcon(
-    builder: UrlBuilder,
-    gradientProvider: SpaceGradientProvider
+    builder: UrlBuilder
 ) : ObjectIcon {
     val img = iconImage
     val emoji = iconEmoji

@@ -81,8 +81,7 @@ class DataViewListWidgetContainer(
                                     WidgetView.SetOfObjects.Element(
                                         obj = obj,
                                         objectIcon = obj.widgetElementIcon(
-                                            builder = urlBuilder,
-                                            gradientProvider = gradientProvider
+                                            builder = urlBuilder
                                         )
                                     )
                                 },

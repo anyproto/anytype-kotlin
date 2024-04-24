@@ -68,7 +68,6 @@
     <string name="danger_zone">Zone de danger</string>
     <string name="snackbar_template_add">Le nouveau modèle a été ajouté au type</string>
     <string name="settings_membership">Adhésion</string>
-    <string name="default_text_placeholder">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
     <string name="default_url_placeholder">https://humanparts.medium.com/how-i-overcame-cult-trauma-with-psychedelics-4342c03a074c</string>
     <string name="multi_select_turn_into">Transformer en</string>
     <string name="multi_select_move_to">Déplacer vers</string>
@@ -1109,6 +1108,7 @@
     <!--region ONBOARDING ERRORS -->
     <string name="error_invalid_recovery_phrase">La phrase de récupération est invalide</string>
     <string name="network">Réseau</string>
+    <string name="network_with_colon">Réseau :</string>
     <string name="network_settings_anytype_network">Réseau Anytype</string>
     <string name="network_settings_anytype_network_description">Sauvegarde vers le réseau géré par Anytype</string>
     <string name="network_settings_local_only">Local seulement</string>
@@ -1154,7 +1154,7 @@
     <string name="multiplayer_space_stop_sharing_space_description">Les membres ne seront plus synchronisés à cet espace et le lien de partage sera désactivé.</string>
     <string name="multiplayer_more_info">Plus d\'infos</string>
     <string name="multiplayer_sharing">Partager</string>
-    <string name="multiplayer_space_type">Type d\'espace</string>
+    <string name="multiplayer_space_type">Type</string>
     <string name="multiplayer_share">Partager</string>
     <string name="multiplayer_manage">Gérer</string>
     <string name="multiplayer_leave_space">Quitter l\'espace</string>
@@ -1192,6 +1192,7 @@
     <string name="multiplayer_notification_view_request">Vue</string>
     <string name="multiplayer_notification_go_to_space">Aller à l\'espace</string>
     <string name="multiplayer_toast_permission_not_allowed">La modification des permissions n\'est pas autorisée</string>
+    <string name="multiplayer_toast_share_limit_reached">Sharing limit reached</string>
     <string name="multiplayer_deeplink_to_your_object">Lien profond vers votre objet</string>
     <string name="multiplayer_deeplink_to_your_object_error">Ce lien profond ne fonctionne pas. L\'objet peut être supprimé ou il peut y avoir des problèmes d\'accès à l\'espace.</string>
     <plurals name="multiplayer_number_of_space_members">
@@ -1199,6 +1200,10 @@
         <item quantity="other">%1$d members</item>
     </plurals>
     <string name="multiplayer_you_as_member">vous</string>
+    <string name="multiplayer_spaces">Espaces</string>
+    <string name="multiplayer_space_status_joining">Connexion</string>
+    <string name="multiplayer_space_status_active">Actif</string>
+    <string name="multiplayer_space_status_removing">Removed</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Adhésion</string>

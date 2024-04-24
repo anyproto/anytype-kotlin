@@ -109,11 +109,13 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
                                 findNavController().navigate(R.id.aboutAppScreen)
                             }
                         ),
-                        onSpacesClicked = {
-                            runCatching {
-                                findNavController().navigate(R.id.spaceListScreen)
+                        onSpacesClicked = throttledClick(
+                            onClick = {
+                                runCatching {
+                                    findNavController().navigate(R.id.spaceListScreen)
+                                }
                             }
-                        }
+                        )
                     )
                 }
             }

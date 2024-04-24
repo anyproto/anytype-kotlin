@@ -134,7 +134,7 @@ fun ProfileSettingsScreen(
         }
         item {
             Option(
-                image = R.drawable.ic_about,
+                image = R.drawable.ic_settings_spaces,
                 text = stringResource(R.string.multiplayer_spaces),
                 onClick = onSpacesClicked
             )

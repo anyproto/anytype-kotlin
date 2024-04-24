@@ -233,37 +233,34 @@ fun Struct.buildFileViews(
     details: Map<Id, Block.Fields>
 ): List<FileView> {
     val files = mutableListOf<FileView>()
-    val value = this.getOrDefault(relationKey, null)
-    if (value is Id) {
-        files.add(
-            FileView(
-                id = value,
-                name = details[value]?.name.orEmpty(),
-                mime = details[value]?.fileMimeType.orEmpty(),
-                ext = details[value]?.fileExt.orEmpty(),
-                icon = ObjectIcon.File(
-                    mime = details[value]?.fileMimeType.orEmpty(),
-                    fileName = details[value]?.name.orEmpty(),
-                )
-            )
-        )
-    } else if (value is List<*>) {
-        value.typeOf<Id>().forEach { id ->
-            files.add(
-                FileView(
-                    id = id,
-                    name = details[id]?.name.orEmpty(),
-                    mime = details[id]?.fileMimeType.orEmpty(),
-                    ext = details[id]?.fileExt.orEmpty(),
-                    icon = ObjectIcon.File(
-                        mime = details[id]?.fileMimeType.orEmpty(),
-                        fileName = details[id]?.name.orEmpty(),
-                    )
-                )
-            )
+    val ids = getOrDefault(relationKey, null) ?: return emptyList()
+    if (ids is Id) {
+        val map = details[ids]?.map ?: return emptyList()
+        val file = ObjectWrapper.File(map)
+        if (file.map.isEmpty() || file.isDeleted == true || file.isArchived == true) return emptyList()
+        files.add(file.toView())
+    } else if (ids is List<*>) {
+        ids.filterIsInstance<Id>().forEach { id ->
+            val map = details[id]?.map ?: return@forEach
+            val file = ObjectWrapper.File(map)
+            if (file.map.isEmpty() || file.isDeleted == true || file.isArchived == true) return@forEach
+            files.add(file.toView())
         }
     }
     return files
+}
+
+private fun ObjectWrapper.File.toView() : FileView {
+    return FileView(
+        id = id,
+        name = "${name.orEmpty()}.$fileExt",
+        mime = fileMimeType.orEmpty(),
+        ext = fileExt.orEmpty(),
+        icon = ObjectIcon.File(
+            mime = fileMimeType.orEmpty(),
+            fileName = name.orEmpty(),
+        )
+    )
 }
 
 fun Struct.buildRelationValueObjectViews(

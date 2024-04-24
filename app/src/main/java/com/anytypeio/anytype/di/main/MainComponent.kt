@@ -44,6 +44,7 @@ import com.anytypeio.anytype.di.feature.settings.SpacesStorageDependencies
 import com.anytypeio.anytype.di.feature.sharing.AddToAnytypeDependencies
 import com.anytypeio.anytype.di.feature.spaces.CreateSpaceDependencies
 import com.anytypeio.anytype.di.feature.spaces.SelectSpaceDependencies
+import com.anytypeio.anytype.di.feature.spaces.SpaceListDependencies
 import com.anytypeio.anytype.di.feature.spaces.SpaceSettingsDependencies
 import com.anytypeio.anytype.di.feature.templates.TemplateBlankDependencies
 import com.anytypeio.anytype.di.feature.templates.TemplateSelectDependencies
@@ -108,6 +109,7 @@ interface MainComponent :
     TemplateSelectDependencies,
     SelectSpaceDependencies,
     CreateSpaceDependencies,
+    SpaceListDependencies,
     SpaceSettingsDependencies,
     SelectObjectTypeDependencies,
     SpacesStorageDependencies,
@@ -264,6 +266,11 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(SelectSpaceDependencies::class)
     abstract fun provideSelectSpaceDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(SpaceListDependencies::class)
+    abstract fun provideSpaceListDependencies(component: MainComponent): ComponentDependencies
 
     @Binds
     @IntoMap

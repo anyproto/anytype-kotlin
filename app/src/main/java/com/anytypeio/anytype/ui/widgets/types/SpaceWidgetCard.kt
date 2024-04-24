@@ -23,11 +23,11 @@ import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SHARED_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SpaceType
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
+import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
-import com.anytypeio.anytype.ui_settings.main.SpaceImageBlock
 
 
 @Composable
@@ -84,12 +84,11 @@ fun SpaceWidgetCard(
                 .padding(start = 16.dp)
                 .align(Alignment.CenterStart)
         ) {
-            SpaceImageBlock(
+            SpaceIconView(
                 icon = icon,
                 onSpaceIconClick = { onClick() },
                 mainSize = 40.dp,
                 gradientSize = 24.dp,
-                emojiSize = 24.dp,
                 gradientCornerRadius = 2.dp
             )
         }

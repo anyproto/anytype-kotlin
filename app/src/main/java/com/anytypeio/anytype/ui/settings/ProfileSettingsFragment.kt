@@ -30,12 +30,12 @@ import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.other.MediaPermissionHelper
+import com.anytypeio.anytype.payments.viewmodel.PaymentsViewModel
+import com.anytypeio.anytype.payments.viewmodel.PaymentsViewModelFactory
 import com.anytypeio.anytype.ui.auth.account.DeleteAccountWarning
 import com.anytypeio.anytype.ui.profile.KeychainPhraseDialog
 import com.anytypeio.anytype.ui_settings.account.ProfileSettingsScreen
 import com.anytypeio.anytype.ui_settings.account.ProfileSettingsViewModel
-import com.anytypeio.anytype.payments.viewmodel.PaymentsViewModel
-import com.anytypeio.anytype.payments.viewmodel.PaymentsViewModelFactory
 import javax.inject.Inject
 import timber.log.Timber
 
@@ -121,6 +121,13 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
                             }
                         ),
                         activeTierName = viewModelPayments.activeTierName.collectAsStateWithLifecycle().value,
+                        onSpacesClicked = throttledClick(
+                            onClick = {
+                                runCatching {
+                                    findNavController().navigate(R.id.spaceListScreen)
+                                }
+                            }
+                        )
                     )
                 }
             }

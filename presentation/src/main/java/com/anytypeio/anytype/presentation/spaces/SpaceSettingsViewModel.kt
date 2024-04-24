@@ -278,10 +278,12 @@ class SpaceSettingsViewModel(
     fun onSharePrivateSpaceClicked() {
         viewModelScope.launch {
             val data = spaceViewState.value
-            if (data is ViewState.Success && !data.data.shareLimitReached) {
-                commands.emit(
-                    Command.SharePrivateSpace(params.space)
-                )
+            if (data is ViewState.Success) {
+                if (!data.data.shareLimitReached) {
+                    commands.emit(Command.SharePrivateSpace(params.space))
+                } else {
+                    commands.emit(Command.ShowShareLimitReachedError)
+                }
             }
         }
     }
@@ -305,6 +307,7 @@ class SpaceSettingsViewModel(
         data class ManageSharedSpace(val space: SpaceId) : Command()
         data object ShowDeleteSpaceWarning : Command()
         data object ShowLeaveSpaceWarning : Command()
+        data object ShowShareLimitReachedError : Command()
     }
 
     class Factory @Inject constructor(

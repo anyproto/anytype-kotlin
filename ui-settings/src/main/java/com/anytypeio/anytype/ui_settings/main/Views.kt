@@ -1,16 +1,10 @@
 package com.anytypeio.anytype.ui_settings.main
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -22,30 +16,19 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.toColorInt
-import coil.compose.rememberAsyncImagePainter
-import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.Title1
-import com.anytypeio.anytype.emojifier.Emojifier
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.ui_settings.R
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
@@ -114,93 +97,6 @@ fun SpaceNameBlock() {
         style = Title1,
         color = colorResource(id = R.color.text_primary)
     )
-}
-
-@Composable
-fun SpaceImageBlock(
-    icon: SpaceIconView?,
-    onSpaceIconClick: () -> Unit,
-    mainSize: Dp = 96.dp,
-    emojiSize: Dp = 48.dp,
-    gradientSize: Dp = 64.dp,
-    gradientBackground: Color = colorResource(id = R.color.default_gradient_background),
-    gradientCornerRadius: Dp = 8.dp
-) {
-    when (icon) {
-        is SpaceIconView.Emoji -> {
-            Box(
-                modifier = Modifier
-                    .size(mainSize)
-                    .clip(RoundedCornerShape(16.dp))
-                    .noRippleClickable { onSpaceIconClick.invoke() }
-                    .background(color = colorResource(id = R.color.glyph_selected))
-            ) {
-                Image(
-                    painter = rememberAsyncImagePainter(
-                        model = Emojifier.safeUri(icon.unicode),
-                        error = painterResource(id = R.drawable.ic_home_widget_space)
-                    ),
-                    contentDescription = "Emoji space icon",
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .size(emojiSize)
-                        .clip(RoundedCornerShape(16.dp)),
-                    contentScale = ContentScale.Crop
-                )
-            }
-        }
-        is SpaceIconView.Image -> {
-            Image(
-                painter = rememberAsyncImagePainter(
-                    model = icon.url,
-                    error = painterResource(id = R.drawable.ic_home_widget_space)
-                ),
-                contentDescription = "Custom image space icon",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(mainSize)
-                    .clip(RoundedCornerShape(4.dp))
-                    .noRippleClickable {
-                        onSpaceIconClick.invoke()
-                    }
-            )
-        }
-        is SpaceIconView.Gradient -> {
-            val gradient = Brush.radialGradient(
-                colors = listOf(
-                    Color(icon.from.toColorInt()),
-                    Color(icon.to.toColorInt())
-                )
-            )
-            Box(
-                modifier = Modifier
-                    .size(mainSize)
-                    .clip(RoundedCornerShape(gradientCornerRadius))
-                    .background(color = gradientBackground)
-                    .noRippleClickable { onSpaceIconClick.invoke() }
-            ) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .size(gradientSize)
-                        .clip(CircleShape)
-                        .background(gradient)
-                )
-            }
-
-        }
-        else -> {
-            Image(
-                painter = painterResource(id = R.drawable.ic_home_widget_space),
-                contentDescription = "Placeholder space icon",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(mainSize)
-                    .clip(RoundedCornerShape(4.dp))
-                    .noRippleClickable { onSpaceIconClick.invoke() }
-            )
-        }
-    }
 }
 
 @OptIn(ExperimentalMaterialApi::class)

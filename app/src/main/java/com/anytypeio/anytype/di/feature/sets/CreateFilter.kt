@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.filter.FilterViewModel
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -52,7 +53,8 @@ object CreateFilterModule {
         objectSetDatabase: ObjectSetDatabase,
         analytics: Analytics,
         getOptions: GetOptions,
-        spaceManager: SpaceManager
+        spaceManager: SpaceManager,
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ): FilterViewModel.Factory = FilterViewModel.Factory(
         objectState = state,
         dispatcher = dispatcher,
@@ -64,6 +66,7 @@ object CreateFilterModule {
         objectSetDatabase = objectSetDatabase,
         analytics = analytics,
         getOptions = getOptions,
-        spaceManager = spaceManager
+        spaceManager = spaceManager,
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
     )
 }

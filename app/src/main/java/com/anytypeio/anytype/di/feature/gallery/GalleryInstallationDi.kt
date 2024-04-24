@@ -11,7 +11,6 @@ import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.workspace.EventProcessChannel
 import com.anytypeio.anytype.gallery_experience.viewmodel.GalleryInstallationViewModel
 import com.anytypeio.anytype.gallery_experience.viewmodel.GalleryInstallationViewModelFactory
-import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
 import dagger.Binds
@@ -70,5 +69,4 @@ interface GalleryInstallationComponentDependencies : ComponentDependencies {
     fun urlBuilder(): UrlBuilder
     fun userPermissionProvider(): UserPermissionProvider
     fun eventProcessChannel(): EventProcessChannel
-    fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
 }

@@ -19,7 +19,6 @@ import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.ext.DefaultDateHelper
-import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.auth.account.DeletedAccountViewModel
 import com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment
 import dagger.Binds
@@ -108,5 +107,4 @@ interface DeletedAccountDependencies : ComponentDependencies {
     fun spaceDeletedStatusWatcher(): SpaceDeletedStatusWatcher
     fun awaitAccountStartManager(): AwaitAccountStartManager
     fun userPermissionProvider(): UserPermissionProvider
-    fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
 }

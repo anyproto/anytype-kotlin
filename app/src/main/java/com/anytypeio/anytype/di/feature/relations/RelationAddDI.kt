@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.GetRelations
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.relations.RelationAddToDataViewViewModel
 import com.anytypeio.anytype.presentation.relations.RelationAddToObjectViewModel
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
@@ -115,7 +116,8 @@ object RelationAddToDataViewModule {
         appCoroutineDispatchers: AppCoroutineDispatchers,
         getRelations: GetRelations,
         addObjectToWorkspace: AddObjectToWorkspace,
-        spaceManager: SpaceManager
+        spaceManager: SpaceManager,
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ): RelationAddToDataViewViewModel.Factory = RelationAddToDataViewViewModel.Factory(
         addRelationToDataView = addRelationToDataView,
         dispatcher = dispatcher,
@@ -126,7 +128,8 @@ object RelationAddToDataViewModule {
         appCoroutineDispatchers = appCoroutineDispatchers,
         getRelations = getRelations,
         addObjectToWorkspace = addObjectToWorkspace,
-        spaceManager = spaceManager
+        spaceManager = spaceManager,
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
     )
 
     @JvmStatic

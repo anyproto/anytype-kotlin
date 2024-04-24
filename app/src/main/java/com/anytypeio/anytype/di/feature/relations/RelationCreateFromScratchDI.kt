@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.CreateRelation
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.relations.RelationCreateFromScratchForDataViewViewModel
 import com.anytypeio.anytype.presentation.relations.RelationCreateFromScratchForObjectBlockViewModel
 import com.anytypeio.anytype.presentation.relations.RelationCreateFromScratchForObjectViewModel
@@ -182,14 +183,16 @@ object RelationCreateFromScratchForObjectBlockModule {
         dispatcher: Dispatcher<Payload>,
         analytics: Analytics,
         createFromScratchState: StateHolder<CreateFromScratchState>,
-        spaceManager: SpaceManager
+        spaceManager: SpaceManager,
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ) = RelationCreateFromScratchForObjectBlockViewModel.Factory(
         addRelationToObject = addRelationToObject,
         createRelation = createRelation,
         dispatcher = dispatcher,
         analytics = analytics,
         createFromScratchState = createFromScratchState,
-        spaceManager = spaceManager
+        spaceManager = spaceManager,
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
     )
 
     @JvmStatic

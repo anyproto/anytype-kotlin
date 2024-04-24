@@ -5,8 +5,9 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import javax.inject.Inject
 
-interface AnalyticsParamsProvider {
+interface AnalyticSpaceHelperDelegate {
 
     fun provideParams(spaceId: SpaceId): Params
 
@@ -16,19 +17,15 @@ interface AnalyticsParamsProvider {
     )
 }
 
-class DefaultAnalyticsParamsProvider constructor(
+class DefaultAnalyticsParamsProvider @Inject constructor(
     private val userPermissionProvider: UserPermissionProvider,
     private val spaceViewContainer: SpaceViewSubscriptionContainer
-) : AnalyticsParamsProvider {
+) : AnalyticSpaceHelperDelegate {
 
-    override fun provideParams(spaceId: SpaceId): AnalyticsParamsProvider.Params {
-        return proceedWithObservingSpaceView(spaceId)
-    }
-
-    private fun proceedWithObservingSpaceView(spaceId: SpaceId): AnalyticsParamsProvider.Params {
+    override fun provideParams(spaceId: SpaceId): AnalyticSpaceHelperDelegate.Params {
         val permissions = userPermissionProvider.get(spaceId)
         val spaceType = spaceViewContainer.get(spaceId)?.spaceAccessType
-        return AnalyticsParamsProvider.Params(
+        return AnalyticSpaceHelperDelegate.Params(
             permission = when (permissions) {
                 SpaceMemberPermissions.READER -> "Reader"
                 SpaceMemberPermissions.WRITER -> "Writer"

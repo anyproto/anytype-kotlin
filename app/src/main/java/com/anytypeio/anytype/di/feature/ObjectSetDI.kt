@@ -67,6 +67,7 @@ import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -252,7 +253,8 @@ object ObjectSetModule {
         dispatchers: AppCoroutineDispatchers,
         getNetworkMode: GetNetworkMode,
         dateProvider: DateProvider,
-        permissions: UserPermissionProvider
+        permissions: UserPermissionProvider,
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         params = params,
         openObjectSet = openObjectSet,
@@ -294,7 +296,8 @@ object ObjectSetModule {
         dispatchers = dispatchers,
         getNetworkMode = getNetworkMode,
         dateProvider = dateProvider,
-        permissions = permissions
+        permissions = permissions,
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
     )
 
     @JvmStatic

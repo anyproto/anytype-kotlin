@@ -40,6 +40,7 @@ import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.common.StateReducer
@@ -94,7 +95,8 @@ open class EditorViewModelFactory @Inject constructor(
     private val templatesContainer: ObjectTypeTemplatesContainer,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val dispatchers: AppCoroutineDispatchers,
-    private val getNetworkMode: GetNetworkMode
+    private val getNetworkMode: GetNetworkMode,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -142,7 +144,8 @@ open class EditorViewModelFactory @Inject constructor(
             templatesContainer = templatesContainer,
             dispatchers = dispatchers,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
-            getNetworkMode = getNetworkMode
+            getNetworkMode = getNetworkMode,
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
         ) as T
     }
 }

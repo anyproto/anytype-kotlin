@@ -100,6 +100,7 @@ import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.DocumentExternalEventReducer
@@ -288,7 +289,8 @@ object EditorSessionModule {
         templatesContainer: ObjectTypeTemplatesContainer,
         storelessSubscriptionContainer: StorelessSubscriptionContainer,
         dispatchers: AppCoroutineDispatchers,
-        getNetworkMode: GetNetworkMode
+        getNetworkMode: GetNetworkMode,
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ): EditorViewModelFactory = EditorViewModelFactory(
         params = params,
         permissions = permissions,
@@ -332,7 +334,8 @@ object EditorSessionModule {
         templatesContainer = templatesContainer,
         dispatchers = dispatchers,
         storelessSubscriptionContainer = storelessSubscriptionContainer,
-        getNetworkMode = getNetworkMode
+        getNetworkMode = getNetworkMode,
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
     )
 
     @JvmStatic

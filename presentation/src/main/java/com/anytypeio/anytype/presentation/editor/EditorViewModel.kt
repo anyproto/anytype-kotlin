@@ -101,6 +101,7 @@ import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.common.StateReducer
@@ -320,7 +321,8 @@ class EditorViewModel(
     private val templatesContainer: ObjectTypeTemplatesContainer,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val dispatchers: AppCoroutineDispatchers,
-    private val getNetworkMode: GetNetworkMode
+    private val getNetworkMode: GetNetworkMode,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -329,7 +331,8 @@ class EditorViewModel(
     ToggleStateHolder by renderer,
     SelectionStateHolder by orchestrator.memory.selections,
     EditorTableDelegate by tableDelegate,
-    StateReducer<List<Block>, Event> by reducer {
+    StateReducer<List<Block>, Event> by reducer,
+    AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val actions = MutableStateFlow(ActionItemType.defaultSorting)
 
@@ -1082,6 +1085,7 @@ class EditorViewModel(
                                         startTime = startTime,
                                         details = orchestrator.stores.details.current().details,
                                         ctx = context,
+                                        spaceParams = provideParams(params.space)
                                     )
                                 }
                             }
@@ -3270,7 +3274,8 @@ class EditorViewModel(
                         analytics = analytics,
                         route = EventsDictionary.Routes.objPowerTool,
                         startTime = startTime,
-                        objType = storeOfObjectTypes.getByKey(objectTypeView.key)
+                        objType = storeOfObjectTypes.getByKey(objectTypeView.key),
+                        spaceParams = provideParams(SpaceId(params.space))
                     )
                     proceedWithOpeningObject(result.objectId)
                 }
@@ -3314,7 +3319,8 @@ class EditorViewModel(
                         route = EventsDictionary.Routes.navigation,
                         startTime = startTime,
                         objType = objType ?: storeOfObjectTypes.getByKey(result.typeKey.key),
-                        view = EventsDictionary.View.viewNavbar
+                        view = EventsDictionary.View.viewNavbar,
+                        spaceParams = provideParams(this@EditorViewModel.params.space)
                     )
                     proceedWithCloseCurrentAndOpenObject(result.obj)
                 },
@@ -4539,6 +4545,7 @@ class EditorViewModel(
                     sourceObject = SET_MARKETPLACE_ID,
                     containsFlagType = true,
                     route = EventsDictionary.Routes.navigation,
+                    spaceParams = provideParams(params.space)
                 )
             }
         )
@@ -5955,7 +5962,8 @@ class EditorViewModel(
                         analytics = analytics,
                         route = EventsDictionary.Routes.objCreateMention,
                         startTime = startTime,
-                        objType = storeOfObjectTypes.getByKey(typeKey.key)
+                        objType = storeOfObjectTypes.getByKey(typeKey.key),
+                        spaceParams = provideParams(this@EditorViewModel.params.space)
                     )
                 }
             )
@@ -6328,7 +6336,8 @@ class EditorViewModel(
                     analytics = analytics,
                     route = EventsDictionary.Routes.objLink,
                     startTime = startTime,
-                    objType = storeOfObjectTypes.getByKey(typeKey.key)
+                    objType = storeOfObjectTypes.getByKey(typeKey.key),
+                    spaceParams = provideParams(this@EditorViewModel.params.space)
                 )
             }
         )

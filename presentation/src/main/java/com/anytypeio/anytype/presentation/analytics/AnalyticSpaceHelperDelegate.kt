@@ -14,7 +14,11 @@ interface AnalyticSpaceHelperDelegate {
     data class Params(
         val permission: String,
         val spaceType: String
-    )
+    ) {
+        companion object {
+            val EMPTY = Params("", "")
+        }
+    }
 }
 
 class DefaultAnalyticsParamsProvider @Inject constructor(

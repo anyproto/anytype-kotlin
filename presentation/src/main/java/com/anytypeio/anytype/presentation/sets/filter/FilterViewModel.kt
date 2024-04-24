@@ -24,6 +24,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
 import com.anytypeio.anytype.presentation.extension.checkboxFilterValue
 import com.anytypeio.anytype.presentation.extension.hasValue
@@ -69,8 +70,9 @@ open class FilterViewModel(
     private val objectSetDatabase: ObjectSetDatabase,
     private val analytics: Analytics,
     private val getOptions: GetOptions,
-    private val spaceManager: SpaceManager
-) : ViewModel() {
+    private val spaceManager: SpaceManager,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val commands = MutableSharedFlow<Commands>()
     val isCompleted = MutableSharedFlow<Boolean>(0)
@@ -769,7 +771,8 @@ open class FilterViewModel(
                         analytics = analytics,
                         event = ObjectStateAnalyticsEvent.CHANGE_FILTER_VALUE,
                         startTime = startTime,
-                        condition = updatedFilter.condition
+                        condition = updatedFilter.condition,
+                        spaceParams = AnalyticSpaceHelperDelegate.Params.EMPTY
                     )
                     isCompleted.emit(true)
                 }
@@ -878,7 +881,8 @@ open class FilterViewModel(
         private val objectSetDatabase: ObjectSetDatabase,
         private val getOptions: GetOptions,
         private val analytics: Analytics,
-        private val spaceManager: SpaceManager
+        private val spaceManager: SpaceManager,
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -893,7 +897,8 @@ open class FilterViewModel(
                 objectSetDatabase = objectSetDatabase,
                 getOptions = getOptions,
                 analytics = analytics,
-                spaceManager = spaceManager
+                spaceManager = spaceManager,
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
             ) as T
         }
     }

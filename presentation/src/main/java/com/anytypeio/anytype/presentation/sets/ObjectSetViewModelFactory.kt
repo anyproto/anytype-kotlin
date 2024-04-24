@@ -90,7 +90,7 @@ class ObjectSetViewModelFactory(
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return ObjectSetViewModel(
-            params = params,
+            vmParams = params,
             permissions = permissions,
             openObjectSet = openObjectSet,
             closeBlock = closeBlock,

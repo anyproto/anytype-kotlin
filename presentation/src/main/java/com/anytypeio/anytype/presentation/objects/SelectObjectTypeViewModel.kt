@@ -33,6 +33,7 @@ import com.anytypeio.anytype.domain.spaces.AddObjectToSpace
 import com.anytypeio.anytype.domain.types.GetPinnedObjectTypes
 import com.anytypeio.anytype.domain.types.SetPinnedObjectTypes
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
@@ -50,7 +51,6 @@ import timber.log.Timber
 class SelectObjectTypeViewModel(
     private val params: Params,
     private val getObjectTypes: GetObjectTypes,
-    private val spaceManager: SpaceManager,
     private val addObjectToSpace: AddObjectToSpace,
     private val setPinnedObjectTypes: SetPinnedObjectTypes,
     private val getPinnedObjectTypes: GetPinnedObjectTypes,
@@ -58,10 +58,9 @@ class SelectObjectTypeViewModel(
     private val setDefaultObjectType: SetDefaultObjectType,
     private val createBookmarkObject: CreateBookmarkObject,
     private val createPrefilledNote: CreatePrefilledNote,
-    private val appActionManager: AppActionManager,
     private val analytics: Analytics,
-    private val storeOfObjectTypes: StoreOfObjectTypes
-) : BaseViewModel() {
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val viewState = MutableStateFlow<SelectTypeViewState>(SelectTypeViewState.Loading)
     val clipboardToolbarViewState = MutableStateFlow<ClipboardToolbarViewState>(ClipboardToolbarViewState.Hidden)
@@ -434,7 +433,8 @@ class SelectObjectTypeViewModel(
                         analytics = analytics,
                         objType = defaultObjectType?.key ?: ObjectTypeUniqueKeys.NOTE,
                         route = EventsDictionary.Routes.sharingExtension,
-                        startTime = startTime
+                        startTime = startTime,
+                        spaceParams = provideParams(SpaceId(params.space.id))
                     )
                     navigation.emit(
                         OpenObjectNavigation.OpenEditor(
@@ -454,7 +454,6 @@ class SelectObjectTypeViewModel(
     class Factory @Inject constructor(
         private val params: Params,
         private val getObjectTypes: GetObjectTypes,
-        private val spaceManager: SpaceManager,
         private val addObjectToSpace: AddObjectToSpace,
         private val setPinnedObjectTypes: SetPinnedObjectTypes,
         private val getPinnedObjectTypes: GetPinnedObjectTypes,
@@ -462,9 +461,8 @@ class SelectObjectTypeViewModel(
         private val setDefaultObjectType: SetDefaultObjectType,
         private val createBookmarkObject: CreateBookmarkObject,
         private val createPrefilledNote: CreatePrefilledNote,
-        private val appActionManager: AppActionManager,
-        private val storeOfObjectTypes: StoreOfObjectTypes,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -472,7 +470,6 @@ class SelectObjectTypeViewModel(
         ) = SelectObjectTypeViewModel(
             params = params,
             getObjectTypes = getObjectTypes,
-            spaceManager = spaceManager,
             addObjectToSpace = addObjectToSpace,
             setPinnedObjectTypes = setPinnedObjectTypes,
             getPinnedObjectTypes = getPinnedObjectTypes,
@@ -480,9 +477,8 @@ class SelectObjectTypeViewModel(
             setDefaultObjectType = setDefaultObjectType,
             createBookmarkObject = createBookmarkObject,
             createPrefilledNote = createPrefilledNote,
-            appActionManager = appActionManager,
-            storeOfObjectTypes = storeOfObjectTypes,
-            analytics = analytics
+            analytics = analytics,
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
         ) as T
     }
 

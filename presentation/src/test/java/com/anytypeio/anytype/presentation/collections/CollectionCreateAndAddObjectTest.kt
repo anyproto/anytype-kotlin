@@ -120,7 +120,7 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
             dispatchers = dispatchers,
             getNetworkMode = getNetworkMode,
             dateProvider = dateProvider,
-            params = ObjectSetViewModel.Params(
+            vmParams = ObjectSetViewModel.Params(
                 ctx = root,
                 space = SpaceId(defaultSpace)
             ),

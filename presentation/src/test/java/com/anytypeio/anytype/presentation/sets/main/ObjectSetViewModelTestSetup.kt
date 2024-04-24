@@ -285,7 +285,7 @@ open class ObjectSetViewModelTestSetup {
             dispatchers = dispatchers,
             getNetworkMode = getNetworkMode,
             dateProvider = DateProviderImpl(),
-            params = ObjectSetViewModel.Params(
+            vmParams = ObjectSetViewModel.Params(
                 ctx = root,
                 space = SpaceId(defaultSpace)
             ),

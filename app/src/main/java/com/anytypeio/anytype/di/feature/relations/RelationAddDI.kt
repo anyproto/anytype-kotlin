@@ -57,7 +57,8 @@ object RelationAddToObjectModule {
         getRelations: GetRelations,
         appCoroutineDispatchers: AppCoroutineDispatchers,
         addObjectToWorkspace: AddObjectToWorkspace,
-        spaceManager: SpaceManager
+        spaceManager: SpaceManager,
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ): RelationAddToObjectViewModel.Factory = RelationAddToObjectViewModel.Factory(
         storeOfRelations = storeOfRelations,
         addRelationToObject = addRelationToObject,
@@ -67,7 +68,8 @@ object RelationAddToObjectModule {
         getRelations = getRelations,
         appCoroutineDispatchers = appCoroutineDispatchers,
         addObjectToWorkspace = addObjectToWorkspace,
-        spaceManager = spaceManager
+        spaceManager = spaceManager,
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
     )
 
     @JvmStatic

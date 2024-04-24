@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Name
 import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
+import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.BodyRegular
@@ -47,7 +48,6 @@ import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
-import com.anytypeio.anytype.ui_settings.main.SpaceIconView
 import com.anytypeio.anytype.ui_settings.space.TypeOfSpace
 
 @Composable

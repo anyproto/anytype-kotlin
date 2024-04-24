@@ -41,8 +41,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -294,7 +294,7 @@ class MainViewModel(
             awaitAccountStartManager
                 .isStarted()
                 .filter { isStarted -> isStarted }
-                .debounce(DEEP_LINK_DEBOUNCE_DURATION)
+                .onEach { delay(NEW_DEEP_LINK_DELAY) }
                 .take(1)
                 .collect { isStarted ->
                     if (isStarted) {
@@ -372,6 +372,6 @@ class MainViewModel(
 
     companion object {
         const val DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN = 200L
-        const val DEEP_LINK_DEBOUNCE_DURATION = 1000L
+        const val NEW_DEEP_LINK_DELAY = 1000L
     }
 }

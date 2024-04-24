@@ -173,6 +173,9 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                     }
                     dialog.show(childFragmentManager, null)
                 }
+                is Command.ShowShareLimitReachedError -> {
+                    toast(getString(R.string.multiplayer_toast_share_limit_reached))
+                }
             }
         }
     }

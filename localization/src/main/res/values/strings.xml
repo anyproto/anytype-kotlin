@@ -1288,6 +1288,7 @@
 
     <string name="error_invalid_recovery_phrase">Invalid recovery phrase</string>
     <string name="network">Network</string>
+    <string name="network_with_colon">Network:</string>
     <string name="network_settings_anytype_network">Anytype network</string>
     <string name="network_settings_anytype_network_description">Backup to the network managed by Anytype</string>
     <string name="network_settings_local_only">Local-only</string>
@@ -1385,6 +1386,12 @@
     </plurals>
 
     <string name="multiplayer_you_as_member">you</string>
+
+    <string name="multiplayer_spaces">Spaces</string>
+
+    <string name="multiplayer_space_status_joining">Joining</string>
+    <string name="multiplayer_space_status_active">Active</string>
+    <string name="multiplayer_space_status_removing">Removed</string>
 
 
     <!--endregion-->
@@ -1513,6 +1520,5 @@
 
     <string name="clipboard_panel_create_bookmark_from_clipboard">Create bookmark from clipboard</string>
     <string name="error_unexpected_layout">Error: unexpected layout</string>
-    <string name="multiplayer_spaces">Spaces</string>
 
 </resources>

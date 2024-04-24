@@ -7,11 +7,21 @@ import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.core_ui.features.multiplayer.SpaceListScreen
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
+import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.presentation.spaces.SpaceListViewModel
 import com.anytypeio.anytype.ui.settings.typography
+import javax.inject.Inject
 
 class SpaceListFragment : BaseBottomSheetComposeFragment() {
+
+    @Inject
+    lateinit var factory: SpaceListViewModel.Factory
+
+    private val vm by viewModels<SpaceListViewModel> { factory }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -23,17 +33,17 @@ class SpaceListFragment : BaseBottomSheetComposeFragment() {
             MaterialTheme(
                 typography = typography
             ) {
-                SpaceListScreen()
+                SpaceListScreen(state = vm.state.collectAsStateWithLifecycle().value)
             }
         }
     }
 
 
     override fun injectDependencies() {
-        // TODO
+        componentManager().spaceListComponent.get().inject(this)
     }
 
     override fun releaseDependencies() {
-        // TODO
+        componentManager().spaceListComponent.release()
     }
 }

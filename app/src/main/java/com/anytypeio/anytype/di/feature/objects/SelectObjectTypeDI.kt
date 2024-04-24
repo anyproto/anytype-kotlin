@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.objects.SelectObjectTypeViewModel
 import com.anytypeio.anytype.ui.objects.creation.SelectObjectTypeFragment
 import dagger.Binds
@@ -56,4 +57,5 @@ interface SelectObjectTypeDependencies : ComponentDependencies {
     fun configStorage(): ConfigStorage
     fun appActionManager(): AppActionManager
     fun storeOfObjectTypes(): StoreOfObjectTypes
+    fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
 }

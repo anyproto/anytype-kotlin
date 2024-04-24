@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
 import com.anytypeio.anytype.presentation.notifications.NotificationsViewModelFactory
 import com.anytypeio.anytype.ui.notifications.NotificationsFragment
@@ -49,4 +50,5 @@ interface NotificationDependencies : ComponentDependencies {
     fun spaceManager(): SpaceManager
     fun userSettingsRepository(): UserSettingsRepository
     fun provideDispatchers(): AppCoroutineDispatchers
+    fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
 }

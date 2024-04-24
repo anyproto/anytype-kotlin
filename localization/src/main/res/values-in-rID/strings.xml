@@ -68,7 +68,6 @@
     <string name="danger_zone">Hapus akun (Hati-hati!)</string>
     <string name="snackbar_template_add">Templat baru ditambahkan ke tipe ini</string>
     <string name="settings_membership">Langganan</string>
-    <string name="default_text_placeholder">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
     <string name="default_url_placeholder">https://humanparts.medium.com/how-i-overcame-cult-trauma-with-psychedelics-4342c03a074c</string>
     <string name="multi_select_turn_into">Ubah menjadi</string>
     <string name="multi_select_move_to">Pindahkan ke</string>
@@ -1105,6 +1104,7 @@
     <!--region ONBOARDING ERRORS -->
     <string name="error_invalid_recovery_phrase">Frasa pemulihan tidak valid</string>
     <string name="network">Jaringan</string>
+    <string name="network_with_colon">Jaringan:</string>
     <string name="network_settings_anytype_network">Jaringan Anytype</string>
     <string name="network_settings_anytype_network_description">Cadangkan ke jaringan yang diatur oleh Anytype</string>
     <string name="network_settings_local_only">Hanya Lokal</string>
@@ -1188,12 +1188,17 @@
     <string name="multiplayer_notification_view_request">Tampilan</string>
     <string name="multiplayer_notification_go_to_space">Kunjungi ruang</string>
     <string name="multiplayer_toast_permission_not_allowed">Changing permissions is not allowed</string>
+    <string name="multiplayer_toast_share_limit_reached">Sharing limit reached</string>
     <string name="multiplayer_deeplink_to_your_object">Deeplink to your object</string>
     <string name="multiplayer_deeplink_to_your_object_error">This deeplink is not working. Object might be deleted or there might be issues with space access.</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="other">%1$d anggota</item>
     </plurals>
     <string name="multiplayer_you_as_member">you</string>
+    <string name="multiplayer_spaces">Ruang</string>
+    <string name="multiplayer_space_status_joining">Bergabung</string>
+    <string name="multiplayer_space_status_active">Aktif</string>
+    <string name="multiplayer_space_status_removing">Removed</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Langganan</string>

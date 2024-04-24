@@ -79,10 +79,9 @@ fun Context.toast(
 fun Fragment.toast(
     msg: CharSequence,
     duration: Int = Toast.LENGTH_SHORT
-) = requireActivity().toast(
-    msg = msg,
-    duration = duration
-)
+) = activity?.let {
+    Toast.makeText(it, msg, duration).show()
+}
 
 fun Fragment.toast(@StringRes msgId: Int) = requireActivity().toast(requireActivity().getString(msgId))
 

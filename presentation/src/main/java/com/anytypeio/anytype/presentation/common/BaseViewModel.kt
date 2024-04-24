@@ -10,4 +10,8 @@ open class BaseViewModel : ViewModel() {
     internal val _toasts = MutableSharedFlow<String>(replay = 0)
     val toasts: Flow<String> get() = _toasts
     fun sendToast(msg: String) = viewModelScope.launch { _toasts.emit(msg) }
+
+    companion object {
+        const val DEFAULT_STOP_TIMEOUT_LIMIT = 5000L
+    }
 }

@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_ui.features.multiplayer
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -40,42 +43,55 @@ import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.SpaceListViewModel.SpaceListItemView
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SpaceListScreen(
     state: ViewState<List<SpaceListItemView>>
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize()
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .nestedScroll(rememberNestedScrollInteropConnection())
     ) {
-        Dragger(
-            modifier = Modifier
-                .padding(vertical = 6.dp)
-                .align(Alignment.CenterHorizontally)
-        )
-        Header(text = stringResource(id = R.string.multiplayer_spaces))
-        if (state is ViewState.Success) {
-            LazyColumn(
+        stickyHeader {
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1.0f)
-            ) {
-                itemsIndexed(
-                    items = state.data,
-                    itemContent = { idx, item ->
-                        SpaceListCardItem(
-                            spaceName = item.space.name.orEmpty(),
-                            spaceStatus = item.space.spaceAccountStatus,
-                            permissions = item.permissions,
-                            spaceIcon = item.icon,
-                            modifier = Modifier.padding(
-                                horizontal = 10.dp,
-                                vertical = 7.dp
-                            )
+                    .background(
+                        color = colorResource(id = R.color.background_secondary),
+                        shape = RoundedCornerShape(
+                            topEnd = 16.dp,
+                            topStart = 16.dp
                         )
-                    },
-                    key = { _, item -> item.space.id }
+                    )
+            ) {
+                Dragger(
+                    modifier = Modifier
+                        .padding(vertical = 6.dp)
+                        .align(Alignment.CenterHorizontally)
                 )
+                Header(text = stringResource(id = R.string.multiplayer_spaces))
             }
+        }
+        if (state is ViewState.Success) {
+            itemsIndexed(
+                items = state.data,
+                itemContent = { idx, item ->
+                    SpaceListCardItem(
+                        spaceName = item.space.name.orEmpty(),
+                        spaceStatus = item.space.spaceAccountStatus,
+                        permissions = item.permissions,
+                        spaceIcon = item.icon,
+                        modifier = Modifier.padding(
+                            start = 10.dp,
+                            end = 10.dp,
+                            top = 7.dp,
+                            bottom = if (idx == state.data.lastIndex) 32.dp else 7.dp
+                        )
+                    )
+                },
+                key = { _, item -> item.space.id }
+            )
         }
     }
 }

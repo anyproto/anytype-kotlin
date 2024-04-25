@@ -1153,7 +1153,7 @@
     <string name="multiplayer_space_stop_sharing">Stop sharing</string>
     <string name="multiplayer_space_stop_sharing_space">Smetti di condividere lo spazio</string>
     <string name="multiplayer_space_stop_sharing_space_description">I partecipanti non si sincronizzeranno più con questo spazio e il link di condivisione verrà disattivato.</string>
-    <string name="multiplayer_more_info">More info</string>
+    <string name="multiplayer_more_info">Ulteriori informazioni</string>
     <string name="multiplayer_sharing">Condivisione</string>
     <string name="multiplayer_space_type">Tipo</string>
     <string name="multiplayer_share">Condividi</string>
@@ -1197,8 +1197,8 @@
     <string name="multiplayer_deeplink_to_your_object">Collegamento profondo al tuo oggetto</string>
     <string name="multiplayer_deeplink_to_your_object_error">Questo collegamento profondo non funziona. L\'oggetto potrebbe essere eliminato o potrebbero esserci problemi con l\'accesso allo spazio.</string>
     <plurals name="multiplayer_number_of_space_members">
-        <item quantity="one">%1$d member</item>
-        <item quantity="other">%1$d members</item>
+        <item quantity="one">%1$d membro</item>
+        <item quantity="other">%1$d membri</item>
     </plurals>
     <string name="multiplayer_you_as_member">tu</string>
     <string name="multiplayer_spaces">Spazi</string>

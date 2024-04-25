@@ -18,6 +18,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -45,7 +47,9 @@ fun SpaceListScreen(
     state: ViewState<List<SpaceListItemView>>
 ) {
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .nestedScroll(rememberNestedScrollInteropConnection())
     ) {
         Dragger(
             modifier = Modifier
@@ -53,12 +57,8 @@ fun SpaceListScreen(
                 .align(Alignment.CenterHorizontally)
         )
         Header(text = stringResource(id = R.string.multiplayer_spaces))
-        if (state is ViewState.Success) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1.0f)
-            ) {
+        LazyColumn {
+            if (state is ViewState.Success) {
                 itemsIndexed(
                     items = state.data,
                     itemContent = { idx, item ->
@@ -68,8 +68,10 @@ fun SpaceListScreen(
                             permissions = item.permissions,
                             spaceIcon = item.icon,
                             modifier = Modifier.padding(
-                                horizontal = 10.dp,
-                                vertical = 7.dp
+                                start = 10.dp,
+                                end = 10.dp,
+                                top = 7.dp,
+                                bottom = if (idx == state.data.lastIndex) 24.dp else 7.dp
                             )
                         )
                     },

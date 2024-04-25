@@ -105,6 +105,10 @@ abstract class BaseBottomSheetComposeFragment : BottomSheetDialogFragment() {
     open fun releaseDependencies() {
         // Inject nothing by default. Override to inject.
     }
+
+    companion object {
+        const val DEFAULT_PADDING_TOP = 28
+    }
 }
 
 fun Fragment.getNavigationId() = findNavController().currentDestination?.id

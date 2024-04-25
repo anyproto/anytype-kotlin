@@ -70,7 +70,7 @@ class SpaceListViewModel(
                                         add(SpaceListItemView.Action.DeleteSpace)
                                     } else {
                                         if (spaceView.spaceAccountStatus == SpaceStatus.SPACE_JOINING) {
-                                            // Add when ready
+                                            // TODO Add when ready to handle this action
 //                                            add(SpaceListItemView.Action.CancelJoinRequest)
                                         } else {
                                             add(SpaceListItemView.Action.LeaveSpace)

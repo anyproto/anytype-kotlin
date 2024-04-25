@@ -490,7 +490,7 @@ open class EditorPresentationTestSetup {
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             dispatchers = dispatchers,
             getNetworkMode = getNetworkMode,
-            params = EditorViewModel.Params(
+            vmParams = EditorViewModel.Params(
                 ctx = root,
                 space = SpaceId(defaultSpace)
             ),

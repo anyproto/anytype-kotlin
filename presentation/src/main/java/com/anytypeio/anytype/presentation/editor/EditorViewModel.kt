@@ -279,7 +279,7 @@ import timber.log.Timber
 import com.anytypeio.anytype.presentation.editor.Editor.Mode as EditorMode
 
 class EditorViewModel(
-    private val params: Params,
+    private val vmParams: Params,
     private val permissions: UserPermissionProvider,
     private val openPage: OpenPage,
     private val closePage: CloseBlock,
@@ -408,7 +408,7 @@ class EditorViewModel(
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
     override val commands = MutableLiveData<EventWrapper<Command>>()
 
-    val permission = MutableStateFlow(permissions.get(params.space))
+    val permission = MutableStateFlow(permissions.get(vmParams.space))
 
     init {
         proceedWithObservingPermissions()
@@ -448,7 +448,7 @@ class EditorViewModel(
     private fun proceedWithObservingPermissions() {
         viewModelScope.launch {
             permissions
-                .observe(space = params.space)
+                .observe(space = vmParams.space)
                 .collect {
                     permission.value = it
                 }
@@ -517,7 +517,7 @@ class EditorViewModel(
         downloadUnsplashImage(
             DownloadUnsplashImage.Params(
                 picture = action.img,
-                space = params.space
+                space = vmParams.space
             )
         ).process(
             failure = {
@@ -720,7 +720,7 @@ class EditorViewModel(
 
         proceedWithUpdatingText(
             intent = Intent.Text.UpdateText(
-                context = params.ctx,
+                context = vmParams.ctx,
                 target = new.id,
                 text = new.content<Content.Text>().text,
                 marks = new.content<Content.Text>().marks
@@ -1045,7 +1045,7 @@ class EditorViewModel(
                 .build(InterceptThreadStatus.Params(context))
                 .collect { status ->
                     val statusView = status.toView(
-                        networkId = spaceManager.getConfig(space = params.space)?.network,
+                        networkId = spaceManager.getConfig(space = vmParams.space)?.network,
                         networkMode = networkMode
                     )
                     syncStatus.value = statusView
@@ -1085,7 +1085,7 @@ class EditorViewModel(
                                         startTime = startTime,
                                         details = orchestrator.stores.details.current().details,
                                         ctx = context,
-                                        spaceParams = provideParams(this@EditorViewModel.params.space)
+                                        spaceParams = provideParams(this@EditorViewModel.vmParams.space)
                                     )
                                 }
                             }
@@ -1741,7 +1741,7 @@ class EditorViewModel(
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.CRUD.Create(
-                    context = params.ctx,
+                    context = vmParams.ctx,
                     target = target,
                     position = position,
                     prototype = Prototype.Text(style = style)
@@ -3157,9 +3157,9 @@ class EditorViewModel(
                 val detail = details.details[dv.targetObjectId]
                 if (detail != null && detail.map.isNotEmpty()) {
                     val wrapper = ObjectWrapper.Basic(detail.map)
-                    wrapper.spaceId ?: params.space.id
+                    wrapper.spaceId ?: vmParams.space.id
                 } else {
-                    params.space.id
+                    vmParams.space.id
                 }
             }
             proceedWithOpeningDataViewObject(
@@ -3259,7 +3259,7 @@ class EditorViewModel(
                 typeId = TypeId(objectTypeView.id),
                 typeKey = TypeKey(objectTypeView.key),
                 template = objectTypeView.defaultTemplate,
-                space = params.space.id
+                space = vmParams.space.id
             )
             createBlockLinkWithObject.async(
                 params = params
@@ -3293,7 +3293,7 @@ class EditorViewModel(
         Timber.d("onProceedWithApplyingTemplateByObjectId, template:[$template]")
         viewModelScope.launch {
             val params = ApplyTemplate.Params(
-                ctx = params.ctx,
+                ctx = vmParams.ctx,
                 template = template,
             )
             applyTemplate.async(params = params).fold(
@@ -3320,7 +3320,7 @@ class EditorViewModel(
                         startTime = startTime,
                         objType = objType ?: storeOfObjectTypes.getByKey(result.typeKey.key),
                         view = EventsDictionary.View.viewNavbar,
-                        spaceParams = provideParams(this@EditorViewModel.params.space)
+                        spaceParams = provideParams(this@EditorViewModel.vmParams.space)
                     )
                     proceedWithCloseCurrentAndOpenObject(result.obj)
                 },
@@ -4076,7 +4076,7 @@ class EditorViewModel(
                                 type = relation.type,
                                 filters = ObjectSearchConstants.setsByObjectTypeFilters(
                                     types = listOf(relation.type),
-                                    space = this@EditorViewModel.params.space.id
+                                    space = this@EditorViewModel.vmParams.space.id
                                 )
                             )
                             findObjectSetForType(params).process(
@@ -4303,12 +4303,12 @@ class EditorViewModel(
                 onFailure = {
                     Timber.e(it, "Error while closing object")
                     navigate(EventWrapper(
-                        AppNavigation.Command.OpenObject(target = target, space = params.space.id))
+                        AppNavigation.Command.OpenObject(target = target, space = vmParams.space.id))
                     )
                 },
                 onSuccess = {
                     navigate(EventWrapper(
-                        AppNavigation.Command.OpenObject(target = target, space = params.space.id))
+                        AppNavigation.Command.OpenObject(target = target, space = vmParams.space.id))
                     )
                 }
             )
@@ -4361,7 +4361,7 @@ class EditorViewModel(
         isPopUpToDashboard: Boolean = false
     ) {
         viewModelScope.launch {
-            closePage.async(params.ctx).fold(
+            closePage.async(vmParams.ctx).fold(
                 onFailure = {
                     Timber.e(it, "Error while closing object")
                     navigate(
@@ -4535,8 +4535,8 @@ class EditorViewModel(
             onFailure = { error -> Timber.e(error, "Error convert object to set") },
             onSuccess = {
                 proceedWithOpeningDataViewObject(
-                    target = params.ctx,
-                    space = params.space,
+                    target = vmParams.ctx,
+                    space = vmParams.space,
                     isPopUpToDashboard = true
                 )
                 viewModelScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
@@ -4545,7 +4545,7 @@ class EditorViewModel(
                     sourceObject = SET_MARKETPLACE_ID,
                     containsFlagType = true,
                     route = EventsDictionary.Routes.navigation,
-                    spaceParams = provideParams(params.space)
+                    spaceParams = provideParams(vmParams.space)
                 )
             }
         )
@@ -4559,8 +4559,8 @@ class EditorViewModel(
             onFailure = { error -> Timber.e(error, "Error convert object to collection") },
             onSuccess = {
                 proceedWithOpeningDataViewObject(
-                    target = params.ctx,
-                    space = params.space,
+                    target = vmParams.ctx,
+                    space = vmParams.space,
                     isPopUpToDashboard = true
                 )
                 viewModelScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
@@ -5021,7 +5021,7 @@ class EditorViewModel(
         }
 
         val intent = Intent.Text.UpdateText(
-            context = params.ctx,
+            context = vmParams.ctx,
             target = targetId,
             text = text,
             marks = marks
@@ -5052,7 +5052,7 @@ class EditorViewModel(
                 sorts = sorts,
                 filters = ObjectSearchConstants.filterTypes(
                     spaces = buildList {
-                        add(params.space.id)
+                        add(vmParams.space.id)
                     },
                     recommendedLayouts = SupportedLayouts.editorLayouts
                 ),
@@ -5963,7 +5963,7 @@ class EditorViewModel(
                         route = EventsDictionary.Routes.objCreateMention,
                         startTime = startTime,
                         objType = storeOfObjectTypes.getByKey(typeKey.key),
-                        spaceParams = provideParams(this@EditorViewModel.params.space)
+                        spaceParams = provideParams(this@EditorViewModel.vmParams.space)
                     )
                 }
             )
@@ -6043,8 +6043,8 @@ class EditorViewModel(
                 filters = ObjectSearchConstants.getFilterLinkTo(
                     ignore = context,
                     spaces = buildList {
-                        add(params.space.id)
-                        val config = spaceManager.getConfig(params.space)
+                        add(vmParams.space.id)
+                        val config = spaceManager.getConfig(vmParams.space)
                         if (config != null) add(config.techSpace)
                     },
                 ),
@@ -6155,7 +6155,7 @@ class EditorViewModel(
                 sorts = emptyList(),
                 filters = ObjectSearchConstants.filterTypes(
                     spaces = buildList {
-                        add(params.space.id)
+                        add(vmParams.space.id)
                     },
                     recommendedLayouts = SupportedLayouts.createObjectLayouts
                 ),
@@ -6208,7 +6208,7 @@ class EditorViewModel(
         viewModelScope.launch {
             setObjectType.async(
                 SetObjectType.Params(
-                    context = params.ctx,
+                    context = vmParams.ctx,
                     objectTypeKey = objType.uniqueKey
                 )
             ).fold(
@@ -6263,14 +6263,14 @@ class EditorViewModel(
             createObjectSet(
                 CreateObjectSet.Params(
                     type = type,
-                    space = params.space.id
+                    space = vmParams.space.id
                 )
             ).process(
                 failure = { Timber.e(it, "Error while creating a set of type: $type") },
                 success = { response ->
                     proceedWithOpeningDataViewObject(
                         target = response.target,
-                        space = params.space
+                        space = vmParams.space
                     )
                 }
             )
@@ -6337,7 +6337,7 @@ class EditorViewModel(
                     route = EventsDictionary.Routes.objLink,
                     startTime = startTime,
                     objType = storeOfObjectTypes.getByKey(typeKey.key),
-                    spaceParams = provideParams(this@EditorViewModel.params.space)
+                    spaceParams = provideParams(this@EditorViewModel.vmParams.space)
                 )
             }
         )
@@ -6524,7 +6524,7 @@ class EditorViewModel(
                 .subscribeToTemplates(
                     type = objType.id,
                     subscription = EDITOR_TEMPLATES_SUBSCRIPTION,
-                    space = params.space
+                    space = vmParams.space
                 )
                 .catch { Timber.e(it, "Error while subscribing to templates") }
                 .collect { templates ->

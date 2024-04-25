@@ -6,7 +6,6 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
@@ -102,7 +101,7 @@ open class EditorViewModelFactory @Inject constructor(
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return EditorViewModel(
-            params = params,
+            vmParams = params,
             permissions = permissions,
             openPage = openPage,
             closePage = closeObject,

@@ -31,6 +31,7 @@ import com.anytypeio.anytype.domain.objects.CreateBookmarkObject
 import com.anytypeio.anytype.domain.objects.CreatePrefilledNote
 import com.anytypeio.anytype.domain.spaces.GetSpaceViews
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
@@ -59,8 +60,9 @@ class AddToAnytypeViewModel(
     private val analytics: Analytics,
     private val uploadFile: UploadFile,
     private val fileSharer: FileSharer,
-    private val permissions: Permissions
-) : BaseViewModel() {
+    private val permissions: Permissions,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val selectedSpaceId = MutableStateFlow(NO_VALUE)
 
@@ -200,7 +202,8 @@ class AddToAnytypeViewModel(
                                 analytics = analytics,
                                 objType = MarketplaceObjectTypeIds.NOTE,
                                 route = EventsDictionary.Routes.sharingExtension,
-                                startTime = startTime
+                                startTime = startTime,
+                                spaceParams = provideParams(SpaceId(spaceManager.get()))
                             )
                             if (targetSpaceId == spaceManager.get()) {
                                 navigation.emit(
@@ -248,7 +251,8 @@ class AddToAnytypeViewModel(
                             analytics = analytics,
                             objType = MarketplaceObjectTypeIds.BOOKMARK,
                             route = EventsDictionary.Routes.sharingExtension,
-                            startTime = startTime
+                            startTime = startTime,
+                            spaceParams = provideParams(SpaceId(spaceManager.get()))
                         )
                         if (targetSpaceId == spaceManager.get()) {
                             navigation.emit(
@@ -295,7 +299,8 @@ class AddToAnytypeViewModel(
                             analytics = analytics,
                             objType = MarketplaceObjectTypeIds.NOTE,
                             route = EventsDictionary.Routes.sharingExtension,
-                            startTime = startTime
+                            startTime = startTime,
+                            spaceParams = provideParams(SpaceId(spaceManager.get()))
                         )
                         if (targetSpaceId == spaceManager.get()) {
                             navigation.emit(
@@ -372,7 +377,8 @@ class AddToAnytypeViewModel(
         private val analytics: Analytics,
         private val uploadFile: UploadFile,
         private val fileSharer: FileSharer,
-        private val permissions: Permissions
+        private val permissions: Permissions,
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -386,7 +392,8 @@ class AddToAnytypeViewModel(
                 analytics = analytics,
                 uploadFile = uploadFile,
                 fileSharer = fileSharer,
-                permissions = permissions
+                permissions = permissions,
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
             ) as T
         }
     }

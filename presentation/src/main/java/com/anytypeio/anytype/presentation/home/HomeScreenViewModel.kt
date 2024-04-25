@@ -59,6 +59,7 @@ import com.anytypeio.anytype.domain.widgets.SetWidgetActiveView
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendAddWidgetEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectTypeSelectOrChangeEvent
@@ -165,14 +166,16 @@ class HomeScreenViewModel(
     private val searchObjects: SearchObjects,
     private val getPinnedObjectTypes: GetPinnedObjectTypes,
     private val userPermissionProvider: UserPermissionProvider,
-    private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate
+    private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
     WidgetSessionStateHolder by widgetSessionStateHolder,
     CollapsedWidgetStateHolder by collapsedWidgetStateHolder,
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate,
-    Unsubscriber by unsubscriber {
+    Unsubscriber by unsubscriber,
+    AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val jobs = mutableListOf<Job>()
     private val mutex = Mutex()
@@ -1217,12 +1220,14 @@ class HomeScreenViewModel(
             createObject.stream(params).collect { createObjectResponse ->
                 createObjectResponse.fold(
                     onSuccess = { result ->
+                        val spaceParams = provideParams(SpaceId(spaceManager.get()))
                         sendAnalyticsObjectCreateEvent(
                             analytics = analytics,
                             route = EventsDictionary.Routes.navigation,
                             startTime = startTime,
                             view = EventsDictionary.View.viewHome,
                             objType = objType ?: storeOfObjectTypes.getByKey(result.typeKey.key),
+                            spaceParams = spaceParams
                         )
                         if (objType != null) {
                             sendAnalyticsObjectTypeSelectOrChangeEvent(
@@ -1230,7 +1235,8 @@ class HomeScreenViewModel(
                                 startTime = startTime,
                                 sourceObject = objType.sourceObject,
                                 containsFlagType = true,
-                                route = EventsDictionary.Routes.longTap
+                                route = EventsDictionary.Routes.longTap,
+                                spaceParams = spaceParams
                             )
                         }
                         proceedWithOpeningObject(result.obj)
@@ -1581,7 +1587,8 @@ class HomeScreenViewModel(
         private val searchObjects: SearchObjects,
         private val getPinnedObjectTypes: GetPinnedObjectTypes,
         private val userPermissionProvider: UserPermissionProvider,
-        private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate
+        private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -1620,7 +1627,8 @@ class HomeScreenViewModel(
             searchObjects = searchObjects,
             getPinnedObjectTypes = getPinnedObjectTypes,
             userPermissionProvider = userPermissionProvider,
-            deepLinkToObjectDelegate = deepLinkToObjectDelegate
+            deepLinkToObjectDelegate = deepLinkToObjectDelegate,
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
         ) as T
     }
 

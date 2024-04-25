@@ -688,7 +688,7 @@ fun CoroutineScope.sendAnalyticsObjectCreateEvent(
     startTime: Long? = null,
     view: String? = null,
     objType: String?,
-    spaceParams: AnalyticSpaceHelperDelegate.Params? = null
+    spaceParams: AnalyticSpaceHelperDelegate.Params?
 ) {
     val props = Props(
         mapOf(

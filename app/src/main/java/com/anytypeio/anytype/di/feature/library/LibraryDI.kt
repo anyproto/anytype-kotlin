@@ -222,4 +222,5 @@ interface LibraryDependencies : ComponentDependencies {
     fun logger(): Logger
     fun container(): StorelessSubscriptionContainer
     fun storeOfTypes (): StoreOfObjectTypes
+    fun analyticSpaceHelperDelegate(): AnalyticSpaceHelperDelegate
 }

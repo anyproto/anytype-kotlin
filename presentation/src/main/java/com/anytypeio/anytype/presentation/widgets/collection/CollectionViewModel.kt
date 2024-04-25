@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.process
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -41,6 +42,7 @@ import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.getSpaceWithTechSpace
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendDeletionWarning
 import com.anytypeio.anytype.presentation.extension.sendScreenHomeEvent
@@ -105,8 +107,9 @@ class CollectionViewModel(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val spaceManager: SpaceManager,
     private val getSpaceView: GetSpaceView,
-    private val dateTypeNameProvider: DateTypeNameProvider
-) : ViewModel(), Reducer<CoreObjectView, Payload> {
+    private val dateTypeNameProvider: DateTypeNameProvider,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+) : ViewModel(), Reducer<CoreObjectView, Payload>, AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val payloads: Flow<Payload>
 
@@ -849,7 +852,8 @@ class CollectionViewModel(
                         route = EventsDictionary.Routes.objCreateHome,
                         startTime = startTime,
                         objType = objType ?: storeOfObjectTypes.getByKey(result.typeKey.key),
-                        view = EventsDictionary.View.viewHome
+                        view = EventsDictionary.View.viewHome,
+                        spaceParams = provideParams(SpaceId(spaceManager.get()))
                     )
                     proceedWithOpeningObject(result.obj)
                 },
@@ -934,7 +938,8 @@ class CollectionViewModel(
         private val storeOfObjectTypes: StoreOfObjectTypes,
         private val spaceManager: SpaceManager,
         private val getSpaceView: GetSpaceView,
-        private val dateTypeNameProvider: DateTypeNameProvider
+        private val dateTypeNameProvider: DateTypeNameProvider,
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -959,7 +964,8 @@ class CollectionViewModel(
                 storeOfObjectTypes = storeOfObjectTypes,
                 spaceManager = spaceManager,
                 getSpaceView = getSpaceView,
-                dateTypeNameProvider = dateTypeNameProvider
+                dateTypeNameProvider = dateTypeNameProvider,
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
             ) as T
         }
     }

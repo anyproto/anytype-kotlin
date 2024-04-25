@@ -195,4 +195,5 @@ interface SplashDependencies : ComponentDependencies {
     fun localeProvider(): LocaleProvider
     fun awaitAccountStartManager(): AwaitAccountStartManager
     fun userPermissionProvider(): UserPermissionProvider
+    fun analyticSpaceHelperDelegate(): AnalyticSpaceHelperDelegate
 }

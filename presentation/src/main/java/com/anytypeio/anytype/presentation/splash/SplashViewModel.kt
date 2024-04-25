@@ -36,6 +36,7 @@ import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -62,8 +63,9 @@ class SplashViewModel(
     private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
     private val localeProvider: LocaleProvider,
     private val spaceManager: SpaceManager,
-    private val userPermissionProvider: UserPermissionProvider
-) : ViewModel() {
+    private val userPermissionProvider: UserPermissionProvider,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val state = MutableStateFlow<ViewState<Any>>(ViewState.Init)
 
@@ -176,6 +178,7 @@ class SplashViewModel(
                         route = EventsDictionary.Routes.home,
                         startTime = startTime,
                         view = EventsDictionary.View.viewHome,
+                        spaceParams = provideParams(SpaceId(spaceManager.get()))
                     )
                     val target = result.objectId
                     val space = requireNotNull(result.obj.spaceId)

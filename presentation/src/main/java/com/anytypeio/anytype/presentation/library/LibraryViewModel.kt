@@ -28,6 +28,7 @@ import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
 import com.anytypeio.anytype.domain.workspace.RemoveObjectsFromWorkspace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Companion.HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
@@ -72,8 +73,9 @@ class LibraryViewModel(
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val appCoroutineDispatchers: AppCoroutineDispatchers,
     private val urlBuilder: UrlBuilder,
-    private val storeOfObjectTypes: StoreOfObjectTypes
-) : NavigationViewModel<LibraryViewModel.Navigation>() {
+    private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+) : NavigationViewModel<LibraryViewModel.Navigation>(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
 
@@ -211,7 +213,8 @@ class LibraryViewModel(
                         route = EventsDictionary.Routes.objCreateLibrary,
                         startTime = startTime,
                         objType = objType ?: storeOfObjectTypes.getByKey(result.typeKey.key),
-                        view = EventsDictionary.View.viewHome
+                        view = EventsDictionary.View.viewHome,
+                        spaceParams = provideParams(SpaceId(spaceManager.get()))
                     )
                             },
                 onFailure = { e -> Timber.e(e, "Error while creating a new object") }
@@ -497,7 +500,8 @@ class LibraryViewModel(
         private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
         private val appCoroutineDispatchers: AppCoroutineDispatchers,
         private val urlBuilder: UrlBuilder,
-        private val storeOfObjectTypes: StoreOfObjectTypes
+        private val storeOfObjectTypes: StoreOfObjectTypes,
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -517,7 +521,8 @@ class LibraryViewModel(
                 storelessSubscriptionContainer = storelessSubscriptionContainer,
                 appCoroutineDispatchers = appCoroutineDispatchers,
                 urlBuilder = urlBuilder,
-                storeOfObjectTypes = storeOfObjectTypes
+                storeOfObjectTypes = storeOfObjectTypes,
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
             ) as T
         }
     }

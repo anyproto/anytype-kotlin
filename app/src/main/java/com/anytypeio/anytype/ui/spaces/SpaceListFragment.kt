@@ -8,7 +8,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
@@ -26,6 +28,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.spaces.SpaceListViewModel
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
+import kotlinx.coroutines.launch
 
 class SpaceListFragment : BaseBottomSheetComposeFragment() {
 
@@ -53,12 +56,17 @@ class SpaceListFragment : BaseBottomSheetComposeFragment() {
                     onCancelJoinRequestClicked = vm::onCancelJoinSpaceClicked
                 )
             }
+
+            val bottomSheetState = rememberModalBottomSheetState()
+            val scope = rememberCoroutineScope()
+
             when(val warning = vm.warning.collectAsStateWithLifecycle().value) {
                 is SpaceListViewModel.Warning.CancelSpaceJoinRequest -> {
                     ModalBottomSheet(
                         onDismissRequest = { vm.onWarningDismissed() },
                         dragHandle = {},
-                        containerColor = colorResource(id = R.color.background_secondary)
+                        containerColor = colorResource(id = R.color.background_secondary),
+                        sheetState = bottomSheetState
                     ) {
                         Warning(
                             actionButtonText = stringResource(R.string.cancel),
@@ -66,10 +74,18 @@ class SpaceListFragment : BaseBottomSheetComposeFragment() {
                             title = stringResource(R.string.multiplayer_cancel_join_request),
                             subtitle = stringResource(R.string.multiplayer_cancel_join_request_msg),
                             onNegativeClick = {
-                                vm.onWarningDismissed()
+                                scope.launch {
+                                    bottomSheetState.hide()
+                                }.invokeOnCompletion {
+                                    vm.onWarningDismissed()
+                                }
                             },
                             onPositiveClick = {
-                                vm.onCancelJoinRequestAccepted(warning.space)
+                                scope.launch {
+                                    bottomSheetState.hide()
+                                }.invokeOnCompletion {
+                                    vm.onCancelJoinRequestAccepted(warning.space)
+                                }
                             },
                             isInProgress = false,
                             footerHeight = 24.dp
@@ -80,7 +96,8 @@ class SpaceListFragment : BaseBottomSheetComposeFragment() {
                     ModalBottomSheet(
                         onDismissRequest = { vm.onWarningDismissed() },
                         dragHandle = {},
-                        containerColor = colorResource(id = R.color.background_secondary)
+                        containerColor = colorResource(id = R.color.background_secondary),
+                        sheetState = bottomSheetState
                     ) {
                         Warning(
                             actionButtonText = stringResource(R.string.delete),
@@ -88,10 +105,18 @@ class SpaceListFragment : BaseBottomSheetComposeFragment() {
                             title = stringResource(R.string.delete_space_title),
                             subtitle = stringResource(R.string.delete_space_subtitle),
                             onNegativeClick = {
-                                vm.onWarningDismissed()
+                                scope.launch {
+                                    bottomSheetState.hide()
+                                }.invokeOnCompletion {
+                                    vm.onWarningDismissed()
+                                }
                             },
                             onPositiveClick = {
-                                vm.onDeleteSpaceAccepted(warning.space)
+                                scope.launch {
+                                    bottomSheetState.hide()
+                                }.invokeOnCompletion {
+                                    vm.onDeleteSpaceAccepted(warning.space)
+                                }
                             },
                             isInProgress = false,
                             footerHeight = 24.dp
@@ -102,7 +127,8 @@ class SpaceListFragment : BaseBottomSheetComposeFragment() {
                     ModalBottomSheet(
                         onDismissRequest = { vm.onWarningDismissed() },
                         dragHandle = {},
-                        containerColor = colorResource(id = R.color.background_secondary)
+                        containerColor = colorResource(id = R.color.background_secondary),
+                        sheetState = bottomSheetState
                     ) {
                         Warning(
                             actionButtonText = stringResource(R.string.multiplayer_leave_space),
@@ -110,10 +136,18 @@ class SpaceListFragment : BaseBottomSheetComposeFragment() {
                             title = stringResource(R.string.multiplayer_leave_space),
                             subtitle = stringResource(R.string.multiplayer_leave_space_warning_subtitle),
                             onNegativeClick = {
-                                vm.onWarningDismissed()
+                                scope.launch {
+                                    bottomSheetState.hide()
+                                }.invokeOnCompletion {
+                                    vm.onWarningDismissed()
+                                }
                             },
                             onPositiveClick = {
-                                vm.onLeaveSpaceAccepted(warning.space)
+                                scope.launch {
+                                    bottomSheetState.hide()
+                                }.invokeOnCompletion {
+                                    vm.onLeaveSpaceAccepted(warning.space)
+                                }
                             },
                             isInProgress = false,
                             footerHeight = 24.dp
@@ -121,7 +155,7 @@ class SpaceListFragment : BaseBottomSheetComposeFragment() {
                     }
                 }
                 is SpaceListViewModel.Warning.None -> {
-                    // Do nothing
+                   // Do nothing.
                 }
             }
             LaunchedEffect(Unit) {

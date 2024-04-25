@@ -66,7 +66,7 @@ class SpaceListViewModel(
                                 } ?: return@buildList
 
                                 if (spaceView.spaceAccessType == SpaceAccessType.SHARED) {
-                                    val isOwner = permissions.get(space)?.isOwnerOrEditor() == true
+                                    val isOwner = permissions.get(space) == SpaceMemberPermissions.OWNER
                                     if (isOwner) {
                                         add(SpaceListItemView.Action.DeleteSpace)
                                     } else {

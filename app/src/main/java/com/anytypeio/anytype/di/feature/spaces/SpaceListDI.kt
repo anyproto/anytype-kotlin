@@ -3,6 +3,8 @@ package com.anytypeio.anytype.di.feature.spaces
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -42,4 +44,6 @@ interface SpaceListDependencies : ComponentDependencies {
     fun spaceViewContainer(): SpaceViewSubscriptionContainer
     fun permissions(): UserPermissionProvider
     fun urlBuilder(): UrlBuilder
+    fun repo(): BlockRepository
+    fun dispatchers(): AppCoroutineDispatchers
 }

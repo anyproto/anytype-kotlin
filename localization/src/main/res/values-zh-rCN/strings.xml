@@ -1148,7 +1148,7 @@
     <string name="multiplayer_space_stop_sharing">停止共享</string>
     <string name="multiplayer_space_stop_sharing_space">停止共享此空间</string>
     <string name="multiplayer_space_stop_sharing_space_description">参与者将不再同步到此空间，共享链接也将被停用。</string>
-    <string name="multiplayer_more_info">More info</string>
+    <string name="multiplayer_more_info">更多信息</string>
     <string name="multiplayer_sharing">分享</string>
     <string name="multiplayer_space_type">类型</string>
     <string name="multiplayer_share">分享</string>
@@ -1188,7 +1188,7 @@
     <string name="multiplayer_notification_view_request">视图</string>
     <string name="multiplayer_notification_go_to_space">转到空间</string>
     <string name="multiplayer_toast_permission_not_allowed">不允许更改权限</string>
-    <string name="multiplayer_toast_share_limit_reached">Sharing limit reached</string>
+    <string name="multiplayer_toast_share_limit_reached">已达到共享限制</string>
     <string name="multiplayer_deeplink_to_your_object">深度链接到您的对象</string>
     <string name="multiplayer_deeplink_to_your_object_error">这个深度链接不可用。对象可能被删除，或者可能存在空间访问问题。</string>
     <plurals name="multiplayer_number_of_space_members">
@@ -1198,7 +1198,7 @@
     <string name="multiplayer_spaces">空间</string>
     <string name="multiplayer_space_status_joining">正在加入</string>
     <string name="multiplayer_space_status_active">正在进行</string>
-    <string name="multiplayer_space_status_removing">Removed</string>
+    <string name="multiplayer_space_status_removing">已移除</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">会员</string>

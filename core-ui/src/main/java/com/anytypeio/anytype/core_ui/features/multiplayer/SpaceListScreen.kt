@@ -2,6 +2,7 @@ package com.anytypeio.anytype.core_ui.features.multiplayer
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -44,7 +45,9 @@ import com.anytypeio.anytype.presentation.spaces.SpaceListViewModel.SpaceListIte
 
 @Composable
 fun SpaceListScreen(
-    state: ViewState<List<SpaceListItemView>>
+    state: ViewState<List<SpaceListItemView>>,
+    onDeleteSpaceClicked: (SpaceListItemView) -> Unit,
+    onCancelJoinRequestClicked: (SpaceListItemView) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -72,7 +75,13 @@ fun SpaceListScreen(
                                 end = 10.dp,
                                 top = 7.dp,
                                 bottom = if (idx == state.data.lastIndex) 24.dp else 7.dp
-                            )
+                            ),
+                            onDeleteSpaceClicked = {
+                                onDeleteSpaceClicked(item)
+                            },
+                            onCancelJoinRequestClicked = {
+
+                            }
                         )
                     },
                     key = { _, item -> item.space.id }
@@ -88,7 +97,9 @@ fun SpaceListCardItem(
     spaceStatus: SpaceStatus,
     spaceIcon: SpaceIconView,
     permissions: SpaceMemberPermissions,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onDeleteSpaceClicked: () -> Unit,
+    onCancelJoinRequestClicked: () -> Unit
 ) {
     ConstraintLayout(
         modifier = modifier
@@ -98,6 +109,9 @@ fun SpaceListCardItem(
                 shape = RoundedCornerShape(12.dp)
             )
             .fillMaxWidth()
+            .clickable {
+                onDeleteSpaceClicked()
+            }
 
     ) {
         val (icon, title, subtitle, divider, dots, circle, network, status, footer) = createRefs()
@@ -239,7 +253,11 @@ fun SpaceListCardItem(
 @Preview
 @Composable
 private fun SpaceListScreenPreview() {
-    SpaceListScreen(ViewState.Loading)
+    SpaceListScreen(
+        state = ViewState.Loading,
+        onCancelJoinRequestClicked = {},
+        onDeleteSpaceClicked = {}
+    )
 }
 
 @Preview
@@ -249,7 +267,9 @@ private fun SpaceCardItemPreview() {
         spaceName = "Architecture",
         spaceStatus = SpaceStatus.SPACE_ACTIVE,
         permissions = SpaceMemberPermissions.OWNER,
-        spaceIcon = SpaceIconView.Placeholder
+        spaceIcon = SpaceIconView.Placeholder,
+        onCancelJoinRequestClicked = {},
+        onDeleteSpaceClicked = {}
     )
 }
 

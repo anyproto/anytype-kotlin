@@ -77,6 +77,7 @@ import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.isCreateObjectAllowed
+import com.anytypeio.anytype.presentation.objects.isSetOrCollection
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon
@@ -1608,17 +1609,24 @@ class ObjectSetViewModel(
     }
 
     fun onAddNewDocumentClicked(objType: ObjectWrapper.Type? = null) {
-        Timber.d("onAddNewDocumentClicked, ")
+        Timber.d("onAddNewDocumentClicked, objType:[$objType]")
 
         val startTime = System.currentTimeMillis()
         val params = objType?.uniqueKey.getCreateObjectParams(objType?.defaultTemplateId)
         jobs += viewModelScope.launch {
             createObject.async(params).fold(
                 onSuccess = { result ->
-                    proceedWithOpeningObject(
-                        target = result.objectId,
-                        layout = result.obj.layout,
-                        space = requireNotNull(result.obj.spaceId)
+                    delegator.delegate(
+                        if (objType.isSetOrCollection())
+                            Action.OpenCollection(
+                                target = result.objectId,
+                                space = requireNotNull(result.obj.spaceId)
+                            )
+                        else
+                            Action.OpenObject(
+                                target = result.objectId,
+                                space = requireNotNull(result.obj.spaceId)
+                            )
                     )
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,

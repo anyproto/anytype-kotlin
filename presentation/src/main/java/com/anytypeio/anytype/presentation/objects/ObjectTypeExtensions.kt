@@ -118,3 +118,10 @@ fun Key?.getCreateObjectParams(defaultTemplate: Id?): CreateObject.Param {
         template = defaultTemplate
     )
 }
+
+fun ObjectWrapper.Type?.isSetOrCollection(): Boolean {
+    if (this == null) {
+        return false
+    }
+    return uniqueKey == SET || uniqueKey == COLLECTION
+}

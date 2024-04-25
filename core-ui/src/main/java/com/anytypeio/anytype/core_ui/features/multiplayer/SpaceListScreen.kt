@@ -70,7 +70,9 @@ fun SpaceListScreen(
                 .align(Alignment.CenterHorizontally)
         )
         Header(text = stringResource(id = R.string.multiplayer_spaces))
-        LazyColumn {
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth().weight(1.0f)
+        ) {
             if (state is ViewState.Success) {
                 itemsIndexed(
                     items = state.data,

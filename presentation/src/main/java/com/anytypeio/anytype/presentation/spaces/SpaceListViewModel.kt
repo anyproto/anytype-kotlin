@@ -34,7 +34,7 @@ class SpaceListViewModel(
     private val cancelJoinSpaceRequest: CancelJoinSpaceRequest
 ) : BaseViewModel() {
 
-    val state : StateFlow<ViewState<List<SpaceListItemView>>> = flow {
+    val state: StateFlow<ViewState<List<SpaceListItemView>>> = flow {
         emit(ViewState.Loading)
         emitAll(
             combine(
@@ -103,8 +103,8 @@ class SpaceListViewModel(
         val actions: List<Action> = emptyList()
     ) {
         sealed class Action {
-            data object CancelJoinRequest: Action()
-            data object DeleteSpace: Action()
+            data object CancelJoinRequest : Action()
+            data object DeleteSpace : Action()
         }
     }
 

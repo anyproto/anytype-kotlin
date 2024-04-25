@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
@@ -77,7 +78,6 @@ import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.isCreateObjectAllowed
-import com.anytypeio.anytype.presentation.objects.isSetOrCollection
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon
@@ -1617,7 +1617,7 @@ class ObjectSetViewModel(
             createObject.async(params).fold(
                 onSuccess = { result ->
                     delegator.delegate(
-                        if (objType.isSetOrCollection())
+                        if (objType?.recommendedLayout.isDataView())
                             Action.OpenCollection(
                                 target = result.objectId,
                                 space = requireNotNull(result.obj.spaceId)

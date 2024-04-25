@@ -77,8 +77,11 @@ class SpaceListViewModel(
                                             SpaceStatus.SPACE_REMOVING -> {
                                                 add(SpaceListItemView.Action.DeleteSpace)
                                             }
-                                            else -> {
+                                            SpaceStatus.SPACE_ACTIVE, SpaceStatus.UNKNOWN -> {
                                                 add(SpaceListItemView.Action.LeaveSpace)
+                                            }
+                                            else -> {
+                                                // Do nothing.
                                             }
                                         }
                                     }

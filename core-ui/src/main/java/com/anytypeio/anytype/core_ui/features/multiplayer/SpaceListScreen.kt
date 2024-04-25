@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_ui.features.multiplayer
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -14,16 +15,23 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -35,6 +43,8 @@ import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Header
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.Title2
@@ -44,7 +54,10 @@ import com.anytypeio.anytype.presentation.spaces.SpaceListViewModel.SpaceListIte
 
 @Composable
 fun SpaceListScreen(
-    state: ViewState<List<SpaceListItemView>>
+    state: ViewState<List<SpaceListItemView>>,
+    onDeleteSpaceClicked: (SpaceListItemView) -> Unit,
+    onLeaveSpaceClicked: (SpaceListItemView) -> Unit,
+    onCancelJoinRequestClicked: (SpaceListItemView) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -57,7 +70,9 @@ fun SpaceListScreen(
                 .align(Alignment.CenterHorizontally)
         )
         Header(text = stringResource(id = R.string.multiplayer_spaces))
-        LazyColumn {
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth().weight(1.0f)
+        ) {
             if (state is ViewState.Success) {
                 itemsIndexed(
                     items = state.data,
@@ -72,7 +87,17 @@ fun SpaceListScreen(
                                 end = 10.dp,
                                 top = 7.dp,
                                 bottom = if (idx == state.data.lastIndex) 24.dp else 7.dp
-                            )
+                            ),
+                            onDeleteSpaceClicked = {
+                                onDeleteSpaceClicked(item)
+                            },
+                            onCancelJoinRequestClicked = {
+                                onCancelJoinRequestClicked(item)
+                            },
+                            onLeaveSpaceClicked = {
+                                onLeaveSpaceClicked(item)
+                            },
+                            actions = item.actions
                         )
                     },
                     key = { _, item -> item.space.id }
@@ -88,7 +113,11 @@ fun SpaceListCardItem(
     spaceStatus: SpaceStatus,
     spaceIcon: SpaceIconView,
     permissions: SpaceMemberPermissions,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onDeleteSpaceClicked: () -> Unit,
+    onLeaveSpaceClicked: () -> Unit,
+    onCancelJoinRequestClicked: () -> Unit,
+    actions: List<SpaceListItemView.Action>
 ) {
     ConstraintLayout(
         modifier = modifier
@@ -98,8 +127,9 @@ fun SpaceListCardItem(
                 shape = RoundedCornerShape(12.dp)
             )
             .fillMaxWidth()
-
     ) {
+        val isCardMenuExpanded = remember { mutableStateOf(false) }
+
         val (icon, title, subtitle, divider, dots, circle, network, status, footer) = createRefs()
 
         SpaceIconView(
@@ -115,14 +145,31 @@ fun SpaceListCardItem(
             gradientCornerRadius = 4.dp
         )
 
-        Box(
-            modifier = Modifier
-                .size(24.dp)
-                .constrainAs(dots) {
-                    top.linkTo(parent.top, margin = 24.dp)
-                    end.linkTo(parent.end, margin = 12.dp)
-                }
-        )
+        if (actions.isNotEmpty()) {
+            Box(
+                modifier = Modifier
+                    .size(24.dp)
+                    .constrainAs(dots) {
+                        top.linkTo(parent.top, margin = 24.dp)
+                        end.linkTo(parent.end, margin = 12.dp)
+                    }
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_space_list_dots),
+                    contentDescription = "Three-dots button",
+                    modifier = Modifier.noRippleClickable {
+                        isCardMenuExpanded.value = !isCardMenuExpanded.value
+                    }
+                )
+                SpaceListItemMenu(
+                    isCardMenuExpanded = isCardMenuExpanded,
+                    actions = actions,
+                    onCancelJoinRequestClicked = onCancelJoinRequestClicked,
+                    onDeleteSpaceClicked = onDeleteSpaceClicked,
+                    onLeaveSpaceClicked = onLeaveSpaceClicked
+                )
+            }
+        }
 
         Text(
             text = spaceName.ifEmpty { stringResource(id = R.string.untitled) },
@@ -236,10 +283,84 @@ fun SpaceListCardItem(
     }
 }
 
+@Composable
+private fun SpaceListItemMenu(
+    isCardMenuExpanded: MutableState<Boolean>,
+    actions: List<SpaceListItemView.Action>,
+    onCancelJoinRequestClicked: () -> Unit,
+    onDeleteSpaceClicked: () -> Unit,
+    onLeaveSpaceClicked: () -> Unit
+) {
+    DropdownMenu(
+        expanded = isCardMenuExpanded.value,
+        onDismissRequest = {
+            isCardMenuExpanded.value = false
+        },
+        offset = DpOffset(x = 0.dp, y = 6.dp)
+    ) {
+        actions.forEachIndexed { idx, action ->
+            when (action) {
+                SpaceListItemView.Action.CancelJoinRequest -> {
+                    DropdownMenuItem(
+                        onClick = {
+                            onCancelJoinRequestClicked().also {
+                                isCardMenuExpanded.value = false
+                            }
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.multiplayer_cancel_join_request),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.palette_system_red)
+                        )
+                    }
+                }
+
+                SpaceListItemView.Action.DeleteSpace -> {
+                    DropdownMenuItem(
+                        onClick = {
+                            onDeleteSpaceClicked().also {
+                                isCardMenuExpanded.value = false
+                            }
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.delete_space),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.palette_system_red)
+                        )
+                    }
+                }
+
+                SpaceListItemView.Action.LeaveSpace -> {
+                    DropdownMenuItem(
+                        onClick = {
+                            onLeaveSpaceClicked().also {
+                                isCardMenuExpanded.value = false
+                            }
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.multiplayer_leave_space),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.palette_system_red)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
 @Preview
 @Composable
 private fun SpaceListScreenPreview() {
-    SpaceListScreen(ViewState.Loading)
+    SpaceListScreen(
+        state = ViewState.Loading,
+        onCancelJoinRequestClicked = {},
+        onDeleteSpaceClicked = {},
+        onLeaveSpaceClicked = {}
+    )
 }
 
 @Preview
@@ -249,7 +370,11 @@ private fun SpaceCardItemPreview() {
         spaceName = "Architecture",
         spaceStatus = SpaceStatus.SPACE_ACTIVE,
         permissions = SpaceMemberPermissions.OWNER,
-        spaceIcon = SpaceIconView.Placeholder
+        spaceIcon = SpaceIconView.Placeholder,
+        onCancelJoinRequestClicked = {},
+        onLeaveSpaceClicked = {},
+        onDeleteSpaceClicked = {},
+        actions = emptyList()
     )
 }
 

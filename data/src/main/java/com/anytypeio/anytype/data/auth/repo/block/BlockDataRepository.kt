@@ -964,6 +964,10 @@ class BlockDataRepository(
         remote.sendJoinSpaceRequest(command)
     }
 
+    override suspend fun cancelJoinSpaceRequest(space: SpaceId) {
+        remote.cancelJoinSpaceRequest(space = space)
+    }
+
     override suspend fun getSpaceInviteView(
         inviteContentId: Id,
         inviteFileKey: String

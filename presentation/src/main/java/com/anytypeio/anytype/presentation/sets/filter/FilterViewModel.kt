@@ -70,9 +70,8 @@ open class FilterViewModel(
     private val objectSetDatabase: ObjectSetDatabase,
     private val analytics: Analytics,
     private val getOptions: GetOptions,
-    private val spaceManager: SpaceManager,
-    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
-) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
+    private val spaceManager: SpaceManager
+) : ViewModel() {
 
     val commands = MutableSharedFlow<Commands>()
     val isCompleted = MutableSharedFlow<Boolean>(0)
@@ -881,8 +880,7 @@ open class FilterViewModel(
         private val objectSetDatabase: ObjectSetDatabase,
         private val getOptions: GetOptions,
         private val analytics: Analytics,
-        private val spaceManager: SpaceManager,
-        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -897,8 +895,7 @@ open class FilterViewModel(
                 objectSetDatabase = objectSetDatabase,
                 getOptions = getOptions,
                 analytics = analytics,
-                spaceManager = spaceManager,
-                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+                spaceManager = spaceManager
             ) as T
         }
     }

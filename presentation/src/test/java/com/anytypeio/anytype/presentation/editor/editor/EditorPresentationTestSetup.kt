@@ -98,6 +98,7 @@ import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.DocumentExternalEventReducer
@@ -366,6 +367,9 @@ open class EditorPresentationTestSetup {
     lateinit var storelessSubscriptionContainer: StorelessSubscriptionContainer
 
     @Mock
+    lateinit var analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+
+    @Mock
     lateinit var getNetworkMode: GetNetworkMode
 
     var permissions: UserPermissionProvider = UserPermissionProviderStub()
@@ -490,7 +494,8 @@ open class EditorPresentationTestSetup {
                 ctx = root,
                 space = SpaceId(defaultSpace)
             ),
-            permissions = permissions
+            permissions = permissions,
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
         )
     }
 

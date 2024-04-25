@@ -124,7 +124,8 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
                 ctx = root,
                 space = SpaceId(defaultSpace)
             ),
-            permissions = permissions
+            permissions = permissions,
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
         )
         stubNetworkMode()
         stubObservePermissions()

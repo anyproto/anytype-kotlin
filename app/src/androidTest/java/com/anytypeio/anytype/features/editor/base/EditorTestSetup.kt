@@ -95,6 +95,7 @@ import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.DocumentExternalEventReducer
 import com.anytypeio.anytype.presentation.editor.Editor
@@ -294,6 +295,9 @@ open class EditorTestSetup {
 
     @Mock
     lateinit var permissions: UserPermissionProvider
+
+    @Mock
+    lateinit var analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
 
     lateinit var interceptFileLimitEvents: InterceptFileLimitEvents
 
@@ -501,7 +505,8 @@ open class EditorTestSetup {
                 ctx = root,
                 space = SpaceId(defaultSpace)
             ),
-            permissions = permissions
+            permissions = permissions,
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
         )
     }
 

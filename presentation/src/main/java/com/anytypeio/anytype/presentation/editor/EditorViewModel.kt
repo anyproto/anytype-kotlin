@@ -1085,7 +1085,7 @@ class EditorViewModel(
                                         startTime = startTime,
                                         details = orchestrator.stores.details.current().details,
                                         ctx = context,
-                                        spaceParams = provideParams(params.space)
+                                        spaceParams = provideParams(this@EditorViewModel.params.space)
                                     )
                                 }
                             }

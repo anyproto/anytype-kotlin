@@ -60,6 +60,7 @@ class SpaceListViewModel(
                                 defaultValue = SpaceMemberPermissions.NO_PERMISSIONS
                             ),
                             actions = buildList {
+
                                 val space = spaceView.targetSpaceId?.let { id ->
                                     SpaceId(id)
                                 } ?: return@buildList
@@ -70,8 +71,7 @@ class SpaceListViewModel(
                                         add(SpaceListItemView.Action.DeleteSpace)
                                     } else {
                                         if (spaceView.spaceAccountStatus == SpaceStatus.SPACE_JOINING) {
-                                            // TODO Add when ready to handle this action
-//                                            add(SpaceListItemView.Action.CancelJoinRequest)
+                                            add(SpaceListItemView.Action.CancelJoinRequest)
                                         } else {
                                             add(SpaceListItemView.Action.LeaveSpace)
                                         }
@@ -106,44 +106,51 @@ class SpaceListViewModel(
     }
 
     fun onCancelJoinRequestAccepted(space: SpaceId) {
+        Timber.d("onCancelJoinRequestClicked")
         viewModelScope.launch {
-            Timber.d("Cancelling")
+            warning.update { Warning.None }
             cancelJoinSpaceRequest.async(space).fold(
                 onSuccess = {
                     Timber.d("Space deleted successfully")
                 },
-                onFailure = {
-                    Timber.e(it, "Error while deleting space")
+                onFailure = { e ->
+                    Timber.e(e, "Error while deleting space").also {
+                        sendToast(e.msg())
+                    }
                 }
             )
         }
     }
 
     fun onDeleteSpaceAccepted(space: SpaceId) {
+        Timber.d("onDeleteSpaceClicked")
         viewModelScope.launch {
             warning.update { Warning.None }
-            Timber.d("Deleting")
             deleteSpace.async(space).fold(
                 onSuccess = {
                     Timber.d("Space deleted successfully")
                 },
-                onFailure = {
-                    Timber.e(it, "Error while deleting space")
+                onFailure = { e ->
+                    Timber.e(e, "Error while deleting space").also {
+                        sendToast(e.msg())
+                    }
                 }
             )
         }
     }
 
     fun onLeaveSpaceAccepted(space: SpaceId) {
+        Timber.d("onLeaveSpaceClicked")
         viewModelScope.launch {
             warning.update { Warning.None }
-            Timber.d("Leaving")
             deleteSpace.async(space).fold(
                 onSuccess = {
                     Timber.d("Space deleted successfully")
                 },
-                onFailure = {
-                    Timber.e(it, "Error while deleting space")
+                onFailure = { e ->
+                    Timber.e(e, "Error while deleting space").also {
+                        sendToast(e.msg())
+                    }
                 }
             )
         }

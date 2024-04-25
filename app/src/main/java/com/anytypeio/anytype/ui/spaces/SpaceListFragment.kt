@@ -4,19 +4,23 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.features.multiplayer.SpaceListScreen
 import com.anytypeio.anytype.core_ui.foundation.Warning
 import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.spaces.SpaceListViewModel
@@ -39,7 +43,8 @@ class SpaceListFragment : BaseBottomSheetComposeFragment() {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             MaterialTheme(
-                typography = typography
+                typography = typography,
+                shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp))
             ) {
                 SpaceListScreen(
                     state = vm.state.collectAsStateWithLifecycle().value,
@@ -50,7 +55,26 @@ class SpaceListFragment : BaseBottomSheetComposeFragment() {
             }
             when(val warning = vm.warning.collectAsStateWithLifecycle().value) {
                 is SpaceListViewModel.Warning.CancelSpaceJoinRequest -> {
-                    // TODO
+                    ModalBottomSheet(
+                        onDismissRequest = { vm.onWarningDismissed() },
+                        dragHandle = {},
+                        containerColor = colorResource(id = R.color.background_secondary)
+                    ) {
+                        Warning(
+                            actionButtonText = stringResource(R.string.cancel),
+                            cancelButtonText = stringResource(R.string.multiplayer_do_not_cancel_join_request),
+                            title = stringResource(R.string.multiplayer_cancel_join_request),
+                            subtitle = stringResource(R.string.multiplayer_cancel_join_request_msg),
+                            onNegativeClick = {
+                                vm.onWarningDismissed()
+                            },
+                            onPositiveClick = {
+                                vm.onCancelJoinRequestAccepted(warning.space)
+                            },
+                            isInProgress = false,
+                            footerHeight = 24.dp
+                        )
+                    }
                 }
                 is SpaceListViewModel.Warning.DeleteSpace -> {
                     ModalBottomSheet(
@@ -69,7 +93,8 @@ class SpaceListFragment : BaseBottomSheetComposeFragment() {
                             onPositiveClick = {
                                 vm.onDeleteSpaceAccepted(warning.space)
                             },
-                            isInProgress = false
+                            isInProgress = false,
+                            footerHeight = 24.dp
                         )
                     }
                 }
@@ -90,12 +115,18 @@ class SpaceListFragment : BaseBottomSheetComposeFragment() {
                             onPositiveClick = {
                                 vm.onLeaveSpaceAccepted(warning.space)
                             },
-                            isInProgress = false
+                            isInProgress = false,
+                            footerHeight = 24.dp
                         )
                     }
                 }
                 is SpaceListViewModel.Warning.None -> {
                     // Do nothing
+                }
+            }
+            LaunchedEffect(Unit) {
+                vm.toasts.collect { msg ->
+                    toast(msg)
                 }
             }
         }

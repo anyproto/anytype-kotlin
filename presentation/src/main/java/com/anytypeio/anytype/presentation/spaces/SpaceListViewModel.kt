@@ -4,8 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -43,19 +45,39 @@ class SpaceListViewModel(
             combine(
                 spaces.observe(),
                 permissions.all()
-            ) { s, p ->
+            ) { spaceViews, permission ->
                 ViewState.Success(
-                    data = s.map { space ->
+                    data = spaceViews.map { spaceView ->
                         SpaceListItemView(
-                            space = space,
-                            icon = space.spaceIcon(
+                            space = spaceView,
+                            icon = spaceView.spaceIcon(
                                 builder = urlBuilder,
                                 spaceGradientProvider = SpaceGradientProvider.Default
                             ),
-                            permissions = p.getOrDefault(
-                                key = requireNotNull(space.targetSpaceId),
+                            permissions = permission.getOrDefault(
+                                key = requireNotNull(spaceView.targetSpaceId),
                                 defaultValue = SpaceMemberPermissions.NO_PERMISSIONS
-                            )
+                            ),
+                            actions = buildList {
+                                val space = spaceView.targetSpaceId?.let { id ->
+                                    SpaceId(id)
+                                } ?: return@buildList
+
+                                if (spaceView.spaceAccessType == SpaceAccessType.SHARED) {
+                                    val isOwner = permissions.get(space)?.isOwnerOrEditor() == true
+                                    if (isOwner) {
+                                        add(SpaceListItemView.Action.DeleteSpace)
+                                    } else {
+                                        if (spaceView.spaceAccountStatus == SpaceStatus.SPACE_JOINING) {
+                                            add(SpaceListItemView.Action.CancelJoinRequest)
+                                        } else {
+                                            add(SpaceListItemView.Action.LeaveSpace)
+                                        }
+                                    }
+                                } else if (spaceView.spaceAccessType == SpaceAccessType.PRIVATE) {
+                                    add(SpaceListItemView.Action.DeleteSpace)
+                                }
+                            }
                         )
                     }
                 )

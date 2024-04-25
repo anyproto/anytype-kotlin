@@ -20,6 +20,7 @@ import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -147,77 +148,29 @@ fun SpaceListCardItem(
             gradientCornerRadius = 4.dp
         )
 
-        Box(
-            modifier = Modifier
-                .size(24.dp)
-                .constrainAs(dots) {
-                    top.linkTo(parent.top, margin = 24.dp)
-                    end.linkTo(parent.end, margin = 12.dp)
-                }
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_space_list_dots),
-                contentDescription = "Three-dots button",
-                modifier = Modifier.noRippleClickable {
-                    isCardMenuExpanded.value = !isCardMenuExpanded.value
-                }
-            )
-            DropdownMenu(
-                expanded = isCardMenuExpanded.value,
-                onDismissRequest = {
-                    isCardMenuExpanded.value = false
-                },
-                offset = DpOffset(x = 0.dp, y = 6.dp)
-            ) {
-                actions.forEachIndexed { idx, action ->
-                    when(action) {
-                        SpaceListItemView.Action.CancelJoinRequest -> {
-                            DropdownMenuItem(
-                                onClick = {
-                                   onCancelJoinRequestClicked().also {
-                                       isCardMenuExpanded.value = false
-                                   }
-                                }
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.multiplayer_cancel_join_request),
-                                    style = BodyRegular,
-                                    color = colorResource(id = R.color.palette_light_red)
-                                )
-                            }
-                        }
-                        SpaceListItemView.Action.DeleteSpace -> {
-                            DropdownMenuItem(
-                                onClick = {
-                                    onDeleteSpaceClicked().also {
-                                        isCardMenuExpanded.value = false
-                                    }
-                                }
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.delete_space),
-                                    style = BodyRegular,
-                                    color = colorResource(id = R.color.palette_system_red)
-                                )
-                            }
-                        }
-                        SpaceListItemView.Action.LeaveSpace -> {
-                            DropdownMenuItem(
-                                onClick = {
-                                    onLeaveSpaceClicked().also {
-                                        isCardMenuExpanded.value = false
-                                    }
-                                }
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.multiplayer_leave_space),
-                                    style = BodyRegular,
-                                    color = colorResource(id = R.color.palette_system_red)
-                                )
-                            }
-                        }
+        if (actions.isNotEmpty()) {
+            Box(
+                modifier = Modifier
+                    .size(24.dp)
+                    .constrainAs(dots) {
+                        top.linkTo(parent.top, margin = 24.dp)
+                        end.linkTo(parent.end, margin = 12.dp)
                     }
-                }
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_space_list_dots),
+                    contentDescription = "Three-dots button",
+                    modifier = Modifier.noRippleClickable {
+                        isCardMenuExpanded.value = !isCardMenuExpanded.value
+                    }
+                )
+                SpaceListItemMenu(
+                    isCardMenuExpanded = isCardMenuExpanded,
+                    actions = actions,
+                    onCancelJoinRequestClicked = onCancelJoinRequestClicked,
+                    onDeleteSpaceClicked = onDeleteSpaceClicked,
+                    onLeaveSpaceClicked = onLeaveSpaceClicked
+                )
             }
         }
 
@@ -330,6 +283,75 @@ fun SpaceListCardItem(
                     top.linkTo(network.bottom)
                 }
         )
+    }
+}
+
+@Composable
+private fun SpaceListItemMenu(
+    isCardMenuExpanded: MutableState<Boolean>,
+    actions: List<SpaceListItemView.Action>,
+    onCancelJoinRequestClicked: () -> Unit,
+    onDeleteSpaceClicked: () -> Unit,
+    onLeaveSpaceClicked: () -> Unit
+) {
+    DropdownMenu(
+        expanded = isCardMenuExpanded.value,
+        onDismissRequest = {
+            isCardMenuExpanded.value = false
+        },
+        offset = DpOffset(x = 0.dp, y = 6.dp)
+    ) {
+        actions.forEachIndexed { idx, action ->
+            when (action) {
+                SpaceListItemView.Action.CancelJoinRequest -> {
+                    DropdownMenuItem(
+                        onClick = {
+                            onCancelJoinRequestClicked().also {
+                                isCardMenuExpanded.value = false
+                            }
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.multiplayer_cancel_join_request),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.palette_system_red)
+                        )
+                    }
+                }
+
+                SpaceListItemView.Action.DeleteSpace -> {
+                    DropdownMenuItem(
+                        onClick = {
+                            onDeleteSpaceClicked().also {
+                                isCardMenuExpanded.value = false
+                            }
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.delete_space),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.palette_system_red)
+                        )
+                    }
+                }
+
+                SpaceListItemView.Action.LeaveSpace -> {
+                    DropdownMenuItem(
+                        onClick = {
+                            onLeaveSpaceClicked().also {
+                                isCardMenuExpanded.value = false
+                            }
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.multiplayer_leave_space),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.palette_system_red)
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 

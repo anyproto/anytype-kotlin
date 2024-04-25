@@ -1199,6 +1199,9 @@
     <string name="multiplayer_space_status_joining">正在加入</string>
     <string name="multiplayer_space_status_active">正在进行</string>
     <string name="multiplayer_space_status_removing">已移除</string>
+    <string name="multiplayer_cancel_join_request">Cancel join request</string>
+    <string name="multiplayer_cancel_join_request_msg">You will have to send join request again</string>
+    <string name="multiplayer_do_not_cancel_join_request">Do not cancel</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">会员</string>

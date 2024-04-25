@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.core_utils.ui.ViewState
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.CancelJoinSpaceRequest
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -69,7 +70,8 @@ class SpaceListViewModel(
                                         add(SpaceListItemView.Action.DeleteSpace)
                                     } else {
                                         if (spaceView.spaceAccountStatus == SpaceStatus.SPACE_JOINING) {
-                                            add(SpaceListItemView.Action.CancelJoinRequest)
+                                            // Add when ready
+//                                            add(SpaceListItemView.Action.CancelJoinRequest)
                                         } else {
                                             add(SpaceListItemView.Action.LeaveSpace)
                                         }
@@ -106,14 +108,14 @@ class SpaceListViewModel(
     fun onCancelJoinRequestAccepted(space: SpaceId) {
         viewModelScope.launch {
             Timber.d("Cancelling")
-//            cancelJoinSpaceRequest.async(space).fold(
-//                onSuccess = {
-//                    Timber.d("Space deleted successfully")
-//                },
-//                onFailure = {
-//                    Timber.e(it, "Error while deleting space")
-//                }
-//            )
+            cancelJoinSpaceRequest.async(space).fold(
+                onSuccess = {
+                    Timber.d("Space deleted successfully")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while deleting space")
+                }
+            )
         }
     }
 
@@ -121,14 +123,14 @@ class SpaceListViewModel(
         viewModelScope.launch {
             warning.update { Warning.None }
             Timber.d("Deleting")
-//            deleteSpace.async(space).fold(
-//                onSuccess = {
-//                    Timber.d("Space deleted successfully")
-//                },
-//                onFailure = {
-//                    Timber.e(it, "Error while deleting space")
-//                }
-//            )
+            deleteSpace.async(space).fold(
+                onSuccess = {
+                    Timber.d("Space deleted successfully")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while deleting space")
+                }
+            )
         }
     }
 
@@ -136,14 +138,14 @@ class SpaceListViewModel(
         viewModelScope.launch {
             warning.update { Warning.None }
             Timber.d("Leaving")
-//            deleteSpace.async(space).fold(
-//                onSuccess = {
-//                    Timber.d("Space deleted successfully")
-//                },
-//                onFailure = {
-//                    Timber.e(it, "Error while deleting space")
-//                }
-//            )
+            deleteSpace.async(space).fold(
+                onSuccess = {
+                    Timber.d("Space deleted successfully")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while deleting space")
+                }
+            )
         }
     }
 

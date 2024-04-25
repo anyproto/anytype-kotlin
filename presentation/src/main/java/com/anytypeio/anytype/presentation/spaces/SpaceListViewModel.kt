@@ -70,10 +70,19 @@ class SpaceListViewModel(
                                     if (isOwner) {
                                         add(SpaceListItemView.Action.DeleteSpace)
                                     } else {
-                                        if (spaceView.spaceAccountStatus == SpaceStatus.SPACE_JOINING) {
-                                            add(SpaceListItemView.Action.CancelJoinRequest)
-                                        } else {
-                                            add(SpaceListItemView.Action.LeaveSpace)
+                                        when (spaceView.spaceAccountStatus) {
+                                            SpaceStatus.SPACE_JOINING -> {
+                                                add(SpaceListItemView.Action.CancelJoinRequest)
+                                            }
+                                            SpaceStatus.SPACE_REMOVING -> {
+                                                add(SpaceListItemView.Action.DeleteSpace)
+                                            }
+                                            SpaceStatus.SPACE_ACTIVE, SpaceStatus.UNKNOWN -> {
+                                                add(SpaceListItemView.Action.LeaveSpace)
+                                            }
+                                            else -> {
+                                                // Do nothing.
+                                            }
                                         }
                                     }
                                 } else if (spaceView.spaceAccessType == SpaceAccessType.PRIVATE) {

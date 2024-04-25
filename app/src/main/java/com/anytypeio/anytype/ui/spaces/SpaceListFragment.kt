@@ -50,25 +50,7 @@ class SpaceListFragment : BaseBottomSheetComposeFragment() {
             }
             when(val warning = vm.warning.collectAsStateWithLifecycle().value) {
                 is SpaceListViewModel.Warning.CancelSpaceJoinRequest -> {
-                    ModalBottomSheet(
-                        onDismissRequest = { vm.onWarningDismissed() },
-                        dragHandle = {},
-                        containerColor = colorResource(id = R.color.background_secondary)
-                    ) {
-                        Warning(
-                            actionButtonText = stringResource(R.string.delete),
-                            cancelButtonText = stringResource(R.string.back),
-                            title = stringResource(R.string.delete_space_title),
-                            subtitle = stringResource(R.string.delete_space_subtitle),
-                            onNegativeClick = {
-                                vm.onWarningDismissed()
-                            },
-                            onPositiveClick = {
-                                vm.onCancelJoinRequestAccepted(warning.space)
-                            },
-                            isInProgress = false
-                        )
-                    }
+                    // TODO
                 }
                 is SpaceListViewModel.Warning.DeleteSpace -> {
                     ModalBottomSheet(

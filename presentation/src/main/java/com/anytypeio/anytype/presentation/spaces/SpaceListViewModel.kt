@@ -113,7 +113,7 @@ class SpaceListViewModel(
     fun onLeaveSpaceAccepted(space: SpaceId) {
         viewModelScope.launch {
             warning.update { Warning.None }
-            Timber.d("Deleting")
+            Timber.d("Leaving")
 //            deleteSpace.async(space).fold(
 //                onSuccess = {
 //                    Timber.d("Space deleted successfully")

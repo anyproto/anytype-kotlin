@@ -174,7 +174,9 @@ fun SpaceListCardItem(
                         SpaceListItemView.Action.CancelJoinRequest -> {
                             DropdownMenuItem(
                                 onClick = {
-                                   onCancelJoinRequestClicked()
+                                   onCancelJoinRequestClicked().also {
+                                       isCardMenuExpanded.value = false
+                                   }
                                 }
                             ) {
                                 Text(
@@ -187,7 +189,9 @@ fun SpaceListCardItem(
                         SpaceListItemView.Action.DeleteSpace -> {
                             DropdownMenuItem(
                                 onClick = {
-                                    onDeleteSpaceClicked()
+                                    onDeleteSpaceClicked().also {
+                                        isCardMenuExpanded.value = false
+                                    }
                                 }
                             ) {
                                 Text(
@@ -200,7 +204,9 @@ fun SpaceListCardItem(
                         SpaceListItemView.Action.LeaveSpace -> {
                             DropdownMenuItem(
                                 onClick = {
-                                    onLeaveSpaceClicked()
+                                    onLeaveSpaceClicked().also {
+                                        isCardMenuExpanded.value = false
+                                    }
                                 }
                             ) {
                                 Text(

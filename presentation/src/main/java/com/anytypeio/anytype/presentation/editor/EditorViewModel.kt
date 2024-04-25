@@ -1085,7 +1085,7 @@ class EditorViewModel(
                                         startTime = startTime,
                                         details = orchestrator.stores.details.current().details,
                                         ctx = context,
-                                        spaceParams = provideParams(this@EditorViewModel.vmParams.space)
+                                        spaceParams = provideParams(vmParams.space)
                                     )
                                 }
                             }
@@ -3275,7 +3275,7 @@ class EditorViewModel(
                         route = EventsDictionary.Routes.objPowerTool,
                         startTime = startTime,
                         objType = storeOfObjectTypes.getByKey(objectTypeView.key),
-                        spaceParams = provideParams(SpaceId(params.space))
+                        spaceParams = provideParams(vmParams.space)
                     )
                     proceedWithOpeningObject(result.objectId)
                 }
@@ -3320,7 +3320,7 @@ class EditorViewModel(
                         startTime = startTime,
                         objType = objType ?: storeOfObjectTypes.getByKey(result.typeKey.key),
                         view = EventsDictionary.View.viewNavbar,
-                        spaceParams = provideParams(this@EditorViewModel.vmParams.space)
+                        spaceParams = provideParams(vmParams.space)
                     )
                     proceedWithCloseCurrentAndOpenObject(result.obj)
                 },
@@ -5963,7 +5963,7 @@ class EditorViewModel(
                         route = EventsDictionary.Routes.objCreateMention,
                         startTime = startTime,
                         objType = storeOfObjectTypes.getByKey(typeKey.key),
-                        spaceParams = provideParams(this@EditorViewModel.vmParams.space)
+                        spaceParams = provideParams(vmParams.space)
                     )
                 }
             )
@@ -6337,7 +6337,7 @@ class EditorViewModel(
                     route = EventsDictionary.Routes.objLink,
                     startTime = startTime,
                     objType = storeOfObjectTypes.getByKey(typeKey.key),
-                    spaceParams = provideParams(this@EditorViewModel.vmParams.space)
+                    spaceParams = provideParams(vmParams.space)
                 )
             }
         )

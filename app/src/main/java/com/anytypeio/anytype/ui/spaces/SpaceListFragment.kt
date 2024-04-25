@@ -44,6 +44,7 @@ class SpaceListFragment : BaseBottomSheetComposeFragment() {
                 SpaceListScreen(
                     state = vm.state.collectAsStateWithLifecycle().value,
                     onDeleteSpaceClicked = vm::onDeleteSpaceClicked,
+                    onLeaveSpaceClicked = vm::onLeaveSpaceClicked,
                     onCancelJoinRequestClicked = vm::onCancelJoinSpaceClicked
                 )
             }

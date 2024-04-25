@@ -73,6 +73,10 @@ class SpaceListViewModel(
         warning.value = Warning.DeleteSpace(SpaceId(view.space.targetSpaceId!!))
     }
 
+    fun onLeaveSpaceClicked(view: SpaceListItemView) {
+        warning.value = Warning.LeaveSpace(SpaceId(view.space.targetSpaceId!!))
+    }
+
     fun onCancelJoinSpaceClicked(view: SpaceListItemView) {
         warning.value = Warning.CancelSpaceJoinRequest(SpaceId(view.space.targetSpaceId!!))
     }
@@ -129,7 +133,11 @@ class SpaceListViewModel(
         val space: ObjectWrapper.SpaceView,
         val icon: SpaceIconView,
         val permissions: SpaceMemberPermissions,
-        val actions: List<Action> = emptyList()
+        val actions: List<Action> = listOf(
+            Action.LeaveSpace,
+            Action.DeleteSpace,
+            Action.CancelJoinRequest
+        )
     ) {
         sealed class Action {
             data object CancelJoinRequest : Action()

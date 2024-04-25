@@ -1521,5 +1521,6 @@
 
     <string name="clipboard_panel_create_bookmark_from_clipboard">Create bookmark from clipboard</string>
     <string name="error_unexpected_layout">Error: unexpected layout</string>
+    <string name="multiplayer_cancel_join_request">Cancel join request</string>
 
 </resources>

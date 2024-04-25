@@ -67,7 +67,18 @@ class SpaceListViewModel(
     )
 
     fun onCancelJoinRequestAccepted(view: SpaceListItemView) {
-
+        viewModelScope.launch {
+            val space = view.space.targetSpaceId
+            requireNotNull(space)
+            cancelJoinSpaceRequest.async(SpaceId(space)).fold(
+                onSuccess = {
+                    Timber.d("Space deleted successfully")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while deleting space")
+                }
+            )
+        }
     }
 
     fun onDeleteSpaceAccepted(view: SpaceListItemView) {

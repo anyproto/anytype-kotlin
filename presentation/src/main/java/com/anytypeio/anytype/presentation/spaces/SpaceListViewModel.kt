@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.CancelJoinSpaceRequest
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
@@ -29,7 +30,8 @@ class SpaceListViewModel(
     private val spaces: SpaceViewSubscriptionContainer,
     private val permissions: UserPermissionProvider,
     private val urlBuilder: UrlBuilder,
-    private val deleteSpace: DeleteSpace
+    private val deleteSpace: DeleteSpace,
+    private val cancelJoinSpaceRequest: CancelJoinSpaceRequest
 ) : BaseViewModel() {
 
     val state : StateFlow<ViewState<List<SpaceListItemView>>> = flow {
@@ -68,10 +70,6 @@ class SpaceListViewModel(
 
     }
 
-    fun onCancelLeaveRequestAccepted(view: SpaceListItemView) {
-        // TODO
-    }
-
     fun onDeleteSpaceAccepted(view: SpaceListItemView) {
         viewModelScope.launch {
             val space = view.space.targetSpaceId
@@ -95,7 +93,6 @@ class SpaceListViewModel(
     ) {
         sealed class Action {
             data object CancelJoinRequest: Action()
-            data object CancelLeaveRequest: Action()
             data object DeleteSpace: Action()
         }
     }
@@ -104,6 +101,7 @@ class SpaceListViewModel(
         private val spaces: SpaceViewSubscriptionContainer,
         private val permissions: UserPermissionProvider,
         private val deleteSpace: DeleteSpace,
+        private val cancelJoinSpaceRequest: CancelJoinSpaceRequest,
         private val urlBuilder: UrlBuilder
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
@@ -113,7 +111,8 @@ class SpaceListViewModel(
             spaces = spaces,
             deleteSpace = deleteSpace,
             permissions = permissions,
-            urlBuilder = urlBuilder
+            urlBuilder = urlBuilder,
+            cancelJoinSpaceRequest = cancelJoinSpaceRequest
         ) as T
     }
 }

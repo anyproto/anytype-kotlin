@@ -4,6 +4,7 @@ import android.os.Build
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.presentation.editor.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.editor.editor.ViewState
 import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
@@ -18,6 +19,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -153,6 +155,7 @@ class BlockReadModeTest : EditorViewModelTest() {
         stubObserveEvents(flow)
         stubOpenPage()
         stubUserPermission()
+        stubAnalyticSpaceHelperDelegate()
         givenViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
@@ -212,6 +215,7 @@ class BlockReadModeTest : EditorViewModelTest() {
         stubObserveEvents(flow)
         stubOpenPage()
         stubUserPermission()
+        stubAnalyticSpaceHelperDelegate()
         givenViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
@@ -247,6 +251,7 @@ class BlockReadModeTest : EditorViewModelTest() {
         stubObserveEvents(flow)
         stubOpenPage()
         stubUserPermission()
+        stubAnalyticSpaceHelperDelegate()
         givenViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
@@ -308,6 +313,7 @@ class BlockReadModeTest : EditorViewModelTest() {
         stubObserveEvents(flow)
         stubOpenPage()
         stubUserPermission()
+        stubAnalyticSpaceHelperDelegate()
         givenViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
@@ -340,12 +346,13 @@ class BlockReadModeTest : EditorViewModelTest() {
     }
 
     @Test
-    fun `should be in read mode and selected after action item duplicate`() {
+    fun `should be in read mode and selected after action item duplicate`() = runTest {
 
         val paragraphs = blocks
         stubObserveEvents(flow)
         stubOpenPage()
         stubUserPermission()
+        stubAnalyticSpaceHelperDelegate()
         stubDuplicateBlock(
             newBlockId = MockDataFactory.randomUuid(),
             root = root

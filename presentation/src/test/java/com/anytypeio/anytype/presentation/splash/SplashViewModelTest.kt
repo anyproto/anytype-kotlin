@@ -27,7 +27,9 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.ArgumentMatchers
 import org.mockito.Mock
+import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
@@ -226,8 +228,7 @@ class SplashViewModelTest {
     }
 
     private fun stubAnalyticSpaceHelperDelegate() {
-        analyticSpaceHelperDelegate.stub {
-            onBlocking { provideParams(SpaceId(defaultSpaceConfig.space)) } doReturn AnalyticSpaceHelperDelegate.Params.EMPTY
-        }
+        Mockito.`when`(analyticSpaceHelperDelegate.provideParams(SpaceId(ArgumentMatchers.anyString())))
+            .thenReturn(AnalyticSpaceHelperDelegate.Params.EMPTY)
     }
 }

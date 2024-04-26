@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.sets.main
 
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi

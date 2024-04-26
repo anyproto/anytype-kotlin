@@ -96,8 +96,10 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.ArgumentMatchers
 import org.mockito.BDDMockito.given
 import org.mockito.Mock
+import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
@@ -240,6 +242,8 @@ class HomeScreenViewModelTest {
     )
 
     private lateinit var urlBuilder: UrlBuilder
+
+    private val defaultSpaceId = SpaceId(defaultSpaceConfig.space)
 
     @Before
     fun setup() {
@@ -2885,9 +2889,8 @@ class HomeScreenViewModelTest {
     }
 
     private fun stubAnalyticSpaceHelperDelegate() {
-        analyticSpaceHelperDelegate.stub {
-            onBlocking { provideParams(SpaceId(defaultSpaceConfig.space)) } doReturn AnalyticSpaceHelperDelegate.Params.EMPTY
-        }
+        Mockito.`when`(analyticSpaceHelperDelegate.provideParams(SpaceId(ArgumentMatchers.anyString())))
+            .thenReturn(AnalyticSpaceHelperDelegate.Params.EMPTY)
     }
 
     private fun buildViewModel() = HomeScreenViewModel(

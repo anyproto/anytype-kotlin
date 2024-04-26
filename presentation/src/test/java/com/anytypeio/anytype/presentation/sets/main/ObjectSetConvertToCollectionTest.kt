@@ -4,6 +4,7 @@ import app.cash.turbine.testIn
 import app.cash.turbine.turbineScope
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig

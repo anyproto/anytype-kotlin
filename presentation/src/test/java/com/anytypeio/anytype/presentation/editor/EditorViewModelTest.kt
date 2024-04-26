@@ -146,9 +146,12 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
+import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
@@ -1085,6 +1088,7 @@ open class EditorViewModelTest {
         stubObserveEvents(events)
         stubOpenPage()
         stubUserPermission()
+        stubAnalyticSpaceHelperDelegate()
         givenViewModel(builder)
 
         vm.onStart(id = root, space = defaultSpace)
@@ -4399,9 +4403,8 @@ open class EditorViewModelTest {
         }
     }
 
-    fun stubAnalyticSpaceHelperDelegate(spaceId: SpaceId = SpaceId(defaultSpace)) {
-        analyticSpaceHelperDelegate.stub {
-            onBlocking { provideParams(spaceId) } doReturn AnalyticSpaceHelperDelegate.Params.EMPTY
-        }
+    fun stubAnalyticSpaceHelperDelegate() {
+        Mockito.`when`(analyticSpaceHelperDelegate.provideParams(SpaceId(defaultSpace)))
+            .thenReturn(AnalyticSpaceHelperDelegate.Params.EMPTY)
     }
 }

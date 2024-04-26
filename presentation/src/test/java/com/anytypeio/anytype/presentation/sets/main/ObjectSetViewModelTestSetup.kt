@@ -90,7 +90,9 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import net.bytebuddy.utility.RandomString
 import org.junit.Rule
+import org.mockito.ArgumentMatchers
 import org.mockito.Mock
+import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -529,9 +531,8 @@ open class ObjectSetViewModelTestSetup {
         }
     }
 
-    fun stubAnalyticSpaceHelperDelegate(spaceId: SpaceId = SpaceId(defaultSpace)) {
-        analyticSpaceHelperDelegate.stub {
-            onBlocking { provideParams(spaceId) } doReturn AnalyticSpaceHelperDelegate.Params.EMPTY
-        }
+    fun stubAnalyticSpaceHelperDelegate() {
+        Mockito.`when`(analyticSpaceHelperDelegate.provideParams(SpaceId(ArgumentMatchers.anyString())))
+            .thenReturn(AnalyticSpaceHelperDelegate.Params.EMPTY)
     }
 }

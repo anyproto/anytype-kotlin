@@ -68,7 +68,6 @@
     <string name="danger_zone">Danger zone</string>
     <string name="snackbar_template_add">Новий шаблон додано до типу</string>
     <string name="settings_membership">Membership</string>
-    <string name="default_text_placeholder">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
     <string name="default_url_placeholder">https://humanparts.medium.com/how-i-overcame-cult-trauma-with-psychedelics-4342c03a074c</string>
     <string name="multi_select_turn_into">Turn into</string>
     <string name="multi_select_move_to">Перемістити до</string>
@@ -1117,6 +1116,7 @@
     <!--region ONBOARDING ERRORS -->
     <string name="error_invalid_recovery_phrase">Invalid recovery phrase</string>
     <string name="network">Network</string>
+    <string name="network_with_colon">Network:</string>
     <string name="network_settings_anytype_network">Anytype network</string>
     <string name="network_settings_anytype_network_description">Backup to the network managed by Anytype</string>
     <string name="network_settings_local_only">Local-only</string>
@@ -1162,7 +1162,7 @@
     <string name="multiplayer_space_stop_sharing_space_description">Participants will no longer sync to this space and the share link will be deactivated.</string>
     <string name="multiplayer_more_info">More info</string>
     <string name="multiplayer_sharing">Sharing</string>
-    <string name="multiplayer_space_type">Space type</string>
+    <string name="multiplayer_space_type">Тип</string>
     <string name="multiplayer_share">Share</string>
     <string name="multiplayer_manage">Manage</string>
     <string name="multiplayer_leave_space">Leave space</string>
@@ -1200,6 +1200,7 @@
     <string name="multiplayer_notification_view_request">Подання</string>
     <string name="multiplayer_notification_go_to_space">Go to space</string>
     <string name="multiplayer_toast_permission_not_allowed">Changing permissions is not allowed</string>
+    <string name="multiplayer_toast_share_limit_reached">Sharing limit reached</string>
     <string name="multiplayer_deeplink_to_your_object">Deeplink to your object</string>
     <string name="multiplayer_deeplink_to_your_object_error">This deeplink is not working. Object might be deleted or there might be issues with space access.</string>
     <plurals name="multiplayer_number_of_space_members">
@@ -1209,6 +1210,10 @@
         <item quantity="other">%1$d members</item>
     </plurals>
     <string name="multiplayer_you_as_member">you</string>
+    <string name="multiplayer_spaces">Spaces</string>
+    <string name="multiplayer_space_status_joining">Joining</string>
+    <string name="multiplayer_space_status_active">Active</string>
+    <string name="multiplayer_space_status_removing">Removed</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Membership</string>

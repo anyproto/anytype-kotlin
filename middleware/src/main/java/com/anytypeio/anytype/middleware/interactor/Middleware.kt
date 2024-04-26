@@ -2459,6 +2459,16 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
+    fun cancelJoinRequest(space: SpaceId) {
+        val request = Rpc.Space.JoinCancel.Request(
+            spaceId = space.id
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.spaceJoinCancel(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+    }
+
+    @Throws(Exception::class)
     fun approveSpaceLeaveRequest(command: Command.ApproveSpaceLeaveRequest) {
         val request = Rpc.Space.LeaveApprove.Request(
             spaceId = command.space.id,

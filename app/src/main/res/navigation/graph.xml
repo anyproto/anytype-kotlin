@@ -204,6 +204,11 @@
         android:label="SpaceSettingsScreen"/>
 
     <dialog
+        android:id="@+id/spaceListScreen"
+        android:name="com.anytypeio.anytype.ui.spaces.SpaceListFragment"
+        android:label="SpaceListScreen"/>
+
+    <dialog
         android:id="@+id/settingsScreen"
         android:name="com.anytypeio.anytype.ui.settings.MainSettingFragment"
         android:label="SettingScreen">

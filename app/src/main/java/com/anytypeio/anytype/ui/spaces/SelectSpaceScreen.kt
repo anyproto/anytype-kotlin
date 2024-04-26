@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
+import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
@@ -44,7 +45,6 @@ import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.spaces.SelectSpaceView
 import com.anytypeio.anytype.presentation.spaces.WorkspaceView
-import com.anytypeio.anytype.ui_settings.main.SpaceImageBlock
 
 @Composable
 fun SelectSpaceScreen(
@@ -153,7 +153,7 @@ private fun SelectSpaceSpaceItem(
                         Modifier
                 )
         ) {
-            SpaceImageBlock(
+            SpaceIconView(
                 icon = item.view.icon,
                 onSpaceIconClick = throttledClick(
                     onClick = { onSpaceClicked(item.view) }

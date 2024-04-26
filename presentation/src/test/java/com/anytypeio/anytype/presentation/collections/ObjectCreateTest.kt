@@ -38,6 +38,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         stubNetworkMode()
         stubCreateDataViewObject()
         stubObservePermissions()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @After

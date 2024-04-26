@@ -87,6 +87,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runTest
 import net.bytebuddy.utility.RandomString
 import org.junit.Rule
 import org.mockito.Mock
@@ -525,6 +526,12 @@ open class ObjectSetViewModelTestSetup {
             onBlocking {
                 run(any())
             } doReturn NetworkModeConfig()
+        }
+    }
+
+    fun stubAnalyticSpaceHelperDelegate(spaceId: SpaceId = SpaceId(defaultSpace)) {
+        analyticSpaceHelperDelegate.stub {
+            onBlocking { provideParams(spaceId) } doReturn AnalyticSpaceHelperDelegate.Params.EMPTY
         }
     }
 }

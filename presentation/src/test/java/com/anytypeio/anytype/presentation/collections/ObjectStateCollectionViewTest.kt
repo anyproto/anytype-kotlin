@@ -46,6 +46,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         stubGetDefaultPageType()
         stubNetworkMode()
         stubObservePermissions()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @After

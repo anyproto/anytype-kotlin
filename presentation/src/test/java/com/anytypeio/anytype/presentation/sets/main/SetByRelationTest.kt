@@ -36,6 +36,7 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
         mockObjectSet = MockSet(context = root, setOfValue = setOfId, setOfKey = setOfKey, space = defaultSpace)
         stubNetworkMode()
         stubObservePermissions()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @After

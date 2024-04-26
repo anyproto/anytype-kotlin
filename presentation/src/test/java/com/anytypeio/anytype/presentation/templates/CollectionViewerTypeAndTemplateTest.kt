@@ -83,6 +83,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         viewModel = givenViewModel()
         stubAddObjectToCollection()
         stubObservePermissions()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @After

@@ -52,6 +52,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
         viewModel = givenViewModel()
         stubNetworkMode()
         stubObservePermissions()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @After

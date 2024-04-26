@@ -430,7 +430,9 @@ open class EditorPresentationTestSetup {
             createTable = createTable,
             fillTableRow = fillTableRow,
             clearBlockContent = clearBlockContent,
-            clearBlockStyle = clearBlockStyle
+            clearBlockStyle = clearBlockStyle,
+            analyticsSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            spaceManager = spaceManager
         )
 
         dispatcher = Dispatcher.Default()
@@ -845,10 +847,17 @@ open class EditorPresentationTestSetup {
         )
     }
 
+    private fun stubAnalyticSpaceHelperDelegate() {
+        analyticSpaceHelperDelegate.stub {
+            onBlocking { provideParams(SpaceId(defaultSpace)) } doReturn AnalyticSpaceHelperDelegate.Params.EMPTY
+        }
+    }
+
     fun proceedWithDefaultBeforeTestStubbing() {
         stubSpaceManager()
         stubUserPermission()
         stubGetNetworkMode()
         stubFileLimitEvents()
+        stubAnalyticSpaceHelperDelegate()
     }
 }

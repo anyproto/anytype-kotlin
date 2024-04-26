@@ -49,6 +49,7 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
         mockObjectCollection = MockCollection(context = root, space = defaultSpace)
         stubNetworkMode()
         stubObservePermissions()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @After

@@ -33,6 +33,7 @@ class CollectionDataViewUpdateTest : ObjectSetViewModelTestSetup() {
         stubGetDefaultPageType()
         stubNetworkMode()
         stubObservePermissions()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @After

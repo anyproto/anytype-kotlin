@@ -28,6 +28,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
         mockObjectSet = MockSet(context = root, space = defaultSpace)
         givenNetworkNodeMocked()
         stubObservePermissions()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @After

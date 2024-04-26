@@ -129,6 +129,7 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
         )
         stubNetworkMode()
         stubObservePermissions()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @After

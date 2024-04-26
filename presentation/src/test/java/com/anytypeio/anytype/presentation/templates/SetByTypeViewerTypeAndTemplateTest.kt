@@ -72,6 +72,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         }
         viewModel = givenViewModel()
         stubObservePermissions()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @After

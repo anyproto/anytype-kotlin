@@ -26,6 +26,7 @@ class ObjectSetInitializationTest : ObjectSetViewModelTestSetup() {
         mockObjectSet = MockSet(context = root, space = defaultSpace)
         stubNetworkMode()
         stubObservePermissions()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @After

@@ -64,6 +64,7 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
         viewModel = givenViewModel()
         stubNetworkMode()
         stubObservePermissions()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @After

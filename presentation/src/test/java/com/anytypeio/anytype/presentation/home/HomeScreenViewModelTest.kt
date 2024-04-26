@@ -252,6 +252,7 @@ class HomeScreenViewModelTest {
         stubSpaceManager()
         userPermissionProvider = UserPermissionProviderStub()
         stubGetPinnedObjectTypes()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @Test
@@ -2889,8 +2890,9 @@ class HomeScreenViewModelTest {
     }
 
     private fun stubAnalyticSpaceHelperDelegate() {
-        Mockito.`when`(analyticSpaceHelperDelegate.provideParams(SpaceId(ArgumentMatchers.anyString())))
-            .thenReturn(AnalyticSpaceHelperDelegate.Params.EMPTY)
+        analyticSpaceHelperDelegate.stub {
+            on { provideParams(SpaceId(defaultSpaceConfig.space)) } doReturn AnalyticSpaceHelperDelegate.Params.EMPTY
+        }
     }
 
     private fun buildViewModel() = HomeScreenViewModel(

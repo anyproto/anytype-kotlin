@@ -4404,7 +4404,8 @@ open class EditorViewModelTest {
     }
 
     fun stubAnalyticSpaceHelperDelegate() {
-        Mockito.`when`(analyticSpaceHelperDelegate.provideParams(SpaceId(defaultSpace)))
-            .thenReturn(AnalyticSpaceHelperDelegate.Params.EMPTY)
+        analyticSpaceHelperDelegate.stub {
+            on { provideParams(SpaceId(defaultSpace)) } doReturn AnalyticSpaceHelperDelegate.Params.EMPTY
+        }
     }
 }

@@ -71,7 +71,7 @@ import com.anytypeio.anytype.presentation.membership.models.TierId
 fun TierScreen(
     state: PaymentsTierState,
     onDismiss: () -> Unit,
-    actionPay: (TierId) -> Unit,
+    actionPay: (TierId, String) -> Unit,
     actionSubmitEmail: (TierId, String) -> Unit
 ) {
     if (state is PaymentsTierState.Visible) {
@@ -85,7 +85,7 @@ fun TierScreen(
             content = {
                 MembershipLevels(
                     tier = state.tier,
-                    actionPay = { actionPay(state.tier.id) },
+                    actionPay = { name -> actionPay(state.tier.id, name) },
                     actionSubmitEmail = { email -> actionSubmitEmail(state.tier.id, email) }
                 )
             }
@@ -94,7 +94,7 @@ fun TierScreen(
 }
 
 @Composable
-fun MembershipLevels(tier: Tier, actionPay: () -> Unit, actionSubmitEmail: (String) -> Unit) {
+fun MembershipLevels(tier: Tier, actionPay: (String) -> Unit, actionSubmitEmail: (String) -> Unit) {
 
     Box(
         modifier = Modifier
@@ -217,7 +217,7 @@ fun NamePickerAndButton(
     nameIsFree: Boolean,
     price: String,
     interval: String,
-    actionPay: () -> Unit
+    actionPay: (String) -> Unit
 ) {
     var innerValue by remember(name) { mutableStateOf(name) }
 
@@ -326,7 +326,7 @@ fun NamePickerAndButton(
         Price(price = price, interval = interval)
         Spacer(modifier = Modifier.height(14.dp))
         ButtonPay(enabled = true, actionPay = {
-            actionPay()
+            actionPay(innerValue)
         })
     }
 }

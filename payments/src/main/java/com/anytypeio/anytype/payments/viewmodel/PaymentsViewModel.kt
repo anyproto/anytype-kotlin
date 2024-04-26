@@ -146,8 +146,8 @@ class PaymentsViewModel(
         command.value = PaymentsNavigation.Code
     }
 
-    fun onPayButtonClicked(tierId: TierId) {
-//        Timber.d("onPayButtonClicked: tierId:$tierId")
+    fun onPayButtonClicked(tierId: TierId, name: String) {
+        Timber.d("onPayButtonClicked: tierId:$tierId, name:$name")
 //        val tier = tierState.value as? PaymentsTierState.Visible ?: return
 //        val androidProductId = tier.tier.
 //        if (androidProductId == null) {

@@ -408,6 +408,7 @@ interface BlockRemote {
     )
 
     suspend fun sendJoinSpaceRequest(command: Command.SendJoinSpaceRequest)
+    suspend fun cancelJoinSpaceRequest(space: SpaceId)
 
     suspend fun getSpaceInviteView(
         inviteContentId: Id,

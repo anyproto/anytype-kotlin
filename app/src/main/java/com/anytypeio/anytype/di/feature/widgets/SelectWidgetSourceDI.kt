@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.SelectWidgetSourceViewModel
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
@@ -43,14 +44,16 @@ object SelectWidgetSourceModule {
         searchObjects: SearchObjects,
         getObjectTypes: GetObjectTypes,
         dispatcher: Dispatcher<WidgetDispatchEvent>,
-        spaceManager: SpaceManager
+        spaceManager: SpaceManager,
+        analyticsHelper: AnalyticSpaceHelperDelegate
     ): SelectWidgetSourceViewModel.Factory = SelectWidgetSourceViewModel.Factory(
         urlBuilder = urlBuilder,
         searchObjects = searchObjects,
         analytics = analytics,
         getObjectTypes = getObjectTypes,
         dispatcher = dispatcher,
-        spaceManager = spaceManager
+        spaceManager = spaceManager,
+        analyticSpaceHelperDelegate = analyticsHelper
     )
 
     @JvmStatic

@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ui.TextInputDialogBottomBehaviorApplier
@@ -19,6 +20,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.getSpaceWithTechSpace
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
@@ -43,10 +45,12 @@ open class ObjectSearchViewModel(
     private val searchObjects: SearchObjects,
     private val getObjectTypes: GetObjectTypes,
     private val analytics: Analytics,
-    private val spaceManager: SpaceManager
+    private val spaceManager: SpaceManager,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
 ) : ViewStateViewModel<ObjectSearchView>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
-    TextInputDialogBottomBehaviorApplier.OnDialogCancelListener {
+    TextInputDialogBottomBehaviorApplier.OnDialogCancelListener,
+    AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate  {
 
     private val jobs = mutableListOf<Job>()
 
@@ -229,11 +233,14 @@ open class ObjectSearchViewModel(
         if (value is ObjectSearchView.Success) {
             val index = value.objects.indexOfFirst { (it as? DefaultObjectView)?.id == id }
             if (index != -1) {
-                viewModelScope.sendAnalyticsSearchResultEvent(
-                    analytics = analytics,
-                    pos = index + 1,
-                    length = userInput.value.length
-                )
+                viewModelScope.launch {
+                    sendAnalyticsSearchResultEvent(
+                        analytics = analytics,
+                        pos = index + 1,
+                        length = userInput.value.length,
+                        spaceParams = provideParams(SpaceId(spaceManager.get()))
+                    )
+                }
             }
         }
     }

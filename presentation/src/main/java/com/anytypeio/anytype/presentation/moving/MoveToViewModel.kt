@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ui.TextInputDialogBottomBehaviorApplier
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
@@ -17,6 +18,7 @@ import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
@@ -40,8 +42,10 @@ class MoveToViewModel(
     private val searchObjects: SearchObjects,
     private val getObjectTypes: GetObjectTypes,
     private val analytics: Analytics,
-    private val spaceManager: SpaceManager
-) : ViewModel(), TextInputDialogBottomBehaviorApplier.OnDialogCancelListener {
+    private val spaceManager: SpaceManager,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+) : ViewModel(), TextInputDialogBottomBehaviorApplier.OnDialogCancelListener,
+    AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val _viewState: MutableStateFlow<MoveToView> = MutableStateFlow(MoveToView.Init)
     val viewState: StateFlow<MoveToView> get() = _viewState
@@ -112,11 +116,14 @@ class MoveToViewModel(
         if (value is MoveToView.Success) {
             val index = value.objects.indexOfFirst { it.id == id }
             if (index != -1) {
-                viewModelScope.sendAnalyticsSearchResultEvent(
-                    analytics = analytics,
-                    pos = index + 1,
-                    length = userInput.value.length
-                )
+                viewModelScope.launch {
+                    sendAnalyticsSearchResultEvent(
+                        analytics = analytics,
+                        pos = index + 1,
+                        length = userInput.value.length,
+                        spaceParams = provideParams(SpaceId(spaceManager.get()))
+                    )
+                }
             }
         }
     }

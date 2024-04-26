@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.editor.editor
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.suspendFold
 import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.ClearBlockContent
@@ -37,6 +38,8 @@ import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.relations.SetRelationKey
 import com.anytypeio.anytype.domain.table.CreateTable
 import com.anytypeio.anytype.domain.table.FillTableRow
+import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeTextBlockStyleEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsCopyBlockEvent
@@ -91,13 +94,17 @@ class Orchestrator(
     val textInteractor: Interactor.TextInteractor,
     private val analytics: Analytics,
     private val clearBlockContent: ClearBlockContent,
-    private val clearBlockStyle: ClearBlockStyle
-) {
+    private val clearBlockStyle: ClearBlockStyle,
+    private val analyticsSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val spaceManager: SpaceManager
+) : AnalyticSpaceHelperDelegate by analyticsSpaceHelperDelegate {
 
     private val defaultOnError: suspend (Throwable) -> Unit = { Timber.e(it) }
 
     suspend fun start() {
         proxies.intents.stream().collect { intent ->
+            val spaceId = SpaceId(spaceManager.get())
+            val spaceParams = provideParams(spaceId)
             when (intent) {
                 is Intent.CRUD.Create -> {
                     val startTime = System.currentTimeMillis()
@@ -117,7 +124,8 @@ class Orchestrator(
                             analytics.sendAnalyticsCreateBlockEvent(
                                 prototype = intent.prototype,
                                 startTime = startTime,
-                                middlewareTime = middlewareTime
+                                middlewareTime = middlewareTime,
+                                spaceParams = spaceParams
                             )
                         },
                         onFailure = defaultOnError
@@ -140,7 +148,8 @@ class Orchestrator(
                             analytics.sendAnalyticsCreateBlockEvent(
                                 prototype = intent.prototype,
                                 startTime = startTime,
-                                middlewareTime = middlewareTime
+                                middlewareTime = middlewareTime,
+                                spaceParams = spaceParams
                             )
                         }
                     )
@@ -226,7 +235,8 @@ class Orchestrator(
                             analytics.sendAnalyticsSplitBlockEvent(
                                 startTime = startTime,
                                 middlewareTime = middlewareTime,
-                                style = intent.style
+                                style = intent.style,
+                                spaceParams = spaceParams
                             )
                         }
                     )
@@ -511,7 +521,8 @@ class Orchestrator(
                             analytics.sendAnalyticsCreateBlockEvent(
                                 prototype = Block.Prototype.Bookmark.New,
                                 startTime = startTime,
-                                middlewareTime = middlewareTime
+                                middlewareTime = middlewareTime,
+                                spaceParams = spaceParams
                             )
                         }
                     )
@@ -607,7 +618,8 @@ class Orchestrator(
                             analytics.sendAnalyticsCreateBlockEvent(
                                 prototype = Block.Prototype.SimpleTable,
                                 startTime = startTime,
-                                middlewareTime = middlewareTime
+                                middlewareTime = middlewareTime,
+                                spaceParams = spaceParams
                             )
                         }
                     )

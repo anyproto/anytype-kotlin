@@ -3269,13 +3269,14 @@ class EditorViewModel(
                 },
                 onSuccess = { result ->
                     orchestrator.proxies.payloads.send(result.payload)
-                    sendAnalyticsCreateLink(analytics)
+                    val spaceParams = provideParams(vmParams.space)
+                    sendAnalyticsCreateLink(analytics, spaceParams)
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
                         route = EventsDictionary.Routes.objPowerTool,
                         startTime = startTime,
                         objType = storeOfObjectTypes.getByKey(objectTypeView.key),
-                        spaceParams = provideParams(vmParams.space)
+                        spaceParams = spaceParams
                     )
                     proceedWithOpeningObject(result.objectId)
                 }
@@ -5975,7 +5976,8 @@ class EditorViewModel(
         viewModelScope.sendAnalyticsSearchResultEvent(
             analytics = analytics,
             pos = pos,
-            length = mentionTrigger.length - 1
+            length = mentionTrigger.length - 1,
+            spaceParams = provideParams(vmParams.space)
         )
         onCreateMentionInText(id = mention.id, name = mention.name, mentionTrigger = mentionTrigger)
     }

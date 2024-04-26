@@ -8,12 +8,14 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.ext.rangeIntersection
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.tools.UrlValidator
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.getSpaceWithTechSpace
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -39,8 +41,9 @@ class LinkToObjectOrWebViewModel(
     private val analytics: Analytics,
     private val stores: Editor.Storage,
     private val urlValidator: UrlValidator,
-    private val spaceManager: SpaceManager
-) : ViewModel() {
+    private val spaceManager: SpaceManager,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val viewState = MutableStateFlow<ViewState>(ViewState.Init)
     val commands = MutableSharedFlow<Command>(replay = 0)
@@ -213,11 +216,14 @@ class LinkToObjectOrWebViewModel(
     }
 
     private fun onObjectClickEvent(position: Int) {
-        viewModelScope.sendAnalyticsSearchResultEvent(
-            analytics = analytics,
-            pos = position + 1,
-            length = userInput.value.length
-        )
+        viewModelScope.launch {
+            sendAnalyticsSearchResultEvent(
+                analytics = analytics,
+                pos = position + 1,
+                length = userInput.value.length,
+                spaceParams = provideParams(spaceId = SpaceId(spaceManager.get()))
+            )
+        }
     }
 
     suspend fun getSearchObjectsParams(ignore: Id) = SearchObjects.Params(

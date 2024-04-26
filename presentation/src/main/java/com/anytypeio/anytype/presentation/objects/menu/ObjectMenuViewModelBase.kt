@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -58,8 +59,9 @@ abstract class ObjectMenuViewModelBase(
     private val addObjectToCollection: AddObjectToCollection,
     private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader,
     private val createWidget: CreateWidget,
-    private val spaceManager: SpaceManager
-) : BaseViewModel() {
+    private val spaceManager: SpaceManager,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     protected val jobs = mutableListOf<Job>()
     val isDismissed = MutableStateFlow(false)
@@ -285,7 +287,8 @@ abstract class ObjectMenuViewModelBase(
                 onSuccess = { obj ->
                     sendAnalyticsBackLinkAddEvent(
                         analytics = analytics,
-                        startTime = startTime
+                        startTime = startTime,
+                        spaceParams = provideParams(SpaceId(space))
                     )
                     commands.emit(
                         Command.OpenSnackbar(
@@ -350,7 +353,8 @@ abstract class ObjectMenuViewModelBase(
                         analytics = analytics,
                         startTime = startTime,
                         details = details,
-                        ctx = ctx
+                        ctx = ctx,
+                        spaceParams = provideParams(SpaceId(space))
                     )
                 }
             )

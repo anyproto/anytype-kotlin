@@ -5,11 +5,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary.libraryCreateType
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -72,7 +75,17 @@ class CreateObjectTypeViewModel(
                 )
             ).fold(
                 onSuccess = {
-                    viewModelScope.sendEvent(analytics = analytics, eventName = libraryCreateType)
+                    val spaceParams = provideParams(SpaceId(spaceManager.get()))
+                    viewModelScope.sendEvent(
+                        analytics = analytics,
+                        eventName = libraryCreateType,
+                        props = Props(
+                            mapOf(
+                                EventsPropertiesKey.permissions to spaceParams.permission,
+                                EventsPropertiesKey.spaceType to spaceParams.spaceType
+                            )
+                        )
+                    )
                     navigate(Navigation.BackWithCreatedType)
                 },
                 onFailure = {

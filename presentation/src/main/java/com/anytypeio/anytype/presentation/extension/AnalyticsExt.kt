@@ -61,14 +61,18 @@ fun Block.Prototype.getAnalyticsEvent(
     eventName: String,
     startTime: Long,
     middlewareTime: Long,
-    renderTime: Long
+    renderTime: Long,
+    spaceParams: AnalyticSpaceHelperDelegate.Params
 ): EventAnalytics.Anytype {
     val props = when (this) {
         is Block.Prototype.Text -> {
             Props(
                 mapOf(
                     EventsPropertiesKey.type to "text",
-                    EventsPropertiesKey.style to getStyleName()
+                    EventsPropertiesKey.style to getStyleName(),
+                    EventsPropertiesKey.permissions to spaceParams.permission,
+                    EventsPropertiesKey.spaceType to spaceParams.spaceType
+
                 )
             )
         }
@@ -76,7 +80,9 @@ fun Block.Prototype.getAnalyticsEvent(
             Props(
                 mapOf(
                     EventsPropertiesKey.type to getTypePropName(),
-                    EventsPropertiesKey.style to "Embed"
+                    EventsPropertiesKey.style to "Embed",
+                    EventsPropertiesKey.permissions to spaceParams.permission,
+                    EventsPropertiesKey.spaceType to spaceParams.spaceType
                 )
             )
         }
@@ -87,17 +93,29 @@ fun Block.Prototype.getAnalyticsEvent(
                     start = startTime,
                     middleware = middlewareTime,
                     render = renderTime
+                ),
+                props = Props(
+                    mapOf(
+                        EventsPropertiesKey.permissions to spaceParams.permission,
+                        EventsPropertiesKey.spaceType to spaceParams.spaceType
+                    )
                 )
             )
         }
         is Block.Prototype.Relation -> {
-            Props(mapOf(EventsPropertiesKey.type to "relation"))
+            Props(mapOf(
+                EventsPropertiesKey.type to "relation",
+                EventsPropertiesKey.permissions to spaceParams.permission,
+                EventsPropertiesKey.spaceType to spaceParams.spaceType
+            ))
         }
         is Block.Prototype.DividerLine -> {
             Props(
                 mapOf(
                     EventsPropertiesKey.type to "div",
-                    EventsPropertiesKey.style to "line"
+                    EventsPropertiesKey.style to "line",
+                    EventsPropertiesKey.permissions to spaceParams.permission,
+                    EventsPropertiesKey.spaceType to spaceParams.spaceType
                 )
             )
         }
@@ -105,21 +123,39 @@ fun Block.Prototype.getAnalyticsEvent(
             Props(
                 mapOf(
                     EventsPropertiesKey.type to "div",
-                    EventsPropertiesKey.style to "dots"
+                    EventsPropertiesKey.style to "dots",
+                    EventsPropertiesKey.permissions to spaceParams.permission,
+                    EventsPropertiesKey.spaceType to spaceParams.spaceType
                 )
             )
         }
         is Block.Prototype.Bookmark -> {
-            Props(mapOf(EventsPropertiesKey.type to "bookmark"))
+            Props(mapOf(
+                EventsPropertiesKey.type to "bookmark",
+                EventsPropertiesKey.permissions to spaceParams.permission,
+                EventsPropertiesKey.spaceType to spaceParams.spaceType
+            ))
         }
         is Block.Prototype.Latex -> {
-            Props(mapOf(EventsPropertiesKey.type to "latex"))
+            Props(mapOf(
+                EventsPropertiesKey.type to "latex",
+                EventsPropertiesKey.permissions to spaceParams.permission,
+                EventsPropertiesKey.spaceType to spaceParams.spaceType
+            ))
         }
         is Block.Prototype.TableOfContents -> {
-            Props(mapOf(EventsPropertiesKey.type to "table_of_contents"))
+            Props(mapOf(
+                EventsPropertiesKey.type to "table_of_contents",
+                EventsPropertiesKey.permissions to spaceParams.permission,
+                EventsPropertiesKey.spaceType to spaceParams.spaceType
+            ))
         }
         is Block.Prototype.SimpleTable -> {
-            Props(mapOf(EventsPropertiesKey.type to "table"))
+            Props(mapOf(
+                EventsPropertiesKey.type to "table",
+                EventsPropertiesKey.permissions to spaceParams.permission,
+                EventsPropertiesKey.spaceType to spaceParams.spaceType
+            ))
         }
     }
 
@@ -273,7 +309,8 @@ fun CoroutineScope.sendAnalyticsObjectShowEvent(
 fun CoroutineScope.sendAnalyticsSearchResultEvent(
     analytics: Analytics,
     pos: Int,
-    length: Int
+    length: Int,
+    spaceParams: AnalyticSpaceHelperDelegate.Params
 ) {
     sendEvent(
         analytics = analytics,
@@ -281,7 +318,9 @@ fun CoroutineScope.sendAnalyticsSearchResultEvent(
         props = Props(
             mapOf(
                 EventsPropertiesKey.index to pos,
-                EventsPropertiesKey.length to length
+                EventsPropertiesKey.length to length,
+                EventsPropertiesKey.permissions to spaceParams.permission,
+                EventsPropertiesKey.spaceType to spaceParams.spaceType
             )
         )
     )
@@ -340,11 +379,14 @@ fun CoroutineScope.sendAnalyticsRemoveFromFavoritesEvent(
 
 fun CoroutineScope.sendAnalyticsBackLinkAddEvent(
     analytics: Analytics,
-    startTime: Long
+    startTime: Long,
+    spaceParams: AnalyticSpaceHelperDelegate.Params
 ) {
     val props = Props(
         buildMap {
             put("linkType", "Object")
+            put(EventsPropertiesKey.permissions, spaceParams.permission)
+            put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
         }
     )
     sendEvent(
@@ -388,7 +430,8 @@ fun CoroutineScope.sendAnalyticsDuplicateEvent(
     details: Map<Id, Block.Fields>?,
     ctx: Id,
     startTime: Long,
-    count: Int = 1
+    count: Int = 1,
+    spaceParams: AnalyticSpaceHelperDelegate.Params
 ) {
     val objType = getAnalyticsObjectType(
         details = details,
@@ -397,7 +440,9 @@ fun CoroutineScope.sendAnalyticsDuplicateEvent(
     val props = Props(
         mapOf(
             EventsPropertiesKey.count to count,
-            EventsPropertiesKey.objectType to objType
+            EventsPropertiesKey.objectType to objType,
+            EventsPropertiesKey.permissions to spaceParams.permission,
+            EventsPropertiesKey.spaceType to spaceParams.spaceType
         )
     )
     sendEvent(
@@ -410,14 +455,19 @@ fun CoroutineScope.sendAnalyticsDuplicateEvent(
 }
 
 suspend fun Analytics.sendAnalyticsSplitBlockEvent(
-    style: TextStyle, startTime: Long, middlewareTime: Long
+    style: TextStyle,
+    startTime: Long,
+    middlewareTime: Long,
+    spaceParams: AnalyticSpaceHelperDelegate.Params
 ) {
     val event = EventAnalytics.Anytype(
         name = EventsDictionary.blockCreate,
         props = Props(
             mapOf(
                 EventsPropertiesKey.type to "text",
-                EventsPropertiesKey.style to style.getStyleName()
+                EventsPropertiesKey.style to style.getStyleName(),
+                EventsPropertiesKey.permissions to spaceParams.permission,
+                EventsPropertiesKey.spaceType to spaceParams.spaceType
             )
         ),
         duration = EventAnalytics.Duration(
@@ -430,13 +480,17 @@ suspend fun Analytics.sendAnalyticsSplitBlockEvent(
 }
 
 suspend fun Analytics.sendAnalyticsCreateBlockEvent(
-    prototype: Block.Prototype, startTime: Long, middlewareTime: Long
+    prototype: Block.Prototype,
+    startTime: Long,
+    middlewareTime: Long,
+    spaceParams: AnalyticSpaceHelperDelegate.Params
 ) {
     val event = prototype.getAnalyticsEvent(
         eventName = EventsDictionary.blockCreate,
         startTime = startTime,
         middlewareTime = middlewareTime,
-        renderTime = System.currentTimeMillis()
+        renderTime = System.currentTimeMillis(),
+        spaceParams = spaceParams
     )
     registerEvent(event)
 }
@@ -688,15 +742,15 @@ fun CoroutineScope.sendAnalyticsObjectCreateEvent(
     startTime: Long? = null,
     view: String? = null,
     objType: String?,
-    spaceParams: AnalyticSpaceHelperDelegate.Params?
+    spaceParams: AnalyticSpaceHelperDelegate.Params
 ) {
     val props = Props(
         mapOf(
             EventsPropertiesKey.objectType to objType,
             EventsPropertiesKey.route to route,
             EventsPropertiesKey.view to view,
-            EventsPropertiesKey.permissions to spaceParams?.permission,
-            EventsPropertiesKey.spaceType to spaceParams?.spaceType
+            EventsPropertiesKey.permissions to spaceParams.permission,
+            EventsPropertiesKey.spaceType to spaceParams.spaceType
         )
     )
     sendEvent(
@@ -714,7 +768,7 @@ fun CoroutineScope.sendAnalyticsObjectCreateEvent(
     startTime: Long? = null,
     view: String? = null,
     objType: ObjectWrapper.Type?,
-    spaceParams: AnalyticSpaceHelperDelegate.Params? = null
+    spaceParams: AnalyticSpaceHelperDelegate.Params
 ) {
     val objTypeParam = if (objType == null) null
     else objType.sourceObject ?: OBJ_TYPE_CUSTOM
@@ -723,8 +777,8 @@ fun CoroutineScope.sendAnalyticsObjectCreateEvent(
             EventsPropertiesKey.objectType to objTypeParam,
             EventsPropertiesKey.route to route,
             EventsPropertiesKey.view to view,
-            EventsPropertiesKey.permissions to spaceParams?.permission,
-            EventsPropertiesKey.spaceType to spaceParams?.spaceType
+            EventsPropertiesKey.permissions to spaceParams.permission,
+            EventsPropertiesKey.spaceType to spaceParams.spaceType
         )
     )
     sendEvent(
@@ -1862,7 +1916,8 @@ fun CoroutineScope.sendAnalyticsCreateTemplateEvent(
     analytics: Analytics,
     details: Map<Id, Block.Fields>,
     ctx: Id,
-    startTime: Long
+    startTime: Long,
+    spaceParams: AnalyticSpaceHelperDelegate.Params
 ) {
     val objType = getAnalyticsObjectType(
         details = details,
@@ -1875,6 +1930,8 @@ fun CoroutineScope.sendAnalyticsCreateTemplateEvent(
             buildMap {
                 put(EventsPropertiesKey.route, "MenuObject")
                 put(EventsPropertiesKey.objectType, objType)
+                put(EventsPropertiesKey.permissions, spaceParams.permission)
+                put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
             }
         ),
         startTime = startTime,
@@ -1915,11 +1972,18 @@ private fun getAnalyticsObjectType(
 }
 
 fun CoroutineScope.sendAnalyticsCreateLink(
-    analytics: Analytics
+    analytics: Analytics,
+    spaceParams: AnalyticSpaceHelperDelegate.Params
 ) {
     sendEvent(
         analytics = analytics,
-        eventName = EventsDictionary.objectCreateLink
+        eventName = objectCreateLink,
+        props = Props(
+            buildMap {
+                put(EventsPropertiesKey.permissions, spaceParams.permission)
+                put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
+            }
+        )
     )
 }
 

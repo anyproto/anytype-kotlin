@@ -449,7 +449,9 @@ object EditorSessionModule {
         updateBlocksMark: UpdateBlocksMark,
         documentFileShareDownloader: DocumentFileShareDownloader,
         clearBlockContent: ClearBlockContent,
-        clearBlockStyle: ClearBlockStyle
+        clearBlockStyle: ClearBlockStyle,
+        analyticsSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        spaceManager: SpaceManager
     ): Orchestrator = Orchestrator(
         stores = storage,
         createBlock = createBlock,
@@ -491,7 +493,9 @@ object EditorSessionModule {
         createTable = createTable,
         fillTableRow = fillTableRow,
         clearBlockContent = clearBlockContent,
-        clearBlockStyle = clearBlockStyle
+        clearBlockStyle = clearBlockStyle,
+        analyticsSpaceHelperDelegate = analyticsSpaceHelperDelegate,
+        spaceManager = spaceManager
     )
 }
 

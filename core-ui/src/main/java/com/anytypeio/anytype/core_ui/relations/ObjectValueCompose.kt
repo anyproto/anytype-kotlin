@@ -99,7 +99,8 @@ fun RelationsViewContent(
                     is ObjectValueItem.Object -> ObjectItem(item, action, state.isEditableRelation)
                     is ObjectValueItem.ObjectType -> ObjectTypeItem(item)
                 }
-            })
+            }
+        )
     }
 }
 

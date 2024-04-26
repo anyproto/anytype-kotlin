@@ -77,6 +77,7 @@ fun ProfileSettingsScreen(
     onAppearanceClicked: () -> Unit,
     onDataManagementClicked: () -> Unit,
     onAboutClicked: () -> Unit,
+    onSpacesClicked: () -> Unit,
     onMembershipClicked: () -> Unit,
     membershipStatus: MembershipStatus?
 ) {
@@ -144,6 +145,16 @@ fun ProfileSettingsScreen(
                 image = R.drawable.ic_about,
                 text = stringResource(R.string.about),
                 onClick = onAboutClicked
+            )
+        }
+        item {
+            Divider(paddingStart = 60.dp)
+        }
+        item {
+            Option(
+                image = R.drawable.ic_settings_spaces,
+                text = stringResource(R.string.multiplayer_spaces),
+                onClick = onSpacesClicked
             )
         }
         item {

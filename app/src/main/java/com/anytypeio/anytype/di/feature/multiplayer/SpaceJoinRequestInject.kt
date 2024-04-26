@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.di.feature.multiplayer
 
 import androidx.lifecycle.ViewModelProvider
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
@@ -53,4 +54,5 @@ interface SpaceJoinRequestDependencies : ComponentDependencies {
     fun urlBuilder(): UrlBuilder
     fun dispatchers(): AppCoroutineDispatchers
     fun spaceManager(): SpaceManager
+    fun analytics(): Analytics
 }

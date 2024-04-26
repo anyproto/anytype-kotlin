@@ -95,6 +95,7 @@ import com.anytypeio.anytype.di.feature.settings.ProfileModule
 import com.anytypeio.anytype.di.feature.sharing.DaggerAddToAnytypeComponent
 import com.anytypeio.anytype.di.feature.spaces.DaggerCreateSpaceComponent
 import com.anytypeio.anytype.di.feature.spaces.DaggerSelectSpaceComponent
+import com.anytypeio.anytype.di.feature.spaces.DaggerSpaceListComponent
 import com.anytypeio.anytype.di.feature.spaces.DaggerSpaceSettingsComponent
 import com.anytypeio.anytype.di.feature.templates.DaggerTemplateBlankComponent
 import com.anytypeio.anytype.di.feature.templates.DaggerTemplateSelectComponent
@@ -930,6 +931,12 @@ class ComponentManager(
 
     val selectSpaceComponent = Component {
         DaggerSelectSpaceComponent
+            .factory()
+            .create(findComponentDependencies())
+    }
+
+    val spaceListComponent = Component {
+        DaggerSpaceListComponent
             .factory()
             .create(findComponentDependencies())
     }

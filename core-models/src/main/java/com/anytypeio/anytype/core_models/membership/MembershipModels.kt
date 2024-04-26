@@ -7,7 +7,8 @@ data class Membership(
     val dateEnds: Long,
     val isAutoRenew: Boolean,
     val paymentMethod: MembershipPaymentMethod,
-    val requestedAnyName: String,
+    val nameServiceName: String,
+    val nameServiceType: NameServiceNameType,
     val userEmail: String,
     val subscribeToNewsletter: Boolean
 ) {
@@ -24,7 +25,7 @@ data class Membership(
 
 enum class MembershipPaymentMethod {
     METHOD_NONE,
-    METHOD_CARD,
+    METHOD_STRIPE,
     METHOD_CRYPTO,
     METHOD_INAPP_APPLE,
     METHOD_INAPP_GOOGLE

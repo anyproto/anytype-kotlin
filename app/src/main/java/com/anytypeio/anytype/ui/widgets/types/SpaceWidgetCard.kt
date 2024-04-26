@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -22,11 +23,11 @@ import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SHARED_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SpaceType
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
+import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
-import com.anytypeio.anytype.ui_settings.main.SpaceImageBlock
 
 
 @Composable
@@ -38,7 +39,22 @@ fun SpaceWidgetCardPreview() {
         name = "Research",
         spaceType = PRIVATE_SPACE_TYPE,
         onSpaceShareIconClicked = {},
-        isShared = true
+        isShared = true,
+        membersCount = 4
+    )
+}
+
+@Composable
+@Preview
+fun SharedSpaceWidgetCardPreview() {
+    SpaceWidgetCard(
+        onClick = {},
+        icon = SpaceIconView.Placeholder,
+        name = "Research",
+        spaceType = SHARED_SPACE_TYPE,
+        onSpaceShareIconClicked = {},
+        isShared = true,
+        membersCount = 4
     )
 }
 
@@ -49,7 +65,8 @@ fun SpaceWidgetCard(
     icon: SpaceIconView,
     spaceType: SpaceType,
     onSpaceShareIconClicked: () -> Unit,
-    isShared: Boolean
+    isShared: Boolean,
+    membersCount: Int
 ) {
     Box(
         modifier = Modifier
@@ -67,12 +84,11 @@ fun SpaceWidgetCard(
                 .padding(start = 16.dp)
                 .align(Alignment.CenterStart)
         ) {
-            SpaceImageBlock(
+            SpaceIconView(
                 icon = icon,
                 onSpaceIconClick = { onClick() },
                 mainSize = 40.dp,
                 gradientSize = 24.dp,
-                emojiSize = 24.dp,
                 gradientCornerRadius = 2.dp
             )
         }
@@ -87,10 +103,15 @@ fun SpaceWidgetCard(
             color = colorResource(id = R.color.text_primary),
             maxLines = 1
         )
-        val spaceTypeName = when(spaceType) {
+        val spaceTypeText = when(spaceType) {
             DEFAULT_SPACE_TYPE -> stringResource(id = R.string.space_type_default_space)
             PRIVATE_SPACE_TYPE -> stringResource(id = R.string.space_type_private_space)
-            SHARED_SPACE_TYPE -> stringResource(id = R.string.space_type_shared_space)
+            SHARED_SPACE_TYPE -> pluralStringResource(
+                id = R.plurals.multiplayer_number_of_space_members,
+                membersCount,
+                membersCount,
+                membersCount
+            )
             else -> stringResource(id = R.string.space_type_unknown)
         }
         Text(
@@ -99,7 +120,7 @@ fun SpaceWidgetCard(
                 .align(Alignment.BottomStart)
                 .padding(start = 71.dp, bottom = 16.dp)
             ,
-            text = spaceTypeName,
+            text = spaceTypeText,
             style = Relations3,
             color = colorResource(id = R.color.text_secondary),
             maxLines = 1

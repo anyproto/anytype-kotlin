@@ -115,6 +115,13 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
                             }
                         ),
                         membershipStatus = vm.membershipStatusState.collectAsStateWithLifecycle().value,
+                        onSpacesClicked = throttledClick(
+                            onClick = {
+                                runCatching {
+                                    findNavController().navigate(R.id.spaceListScreen)
+                                }
+                            }
+                        )
                     )
                 }
             }
@@ -123,7 +130,7 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupBottomSheetBehavior(PADDING_TOP)
+        setupBottomSheetBehavior(DEFAULT_PADDING_TOP)
     }
 
     override fun onStart() {
@@ -177,7 +184,5 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
         const val SPACE_ID_KEY = "arg.profile-settings.space-id"
     }
 }
-
-private const val PADDING_TOP = 28
 
 private const val SELECT_IMAGE_CODE = 1

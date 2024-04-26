@@ -22,7 +22,6 @@ import com.anytypeio.anytype.presentation.objects.toLinkToObjectView
 import com.anytypeio.anytype.presentation.objects.toLinkToView
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
-import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -109,7 +108,6 @@ class LinkToObjectOrWebViewModel(
                         LinkToItemView.Subheading.LinkedTo,
                         obj.toLinkToObjectView(
                             urlBuilder = urlBuilder,
-                            gradientProvider = SpaceGradientProvider.Default,
                             objectTypes = storeOfObjectTypes.getAll()
                         ),
                         LinkToItemView.Subheading.Actions,
@@ -130,8 +128,7 @@ class LinkToObjectOrWebViewModel(
 
                 val objectViews = filteredSearchResponse.toLinkToView(
                     urlBuilder = urlBuilder,
-                    objectTypes = storeOfObjectTypes.getAll(),
-                    gradientProvider = SpaceGradientProvider.Default
+                    objectTypes = storeOfObjectTypes.getAll()
                 )
                 val views = mutableListOf<LinkToItemView>()
                 if (clipboardUrl != null && userInput.value.isBlank()) {

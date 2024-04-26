@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -34,11 +33,11 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.gallery_experience.models.GalleryInstallationSpacesState
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.Title3
+import com.anytypeio.anytype.gallery_experience.models.GalleryInstallationSpacesState
 import com.anytypeio.anytype.gallery_experience.models.GallerySpaceView
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
@@ -140,7 +139,7 @@ private fun SpaceItem(space: GallerySpaceView, onSpaceClick: (GallerySpaceView) 
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 12.dp, end = 20.dp),
-            text = space.obj.name.orEmpty(),
+            text = space.obj.name.orEmpty().ifEmpty { stringResource(id = R.string.untitled) },
             style = Title3,
             color = colorResource(id = R.color.text_primary)
         )

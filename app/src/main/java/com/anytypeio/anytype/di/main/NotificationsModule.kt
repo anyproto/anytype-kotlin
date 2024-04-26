@@ -1,9 +1,12 @@
 package com.anytypeio.anytype.di.main
 
+import android.content.Context
+import com.anytypeio.anytype.app.AnytypeNotificationService
 import com.anytypeio.anytype.data.auth.event.NotificationsDateChannel
 import com.anytypeio.anytype.data.auth.event.NotificationsRemoteChannel
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import com.anytypeio.anytype.domain.workspace.NotificationsChannel
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.interactor.NotificationsMiddlewareChannel
@@ -34,6 +37,13 @@ object NotificationsModule {
     ): NotificationsChannel = NotificationsDateChannel(
         channel = channel
     )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideNotificator(
+        context: Context
+    ): SystemNotificationService = AnytypeNotificationService(context = context)
 
     @JvmStatic
     @Singleton

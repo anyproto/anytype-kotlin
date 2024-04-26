@@ -15,7 +15,7 @@ class DefaultDeepLinkResolverTest {
     private val deepLinkResolver = DefaultDeepLinkResolver
 
     @Test
-    fun `resolve returns Import Experience for import experience deeplinks`() {
+    fun `resolve returns Import Experience for import experience deep links`() {
         // Given
         val deeplink = "anytype://main/import/?type=experience123&source=source321"
 
@@ -27,9 +27,9 @@ class DefaultDeepLinkResolverTest {
     }
 
     @Test
-    fun `resolve returns Invite with deeplink for invite deeplinks`() {
+    fun `resolve returns Invite with deeplink for invite deep links`() {
         // Given
-        val deeplink = "anytype://invite/some_unique_identifier"
+        val deeplink = "https://invite.any.coop/bafybeibqdqtd65nlaey3mnkf24prpeq#DsESM2H2xi7Fs96XSp6YcaKaXASX"
 
         // When
         val result = deepLinkResolver.resolve(deeplink)
@@ -40,7 +40,7 @@ class DefaultDeepLinkResolverTest {
     }
 
     @Test
-    fun `resolve returns Unknown for unrecognized deeplinks`() {
+    fun `resolve returns Unknown for unrecognized deep links`() {
         // Given
         val deeplink = "anytype://some_random_path"
 

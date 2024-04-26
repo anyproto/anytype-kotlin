@@ -5,7 +5,6 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 
 sealed class ObjectIcon {
     object None : ObjectIcon()
@@ -34,8 +33,7 @@ sealed class ObjectIcon {
             obj: ObjectWrapper.Basic,
             layout: ObjectType.Layout?,
             builder: UrlBuilder,
-            objectTypeNoIcon: Boolean = false,
-            gradientProvider: SpaceGradientProvider = SpaceGradientProvider.Default,
+            objectTypeNoIcon: Boolean = false
         ): ObjectIcon {
             val img = obj.iconImage
             val emoji = obj.iconEmoji
@@ -72,7 +70,16 @@ sealed class ObjectIcon {
                 }
                 ObjectType.Layout.TODO -> Task(isChecked = obj.done ?: false)
                 ObjectType.Layout.NOTE -> Basic.Avatar(obj.snippet.orEmpty())
-                ObjectType.Layout.FILE -> Basic.Avatar(obj.name.orEmpty())
+                ObjectType.Layout.FILE,
+                ObjectType.Layout.AUDIO,
+                ObjectType.Layout.VIDEO,
+                ObjectType.Layout.PDF -> {
+                    if (img.isNullOrBlank()) {
+                        File(mime = obj.fileMimeType, fileName = obj.name)
+                    } else {
+                        Basic.Image(hash = builder.thumbnail(img))
+                    }
+                }
                 ObjectType.Layout.BOOKMARK -> when {
                     !img.isNullOrBlank() -> Bookmark(image = builder.thumbnail(img))
                     !emoji.isNullOrBlank() -> Basic.Emoji(unicode = emoji)

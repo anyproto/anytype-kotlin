@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_models
 
+import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.test_utils.MockDataFactory
 
 fun StubDataView(
@@ -92,4 +93,19 @@ fun StubFilter(
     condition = condition,
     quickOption = quickOption,
     value = value
+)
+
+fun StubSpaceView(
+    id: Id = MockDataFactory.randomUuid(),
+    targetSpaceId: Id = MockDataFactory.randomUuid(),
+    spaceAccessType: SpaceAccessType = SpaceAccessType.DEFAULT,
+    sharedSpaceLimit: Int? = null
+
+) = ObjectWrapper.SpaceView(
+    map = mapOf(
+        Relations.ID to id,
+        Relations.TARGET_SPACE_ID to targetSpaceId,
+        Relations.SPACE_ACCESS_TYPE to spaceAccessType.code.toDouble(),
+        Relations.SHARED_SPACES_LIMIT to sharedSpaceLimit?.toDouble()
+    )
 )

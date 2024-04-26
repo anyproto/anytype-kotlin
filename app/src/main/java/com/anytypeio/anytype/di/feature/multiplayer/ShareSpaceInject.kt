@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.di.feature.multiplayer
 
 import androidx.lifecycle.ViewModelProvider
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
@@ -58,4 +59,5 @@ interface ShareSpaceDependencies : ComponentDependencies {
     fun container(): StorelessSubscriptionContainer
     fun config(): ConfigStorage
     fun permissions(): UserPermissionProvider
+    fun analytics(): Analytics
 }

@@ -927,6 +927,10 @@ class BlockMiddleware(
         middleware.sendJoinSpaceRequest(command)
     }
 
+    override suspend fun cancelJoinSpaceRequest(space: SpaceId) {
+        middleware.cancelJoinRequest(space = space)
+    }
+
     override suspend fun getSpaceInviteView(
         inviteContentId: Id,
         inviteFileKey: String

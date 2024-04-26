@@ -280,6 +280,13 @@ sealed class ObjectWrapper {
 
         val writersLimit: Double? by default
         val readersLimit: Double? by default
+
+        val sharedSpaceLimit: Int
+            get() {
+                val value = getValue<Double?>(Relations.SHARED_SPACES_LIMIT)
+                return value?.toInt() ?: 0
+            }
+
     }
 
     inline fun <reified T> getValue(relation: Key): T? {
@@ -349,6 +356,8 @@ sealed class ObjectWrapper {
                 .let { code ->
                     SpaceMemberPermissions.values().firstOrNull { it.code == code?.toInt() }
                 }
+
+        val globalName: String? by default
     }
 }
 

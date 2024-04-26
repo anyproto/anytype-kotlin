@@ -16,6 +16,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.multiplayer.ShareSpaceScreen
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -113,7 +114,8 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                         resId = R.id.spaceJoinRequestScreen,
                         args = SpaceJoinRequestFragment.args(
                             space = command.space,
-                            member = command.member
+                            member = command.member,
+                            analyticsRoute = EventsDictionary.Routes.settings
                         )
                     )
                 }.onFailure {
@@ -123,6 +125,19 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
             is Command.ShowHowToShareSpace -> {
                 runCatching {
                     findNavController().navigate(R.id.howToShareSpaceScreen)
+                }.onFailure {
+                    Timber.e(it, "Error while navigation")
+                }
+            }
+            is Command.ShowRemoveMemberWarning -> {
+                runCatching {
+                    val dialog = RemoveMemberWarning.new(name = command.name)
+                    dialog.onAccepted = {
+                        vm.onRemoveMemberAccepted(command.identity).also {
+                            dialog.dismiss()
+                        }
+                    }
+                    dialog.show(childFragmentManager, null)
                 }.onFailure {
                     Timber.e(it, "Error while navigation")
                 }

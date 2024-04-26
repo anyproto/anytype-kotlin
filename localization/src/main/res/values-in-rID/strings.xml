@@ -48,7 +48,7 @@
     <string name="about_meta_info_for_copy">Perangkat: %1$s\nVersi Android: %2$d\nVersi Aplikasi: %3$s\nPembuatan Nomor: %4$d\nVersi Pustaka: %5$s\nAkun\u00A0ID:\u00A0%6$s\nPerangkat\u00A0ID:\u00A0%7$s\nAnalisis\u00A0ID:\u00A0%8$s</string>
     <string name="space">Ruang</string>
     <string name="space_name">Nama Ruang</string>
-    <string name="default_space">Ruang bawaan</string>
+    <string name="default_space">Entry space</string>
     <string name="space_settings_apply_random_gradient">Terapkan gradasi acak</string>
     <string name="delete_space">Hapus ruang</string>
     <string name="you_can_store">Kamu bisa menyimpan berkasmu hingga %1$s di simpul cadangan terenkripsi kami secara gratis. Jika melewati batas, berkasmu hanya akan disimpan secara lokal.</string>
@@ -68,7 +68,6 @@
     <string name="danger_zone">Hapus akun (Hati-hati!)</string>
     <string name="snackbar_template_add">Templat baru ditambahkan ke tipe ini</string>
     <string name="settings_membership">Langganan</string>
-    <string name="default_text_placeholder">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
     <string name="default_url_placeholder">https://humanparts.medium.com/how-i-overcame-cult-trauma-with-psychedelics-4342c03a074c</string>
     <string name="multi_select_turn_into">Ubah menjadi</string>
     <string name="multi_select_move_to">Pindahkan ke</string>
@@ -822,8 +821,8 @@
     <string name="anytype_update_alert_description">Some of your data was managed in a newer version of Anytype. Please update the app to work with all your docs and the latest features.</string>
     <string name="anytype_update_alert_title">Waktunya memperbarui</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
-    <string name="space_type_default">Bawaan</string>
-    <string name="space_type_default_space">Ruang bawaan</string>
+    <string name="space_type_default">Entry</string>
+    <string name="space_type_default_space">Entry space</string>
     <string name="space_type_private">Pribadi</string>
     <string name="space_type_private_space">Ruang pribadi</string>
     <string name="space_type_shared">Berbagi</string>
@@ -1105,6 +1104,7 @@
     <!--region ONBOARDING ERRORS -->
     <string name="error_invalid_recovery_phrase">Frasa pemulihan tidak valid</string>
     <string name="network">Jaringan</string>
+    <string name="network_with_colon">Jaringan:</string>
     <string name="network_settings_anytype_network">Jaringan Anytype</string>
     <string name="network_settings_anytype_network_description">Cadangkan ke jaringan yang diatur oleh Anytype</string>
     <string name="network_settings_local_only">Hanya Lokal</string>
@@ -1143,13 +1143,14 @@
     <string name="multiplayer_space_request_reject">Tolak</string>
     <string name="multiplayer_space_join_request_header">%1$s meminta bergabung ke ruang %2$s</string>
     <string name="multiplayer_remove_member">Hapus anggota</string>
+    <string name="multiplayer_remove_member_warning_text">%1$s akan dihapus dari ruang</string>
     <string name="multiplayer_request_sent_toast">Permintaan terkirim</string>
     <string name="multiplayer_space_stop_sharing">Berhenti berbagi</string>
     <string name="multiplayer_space_stop_sharing_space">Berhenti membagikan ruang</string>
     <string name="multiplayer_space_stop_sharing_space_description">Anggota tidak akan lagi menyinkronkan ruang ini dan tautan pembagian akan dinonaktifkan.</string>
-    <string name="multiplayer_more_info">Informasi lebih lanjut</string>
+    <string name="multiplayer_more_info">Lebih lanjut</string>
     <string name="multiplayer_sharing">Berbagi</string>
-    <string name="multiplayer_space_type">Tipe ruang</string>
+    <string name="multiplayer_space_type">Tipe</string>
     <string name="multiplayer_share">Bagikan</string>
     <string name="multiplayer_manage">Kelola</string>
     <string name="multiplayer_leave_space">Tinggalkan ruang</string>
@@ -1175,14 +1176,29 @@
     <string name="multiplayer_notification_new_join_request">Permintaan gabung baru</string>
     <string name="multiplayer_notification_member_joined_space_with_read_only_rights">%1$s bergabung ke ruang %2$s dengan akses pembaca</string>
     <string name="multiplayer_notification_member_joined_space_with_editor_only_rights">%1$s bergabung ke ruang %2$s dengan akses penyunting</string>
+    <string name="multiplayer_notification_member_request_approved">Permintaan disetujui</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Permintaanmu bergabug ke ruang %1$s telah disetujui dengan hak akses pembaca. Ruang ini akan tersedia di perangkatmu sebentar lagi.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Permintaanmu bergabung ke ruang %1$s telah disetujui dengan hak akses penyunting. Ruang ini akan tersedia di perangkatmu sebentar lagi.</string>
     <string name="multiplayer_notification_member_removed_from_space">Kamu telah dikeluarkan dari ruang ini, atau ruang tersebut telah dihapus oleh pemiliknya.</string>
+    <string name="multiplayer_notification_member_permissions_changed">Izin diubah</string>
     <string name="multiplayer_notification_member_permission_change_read">Hak aksesmu di ruang %1$s telah diganti menjadi pembaca.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Hak aksesmu di ruang %1$s telah diganti menjadi penyunting.</string>
     <string name="multiplayer_notification_member_join_request_declined">Permintaanmu bergabung ke ruang %1$s telah ditolak.</string>
+    <string name="multiplayer_notification_request_declined">Permintaan ditolak</string>
     <string name="multiplayer_notification_view_request">Tampilan</string>
+    <string name="multiplayer_notification_go_to_space">Kunjungi ruang</string>
     <string name="multiplayer_toast_permission_not_allowed">Changing permissions is not allowed</string>
+    <string name="multiplayer_toast_share_limit_reached">Sharing limit reached</string>
+    <string name="multiplayer_deeplink_to_your_object">Deeplink to your object</string>
+    <string name="multiplayer_deeplink_to_your_object_error">This deeplink is not working. Object might be deleted or there might be issues with space access.</string>
+    <plurals name="multiplayer_number_of_space_members">
+        <item quantity="other">%1$d anggota</item>
+    </plurals>
+    <string name="multiplayer_you_as_member">you</string>
+    <string name="multiplayer_spaces">Ruang</string>
+    <string name="multiplayer_space_status_joining">Bergabung</string>
+    <string name="multiplayer_space_status_active">Aktif</string>
+    <string name="multiplayer_space_status_removing">Removed</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Langganan</string>
@@ -1279,4 +1295,10 @@
     <string name="gallery_experience_alert_button_space">Buka ruang</string>
     <string name="gallery_experience_alert_button_error">Tutup</string>
     <string name="three_dots_text_placeholder">...</string>
+    <string name="notifications_prompt_get_notified">Dapatkan pemberitahuan</string>
+    <string name="notifications_prompt_secondary_button_text">Tidak dulu</string>
+    <string name="notifications_prompt_description">Nyalakan pemberitahuan permintaan bergabung atau keluar dari ruangan.</string>
+    <string name="notifications_prompt_primary_button_text">Nyalakan</string>
+    <string name="clipboard_panel_create_bookmark_from_clipboard">Buat markah dari papan kerani</string>
+    <string name="error_unexpected_layout">Galat: tata letak tak terduga</string>
 </resources>

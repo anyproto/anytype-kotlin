@@ -225,7 +225,8 @@ fun Warning(
     cancelButtonText: String,
     onNegativeClick: () -> Unit,
     onPositiveClick: () -> Unit,
-    isInProgress: Boolean = false
+    isInProgress: Boolean = false,
+    footerHeight: Dp = 10.dp
 ) {
     Column {
         Text(
@@ -283,7 +284,7 @@ fun Warning(
                 loading = isInProgress
             )
         }
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(footerHeight))
     }
 }
 

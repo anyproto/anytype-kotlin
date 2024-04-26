@@ -114,12 +114,14 @@
     <color name="text_secondary_widgets">#949494</color>
     <color name="text_tertiary">#C8C8C8</color>
     <color name="text_white">#FFFFFF</color>
+    <color name="text_label_inversion">#FFFFFF</color>
     <color name="text_button_label">#FFFFFF</color>
 
     <color name="background_primary">#FFFFFF</color>
     <color name="background_notification_primary">#000000</color>
     <color name="background_secondary">#FFFFFF</color>
     <color name="background_highlighted">#144F4F4F</color>
+    <color name="background_multiplayer_request">#252525</color>
 
     <color name="shape_primary">#E3E3E3</color>
     <color name="shape_secondary">#EBEBEB</color>

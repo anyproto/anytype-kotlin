@@ -22,6 +22,7 @@ import com.anytypeio.anytype.core_models.StubLinkToObjectBlock
 import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.StubObjectView
 import com.anytypeio.anytype.core_models.StubSmartBlock
+import com.anytypeio.anytype.core_models.StubSpaceView
 import com.anytypeio.anytype.core_models.StubWidgetBlock
 import com.anytypeio.anytype.core_models.UNKNOWN_SPACE_TYPE
 import com.anytypeio.anytype.core_models.WidgetSession
@@ -60,6 +61,7 @@ import com.anytypeio.anytype.domain.widgets.SaveWidgetSession
 import com.anytypeio.anytype.domain.widgets.SetWidgetActiveView
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.Subscriptions
@@ -203,6 +205,9 @@ class HomeScreenViewModelTest {
     @Mock
     lateinit var getPinnedObjectTypes: GetPinnedObjectTypes
 
+    @Mock
+    lateinit var deepLinkToObjectDelegate: DeepLinkToObjectDelegate
+
     lateinit var userPermissionProvider: UserPermissionProvider
 
     private val objectPayloadDispatcher = Dispatcher.Default<Payload>()
@@ -224,9 +229,10 @@ class HomeScreenViewModelTest {
     )
 
     private val defaultSpaceWidgetView = WidgetView.SpaceWidget.View(
-        space = StubObject(),
+        space = StubSpaceView(),
         icon = SpaceIconView.Placeholder,
-        type = UNKNOWN_SPACE_TYPE
+        type = UNKNOWN_SPACE_TYPE,
+        membersCount = 0
     )
 
     private lateinit var urlBuilder: UrlBuilder
@@ -2826,7 +2832,7 @@ class HomeScreenViewModelTest {
     ) {
         getSpaceView.stub {
             onBlocking {
-                async(spaceView)
+                async(GetSpaceView.Params.BySpaceViewId(spaceView))
             } doReturn Resultat.success(objectWrapper)
         }
     }
@@ -2900,7 +2906,8 @@ class HomeScreenViewModelTest {
         getSpaceView = getSpaceView,
         searchObjects = searchObjects,
         getPinnedObjectTypes = getPinnedObjectTypes,
-        userPermissionProvider = userPermissionProvider
+        userPermissionProvider = userPermissionProvider,
+        deepLinkToObjectDelegate = deepLinkToObjectDelegate
     )
 
     companion object {

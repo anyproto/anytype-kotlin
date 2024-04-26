@@ -16,7 +16,6 @@ android {
     defaultConfig {
         buildConfigField "boolean", "ENABLE_LINK_APPERANCE_MENU", "true"
         buildConfigField "boolean", "USE_SIMPLE_TABLES_IN_EDITOR_EDDITING", "true"
-        buildConfigField "boolean", "ENABLE_WIDGETS", "false"
         buildConfigField "boolean", "ENABLE_VIEWS_MENU", "true"
     }
     namespace 'com.anytypeio.anytype.presentation'

@@ -166,12 +166,15 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                     val dialog = LeaveSpaceWarning.new()
                     dialog.onLeaveSpaceAccepted = {
                         dialog.dismiss()
-                        vm.onDeleteSpaceAcceptedClicked()
+                        vm.onLeaveSpaceAcceptedClicked()
                     }
                     dialog.onLeaveSpaceCancelled = {
                         vm.onDeleteSpaceWarningCancelled()
                     }
                     dialog.show(childFragmentManager, null)
+                }
+                is Command.ShowShareLimitReachedError -> {
+                    toast(getString(R.string.multiplayer_toast_share_limit_reached))
                 }
             }
         }

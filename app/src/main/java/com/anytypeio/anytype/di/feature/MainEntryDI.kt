@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
@@ -25,7 +26,8 @@ import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
 import com.anytypeio.anytype.domain.wallpaper.WallpaperStore
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.main.MainViewModelFactory
-import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
+import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
+import com.anytypeio.anytype.presentation.notifications.NotificationActionDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
 import com.anytypeio.anytype.ui.main.MainActivity
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
@@ -69,7 +71,10 @@ object MainEntryModule {
         localeProvider: LocaleProvider,
         userPermissionProvider: UserPermissionProvider,
         notificationsProvider: NotificationsProvider,
-        membershipProvider: MembershipProvider
+        notificator: SystemNotificationService,
+        notificationActionDelegate: NotificationActionDelegate,
+        deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
+        awaitAccountStartManager: AwaitAccountStartManager
     ): MainViewModelFactory = MainViewModelFactory(
         resumeAccount = resumeAccount,
         analytics = analytics,
@@ -85,7 +90,10 @@ object MainEntryModule {
         localeProvider = localeProvider,
         userPermissionProvider = userPermissionProvider,
         notificationsProvider = notificationsProvider,
-        membershipProvider = membershipProvider
+        notificator = notificator,
+        notificationActionDelegate = notificationActionDelegate,
+        deepLinkToObjectDelegate = deepLinkToObjectDelegate,
+        awaitAccountStartManager = awaitAccountStartManager
     )
 
     @JvmStatic
@@ -176,4 +184,18 @@ object MainEntryModule {
     fun provideCheckAuthStatus(
         repo: AuthRepository
     ): CheckAuthorizationStatus = CheckAuthorizationStatus(repo)
+
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun provideNotificationActionDelegate(
+        default: NotificationActionDelegate.Default
+    ) : NotificationActionDelegate = default
+
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun provideDeepLinkToObjectDelegate(
+        default: DeepLinkToObjectDelegate.Default
+    ): DeepLinkToObjectDelegate = default
 }

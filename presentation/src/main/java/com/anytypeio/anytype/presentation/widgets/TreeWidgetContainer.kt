@@ -160,7 +160,9 @@ class TreeWidgetContainer(
                     }
                 }
         } else if (widget.source.id == BundledWidgetSourceIds.RECENT) {
-            val spaceView = getSpaceView.async(config.spaceView).getOrNull()
+            val spaceView = getSpaceView.async(
+                GetSpaceView.Params.BySpaceViewId(config.spaceView)
+            ).getOrNull()
             val spaceViewCreationDate = spaceView
                 ?.getValue<Double?>(Relations.CREATED_DATE)
                 ?.toLong()
@@ -242,8 +244,7 @@ class TreeWidgetContainer(
                             currentLinkPath = currentLinkPath
                         ),
                         objectIcon = obj.widgetElementIcon(
-                            builder = urlBuilder,
-                            gradientProvider = spaceGradientProvider
+                            builder = urlBuilder
                         ),
                         indent = level,
                         obj = obj,

@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.Logout
@@ -10,12 +11,14 @@ import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
-import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
+import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
+import com.anytypeio.anytype.presentation.notifications.NotificationActionDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
 import javax.inject.Inject
 
@@ -34,7 +37,10 @@ class MainViewModelFactory @Inject constructor(
     private val localeProvider: LocaleProvider,
     private val userPermissionProvider: UserPermissionProvider,
     private val notificationsProvider: NotificationsProvider,
-    private val membershipProvider: MembershipProvider
+    private val notificator: SystemNotificationService,
+    private val notificationActionDelegate: NotificationActionDelegate,
+    private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
+    private val awaitAccountStartManager: AwaitAccountStartManager
     ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -54,5 +60,9 @@ class MainViewModelFactory @Inject constructor(
         localeProvider = localeProvider,
         userPermissionProvider = userPermissionProvider,
         notificationsProvider = notificationsProvider,
+        notificator = notificator,
+        notificationActionDelegate = notificationActionDelegate,
+        deepLinkToObjectDelegate = deepLinkToObjectDelegate,
+        awaitAccountStartManager = awaitAccountStartManager
     ) as T
 }

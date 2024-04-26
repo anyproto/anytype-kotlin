@@ -3,6 +3,7 @@ package com.anytypeio.anytype.middleware.mappers
 import anytype.ResponseEvent
 import anytype.Rpc
 import anytype.model.Account
+import anytype.model.NameserviceNameType
 import anytype.model.ParticipantPermissions
 import anytype.model.Restrictions
 import com.anytypeio.anytype.core_models.AccountStatus
@@ -47,6 +48,7 @@ import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
+import com.anytypeio.anytype.core_models.membership.NameServiceNameType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
@@ -987,7 +989,7 @@ fun MMembershipStatus.toCoreModel(): Membership.Status {
 fun MMembershipPaymentMethod.toCoreModel(): MembershipPaymentMethod {
     return when (this) {
         MMembershipPaymentMethod.MethodNone -> MembershipPaymentMethod.METHOD_NONE
-        MMembershipPaymentMethod.MethodCard -> MembershipPaymentMethod.METHOD_CARD
+        MMembershipPaymentMethod.MethodStripe -> MembershipPaymentMethod.METHOD_STRIPE
         MMembershipPaymentMethod.MethodCrypto -> MembershipPaymentMethod.METHOD_CRYPTO
         MMembershipPaymentMethod.MethodInappApple -> MembershipPaymentMethod.METHOD_INAPP_APPLE
         MMembershipPaymentMethod.MethodInappGoogle -> MembershipPaymentMethod.METHOD_INAPP_GOOGLE
@@ -1002,7 +1004,8 @@ fun MMembership.toCoreModel(): Membership {
         dateEnds = dateEnds,
         isAutoRenew = isAutoRenew,
         paymentMethod = paymentMethod.toCoreModel(),
-        requestedAnyName = requestedAnyName,
+        nameServiceName = nsName,
+        nameServiceType = nsNameType.toCoreModel(),
         userEmail = userEmail,
         subscribeToNewsletter = subscribeToNewsletter
     )
@@ -1047,5 +1050,9 @@ fun MEmailVerificationStatus.toCoreModel(): EmailVerificationStatus {
         MEmailVerificationStatus.StatusCodeSent -> EmailVerificationStatus.STATUS_CODE_SENT
         MEmailVerificationStatus.StatusVerified -> EmailVerificationStatus.STATUS_VERIFIED
     }
+}
+
+fun MNameServiceNameType.toCoreModel(): NameServiceNameType = when (this) {
+    NameserviceNameType.AnyName -> NameServiceNameType.ANY_NAME
 }
 //endregion

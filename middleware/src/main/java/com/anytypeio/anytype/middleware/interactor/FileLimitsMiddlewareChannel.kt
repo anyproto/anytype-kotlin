@@ -38,6 +38,13 @@ class FileLimitsMiddlewareChannel(
                                 spaceId = event.spaceId
                             )
                         }
+                        message.fileLimitUpdated != null -> {
+                            val event = message.fileLimitUpdated
+                            checkNotNull(event)
+                            FileLimitsEvent.FileLimitUpdated(
+                                bytesLimit = event.bytesLimit
+                            )
+                        }
                         else -> null
                     }
                 }

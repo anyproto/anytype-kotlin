@@ -344,31 +344,3 @@ object MultiValueParser {
         else -> emptyList()
     }
 }
-
-fun identityRelation(
-    relationDetails: ObjectWrapper.Relation?,
-    values: Map<String, Any?>,
-    isFeatured: Boolean = false,
-    objLayout : ObjectType.Layout?
-): ObjectRelationView? {
-    if (relationDetails == null) {
-        return null
-    }
-    val globalNameValue = values.getSingleValue<String>(Relations.GLOBAL_NAME)
-    val value =
-        if (objLayout == ObjectType.Layout.PARTICIPANT && !globalNameValue.isNullOrBlank()) {
-            globalNameValue
-        } else {
-            values.getSingleValue(Relations.IDENTITY)
-        }
-    return ObjectRelationView.Default(
-        id = relationDetails.id,
-        key = relationDetails.key,
-        name = relationDetails.name.orEmpty(),
-        value = value as? String,
-        featured = isFeatured,
-        readOnly = relationDetails.isReadonlyValue,
-        format = relationDetails.format,
-        system = relationDetails.key.isSystemKey()
-    )
-}

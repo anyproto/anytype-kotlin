@@ -89,7 +89,7 @@ interface MembershipProvider {
                 status = membership.membershipStatusModel,
                 dateEnds = membership.dateEnds,
                 paymentMethod = membership.paymentMethod,
-                anyName = membership.requestedAnyName,
+                anyName = membership.nameServiceName,
                 tiers = tiers,
                 formattedDateEnds = membership.dateEnds.formatToDateString(
                     pattern = DATE_FORMAT,

@@ -40,7 +40,6 @@ import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.fontInterSemibold
 import com.anytypeio.anytype.core_utils.ext.formatToDateString
-import com.anytypeio.anytype.payments.viewmodel.DATE_FORMAT
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
 import com.anytypeio.anytype.presentation.membership.models.Tier

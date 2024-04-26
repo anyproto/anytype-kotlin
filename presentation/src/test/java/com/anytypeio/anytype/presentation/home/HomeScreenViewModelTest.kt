@@ -61,6 +61,7 @@ import com.anytypeio.anytype.domain.widgets.SaveWidgetSession
 import com.anytypeio.anytype.domain.widgets.SetWidgetActiveView
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -208,6 +209,9 @@ class HomeScreenViewModelTest {
     @Mock
     lateinit var deepLinkToObjectDelegate: DeepLinkToObjectDelegate
 
+    @Mock
+    lateinit var analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+
     lateinit var userPermissionProvider: UserPermissionProvider
 
     private val objectPayloadDispatcher = Dispatcher.Default<Payload>()
@@ -273,6 +277,7 @@ class HomeScreenViewModelTest {
         stubSpaceManager()
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
         stubUserPermission()
+        stubAnalyticSpaceHelperDelegate()
 
         val vm = buildViewModel()
 
@@ -332,6 +337,7 @@ class HomeScreenViewModelTest {
             stubSpaceManager()
             stubSpaceWidgetContainer(defaultSpaceWidgetView)
             stubUserPermission()
+            stubAnalyticSpaceHelperDelegate()
 
             val vm = buildViewModel()
 
@@ -418,6 +424,7 @@ class HomeScreenViewModelTest {
         stubSpaceManager()
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
         stubUserPermission()
+        stubAnalyticSpaceHelperDelegate()
 
         val vm = buildViewModel()
 
@@ -524,6 +531,7 @@ class HomeScreenViewModelTest {
         stubSpaceManager()
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
         stubUserPermission()
+        stubAnalyticSpaceHelperDelegate()
 
         val vm = buildViewModel()
 
@@ -638,6 +646,7 @@ class HomeScreenViewModelTest {
         stubSpaceManager()
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
         stubUserPermission()
+        stubAnalyticSpaceHelperDelegate()
 
         val vm = buildViewModel()
 
@@ -739,6 +748,7 @@ class HomeScreenViewModelTest {
         stubSpaceManager()
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
         stubUserPermission()
+        stubAnalyticSpaceHelperDelegate()
 
         val vm = buildViewModel()
 
@@ -938,6 +948,7 @@ class HomeScreenViewModelTest {
             stubSpaceManager()
             stubSpaceWidgetContainer(defaultSpaceWidgetView)
             stubUserPermission()
+            stubAnalyticSpaceHelperDelegate()
 
             val vm = buildViewModel()
 
@@ -1085,6 +1096,7 @@ class HomeScreenViewModelTest {
         stubSpaceManager()
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
         stubUserPermission()
+        stubAnalyticSpaceHelperDelegate()
 
         val vm = buildViewModel()
 
@@ -2066,6 +2078,7 @@ class HomeScreenViewModelTest {
         stubSpaceManager()
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
         stubUserPermission()
+        stubAnalyticSpaceHelperDelegate()
 
         val vm = buildViewModel()
 
@@ -2871,6 +2884,12 @@ class HomeScreenViewModelTest {
         )
     }
 
+    private fun stubAnalyticSpaceHelperDelegate() {
+        analyticSpaceHelperDelegate.stub {
+            onBlocking { provideParams(SpaceId(defaultSpaceConfig.space)) } doReturn AnalyticSpaceHelperDelegate.Params.EMPTY
+        }
+    }
+
     private fun buildViewModel() = HomeScreenViewModel(
         interceptEvents = interceptEvents,
         createWidget = createWidget,
@@ -2907,7 +2926,8 @@ class HomeScreenViewModelTest {
         searchObjects = searchObjects,
         getPinnedObjectTypes = getPinnedObjectTypes,
         userPermissionProvider = userPermissionProvider,
-        deepLinkToObjectDelegate = deepLinkToObjectDelegate
+        deepLinkToObjectDelegate = deepLinkToObjectDelegate,
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
     )
 
     companion object {

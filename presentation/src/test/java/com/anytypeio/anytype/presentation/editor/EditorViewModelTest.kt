@@ -3912,7 +3912,9 @@ open class EditorViewModelTest {
                 createTable = createTable,
                 fillTableRow = fillTableRow,
                 clearBlockContent = clearBlockContent,
-                clearBlockStyle = clearBlockStyle
+                clearBlockStyle = clearBlockStyle,
+                analyticsSpaceHelperDelegate = analyticSpaceHelperDelegate,
+                spaceManager = spaceManager,
             ),
             analytics = analytics,
             dispatcher = Dispatcher.Default(),

@@ -4077,7 +4077,7 @@ class EditorViewModel(
                                 type = relation.type,
                                 filters = ObjectSearchConstants.setsByObjectTypeFilters(
                                     types = listOf(relation.type),
-                                    space = this@EditorViewModel.vmParams.space.id
+                                    space = vmParams.space.id
                                 )
                             )
                             findObjectSetForType(params).process(

@@ -1193,7 +1193,7 @@
     <string name="multiplayer_notification_view_request">Vista</string>
     <string name="multiplayer_notification_go_to_space">Vai allo spazio</string>
     <string name="multiplayer_toast_permission_not_allowed">Non è consentito modificare i permessi</string>
-    <string name="multiplayer_toast_share_limit_reached">Sharing limit reached</string>
+    <string name="multiplayer_toast_share_limit_reached">Limite di condivisione raggiunto</string>
     <string name="multiplayer_deeplink_to_your_object">Collegamento profondo al tuo oggetto</string>
     <string name="multiplayer_deeplink_to_your_object_error">Questo collegamento profondo non funziona. L\'oggetto potrebbe essere eliminato o potrebbero esserci problemi con l\'accesso allo spazio.</string>
     <plurals name="multiplayer_number_of_space_members">
@@ -1204,10 +1204,10 @@
     <string name="multiplayer_spaces">Spazi</string>
     <string name="multiplayer_space_status_joining">Accesso in corso</string>
     <string name="multiplayer_space_status_active">Attivo</string>
-    <string name="multiplayer_space_status_removing">Removed</string>
-    <string name="multiplayer_cancel_join_request">Cancel join request</string>
-    <string name="multiplayer_cancel_join_request_msg">You will have to send join request again</string>
-    <string name="multiplayer_do_not_cancel_join_request">Do not cancel</string>
+    <string name="multiplayer_space_status_removing">Rimosso</string>
+    <string name="multiplayer_cancel_join_request">Annulla richiesta di partecipazione</string>
+    <string name="multiplayer_cancel_join_request_msg">Dovrai inviare nuovamente la richiesta di partecipazione</string>
+    <string name="multiplayer_do_not_cancel_join_request">Non annullare</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Membership</string>

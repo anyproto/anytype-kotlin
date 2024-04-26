@@ -468,7 +468,9 @@ open class EditorTestSetup {
                 createTable = createTable,
                 fillTableRow = fillTableRow,
                 clearBlockContent = clearBlockContent,
-                clearBlockStyle = clearBlockStyle
+                clearBlockStyle = clearBlockStyle,
+                analyticsSpaceHelperDelegate = analyticSpaceHelperDelegate,
+                spaceManager = spaceManager
             ),
             createObjectAsMentionOrLink = createObjectAsMentionOrLink,
             interceptThreadStatus = interceptThreadStatus,

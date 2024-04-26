@@ -411,6 +411,7 @@ open class EditorViewModelTest {
         stubObserveEvents()
         stubInterceptEvents()
         stubUserPermission()
+        stubAnalyticSpaceHelperDelegate()
         spaceManager.stub {
             onBlocking {
                 get()
@@ -4395,6 +4396,12 @@ open class EditorViewModelTest {
             on {
                 observe(space = space)
             } doReturn flowOf(permission)
+        }
+    }
+
+    fun stubAnalyticSpaceHelperDelegate(spaceId: SpaceId = SpaceId(defaultSpace)) {
+        analyticSpaceHelperDelegate.stub {
+            onBlocking { provideParams(spaceId) } doReturn AnalyticSpaceHelperDelegate.Params.EMPTY
         }
     }
 }

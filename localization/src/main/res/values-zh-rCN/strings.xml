@@ -48,7 +48,7 @@
     <string name="about_meta_info_for_copy">设备：%1$s\nAndroid 版本：%2$d\n应用版本：%3$s\n构建号：%4$d\n库版本：%5$s\n账户\u00A0 ID：\u00A0%6$s\n设备\u00A0 ID：\u00A0%7$s\n分析\u00A0 ID：\u00A0%8$s</string>
     <string name="space">空间</string>
     <string name="space_name">空间名称</string>
-    <string name="default_space">Entry space</string>
+    <string name="default_space">默认空间</string>
     <string name="space_settings_apply_random_gradient">应用随机渐变色</string>
     <string name="delete_space">删除空间</string>
     <string name="you_can_store">您可以在我们的节点上免费加密备份存储多达 %1$s 的文件。如果达到限制，文件将仅存储在本地。</string>
@@ -821,8 +821,8 @@
     <string name="anytype_update_alert_description">您的某些数据是在 Anytype 的较新版本中管理的。请更新应用程序，以便使用您的所有文档和最新功能。</string>
     <string name="anytype_update_alert_title">是时候更新了</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
-    <string name="space_type_default">Entry</string>
-    <string name="space_type_default_space">Entry space</string>
+    <string name="space_type_default">默认</string>
+    <string name="space_type_default_space">默认空间</string>
     <string name="space_type_private">私人</string>
     <string name="space_type_private_space">私人空间</string>
     <string name="space_type_shared">共享</string>

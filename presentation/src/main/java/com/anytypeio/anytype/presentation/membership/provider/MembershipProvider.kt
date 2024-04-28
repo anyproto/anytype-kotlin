@@ -67,7 +67,7 @@ interface MembershipProvider {
 
         private suspend fun proceedWithGettingMembership(): Membership? {
             val command = Command.Membership.GetStatus(
-                noCache = false
+                noCache = true
             )
             return repo.membershipStatus(command)
         }

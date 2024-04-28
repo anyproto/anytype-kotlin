@@ -139,8 +139,7 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
         TierScreen(
             state = vm.tierState.collectAsStateWithLifecycle().value,
             onDismiss = vm::onDismissTier,
-            actionPay = vm::onPayButtonClicked,
-            actionSubmitEmail = vm::onSubmitEmailButtonClicked
+            actionTier = vm::onTierAction,
         )
     }
 

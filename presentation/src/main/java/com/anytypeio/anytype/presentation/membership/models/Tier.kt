@@ -6,14 +6,12 @@ sealed class Tier {
     abstract val prettyName: String
     abstract val color: String
     abstract val features: List<String>
-    abstract val androidTierId: String?
 
     data class Explorer(
         override val id: TierId,
         override val isCurrent: Boolean,
         override val prettyName: String = "Explorer",
         override val features: List<String>,
-        override val androidTierId: String?,
         val price: String = "",
         val email: String = "",
         val isChecked: Boolean = true,
@@ -25,7 +23,6 @@ sealed class Tier {
         override val isCurrent: Boolean,
         override val prettyName: String = "Builder",
         override val features: List<String>,
-        override val androidTierId: String?,
         val price: String = "",
         val name: String = "",
         val nameIsTaken: Boolean = false,
@@ -38,7 +35,6 @@ sealed class Tier {
         override val isCurrent: Boolean,
         override val prettyName: String = "Co-Creator",
         override val features: List<String>,
-        override val androidTierId: String?,
         val price: String = "",
         val name: String = "",
         val nameIsTaken: Boolean = false,
@@ -51,7 +47,6 @@ sealed class Tier {
         override val isCurrent: Boolean,
         override val prettyName: String = "Custom",
         override val features: List<String>,
-        override val androidTierId: String?,
         val price: String = "",
         override val color: String
     ) : Tier()

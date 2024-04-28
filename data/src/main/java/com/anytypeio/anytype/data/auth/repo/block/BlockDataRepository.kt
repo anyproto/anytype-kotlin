@@ -1003,7 +1003,11 @@ class BlockDataRepository(
     }
 
     override suspend fun membershipIsNameValid(command: Command.Membership.IsNameValid) {
-        remote.membershipIsNameValid(command)
+        return remote.membershipIsNameValid(command)
+    }
+
+    override suspend fun membershipResolveName(command: Command.Membership.ResolveName): Boolean {
+        return remote.membershipResolveName(command)
     }
 
     override suspend fun membershipGetPaymentUrl(command: Command.Membership.GetPaymentUrl): GetPaymentUrlResponse {

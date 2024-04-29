@@ -97,18 +97,19 @@ class AddToAnytypeViewModel(
                     combine(
                         spaces,
                         selectedSpaceId,
-                    ) { spaces, selected ->
+                        permissions.all()
+                    ) { spaces, selected, permissions ->
                         val isSelectedSpaceAvailable = if (selected.isEmpty()) {
                             false
                         } else {
-                            permissions.get(SpaceId(selected))?.isOwnerOrEditor() == true
+                            permissions[selected]?.isOwnerOrEditor() == true
                         }
                         spaces.filter { wrapper ->
                             val space = wrapper.targetSpaceId
                             if (space.isNullOrEmpty())
                                 false
                             else {
-                                permissions.get(SpaceId(space))?.isOwnerOrEditor() == true
+                                permissions[space]?.isOwnerOrEditor() == true
                             }
                         }.mapIndexed { index, space ->
                             SpaceView(

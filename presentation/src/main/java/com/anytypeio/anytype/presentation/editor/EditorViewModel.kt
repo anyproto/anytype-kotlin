@@ -209,6 +209,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsCreateLink
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsGoBackEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsMentionMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectShowEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectTypeSelectOrChangeEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOpenAsObject
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
@@ -1079,13 +1080,13 @@ class EditorViewModel(
                                     if (event.details.details[context]?.type?.contains(ObjectTypeIds.FILE) == true) {
                                         isSyncStatusVisible.value = false
                                     }
-//                                    sendAnalyticsObjectShowEvent(
-//                                        analytics = analytics,
-//                                        startTime = startTime,
-//                                        details = orchestrator.stores.details.current().details,
-//                                        ctx = context,
-//                                        spaceParams = provideParams(vmParams.space.id)
-//                                    )
+                                    sendAnalyticsObjectShowEvent(
+                                        analytics = analytics,
+                                        startTime = startTime,
+                                        details = orchestrator.stores.details.current().details,
+                                        ctx = context,
+                                        spaceParams = provideParams(vmParams.space.id)
+                                    )
                                 }
                             }
                         }

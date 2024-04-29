@@ -851,6 +851,10 @@ open class EditorPresentationTestSetup {
     fun stubAnalyticSpaceHelperDelegate() {
         Mockito.`when`(analyticSpaceHelperDelegate.provideParams(defaultSpace))
             .thenReturn(AnalyticSpaceHelperDelegate.Params.EMPTY)
+
+        analyticSpaceHelperDelegate.stub {
+            on { provideParams(defaultSpace) } doReturn AnalyticSpaceHelperDelegate.Params.EMPTY
+        }
     }
 
     fun proceedWithDefaultBeforeTestStubbing() {

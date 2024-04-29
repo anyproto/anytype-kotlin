@@ -1398,8 +1398,10 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
         val page = StubSmartBlock(id = root, children = listOf(header.id, table.id))
         val document =
             listOf(page, header, title, table, columnLayout, rowLayout) + columns + rows
+
         stubInterceptEvents()
         stubOpenDocument(document)
+        stubAnalyticSpaceHelperDelegate()
 
         val row0 = rows[0].id
         val columnToMoveId = columns[0].id

@@ -13,13 +13,14 @@ import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
 import kotlin.test.assertEquals
 import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.After
 import org.junit.Before
@@ -42,7 +43,7 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+    val coroutineTestRule = DefaultCoroutineTestRule()
 
     @Before
     fun setup() {
@@ -50,6 +51,7 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
         stubSpaceManager()
         stubGetNetworkMode()
         stubFileLimitEvents()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -60,7 +62,7 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
 
     @ExperimentalTime
     @Test
-    fun `should render featured relations block and show note header as footer`() = runBlocking {
+    fun `should render featured relations block and show note header as footer`() = runTest {
 
         val featuredBlock = Block(
             id = "featuredRelations",
@@ -147,6 +149,8 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         val expected = listOf(
             BlockView.FeaturedRelation(
                 id = featuredBlock.id,
@@ -178,7 +182,7 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
 
     @ExperimentalTime
     @Test
-    fun `should render featured relations block and not show note header as footer`() = runBlocking {
+    fun `should render featured relations block and not show note header as footer`() = runTest {
 
         val featuredBlock = Block(
             id = "featuredRelations",
@@ -265,6 +269,8 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
         storeOfRelations.merge(objectRelations)
 
         vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
 
         val expected = listOf(
             BlockView.FeaturedRelation(

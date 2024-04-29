@@ -12,13 +12,15 @@ import com.anytypeio.anytype.presentation.editor.EditorViewModel.Companion.TEXT_
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -35,7 +37,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+    val coroutineTestRule = DefaultCoroutineTestRule()
 
     @Before
     fun setup() {
@@ -47,6 +49,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
         stubDuplicateBlock("", emptyList())
         stubCopy()
         stubPaste()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -57,7 +60,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
     //region {Action DELETE}
     @Test
-    fun `should not hide slash widget when action delete happened`() {
+    fun `should not hide slash widget when action delete happened`() = runTest {
 
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
@@ -72,22 +75,28 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.apply {
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Actions.Delete)
+
+        advanceUntilIdle()
 
         val state = vm.controlPanelViewState.value
 
@@ -96,7 +105,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should send unlinkBlocks UseCase when action Delete happened`() {
+    fun `should send unlinkBlocks UseCase when action Delete happened`() = runTest {
 
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
@@ -106,26 +115,33 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
         stubSearchObjects()
         stubOpenDocument(document = doc)
         stubUnlinkBlocks()
+
         val vm = buildViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
 
         vm.apply {
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Actions.Delete)
+
+        advanceUntilIdle()
 
         val params = UnlinkBlocks.Params(
             context = root,
@@ -138,7 +154,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should not triggered unlinkBlocks UseCase when no blocks in focus`() {
+    fun `should not triggered unlinkBlocks UseCase when no blocks in focus`() = runTest {
 
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
@@ -149,6 +165,8 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.apply {
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
@@ -156,11 +174,14 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
                     slashStart = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Actions.Delete)
+
+        advanceUntilIdle()
 
         val params = UnlinkBlocks.Params(
             context = root,
@@ -172,7 +193,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
     //region {Action DUPLICATE}
     @Test
-    fun `should hide slash widget after action Duplicate`() {
+    fun `should hide slash widget after action Duplicate`() = runTest {
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
 
@@ -184,22 +205,28 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.apply {
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Actions.Duplicate)
+
+        advanceUntilIdle()
 
         val stateAfter = vm.controlPanelViewState.value
 
@@ -217,7 +244,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should invoke duplicateBlock UseCase after action Duplicate`() {
+    fun `should invoke duplicateBlock UseCase after action Duplicate`() = runTest {
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
 
@@ -229,22 +256,28 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.apply {
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Actions.Duplicate)
+
+        advanceUntilIdle()
 
         val params = DuplicateBlock.Params(
             context = root,
@@ -257,7 +290,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
     //region {Action COPY}
     @Test
-    fun `should hide slash widget after action Copy`() {
+    fun `should hide slash widget after action Copy`() = runTest {
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
 
@@ -268,22 +301,28 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.apply {
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Actions.Copy)
+
+        advanceUntilIdle()
 
         val state = vm.controlPanelViewState.value
 
@@ -292,7 +331,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should send Copy UseCase with null range after action Copy`() {
+    fun `should send Copy UseCase with null range after action Copy`() = runTest {
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
 
@@ -306,22 +345,28 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.apply {
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Actions.Copy)
+
+        advanceUntilIdle()
 
         val params = Copy.Params(
             context = root,
@@ -335,7 +380,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
     //region {Action PASTE}
     @Test
-    fun `should hide slash widget after action Paste`() {
+    fun `should hide slash widget after action Paste`() = runTest {
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
 
@@ -345,22 +390,28 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.apply {
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Actions.Paste)
+
+        advanceUntilIdle()
 
         val state = vm.controlPanelViewState.value
 
@@ -369,7 +420,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should send Paste UseCase with selection range after action Paste`() {
+    fun `should send Paste UseCase with selection range after action Paste`() = runTest {
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
 
@@ -381,26 +432,34 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.apply {
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSelectionChanged(
                 id = block.id,
                 selection = IntRange(3, 3)
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 3
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Actions.Paste)
+        advanceUntilIdle()
+
+
         val focus = vm.focus.value
         assertNotNull(focus)
 
@@ -417,7 +476,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
     //region {Action MOVE}
     @Test
-    fun `should hide slash widget after action Move`() {
+    fun `should hide slash widget after action Move`() = runTest {
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
 
@@ -427,22 +486,28 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.apply {
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Actions.Move)
+
+        advanceUntilIdle()
 
         val state = vm.controlPanelViewState.value
 
@@ -451,7 +516,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should enter mode SAM after action Move`() {
+    fun `should enter mode SAM after action Move`() = runTest {
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
 
@@ -461,22 +526,28 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.apply {
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Actions.Move)
+
+        advanceUntilIdle()
 
         val state = vm.controlPanelViewState.value
 
@@ -495,7 +566,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
     //region {Action MOVE TO}
     @Test
-    fun `should hide slash widget and navigate to move to screen after move to action`() {
+    fun `should hide slash widget and navigate to move to screen after move to action`() = runTest {
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
 
@@ -505,22 +576,28 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.apply {
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Actions.MoveTo)
+
+        advanceUntilIdle()
 
         val state = vm.controlPanelViewState.value
 
@@ -540,7 +617,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
     //region {Action CLEAN STYLE}
     @Test
-    fun `should hide slash widget after action Clean Style`() {
+    fun `should hide slash widget after action Clean Style`() = runTest {
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
 
@@ -550,22 +627,28 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.apply {
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Actions.CleanStyle)
+
+        advanceUntilIdle()
 
         val state = vm.controlPanelViewState.value
 
@@ -574,7 +657,7 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should not send UpdateText UseCase after action Clean Style`() {
+    fun `should not send UpdateText UseCase after action Clean Style`() = runTest {
 
         val header = MockTypicalDocumentFactory.header
         val title = MockTypicalDocumentFactory.title
@@ -621,22 +704,28 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.apply {
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Actions.CleanStyle)
+
+        advanceUntilIdle()
 
         val params = UpdateText.Params(
             context = root,

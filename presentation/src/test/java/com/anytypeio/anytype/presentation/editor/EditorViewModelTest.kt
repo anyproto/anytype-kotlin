@@ -140,18 +140,16 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
-import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
-import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
@@ -2235,22 +2233,27 @@ open class EditorViewModelTest {
         stubOpenPage(context = root)
         stubCreateBlock(root)
         stubUnlinkBlocks(root)
+        stubInterceptThreadStatus()
         givenViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
 
-        coroutineTestRule.advanceTime(100)
+        advanceUntilIdle()
 
         vm.onBlockFocusChanged(
             id = child,
             hasFocus = true
         )
 
+        advanceUntilIdle()
+
         vm.onEndLineEnterClicked(
             id = child,
             text = page.last().content<Block.Content.Text>().text,
             marks = emptyList()
         )
+
+        advanceUntilIdle()
 
         verify(createBlock, times(1)).async(
             params = eq(

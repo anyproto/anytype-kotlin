@@ -40,7 +40,6 @@ import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchFormatPickerF
 import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchFormatPickerFragment.Companion.FLOW_TYPE
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import java.io.Serializable
 import javax.inject.Inject
 
 abstract class RelationCreateFromScratchBaseFragment :
@@ -420,8 +419,5 @@ class RelationCreateFromScratchForObjectBlockFragment : RelationCreateFromScratc
 }
 
 interface OnCreateFromScratchRelationListener {
-
     fun onCreateRelation(target: Id, relation: Key)
 }
-
-data class RelationNewResult(val target: String, val relation: String) : Serializable

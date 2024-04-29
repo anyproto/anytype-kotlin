@@ -15,10 +15,11 @@ import com.anytypeio.anytype.presentation.editor.editor.slash.SlashWidgetState
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -31,7 +32,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
     val rule = InstantTaskExecutorRule()
 
     @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+    val coroutineTestRule = DefaultCoroutineTestRule()
 
     @Before
     fun setup() {
@@ -56,7 +57,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
 
     //region {STYLE}
     @Test
-    fun `should return Update command with style items when click on style item`() {
+    fun `should return Update command with style items when click on style item`() = runTest {
 
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
@@ -67,6 +68,8 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
         val vm = buildViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
 
         vm.apply {
             onBlockFocusChanged(
@@ -81,12 +84,16 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             )
         }
 
+        advanceUntilIdle()
+
         // TESTING
 
         val event = SlashEvent.Filter(filter = "/", viewType = Types.HOLDER_NUMBERED)
 
         vm.onSlashTextWatcherEvent(event = event)
         vm.onSlashItemClicked(SlashItem.Main.Style)
+
+        advanceUntilIdle()
 
         val state = vm.controlPanelViewState.value
 
@@ -127,7 +134,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should return Update command with style items without bold and italic`() {
+    fun `should return Update command with style items without bold and italic`() = runTest {
 
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
@@ -138,6 +145,8 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
         val vm = buildViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
 
         vm.apply {
             onBlockFocusChanged(
@@ -152,12 +161,16 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             )
         }
 
+        advanceUntilIdle()
+
         // TESTING
 
         val event = SlashEvent.Filter(filter = "/", viewType = Types.HOLDER_HEADER_TWO)
 
         vm.onSlashTextWatcherEvent(event = event)
         vm.onSlashItemClicked(SlashItem.Main.Style)
+
+        advanceUntilIdle()
 
         val state = vm.controlPanelViewState.value
 
@@ -197,7 +210,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
 
     //region {MEDIA}
     @Test
-    fun `should return Update command with media items when click on media item`() {
+    fun `should return Update command with media items when click on media item`() = runTest {
 
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
@@ -208,6 +221,8 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
         val vm = buildViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
 
         vm.apply {
             onBlockFocusChanged(
@@ -222,12 +237,16 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             )
         }
 
+        advanceUntilIdle()
+
         // TESTING
 
         val event = SlashEvent.Filter(filter = "/", viewType = Types.HOLDER_NUMBERED)
 
         vm.onSlashTextWatcherEvent(event = event)
         vm.onSlashItemClicked(SlashItem.Main.Media)
+
+        advanceUntilIdle()
 
         val state = vm.controlPanelViewState.value
 
@@ -297,13 +316,12 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubOpenDocument(document = doc)
         stubGetObjectTypes((listOf(type2, type1, type3)))
-//        stubSearchObjects(
-//            objects = listOf(type1, type2, type3)
-//        )
 
         val vm = buildViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
 
         vm.apply {
             onBlockFocusChanged(
@@ -318,12 +336,16 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             )
         }
 
+        advanceUntilIdle()
+
         // TESTING
 
         val event = SlashEvent.Filter(filter = "/", viewType = Types.HOLDER_NUMBERED)
 
         vm.onSlashTextWatcherEvent(event = event)
         vm.onSlashItemClicked(SlashItem.Main.Objects)
+
+        advanceUntilIdle()
 
         val state = vm.controlPanelViewState.value
 
@@ -471,6 +493,8 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.apply {
             onBlockFocusChanged(
                 id = a.id,
@@ -484,12 +508,16 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             )
         }
 
+        advanceUntilIdle()
+
         // TESTING
 
         val event = SlashEvent.Filter(filter = "/", viewType = Types.HOLDER_NUMBERED)
 
         vm.onSlashTextWatcherEvent(event = event)
         vm.onSlashItemClicked(SlashItem.Main.Relations)
+
+        advanceUntilIdle()
 
         val state = vm.controlPanelViewState.value
 
@@ -550,7 +578,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
 
     //region {OTHERS}
     @Test
-    fun `should return Update command with other items when click on Other item`() {
+    fun `should return Update command with other items when click on Other item`() = runTest {
 
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
@@ -561,6 +589,8 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
         val vm = buildViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
 
         vm.apply {
             onBlockFocusChanged(
@@ -575,12 +605,16 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             )
         }
 
+        advanceUntilIdle()
+
         // TESTING
 
         val event = SlashEvent.Filter(filter = "/", viewType = Types.HOLDER_NUMBERED)
 
         vm.onSlashTextWatcherEvent(event = event)
         vm.onSlashItemClicked(SlashItem.Main.Other)
+
+        advanceUntilIdle()
 
         val state = vm.controlPanelViewState.value
 
@@ -614,7 +648,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
 
     //region {ACTIONS}
     @Test
-    fun `should return Update command with actions items when click on Action item(Stable Build)`() {
+    fun `should return Update command with actions items when click on Action item(Stable Build)`() = runTest {
 
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
@@ -625,6 +659,8 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
         val vm = buildViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
 
         vm.apply {
             onBlockFocusChanged(
@@ -639,12 +675,16 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             )
         }
 
+        advanceUntilIdle()
+
         // TESTING
 
         val event = SlashEvent.Filter(filter = "/", viewType = Types.HOLDER_NUMBERED)
 
         vm.onSlashTextWatcherEvent(event = event)
         vm.onSlashItemClicked(SlashItem.Main.Actions)
+
+        advanceUntilIdle()
 
         val state = vm.controlPanelViewState.value
 
@@ -680,7 +720,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
 
     //region {ALIGNMENT}
     @Test
-    fun `should return Update command with alignment items when click on Alignment item`() {
+    fun `should return Update command with alignment items when click on Alignment item`() = runTest {
 
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
@@ -691,6 +731,8 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
         val vm = buildViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
 
         vm.apply {
             onBlockFocusChanged(
@@ -705,12 +747,16 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             )
         }
 
+        advanceUntilIdle()
+
         // TESTING
 
         val event = SlashEvent.Filter(filter = "/", viewType = Types.HOLDER_PARAGRAPH)
 
         vm.onSlashTextWatcherEvent(event = event)
         vm.onSlashItemClicked(SlashItem.Main.Alignment)
+
+        advanceUntilIdle()
 
         val state = vm.controlPanelViewState.value
 
@@ -741,7 +787,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should return Update command with no alignment items when click on alignment item for numbers views`() {
+    fun `should return Update command with no alignment items when click on alignment item for numbers views`() = runTest {
 
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
@@ -752,6 +798,8 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
         val vm = buildViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
 
         vm.apply {
             onBlockFocusChanged(
@@ -766,12 +814,16 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             )
         }
 
+        advanceUntilIdle()
+
         // TESTING
 
         val event = SlashEvent.Filter(filter = "/", viewType = Types.HOLDER_NUMBERED)
 
         vm.onSlashTextWatcherEvent(event = event)
         vm.onSlashItemClicked(SlashItem.Main.Alignment)
+
+        advanceUntilIdle()
 
         val state = vm.controlPanelViewState.value
 

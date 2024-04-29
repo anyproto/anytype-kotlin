@@ -23,7 +23,8 @@ import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
 import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.After
@@ -41,7 +42,7 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
-    val coroutineTestRule = DefaultCoroutineTestRule(UnconfinedTestDispatcher())
+    val coroutineTestRule = DefaultCoroutineTestRule(StandardTestDispatcher())
 
     @get:Rule
     val timberTestRule: TimberTestRule = TimberTestRule.builder()
@@ -96,6 +97,9 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
         // TESTING
 
         vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
+
         val selection = IntRange(1, 1)
 
         vm.apply {
@@ -121,6 +125,8 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
             )
         }
 
+        advanceUntilIdle()
+
         vm.onSlashItemClicked(
             SlashItem.Relation(
                 relation = SlashRelationView.Item(
@@ -136,6 +142,8 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
                 )
             )
         )
+
+        advanceUntilIdle()
 
         val params = CreateBlock.Params(
             context = root,
@@ -203,6 +211,9 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
         vm.onStart(id = root, space = defaultSpace)
         val selection = IntRange(0, 0)
 
+
+        advanceUntilIdle()
+
         vm.apply {
             onSelectionChanged(
                 id = a.id,
@@ -237,6 +248,8 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
             )
         }
 
+        advanceUntilIdle()
+
         //TESTING
 
         vm.onSlashItemClicked(
@@ -254,6 +267,8 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
                 )
             )
         )
+
+        advanceUntilIdle()
 
         val params = ReplaceBlock.Params(
             context = root,
@@ -316,6 +331,9 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
         // TESTING
 
         vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
+
         val selection = IntRange(0, 0)
 
         vm.apply {
@@ -352,6 +370,8 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
             )
         }
 
+        advanceUntilIdle()
+
         //TESTING
 
         vm.onSlashItemClicked(
@@ -369,6 +389,8 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
                 )
             )
         )
+
+        advanceUntilIdle()
 
         vm.controlPanelViewState.test().assertValue { value ->
             !value.mainToolbar.isVisible && value.navigationToolbar.isVisible && !value.slashWidget.isVisible
@@ -436,6 +458,8 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
             )
         }
 
+        advanceUntilIdle()
+
         //TESTING
 
         vm.onSlashItemClicked(
@@ -454,13 +478,15 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
             )
         )
 
+        advanceUntilIdle()
+
         vm.controlPanelViewState.test().assertValue { value ->
             !value.mainToolbar.isVisible && value.navigationToolbar.isVisible && !value.slashWidget.isVisible
         }
     }
 
     @Test
-    fun `should remove slash filter after adding new relation`() {
+    fun `should remove slash filter after adding new relation`() = runTest {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
@@ -486,7 +512,11 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
         )
 
         val vm = buildViewModel()
+
         vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
+
         val selection = IntRange(1, 1)
 
         //TESTING
@@ -528,6 +558,7 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
             onSlashItemClicked(SlashItem.Main.Relations)
             onSlashItemClicked(SlashItem.RelationNew)
 
+            advanceUntilIdle()
             //open RelationListScreen
             //open RelationCreateScreen
             proceedWithAddingRelationToTarget(
@@ -535,6 +566,9 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
                 relationKey = MockDataFactory.randomUuid()
             )
         }
+
+        advanceUntilIdle()
+
 
         val result = vm.blocks.find { it.id == a.id }
 

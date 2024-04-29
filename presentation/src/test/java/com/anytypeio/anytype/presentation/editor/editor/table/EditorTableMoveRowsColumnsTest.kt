@@ -1490,6 +1490,8 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
 
             onBlockToolbarBlockActionsClicked()
 
+            advanceUntilIdle()
+
             onBlockFocusChanged(
                 id = cellR0C0,
                 hasFocus = false

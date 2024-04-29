@@ -328,6 +328,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
@@ -343,6 +344,9 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
         val event = SlashEvent.Filter(filter = "/", viewType = Types.HOLDER_NUMBERED)
 
         vm.onSlashTextWatcherEvent(event = event)
+
+        advanceUntilIdle()
+
         vm.onSlashItemClicked(SlashItem.Main.Objects)
 
         advanceUntilIdle()

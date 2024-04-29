@@ -434,22 +434,28 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
         // TESTING
 
         vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
+
         val selection = IntRange(1, 1)
         vm.apply {
             onSelectionChanged(
                 id = a.id,
                 selection = selection
             )
+            advanceUntilIdle()
             onBlockFocusChanged(
                 id = a.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 1
                 )
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 event = SlashEvent.Filter(
                     filter = "/",

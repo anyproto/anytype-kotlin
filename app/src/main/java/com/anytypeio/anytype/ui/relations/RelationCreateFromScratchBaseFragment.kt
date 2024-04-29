@@ -42,7 +42,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import java.io.Serializable
 import javax.inject.Inject
-import kotlinx.coroutines.flow.flow
 
 abstract class RelationCreateFromScratchBaseFragment :
     BaseBottomSheetFragment<FragmentRelationCreateFromScratchBinding>() {
@@ -308,10 +307,21 @@ class RelationCreateFromScratchForDataViewFragment : RelationCreateFromScratchBa
     }
 
     companion object {
-        fun new(ctx: Id, viewer: Id, dv: Id, query: String) =
-            RelationCreateFromScratchForDataViewFragment().apply {
+        fun new(
+            ctx: Id,
+            space: Id,
+            viewer: Id,
+            dv: Id,
+            query: String
+        ) = RelationCreateFromScratchForDataViewFragment().apply {
                 arguments =
-                    bundleOf(CTX_KEY to ctx, DV_KEY to dv, QUERY_KEY to query, VIEWER_KEY to viewer)
+                    bundleOf(
+                        CTX_KEY to ctx,
+                        DV_KEY to dv,
+                        QUERY_KEY to query,
+                        VIEWER_KEY to viewer,
+                        SPACE_KEY to space
+                    )
             }
 
         const val DV_KEY = "arg.relation-create-from-scratch-for-data-view.ctx"

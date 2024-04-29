@@ -420,7 +420,7 @@ class EditorViewModel(
         startObservingErrors()
         processRendering()
         processMarkupChanges()
-        viewModelScope.launch { orchestrator.start() }
+        viewModelScope.launch { orchestrator.start(vmParams.space) }
 
         viewModelScope.launch {
             delegator.receive().collect { action ->

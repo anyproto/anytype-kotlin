@@ -3,9 +3,11 @@ package com.anytypeio.anytype.presentation.editor.editor
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -21,7 +23,7 @@ class EditorEventSubscriptionTest : EditorPresentationTestSetup() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+    val coroutineTestRule = DefaultCoroutineTestRule()
 
     @Before
     fun setup() {
@@ -30,10 +32,11 @@ class EditorEventSubscriptionTest : EditorPresentationTestSetup() {
         stubFileLimitEvents()
         stubGetNetworkMode()
         stubInterceptEvents()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @Test
-    fun `should subscribe only on start`() {
+    fun `should subscribe only on start`() = runTest {
 
         // SETUP
 
@@ -70,11 +73,17 @@ class EditorEventSubscriptionTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         verify(interceptEvents, times(1)).build(params)
 
         vm.onStop()
 
+        advanceUntilIdle()
+
         vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
 
         verify(interceptEvents, times(2)).build(params)
     }

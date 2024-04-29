@@ -2014,7 +2014,7 @@ open class EditorViewModelTest {
         }
     }
 
-    private fun stubUnlinkBlocks(root: String) {
+    fun stubUnlinkBlocks(root: String) {
         unlinkBlocks.stub {
             onBlocking { invoke(any()) } doReturn Either.Right(
                 Payload(

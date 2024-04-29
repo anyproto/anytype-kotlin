@@ -39,16 +39,14 @@ import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.fontInterSemibold
-import com.anytypeio.anytype.core_utils.ext.formatToDateString
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
-import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
-import com.anytypeio.anytype.presentation.membership.models.Tier
+import com.anytypeio.anytype.payments.viewmodel.Tier
+import com.anytypeio.anytype.presentation.membership.models.TierId
 
 @Composable
 fun TierView(
-    membershipStatus: MembershipStatus,
     tier: Tier,
-    onClick: (Tier) -> Unit
+    onClick: (TierId) -> Unit
 ) {
     val resources = mapTierToResources(tier) ?: return
 
@@ -68,7 +66,7 @@ fun TierView(
                     color = colorResource(id = R.color.shape_tertiary),
                     shape = RoundedCornerShape(16.dp)
                 )
-                .noRippleThrottledClickable { onClick(tier) }
+                .noRippleThrottledClickable { onClick(tier.id) }
         ) {
             Box(
                 modifier = Modifier
@@ -105,12 +103,12 @@ fun TierView(
                 textAlign = TextAlign.Start
             )
             if (tier.isCurrent) {
-                ValidUntilText(
-                    expirationText(
-                        formattedDateEnds = membershipStatus.formattedDateEnds,
-                        tier = tier
-                    )
-                )
+//                ValidUntilText(
+//                    expirationText(
+//                        formattedDateEnds = membershipStatus.formattedDateEnds,
+//                        tier = tier
+//                    )
+//                )
             } else {
                 //PriceText(price = tier.price, interval = tier.interval)
             }
@@ -123,7 +121,7 @@ fun TierView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
-                onClick = { onClick(tier) },
+                onClick = { onClick(tier.id) },
                 size = ButtonSize.Small
             )
             Spacer(modifier = Modifier.height(10.dp))

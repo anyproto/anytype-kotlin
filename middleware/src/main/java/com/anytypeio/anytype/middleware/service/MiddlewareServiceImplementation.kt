@@ -6,13 +6,16 @@ import com.anytypeio.anytype.core_models.exceptions.LoginException
 import com.anytypeio.anytype.core_models.exceptions.MigrationNeededException
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.core_models.exceptions.SpaceLimitReachedException
+import com.anytypeio.anytype.core_models.membership.MembershipErrors
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteError
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.data.auth.exception.AnytypeNeedsUpgradeException
 import com.anytypeio.anytype.data.auth.exception.NotFoundObjectException
 import com.anytypeio.anytype.data.auth.exception.UndoRedoExhaustedException
+import com.anytypeio.anytype.middleware.mappers.toCore
 import javax.inject.Inject
 import service.Service
+import timber.log.Timber
 
 class MiddlewareServiceImplementation @Inject constructor(
     featureToggles: FeatureToggles
@@ -2003,11 +2006,28 @@ class MiddlewareServiceImplementation @Inject constructor(
     override fun membershipIsNameValid(request: Rpc.Membership.IsNameValid.Request): Rpc.Membership.IsNameValid.Response {
         val encoded = Service.membershipIsNameValid(
             Rpc.Membership.IsNameValid.Request.ADAPTER.encode(request)
+        ) ?: return Rpc.Membership.IsNameValid.Response(
+            error = Rpc.Membership.IsNameValid.Response.Error(
+                code = Rpc.Membership.IsNameValid.Response.Error.Code.NULL
+            )
         )
         val response = Rpc.Membership.IsNameValid.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Membership.IsNameValid.Response.Error.Code.NULL) {
-            throw Exception(error.description)
+            throw error.toCore()
+        } else {
+            return response
+        }
+    }
+
+    override fun membershipResolveName(request: Rpc.NameService.ResolveName.Request): Rpc.NameService.ResolveName.Response {
+        val encoded = Service.nameServiceResolveName(
+            Rpc.NameService.ResolveName.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.NameService.ResolveName.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.NameService.ResolveName.Response.Error.Code.NULL) {
+            throw error.toCore()
         } else {
             return response
         }

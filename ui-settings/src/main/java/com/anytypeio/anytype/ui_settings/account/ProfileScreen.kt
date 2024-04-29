@@ -124,7 +124,7 @@ fun ProfileSettingsScreen(
                 onClick = onDataManagementClicked
             )
         }
-        if (BuildConfig.DEBUG) {
+        if (true) {
             item {
                 Divider(paddingStart = 60.dp)
             }

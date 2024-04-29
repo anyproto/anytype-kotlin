@@ -46,8 +46,8 @@ class BillingClientLifecycle(
     /**
      * ProductDetails for all known products.
      */
-    private val _builderSubProductWithProductDetails = MutableStateFlow<List<ProductDetails>>(emptyList())
-    val builderSubProductWithProductDetails: StateFlow<List<ProductDetails>> = _builderSubProductWithProductDetails
+    private val _builderSubProductWithProductDetails = MutableStateFlow<BillingClientState>(BillingClientState.Disconnected)
+    val builderSubProductWithProductDetails: StateFlow<BillingClientState> = _builderSubProductWithProductDetails
 
     /**
      * Instantiate a new BillingClient instance.
@@ -194,7 +194,13 @@ class BillingClientLifecycle(
                 }
             }
         }
-        _builderSubProductWithProductDetails.value = result
+        if (result.isNotEmpty()) {
+            _builderSubProductWithProductDetails.value = BillingClientState.Connected.Ready(result)
+        } else {
+            Timber.e("No product details found for subscriptionIds: $subscriptionIds")
+            _builderSubProductWithProductDetails.value =
+                BillingClientState.Connected.Error("No product details found for subscriptionIds: $subscriptionIds")
+        }
     }
 
     /**
@@ -336,5 +342,13 @@ class BillingClientLifecycle(
         val debugMessage = billingResult.debugMessage
         Timber.d("launchBillingFlow: BillingResponse $responseCode $debugMessage")
         return responseCode
+    }
+}
+
+sealed class BillingClientState {
+    data object Disconnected : BillingClientState()
+    sealed class Connected : BillingClientState() {
+        data class Ready(val products: List<ProductDetails>) : Connected()
+        data class Error(val message: String) : Connected()
     }
 }

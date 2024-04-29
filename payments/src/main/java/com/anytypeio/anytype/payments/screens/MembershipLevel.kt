@@ -46,9 +46,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyBold
@@ -61,32 +59,33 @@ import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.payments.R
-import com.anytypeio.anytype.payments.viewmodel.PaymentsTierState
-import com.anytypeio.anytype.presentation.membership.models.Tier
-import com.anytypeio.anytype.presentation.membership.models.TierId
+import com.anytypeio.anytype.payments.viewmodel.MembershipTierState
+import com.anytypeio.anytype.payments.viewmodel.TierAction
+import com.anytypeio.anytype.payments.viewmodel.Tier
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TierScreen(
-    state: PaymentsTierState,
+    state: MembershipTierState,
     onDismiss: () -> Unit,
-    actionPay: (TierId, String) -> Unit,
-    actionSubmitEmail: (TierId, String) -> Unit
+    actionTier: (TierAction) -> Unit
 ) {
-    if (state is PaymentsTierState.Visible) {
+    if (state is MembershipTierState.Visible) {
         val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
         ModalBottomSheet(
-            modifier = Modifier.padding(top = 30.dp),
+            modifier = Modifier
+                .padding(top = 30.dp)
+                .fillMaxWidth()
+                .wrapContentHeight(),
             sheetState = sheetState,
             containerColor = Color.Transparent,
             dragHandle = null,
             onDismissRequest = { onDismiss() },
             content = {
                 MembershipLevels(
-                    tier = state.tier,
-                    actionPay = { name -> actionPay(state.tier.id, name) },
-                    actionSubmitEmail = { email -> actionSubmitEmail(state.tier.id, email) }
+                    state = state,
+                    actionTier = actionTier,
                 )
             }
         )
@@ -94,8 +93,10 @@ fun TierScreen(
 }
 
 @Composable
-fun MembershipLevels(tier: Tier, actionPay: (String) -> Unit, actionSubmitEmail: (String) -> Unit) {
-
+fun MembershipLevels(
+    state: MembershipTierState.Visible,
+    actionTier: (TierAction) -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -105,7 +106,7 @@ fun MembershipLevels(tier: Tier, actionPay: (String) -> Unit, actionSubmitEmail:
             ),
     ) {
 
-        val tierResources = mapTierToResources(tier)
+        val tierResources: TierResources? = null//mapTierToResources(state.tier)
 
         if (tierResources != null) {
             val brush = Brush.verticalGradient(
@@ -167,169 +168,173 @@ fun MembershipLevels(tier: Tier, actionPay: (String) -> Unit, actionSubmitEmail:
                     Benefit(benefit = benefit)
                     Spacer(modifier = Modifier.height(6.dp))
                 }
-                Spacer(modifier = Modifier.height(30.dp))
-                if (tier is Tier.Explorer) {
-                    if (tier.isCurrent) {
-                        StatusSubscribedExplorer(tier)
-                    } else {
-                        SubmitEmail(tier = tier, updateEmail = { email ->
-                            actionSubmitEmail(email)
-                        })
-                    }
-                }
-                if (tier is Tier.Builder) {
-                    if (tier.isCurrent) {
-                        StatusSubscribed(tier, {})
-                    } else {
-                        NamePickerAndButton(
-                            name = tier.name,
-                            nameIsTaken = tier.nameIsTaken,
-                            nameIsFree = tier.nameIsFree,
-                            price = tier.price,
-                            interval = "ПОПРАВИТЬ ТУТ:203",
-                            actionPay = actionPay
-                        )
-                    }
-                }
-                if (tier is Tier.CoCreator) {
-                    if (tier.isCurrent) {
-                        StatusSubscribed(tier, {})
-                    } else {
-                        NamePickerAndButton(
-                            name = tier.name,
-                            nameIsTaken = tier.nameIsTaken,
-                            nameIsFree = tier.nameIsFree,
-                            price = tier.price,
-                            interval = "ПОПРАВИТЬ ТУТ:203",
-                            actionPay = actionPay
-                        )
-                    }
-                }
+//                if (tier is Tier.Builder) {
+//                    if (tier.isCurrent) {
+//                        StatusSubscribed(tier, {})
+//                    } else {
+//                        NamePickerAndButton(
+//                            name = tier.name,
+//                            nameIsTaken = tier.nameIsTaken,
+//                            nameIsFree = tier.nameIsFree,
+//                            price = tier.price,
+//                            interval = "ПОПРАВИТЬ ТУТ:203",
+//                            actionPay = actionPay
+//                        )
+//                    }
+//                }
+//                Spacer(modifier = Modifier.height(30.dp))
+//                if (tier is Tier.Explorer) {
+//                    if (tier.isCurrent) {
+//                        StatusSubscribedExplorer(tier)
+//                    } else {
+//                        SubmitEmail(tier = tier, updateEmail = { email ->
+//                            actionSubmitEmail(email)
+//                        })
+//                    }
+//                }
+//
+//                if (tier is Tier.CoCreator) {
+//                    if (tier.isCurrent) {
+//                        StatusSubscribed(tier, {})
+//                    } else {
+//                        NamePickerAndButton(
+//                            name = tier.name,
+//                            nameIsTaken = tier.nameIsTaken,
+//                            nameIsFree = tier.nameIsFree,
+//                            price = tier.price,
+//                            interval = "ПОПРАВИТЬ ТУТ:203",
+//                            actionPay = actionPay
+//                        )
+//                    }
+//                }
             }
         }
     }
 }
 
-@Composable
-fun NamePickerAndButton(
-    name: String,
-    nameIsTaken: Boolean,
-    nameIsFree: Boolean,
-    price: String,
-    interval: String,
-    actionPay: (String) -> Unit
-) {
-    var innerValue by remember(name) { mutableStateOf(name) }
-
-    val focusRequester = remember { FocusRequester() }
-    val focusManager = LocalFocusManager.current
-    val keyboardController = LocalSoftwareKeyboardController.current
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .background(
-                shape = RoundedCornerShape(16.dp),
-                color = colorResource(id = R.color.background_primary)
-            )
-            .padding(start = 20.dp, end = 20.dp)
-    ) {
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 26.dp),
-            text = stringResource(id = R.string.payments_tier_details_name_title),
-            color = colorResource(id = R.color.text_primary),
-            style = BodyBold,
-            textAlign = TextAlign.Start
-        )
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 6.dp),
-            text = stringResource(id = R.string.payments_tier_details_name_subtitle),
-            color = colorResource(id = R.color.text_primary),
-            style = BodyCallout,
-            textAlign = TextAlign.Start
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        Row(modifier = Modifier.fillMaxWidth()) {
-            BasicTextField(
-                value = innerValue,
-                onValueChange = { innerValue = it },
-                textStyle = BodyRegular.copy(color = colorResource(id = com.anytypeio.anytype.core_ui.R.color.text_primary)),
-                singleLine = true,
-                enabled = true,
-                cursorBrush = SolidColor(colorResource(id = com.anytypeio.anytype.core_ui.R.color.text_primary)),
-                modifier = Modifier
-                    .weight(1f)
-                    .wrapContentHeight()
-                    .padding(start = 0.dp, top = 2.dp)
-                    .focusRequester(focusRequester)
-                    .onFocusChanged { focusState ->
-                        if (focusState.isFocused) {
-
-                        } else {
-
-                        }
-                    },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text
-                ),
-                keyboardActions = KeyboardActions {
-                    keyboardController?.hide()
-                    focusManager.clearFocus()
-                },
-                decorationBox = { innerTextField ->
-                    if (innerValue.isEmpty()) {
-                        Text(
-                            text = stringResource(id = com.anytypeio.anytype.localization.R.string.payments_tier_details_name_hint),
-                            style = BodyRegular,
-                            color = colorResource(id = com.anytypeio.anytype.core_ui.R.color.text_tertiary),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight()
-                        )
-                    }
-                    innerTextField()
-                }
-            )
-            Text(
-                text = stringResource(id = R.string.payments_tier_details_name_domain),
-                style = BodyRegular,
-                color = colorResource(id = R.color.text_primary)
-            )
-        }
-        Spacer(modifier = Modifier.height(12.dp))
-        Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
-        val (messageTextColor, messageText) = when {
-            nameIsTaken ->
-                colorResource(id = R.color.palette_system_red) to stringResource(id = R.string.payments_tier_details_name_error)
-
-            nameIsFree ->
-                colorResource(id = R.color.palette_dark_lime) to stringResource(id = R.string.payments_tier_details_name_success)
-
-            else ->
-                colorResource(id = R.color.text_secondary) to stringResource(id = R.string.payments_tier_details_name_min)
-        }
-        Spacer(modifier = Modifier.height(10.dp))
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp),
-            text = messageText,
-            color = messageTextColor,
-            style = Relations2,
-            textAlign = TextAlign.Center
-        )
-        Price(price = price, interval = interval)
-        Spacer(modifier = Modifier.height(14.dp))
-        ButtonPay(enabled = true, actionPay = {
-            actionPay(innerValue)
-        })
-    }
-}
+//@Composable
+//fun NamePickerAndButton(
+//    state: MembershipTierState.Visible.AvailableToSubscribe,
+//    actionPay: (TierAction) -> Unit
+//) {
+//    var innerValue by remember("") { mutableStateOf("") }
+//
+//    val focusRequester = remember { FocusRequester() }
+//    val focusManager = LocalFocusManager.current
+//    val keyboardController = LocalSoftwareKeyboardController.current
+//
+//    Column(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .fillMaxHeight()
+//            .background(
+//                shape = RoundedCornerShape(16.dp),
+//                color = colorResource(id = R.color.background_primary)
+//            )
+//            .padding(start = 20.dp, end = 20.dp)
+//    ) {
+//        Text(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(top = 26.dp),
+//            text = stringResource(id = R.string.payments_tier_details_name_title),
+//            color = colorResource(id = R.color.text_primary),
+//            style = BodyBold,
+//            textAlign = TextAlign.Start
+//        )
+//        Text(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(top = 6.dp),
+//            text = stringResource(id = R.string.payments_tier_details_name_subtitle),
+//            color = colorResource(id = R.color.text_primary),
+//            style = BodyCallout,
+//            textAlign = TextAlign.Start
+//        )
+//        Spacer(modifier = Modifier.height(10.dp))
+//        Row(modifier = Modifier.fillMaxWidth()) {
+//            BasicTextField(
+//                value = innerValue,
+//                onValueChange = {
+//                    innerValue = it
+//                    actionPay(TierAction.UpdateName(tierId = state.tier.id, name = it))
+//                },
+//                textStyle = BodyRegular.copy(color = colorResource(id = com.anytypeio.anytype.core_ui.R.color.text_primary)),
+//                singleLine = true,
+//                enabled = true,
+//                cursorBrush = SolidColor(colorResource(id = com.anytypeio.anytype.core_ui.R.color.text_primary)),
+//                modifier = Modifier
+//                    .weight(1f)
+//                    .wrapContentHeight()
+//                    .padding(start = 0.dp, top = 2.dp)
+//                    .focusRequester(focusRequester)
+//                    .onFocusChanged { focusState ->
+//                        if (focusState.isFocused) {
+//
+//                        } else {
+//
+//                        }
+//                    },
+//                keyboardOptions = KeyboardOptions(
+//                    keyboardType = KeyboardType.Text
+//                ),
+//                keyboardActions = KeyboardActions {
+//                    keyboardController?.hide()
+//                    focusManager.clearFocus()
+//                },
+//                decorationBox = { innerTextField ->
+//                    if (innerValue.isEmpty()) {
+//                        Text(
+//                            text = stringResource(id = com.anytypeio.anytype.localization.R.string.payments_tier_details_name_hint),
+//                            style = BodyRegular,
+//                            color = colorResource(id = com.anytypeio.anytype.core_ui.R.color.text_tertiary),
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .wrapContentHeight()
+//                        )
+//                    }
+//                    innerTextField()
+//                }
+//            )
+//            Text(
+//                text = stringResource(id = R.string.payments_tier_details_name_domain),
+//                style = BodyRegular,
+//                color = colorResource(id = R.color.text_primary)
+//            )
+//        }
+//        Spacer(modifier = Modifier.height(12.dp))
+//        Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+//        val (messageTextColor, messageText) = when (state.nameState) {
+//            is MembershipTierState.Visible.NameState.Default -> {
+//                colorResource(id = R.color.text_secondary) to stringResource(id = R.string.payments_tier_details_name_min)
+//            }
+//            is MembershipTierState.Visible.NameState.Error -> {
+//                colorResource(id = R.color.palette_system_red) to stringResource(id = R.string.payments_tier_details_name_error)
+//            }
+//            is MembershipTierState.Visible.NameState.Validated -> {
+//                colorResource(id = R.color.palette_dark_lime) to stringResource(id = R.string.payments_tier_details_name_validated)
+//            }
+//            is MembershipTierState.Visible.NameState.Validating -> {
+//                colorResource(id = R.color.palette_dark_orange) to stringResource(id = R.string.payments_tier_details_name_validating)
+//            }
+//        }
+//        Spacer(modifier = Modifier.height(10.dp))
+//        Text(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(horizontal = 20.dp),
+//            text = messageText,
+//            color = messageTextColor,
+//            style = Relations2,
+//            textAlign = TextAlign.Center
+//        )
+//        //Price(price = price, interval = interval)
+//        Spacer(modifier = Modifier.height(14.dp))
+//        ButtonPay(enabled = true, actionPay = {
+//            //actionPay(TierAction.PayClicked(innerValue))
+//        })
+//    }
+//}
 
 @Composable
 private fun StatusSubscribed(tier: Tier, actionManage: () -> Unit) {
@@ -646,19 +651,25 @@ private fun ButtonPay(enabled: Boolean, actionPay: () -> Unit) {
 }
 
 
-@Preview(showBackground = true, showSystemUi = true, device = "id:pixel_7_pro", backgroundColor = 0xFFFFFFFF)
-@Composable
-fun MyLevel() {
-    MembershipLevels(
-        tier = Tier.Builder(
-            id = TierId(1),
-            isCurrent = false,
-            price = "$99",
-            color = "green",
-            features = listOf("Feature 1", "Feature 2", "Feature 3", "Feature 4", "Feature 5", "Feature 1", "Feature 2", "Feature 3", "Feature 4", "Feature 5"),
-            androidTierId = null,
-        ),
-        actionPay = {},
-        actionSubmitEmail = {}
-    )
-}
+//@Preview(
+//    showBackground = true,
+//    showSystemUi = true,
+//    device = "id:pixel_7_pro",
+//    backgroundColor = 0xFFFFFFFF
+//)
+//@Composable
+//fun MyLevel() {
+//    MembershipLevels(
+//        state = MembershipTierState.Visible.AvailableToSubscribe(
+//            tier = Tier.Builder(
+//                id = TierId(1),
+//                isCurrent = false,
+//                price = "$99",
+//                color = "green",
+//                features = listOf("Feature 1", "Feature 2", "Feature 3"),
+//            ),
+//            nameState = MembershipTierState.Visible.NameState.Error("name", "error")
+//        ),
+//        actionTier = {}
+//    )
+//}

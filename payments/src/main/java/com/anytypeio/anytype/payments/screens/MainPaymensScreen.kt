@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.payments.screens
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -54,12 +55,12 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.fontRiccioneRegular
-import com.anytypeio.anytype.presentation.membership.models.Tier
-import com.anytypeio.anytype.payments.viewmodel.PaymentsMainState
-import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
+import com.anytypeio.anytype.payments.viewmodel.Tier
+import com.anytypeio.anytype.payments.viewmodel.MembershipMainState
+import com.anytypeio.anytype.presentation.membership.models.TierId
 
 @Composable
-fun MainPaymentsScreen(state: PaymentsMainState, tierClicked: (Tier) -> Unit) {
+fun MainPaymentsScreen(state: MembershipMainState, tierClicked: (TierId) -> Unit) {
     Box(
         modifier = Modifier
             .nestedScroll(rememberNestedScrollInteropConnection())
@@ -76,27 +77,18 @@ fun MainPaymentsScreen(state: PaymentsMainState, tierClicked: (Tier) -> Unit) {
                 .padding(bottom = 20.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            if (state is PaymentsMainState.Default.WithBanner) {
+            if (state is MembershipMainState.Default) {
                 Title()
                 Spacer(modifier = Modifier.height(7.dp))
-                Subtitle()
+                if (state.subtitle != null) {
+                    Subtitle(state.subtitle)
+                }
                 Spacer(modifier = Modifier.height(32.dp))
-                InfoCards()
-                Spacer(modifier = Modifier.height(32.dp))
-                TiersList(tiers = state.tiers, onClick = tierClicked, membershipStatus = state.membershipStatus)
-                Spacer(modifier = Modifier.height(32.dp))
-                LinkButton(text = stringResource(id = R.string.payments_member_link), action = {})
-                Divider()
-                LinkButton(text = stringResource(id = R.string.payments_privacy_link), action = {})
-                Divider()
-                LinkButton(text = stringResource(id = R.string.payments_terms_link), action = {})
-                Spacer(modifier = Modifier.height(32.dp))
-                BottomText()
-            }
-            if (state is PaymentsMainState.Default.WithoutBanner) {
-                Title()
-                Spacer(modifier = Modifier.height(39.dp))
-                TiersList(tiers = state.tiers, onClick = tierClicked, membershipStatus = state.membershipStatus)
+                if (state.showBanner) {
+                    InfoCards()
+                    Spacer(modifier = Modifier.height(32.dp))
+                }
+                //TiersList(tiers = state.tiers, onClick = tierClicked)
                 Spacer(modifier = Modifier.height(32.dp))
                 LinkButton(text = stringResource(id = R.string.payments_member_link), action = {})
                 Divider()
@@ -106,7 +98,7 @@ fun MainPaymentsScreen(state: PaymentsMainState, tierClicked: (Tier) -> Unit) {
                 Spacer(modifier = Modifier.height(32.dp))
                 BottomText()
             }
-            if (state is PaymentsMainState.ErrorState) {
+            if (state is MembershipMainState.ErrorState) {
                 Title()
                 Spacer(modifier = Modifier.height(39.dp))
                 Text(
@@ -163,7 +155,7 @@ private fun Title() {
 }
 
 @Composable
-private fun Subtitle() {
+private fun Subtitle(@StringRes subtitle: Int) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -173,7 +165,7 @@ private fun Subtitle() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 60.dp, end = 60.dp),
-            text = stringResource(id = R.string.payments_subheader),
+            text = stringResource(id = subtitle),
             color = colorResource(id = R.color.text_primary),
             style = Relations2,
             textAlign = TextAlign.Center
@@ -183,7 +175,7 @@ private fun Subtitle() {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TiersList(membershipStatus: MembershipStatus, tiers: List<Tier>, onClick: (Tier) -> Unit) {
+fun TiersList(tiers: List<Tier>, onClick: (TierId) -> Unit) {
     val itemsScroll = rememberLazyListState()
     LazyRow(
         state = itemsScroll,
@@ -196,8 +188,7 @@ fun TiersList(membershipStatus: MembershipStatus, tiers: List<Tier>, onClick: (T
         itemsIndexed(tiers) { _, tier ->
             TierView(
                 onClick = onClick,
-                tier = tier,
-                membershipStatus = membershipStatus
+                tier = tier
             )
         }
     }

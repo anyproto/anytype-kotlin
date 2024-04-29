@@ -22,13 +22,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.payments.R
-import com.anytypeio.anytype.presentation.membership.models.Tier
+import com.anytypeio.anytype.payments.viewmodel.Tier
 import com.anytypeio.anytype.payments.viewmodel.PaymentsWelcomeState
 import com.anytypeio.anytype.presentation.membership.models.TierId
 
@@ -113,7 +112,6 @@ fun PaymentWelcomeScreenPreview() {
                 "01-01-2025",
                 color = "green",
                 features = listOf("Feature 1", "Feature 2"),
-                androidTierId = null
             )
         ), {})
 }

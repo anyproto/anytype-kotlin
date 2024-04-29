@@ -7,13 +7,17 @@ import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.payments.GetMembershipPaymentUrl
+import com.anytypeio.anytype.domain.payments.IsMembershipNameValid
+import com.anytypeio.anytype.domain.payments.ResolveMembershipName
 import com.anytypeio.anytype.payments.constants.TiersConstants.EXPLORER_ID
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
+import com.anytypeio.anytype.payments.playbilling.BillingClientState
 import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
-import com.anytypeio.anytype.presentation.membership.models.Tier
 import com.anytypeio.anytype.presentation.membership.models.TierId
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -26,13 +30,16 @@ class PaymentsViewModel(
     private val billingClientLifecycle: BillingClientLifecycle,
     private val getAccount: GetAccount,
     private val membershipProvider: MembershipProvider,
-    private val getMembershipPaymentUrl: GetMembershipPaymentUrl
+    private val getMembershipPaymentUrl: GetMembershipPaymentUrl,
+    private val isMembershipNameValid: IsMembershipNameValid,
+    private val resolveMembershipName: ResolveMembershipName
 ) : ViewModel() {
 
-    val viewState = MutableStateFlow<PaymentsMainState>(PaymentsMainState.Loading)
+    val viewState = MutableStateFlow<MembershipMainState>(MembershipMainState.Loading)
     val codeState = MutableStateFlow<PaymentsCodeState>(PaymentsCodeState.Hidden)
-    val tierState = MutableStateFlow<PaymentsTierState>(PaymentsTierState.Hidden)
+    val tierState = MutableStateFlow<MembershipTierState>(MembershipTierState.Hidden)
     val welcomeState = MutableStateFlow<PaymentsWelcomeState>(PaymentsWelcomeState.Hidden)
+    val errorState = MutableStateFlow<PaymentsErrorState>(PaymentsErrorState.Hidden)
 
     val command = MutableStateFlow<PaymentsNavigation?>(null)
 
@@ -44,13 +51,15 @@ class PaymentsViewModel(
     /**
      * ProductDetails for all known Products.
      */
-    private val builderSubProductWithProductDetails =
+
+    private val _billingClientState =
         billingClientLifecycle.builderSubProductWithProductDetails
 
     private val _launchBillingCommand = MutableSharedFlow<BillingFlowParams>()
     val launchBillingCommand = _launchBillingCommand.asSharedFlow()
 
     val initBillingClient = MutableStateFlow(false)
+    private val membershipStatusState = MutableStateFlow<MembershipStatus?>(null)
 
     init {
         Timber.d("PaymentsViewModel init")
@@ -61,15 +70,18 @@ class PaymentsViewModel(
         viewModelScope.launch {
             combine(
                 membershipProvider.status(),
-                builderSubProductWithProductDetails
-            ) { membershipStatus, productDetails ->
-                setupBillingClient(membershipStatus)
-                membershipStatus to productDetails
-            }.collect { (membershipStatus, products) ->
-                viewState.value = toViewState(
-                    membershipStatus = membershipStatus,
-                    products = products
-                )
+                _billingClientState
+            ) { membershipStatus, billingClientState ->
+                if (membershipStatus.tiers.any { it.androidProductId != null }) {
+                    setupBillingClient(membershipStatus)
+                }
+                membershipStatus to billingClientState
+            }.collect { (membershipStatus, billingClientState) ->
+                membershipStatusState.value = membershipStatus
+                viewState.value =
+                    membershipStatus.toMainView(
+                        billingClientState = billingClientState
+                    )
             }
         }
     }
@@ -82,39 +94,21 @@ class PaymentsViewModel(
         }
     }
 
-    private fun toViewState(
-        membershipStatus: MembershipStatus,
-        products: List<ProductDetails>
-    ): PaymentsMainState {
-        val activeTierId = membershipStatus.activeTier.value
-        if (activeTierId == 0) {
-            Timber.e("Membership has no active tier")
-            return PaymentsMainState.ErrorState("No active subscription found, please contact support.")
+    fun onTierClicked(tierId: TierId) {
+        Timber.d("onTierClicked: tierId:${tierId.value}")
+        val membershipStatus = membershipStatusState.value
+        if (membershipStatus == null) {
+            Timber.e("Membership status not found")
+            errorState.value = PaymentsErrorState.MembershipStatusEmpty
+            return
         }
-        val activeTier = membershipStatus.tiers.firstOrNull { it.id == activeTierId }
-        if (activeTier == null) {
-            Timber.e("Active tier $activeTierId not found in tiers list")
-            return PaymentsMainState.ErrorState("No active subscription found, please contact support.")
+        val tier = membershipStatus.tiers.find { it.id == tierId.value }
+        if (tier == null) {
+            Timber.e("Tier $tierId not found in tiers list")
+            errorState.value = PaymentsErrorState.TierNotFound(tierId)
+            return
         }
-        val tiers = membershipStatus.toTiersView(
-            products = products
-        )
-        return if (hasBanner(activeTierId)) {
-            PaymentsMainState.Default.WithBanner(
-                membershipStatus = membershipStatus,
-                tiers = tiers
-            )
-        } else {
-            PaymentsMainState.Default.WithoutBanner(
-                membershipStatus = membershipStatus,
-                tiers = tiers
-            )
-        }
-    }
-
-    fun onTierClicked(tier: Tier) {
-        Timber.d("onTierClicked: tierId:$tier")
-        tierState.value = PaymentsTierState.Visible.Initial(tier = tier)
+        //tierState.value = membershipStatus.toTierView(tier, _billingClientState.value)
         command.value = PaymentsNavigation.Tier
     }
 
@@ -146,34 +140,132 @@ class PaymentsViewModel(
         command.value = PaymentsNavigation.Code
     }
 
-    fun onPayButtonClicked(tierId: TierId, name: String) {
-        Timber.d("onPayButtonClicked: tierId:$tierId, name:$name")
-//        val tier = tierState.value as? PaymentsTierState.Visible ?: return
-//        val androidProductId = tier.tier.
-//        if (androidProductId == null) {
-//            Timber.e("Tier $tierId has no androidProductId")
+    fun onTierAction(action: TierAction) {
+        Timber.d("onTierAction: action:$action")
+        when (action) {
+            is TierAction.UpdateName -> {
+                proceedWithValidatingName(action.tierId, action.name)
+//                val tierState = tierState.value as? PaymentsTierState.Visible.AvailableToSubscribe
+//                    ?: return
+//                tierState.copy(nameState = PaymentsTierState.Visible.NameState.Default(action.name))
+            }
+            is TierAction.PayClicked -> {
+                onPayButtonClicked(action.tierId, "")
+            }
+        }
+    }
+
+    private var validateNameJob: Job? = null
+
+    private fun proceedWithValidatingName(tierId: TierId, name: String) {
+//        val currentTierState = tierState.value as? MembershipTierState.Visible.AvailableToSubscribe
+//            ?: return
+//        if (name.length < 7) {
+//            tierState.value = currentTierState.copy(
+//                nameState = MembershipTierState.Visible.NameState.Default(
+//                    name = name
+//                )
+//            )
 //            return
 //        }
-//        viewModelScope.launch {
-//            getMembershipPaymentUrl.async(
-//                GetMembershipPaymentUrl.Params(
-//                    tierId = tierId.value,
-//                    name = ""
-//                )
-//            ).fold(
-//                onSuccess = { url ->
-//                    Timber.d("Payment url: $url")
-//                    buyBasePlans(
-//                        billingId = url.billingId,
-//                        product = androidProductId,
-//                        upDowngrade = false
+//        if (validateNameJob?.isActive == true) {
+//            validateNameJob?.cancel()
+//        }
+//        validateNameJob = viewModelScope.launch {
+//            val params = IsMembershipNameValid.Params(
+//                tier = tierId.value,
+//                name = name
+//            )
+//            isMembershipNameValid.async(params).fold(
+//                onLoading = {
+//                    Timber.d("Validating name")
+//                    tierState.value = currentTierState.copy(
+//                        nameState = MembershipTierState.Visible.NameState.Validating(name)
+//                    )
+//                },
+//                onSuccess = {
+//                    Timber.d("Name is valid")
+//                    tierState.value = currentTierState.copy(
+//                        nameState = MembershipTierState.Visible.NameState.Validated(name)
 //                    )
 //                },
 //                onFailure = { error ->
-//                    Timber.e("Error getting payment url: $error")
+//                    Timber.e("Error validating name: $error")
+//                    tierState.value = currentTierState.copy(
+//                        nameState = MembershipTierState.Visible.NameState.Error(
+//                            name = name,
+//                            message = error.message ?: "Unknown error"
+//                        )
+//                    )
 //                }
 //            )
 //        }
+    }
+
+    fun onPayButtonClicked(tierId: TierId, name: String) {
+//        Timber.d("onPayButtonClicked: tierId:$tierId, name:$name")
+//        val tierState = tierState.value as? MembershipTierState.Visible.Initial ?: return
+//        viewModelScope.launch {
+//            val params = IsMembershipNameValid.Params(
+//                tier = tierId.value,
+//                name = name
+//            )
+//            isMembershipNameValid.async(params).fold(
+//                onSuccess = {
+//                    Timber.d("Name is valid")
+//                    proceedWithResolveName(tierId, name)
+//                },
+//                onFailure = { error ->
+//
+//                    Timber.e("Error validating name: $error")
+//                }
+//            )
+//        }
+    }
+
+    private suspend fun proceedWithResolveName(tierId: TierId, name: String) {
+        viewModelScope.launch {
+            val params = ResolveMembershipName.Params(
+                name = name
+            )
+            resolveMembershipName.async(params).fold(
+                onSuccess = {
+                    Timber.d("Name resolved")
+                    proceedWithPurchase(tierId, name)
+                },
+                onFailure = { error ->
+                    Timber.e("Error resolving name: $error")
+                }
+            )
+        }
+    }
+
+    private suspend fun proceedWithPurchase(tierId: TierId, name: String) {
+        val tier = membershipStatusState.value?.tiers?.find { it.id == tierId.value } ?: return
+        Timber.d("Tier: $tier")
+        val androidProductId = tier.androidProductId
+        if (androidProductId == null) {
+            Timber.e("Tier ${tier.id} has no androidProductId")
+            return
+        }
+        getMembershipPaymentUrl.async(
+            GetMembershipPaymentUrl.Params(
+                tierId = tier.id,
+                name = name
+            )
+        ).fold(
+            onSuccess = { url ->
+                Timber.d("Payment url: $url")
+                buyBasePlans(
+                    billingId = url.billingId,
+                    product = androidProductId,
+                    upDowngrade = false
+                )
+            },
+            onFailure = { error ->
+                Timber.e("Error getting payment url: $error")
+            }
+        )
     }
 
     fun onDismissTier() {
@@ -246,7 +338,7 @@ class PaymentsViewModel(
         }
 
         val builderSubProductDetails =
-            builderSubProductWithProductDetails.value.firstOrNull { it.productId == product }
+            (_billingClientState.value as? BillingClientState.Connected.Ready)?.products?.firstOrNull { it.productId == product }
                 ?: run {
                     Timber.e("Could not find Basic product details by product id: $product")
                     return

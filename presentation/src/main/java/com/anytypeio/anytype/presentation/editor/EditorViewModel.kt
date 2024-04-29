@@ -1387,15 +1387,6 @@ class EditorViewModel(
                     Editor.Focus.id(id = id, isPending = false)
                 )
             }
-//            controlPanelInteractor.onEvent(
-//                ControlPanelMachine.Event.OnFocusChanged(
-//                    id = id,
-//                    style = if (id == context)
-//                        Content.Text.Style.TITLE
-//                    else
-//                        blocks.first { it.id == id }.textStyle()
-//                )
-//            )
         }
     }
 

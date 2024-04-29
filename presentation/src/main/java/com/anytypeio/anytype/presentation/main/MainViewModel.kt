@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.Notification
 import com.anytypeio.anytype.core_models.NotificationPayload
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
+import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
@@ -36,10 +37,12 @@ import com.anytypeio.anytype.presentation.notifications.NotificationAction
 import com.anytypeio.anytype.presentation.notifications.NotificationActionDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
 import com.anytypeio.anytype.presentation.splash.SplashViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -67,6 +70,8 @@ class MainViewModel(
 ) : ViewModel(),
     NotificationActionDelegate by notificationActionDelegate,
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
+
+    private val deepLinkJobs = mutableListOf<Job>()
 
     val wallpaper = MutableStateFlow<Wallpaper>(Wallpaper.Default)
     val commands = MutableSharedFlow<Command>(replay = 0)
@@ -284,10 +289,12 @@ class MainViewModel(
     }
 
     fun onNewDeepLink(deeplink: DeepLinkResolver.Action) {
-        viewModelScope.launch {
+        deepLinkJobs.cancel()
+        deepLinkJobs += viewModelScope.launch {
             awaitAccountStartManager
                 .isStarted()
                 .filter { isStarted -> isStarted }
+                .onEach { delay(NEW_DEEP_LINK_DELAY) }
                 .take(1)
                 .collect { isStarted ->
                     if (isStarted) {
@@ -365,5 +372,6 @@ class MainViewModel(
 
     companion object {
         const val DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN = 200L
+        const val NEW_DEEP_LINK_DELAY = 1000L
     }
 }

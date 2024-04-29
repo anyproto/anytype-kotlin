@@ -102,14 +102,16 @@ interface SpaceViewSubscriptionContainer {
                                 relation = Relations.SPACE_ACCOUNT_STATUS,
                                 value = buildList {
                                     add(SpaceStatus.SPACE_DELETED.code.toDouble())
-                                    add(SpaceStatus.SPACE_REMOVING.code.toDouble())
                                 },
                                 condition = DVFilterCondition.NOT_IN
                             ),
                             DVFilter(
                                 relation = Relations.SPACE_LOCAL_STATUS,
-                                value = SpaceStatus.OK.code.toDouble(),
-                                condition = DVFilterCondition.EQUAL
+                                value = buildList {
+                                    add(SpaceStatus.OK.code.toDouble())
+                                    add(SpaceStatus.UNKNOWN.code.toDouble())
+                                },
+                                condition = DVFilterCondition.IN
                             )
                         ),
                         sorts = listOf(

@@ -1394,6 +1394,10 @@
     <string name="multiplayer_space_status_active">Active</string>
     <string name="multiplayer_space_status_removing">Removed</string>
 
+    <string name="multiplayer_cancel_join_request">Cancel join request</string>
+    <string name="multiplayer_cancel_join_request_msg">You will have to send join request again</string>
+    <string name="multiplayer_do_not_cancel_join_request">Do not cancel</string>
+
 
     <!--endregion-->
 

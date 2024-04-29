@@ -459,6 +459,7 @@ interface BlockRepository {
     ): SpaceInviteView
 
     suspend fun sendJoinSpaceRequest(command: Command.SendJoinSpaceRequest)
+    suspend fun cancelJoinSpaceRequest(space: SpaceId)
 
     suspend fun stopSharingSpace(space: SpaceId)
 

@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
@@ -1608,17 +1609,24 @@ class ObjectSetViewModel(
     }
 
     fun onAddNewDocumentClicked(objType: ObjectWrapper.Type? = null) {
-        Timber.d("onAddNewDocumentClicked, ")
+        Timber.d("onAddNewDocumentClicked, objType:[$objType]")
 
         val startTime = System.currentTimeMillis()
         val params = objType?.uniqueKey.getCreateObjectParams(objType?.defaultTemplateId)
         jobs += viewModelScope.launch {
             createObject.async(params).fold(
                 onSuccess = { result ->
-                    proceedWithOpeningObject(
-                        target = result.objectId,
-                        layout = result.obj.layout,
-                        space = requireNotNull(result.obj.spaceId)
+                    delegator.delegate(
+                        if (objType?.recommendedLayout.isDataView())
+                            Action.OpenCollection(
+                                target = result.objectId,
+                                space = requireNotNull(result.obj.spaceId)
+                            )
+                        else
+                            Action.OpenObject(
+                                target = result.objectId,
+                                space = requireNotNull(result.obj.spaceId)
+                            )
                     )
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,

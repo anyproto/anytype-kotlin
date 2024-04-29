@@ -122,6 +122,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import org.mockito.Mock
+import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -848,16 +849,15 @@ open class EditorPresentationTestSetup {
     }
 
     fun stubAnalyticSpaceHelperDelegate() {
-        analyticSpaceHelperDelegate.stub {
-            on { provideParams(defaultSpace) } doReturn AnalyticSpaceHelperDelegate.Params.EMPTY
-        }
+        Mockito.`when`(analyticSpaceHelperDelegate.provideParams(defaultSpace))
+            .thenReturn(AnalyticSpaceHelperDelegate.Params.EMPTY)
     }
 
     fun proceedWithDefaultBeforeTestStubbing() {
+        stubAnalyticSpaceHelperDelegate()
         stubSpaceManager()
         stubUserPermission()
         stubGetNetworkMode()
         stubFileLimitEvents()
-        stubAnalyticSpaceHelperDelegate()
     }
 }

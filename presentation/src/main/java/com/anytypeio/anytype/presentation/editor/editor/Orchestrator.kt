@@ -102,7 +102,7 @@ class Orchestrator(
 
     suspend fun start() {
         proxies.intents.stream().collect { intent ->
-            val spaceParams = AnalyticSpaceHelperDelegate.Params.EMPTY//provideParams(spaceManager.get())
+            val spaceParams = provideParams(spaceManager.get())
             when (intent) {
                 is Intent.CRUD.Create -> {
                     val startTime = System.currentTimeMillis()

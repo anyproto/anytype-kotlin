@@ -169,7 +169,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
@@ -905,7 +904,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 is Command.OpenTextBlockIconPicker -> {
                     TextBlockIconPickerFragment.new(
-                        context = ctx, blockId = command.block
+                        context = ctx,
+                        blockId = command.block,
+                        space = space
                     ).showChildFragment()
                 }
                 is Command.OpenDocumentEmojiIconPicker -> {

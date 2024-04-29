@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 interface AnalyticSpaceHelperDelegate {
 
-    fun provideParams(spaceId: SpaceId): Params
+    fun provideParams(space: String): Params
 
     data class Params(
         val permission: String,
@@ -26,7 +26,8 @@ class DefaultAnalyticsParamsProvider @Inject constructor(
     private val spaceViewContainer: SpaceViewSubscriptionContainer
 ) : AnalyticSpaceHelperDelegate {
 
-    override fun provideParams(spaceId: SpaceId): AnalyticSpaceHelperDelegate.Params {
+    override fun provideParams(space: String): AnalyticSpaceHelperDelegate.Params {
+        val spaceId = SpaceId(space)
         val permissions = userPermissionProvider.get(spaceId)
         val spaceType = spaceViewContainer.get(spaceId)?.spaceAccessType
         return AnalyticSpaceHelperDelegate.Params(

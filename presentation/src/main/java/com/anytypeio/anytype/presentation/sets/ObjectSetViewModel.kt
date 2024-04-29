@@ -584,7 +584,7 @@ class ObjectSetViewModel(
                                 event = ObjectStateAnalyticsEvent.OPEN_OBJECT,
                                 startTime = startTime,
                                 currentViewId = session.currentViewerId.value,
-                                spaceParams = provideParams(vmParams.space)
+                                spaceParams = provideParams(vmParams.space.id)
                             )
                         }
                     }
@@ -1640,7 +1640,7 @@ class ObjectSetViewModel(
                         startTime = startTime,
                         view = EventsDictionary.View.viewNavbar,
                         objType = objType ?: storeOfObjectTypes.getByKey(result.typeKey.key),
-                        spaceParams = provideParams(vmParams.space)
+                        spaceParams = provideParams(vmParams.space.id)
                     )
                 },
                 onFailure = { e ->
@@ -1660,7 +1660,7 @@ class ObjectSetViewModel(
                 event = ObjectStateAnalyticsEvent.OBJECT_CREATE,
                 startTime = startTime,
                 type = objType?.sourceObject ?: OBJ_TYPE_CUSTOM,
-                spaceParams = provideParams(vmParams.space)
+                spaceParams = provideParams(vmParams.space.id)
             )
         }
     }
@@ -1850,7 +1850,7 @@ class ObjectSetViewModel(
                         event = ObjectStateAnalyticsEvent.SELECT_QUERY,
                         type = query,
                         startTime = startTime,
-                        spaceParams = provideParams(vmParams.space)
+                        spaceParams = provideParams(vmParams.space.id)
                     )
                     defaultPayloadConsumer(payload)
                 },
@@ -1872,7 +1872,7 @@ class ObjectSetViewModel(
                         analytics = analytics,
                         event = ObjectStateAnalyticsEvent.TURN_INTO_COLLECTION,
                         startTime = startTime,
-                        spaceParams = provideParams(vmParams.space)
+                        spaceParams = provideParams(vmParams.space.id)
                     )
                 }
             )
@@ -2023,7 +2023,7 @@ class ObjectSetViewModel(
                 analytics = analytics,
                 event = event,
                 type = type,
-                spaceParams = provideParams(vmParams.space)
+                spaceParams = provideParams(vmParams.space.id)
             )
         }
     }
@@ -2227,7 +2227,7 @@ class ObjectSetViewModel(
                         analytics = analytics,
                         event = ObjectStateAnalyticsEvent.CREATE_TEMPLATE,
                         type = storeOfObjectTypes.get(targetTypeId)?.sourceObject,
-                        spaceParams = provideParams(vmParams.space)
+                        spaceParams = provideParams(vmParams.space.id)
                     )
                     proceedWithOpeningTemplate(
                         target = id,
@@ -2340,7 +2340,7 @@ class ObjectSetViewModel(
                         analytics = analytics,
                         event = ObjectStateAnalyticsEvent.DUPLICATE_TEMPLATE,
                         type = template.targetTypeId.id,
-                        spaceParams = provideParams(vmParams.space)
+                        spaceParams = provideParams(vmParams.space.id)
                     )
                     Timber.d("Successfully duplicated templates: $ids")
                 },
@@ -2368,7 +2368,7 @@ class ObjectSetViewModel(
                         analytics = analytics,
                         event = ObjectStateAnalyticsEvent.DELETE_TEMPLATE,
                         type = template.targetTypeKey.key,
-                        spaceParams = provideParams(vmParams.space)
+                        spaceParams = provideParams(vmParams.space.id)
                     )
                     Timber.d("Successfully archived templates: $ids")
                 },
@@ -2398,7 +2398,7 @@ class ObjectSetViewModel(
                         analytics = analytics,
                         event = ObjectStateAnalyticsEvent.EDIT_TEMPLATE,
                         type = template.targetTypeKey.key,
-                        spaceParams = provideParams(vmParams.space)
+                        spaceParams = provideParams(vmParams.space.id)
                     )
                 }
             }
@@ -2438,7 +2438,7 @@ class ObjectSetViewModel(
                                     analytics = analytics,
                                     event = ObjectStateAnalyticsEvent.REMOVE_VIEW,
                                     startTime = startTime,
-                                    spaceParams = provideParams(vmParams.space)
+                                    spaceParams = provideParams(vmParams.space.id)
                                 )
                             }
                         )
@@ -2472,7 +2472,7 @@ class ObjectSetViewModel(
                                     event = ObjectStateAnalyticsEvent.REPOSITION_VIEW,
                                     startTime = startTime,
                                     type = type.formattedName,
-                                    spaceParams = provideParams(vmParams.space)
+                                    spaceParams = provideParams(vmParams.space.id)
                                 )
                             }
                         )
@@ -2491,7 +2491,7 @@ class ObjectSetViewModel(
                                 event = ObjectStateAnalyticsEvent.SWITCH_VIEW,
                                 startTime = startTime,
                                 type = action.type.formattedName,
-                                spaceParams = provideParams(vmParams.space)
+                                spaceParams = provideParams(vmParams.space.id)
                             )
                         }
                     ))
@@ -2521,7 +2521,7 @@ class ObjectSetViewModel(
                                     event = ObjectStateAnalyticsEvent.ADD_VIEW,
                                     startTime = startTime,
                                     type = newView.type.formattedName,
-                                    spaceParams = provideParams(vmParams.space)
+                                    spaceParams = provideParams(vmParams.space.id)
                                 )
                                 widgetViewerId.value = newViewId
                                 showViewerEditWidgetForNewView()
@@ -2630,7 +2630,7 @@ class ObjectSetViewModel(
                                     analytics = analytics,
                                     event = ObjectStateAnalyticsEvent.REMOVE_VIEW,
                                     startTime = startTime,
-                                    spaceParams = provideParams(vmParams.space)
+                                    spaceParams = provideParams(vmParams.space.id)
                                 )
                             }
                         )
@@ -2654,7 +2654,7 @@ class ObjectSetViewModel(
                                     event = ObjectStateAnalyticsEvent.DUPLICATE_VIEW,
                                     startTime = startTime,
                                     type = viewer.type.formattedName,
-                                    spaceParams = provideParams(vmParams.space)
+                                    spaceParams = provideParams(vmParams.space.id)
                                 )
                             }
                         )
@@ -2805,7 +2805,7 @@ class ObjectSetViewModel(
                                 event = ObjectStateAnalyticsEvent.CHANGE_VIEW_TYPE,
                                 startTime = startTime,
                                 type = action.type.formattedName,
-                                spaceParams = provideParams(vmParams.space)
+                                spaceParams = provideParams(vmParams.space.id)
                             )
                         }
                     },

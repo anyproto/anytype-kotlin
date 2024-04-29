@@ -75,7 +75,7 @@ class CreateObjectTypeViewModel(
                 )
             ).fold(
                 onSuccess = {
-                    val spaceParams = provideParams(SpaceId(spaceManager.get()))
+                    val spaceParams = provideParams(spaceManager.get())
                     viewModelScope.sendEvent(
                         analytics = analytics,
                         eventName = libraryCreateType,

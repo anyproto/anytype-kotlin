@@ -77,7 +77,7 @@ class RelationAddToDataViewViewModel(
                         analytics = analytics,
                         type = screenType,
                         format = format.getPropName(),
-                        spaceParams = analyticSpaceHelperDelegate.provideParams(SpaceId(spaceManager.get()))
+                        spaceParams = analyticSpaceHelperDelegate.provideParams(spaceManager.get())
                     )
                 },
                 failure = {

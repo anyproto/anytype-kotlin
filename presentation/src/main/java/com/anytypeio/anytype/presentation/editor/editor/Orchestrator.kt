@@ -3,7 +3,6 @@ package com.anytypeio.anytype.presentation.editor.editor
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.suspendFold
 import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.ClearBlockContent
@@ -103,8 +102,7 @@ class Orchestrator(
 
     suspend fun start() {
         proxies.intents.stream().collect { intent ->
-            val spaceId = SpaceId(spaceManager.get())
-            val spaceParams = provideParams(spaceId)
+            val spaceParams = AnalyticSpaceHelperDelegate.Params.EMPTY//provideParams(spaceManager.get())
             when (intent) {
                 is Intent.CRUD.Create -> {
                     val startTime = System.currentTimeMillis()

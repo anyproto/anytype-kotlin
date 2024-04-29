@@ -405,6 +405,7 @@ open class EditorViewModelTest {
     private val storeOfObjectTypes: StoreOfObjectTypes = DefaultStoreOfObjectTypes()
 
     val defaultSpace = MockDataFactory.randomString()
+    val spaceId = SpaceId(defaultSpace)
 
     @Before
     fun setup() {
@@ -414,12 +415,12 @@ open class EditorViewModelTest {
         stubObserveEvents()
         stubInterceptEvents()
         stubUserPermission()
-        stubAnalyticSpaceHelperDelegate()
         spaceManager.stub {
             onBlocking {
                 get()
             } doReturn defaultSpace
         }
+        stubAnalyticSpaceHelperDelegate()
         stubFileLimitEvents()
         stubUpdateBlocksMark()
         stubOpenPage(root, emptyList())
@@ -455,7 +456,7 @@ open class EditorViewModelTest {
         val param = OpenPage.Params(
             obj = root,
             saveAsLastOpened = true,
-            space = SpaceId(defaultSpace)
+            space = spaceId
         )
 
         stubInterceptEvents()
@@ -3693,7 +3694,7 @@ open class EditorViewModelTest {
                 async(
                     OpenPage.Params(
                         obj = context,
-                        space = SpaceId(defaultSpace),
+                        space = spaceId,
                         saveAsLastOpened = true
                     )
                 )
@@ -3952,7 +3953,7 @@ open class EditorViewModelTest {
             getNetworkMode = getNetworkMode,
             vmParams = EditorViewModel.Params(
                 ctx = root,
-                space = SpaceId(defaultSpace)
+                space = spaceId
             ),
             permissions = permissions,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
@@ -4393,7 +4394,7 @@ open class EditorViewModelTest {
     }
 
     fun stubUserPermission(
-        space: SpaceId = SpaceId(defaultSpace),
+        space: SpaceId = spaceId,
         permission: SpaceMemberPermissions = SpaceMemberPermissions.OWNER
     ) {
         permissions.stub {
@@ -4405,7 +4406,7 @@ open class EditorViewModelTest {
 
     fun stubAnalyticSpaceHelperDelegate() {
         analyticSpaceHelperDelegate.stub {
-            on { provideParams(SpaceId(defaultSpace)) } doReturn AnalyticSpaceHelperDelegate.Params.EMPTY
+            on { provideParams(defaultSpace) } doReturn AnalyticSpaceHelperDelegate.Params.EMPTY
         }
     }
 }

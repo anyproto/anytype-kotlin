@@ -431,7 +431,7 @@ class SelectObjectTypeViewModel(
                         objType = defaultObjectType?.key ?: ObjectTypeUniqueKeys.NOTE,
                         route = EventsDictionary.Routes.sharingExtension,
                         startTime = startTime,
-                        spaceParams = provideParams(vmParams.space)
+                        spaceParams = provideParams(vmParams.space.id)
                     )
                     navigation.emit(
                         OpenObjectNavigation.OpenEditor(

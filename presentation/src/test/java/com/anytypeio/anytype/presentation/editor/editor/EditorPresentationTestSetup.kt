@@ -121,9 +121,7 @@ import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
-import org.mockito.ArgumentMatchers
 import org.mockito.Mock
-import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -849,9 +847,9 @@ open class EditorPresentationTestSetup {
         )
     }
 
-    private fun stubAnalyticSpaceHelperDelegate() {
+    fun stubAnalyticSpaceHelperDelegate() {
         analyticSpaceHelperDelegate.stub {
-            on { provideParams(SpaceId(defaultSpace)) } doReturn AnalyticSpaceHelperDelegate.Params.EMPTY
+            on { provideParams(defaultSpace) } doReturn AnalyticSpaceHelperDelegate.Params.EMPTY
         }
     }
 

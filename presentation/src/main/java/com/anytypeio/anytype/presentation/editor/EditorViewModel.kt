@@ -1085,7 +1085,7 @@ class EditorViewModel(
                                         startTime = startTime,
                                         details = orchestrator.stores.details.current().details,
                                         ctx = context,
-                                        spaceParams = provideParams(vmParams.space)
+                                        spaceParams = provideParams(vmParams.space.id)
                                     )
                                 }
                             }
@@ -3269,7 +3269,7 @@ class EditorViewModel(
                 },
                 onSuccess = { result ->
                     orchestrator.proxies.payloads.send(result.payload)
-                    val spaceParams = provideParams(vmParams.space)
+                    val spaceParams = provideParams(vmParams.space.id)
                     sendAnalyticsCreateLink(analytics, spaceParams)
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
@@ -3321,7 +3321,7 @@ class EditorViewModel(
                         startTime = startTime,
                         objType = objType ?: storeOfObjectTypes.getByKey(result.typeKey.key),
                         view = EventsDictionary.View.viewNavbar,
-                        spaceParams = provideParams(vmParams.space)
+                        spaceParams = provideParams(vmParams.space.id)
                     )
                     proceedWithCloseCurrentAndOpenObject(result.obj)
                 },
@@ -4546,7 +4546,7 @@ class EditorViewModel(
                     sourceObject = SET_MARKETPLACE_ID,
                     containsFlagType = true,
                     route = EventsDictionary.Routes.navigation,
-                    spaceParams = provideParams(vmParams.space)
+                    spaceParams = provideParams(vmParams.space.id)
                 )
             }
         )
@@ -5964,7 +5964,7 @@ class EditorViewModel(
                         route = EventsDictionary.Routes.objCreateMention,
                         startTime = startTime,
                         objType = storeOfObjectTypes.getByKey(typeKey.key),
-                        spaceParams = provideParams(vmParams.space)
+                        spaceParams = provideParams(vmParams.space.id)
                     )
                 }
             )
@@ -5977,7 +5977,7 @@ class EditorViewModel(
             analytics = analytics,
             pos = pos,
             length = mentionTrigger.length - 1,
-            spaceParams = provideParams(vmParams.space)
+            spaceParams = provideParams(vmParams.space.id)
         )
         onCreateMentionInText(id = mention.id, name = mention.name, mentionTrigger = mentionTrigger)
     }
@@ -6339,7 +6339,7 @@ class EditorViewModel(
                     route = EventsDictionary.Routes.objLink,
                     startTime = startTime,
                     objType = storeOfObjectTypes.getByKey(typeKey.key),
-                    spaceParams = provideParams(vmParams.space)
+                    spaceParams = provideParams(vmParams.space.id)
                 )
             }
         )

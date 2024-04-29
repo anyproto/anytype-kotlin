@@ -316,7 +316,7 @@ open class LinkToObjectOrWebViewModelTest {
 
     private fun stubAnalyticSpaceHelperDelegate() {
         analyticSpaceHelperDelegate.stub {
-            on { provideParams(SpaceId("")) } doReturn AnalyticSpaceHelperDelegate.Params.EMPTY
+            on { provideParams("") } doReturn AnalyticSpaceHelperDelegate.Params.EMPTY
         }
     }
 }

@@ -288,7 +288,7 @@ abstract class ObjectMenuViewModelBase(
                     sendAnalyticsBackLinkAddEvent(
                         analytics = analytics,
                         startTime = startTime,
-                        spaceParams = provideParams(SpaceId(space))
+                        spaceParams = provideParams(space)
                     )
                     commands.emit(
                         Command.OpenSnackbar(
@@ -354,7 +354,7 @@ abstract class ObjectMenuViewModelBase(
                         startTime = startTime,
                         details = details,
                         ctx = ctx,
-                        spaceParams = provideParams(SpaceId(space))
+                        spaceParams = provideParams(space)
                     )
                 }
             )

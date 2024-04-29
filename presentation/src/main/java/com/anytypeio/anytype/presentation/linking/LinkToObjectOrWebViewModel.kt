@@ -221,7 +221,7 @@ class LinkToObjectOrWebViewModel(
                 analytics = analytics,
                 pos = position + 1,
                 length = userInput.value.length,
-                spaceParams = provideParams(spaceId = SpaceId(spaceManager.get()))
+                spaceParams = provideParams(spaceManager.get())
             )
         }
     }

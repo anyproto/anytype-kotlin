@@ -65,7 +65,7 @@ class RelationAddToObjectViewModel(
                             analytics = analytics,
                             type = screenType,
                             format = format.getPropName(),
-                            spaceParams = provideParams(spaceId = SpaceId(spaceManager.get()))
+                            spaceParams = provideParams(spaceManager.get())
                         )
                         isDismissed.value = true
                     }

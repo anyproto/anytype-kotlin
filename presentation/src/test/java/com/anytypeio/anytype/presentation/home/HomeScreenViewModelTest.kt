@@ -2891,7 +2891,7 @@ class HomeScreenViewModelTest {
 
     private fun stubAnalyticSpaceHelperDelegate() {
         analyticSpaceHelperDelegate.stub {
-            on { provideParams(SpaceId(defaultSpaceConfig.space)) } doReturn AnalyticSpaceHelperDelegate.Params.EMPTY
+            on { provideParams(defaultSpaceConfig.space) } doReturn AnalyticSpaceHelperDelegate.Params.EMPTY
         }
     }
 

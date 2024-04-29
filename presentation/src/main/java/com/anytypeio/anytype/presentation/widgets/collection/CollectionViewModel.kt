@@ -853,7 +853,7 @@ class CollectionViewModel(
                         startTime = startTime,
                         objType = objType ?: storeOfObjectTypes.getByKey(result.typeKey.key),
                         view = EventsDictionary.View.viewHome,
-                        spaceParams = provideParams(SpaceId(spaceManager.get()))
+                        spaceParams = provideParams(spaceManager.get())
                     )
                     proceedWithOpeningObject(result.obj)
                 },

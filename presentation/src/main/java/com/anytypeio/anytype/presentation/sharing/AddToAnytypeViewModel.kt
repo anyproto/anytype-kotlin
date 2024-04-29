@@ -203,7 +203,7 @@ class AddToAnytypeViewModel(
                                 objType = MarketplaceObjectTypeIds.NOTE,
                                 route = EventsDictionary.Routes.sharingExtension,
                                 startTime = startTime,
-                                spaceParams = provideParams(SpaceId(spaceManager.get()))
+                                spaceParams = provideParams(spaceManager.get())
                             )
                             if (targetSpaceId == spaceManager.get()) {
                                 navigation.emit(
@@ -252,7 +252,7 @@ class AddToAnytypeViewModel(
                             objType = MarketplaceObjectTypeIds.BOOKMARK,
                             route = EventsDictionary.Routes.sharingExtension,
                             startTime = startTime,
-                            spaceParams = provideParams(SpaceId(spaceManager.get()))
+                            spaceParams = provideParams(spaceManager.get())
                         )
                         if (targetSpaceId == spaceManager.get()) {
                             navigation.emit(
@@ -300,7 +300,7 @@ class AddToAnytypeViewModel(
                             objType = MarketplaceObjectTypeIds.NOTE,
                             route = EventsDictionary.Routes.sharingExtension,
                             startTime = startTime,
-                            spaceParams = provideParams(SpaceId(spaceManager.get()))
+                            spaceParams = provideParams(spaceManager.get())
                         )
                         if (targetSpaceId == spaceManager.get()) {
                             navigation.emit(

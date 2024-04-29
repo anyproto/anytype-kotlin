@@ -178,7 +178,7 @@ class SplashViewModel(
                         route = EventsDictionary.Routes.home,
                         startTime = startTime,
                         view = EventsDictionary.View.viewHome,
-                        spaceParams = provideParams(SpaceId(spaceManager.get()))
+                        spaceParams = provideParams(spaceManager.get())
                     )
                     val target = result.objectId
                     val space = requireNotNull(result.obj.spaceId)

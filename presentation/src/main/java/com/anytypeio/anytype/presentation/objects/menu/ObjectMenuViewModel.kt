@@ -351,7 +351,7 @@ class ObjectMenuViewModel(
                         details = storage.details.current().details,
                         ctx = ctx,
                         startTime = startTime,
-                        spaceParams = provideParams(SpaceId(space))
+                        spaceParams = provideParams(space)
                     )
                     buildOpenTemplateCommand(
                         ctx = ctx,

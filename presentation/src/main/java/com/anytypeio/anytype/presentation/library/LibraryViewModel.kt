@@ -214,7 +214,7 @@ class LibraryViewModel(
                         startTime = startTime,
                         objType = objType ?: storeOfObjectTypes.getByKey(result.typeKey.key),
                         view = EventsDictionary.View.viewHome,
-                        spaceParams = provideParams(SpaceId(spaceManager.get()))
+                        spaceParams = provideParams(spaceManager.get())
                     )
                             },
                 onFailure = { e -> Timber.e(e, "Error while creating a new object") }

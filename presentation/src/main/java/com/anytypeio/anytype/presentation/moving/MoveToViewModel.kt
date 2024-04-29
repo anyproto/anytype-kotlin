@@ -121,7 +121,7 @@ class MoveToViewModel(
                         analytics = analytics,
                         pos = index + 1,
                         length = userInput.value.length,
-                        spaceParams = provideParams(SpaceId(spaceManager.get()))
+                        spaceParams = provideParams(spaceManager.get())
                     )
                 }
             }

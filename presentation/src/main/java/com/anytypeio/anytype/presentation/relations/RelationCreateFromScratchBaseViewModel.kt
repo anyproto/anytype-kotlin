@@ -122,7 +122,7 @@ class RelationCreateFromScratchForObjectViewModel(
                             analytics = analytics,
                             type = EventsDictionary.Type.menu,
                             format = format.name,
-                            spaceParams = provideParams(SpaceId(spaceManager.get()))
+                            spaceParams = provideParams(spaceManager.get())
                         )
                     }
                 },
@@ -218,7 +218,7 @@ class RelationCreateFromScratchForObjectBlockViewModel(
                             type = EventsDictionary.Type.block,
                             format = format.name,
                             spaceParams = provideParams(
-                                SpaceId(spaceManager.get())
+                                spaceManager.get()
                             )
                         )
                     }
@@ -319,7 +319,7 @@ class RelationCreateFromScratchForDataViewViewModel(
                             analytics = analytics,
                             type = EventsDictionary.Type.dataView,
                             format = format.name,
-                            spaceParams = provideParams(SpaceId(spaceManager.get()))
+                            spaceParams = provideParams(spaceManager.get())
                         )
                     }
                 },

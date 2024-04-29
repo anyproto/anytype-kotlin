@@ -1220,7 +1220,7 @@ class HomeScreenViewModel(
             createObject.stream(params).collect { createObjectResponse ->
                 createObjectResponse.fold(
                     onSuccess = { result ->
-                        val spaceParams = provideParams(SpaceId(spaceManager.get()))
+                        val spaceParams = provideParams(spaceManager.get())
                         sendAnalyticsObjectCreateEvent(
                             analytics = analytics,
                             route = EventsDictionary.Routes.navigation,

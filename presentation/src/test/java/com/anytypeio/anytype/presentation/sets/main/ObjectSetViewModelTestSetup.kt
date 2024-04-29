@@ -532,7 +532,7 @@ open class ObjectSetViewModelTestSetup {
     }
 
     fun stubAnalyticSpaceHelperDelegate() {
-        Mockito.`when`(analyticSpaceHelperDelegate.provideParams(SpaceId(ArgumentMatchers.anyString())))
+        Mockito.`when`(analyticSpaceHelperDelegate.provideParams(""))
             .thenReturn(AnalyticSpaceHelperDelegate.Params.EMPTY)
     }
 }

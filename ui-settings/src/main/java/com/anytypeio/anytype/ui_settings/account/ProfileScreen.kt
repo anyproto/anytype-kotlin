@@ -124,9 +124,9 @@ fun ProfileSettingsScreen(
         }
         item {
             Option(
-                image = R.drawable.ic_about,
-                text = stringResource(R.string.about),
-                onClick = onAboutClicked
+                image = R.drawable.ic_settings_spaces,
+                text = stringResource(R.string.multiplayer_spaces),
+                onClick = onSpacesClicked
             )
         }
         item {
@@ -134,9 +134,9 @@ fun ProfileSettingsScreen(
         }
         item {
             Option(
-                image = R.drawable.ic_settings_spaces,
-                text = stringResource(R.string.multiplayer_spaces),
-                onClick = onSpacesClicked
+                image = R.drawable.ic_about,
+                text = stringResource(R.string.about),
+                onClick = onAboutClicked
             )
         }
         item {

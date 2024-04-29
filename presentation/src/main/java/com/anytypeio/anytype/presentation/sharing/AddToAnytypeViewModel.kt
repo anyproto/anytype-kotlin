@@ -206,7 +206,8 @@ class AddToAnytypeViewModel(
                                     analytics = analytics,
                                     objType = MarketplaceObjectTypeIds.NOTE,
                                     route = EventsDictionary.Routes.sharingExtension,
-                                    startTime = startTime
+                                    startTime = startTime,
+                                    spaceParams = provideParams(spaceManager.get())
                                 )
                                 if (targetSpaceId == spaceManager.get()) {
                                     navigation.emit(

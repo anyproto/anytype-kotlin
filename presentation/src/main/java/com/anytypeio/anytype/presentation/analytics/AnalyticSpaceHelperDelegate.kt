@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.presentation.analytics
 
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -9,7 +11,7 @@ import javax.inject.Inject
 
 interface AnalyticSpaceHelperDelegate {
 
-    fun provideParams(space: String): Params
+    fun provideParams(space: Id): Params
 
     data class Params(
         val permission: String,
@@ -26,7 +28,7 @@ class DefaultAnalyticsParamsProvider @Inject constructor(
     private val spaceViewContainer: SpaceViewSubscriptionContainer
 ) : AnalyticSpaceHelperDelegate {
 
-    override fun provideParams(space: String): AnalyticSpaceHelperDelegate.Params {
+    override fun provideParams(space: Id): AnalyticSpaceHelperDelegate.Params {
         val spaceId = SpaceId(space)
         val permissions = userPermissionProvider.get(spaceId)
         val spaceType = spaceViewContainer.get(spaceId)?.spaceAccessType
@@ -36,13 +38,13 @@ class DefaultAnalyticsParamsProvider @Inject constructor(
                 SpaceMemberPermissions.WRITER -> "Writer"
                 SpaceMemberPermissions.OWNER -> "Owner"
                 SpaceMemberPermissions.NO_PERMISSIONS -> "NoPermissions"
-                null -> ""
+                null -> EMPTY_STRING_VALUE
             },
             spaceType = when (spaceType) {
                 SpaceAccessType.DEFAULT -> "Personal"
                 SpaceAccessType.PRIVATE -> "Private"
                 SpaceAccessType.SHARED -> "Shared"
-                else -> ""
+                else -> EMPTY_STRING_VALUE
             }
         )
     }

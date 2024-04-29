@@ -4,7 +4,6 @@ import android.os.Build
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.ext.content
-import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.presentation.editor.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.editor.editor.ViewState
 import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
@@ -307,18 +306,20 @@ class BlockReadModeTest : EditorViewModelTest() {
     }
 
     @Test
-    fun `should enter edit mode after action menu is closed by action item delete`() {
+    fun `should enter edit mode after action menu is closed by action item delete`() = runTest {
 
         val paragraphs = blocks
         stubObserveEvents(flow)
         stubOpenPage()
         stubUserPermission()
         stubAnalyticSpaceHelperDelegate()
+        stubUnlinkBlocks(root)
+
         givenViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
 
-        coroutineTestRule.advanceTime(100)
+        coroutineTestRule.advanceUntilIdle()
 
         // TESTING
 
@@ -329,7 +330,11 @@ class BlockReadModeTest : EditorViewModelTest() {
             )
         )
 
+        coroutineTestRule.advanceUntilIdle()
+
         vm.onMultiSelectAction(ActionItemType.Delete)
+
+        coroutineTestRule.advanceUntilIdle()
 
         val testObserver = vm.state.test()
 

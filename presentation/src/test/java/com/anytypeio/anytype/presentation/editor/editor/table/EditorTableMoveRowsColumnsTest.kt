@@ -26,12 +26,13 @@ import com.anytypeio.anytype.presentation.editor.editor.ViewState
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
 import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -50,7 +51,7 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+    val coroutineTestRule = DefaultCoroutineTestRule()
 
     @Before
     fun setup() {
@@ -92,6 +93,8 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
 
         vm.apply {
             onStart(id = root, space = defaultSpace)
+
+            advanceUntilIdle()
 
             fillTableRow.stub {
                 onBlocking {
@@ -142,6 +145,8 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
                 )
             )
 
+            advanceUntilIdle()
+
             verify(fillTableRow, times(1)).invoke(
                 params = FillTableRow.Params(
                     ctx = root,
@@ -154,16 +159,24 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
                 hasFocus = true
             )
 
+            advanceUntilIdle()
+
             onBlockToolbarBlockActionsClicked()
+
+            advanceUntilIdle()
 
             onBlockFocusChanged(
                 id = cellR3C2,
                 hasFocus = false
             )
 
+            advanceUntilIdle()
+
             onSimpleTableWidgetItemClicked(
                 item = SimpleTableWidgetItem.Tab.Row
             )
+
+            advanceUntilIdle()
 
             fillTableRow.stub {
                 onBlocking {
@@ -180,6 +193,8 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
                     )
                 )
             }
+
+            advanceUntilIdle()
 
             moveTableRow.stub {
                 onBlocking {
@@ -205,6 +220,8 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
                 )
             }
 
+            advanceUntilIdle()
+
             onSimpleTableWidgetItemClicked(
                 item = SimpleTableWidgetItem.Row.MoveUp(
                     row = BlockView.Table.Row(
@@ -214,6 +231,8 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
                     )
                 )
             )
+
+            advanceUntilIdle()
 
             verify(fillTableRow, times(2)).invoke(
                 params = FillTableRow.Params(
@@ -515,6 +534,8 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
                 )
             )
 
+            advanceUntilIdle()
+
             verify(fillTableRow, times(3)).invoke(
                 params = FillTableRow.Params(
                     ctx = root,
@@ -815,6 +836,8 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
                 )
             )
 
+            advanceUntilIdle()
+
             verify(fillTableRow, times(4)).invoke(
                 params = FillTableRow.Params(
                     ctx = root,
@@ -1108,6 +1131,8 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
                 )
             )
 
+            advanceUntilIdle()
+
             verify(fillTableRow, times(5)).invoke(
                 params = FillTableRow.Params(
                     ctx = root,
@@ -1393,6 +1418,8 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
         vm.apply {
             onStart(id = root, space = defaultSpace)
 
+            advanceUntilIdle()
+
             fillTableRow.stub {
                 onBlocking {
                     invoke(
@@ -1423,6 +1450,8 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
                 )
             }
 
+            advanceUntilIdle()
+
             onClickListener(
                 clicked = ListenerType.TableEmptyCell(
                     cell = BlockView.Table.Cell(
@@ -1441,6 +1470,8 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
                 )
             )
 
+            advanceUntilIdle()
+
             verify(fillTableRow, times(1)).invoke(
                 params = FillTableRow.Params(
                     ctx = root,
@@ -1453,6 +1484,8 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
                 hasFocus = true
             )
 
+            advanceUntilIdle()
+
             onBlockToolbarBlockActionsClicked()
 
             onBlockFocusChanged(
@@ -1460,9 +1493,13 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
                 hasFocus = false
             )
 
+            advanceUntilIdle()
+
             onSimpleTableWidgetItemClicked(
                 item = SimpleTableWidgetItem.Tab.Column
             )
+
+            advanceUntilIdle()
 
             fillTableColumn.stub {
                 onBlocking {
@@ -1528,6 +1565,8 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
                 )
             }
 
+            advanceUntilIdle()
+
             onSimpleTableWidgetItemClicked(
                 item = SimpleTableWidgetItem.Column.MoveRight(
                     column = BlockView.Table.Column(
@@ -1536,6 +1575,8 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
                     )
                 )
             )
+
+            advanceUntilIdle()
 
             verifyNoMoreInteractions(fillTableRow)
 
@@ -1792,6 +1833,8 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
                 )
             )
 
+            advanceUntilIdle()
+
             verifyNoMoreInteractions(fillTableRow)
 
             verify(fillTableColumn, times(2)).invoke(
@@ -2042,6 +2085,8 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
                     )
                 )
             )
+
+            advanceUntilIdle()
 
             verifyNoMoreInteractions(fillTableRow)
 

@@ -9,7 +9,7 @@ import com.anytypeio.anytype.core_models.StubHeader
 import com.anytypeio.anytype.core_models.StubSmartBlock
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.presentation.editor.editor.EditorPresentationTestSetup
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,7 +28,7 @@ class EditorTemplateTest: EditorPresentationTestSetup() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+    val coroutineTestRule = DefaultCoroutineTestRule()
 
     @Before
     fun setup() {
@@ -81,7 +81,7 @@ class EditorTemplateTest: EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
-        coroutineTestRule.advanceUntilIdle()
+        advanceUntilIdle()
 
         assertTrue(vm.isObjectTemplate())
     }

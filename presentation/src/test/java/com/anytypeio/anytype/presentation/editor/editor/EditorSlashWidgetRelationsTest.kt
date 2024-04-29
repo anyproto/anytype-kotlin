@@ -17,12 +17,13 @@ import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
 import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.After
@@ -40,7 +41,7 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+    val coroutineTestRule = DefaultCoroutineTestRule(UnconfinedTestDispatcher())
 
     @get:Rule
     val timberTestRule: TimberTestRule = TimberTestRule.builder()
@@ -58,7 +59,7 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
 
     @After
     fun after() {
-        coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+        coroutineTestRule.advanceUntilIdle()
     }
 
     @Test
@@ -86,16 +87,17 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
             details = customDetails
         )
 
-        val vm = buildViewModel()
-
         storeOfRelations.merge(
             listOf(r1, r2, r3)
         )
+
+        val vm = buildViewModel()
 
         // TESTING
 
         vm.onStart(id = root, space = defaultSpace)
         val selection = IntRange(1, 1)
+
         vm.apply {
             onSelectionChanged(
                 id = a.id,

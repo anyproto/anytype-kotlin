@@ -13,12 +13,14 @@ import com.anytypeio.anytype.presentation.editor.EditorViewModel.Companion.TEXT_
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashWidgetState
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -39,7 +41,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+    val coroutineTestRule = DefaultCoroutineTestRule()
 
     @Before
     fun setup() {
@@ -48,6 +50,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         stubGetNetworkMode()
         stubFileLimitEvents()
         stubUpdateText()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -58,7 +61,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
     //region {TEXT COLOR}
     @Test
-    fun `should selected red color when block text color is red`() {
+    fun `should selected red color when block text color is red`() = runTest {
 
         val code = ThemeColor.RED.code
 
@@ -98,22 +101,28 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.apply {
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Main.Color)
+
+        advanceUntilIdle()
 
         val state = vm.controlPanelViewState.value
 
@@ -143,7 +152,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should selected default color when block text color is null`() {
+    fun `should selected default color when block text color is null`() = runTest {
 
         val code: String? = null
 
@@ -183,22 +192,28 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.apply {
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Main.Color)
+
+        advanceUntilIdle()
 
         val state = vm.controlPanelViewState.value
 
@@ -228,7 +243,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should selected default color when block text color is default`() {
+    fun `should selected default color when block text color is default`() = runTest {
 
         val code: String = ThemeColor.DEFAULT.code
 
@@ -268,22 +283,28 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.apply {
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Main.Color)
+
+        advanceUntilIdle()
 
         val state = vm.controlPanelViewState.value
 
@@ -313,7 +334,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should save selection and focus when text color picked`() {
+    fun `should save selection and focus when text color picked`() = runTest {
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
 
@@ -324,6 +345,8 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         val selection = IntRange(4, 4)
 
         vm.apply {
@@ -331,10 +354,12 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
                 id = block.id,
                 selection = selection
             )
+            advanceUntilIdle()
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
@@ -346,7 +371,9 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Main.Color)
+        advanceUntilIdle()
         vm.onSlashItemClicked(SlashItem.Color.Text(themeColor = ThemeColor.RED, isSelected = false))
+        advanceUntilIdle()
 
         val focus = orchestrator.stores.focus.current()
         val cursor = Editor.Cursor.Range(range = selection)
@@ -356,7 +383,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should hide slash widget when text color picked`() {
+    fun `should hide slash widget when text color picked`() = runTest {
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
 
@@ -367,23 +394,29 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.apply {
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Main.Color)
+        advanceUntilIdle()
         vm.onSlashItemClicked(SlashItem.Color.Text(themeColor = ThemeColor.RED, isSelected = false))
+        advanceUntilIdle()
 
         val state = vm.controlPanelViewState.value
 
@@ -392,7 +425,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should send updateTextColor UseCase when text color picked`() {
+    fun `should send updateTextColor UseCase when text color picked`() = runTest {
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
 
@@ -405,17 +438,21 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.apply {
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING
@@ -423,7 +460,10 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         val code = ThemeColor.ICE.code
 
         vm.onSlashItemClicked(SlashItem.Main.Color)
+        advanceUntilIdle()
+
         vm.onSlashItemClicked(SlashItem.Color.Text(themeColor = ThemeColor.ICE, isSelected = false))
+        advanceUntilIdle()
 
         val params = UpdateTextColor.Params(
             context = root,
@@ -438,7 +478,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
     //region {BACKGROUND COLOR}
     @Test
-    fun `should selected green color when block background color is green`() {
+    fun `should selected green color when block background color is green`() = runTest {
 
         val code = ThemeColor.LIME.code
 
@@ -480,22 +520,28 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.apply {
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Main.Background)
+
+        advanceUntilIdle()
 
         val state = vm.controlPanelViewState.value
 
@@ -525,7 +571,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should selected default color when block background color is null`() {
+    fun `should selected default color when block background color is null`() = runTest {
 
         val code: String? = null
 
@@ -567,22 +613,28 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.apply {
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Main.Background)
+
+        advanceUntilIdle()
 
         val state = vm.controlPanelViewState.value
 
@@ -612,7 +664,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should selected default color when block background color is default`() {
+    fun `should selected default color when block background color is default`() = runTest {
 
         val code: String = ThemeColor.DEFAULT.code
 
@@ -654,22 +706,28 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.apply {
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Main.Background)
+
+        advanceUntilIdle()
 
         val state = vm.controlPanelViewState.value
 
@@ -699,7 +757,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should save selection and focus when background color picked`() {
+    fun `should save selection and focus when background color picked`() = runTest {
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
 
@@ -712,6 +770,8 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         val selection = IntRange(4, 4)
 
         vm.apply {
@@ -720,10 +780,15 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
                 selection = selection
             )
 
+            advanceUntilIdle()
+
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+
+            advanceUntilIdle()
+
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
@@ -735,7 +800,12 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Main.Background)
+
+        advanceUntilIdle()
+
         vm.onSlashItemClicked(SlashItem.Color.Background(themeColor = ThemeColor.RED, isSelected = false))
+
+        advanceUntilIdle()
 
         val focus = orchestrator.stores.focus.current()
         val cursor = Editor.Cursor.Range(range = selection)
@@ -745,7 +815,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should hide slash widget when background color picked`() {
+    fun `should hide slash widget when background color picked`() = runTest {
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
 
@@ -758,23 +828,29 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.apply {
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Main.Background)
+        advanceUntilIdle()
         vm.onSlashItemClicked(SlashItem.Color.Background(themeColor = ThemeColor.RED, isSelected = false))
+        advanceUntilIdle()
 
         val state = vm.controlPanelViewState.value
 
@@ -783,7 +859,7 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should send updateBackgroundColor UseCase when background color picked`() {
+    fun `should send updateBackgroundColor UseCase when background color picked`() = runTest {
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
 
@@ -796,17 +872,21 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.apply {
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING
@@ -814,7 +894,9 @@ class EditorSlashWidgetColorTest : EditorPresentationTestSetup() {
         val code = ThemeColor.PURPLE.code
 
         vm.onSlashItemClicked(SlashItem.Main.Background)
+        advanceUntilIdle()
         vm.onSlashItemClicked(SlashItem.Color.Background(themeColor = ThemeColor.PURPLE, isSelected = false))
+        advanceUntilIdle()
 
         val params = UpdateBackgroundColor.Params(
             context = root,

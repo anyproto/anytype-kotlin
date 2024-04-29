@@ -8,8 +8,8 @@ import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.domain.icon.TextBlockTarget
-import com.anytypeio.anytype.presentation.picker.IconPickerViewModel
 import com.anytypeio.anytype.presentation.editor.picker.TextBlockIconPickerViewModelFactory
+import com.anytypeio.anytype.presentation.picker.IconPickerViewModel
 import javax.inject.Inject
 
 class TextBlockIconPickerFragment : IconPickerFragmentBase<TextBlockTarget>() {
@@ -45,11 +45,13 @@ class TextBlockIconPickerFragment : IconPickerFragmentBase<TextBlockTarget>() {
         const val ARG_BLOCK_ID_KEY = "arg.picker.block.id"
         fun new(
             context: Id,
-            blockId: Id
+            blockId: Id,
+            space: Id
         ) = TextBlockIconPickerFragment().apply {
             arguments = bundleOf(
                 ARG_CONTEXT_ID_KEY to context,
-                ARG_BLOCK_ID_KEY to blockId
+                ARG_BLOCK_ID_KEY to blockId,
+                ARG_SPACE_ID_KEY to space
             )
         }
     }

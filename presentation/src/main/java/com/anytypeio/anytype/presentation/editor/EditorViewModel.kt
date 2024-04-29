@@ -3024,8 +3024,8 @@ class EditorViewModel(
         if (root.children.isEmpty()) {
             addNewBlockAtTheEnd()
         } else {
-            val last = blocks.first { it.id == root.children.last() }
-            when (val content = last.content) {
+            val last = blocks.find { it.id == root.children.last() }
+            when (val content = last?.content) {
                 is Content.Text -> {
                     when {
                         content.style == Content.Text.Style.TITLE -> addNewBlockAtTheEnd()

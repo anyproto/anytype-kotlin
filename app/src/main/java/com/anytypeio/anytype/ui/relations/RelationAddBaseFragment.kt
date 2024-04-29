@@ -236,6 +236,7 @@ class RelationAddToDataViewFragment : RelationAddBaseFragment() {
     override fun onCreateFromScratchClicked() {
         val fr = RelationCreateFromScratchForDataViewFragment.new(
             ctx = ctx,
+            space = space,
             viewer = viewer,
             dv = dv,
             query = createFromScratchAdapter.query

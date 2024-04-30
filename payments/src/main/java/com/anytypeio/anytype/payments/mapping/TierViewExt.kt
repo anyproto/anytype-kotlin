@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.payments.constants.TiersConstants.ERROR_PRODUCT_NOT_FOUND
 import com.anytypeio.anytype.payments.constants.TiersConstants.ERROR_PRODUCT_PRICE
+import com.anytypeio.anytype.payments.models.BillingPriceInfo
 import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierConditionInfo
@@ -32,7 +33,7 @@ fun MembershipTierData.toView(
         isActive = isActive,
         features = features,
         membershipAnyName = getAnyName(isActive, billingClientState),
-        buttonState = toButtonView(isActive = isActive)
+        buttonState = toButtonView(isActive = isActive, billingClientState = billingClientState)
     )
 }
 
@@ -56,12 +57,18 @@ fun MembershipTierData.toPreviewView(
 
 private fun MembershipTierData.toButtonView(
     isActive: Boolean,
+    billingClientState: BillingClientState
 ): TierButton {
     return if (isActive) {
         if (androidProductId == null) {
             TierButton.Info.Enabled("")
         } else {
-            TierButton.Manage.Android.Enabled
+            if(billingClientState is BillingClientState.Connected)  {
+                TierButton.Manage.Android.Enabled(androidProductId!!)
+            } else {
+                TierButton.Manage.Android.Disabled
+            }
+
         }
     } else {
         if (androidProductId == null) {
@@ -88,7 +95,7 @@ private fun MembershipTierData.getAnyName(
                 if (product == null) {
                     TierAnyName.Visible.Disabled
                 } else {
-                    if (product.getFormattedPrice().isBlank()) {
+                    if (product.billingPriceInfo() == null) {
                         TierAnyName.Visible.Disabled
                     } else {
                         TierAnyName.Visible.Enter
@@ -157,13 +164,12 @@ private fun MembershipTierData.createConditionInfoForBillingTier(billingClientSt
             if (product == null) {
                 TierConditionInfo.Visible.Error(ERROR_PRODUCT_NOT_FOUND)
             } else {
-                val productPrice = product.getFormattedPrice()
-                if (productPrice.isBlank()) {
+                val billingPriceInfo = product.billingPriceInfo()
+                if (billingPriceInfo == null) {
                     TierConditionInfo.Visible.Error(ERROR_PRODUCT_PRICE)
                 } else {
-                    TierConditionInfo.Visible.Price(
-                        price = productPrice,
-                        period = convertToTierViewPeriod(this)
+                    TierConditionInfo.Visible.PriceBilling(
+                        price = billingPriceInfo
                     )
                 }
             }
@@ -171,8 +177,18 @@ private fun MembershipTierData.createConditionInfoForBillingTier(billingClientSt
     }
 }
 
-private fun ProductDetails.getFormattedPrice(): String =
-    subscriptionOfferDetails?.get(0)?.pricingPhases?.pricingPhaseList?.get(0)?.formattedPrice ?: ""
+private fun ProductDetails.billingPriceInfo(): BillingPriceInfo? {
+    val pricingPhase = subscriptionOfferDetails?.get(0)?.pricingPhases?.pricingPhaseList?.get(0)
+    val formattedPrice = pricingPhase?.formattedPrice
+    val periodType = pricingPhase?.billingPeriod?.parsePeriod()
+    if (formattedPrice == null || periodType == null || formattedPrice.isBlank()) {
+        return null
+    }
+    return BillingPriceInfo(
+        formattedPrice = formattedPrice,
+        period = periodType
+    )
+}
 
 private fun convertToTierViewPeriod(tier: MembershipTierData): TierPeriod {
     return when (tier.periodType) {

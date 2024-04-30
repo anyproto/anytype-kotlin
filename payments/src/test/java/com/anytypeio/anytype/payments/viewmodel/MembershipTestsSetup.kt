@@ -98,11 +98,11 @@ open class MembershipTestsSetup {
         expectedButtonState: TierButton
     ) {
         assertEquals(expectedId, tierView.id.value)
-        assertEquals(expectedActive, tierView.isActive)
-        assertEquals(expectedFeatures, tierView.features)
-        assertEquals(expectedConditionInfo, tierView.conditionInfo)
-        assertEquals(expectedAnyName, tierView.membershipAnyName)
-        assertEquals(expectedButtonState, tierView.buttonState)
+        assertEquals("is Active", expectedActive, tierView.isActive)
+        assertEquals("Features", expectedFeatures, tierView.features)
+        assertEquals("Condition info", expectedConditionInfo, tierView.conditionInfo)
+        assertEquals("Any name", expectedAnyName, tierView.membershipAnyName, )
+        assertEquals("Button state", expectedButtonState, tierView.buttonState)
     }
 
     protected fun stubMembershipProvider(membershipStatus: MembershipStatus?) {

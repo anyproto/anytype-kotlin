@@ -30,6 +30,7 @@ sealed class TierConditionInfo {
         data object LoadingBillingClient : Visible()
         data class Valid(val period: TierPeriod) : Visible()
         data class Price(val price: String, val period: TierPeriod) : Visible()
+        data class PriceBilling(val price: BillingPriceInfo) : Visible()
         data class Free(val period: TierPeriod) : Visible()
         data class Error(val message: String) : Visible()
     }
@@ -63,7 +64,7 @@ sealed class TierButton {
 
     sealed class Manage : TierButton() {
         sealed class Android : Manage() {
-            data object Enabled : Android()
+            data class Enabled(val productId: String) : Android()
             data object Disabled : Android()
         }
         sealed class External : Manage() {
@@ -83,3 +84,7 @@ sealed class TierAnyName {
         data class Error(val message: String) : Visible()
     }
 }
+
+data class BillingPriceInfo(val formattedPrice: String, val period: PeriodDescription)
+data class PeriodDescription(val amount: Int, val unit: PeriodUnit)
+enum class PeriodUnit { YEARS, MONTHS, DAYS }

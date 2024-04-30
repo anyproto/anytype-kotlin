@@ -7,10 +7,12 @@ import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.payments.constants.TiersConstants
+import com.anytypeio.anytype.payments.models.BillingPriceInfo
+import com.anytypeio.anytype.payments.models.PeriodDescription
+import com.anytypeio.anytype.payments.models.PeriodUnit
 import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierConditionInfo
-import com.anytypeio.anytype.payments.models.TierPeriod
 import com.anytypeio.anytype.payments.models.TierPreviewView
 import com.anytypeio.anytype.payments.playbilling.BillingClientState
 import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
@@ -297,6 +299,7 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
             Mockito.`when`(pricingPhases?.pricingPhaseList).thenReturn(pricingPhaseList)
             val formattedPrice = "$9.99" // You can set any desired formatted price here
             Mockito.`when`(pricingPhaseList[0]?.formattedPrice).thenReturn(formattedPrice)
+            Mockito.`when`(pricingPhaseList[0]?.billingPeriod).thenReturn("P1Y")
             stubBilling(billingClientState = BillingClientState.Connected(listOf(product)))
 
             val viewModel = buildViewModel()
@@ -306,7 +309,12 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
             assertIs<MembershipMainState.Loading>(viewStateFlow.awaitItem())
             assertIs<MembershipTierState.Hidden>(tierStateFlow.awaitItem())
 
-            val expectedConditionInfo = TierConditionInfo.Visible.Price(formattedPrice, TierPeriod.Year(1))
+            val expectedConditionInfo = TierConditionInfo.Visible.PriceBilling(
+                BillingPriceInfo(
+                    formattedPrice = formattedPrice,
+                    period = PeriodDescription(amount = 1, unit = PeriodUnit.YEARS)
+                )
+            )
 
             viewStateFlow.awaitItem().let { result ->
                 assertIs<MembershipMainState.Default>(result)
@@ -326,6 +334,118 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
                     expectedFeatures = features,
                     expectedConditionInfo = expectedConditionInfo,
                     expectedAnyName = TierAnyName.Visible.Enter,
+                    expectedButtonState = TierButton.Pay.Disabled,
+                    expectedId = TiersConstants.BUILDER_ID,
+                    expectedActive = false
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `test unsuccessful product billing state, when billing period is wrong`() = runTest {
+        turbineScope {
+            val (features, tiers) = commonTestSetup()
+
+            stubMembershipProvider(setupMembershipStatus(tiers))
+
+            val product = Mockito.mock(ProductDetails::class.java)
+            val subscriptionOfferDetails = listOf(Mockito.mock(ProductDetails.SubscriptionOfferDetails::class.java))
+            val pricingPhases = Mockito.mock(ProductDetails.PricingPhases::class.java)
+            val pricingPhaseList = listOf(Mockito.mock(ProductDetails.PricingPhase::class.java))
+
+            Mockito.`when`(product.productId).thenReturn(androidProductId)
+            Mockito.`when`(product?.subscriptionOfferDetails).thenReturn(subscriptionOfferDetails)
+            Mockito.`when`(subscriptionOfferDetails[0].pricingPhases).thenReturn(pricingPhases)
+            Mockito.`when`(pricingPhases?.pricingPhaseList).thenReturn(pricingPhaseList)
+            val formattedPrice = "$9.99" // You can set any desired formatted price here
+            Mockito.`when`(pricingPhaseList[0]?.formattedPrice).thenReturn(formattedPrice)
+            Mockito.`when`(pricingPhaseList[0]?.billingPeriod).thenReturn("errorBillingPeriod")
+            stubBilling(billingClientState = BillingClientState.Connected(listOf(product)))
+
+            val viewModel = buildViewModel()
+            val viewStateFlow = viewModel.viewState.testIn(backgroundScope)
+            val tierStateFlow = viewModel.tierState.testIn(backgroundScope)
+
+            assertIs<MembershipMainState.Loading>(viewStateFlow.awaitItem())
+            assertIs<MembershipTierState.Hidden>(tierStateFlow.awaitItem())
+
+            val expectedConditionInfo = TierConditionInfo.Visible.Error(TiersConstants.ERROR_PRODUCT_PRICE)
+
+            viewStateFlow.awaitItem().let { result ->
+                assertIs<MembershipMainState.Default>(result)
+                val tier: TierPreviewView = result.tiers.find { it.id.value == TiersConstants.BUILDER_ID }!!
+                assertEquals(TiersConstants.BUILDER_ID, tier.id.value)
+                assertEquals(false, tier.isActive)
+                assertEquals(expectedConditionInfo, tier.conditionInfo)
+            }
+
+            viewModel.onTierClicked(TierId(TiersConstants.BUILDER_ID))
+
+            //STATE : BUILDER, NOT CURRENT, BUILDER PRODUCT, INCORRECT BILLING PERIOD
+            tierStateFlow.awaitItem().let { result ->
+                assertIs<MembershipTierState.Visible>(result)
+                validateTierView(
+                    tierView = result.tierView,
+                    expectedFeatures = features,
+                    expectedConditionInfo = expectedConditionInfo,
+                    expectedAnyName = TierAnyName.Visible.Disabled,
+                    expectedButtonState = TierButton.Pay.Disabled,
+                    expectedId = TiersConstants.BUILDER_ID,
+                    expectedActive = false
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `test unsuccessful product billing state, when billing price is wrong`() = runTest {
+        turbineScope {
+            val (features, tiers) = commonTestSetup()
+
+            stubMembershipProvider(setupMembershipStatus(tiers))
+
+            val product = Mockito.mock(ProductDetails::class.java)
+            val subscriptionOfferDetails = listOf(Mockito.mock(ProductDetails.SubscriptionOfferDetails::class.java))
+            val pricingPhases = Mockito.mock(ProductDetails.PricingPhases::class.java)
+            val pricingPhaseList = listOf(Mockito.mock(ProductDetails.PricingPhase::class.java))
+
+            Mockito.`when`(product.productId).thenReturn(androidProductId)
+            Mockito.`when`(product?.subscriptionOfferDetails).thenReturn(subscriptionOfferDetails)
+            Mockito.`when`(subscriptionOfferDetails[0].pricingPhases).thenReturn(pricingPhases)
+            Mockito.`when`(pricingPhases?.pricingPhaseList).thenReturn(pricingPhaseList)
+            val formattedPrice = null // You can set any desired formatted price here
+            Mockito.`when`(pricingPhaseList[0]?.formattedPrice).thenReturn(formattedPrice)
+            Mockito.`when`(pricingPhaseList[0]?.billingPeriod).thenReturn("P1Y")
+            stubBilling(billingClientState = BillingClientState.Connected(listOf(product)))
+
+            val viewModel = buildViewModel()
+            val viewStateFlow = viewModel.viewState.testIn(backgroundScope)
+            val tierStateFlow = viewModel.tierState.testIn(backgroundScope)
+
+            assertIs<MembershipMainState.Loading>(viewStateFlow.awaitItem())
+            assertIs<MembershipTierState.Hidden>(tierStateFlow.awaitItem())
+
+            val expectedConditionInfo = TierConditionInfo.Visible.Error(TiersConstants.ERROR_PRODUCT_PRICE)
+
+            viewStateFlow.awaitItem().let { result ->
+                assertIs<MembershipMainState.Default>(result)
+                val tier: TierPreviewView = result.tiers.find { it.id.value == TiersConstants.BUILDER_ID }!!
+                assertEquals(TiersConstants.BUILDER_ID, tier.id.value)
+                assertEquals(false, tier.isActive)
+                assertEquals(expectedConditionInfo, tier.conditionInfo)
+            }
+
+            viewModel.onTierClicked(TierId(TiersConstants.BUILDER_ID))
+
+            //STATE : BUILDER, NOT CURRENT, BUILDER PRODUCT, INCORRECT BILLING PRICE
+            tierStateFlow.awaitItem().let { result ->
+                assertIs<MembershipTierState.Visible>(result)
+                validateTierView(
+                    tierView = result.tierView,
+                    expectedFeatures = features,
+                    expectedConditionInfo = expectedConditionInfo,
+                    expectedAnyName = TierAnyName.Visible.Disabled,
                     expectedButtonState = TierButton.Pay.Disabled,
                     expectedId = TiersConstants.BUILDER_ID,
                     expectedActive = false

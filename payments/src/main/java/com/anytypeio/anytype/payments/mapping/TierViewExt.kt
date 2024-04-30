@@ -113,7 +113,7 @@ private fun MembershipTierData.getConditionInfo(
 }
 
 private fun MembershipTierData.createConditionInfoForCurrentTier(): TierConditionInfo {
-    throw IllegalStateException("Current tier should not be shown in the list")
+    return TierConditionInfo.Hidden
 }
 
 private fun MembershipTierData.createConditionInfoForNonBillingTier(): TierConditionInfo {

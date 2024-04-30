@@ -4,6 +4,7 @@ import app.cash.turbine.turbineScope
 import com.android.billingclient.api.ProductDetails
 import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
+import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.payments.constants.TiersConstants
 import com.anytypeio.anytype.payments.models.TierAnyName
@@ -23,7 +24,7 @@ import org.mockito.Mockito
 
 class TierPayStateTests : MembershipTestsSetup() {
 
-    protected fun commonTestSetup(): Pair<List<String>, List<MembershipTierData>> {
+    private fun commonTestSetup(): Pair<List<String>, List<MembershipTierData>> {
         val features = listOf("feature-${RandomString.make()}", "feature-${RandomString.make()}")
         val tiers = setupTierData(features)
         return Pair(features, tiers)
@@ -32,10 +33,35 @@ class TierPayStateTests : MembershipTestsSetup() {
     private fun setupTierData(features: List<String>): List<MembershipTierData> {
         return listOf(
             StubMembershipTierData(
+                id = TiersConstants.EXPLORER_ID,
+                androidProductId = null,
+                features = features,
+                periodType = MembershipPeriodType.PERIOD_TYPE_UNLIMITED,
+                priceStripeUsdCents = 0
+            ),
+            StubMembershipTierData(
                 id = TiersConstants.BUILDER_ID,
                 androidProductId = androidProductId,
                 features = features,
-                periodValue = 1
+                periodValue = 1,
+                periodType = MembershipPeriodType.PERIOD_TYPE_YEARS,
+                priceStripeUsdCents = 9900
+            ),
+            StubMembershipTierData(
+                id = TiersConstants.CO_CREATOR_ID,
+                androidProductId = null,
+                features = features,
+                periodValue = 3,
+                periodType = MembershipPeriodType.PERIOD_TYPE_YEARS,
+                priceStripeUsdCents = 29900
+            ),
+            StubMembershipTierData(
+                id = 22,
+                androidProductId = null,
+                features = features,
+                periodValue = 1,
+                periodType = MembershipPeriodType.PERIOD_TYPE_MONTHS,
+                priceStripeUsdCents = 1000
             )
         )
     }
@@ -51,7 +77,6 @@ class TierPayStateTests : MembershipTestsSetup() {
             formattedDateEnds = "formattedDateEnds-${RandomString.make()}"
         )
     }
-
 
     @Test
     fun `test loading billing state`() = runTest {
@@ -70,7 +95,7 @@ class TierPayStateTests : MembershipTestsSetup() {
 
             viewStateFlow.awaitItem().let { result ->
                 assertIs<MembershipMainState.Default>(result)
-                val tier: TierPreviewView = result.tiers[0]
+                val tier: TierPreviewView = result.tiers.find { it.id.value == TiersConstants.BUILDER_ID }!!
                 assertEquals(TiersConstants.BUILDER_ID, tier.id.value)
                 assertEquals(false, tier.isCurrent)
                 assertEquals(TierConditionInfo.Visible.LoadingBillingClient, tier.conditionInfo)
@@ -110,7 +135,7 @@ class TierPayStateTests : MembershipTestsSetup() {
 
             viewStateFlow.awaitItem().let { result ->
                 assertIs<MembershipMainState.Default>(result)
-                val tier: TierPreviewView = result.tiers[0]
+                val tier: TierPreviewView = result.tiers.find { it.id.value == TiersConstants.BUILDER_ID }!!
                 assertEquals(TiersConstants.BUILDER_ID, tier.id.value)
                 assertEquals(false, tier.isCurrent)
                 assertEquals(TierConditionInfo.Visible.Error(errorMessage), tier.conditionInfo)
@@ -163,7 +188,7 @@ class TierPayStateTests : MembershipTestsSetup() {
 
             viewStateFlow.awaitItem().let { result ->
                 assertIs<MembershipMainState.Default>(result)
-                val tier: TierPreviewView = result.tiers[0]
+                val tier: TierPreviewView = result.tiers.find { it.id.value == TiersConstants.BUILDER_ID }!!
                 assertEquals(TiersConstants.BUILDER_ID, tier.id.value)
                 assertEquals(false, tier.isCurrent)
                 assertEquals(expectedConditionInfo, tier.conditionInfo)
@@ -216,7 +241,7 @@ class TierPayStateTests : MembershipTestsSetup() {
 
             viewStateFlow.awaitItem().let { result ->
                 assertIs<MembershipMainState.Default>(result)
-                val tier: TierPreviewView = result.tiers[0]
+                val tier: TierPreviewView = result.tiers.find { it.id.value == TiersConstants.BUILDER_ID }!!
                 assertEquals(TiersConstants.BUILDER_ID, tier.id.value)
                 assertEquals(false, tier.isCurrent)
                 assertEquals(expectedConditionInfo, tier.conditionInfo)
@@ -269,7 +294,7 @@ class TierPayStateTests : MembershipTestsSetup() {
 
             viewStateFlow.awaitItem().let { result ->
                 assertIs<MembershipMainState.Default>(result)
-                val tier: TierPreviewView = result.tiers[0]
+                val tier: TierPreviewView = result.tiers.find { it.id.value == TiersConstants.BUILDER_ID }!!
                 assertEquals(TiersConstants.BUILDER_ID, tier.id.value)
                 assertEquals(false, tier.isCurrent)
                 assertEquals(expectedConditionInfo, tier.conditionInfo)

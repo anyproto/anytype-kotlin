@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.getSpaceWithTechSpace
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.objects.toRelationObjectValueView
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
@@ -32,8 +33,9 @@ class AddObjectRelationViewModel(
     private val searchObjects: SearchObjects,
     private val urlBuilder: UrlBuilder,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val spaceManager: SpaceManager
-) : ViewModel() {
+    private val spaceManager: SpaceManager,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val _views = MutableStateFlow<List<RelationValueView.Object>>(listOf())
     private val _filter = MutableStateFlow("")
@@ -188,7 +190,8 @@ class AddObjectRelationViewModel(
         private val searchObjects: SearchObjects,
         private val urlBuilder: UrlBuilder,
         private val storeOfObjectTypes: StoreOfObjectTypes,
-        private val spaceManager: SpaceManager
+        private val spaceManager: SpaceManager,
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -198,7 +201,8 @@ class AddObjectRelationViewModel(
                 searchObjects = searchObjects,
                 urlBuilder = urlBuilder,
                 storeOfObjectTypes = storeOfObjectTypes,
-                spaceManager = spaceManager
+                spaceManager = spaceManager,
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
             ) as T
         }
     }

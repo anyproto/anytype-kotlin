@@ -5,6 +5,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.StubParagraph
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.tools.UrlValidator
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.config.Gateway
@@ -13,6 +14,7 @@ import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -51,6 +53,9 @@ open class LinkToObjectOrWebViewModelTest {
     lateinit var spaceManager: SpaceManager
 
     @Mock
+    lateinit var analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+
+    @Mock
     lateinit var gateway: Gateway
 
     var store: Editor.Storage = Editor.Storage()
@@ -64,6 +69,7 @@ open class LinkToObjectOrWebViewModelTest {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         stubSpaceManager()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @After
@@ -298,12 +304,19 @@ open class LinkToObjectOrWebViewModelTest {
         urlBuilder = builder,
         urlValidator = urlValidator,
         storeOfObjectTypes = storeOfObjectTypes,
-        spaceManager = spaceManager
+        spaceManager = spaceManager,
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
     )
 
     fun stubSpaceManager() {
         spaceManager.stub {
             onBlocking { get() } doReturn ""
+        }
+    }
+
+    private fun stubAnalyticSpaceHelperDelegate() {
+        analyticSpaceHelperDelegate.stub {
+            on { provideParams("") } doReturn AnalyticSpaceHelperDelegate.Params.EMPTY
         }
     }
 }

@@ -61,6 +61,7 @@ import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.getSpaceWithTechSpace
 import com.anytypeio.anytype.presentation.BuildConfig
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -136,7 +137,7 @@ import kotlinx.coroutines.withTimeout
 import timber.log.Timber
 
 class ObjectSetViewModel(
-    private val params: Params,
+    private val vmParams: Params,
     private val permissions: UserPermissionProvider,
     private val database: ObjectSetDatabase,
     private val openObjectSet: OpenObjectSet,
@@ -176,8 +177,12 @@ class ObjectSetViewModel(
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val dispatchers: AppCoroutineDispatchers,
     private val getNetworkMode: GetNetworkMode,
-    private val dateProvider: DateProvider
-) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>, ViewerDelegate by viewerDelegate {
+    private val dateProvider: DateProvider,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>,
+    ViewerDelegate by viewerDelegate,
+    AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate
+{
 
     val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
 
@@ -248,12 +253,12 @@ class ObjectSetViewModel(
                 }
                 .collectLatest { (state, permission) ->
                     featured.value = state.featuredRelations(
-                        ctx = params.ctx,
+                        ctx = vmParams.ctx,
                         urlBuilder = urlBuilder,
                         relations = storeOfRelations.getAll()
                     )
                     _header.value = state.header(
-                        ctx = params.ctx,
+                        ctx = vmParams.ctx,
                         urlBuilder = urlBuilder,
                         coverImageHashProvider = coverImageHashProvider,
                         isReadOnlyMode = permission == SpaceMemberPermissions.NO_PERMISSIONS || permission == SpaceMemberPermissions.READER
@@ -294,7 +299,7 @@ class ObjectSetViewModel(
                 .distinctUntilChanged()
                 .map {
                     UpdateText.Params(
-                        context = params.ctx,
+                        context = vmParams.ctx,
                         target = it.target,
                         text = it.text,
                         marks = emptyList()
@@ -380,7 +385,7 @@ class ObjectSetViewModel(
     private fun proceedWIthObservingPermissions() {
         viewModelScope.launch {
             permissions
-                .observe(params.space)
+                .observe(vmParams.space)
                 .collect {
                     permission.value = it
                 }
@@ -389,7 +394,7 @@ class ObjectSetViewModel(
 
     private fun proceedWithObservingProfileIcon() {
         viewModelScope.launch {
-            val config = spaceManager.getConfig(params.space)
+            val config = spaceManager.getConfig(vmParams.space)
             if (config != null) {
                 storelessSubscriptionContainer.subscribe(
                     StoreSearchByIdsParams(
@@ -422,7 +427,7 @@ class ObjectSetViewModel(
         downloadUnsplashImage(
             DownloadUnsplashImage.Params(
                 picture = action.img,
-                space = params.space
+                space = vmParams.space
             )
         ).process(
             failure = {
@@ -467,7 +472,7 @@ class ObjectSetViewModel(
                 .build(InterceptThreadStatus.Params(ctx))
                 .collect {
                     val statusView = it.toView(
-                        networkId = spaceManager.getConfig(params.space)?.network,
+                        networkId = spaceManager.getConfig(vmParams.space)?.network,
                         networkMode = networkMode
                     )
                     status.value = statusView
@@ -495,12 +500,12 @@ class ObjectSetViewModel(
                         Timber.d("subscribeToObjectState, NEW COLLECTION STATE")
                         if (query.state.isInitialized) {
                             dataViewSubscription.startObjectCollectionSubscription(
-                                collection = params.ctx,
+                                collection = vmParams.ctx,
                                 state = query.state,
                                 currentViewerId = query.currentViewerId,
                                 offset = query.offset,
-                                context = params.ctx,
-                                spaces = spaceManager.getSpaceWithTechSpace(space = params.space.id),
+                                context = vmParams.ctx,
+                                spaces = spaceManager.getSpaceWithTechSpace(space = vmParams.space.id),
                                 dataViewRelationLinks = query.state.dataViewContent.relationLinks
                             )
                         } else {
@@ -516,7 +521,7 @@ class ObjectSetViewModel(
                                 currentViewerId = query.currentViewerId,
                                 offset = query.offset,
                                 context = context,
-                                spaces = spaceManager.getSpaceWithTechSpace(params.space.id),
+                                spaces = spaceManager.getSpaceWithTechSpace(vmParams.space.id),
                                 dataViewRelationLinks = query.state.dataViewContent.relationLinks
                             )
                         } else {
@@ -551,7 +556,7 @@ class ObjectSetViewModel(
             openObjectSet(
                 OpenObjectSet.Params(
                     obj = ctx,
-                    space = params.space
+                    space = vmParams.space
                 )
             ).process(
                 success = { result ->
@@ -578,7 +583,8 @@ class ObjectSetViewModel(
                                 analytics = analytics,
                                 event = ObjectStateAnalyticsEvent.OPEN_OBJECT,
                                 startTime = startTime,
-                                currentViewId = session.currentViewerId.value
+                                currentViewId = session.currentViewerId.value,
+                                spaceParams = provideParams(vmParams.space.id)
                             )
                         }
                     }
@@ -1219,8 +1225,8 @@ class ObjectSetViewModel(
         if (type.key == ObjectTypeIds.BOOKMARK) {
             dispatch(
                 ObjectSetCommand.Modal.CreateBookmark(
-                    ctx = params.ctx,
-                    space = params.space.id
+                    ctx = vmParams.ctx,
+                    space = vmParams.space.id
                 )
             )
         } else {
@@ -1356,8 +1362,8 @@ class ObjectSetViewModel(
         Timber.d("onCoverClicked, ")
         dispatch(
             ObjectSetCommand.Modal.OpenCoverActionMenu(
-                ctx = params.ctx,
-                space = params.space.id
+                ctx = vmParams.ctx,
+                space = vmParams.space.id
             )
         )
     }
@@ -1465,7 +1471,7 @@ class ObjectSetViewModel(
         isCustomizeViewPanelVisible.value = false
         val event = AppNavigation.Command.OpenModalTemplateSelect(
             template = target,
-            space = params.space.id,
+            space = vmParams.space.id,
             templateTypeId = targetTypeId,
             templateTypeKey = targetTypeKey
         )
@@ -1633,7 +1639,8 @@ class ObjectSetViewModel(
                         route = EventsDictionary.Routes.navigation,
                         startTime = startTime,
                         view = EventsDictionary.View.viewNavbar,
-                        objType = objType ?: storeOfObjectTypes.getByKey(result.typeKey.key)
+                        objType = objType ?: storeOfObjectTypes.getByKey(result.typeKey.key),
+                        spaceParams = provideParams(vmParams.space.id)
                     )
                 },
                 onFailure = { e ->
@@ -1652,7 +1659,8 @@ class ObjectSetViewModel(
                 analytics = analytics,
                 event = ObjectStateAnalyticsEvent.OBJECT_CREATE,
                 startTime = startTime,
-                type = objType?.sourceObject ?: OBJ_TYPE_CUSTOM
+                type = objType?.sourceObject ?: OBJ_TYPE_CUSTOM,
+                spaceParams = provideParams(vmParams.space.id)
             )
         }
     }
@@ -1789,7 +1797,7 @@ class ObjectSetViewModel(
                             ctx = context,
                             objectId = context,
                             relationKey = relation.key,
-                            space = params.space.id
+                            space = vmParams.space.id
                         )
                     )
                 }
@@ -1841,7 +1849,8 @@ class ObjectSetViewModel(
                         analytics = analytics,
                         event = ObjectStateAnalyticsEvent.SELECT_QUERY,
                         type = query,
-                        startTime = startTime
+                        startTime = startTime,
+                        spaceParams = provideParams(vmParams.space.id)
                     )
                     defaultPayloadConsumer(payload)
                 },
@@ -1862,7 +1871,8 @@ class ObjectSetViewModel(
                         state = stateReducer.state.value,
                         analytics = analytics,
                         event = ObjectStateAnalyticsEvent.TURN_INTO_COLLECTION,
-                        startTime = startTime
+                        startTime = startTime,
+                        spaceParams = provideParams(vmParams.space.id)
                     )
                 }
             )
@@ -2012,7 +2022,8 @@ class ObjectSetViewModel(
                 state = stateReducer.state.value,
                 analytics = analytics,
                 event = event,
-                type = type
+                type = type,
+                spaceParams = provideParams(vmParams.space.id)
             )
         }
     }
@@ -2028,7 +2039,7 @@ class ObjectSetViewModel(
                 .flatMapLatest { selectedType ->
                     templatesContainer.subscribeToTemplates(
                         type = selectedType.id,
-                        space = params.space,
+                        space = vmParams.space,
                         subscription = "$context$SUBSCRIPTION_TEMPLATES_ID"
                     )
                 }.map { templates ->
@@ -2111,7 +2122,7 @@ class ObjectSetViewModel(
 
     private suspend fun fetchAndProcessObjectTypes(selectedType: Id, widgetState: TypeTemplatesWidgetUI.Data) {
         val filters = ObjectSearchConstants.filterTypes(
-            spaces = listOf(params.space.id),
+            spaces = listOf(vmParams.space.id),
             recommendedLayouts = SupportedLayouts.createObjectLayouts
         )
         val params = GetObjectTypes.Params(
@@ -2215,7 +2226,8 @@ class ObjectSetViewModel(
                         state = stateReducer.state.value,
                         analytics = analytics,
                         event = ObjectStateAnalyticsEvent.CREATE_TEMPLATE,
-                        type = storeOfObjectTypes.get(targetTypeId)?.sourceObject
+                        type = storeOfObjectTypes.get(targetTypeId)?.sourceObject,
+                        spaceParams = provideParams(vmParams.space.id)
                     )
                     proceedWithOpeningTemplate(
                         target = id,
@@ -2327,7 +2339,8 @@ class ObjectSetViewModel(
                         state = stateReducer.state.value,
                         analytics = analytics,
                         event = ObjectStateAnalyticsEvent.DUPLICATE_TEMPLATE,
-                        type = template.targetTypeId.id
+                        type = template.targetTypeId.id,
+                        spaceParams = provideParams(vmParams.space.id)
                     )
                     Timber.d("Successfully duplicated templates: $ids")
                 },
@@ -2354,7 +2367,8 @@ class ObjectSetViewModel(
                         state = stateReducer.state.value,
                         analytics = analytics,
                         event = ObjectStateAnalyticsEvent.DELETE_TEMPLATE,
-                        type = template.targetTypeKey.key
+                        type = template.targetTypeKey.key,
+                        spaceParams = provideParams(vmParams.space.id)
                     )
                     Timber.d("Successfully archived templates: $ids")
                 },
@@ -2383,7 +2397,8 @@ class ObjectSetViewModel(
                         state = stateReducer.state.value,
                         analytics = analytics,
                         event = ObjectStateAnalyticsEvent.EDIT_TEMPLATE,
-                        type = template.targetTypeKey.key
+                        type = template.targetTypeKey.key,
+                        spaceParams = provideParams(vmParams.space.id)
                     )
                 }
             }
@@ -2422,7 +2437,8 @@ class ObjectSetViewModel(
                                     state = state,
                                     analytics = analytics,
                                     event = ObjectStateAnalyticsEvent.REMOVE_VIEW,
-                                    startTime = startTime
+                                    startTime = startTime,
+                                    spaceParams = provideParams(vmParams.space.id)
                                 )
                             }
                         )
@@ -2455,7 +2471,8 @@ class ObjectSetViewModel(
                                     analytics = analytics,
                                     event = ObjectStateAnalyticsEvent.REPOSITION_VIEW,
                                     startTime = startTime,
-                                    type = type.formattedName
+                                    type = type.formattedName,
+                                    spaceParams = provideParams(vmParams.space.id)
                                 )
                             }
                         )
@@ -2473,7 +2490,8 @@ class ObjectSetViewModel(
                                 analytics = analytics,
                                 event = ObjectStateAnalyticsEvent.SWITCH_VIEW,
                                 startTime = startTime,
-                                type = action.type.formattedName
+                                type = action.type.formattedName,
+                                spaceParams = provideParams(vmParams.space.id)
                             )
                         }
                     ))
@@ -2502,7 +2520,8 @@ class ObjectSetViewModel(
                                     analytics = analytics,
                                     event = ObjectStateAnalyticsEvent.ADD_VIEW,
                                     startTime = startTime,
-                                    type = newView.type.formattedName
+                                    type = newView.type.formattedName,
+                                    spaceParams = provideParams(vmParams.space.id)
                                 )
                                 widgetViewerId.value = newViewId
                                 showViewerEditWidgetForNewView()
@@ -2610,7 +2629,8 @@ class ObjectSetViewModel(
                                     state = state,
                                     analytics = analytics,
                                     event = ObjectStateAnalyticsEvent.REMOVE_VIEW,
-                                    startTime = startTime
+                                    startTime = startTime,
+                                    spaceParams = provideParams(vmParams.space.id)
                                 )
                             }
                         )
@@ -2633,7 +2653,8 @@ class ObjectSetViewModel(
                                     analytics = analytics,
                                     event = ObjectStateAnalyticsEvent.DUPLICATE_VIEW,
                                     startTime = startTime,
-                                    type = viewer.type.formattedName
+                                    type = viewer.type.formattedName,
+                                    spaceParams = provideParams(vmParams.space.id)
                                 )
                             }
                         )
@@ -2783,7 +2804,8 @@ class ObjectSetViewModel(
                                 analytics = analytics,
                                 event = ObjectStateAnalyticsEvent.CHANGE_VIEW_TYPE,
                                 startTime = startTime,
-                                type = action.type.formattedName
+                                type = action.type.formattedName,
+                                spaceParams = provideParams(vmParams.space.id)
                             )
                         }
                     },

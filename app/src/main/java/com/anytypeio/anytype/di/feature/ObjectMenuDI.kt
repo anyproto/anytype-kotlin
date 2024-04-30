@@ -25,6 +25,7 @@ import com.anytypeio.anytype.domain.templates.CreateTemplateFromObject
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.Editor
@@ -127,7 +128,8 @@ object ObjectMenuModule {
         debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader,
         createWidget: CreateWidget,
         spaceManager: SpaceManager,
-        deepLinkResolver: DeepLinkResolver
+        deepLinkResolver: DeepLinkResolver,
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ): ObjectMenuViewModel.Factory = ObjectMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
         duplicateObject = duplicateObject,
@@ -148,7 +150,8 @@ object ObjectMenuModule {
         debugGoroutinesShareDownloader = debugGoroutinesShareDownloader,
         createWidget = createWidget,
         spaceManager = spaceManager,
-        deepLinkResolver = deepLinkResolver
+        deepLinkResolver = deepLinkResolver,
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
     )
 
     @JvmStatic
@@ -224,7 +227,8 @@ object ObjectSetMenuModule {
         debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader,
         createWidget: CreateWidget,
         spaceManager: SpaceManager,
-        deepLinkResolver: DeepLinkResolver
+        deepLinkResolver: DeepLinkResolver,
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ): ObjectSetMenuViewModel.Factory = ObjectSetMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
         addToFavorite = addToFavorite,
@@ -241,7 +245,8 @@ object ObjectSetMenuModule {
         debugGoroutinesShareDownloader = debugGoroutinesShareDownloader,
         createWidget = createWidget,
         spaceManager = spaceManager,
-        deepLinkResolver = deepLinkResolver
+        deepLinkResolver = deepLinkResolver,
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
     )
 
     @JvmStatic

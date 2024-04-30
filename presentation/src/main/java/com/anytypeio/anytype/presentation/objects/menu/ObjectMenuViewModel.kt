@@ -28,6 +28,7 @@ import com.anytypeio.anytype.domain.page.AddBackLinkToObject
 import com.anytypeio.anytype.domain.templates.CreateTemplateFromObject
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.Editor
@@ -65,7 +66,8 @@ class ObjectMenuViewModel(
     private val setObjectDetails: SetObjectDetails,
     private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader,
     private val spaceManager: SpaceManager,
-    private val deepLinkResolver: DeepLinkResolver
+    private val deepLinkResolver: DeepLinkResolver,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
     addToFavorite = addToFavorite,
@@ -80,7 +82,8 @@ class ObjectMenuViewModel(
     addObjectToCollection = addObjectToCollection,
     debugGoroutinesShareDownloader = debugGoroutinesShareDownloader,
     createWidget = createWidget,
-    spaceManager = spaceManager
+    spaceManager = spaceManager,
+    analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
 ) {
 
     private val objectRestrictions = storage.objectRestrictions.current()
@@ -347,7 +350,8 @@ class ObjectMenuViewModel(
                         analytics = analytics,
                         details = storage.details.current().details,
                         ctx = ctx,
-                        startTime = startTime
+                        startTime = startTime,
+                        spaceParams = provideParams(space)
                     )
                     buildOpenTemplateCommand(
                         ctx = ctx,
@@ -459,7 +463,8 @@ class ObjectMenuViewModel(
         private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader,
         private val createWidget: CreateWidget,
         private val spaceManager: SpaceManager,
-        private val deepLinkResolver: DeepLinkResolver
+        private val deepLinkResolver: DeepLinkResolver,
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectMenuViewModel(
@@ -482,7 +487,8 @@ class ObjectMenuViewModel(
                 debugGoroutinesShareDownloader = debugGoroutinesShareDownloader,
                 createWidget = createWidget,
                 spaceManager = spaceManager,
-                deepLinkResolver = deepLinkResolver
+                deepLinkResolver = deepLinkResolver,
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
             ) as T
         }
     }

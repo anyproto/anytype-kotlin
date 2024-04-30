@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.multiplayer.SpaceJoinRequestViewModel
 import com.anytypeio.anytype.ui.multiplayer.SpaceJoinRequestFragment
 import dagger.Binds
@@ -55,4 +56,5 @@ interface SpaceJoinRequestDependencies : ComponentDependencies {
     fun dispatchers(): AppCoroutineDispatchers
     fun spaceManager(): SpaceManager
     fun analytics(): Analytics
+    fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
 }

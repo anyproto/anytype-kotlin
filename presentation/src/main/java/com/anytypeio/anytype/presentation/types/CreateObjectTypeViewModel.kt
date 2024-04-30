@@ -5,17 +5,21 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary.libraryCreateType
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.types.CreateObjectType
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import javax.inject.Inject
@@ -32,8 +36,10 @@ class CreateObjectTypeViewModel(
     private val urlBuilder: UrlBuilder,
     private val emojiProvider: EmojiProvider,
     private val analytics: Analytics,
-    private val spaceManager: SpaceManager
-) : NavigationViewModel<CreateObjectTypeViewModel.Navigation>() {
+    private val spaceManager: SpaceManager,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+) : NavigationViewModel<CreateObjectTypeViewModel.Navigation>(),
+    AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val unicodeIconFlow = MutableStateFlow("")
 
@@ -69,7 +75,17 @@ class CreateObjectTypeViewModel(
                 )
             ).fold(
                 onSuccess = {
-                    viewModelScope.sendEvent(analytics = analytics, eventName = libraryCreateType)
+                    val spaceParams = provideParams(spaceManager.get())
+                    viewModelScope.sendEvent(
+                        analytics = analytics,
+                        eventName = libraryCreateType,
+                        props = Props(
+                            mapOf(
+                                EventsPropertiesKey.permissions to spaceParams.permission,
+                                EventsPropertiesKey.spaceType to spaceParams.spaceType
+                            )
+                        )
+                    )
                     navigate(Navigation.BackWithCreatedType)
                 },
                 onFailure = {
@@ -109,7 +125,8 @@ class CreateObjectTypeViewModel(
         private val urlBuilder: UrlBuilder,
         private val emojiProvider: EmojiProvider,
         private val analytics: Analytics,
-        private val spaceManager: SpaceManager
+        private val spaceManager: SpaceManager,
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -118,7 +135,8 @@ class CreateObjectTypeViewModel(
                 urlBuilder = urlBuilder,
                 emojiProvider = emojiProvider,
                 analytics = analytics,
-                spaceManager = spaceManager
+                spaceManager = spaceManager,
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
             ) as T
         }
     }

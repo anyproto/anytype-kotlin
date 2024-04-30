@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.linking.LinkToObjectOrWebViewModelFactory
 import com.anytypeio.anytype.ui.linking.LinkToObjectOrWebPagesFragment
@@ -42,7 +43,8 @@ object LinkToObjectOrWebModule {
         analytics: Analytics,
         stores: Editor.Storage,
         urlValidator: UrlValidator,
-        spaceManager: SpaceManager
+        spaceManager: SpaceManager,
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ): LinkToObjectOrWebViewModelFactory = LinkToObjectOrWebViewModelFactory(
         urlBuilder = urlBuilder,
         storeOfObjectTypes = storeOfObjectTypes,
@@ -50,6 +52,7 @@ object LinkToObjectOrWebModule {
         analytics = analytics,
         stores = stores,
         urlValidator = urlValidator,
-        spaceManager = spaceManager
+        spaceManager = spaceManager,
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
     )
 }

@@ -11,12 +11,14 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.After
 import org.junit.Before
@@ -33,7 +35,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+    val coroutineTestRule = DefaultCoroutineTestRule()
 
     @get:Rule
     val timberTestRule: TimberTestRule = TimberTestRule.builder()
@@ -49,6 +51,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         stubSpaceManager()
         stubGetNetworkMode()
         stubFileLimitEvents()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @After
@@ -76,7 +79,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
     //region {1}
     @Test
-    fun `should hide slash widget when clicked on BOLD `() {
+    fun `should hide slash widget when clicked on BOLD `() = runTest {
 
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
@@ -90,26 +93,33 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.apply {
             onSelectionChanged(
                 id = block.id,
                 selection = IntRange(0, 0)
             )
+            advanceUntilIdle()
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Style.Markup.Bold)
+
+        advanceUntilIdle()
 
         val state = vm.controlPanelViewState.value
 
@@ -117,138 +127,8 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         assertFalse(state.slashWidget.isVisible)
     }
 
-    fun `should invoke update markup Bold command`() {
-
-        val header = MockTypicalDocumentFactory.header
-        val title = MockTypicalDocumentFactory.title
-
-        val block = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "FooBar",
-                marks = listOf(),
-                style = Block.Content.Text.Style.P
-            )
-        )
-
-        val page = Block(
-            id = root,
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart,
-            children = listOf(header.id, block.id)
-        )
-
-        val doc = listOf(page, header, title, block)
-
-        stubInterceptEvents()
-        stubUpdateBlocksMark()
-        stubOpenDocument(document = doc)
-        val vm = buildViewModel()
-
-        vm.onStart(id = root, space = defaultSpace)
-
-        vm.apply {
-            onSelectionChanged(
-                id = block.id,
-                selection = IntRange(3, 3)
-            )
-            onBlockFocusChanged(
-                id = block.id,
-                hasFocus = true
-            )
-            onSlashTextWatcherEvent(
-                event = SlashEvent.Start(
-                    cursorCoordinate = 820,
-                    slashStart = 3
-                )
-            )
-            onSlashTextWatcherEvent(
-                event = SlashEvent.Filter(
-                    filter = "/",
-                    viewType = 0
-                )
-            )
-            onTextBlockTextChanged(
-                view = BlockView.Text.Paragraph(
-                    id = block.id,
-                    text = "Foo/Bar",
-                    marks = listOf(),
-                    isFocused = true,
-                    mode = BlockView.Mode.EDIT,
-                    isSelected = false,
-                    cursor = null
-                )
-            )
-            onSelectionChanged(
-                id = block.id,
-                selection = IntRange(4, 4)
-            )
-            onSlashTextWatcherEvent(
-                event = SlashEvent.Filter(
-                    filter = "/b",
-                    viewType = 0
-                )
-            )
-            onTextBlockTextChanged(
-                view = BlockView.Text.Paragraph(
-                    id = block.id,
-                    text = "Foo/bBar",
-                    marks = listOf(),
-                    isFocused = true,
-                    mode = BlockView.Mode.EDIT,
-                    isSelected = false,
-                    cursor = null
-                )
-            )
-            onSelectionChanged(
-                id = block.id,
-                selection = IntRange(5, 5)
-            )
-            onSlashTextWatcherEvent(
-                event = SlashEvent.Filter(
-                    filter = "/bo",
-                    viewType = 0
-                )
-            )
-            onTextBlockTextChanged(
-                view = BlockView.Text.Paragraph(
-                    id = block.id,
-                    text = "Foo/boBar",
-                    marks = listOf(),
-                    isFocused = true,
-                    mode = BlockView.Mode.EDIT,
-                    isSelected = false,
-                    cursor = null
-                )
-            )
-            onSelectionChanged(
-                id = block.id,
-                selection = IntRange(6, 6)
-            )
-        }
-
-        //TESTING
-
-        vm.onSlashItemClicked(
-            item = SlashItem.Style.Markup.Bold
-        )
-
-        val params = UpdateBlocksMark.Params(
-            context = root,
-            targets = listOf(block.id),
-            mark = Block.Content.Text.Mark(
-                range = IntRange(0, block.content.asText().text.length),
-                type = Block.Content.Text.Mark.Type.BOLD
-            )
-        )
-
-        verifyBlocking(updateBlocksMark, times(1)) { invoke(params) }
-    }
-
     @Test
-    fun `should save selection and focus on slash start index when clicked on BOLD`() {
+    fun `should save selection and focus on slash start index when clicked on BOLD`() = runTest {
         val header = MockTypicalDocumentFactory.header
         val title = MockTypicalDocumentFactory.title
 
@@ -303,6 +183,8 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         val selection = IntRange(7, 7)
 
         vm.apply {
@@ -310,27 +192,33 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
                 id = block.id,
                 selection = selection
             )
+            advanceUntilIdle()
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 7
                 )
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 event = SlashEvent.Filter(
                     filter = "/",
                     viewType = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         //TESTING
 
         vm.onSlashItemClicked(SlashItem.Style.Markup.Bold)
+
+        advanceUntilIdle()
 
         val focus = orchestrator.stores.focus.current()
         val cursor = Editor.Cursor.Range(range = selection)
@@ -340,7 +228,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should invoke updateBlocksMark when clicked on BOLD`() {
+    fun `should invoke updateBlocksMark when clicked on BOLD`() = runTest {
         val header = MockTypicalDocumentFactory.header
         val title = MockTypicalDocumentFactory.title
 
@@ -400,6 +288,8 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         val selection = IntRange(7, 7)
 
         vm.apply {
@@ -407,22 +297,26 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
                 id = block2.id,
                 selection = selection
             )
+            advanceUntilIdle()
             onBlockFocusChanged(
                 id = block2.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 7
                 )
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 event = SlashEvent.Filter(
                     filter = "/",
                     viewType = Types.HOLDER_BULLET
                 )
             )
+            advanceUntilIdle()
             onTextBlockTextChanged(
                 view = BlockView.Text.Paragraph(
                     id = block2.id,
@@ -434,6 +328,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
                     cursor = null
                 )
             )
+            advanceUntilIdle()
         }
 
         coroutineTestRule.advanceTime(300)
@@ -441,6 +336,8 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
         //TESTING
 
         vm.onSlashItemClicked(SlashItem.Style.Markup.Bold)
+
+        advanceUntilIdle()
 
         val params = UpdateBlocksMark.Params(
             context = root,
@@ -457,7 +354,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
     //region {2}
     @Test
-    fun `should hide slash widget event when clicked on ITALIC `() {
+    fun `should hide slash widget event when clicked on ITALIC `() = runTest {
 
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
@@ -471,32 +368,40 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.apply {
             onSelectionChanged(
                 id = block.id,
                 selection = IntRange(0, 0)
             )
+            advanceUntilIdle()
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
                 )
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 event = SlashEvent.Filter(
                     filter = "/",
                     viewType = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Style.Markup.Italic)
+
+        advanceUntilIdle()
 
         val state = vm.controlPanelViewState.value
 
@@ -505,7 +410,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should save selection and focus when clicked on ITALIC`() {
+    fun `should save selection and focus when clicked on ITALIC`() = runTest {
         val header = MockTypicalDocumentFactory.header
         val title = MockTypicalDocumentFactory.title
 
@@ -560,6 +465,8 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         val selection = IntRange(11, 11)
 
         vm.apply {
@@ -567,27 +474,33 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
                 id = block.id,
                 selection = selection
             )
+            advanceUntilIdle()
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 11
                 )
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 event = SlashEvent.Filter(
                     filter = "/",
                     viewType = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         //TESTING
 
         vm.onSlashItemClicked(SlashItem.Style.Markup.Italic)
+
+        advanceUntilIdle()
 
         val focus = orchestrator.stores.focus.current()
         val cursor = Editor.Cursor.Range(range = selection)
@@ -597,7 +510,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should invoke updateBlocksMark when clicked on ITALIC`() {
+    fun `should invoke updateBlocksMark when clicked on ITALIC`() = runTest {
         val header = MockTypicalDocumentFactory.header
         val title = MockTypicalDocumentFactory.title
 
@@ -641,6 +554,8 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         val selection = IntRange(7, 7)
 
         vm.apply {
@@ -648,22 +563,26 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
                 id = block2.id,
                 selection = selection
             )
+            advanceUntilIdle()
             onBlockFocusChanged(
                 id = block2.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 7
                 )
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 event = SlashEvent.Filter(
                     filter = "/",
                     viewType = 0
                 )
             )
+            advanceUntilIdle()
             onTextBlockTextChanged(
                 view = BlockView.Text.Paragraph(
                     id = block2.id,
@@ -675,11 +594,14 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
                     cursor = null
                 )
             )
+            advanceUntilIdle()
         }
 
         //TESTING
 
         vm.onSlashItemClicked(SlashItem.Style.Markup.Italic)
+
+        advanceUntilIdle()
 
         val params = UpdateBlocksMark.Params(
             context = root,
@@ -696,7 +618,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
     //region {3}
     @Test
-    fun `should hide slash widget event when clicked on STRIKETHROUGH `() {
+    fun `should hide slash widget event when clicked on STRIKETHROUGH `() = runTest {
 
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
@@ -710,26 +632,33 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.apply {
             onSelectionChanged(
                 id = block.id,
                 selection = IntRange(0, 0)
             )
+            advanceUntilIdle()
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Style.Markup.Strikethrough)
+
+        advanceUntilIdle()
 
         val state = vm.controlPanelViewState.value
 
@@ -738,7 +667,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should save selection and focus when clicked on STRIKETHROUGH`() {
+    fun `should save selection and focus when clicked on STRIKETHROUGH`() = runTest {
         val header = MockTypicalDocumentFactory.header
         val title = MockTypicalDocumentFactory.title
 
@@ -793,6 +722,8 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         val selection = IntRange(5, 5)
 
         vm.apply {
@@ -800,27 +731,33 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
                 id = block2.id,
                 selection = selection
             )
+            advanceUntilIdle()
             onBlockFocusChanged(
                 id = block2.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 5
                 )
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 event = SlashEvent.Filter(
                     filter = "/",
                     viewType = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         //TESTING
 
         vm.onSlashItemClicked(SlashItem.Style.Markup.Strikethrough)
+
+        advanceUntilIdle()
 
         val focus = orchestrator.stores.focus.current()
         val cursor = Editor.Cursor.Range(range = selection)
@@ -830,7 +767,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should invoke updateBlocksMark when clicked on STRIKETHROUGH`() {
+    fun `should invoke updateBlocksMark when clicked on STRIKETHROUGH`() = runTest {
         val header = MockTypicalDocumentFactory.header
         val title = MockTypicalDocumentFactory.title
 
@@ -874,6 +811,8 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         val selection = IntRange(7, 7)
 
         vm.apply {
@@ -881,22 +820,26 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
                 id = block.id,
                 selection = selection
             )
+            advanceUntilIdle()
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 7
                 )
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 event = SlashEvent.Filter(
                     filter = "/",
                     viewType = 0
                 )
             )
+            advanceUntilIdle()
             onTextBlockTextChanged(
                 view = BlockView.Text.Paragraph(
                     id = block.id,
@@ -908,11 +851,14 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
                     cursor = null
                 )
             )
+            advanceUntilIdle()
         }
 
         //TESTING
 
         vm.onSlashItemClicked(SlashItem.Style.Markup.Strikethrough)
+
+        advanceUntilIdle()
 
         val params = UpdateBlocksMark.Params(
             context = root,
@@ -929,7 +875,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
     //region {4}
     @Test
-    fun `should hide slash widget event when clicked on CODE `() {
+    fun `should hide slash widget event when clicked on CODE `() = runTest {
 
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
@@ -943,32 +889,40 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.apply {
             onSelectionChanged(
                 id = block.id,
                 selection = IntRange(0, 0)
             )
+            advanceUntilIdle()
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
                 )
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 event = SlashEvent.Filter(
                     filter = "/",
                     viewType = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Style.Markup.Code)
+
+        advanceUntilIdle()
 
         val state = vm.controlPanelViewState.value
 
@@ -977,7 +931,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should save selection and focus when clicked on CODE`() {
+    fun `should save selection and focus when clicked on CODE`() = runTest {
         val header = MockTypicalDocumentFactory.header
         val title = MockTypicalDocumentFactory.title
 
@@ -1032,6 +986,8 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         val selection = IntRange(15, 15)
 
         vm.apply {
@@ -1039,27 +995,33 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
                 id = block3.id,
                 selection = selection
             )
+            advanceUntilIdle()
             onBlockFocusChanged(
                 id = block3.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 15
                 )
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 event = SlashEvent.Filter(
                     filter = "/",
                     viewType = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         //TESTING
 
         vm.onSlashItemClicked(SlashItem.Style.Markup.Code)
+
+        advanceUntilIdle()
 
         val focus = orchestrator.stores.focus.current()
         val cursor = Editor.Cursor.Range(range = selection)
@@ -1069,7 +1031,7 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should invoke updateBlocksMark when clicked on CODE`() {
+    fun `should invoke updateBlocksMark when clicked on CODE`() = runTest {
         val header = MockTypicalDocumentFactory.header
         val title = MockTypicalDocumentFactory.title
 
@@ -1113,6 +1075,8 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         val selection = IntRange(7, 7)
 
         vm.apply {
@@ -1120,22 +1084,26 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
                 id = block.id,
                 selection = selection
             )
+            advanceUntilIdle()
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 7
                 )
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 event = SlashEvent.Filter(
                     filter = "/",
                     viewType = 0
                 )
             )
+            advanceUntilIdle()
             onTextBlockTextChanged(
                 view = BlockView.Text.Paragraph(
                     id = block.id,
@@ -1147,11 +1115,14 @@ class EditorSlashWidgetMarksTest : EditorPresentationTestSetup() {
                     cursor = null
                 )
             )
+            advanceUntilIdle()
         }
 
         //TESTING
 
         vm.onSlashItemClicked(SlashItem.Style.Markup.Code)
+
+        advanceUntilIdle()
 
         val params = UpdateBlocksMark.Params(
             context = root,

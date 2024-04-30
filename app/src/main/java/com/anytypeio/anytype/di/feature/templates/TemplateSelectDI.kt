@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.onboarding.OnboardingViewModel
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
@@ -83,6 +84,7 @@ interface TemplateSelectDependencies : ComponentDependencies {
     fun blockRepository(): BlockRepository
     fun dispatchers(): AppCoroutineDispatchers
     fun spaceManager(): SpaceManager
+    fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
 }
 
 @Scope

@@ -7,9 +7,11 @@ import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.UpdateCheckbox
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -28,7 +30,7 @@ class EditorCheckboxTest : EditorPresentationTestSetup() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+    val coroutineTestRule = DefaultCoroutineTestRule()
 
     @Before
     fun setup() {
@@ -37,10 +39,11 @@ class EditorCheckboxTest : EditorPresentationTestSetup() {
         stubGetNetworkMode()
         stubFileLimitEvents()
         stubInterceptEvents()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @Test
-    fun `should start updating checkbox as checked when it is clicked`() {
+    fun `should start updating checkbox as checked when it is clicked`() = runTest {
 
         // SETUP
 
@@ -84,7 +87,11 @@ class EditorCheckboxTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.onCheckboxClicked(view)
+
+        advanceUntilIdle()
 
         verifyBlocking(updateCheckbox, times(1)) {
             invoke(
@@ -100,7 +107,7 @@ class EditorCheckboxTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should start updating checkbox as not checked when it is clicked`() {
+    fun `should start updating checkbox as not checked when it is clicked`() = runTest {
 
         // SETUP
 
@@ -144,7 +151,11 @@ class EditorCheckboxTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.onCheckboxClicked(view)
+
+        advanceUntilIdle()
 
         verifyBlocking(updateCheckbox, times(1)) {
             invoke(

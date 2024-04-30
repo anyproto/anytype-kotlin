@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
@@ -38,6 +39,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         stubNetworkMode()
         stubCreateDataViewObject()
         stubObservePermissions()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @After

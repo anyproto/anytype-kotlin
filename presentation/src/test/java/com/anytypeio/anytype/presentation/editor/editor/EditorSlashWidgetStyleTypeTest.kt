@@ -9,12 +9,14 @@ import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.editor.EditorViewModel.Companion.TEXT_CHANGES_DEBOUNCE_DURATION
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.After
 import org.junit.Before
@@ -31,7 +33,7 @@ class EditorSlashWidgetStyleTypeTest : EditorPresentationTestSetup() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+    val coroutineTestRule = DefaultCoroutineTestRule()
 
     @get:Rule
     val timberTestRule: TimberTestRule = TimberTestRule.builder()
@@ -47,6 +49,7 @@ class EditorSlashWidgetStyleTypeTest : EditorPresentationTestSetup() {
         stubSpaceManager()
         stubGetNetworkMode()
         stubFileLimitEvents()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -56,7 +59,7 @@ class EditorSlashWidgetStyleTypeTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should save selection and focus when clicked on BULLETED`() {
+    fun `should save selection and focus when clicked on BULLETED`() = runTest {
         val header = MockTypicalDocumentFactory.header
         val title = MockTypicalDocumentFactory.title
 
@@ -100,6 +103,8 @@ class EditorSlashWidgetStyleTypeTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         val selection = IntRange(7, 7)
 
         vm.apply {
@@ -107,21 +112,26 @@ class EditorSlashWidgetStyleTypeTest : EditorPresentationTestSetup() {
                 id = block.id,
                 selection = selection
             )
+            advanceUntilIdle()
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 7
                 )
             )
+            advanceUntilIdle()
         }
 
         //TESTING
 
         vm.onSlashItemClicked(SlashItem.Style.Type.Bulleted)
+
+        advanceUntilIdle()
 
         val focus = orchestrator.stores.focus.current()
         val cursor = Editor.Cursor.Range(range = selection)
@@ -131,7 +141,7 @@ class EditorSlashWidgetStyleTypeTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should hide slash widget event when clicked on BULLETED `() {
+    fun `should hide slash widget event when clicked on BULLETED `() = runTest {
 
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
@@ -146,26 +156,33 @@ class EditorSlashWidgetStyleTypeTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.apply {
             onSelectionChanged(
                 id = block.id,
                 selection = IntRange(0, 0)
             )
+            advanceUntilIdle()
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING
 
         vm.onSlashItemClicked(SlashItem.Style.Type.Bulleted)
+
+        advanceUntilIdle()
 
         val state = vm.controlPanelViewState.value
 
@@ -174,7 +191,7 @@ class EditorSlashWidgetStyleTypeTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should invoke turnIntoStyle when clicked on BOLD`() {
+    fun `should invoke turnIntoStyle when clicked on BOLD`() = runTest {
         val header = MockTypicalDocumentFactory.header
         val title = MockTypicalDocumentFactory.title
 
@@ -234,6 +251,8 @@ class EditorSlashWidgetStyleTypeTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         val selection = IntRange(7, 7)
 
         vm.apply {
@@ -241,21 +260,26 @@ class EditorSlashWidgetStyleTypeTest : EditorPresentationTestSetup() {
                 id = block2.id,
                 selection = selection
             )
+            advanceUntilIdle()
             onBlockFocusChanged(
                 id = block2.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         //TESTING
 
         vm.onSlashItemClicked(SlashItem.Style.Type.Bulleted)
+
+        advanceUntilIdle()
 
         val params = TurnIntoStyle.Params(
             context = root,

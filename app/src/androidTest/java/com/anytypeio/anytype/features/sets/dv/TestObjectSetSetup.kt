@@ -57,6 +57,7 @@ import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -177,6 +178,9 @@ abstract class TestObjectSetSetup {
 
     @Mock
     lateinit var getNetworkMode: GetNetworkMode
+
+    @Mock
+    lateinit var analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
 
     private lateinit var getTemplates: GetTemplates
     private lateinit var getDefaultObjectType: GetDefaultObjectType
@@ -306,7 +310,8 @@ abstract class TestObjectSetSetup {
                 ctx = ctx,
                 space = SpaceId(defaultSpace)
             ),
-            permissions = permissions
+            permissions = permissions,
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
         )
     }
 

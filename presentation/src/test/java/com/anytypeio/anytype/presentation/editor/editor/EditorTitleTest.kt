@@ -12,7 +12,7 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColor
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
 import kotlin.test.assertEquals
@@ -20,7 +20,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.After
 import org.junit.Before
@@ -39,7 +41,7 @@ class EditorTitleTest : EditorPresentationTestSetup() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+    val coroutineTestRule = DefaultCoroutineTestRule(UnconfinedTestDispatcher())
 
     @get:Rule
     val timberTestRule: TimberTestRule = TimberTestRule.builder()
@@ -60,6 +62,7 @@ class EditorTitleTest : EditorPresentationTestSetup() {
         stubCopy()
         stubSplitBlock()
         stubCreateBlock(root)
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @After
@@ -88,7 +91,7 @@ class EditorTitleTest : EditorPresentationTestSetup() {
     )
 
     @Test
-    fun `should not open action menu for title block`() {
+    fun `should not open action menu for title block`() = runTest {
 
         // SETUP
 
@@ -110,34 +113,34 @@ class EditorTitleTest : EditorPresentationTestSetup() {
 
         val toasts = mutableListOf<String>()
 
-        runBlockingTest {
+        val toastSubscription = launch { vm.toasts.collect { toasts.add(it) } }
+        val commandTestObserver = vm.commands.test()
 
-            val toastSubscription = launch { vm.toasts.collect { toasts.add(it) } }
-            val commandTestObserver = vm.commands.test()
-
-            vm.apply {
-                onStart(id = root, space = defaultSpace)
-                onBlockFocusChanged(title.id, true)
-                onBlockToolbarBlockActionsClicked()
-            }
-
-            commandTestObserver.assertNoValue().assertHistorySize(0)
-
-            assertEquals(
-                expected = 1,
-                actual = toasts.size
-            )
-            assertEquals(
-                expected = EditorViewModel.CANNOT_OPEN_ACTION_MENU_FOR_TITLE_ERROR,
-                actual = toasts.first()
-            )
-
-            toastSubscription.cancel()
+        vm.apply {
+            onStart(id = root, space = defaultSpace)
+            advanceUntilIdle()
+            onBlockFocusChanged(title.id, true)
+            advanceUntilIdle()
+            onBlockToolbarBlockActionsClicked()
+            advanceUntilIdle()
         }
+
+        commandTestObserver.assertNoValue().assertHistorySize(0)
+
+        assertEquals(
+            expected = 1,
+            actual = toasts.size
+        )
+        assertEquals(
+            expected = EditorViewModel.CANNOT_OPEN_ACTION_MENU_FOR_TITLE_ERROR,
+            actual = toasts.first()
+        )
+
+        toastSubscription.cancel()
     }
 
     @Test
-    fun `should start updating title on title-text-changed event without delay`() {
+    fun `should start updating title on title-text-changed event without delay`() = runTest {
 
         // SETUP
 
@@ -261,7 +264,7 @@ class EditorTitleTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should update emoji in title`()  {
+    fun `should update emoji in title`() = runTest  {
         // SETUP
 
         val delay = 500L
@@ -351,7 +354,7 @@ class EditorTitleTest : EditorPresentationTestSetup() {
         assertEquals(expected = before, actual = vm.state.value)
 
         // Moving time forward to receive granular change event
-        coroutineTestRule.advanceTime(delay)
+        advanceUntilIdle()
 
         val after = ViewState.Success(
             blocks = listOf(
@@ -378,7 +381,7 @@ class EditorTitleTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should update emoji and then update text in title`()  {
+    fun `should update emoji and then update text in title`() = runTest  {
         // SETUP
 
         val delay = 500L
@@ -445,7 +448,7 @@ class EditorTitleTest : EditorPresentationTestSetup() {
         // TESTING
 
         // Moving time forward to receive granular change event
-        coroutineTestRule.advanceTime(delay)
+        advanceUntilIdle()
 
         val newText = MockDataFactory.randomString()
         //Update title text

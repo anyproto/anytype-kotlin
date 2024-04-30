@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.other.DefaultSpaceInviteResolver
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.multiplayer.RequestJoinSpaceViewModel
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import dagger.Binds
@@ -64,5 +65,6 @@ interface RequestJoinSpaceDependencies : ComponentDependencies {
     fun dispatchers(): AppCoroutineDispatchers
     fun spaceManager(): SpaceManager
     fun logger(): Logger
-    fun anallytics(): Analytics
+    fun analytics(): Analytics
+    fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
 }

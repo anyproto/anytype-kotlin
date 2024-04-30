@@ -36,6 +36,7 @@ interface SpaceViewSubscriptionContainer {
     fun observe(space: SpaceId) : Flow<ObjectWrapper.SpaceView>
 
     fun get(): List<ObjectWrapper.SpaceView>
+    fun get(space: SpaceId) : ObjectWrapper.SpaceView?
 
     class Default @Inject constructor(
         private val container: StorelessSubscriptionContainer,
@@ -70,6 +71,10 @@ interface SpaceViewSubscriptionContainer {
 
         override fun get(): List<ObjectWrapper.SpaceView> {
             return data.value
+        }
+
+        override fun get(space: SpaceId): ObjectWrapper.SpaceView? {
+            return data.value.find { spaceView -> spaceView.targetSpaceId == space.id }
         }
 
         override fun start() {

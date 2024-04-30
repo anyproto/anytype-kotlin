@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.Editor
 import javax.inject.Inject
 
@@ -17,7 +18,8 @@ class LinkToObjectViewModelFactory(
     private val getObjectTypes: GetObjectTypes,
     private val searchObjects: SearchObjects,
     private val analytics: Analytics,
-    private val spaceManager: SpaceManager
+    private val spaceManager: SpaceManager,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -27,7 +29,8 @@ class LinkToObjectViewModelFactory(
             getObjectTypes = getObjectTypes,
             searchObjects = searchObjects,
             analytics = analytics,
-            spaceManager = spaceManager
+            spaceManager = spaceManager,
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
         ) as T
     }
 }
@@ -39,7 +42,8 @@ class LinkToObjectOrWebViewModelFactory(
     private val analytics: Analytics,
     private val stores: Editor.Storage,
     private val urlValidator: UrlValidator,
-    private val spaceManager: SpaceManager
+    private val spaceManager: SpaceManager,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -51,7 +55,8 @@ class LinkToObjectOrWebViewModelFactory(
             analytics = analytics,
             stores = stores,
             urlValidator = urlValidator,
-            spaceManager = spaceManager
+            spaceManager = spaceManager,
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
         ) as T
     }
 }
@@ -61,7 +66,8 @@ class BackLinkOrAddToObjectViewModelFactory @Inject constructor(
     private val getObjectTypes: GetObjectTypes,
     private val searchObjects: SearchObjects,
     private val analytics: Analytics,
-    private val spaceManager: SpaceManager
+    private val spaceManager: SpaceManager,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -71,7 +77,8 @@ class BackLinkOrAddToObjectViewModelFactory @Inject constructor(
             getObjectTypes = getObjectTypes,
             searchObjects = searchObjects,
             analytics = analytics,
-            spaceManager = spaceManager
+            spaceManager = spaceManager,
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
         ) as T
     }
 }

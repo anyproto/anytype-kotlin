@@ -21,12 +21,15 @@ import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.ArgumentMatchers
 import org.mockito.Mock
+import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
@@ -90,6 +93,9 @@ class SplashViewModelTest {
     @Mock
     lateinit var userPermissionProvider: UserPermissionProvider
 
+    @Mock
+    lateinit var analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+
     lateinit var vm: SplashViewModel
 
     val defaultSpaceConfig = StubConfig()
@@ -102,6 +108,7 @@ class SplashViewModelTest {
             blockRepo = repo
         )
         stubSpaceManager()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     private fun initViewModel() {
@@ -119,7 +126,8 @@ class SplashViewModelTest {
             spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
             localeProvider = localeProvider,
             spaceManager = spaceManager,
-            userPermissionProvider = userPermissionProvider
+            userPermissionProvider = userPermissionProvider,
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
         )
     }
 
@@ -217,5 +225,10 @@ class SplashViewModelTest {
                 get()
             } doReturn defaultSpaceConfig.space
         }
+    }
+
+    private fun stubAnalyticSpaceHelperDelegate() {
+        Mockito.`when`(analyticSpaceHelperDelegate.provideParams(""))
+            .thenReturn(AnalyticSpaceHelperDelegate.Params.EMPTY)
     }
 }

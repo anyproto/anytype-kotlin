@@ -21,7 +21,6 @@ import com.anytypeio.anytype.payments.playbilling.BillingClientState
 import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
 import com.anytypeio.anytype.presentation.membership.models.TierId
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
-import junit.framework.TestCase
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -97,7 +96,7 @@ open class MembershipTestsSetup {
         expectedButtonState: TierButton
     ) {
         assertEquals(TiersConstants.BUILDER_ID, tierView.id.value)
-        assertEquals(false, tierView.isCurrent)
+        assertEquals(false, tierView.isActive)
         assertEquals(expectedFeatures, tierView.features)
         assertEquals(expectedConditionInfo, tierView.conditionInfo)
         assertEquals(expectedAnyName, tierView.membershipAnyName)

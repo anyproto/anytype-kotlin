@@ -22,7 +22,15 @@ import net.bytebuddy.utility.RandomString
 import org.junit.Test
 import org.mockito.Mockito
 
-class TierPayStateTests : MembershipTestsSetup() {
+/**
+ * Tests for the not active tier with possible android subscription
+ *
+ * TierPreview = [Title|Subtitle|ConditionInfo]
+ * Tier = [Title|Subtitle|ConditionInfo|Features|AnyName|ButtonPay]
+ *
+ * TierPreview has same fields as Tier except for Features, AnyName, ButtonState
+ */
+class TierAndroidNotActiveTests : MembershipTestsSetup() {
 
     private fun commonTestSetup(): Pair<List<String>, List<MembershipTierData>> {
         val features = listOf("feature-${RandomString.make()}", "feature-${RandomString.make()}")
@@ -97,7 +105,7 @@ class TierPayStateTests : MembershipTestsSetup() {
                 assertIs<MembershipMainState.Default>(result)
                 val tier: TierPreviewView = result.tiers.find { it.id.value == TiersConstants.BUILDER_ID }!!
                 assertEquals(TiersConstants.BUILDER_ID, tier.id.value)
-                assertEquals(false, tier.isCurrent)
+                assertEquals(false, tier.isActive)
                 assertEquals(TierConditionInfo.Visible.LoadingBillingClient, tier.conditionInfo)
             }
 
@@ -137,7 +145,7 @@ class TierPayStateTests : MembershipTestsSetup() {
                 assertIs<MembershipMainState.Default>(result)
                 val tier: TierPreviewView = result.tiers.find { it.id.value == TiersConstants.BUILDER_ID }!!
                 assertEquals(TiersConstants.BUILDER_ID, tier.id.value)
-                assertEquals(false, tier.isCurrent)
+                assertEquals(false, tier.isActive)
                 assertEquals(TierConditionInfo.Visible.Error(errorMessage), tier.conditionInfo)
             }
 
@@ -190,7 +198,7 @@ class TierPayStateTests : MembershipTestsSetup() {
                 assertIs<MembershipMainState.Default>(result)
                 val tier: TierPreviewView = result.tiers.find { it.id.value == TiersConstants.BUILDER_ID }!!
                 assertEquals(TiersConstants.BUILDER_ID, tier.id.value)
-                assertEquals(false, tier.isCurrent)
+                assertEquals(false, tier.isActive)
                 assertEquals(expectedConditionInfo, tier.conditionInfo)
             }
 
@@ -243,7 +251,7 @@ class TierPayStateTests : MembershipTestsSetup() {
                 assertIs<MembershipMainState.Default>(result)
                 val tier: TierPreviewView = result.tiers.find { it.id.value == TiersConstants.BUILDER_ID }!!
                 assertEquals(TiersConstants.BUILDER_ID, tier.id.value)
-                assertEquals(false, tier.isCurrent)
+                assertEquals(false, tier.isActive)
                 assertEquals(expectedConditionInfo, tier.conditionInfo)
             }
 
@@ -296,7 +304,7 @@ class TierPayStateTests : MembershipTestsSetup() {
                 assertIs<MembershipMainState.Default>(result)
                 val tier: TierPreviewView = result.tiers.find { it.id.value == TiersConstants.BUILDER_ID }!!
                 assertEquals(TiersConstants.BUILDER_ID, tier.id.value)
-                assertEquals(false, tier.isCurrent)
+                assertEquals(false, tier.isActive)
                 assertEquals(expectedConditionInfo, tier.conditionInfo)
             }
 

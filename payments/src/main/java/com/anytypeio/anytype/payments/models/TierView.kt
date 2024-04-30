@@ -6,7 +6,7 @@ import com.anytypeio.anytype.presentation.membership.models.TierId
 //This is a data class that represents a tier preview view in the main Membership screen
 data class TierPreviewView(
     val id: TierId,
-    val isCurrent: Boolean,
+    val isActive: Boolean,
     @StringRes val title: Int,
     @StringRes val subtitle: Int,
     val conditionInfo: TierConditionInfo,
@@ -15,7 +15,7 @@ data class TierPreviewView(
 //This is a data class that represents a tier view when tier is opened
 data class TierView(
     val id: TierId,
-    val isCurrent: Boolean,
+    val isActive: Boolean,
     @StringRes val title: Int,
     @StringRes val subtitle: Int,
     val conditionInfo: TierConditionInfo,

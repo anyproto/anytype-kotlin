@@ -20,19 +20,19 @@ fun MembershipTierData.toView(
     billingClientState: BillingClientState
 ): TierView {
     val tierId = TierId(id)
-    val isCurrent = membershipStatus.isTierActive(id)
+    val isActive = membershipStatus.isTierActive(id)
     return TierView(
         id = tierId,
         title = tierId.getTierTitle(),
         subtitle = tierId.getTierSubtitle(),
         conditionInfo = getConditionInfo(
-            isCurrent = isCurrent,
+            isActive = isActive,
             billingClientState = billingClientState
         ),
-        isCurrent = isCurrent,
+        isActive = isActive,
         features = features,
-        membershipAnyName = getAnyName(isCurrent, billingClientState),
-        buttonState = toButtonView(isCurrent = isCurrent)
+        membershipAnyName = getAnyName(isActive, billingClientState),
+        buttonState = toButtonView(isActive = isActive)
     )
 }
 
@@ -41,24 +41,28 @@ fun MembershipTierData.toPreviewView(
     billingClientState: BillingClientState
 ): TierPreviewView {
     val tierId = TierId(id)
-    val isCurrent = membershipStatus.isTierActive(id)
+    val isActive = membershipStatus.isTierActive(id)
     return TierPreviewView(
         id = tierId,
         title = tierId.getTierTitle(),
         subtitle = tierId.getTierSubtitle(),
         conditionInfo = getConditionInfo(
-            isCurrent = isCurrent,
+            isActive = isActive,
             billingClientState = billingClientState
         ),
-        isCurrent = isCurrent
+        isActive = isActive
     )
 }
 
 private fun MembershipTierData.toButtonView(
-    isCurrent: Boolean,
+    isActive: Boolean,
 ): TierButton {
-    return if (isCurrent) {
-        TierButton.Hidden
+    return if (isActive) {
+        if (androidProductId == null) {
+            TierButton.Info.Enabled("")
+        } else {
+            TierButton.Manage.Android.Enabled
+        }
     } else {
         if (androidProductId == null) {
             TierButton.Info.Enabled("")
@@ -69,10 +73,10 @@ private fun MembershipTierData.toButtonView(
 }
 
 private fun MembershipTierData.getAnyName(
-    isCurrent: Boolean,
+    isActive: Boolean,
     billingClientState: BillingClientState
 ): TierAnyName {
-    return if (isCurrent) {
+    return if (isActive) {
         TierAnyName.Hidden
     } else {
         if (androidProductId == null) {
@@ -98,10 +102,10 @@ private fun MembershipTierData.getAnyName(
 }
 
 private fun MembershipTierData.getConditionInfo(
-    isCurrent: Boolean,
+    isActive: Boolean,
     billingClientState: BillingClientState
 ): TierConditionInfo {
-    return if (isCurrent) {
+    return if (isActive) {
         createConditionInfoForCurrentTier()
     } else {
         if (androidProductId == null) {
@@ -113,7 +117,15 @@ private fun MembershipTierData.getConditionInfo(
 }
 
 private fun MembershipTierData.createConditionInfoForCurrentTier(): TierConditionInfo {
-    return TierConditionInfo.Hidden
+    return if (priceStripeUsdCents == 0)  {
+        TierConditionInfo.Visible.Free(
+            period = convertToTierViewPeriod(this)
+        )
+    } else {
+        TierConditionInfo.Visible.Valid(
+            period = convertToTierViewPeriod(this)
+        )
+    }
 }
 
 private fun MembershipTierData.createConditionInfoForNonBillingTier(): TierConditionInfo {

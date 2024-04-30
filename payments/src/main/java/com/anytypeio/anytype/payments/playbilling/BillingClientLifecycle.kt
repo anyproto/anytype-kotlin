@@ -46,8 +46,10 @@ class BillingClientLifecycle(
     /**
      * ProductDetails for all known products.
      */
-    private val _builderSubProductWithProductDetails = MutableStateFlow<BillingClientState>(BillingClientState.Disconnected)
-    val builderSubProductWithProductDetails: StateFlow<BillingClientState> = _builderSubProductWithProductDetails
+    private val _builderSubProductWithProductDetails =
+        MutableStateFlow<BillingClientState>(BillingClientState.Loading)
+    val builderSubProductWithProductDetails: StateFlow<BillingClientState> =
+        _builderSubProductWithProductDetails
 
     /**
      * Instantiate a new BillingClient instance.
@@ -95,6 +97,10 @@ class BillingClientLifecycle(
             // You can query product details and purchases here.
             querySubscriptionProductDetails()
             querySubscriptionPurchases()
+        } else {
+            Timber.e("onBillingSetupFinished: BillingResponse $responseCode")
+            _builderSubProductWithProductDetails.value =
+                BillingClientState.Error("BillingResponse $responseCode")
         }
     }
 
@@ -154,6 +160,8 @@ class BillingClientLifecycle(
             processProductDetails(productDetailsList)
         } else {
             Timber.e("onProductDetailsResponse: ${billingResult.responseCode}")
+            _builderSubProductWithProductDetails.value =
+                BillingClientState.Error("onProductDetailsResponse: ${billingResult.responseCode}")
         }
     }
 
@@ -195,11 +203,11 @@ class BillingClientLifecycle(
             }
         }
         if (result.isNotEmpty()) {
-            _builderSubProductWithProductDetails.value = BillingClientState.Connected.Ready(result)
+            _builderSubProductWithProductDetails.value = BillingClientState.Connected(result)
         } else {
             Timber.e("No product details found for subscriptionIds: $subscriptionIds")
             _builderSubProductWithProductDetails.value =
-                BillingClientState.Connected.Error("No product details found for subscriptionIds: $subscriptionIds")
+                BillingClientState.Error("No product details found for subscriptionIds: $subscriptionIds")
         }
     }
 
@@ -265,6 +273,9 @@ class BillingClientLifecycle(
                             "not recognize the configuration."
                 )
             }
+            else -> {
+                Timber.e("onPurchasesUpdated: BillingResponseCode $responseCode")
+            }
         }
     }
 
@@ -273,7 +284,7 @@ class BillingClientLifecycle(
      * on the sever.
      */
     private fun processPurchases(purchasesList: List<Purchase>?) {
-        Timber.d( "processPurchases: ${purchasesList?.size} purchase(s)")
+        Timber.d("processPurchases: ${purchasesList?.size} purchase(s)")
         purchasesList?.let { list ->
             if (isUnchangedPurchaseList(list)) {
                 Timber.d("processPurchases: Purchase list has not changed")
@@ -346,9 +357,8 @@ class BillingClientLifecycle(
 }
 
 sealed class BillingClientState {
-    data object Disconnected : BillingClientState()
-    sealed class Connected : BillingClientState() {
-        data class Ready(val products: List<ProductDetails>) : Connected()
-        data class Error(val message: String) : Connected()
-    }
+    data object Loading : BillingClientState()
+    data class Error(val message: String) : BillingClientState()
+    //Connected state is suppose that we have non empty list of product details
+    data class Connected(val productDetails: List<ProductDetails>) : BillingClientState()
 }

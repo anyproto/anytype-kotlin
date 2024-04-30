@@ -10,9 +10,11 @@ import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -29,7 +31,7 @@ class EditorMergeTest : EditorPresentationTestSetup() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+    val coroutineTestRule = DefaultCoroutineTestRule()
 
     @Before
     fun setup() {
@@ -37,10 +39,11 @@ class EditorMergeTest : EditorPresentationTestSetup() {
         stubSpaceManager()
         stubGetNetworkMode()
         stubFileLimitEvents()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @Test
-    fun `should update text and proceed with merging the first paragraph with the second on non-empty-block-backspace-pressed event`() {
+    fun `should update text and proceed with merging the first paragraph with the second on non-empty-block-backspace-pressed event`() = runTest {
 
         val title = StubTitle()
         val header = StubHeader(children = listOf(title.id))
@@ -66,15 +69,22 @@ class EditorMergeTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.onBlockFocusChanged(
             id = second.id,
             hasFocus = true
         )
 
+        advanceUntilIdle()
+
+
         vm.onSelectionChanged(
             id = second.id,
             selection = IntRange(0, 0)
         )
+
+        advanceUntilIdle()
 
         val text = MockDataFactory.randomString()
 
@@ -85,11 +95,16 @@ class EditorMergeTest : EditorPresentationTestSetup() {
 
         vm.onTextBlockTextChanged(blockView)
 
+        advanceUntilIdle()
+
+
         vm.onNonEmptyBlockBackspaceClicked(
             id = second.id,
             marks = emptyList(),
             text = text
         )
+
+        advanceUntilIdle()
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
@@ -119,7 +134,7 @@ class EditorMergeTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should merge two text blocks from two different divs`() {
+    fun `should merge two text blocks from two different divs`() = runTest {
 
         // SETUP
 
@@ -181,13 +196,19 @@ class EditorMergeTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.onBlockFocusChanged(b.id, true)
+
+        advanceUntilIdle()
 
         vm.onNonEmptyBlockBackspaceClicked(
             id = b.id,
             text = b.content<Block.Content.Text>().text,
             marks = b.content<Block.Content.Text>().marks
         )
+
+        advanceUntilIdle()
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
@@ -204,7 +225,7 @@ class EditorMergeTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should merge two text blocks from the first of two divs`() {
+    fun `should merge two text blocks from the first of two divs`() = runTest {
 
         // SETUP
 
@@ -288,13 +309,19 @@ class EditorMergeTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.onBlockFocusChanged(d.id, true)
+
+        advanceUntilIdle()
 
         vm.onNonEmptyBlockBackspaceClicked(
             id = d.id,
             text = d.content<Block.Content.Text>().text,
             marks = d.content<Block.Content.Text>().marks
         )
+
+        advanceUntilIdle()
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
@@ -312,7 +339,7 @@ class EditorMergeTest : EditorPresentationTestSetup() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `should not merge text block with the previous block if this previous block is not a text block`() {
+    fun `should not merge text block with the previous block if this previous block is not a text block`() = runTest {
 
         // SETUP
 
@@ -353,13 +380,19 @@ class EditorMergeTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.onBlockFocusChanged(b.id, true)
+
+        advanceUntilIdle()
 
         vm.onNonEmptyBlockBackspaceClicked(
             id = b.id,
             text = b.content<Block.Content.Text>().text,
             marks = b.content<Block.Content.Text>().marks
         )
+
+        advanceUntilIdle()
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 

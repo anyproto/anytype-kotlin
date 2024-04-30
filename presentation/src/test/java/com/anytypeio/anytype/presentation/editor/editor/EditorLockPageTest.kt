@@ -15,12 +15,13 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColor
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
 import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -34,7 +35,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+    val coroutineTestRule = DefaultCoroutineTestRule()
 
     val title = StubTitle()
 
@@ -54,7 +55,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `all views should be in edit mode when locked key is missing`() {
+    fun `all views should be in edit mode when locked key is missing`() = runTest {
 
         // SETUP
 
@@ -92,6 +93,8 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         val expected = listOf(
             BlockView.Title.Basic(
                 id = title.id,
@@ -117,7 +120,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `all views should be in edit mode when locked key is set to false`() {
+    fun `all views should be in edit mode when locked key is set to false`() = runTest {
 
         // SETUP
 
@@ -157,6 +160,8 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         val expected = listOf(
             BlockView.Title.Basic(
                 id = title.id,
@@ -182,7 +187,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `all views should be in read mode`() {
+    fun `all views should be in read mode`() = runTest {
 
         // SETUP
 
@@ -222,6 +227,8 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         val expected = listOf(
             BlockView.Title.Basic(
                 id = title.id,
@@ -247,7 +254,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should navigate to target when clicking on link-to-object when page is locked`() {
+    fun `should navigate to target when clicking on link-to-object when page is locked`() = runTest {
         // SETUP
         val link = MockBlockFactory.link()
         val target = link.content.asLink().target
@@ -289,6 +296,8 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         // TESTING
 
         val expected = listOf(
@@ -323,6 +332,8 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
             )
         )
 
+        advanceUntilIdle()
+
         // checking navigation command
 
         testObserver.assertValue { value ->
@@ -334,7 +345,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should navigate to target when clicking on mention when page is locked`() {
+    fun `should navigate to target when clicking on mention when page is locked`() = runTest {
 
         // SETUP
 
@@ -394,6 +405,8 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         // TESTING
 
         val expected = listOf(
@@ -437,6 +450,8 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
             )
         )
 
+        advanceUntilIdle()
+
         // checking navigation command
 
         testObserver.assertValue { value ->
@@ -448,7 +463,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should open bookmark when clicking on bookmark when page is locked`() {
+    fun `should open bookmark when clicking on bookmark when page is locked`() = runTest {
 
         // SETUP
 
@@ -503,6 +518,8 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         // TESTING
 
         val expected = listOf(
@@ -543,6 +560,8 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                 item = expected.last() as BlockView.Media.Bookmark
             )
         )
+
+        advanceUntilIdle()
 
         // checking browsing command
 
@@ -612,6 +631,8 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         // TESTING
 
         val expected = listOf(
@@ -648,9 +669,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
 
         vm.onClickListener(ListenerType.File.View(fileBlockId))
 
-        // checking open-by-default-app command
-
-        coroutineTestRule.advanceUntilIdle()
+        advanceUntilIdle()
 
         testObserver.assertValue { value ->
             value is EventWrapper && value.peekContent() == Command.OpenFileByDefaultApp(
@@ -661,7 +680,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should open picture in fullscreen when clicking on file when page is locked`() {
+    fun `should open picture in fullscreen when clicking on file when page is locked`() = runTest {
 
         // SETUP
 
@@ -720,6 +739,8 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         // TESTING
 
         val expected = listOf(
@@ -756,6 +777,8 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
         val testObserver = vm.commands.test()
 
         vm.onClickListener(ListenerType.Picture.View(picture.id))
+
+        advanceUntilIdle()
 
         // checking open-by-default-app command
 

@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.linking.BackLinkOrAddToObjectViewModelFactory
 import com.anytypeio.anytype.ui.linking.BacklinkOrAddToObjectFragment
 import dagger.Binds
@@ -79,4 +80,5 @@ interface BacklinkOrAddToObjectDependencies : ComponentDependencies {
     fun dispatchers(): AppCoroutineDispatchers
     fun analytics(): Analytics
     fun spaceManager(): SpaceManager
+    fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
 }

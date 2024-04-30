@@ -9,9 +9,11 @@ import com.anytypeio.anytype.presentation.editor.EditorViewModel.Companion.TEXT_
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -32,7 +34,7 @@ class EditorSlashWidgetCutFilterTest : EditorPresentationTestSetup() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+    val coroutineTestRule = DefaultCoroutineTestRule()
 
     @Before
     fun setup() {
@@ -41,6 +43,7 @@ class EditorSlashWidgetCutFilterTest : EditorPresentationTestSetup() {
         stubGetNetworkMode()
         stubFileLimitEvents()
         stubGetObjectTypes(emptyList())
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -121,7 +124,7 @@ class EditorSlashWidgetCutFilterTest : EditorPresentationTestSetup() {
 
     private fun `should invoke updateText useCase when clicked on Slash Item Style`(
         slashItem: SlashItem
-    ) {
+    ) = runTest {
 
         val header = MockTypicalDocumentFactory.header
         val title = MockTypicalDocumentFactory.title
@@ -160,27 +163,33 @@ class EditorSlashWidgetCutFilterTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.apply {
             onSelectionChanged(
                 id = block.id,
                 selection = IntRange(3, 3)
             )
+            advanceUntilIdle()
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 event = SlashEvent.Start(
                     cursorCoordinate = 820,
                     slashStart = 3
                 )
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 event = SlashEvent.Filter(
                     filter = "/",
                     viewType = 0
                 )
             )
+            advanceUntilIdle()
             onTextBlockTextChanged(
                 view = BlockView.Text.Paragraph(
                     id = block.id,
@@ -197,16 +206,19 @@ class EditorSlashWidgetCutFilterTest : EditorPresentationTestSetup() {
                     cursor = null
                 )
             )
+            advanceUntilIdle()
             onSelectionChanged(
                 id = block.id,
                 selection = IntRange(4, 4)
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 event = SlashEvent.Filter(
                     filter = "/s",
                     viewType = 0
                 )
             )
+            advanceUntilIdle()
             onTextBlockTextChanged(
                 view = BlockView.Text.Paragraph(
                     id = block.id,
@@ -223,16 +235,19 @@ class EditorSlashWidgetCutFilterTest : EditorPresentationTestSetup() {
                     cursor = null
                 )
             )
+            advanceUntilIdle()
             onSelectionChanged(
                 id = block.id,
                 selection = IntRange(5, 5)
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 event = SlashEvent.Filter(
                     filter = "/su",
                     viewType = 0
                 )
             )
+            advanceUntilIdle()
             onTextBlockTextChanged(
                 view = BlockView.Text.Paragraph(
                     id = block.id,
@@ -249,10 +264,12 @@ class EditorSlashWidgetCutFilterTest : EditorPresentationTestSetup() {
                     cursor = null
                 )
             )
+            advanceUntilIdle()
             onSelectionChanged(
                 id = block.id,
                 selection = IntRange(6, 6)
             )
+            advanceUntilIdle()
         }
 
         //TESTING
@@ -260,6 +277,8 @@ class EditorSlashWidgetCutFilterTest : EditorPresentationTestSetup() {
         vm.onSlashItemClicked(
             item = slashItem
         )
+
+        advanceUntilIdle()
 
         val params = UpdateText.Params(
             context = root,

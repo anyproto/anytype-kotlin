@@ -8,6 +8,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 
+@Deprecated("Use DefaultCoroutineTestRule")
 @ExperimentalCoroutinesApi
 class CoroutinesTestRule(
     val testDispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()

@@ -12,11 +12,11 @@ import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.presentation.MockBlockFactory
-import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
-import com.jraska.livedata.test
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -53,7 +53,7 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+    val coroutineTestRule = DefaultCoroutineTestRule()
 
     @Before
     fun setup() {
@@ -61,17 +61,19 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
         stubSpaceManager()
         stubGetNetworkMode()
         stubFileLimitEvents()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @Test
-    fun `should ignore outside click if document isn't started yet`() {
+    fun `should ignore outside click if document isn't started yet`() = runTest {
         val vm = buildViewModel()
         vm.onOutsideClicked()
+        advanceUntilIdle()
         verifyNoInteractions(createBlock)
     }
 
     @Test
-    fun `should create a new paragraph on outside-clicked event if page contains only title with icon`() {
+    fun `should create a new paragraph on outside-clicked event if page contains only title with icon`() = runTest {
 
         // SETUP
 
@@ -92,9 +94,13 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         // TESTING
 
         vm.onOutsideClicked()
+
+        advanceUntilIdle()
 
         verifyBlocking(createBlock, times(1)) {
             async(
@@ -113,7 +119,7 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should create a new paragraph on outside-clicked event if page contains only title with icon and one non-empty paragraph`() {
+    fun `should create a new paragraph on outside-clicked event if page contains only title with icon and one non-empty paragraph`() = runTest {
 
         // SETUP
 
@@ -145,9 +151,13 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         // TESTING
 
         vm.onOutsideClicked()
+
+        advanceUntilIdle()
 
         verifyBlocking(createBlock, times(1)) {
             async(
@@ -166,7 +176,7 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should create a new paragraph on outside-clicked event if the last block is a link block`() {
+    fun `should create a new paragraph on outside-clicked event if the last block is a link block`() = runTest {
 
         // SETUP
 
@@ -194,9 +204,13 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root.id, space = defaultSpace)
 
+        advanceUntilIdle()
+
         // TESTING
 
         vm.onOutsideClicked()
+
+        advanceUntilIdle()
 
         verifyBlocking(createBlock, times(1)) {
             async(
@@ -214,83 +228,8 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
         }
     }
 
-    //@Test
-    fun `should not create a new paragraph but focus the last empty block`() {
-
-        // SETUP
-
-        val style = Block.Content.Text.Style.values().filter { style ->
-            style != Block.Content.Text.Style.TITLE || style != Block.Content.Text.Style.DESCRIPTION
-        }.random()
-
-        val pic = Block(
-            id = MockDataFactory.randomUuid(),
-            content = Block.Content.File(
-                type = Block.Content.File.Type.IMAGE,
-                state = Block.Content.File.State.DONE
-            ),
-            fields = Block.Fields.empty(),
-            children = emptyList()
-        )
-
-        val txt = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.Text(
-                text = "",
-                marks = emptyList(),
-                style = style
-            ),
-            children = emptyList()
-        )
-
-        val doc = listOf(
-            Block(
-                id = root,
-                fields = Block.Fields(emptyMap()),
-                content = Block.Content.Smart,
-                children = listOf(pic.id, txt.id)
-            ),
-            pic,
-            txt
-        )
-
-        stubInterceptEvents()
-        stubOpenDocument(document = doc)
-
-        val vm = buildViewModel()
-
-        // TESTING
-
-        vm.onStart(id = root, space = defaultSpace)
-
-        // Checking that no text block is focused
-
-        vm.state.test().assertValue { value ->
-            check(value is ViewState.Success)
-            value.blocks.none { it is BlockView.Text && it.isFocused }
-        }
-
-        vm.onOutsideClicked()
-
-        verifyNoInteractions(createBlock)
-
-        // Checking that the last text block is focused and has empty text
-
-        vm.state.test().assertValue { value ->
-            check(value is ViewState.Success)
-            val last = value.blocks.last()
-            check(last is BlockView.Text || last is BlockView.Code)
-            when (last) {
-                is BlockView.Code -> last.text.isEmpty() && last.isFocused
-                is BlockView.Text -> last.text.isEmpty() && last.isFocused
-                else -> throw IllegalStateException()
-            }
-        }
-    }
-
     @Test
-    fun `should not create a new paragraph on outside-clicked event if object has restriction BLOCKS`() {
+    fun `should not create a new paragraph on outside-clicked event if object has restriction BLOCKS`() = runTest {
 
         // SETUP
 
@@ -311,15 +250,19 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         // TESTING
 
         vm.onOutsideClicked()
+
+        advanceUntilIdle()
 
         verifyNoInteractions(createBlock)
     }
 
     @Test
-    fun `should create a new paragraph on outside-clicked event if the last block is a table block`() {
+    fun `should create a new paragraph on outside-clicked event if the last block is a table block`() = runTest {
 
         // SETUP
 
@@ -343,9 +286,13 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         // TESTING
 
         vm.onOutsideClicked()
+
+        advanceUntilIdle()
 
         verifyBlocking(createBlock, times(1)) {
             async(
@@ -364,7 +311,7 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should create a new paragraph on outside-clicked event if the last block is a code snippet block`() {
+    fun `should create a new paragraph on outside-clicked event if the last block is a code snippet block`() = runTest {
 
         // SETUP
 
@@ -388,9 +335,13 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         // TESTING
 
         vm.onOutsideClicked()
+
+        advanceUntilIdle()
 
         verifyBlocking(createBlock, times(1)) {
             async(

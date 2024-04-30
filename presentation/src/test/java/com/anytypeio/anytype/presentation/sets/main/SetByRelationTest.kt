@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.sets.main
 
 import app.cash.turbine.test
 import app.cash.turbine.turbineScope
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.presentation.collections.MockSet
@@ -36,6 +37,7 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
         mockObjectSet = MockSet(context = root, setOfValue = setOfId, setOfKey = setOfKey, space = defaultSpace)
         stubNetworkMode()
         stubObservePermissions()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @After

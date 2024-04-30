@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.sets.main
 
 import app.cash.turbine.test
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.presentation.collections.MockSet
@@ -28,6 +29,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
         mockObjectSet = MockSet(context = root, space = defaultSpace)
         givenNetworkNodeMocked()
         stubObservePermissions()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @After

@@ -16,11 +16,12 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColor
 import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
 import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.After
@@ -44,7 +45,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+    val coroutineTestRule = DefaultCoroutineTestRule()
 
     @Before
     fun setup() {
@@ -134,6 +135,8 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         val expected = listOf(
             BlockView.Title.Basic(
                 id = title.id,
@@ -185,11 +188,6 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
         val second = test.awaitValue()
 
         second.assertValue(ViewState.Success(expected))
-
-//        assertEquals(
-//            expected = ViewState.Success(expected),
-//            actual = second
-//        )
     }
 
     @Test
@@ -260,6 +258,8 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
         val vm = buildViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
 
         val expected =
             listOf(
@@ -363,6 +363,8 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         val expected =
             listOf(
                 BlockView.Title.Basic(
@@ -465,6 +467,8 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
             val vm = buildViewModel()
 
             vm.onStart(id = root, space = defaultSpace)
+
+            advanceUntilIdle()
 
             val expected = listOf(
                 BlockView.Title.Basic(
@@ -586,6 +590,8 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
             val vm = buildViewModel()
 
             vm.onStart(id = root, space = defaultSpace)
+
+            advanceUntilIdle()
 
             val expected = listOf(
                 BlockView.Title.Basic(
@@ -717,6 +723,8 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
 
             vm.onStart(id = root, space = defaultSpace)
 
+            advanceUntilIdle()
+
             val expected = listOf(
                 BlockView.Title.Basic(
                     id = title.id,
@@ -840,6 +848,8 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
         val vm = buildViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
 
         val expected = listOf(
             BlockView.Title.Basic(
@@ -1074,6 +1084,8 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         val expected = listOf(
             BlockView.Title.Basic(
                 id = title.id,
@@ -1164,6 +1176,8 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
         val vm = buildViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
 
         val expected = listOf(
             BlockView.Title.Profile(
@@ -1256,6 +1270,8 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         val expected = listOf(
             BlockView.Title.Profile(
                 id = title.id,
@@ -1343,6 +1359,8 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
         val vm = buildViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
 
         val expected = listOf(
             BlockView.Title.Profile(
@@ -1443,6 +1461,8 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
         val vm = buildViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
 
         val expected = listOf(
             BlockView.Title.Profile(

@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendChangeWidgetSourceEvent
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.search.ObjectSearchSection
@@ -32,13 +33,15 @@ class SelectWidgetSourceViewModel(
     private val getObjectTypes: GetObjectTypes,
     private val analytics: Analytics,
     private val dispatcher: Dispatcher<WidgetDispatchEvent>,
-    private val spaceManager: SpaceManager
+    private val spaceManager: SpaceManager,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
 ) : ObjectSearchViewModel(
     urlBuilder = urlBuilder,
     searchObjects = searchObjects,
     getObjectTypes = getObjectTypes,
     analytics = analytics,
-    spaceManager = spaceManager
+    spaceManager = spaceManager,
+    analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
 ) {
 
     val isDismissed = MutableStateFlow(false)
@@ -247,7 +250,8 @@ class SelectWidgetSourceViewModel(
         private val getObjectTypes: GetObjectTypes,
         private val analytics: Analytics,
         private val dispatcher: Dispatcher<WidgetDispatchEvent>,
-        private val spaceManager: SpaceManager
+        private val spaceManager: SpaceManager,
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -258,7 +262,8 @@ class SelectWidgetSourceViewModel(
                 analytics = analytics,
                 getObjectTypes = getObjectTypes,
                 dispatcher = dispatcher,
-                spaceManager = spaceManager
+                spaceManager = spaceManager,
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
             ) as T
         }
     }

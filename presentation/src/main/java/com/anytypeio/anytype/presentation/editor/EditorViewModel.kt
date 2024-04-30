@@ -101,6 +101,7 @@ import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.common.StateReducer
@@ -278,7 +279,7 @@ import timber.log.Timber
 import com.anytypeio.anytype.presentation.editor.Editor.Mode as EditorMode
 
 class EditorViewModel(
-    private val params: Params,
+    private val vmParams: Params,
     private val permissions: UserPermissionProvider,
     private val openPage: OpenPage,
     private val closePage: CloseBlock,
@@ -320,7 +321,8 @@ class EditorViewModel(
     private val templatesContainer: ObjectTypeTemplatesContainer,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val dispatchers: AppCoroutineDispatchers,
-    private val getNetworkMode: GetNetworkMode
+    private val getNetworkMode: GetNetworkMode,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -329,7 +331,8 @@ class EditorViewModel(
     ToggleStateHolder by renderer,
     SelectionStateHolder by orchestrator.memory.selections,
     EditorTableDelegate by tableDelegate,
-    StateReducer<List<Block>, Event> by reducer {
+    StateReducer<List<Block>, Event> by reducer,
+    AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val actions = MutableStateFlow(ActionItemType.defaultSorting)
 
@@ -405,7 +408,7 @@ class EditorViewModel(
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
     override val commands = MutableLiveData<EventWrapper<Command>>()
 
-    val permission = MutableStateFlow(permissions.get(params.space))
+    val permission = MutableStateFlow(permissions.get(vmParams.space))
 
     init {
         proceedWithObservingPermissions()
@@ -417,7 +420,7 @@ class EditorViewModel(
         startObservingErrors()
         processRendering()
         processMarkupChanges()
-        viewModelScope.launch { orchestrator.start() }
+        viewModelScope.launch { orchestrator.start(vmParams.space) }
 
         viewModelScope.launch {
             delegator.receive().collect { action ->
@@ -445,7 +448,7 @@ class EditorViewModel(
     private fun proceedWithObservingPermissions() {
         viewModelScope.launch {
             permissions
-                .observe(space = params.space)
+                .observe(space = vmParams.space)
                 .collect {
                     permission.value = it
                 }
@@ -514,7 +517,7 @@ class EditorViewModel(
         downloadUnsplashImage(
             DownloadUnsplashImage.Params(
                 picture = action.img,
-                space = params.space
+                space = vmParams.space
             )
         ).process(
             failure = {
@@ -717,7 +720,7 @@ class EditorViewModel(
 
         proceedWithUpdatingText(
             intent = Intent.Text.UpdateText(
-                context = params.ctx,
+                context = vmParams.ctx,
                 target = new.id,
                 text = new.content<Content.Text>().text,
                 marks = new.content<Content.Text>().marks
@@ -1042,7 +1045,7 @@ class EditorViewModel(
                 .build(InterceptThreadStatus.Params(context))
                 .collect { status ->
                     val statusView = status.toView(
-                        networkId = spaceManager.getConfig(space = params.space)?.network,
+                        networkId = spaceManager.getConfig(space = vmParams.space)?.network,
                         networkMode = networkMode
                     )
                     syncStatus.value = statusView
@@ -1082,6 +1085,7 @@ class EditorViewModel(
                                         startTime = startTime,
                                         details = orchestrator.stores.details.current().details,
                                         ctx = context,
+                                        spaceParams = provideParams(vmParams.space.id)
                                     )
                                 }
                             }
@@ -1383,15 +1387,6 @@ class EditorViewModel(
                     Editor.Focus.id(id = id, isPending = false)
                 )
             }
-//            controlPanelInteractor.onEvent(
-//                ControlPanelMachine.Event.OnFocusChanged(
-//                    id = id,
-//                    style = if (id == context)
-//                        Content.Text.Style.TITLE
-//                    else
-//                        blocks.first { it.id == id }.textStyle()
-//                )
-//            )
         }
     }
 
@@ -1737,7 +1732,7 @@ class EditorViewModel(
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.CRUD.Create(
-                    context = params.ctx,
+                    context = vmParams.ctx,
                     target = target,
                     position = position,
                     prototype = Prototype.Text(style = style)
@@ -3153,9 +3148,9 @@ class EditorViewModel(
                 val detail = details.details[dv.targetObjectId]
                 if (detail != null && detail.map.isNotEmpty()) {
                     val wrapper = ObjectWrapper.Basic(detail.map)
-                    wrapper.spaceId ?: params.space.id
+                    wrapper.spaceId ?: vmParams.space.id
                 } else {
-                    params.space.id
+                    vmParams.space.id
                 }
             }
             proceedWithOpeningDataViewObject(
@@ -3255,7 +3250,7 @@ class EditorViewModel(
                 typeId = TypeId(objectTypeView.id),
                 typeKey = TypeKey(objectTypeView.key),
                 template = objectTypeView.defaultTemplate,
-                space = params.space.id
+                space = vmParams.space.id
             )
             createBlockLinkWithObject.async(
                 params = params
@@ -3265,12 +3260,14 @@ class EditorViewModel(
                 },
                 onSuccess = { result ->
                     orchestrator.proxies.payloads.send(result.payload)
-                    sendAnalyticsCreateLink(analytics)
+                    val spaceParams = provideParams(vmParams.space.id)
+                    sendAnalyticsCreateLink(analytics, spaceParams)
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
                         route = EventsDictionary.Routes.objPowerTool,
                         startTime = startTime,
-                        objType = storeOfObjectTypes.getByKey(objectTypeView.key)
+                        objType = storeOfObjectTypes.getByKey(objectTypeView.key),
+                        spaceParams = spaceParams
                     )
                     proceedWithOpeningObject(result.objectId)
                 }
@@ -3288,7 +3285,7 @@ class EditorViewModel(
         Timber.d("onProceedWithApplyingTemplateByObjectId, template:[$template]")
         viewModelScope.launch {
             val params = ApplyTemplate.Params(
-                ctx = params.ctx,
+                ctx = vmParams.ctx,
                 template = template,
             )
             applyTemplate.async(params = params).fold(
@@ -3314,7 +3311,8 @@ class EditorViewModel(
                         route = EventsDictionary.Routes.navigation,
                         startTime = startTime,
                         objType = objType ?: storeOfObjectTypes.getByKey(result.typeKey.key),
-                        view = EventsDictionary.View.viewNavbar
+                        view = EventsDictionary.View.viewNavbar,
+                        spaceParams = provideParams(vmParams.space.id)
                     )
                     proceedWithCloseCurrentAndOpenObject(result.obj)
                 },
@@ -4070,7 +4068,7 @@ class EditorViewModel(
                                 type = relation.type,
                                 filters = ObjectSearchConstants.setsByObjectTypeFilters(
                                     types = listOf(relation.type),
-                                    space = this@EditorViewModel.params.space.id
+                                    space = vmParams.space.id
                                 )
                             )
                             findObjectSetForType(params).process(
@@ -4297,12 +4295,12 @@ class EditorViewModel(
                 onFailure = {
                     Timber.e(it, "Error while closing object")
                     navigate(EventWrapper(
-                        AppNavigation.Command.OpenObject(target = target, space = params.space.id))
+                        AppNavigation.Command.OpenObject(target = target, space = vmParams.space.id))
                     )
                 },
                 onSuccess = {
                     navigate(EventWrapper(
-                        AppNavigation.Command.OpenObject(target = target, space = params.space.id))
+                        AppNavigation.Command.OpenObject(target = target, space = vmParams.space.id))
                     )
                 }
             )
@@ -4355,7 +4353,7 @@ class EditorViewModel(
         isPopUpToDashboard: Boolean = false
     ) {
         viewModelScope.launch {
-            closePage.async(params.ctx).fold(
+            closePage.async(vmParams.ctx).fold(
                 onFailure = {
                     Timber.e(it, "Error while closing object")
                     navigate(
@@ -4529,8 +4527,8 @@ class EditorViewModel(
             onFailure = { error -> Timber.e(error, "Error convert object to set") },
             onSuccess = {
                 proceedWithOpeningDataViewObject(
-                    target = params.ctx,
-                    space = params.space,
+                    target = vmParams.ctx,
+                    space = vmParams.space,
                     isPopUpToDashboard = true
                 )
                 viewModelScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
@@ -4539,6 +4537,7 @@ class EditorViewModel(
                     sourceObject = SET_MARKETPLACE_ID,
                     containsFlagType = true,
                     route = EventsDictionary.Routes.navigation,
+                    spaceParams = provideParams(vmParams.space.id)
                 )
             }
         )
@@ -4552,8 +4551,8 @@ class EditorViewModel(
             onFailure = { error -> Timber.e(error, "Error convert object to collection") },
             onSuccess = {
                 proceedWithOpeningDataViewObject(
-                    target = params.ctx,
-                    space = params.space,
+                    target = vmParams.ctx,
+                    space = vmParams.space,
                     isPopUpToDashboard = true
                 )
                 viewModelScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
@@ -5014,7 +5013,7 @@ class EditorViewModel(
         }
 
         val intent = Intent.Text.UpdateText(
-            context = params.ctx,
+            context = vmParams.ctx,
             target = targetId,
             text = text,
             marks = marks
@@ -5045,7 +5044,7 @@ class EditorViewModel(
                 sorts = sorts,
                 filters = ObjectSearchConstants.filterTypes(
                     spaces = buildList {
-                        add(params.space.id)
+                        add(vmParams.space.id)
                     },
                     recommendedLayouts = SupportedLayouts.editorLayouts
                 ),
@@ -5955,7 +5954,8 @@ class EditorViewModel(
                         analytics = analytics,
                         route = EventsDictionary.Routes.objCreateMention,
                         startTime = startTime,
-                        objType = storeOfObjectTypes.getByKey(typeKey.key)
+                        objType = storeOfObjectTypes.getByKey(typeKey.key),
+                        spaceParams = provideParams(vmParams.space.id)
                     )
                 }
             )
@@ -5967,7 +5967,8 @@ class EditorViewModel(
         viewModelScope.sendAnalyticsSearchResultEvent(
             analytics = analytics,
             pos = pos,
-            length = mentionTrigger.length - 1
+            length = mentionTrigger.length - 1,
+            spaceParams = provideParams(vmParams.space.id)
         )
         onCreateMentionInText(id = mention.id, name = mention.name, mentionTrigger = mentionTrigger)
     }
@@ -6035,8 +6036,8 @@ class EditorViewModel(
                 filters = ObjectSearchConstants.getFilterLinkTo(
                     ignore = context,
                     spaces = buildList {
-                        add(params.space.id)
-                        val config = spaceManager.getConfig(params.space)
+                        add(vmParams.space.id)
+                        val config = spaceManager.getConfig(vmParams.space)
                         if (config != null) add(config.techSpace)
                     },
                 ),
@@ -6147,7 +6148,7 @@ class EditorViewModel(
                 sorts = emptyList(),
                 filters = ObjectSearchConstants.filterTypes(
                     spaces = buildList {
-                        add(params.space.id)
+                        add(vmParams.space.id)
                     },
                     recommendedLayouts = SupportedLayouts.createObjectLayouts
                 ),
@@ -6200,7 +6201,7 @@ class EditorViewModel(
         viewModelScope.launch {
             setObjectType.async(
                 SetObjectType.Params(
-                    context = params.ctx,
+                    context = vmParams.ctx,
                     objectTypeKey = objType.uniqueKey
                 )
             ).fold(
@@ -6255,14 +6256,14 @@ class EditorViewModel(
             createObjectSet(
                 CreateObjectSet.Params(
                     type = type,
-                    space = params.space.id
+                    space = vmParams.space.id
                 )
             ).process(
                 failure = { Timber.e(it, "Error while creating a set of type: $type") },
                 success = { response ->
                     proceedWithOpeningDataViewObject(
                         target = response.target,
-                        space = params.space
+                        space = vmParams.space
                     )
                 }
             )
@@ -6328,7 +6329,8 @@ class EditorViewModel(
                     analytics = analytics,
                     route = EventsDictionary.Routes.objLink,
                     startTime = startTime,
-                    objType = storeOfObjectTypes.getByKey(typeKey.key)
+                    objType = storeOfObjectTypes.getByKey(typeKey.key),
+                    spaceParams = provideParams(vmParams.space.id)
                 )
             }
         )
@@ -6515,7 +6517,7 @@ class EditorViewModel(
                 .subscribeToTemplates(
                     type = objType.id,
                     subscription = EDITOR_TEMPLATES_SUBSCRIPTION,
-                    space = params.space
+                    space = vmParams.space
                 )
                 .catch { Timber.e(it, "Error while subscribing to templates") }
                 .collect { templates ->

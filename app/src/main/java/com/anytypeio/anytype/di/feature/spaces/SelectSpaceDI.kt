@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.spaces.SelectSpaceViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.ui.spaces.SelectSpaceFragment
@@ -68,4 +69,5 @@ interface SelectSpaceDependencies : ComponentDependencies {
     fun userSettings(): UserSettingsRepository
     fun logger(): Logger
     fun configStorage(): ConfigStorage
+    fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
 }

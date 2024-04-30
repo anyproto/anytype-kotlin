@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.theme.GetTheme
 import com.anytypeio.anytype.domain.theme.SetTheme
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendChangeThemeEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -18,8 +19,9 @@ class AppearanceViewModel(
     private val getTheme: GetTheme,
     private val setTheme: SetTheme,
     private val themeApplicator: ThemeApplicator,
-    private val analytics: Analytics
-) : ViewModel() {
+    private val analytics: Analytics,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val selectedTheme = MutableStateFlow<ThemeMode>(ThemeMode.System)
 
@@ -76,7 +78,8 @@ class AppearanceViewModel(
         private val getTheme: GetTheme,
         private val setTheme: SetTheme,
         private val themeApplicator: ThemeApplicator,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -84,7 +87,8 @@ class AppearanceViewModel(
                 getTheme = getTheme,
                 setTheme = setTheme,
                 themeApplicator = themeApplicator,
-                analytics = analytics
+                analytics = analytics,
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
             ) as T
         }
     }

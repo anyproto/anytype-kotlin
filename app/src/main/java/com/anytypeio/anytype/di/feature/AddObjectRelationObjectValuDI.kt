@@ -5,6 +5,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.relations.add.AddObjectRelationViewModel
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
@@ -39,13 +40,15 @@ object AddObjectRelationModule {
         storeOfObjectTypes: StoreOfObjectTypes,
         searchObjects: SearchObjects,
         urlBuilder: UrlBuilder,
-        spaceManager: SpaceManager
+        spaceManager: SpaceManager,
+        spaceHelperDelegate: AnalyticSpaceHelperDelegate
     ): AddObjectRelationViewModel.Factory = AddObjectRelationViewModel.Factory(
         relations = relations,
         values = values,
         searchObjects = searchObjects,
         urlBuilder = urlBuilder,
         storeOfObjectTypes = storeOfObjectTypes,
-        spaceManager = spaceManager
+        spaceManager = spaceManager,
+        analyticSpaceHelperDelegate = spaceHelperDelegate
     )
 }

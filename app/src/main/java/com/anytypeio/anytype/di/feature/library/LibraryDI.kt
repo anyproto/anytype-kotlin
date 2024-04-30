@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
 import com.anytypeio.anytype.domain.workspace.RemoveObjectsFromWorkspace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.library.LibraryListDelegate
 import com.anytypeio.anytype.presentation.library.LibraryResourceManager
 import com.anytypeio.anytype.presentation.library.LibraryViewModel
@@ -221,4 +222,5 @@ interface LibraryDependencies : ComponentDependencies {
     fun logger(): Logger
     fun container(): StorelessSubscriptionContainer
     fun storeOfTypes (): StoreOfObjectTypes
+    fun analyticSpaceHelperDelegate(): AnalyticSpaceHelperDelegate
 }

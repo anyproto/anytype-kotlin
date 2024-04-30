@@ -2,11 +2,13 @@ package com.anytypeio.anytype.presentation.editor.editor
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -21,7 +23,7 @@ class EditorBackButtonTest : EditorPresentationTestSetup() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+    val coroutineTestRule = DefaultCoroutineTestRule()
 
     @Before
     fun setup() {
@@ -31,10 +33,11 @@ class EditorBackButtonTest : EditorPresentationTestSetup() {
         stubGetNetworkMode()
         stubFileLimitEvents()
         stubInterceptEvents()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @Test
-    fun `should proceed to the exit when the system back button is pressed`() {
+    fun `should proceed to the exit when the system back button is pressed`() = runTest {
 
         val doc = MockTypicalDocumentFactory.page(root)
 
@@ -44,6 +47,8 @@ class EditorBackButtonTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         // TESTING
 
         val stateBefore = vm.controlPanelViewState.value
@@ -52,6 +57,8 @@ class EditorBackButtonTest : EditorPresentationTestSetup() {
         assertFalse(stateBefore.styleTextToolbar.isVisible)
 
         vm.onSystemBackPressed(editorHasChildrenScreens = false)
+
+        advanceUntilIdle()
 
         val stateBackPressed = vm.controlPanelViewState.value
 

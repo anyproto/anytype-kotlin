@@ -25,14 +25,12 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.launch.SetDefaultObjectType
-import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.objects.CreateBookmarkObject
 import com.anytypeio.anytype.domain.objects.CreatePrefilledNote
-import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.spaces.AddObjectToSpace
 import com.anytypeio.anytype.domain.types.GetPinnedObjectTypes
 import com.anytypeio.anytype.domain.types.SetPinnedObjectTypes
-import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
@@ -48,9 +46,8 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class SelectObjectTypeViewModel(
-    private val params: Params,
+    private val vmParams: Params,
     private val getObjectTypes: GetObjectTypes,
-    private val spaceManager: SpaceManager,
     private val addObjectToSpace: AddObjectToSpace,
     private val setPinnedObjectTypes: SetPinnedObjectTypes,
     private val getPinnedObjectTypes: GetPinnedObjectTypes,
@@ -58,10 +55,9 @@ class SelectObjectTypeViewModel(
     private val setDefaultObjectType: SetDefaultObjectType,
     private val createBookmarkObject: CreateBookmarkObject,
     private val createPrefilledNote: CreatePrefilledNote,
-    private val appActionManager: AppActionManager,
     private val analytics: Analytics,
-    private val storeOfObjectTypes: StoreOfObjectTypes
-) : BaseViewModel() {
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val viewState = MutableStateFlow<SelectTypeViewState>(SelectTypeViewState.Loading)
     val clipboardToolbarViewState = MutableStateFlow<ClipboardToolbarViewState>(ClipboardToolbarViewState.Hidden)
@@ -78,7 +74,7 @@ class SelectObjectTypeViewModel(
     init {
         viewModelScope.launch {
             getPinnedObjectTypes.flow(
-                GetPinnedObjectTypes.Params(params.space)
+                GetPinnedObjectTypes.Params(vmParams.space)
             ).collect { pinned.value = it }
         }
         viewModelScope.launch {
@@ -88,13 +84,13 @@ class SelectObjectTypeViewModel(
                         sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                         filters = ObjectSearchConstants.filterTypes(
                             spaces = buildList {
-                                add(params.space.id)
+                                add(vmParams.space.id)
                                 if (query.isNotEmpty()) {
                                     add(Marketplace.MARKETPLACE_SPACE_ID)
                                 }
                             },
                             recommendedLayouts = SupportedLayouts.createObjectLayouts,
-                            excludedTypeKeys = params.excludedTypeKeys
+                            excludedTypeKeys = vmParams.excludedTypeKeys
                         ),
                         keys = ObjectSearchConstants.defaultKeysObjectType,
                         query = query
@@ -118,7 +114,7 @@ class SelectObjectTypeViewModel(
                         .sortedBy { obj -> pinnedObjectTypesIds.indexOf(obj.id) }
 
                     val (allUserTypes, allLibraryTypes) = allTypes.partition { type ->
-                        type.getValue<Id>(Relations.SPACE_ID) == params.space.id
+                        type.getValue<Id>(Relations.SPACE_ID) == vmParams.space.id
                     }
                     val filteredLibraryTypes = allLibraryTypes.filter { type ->
                         allUserTypes.none { it.uniqueKey == type.uniqueKey }
@@ -288,7 +284,7 @@ class SelectObjectTypeViewModel(
         viewModelScope.launch {
             setPinnedObjectTypes.async(
                 SetPinnedObjectTypes.Params(
-                    space = params.space,
+                    space = vmParams.space,
                     types = pinned
                 )
             ).fold(
@@ -306,7 +302,7 @@ class SelectObjectTypeViewModel(
         viewModelScope.launch {
             setDefaultObjectType.async(
                 SetDefaultObjectType.Params(
-                    space = params.space,
+                    space = vmParams.space,
                     type = TypeId(typeView.id)
                 )
             ).fold(
@@ -325,7 +321,7 @@ class SelectObjectTypeViewModel(
             if (typeView.isFromLibrary) {
                 val params = AddObjectToSpace.Params(
                     obj = typeView.id,
-                    space = params.space.id
+                    space = vmParams.space.id
                 )
                 addObjectToSpace.async(params = params).fold(
                     onSuccess = { result ->
@@ -380,7 +376,7 @@ class SelectObjectTypeViewModel(
             val startTime = System.currentTimeMillis()
             createBookmarkObject(
                 CreateBookmarkObject.Params(
-                    space = params.space.id,
+                    space = vmParams.space.id,
                     url = url,
                     details = mapOf(
                         Relations.ORIGIN to ObjectOrigin.CLIPBOARD.code.toDouble()
@@ -398,7 +394,7 @@ class SelectObjectTypeViewModel(
                     navigation.emit(
                         OpenObjectNavigation.OpenEditor(
                             target = obj,
-                            space = params.space.id
+                            space = vmParams.space.id
                         )
                     )
                 },
@@ -422,7 +418,7 @@ class SelectObjectTypeViewModel(
             createPrefilledNote.async(
                 CreatePrefilledNote.Params(
                     text = text,
-                    space = params.space.id,
+                    space = vmParams.space.id,
                     details = mapOf(
                         Relations.ORIGIN to ObjectOrigin.CLIPBOARD.code.toDouble()
                     ),
@@ -434,12 +430,13 @@ class SelectObjectTypeViewModel(
                         analytics = analytics,
                         objType = defaultObjectType?.key ?: ObjectTypeUniqueKeys.NOTE,
                         route = EventsDictionary.Routes.sharingExtension,
-                        startTime = startTime
+                        startTime = startTime,
+                        spaceParams = provideParams(vmParams.space.id)
                     )
                     navigation.emit(
                         OpenObjectNavigation.OpenEditor(
                             target = obj,
-                            space = params.space.id
+                            space = vmParams.space.id
                         )
                     )
                 },
@@ -454,7 +451,6 @@ class SelectObjectTypeViewModel(
     class Factory @Inject constructor(
         private val params: Params,
         private val getObjectTypes: GetObjectTypes,
-        private val spaceManager: SpaceManager,
         private val addObjectToSpace: AddObjectToSpace,
         private val setPinnedObjectTypes: SetPinnedObjectTypes,
         private val getPinnedObjectTypes: GetPinnedObjectTypes,
@@ -462,17 +458,15 @@ class SelectObjectTypeViewModel(
         private val setDefaultObjectType: SetDefaultObjectType,
         private val createBookmarkObject: CreateBookmarkObject,
         private val createPrefilledNote: CreatePrefilledNote,
-        private val appActionManager: AppActionManager,
-        private val storeOfObjectTypes: StoreOfObjectTypes,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
             modelClass: Class<T>
         ) = SelectObjectTypeViewModel(
-            params = params,
+            vmParams = params,
             getObjectTypes = getObjectTypes,
-            spaceManager = spaceManager,
             addObjectToSpace = addObjectToSpace,
             setPinnedObjectTypes = setPinnedObjectTypes,
             getPinnedObjectTypes = getPinnedObjectTypes,
@@ -480,9 +474,8 @@ class SelectObjectTypeViewModel(
             setDefaultObjectType = setDefaultObjectType,
             createBookmarkObject = createBookmarkObject,
             createPrefilledNote = createPrefilledNote,
-            appActionManager = appActionManager,
-            storeOfObjectTypes = storeOfObjectTypes,
-            analytics = analytics
+            analytics = analytics,
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
         ) as T
     }
 

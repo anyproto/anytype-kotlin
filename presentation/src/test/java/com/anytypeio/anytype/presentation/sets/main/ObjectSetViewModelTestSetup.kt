@@ -59,6 +59,7 @@ import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.collections.MockCollection
 import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.common.Action
@@ -86,9 +87,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runTest
 import net.bytebuddy.utility.RandomString
 import org.junit.Rule
+import org.mockito.ArgumentMatchers
 import org.mockito.Mock
+import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -198,6 +202,9 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var getNetworkMode: GetNetworkMode
 
+    @Mock
+    lateinit var analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+
     var permissions: UserPermissionProvider = UserPermissionProviderStub()
 
     lateinit var spaceConfig: Config
@@ -285,11 +292,12 @@ open class ObjectSetViewModelTestSetup {
             dispatchers = dispatchers,
             getNetworkMode = getNetworkMode,
             dateProvider = DateProviderImpl(),
-            params = ObjectSetViewModel.Params(
+            vmParams = ObjectSetViewModel.Params(
                 ctx = root,
                 space = SpaceId(defaultSpace)
             ),
-            permissions = permissions
+            permissions = permissions,
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
         )
     }
 
@@ -521,5 +529,10 @@ open class ObjectSetViewModelTestSetup {
                 run(any())
             } doReturn NetworkModeConfig()
         }
+    }
+
+    fun stubAnalyticSpaceHelperDelegate() {
+        Mockito.`when`(analyticSpaceHelperDelegate.provideParams(defaultSpace))
+            .thenReturn(AnalyticSpaceHelperDelegate.Params.EMPTY)
     }
 }

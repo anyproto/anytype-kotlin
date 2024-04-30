@@ -4,9 +4,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.emojifier.data.Emoji
-import com.anytypeio.anytype.emojifier.data.EmojiProvider
 import com.anytypeio.anytype.presentation.relations.RelationEditViewModel
 import com.anytypeio.anytype.presentation.types.TypeIcon
 import com.anytypeio.anytype.presentation.types.TypeId

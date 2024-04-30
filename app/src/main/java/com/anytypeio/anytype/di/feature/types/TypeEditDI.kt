@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.types.TypeEditViewModel
 import com.anytypeio.anytype.presentation.types.TypeIcon
 import com.anytypeio.anytype.presentation.types.TypeId
@@ -72,4 +73,5 @@ interface TypeEditDependencies : ComponentDependencies {
     fun blockRepository(): BlockRepository
     fun urlBuilder(): UrlBuilder
     fun analytics(): Analytics
+    fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
 }

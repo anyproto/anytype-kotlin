@@ -13,4 +13,7 @@ object TiersConstants {
     const val MEMBERSHIP_CONTACT_EMAIL = "membership-upgrade@anytype.io"
 
     val ACTIVE_TIERS_WITH_BANNERS = listOf(NONE_ID, EXPLORER_ID)
+
+    const val ERROR_PRODUCT_NOT_FOUND = "Product not found"
+    const val ERROR_PRODUCT_PRICE = "Price of the product is not available"
 }

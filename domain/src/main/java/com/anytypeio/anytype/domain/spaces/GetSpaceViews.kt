@@ -23,9 +23,12 @@ class GetSpaceViews @Inject constructor(
                 Relations.ID,
                 Relations.TARGET_SPACE_ID,
                 Relations.NAME,
+                Relations.LAYOUT,
                 Relations.ICON_IMAGE,
                 Relations.ICON_OPTION,
-                Relations.SPACE_ACCOUNT_STATUS
+                Relations.SPACE_ACCOUNT_STATUS,
+                Relations.SPACE_LOCAL_STATUS,
+                Relations.LAST_OPENED_DATE
             ),
             filters = listOf(
                 DVFilter(

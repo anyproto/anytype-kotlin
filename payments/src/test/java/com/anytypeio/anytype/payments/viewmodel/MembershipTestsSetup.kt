@@ -90,13 +90,15 @@ open class MembershipTestsSetup {
 
     protected fun validateTierView(
         tierView: TierView,
+        expectedId: Int,
+        expectedActive: Boolean,
         expectedFeatures: List<String>,
         expectedConditionInfo: TierConditionInfo.Visible,
         expectedAnyName: TierAnyName,
         expectedButtonState: TierButton
     ) {
-        assertEquals(TiersConstants.BUILDER_ID, tierView.id.value)
-        assertEquals(false, tierView.isActive)
+        assertEquals(expectedId, tierView.id.value)
+        assertEquals(expectedActive, tierView.isActive)
         assertEquals(expectedFeatures, tierView.features)
         assertEquals(expectedConditionInfo, tierView.conditionInfo)
         assertEquals(expectedAnyName, tierView.membershipAnyName)

@@ -25,8 +25,8 @@ import org.mockito.Mockito
 /**
  * Tests for the not active tier with possible android subscription
  *
- * TierPreview = [Title|Subtitle|ConditionInfo]
- * Tier = [Title|Subtitle|ConditionInfo|Features|AnyName|ButtonPay]
+ * TierPreview = [Title|Subtitle|ConditionInfo.Price]
+ * Tier = [Title|Subtitle|Features|AnyName|ConditionInfo.Price|ButtonPay]
  *
  * TierPreview has same fields as Tier except for Features, AnyName, ButtonState
  */
@@ -119,7 +119,9 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
                     expectedFeatures = features,
                     expectedConditionInfo = TierConditionInfo.Visible.LoadingBillingClient,
                     expectedAnyName = TierAnyName.Visible.Disabled,
-                    expectedButtonState = TierButton.Pay.Disabled
+                    expectedButtonState = TierButton.Pay.Disabled,
+                    expectedId = TiersConstants.BUILDER_ID,
+                    expectedActive = false
                 )
             }
         }
@@ -159,7 +161,9 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
                     expectedFeatures = features,
                     expectedConditionInfo = TierConditionInfo.Visible.Error(errorMessage),
                     expectedAnyName = TierAnyName.Visible.Disabled,
-                    expectedButtonState = TierButton.Pay.Disabled
+                    expectedButtonState = TierButton.Pay.Disabled,
+                    expectedId = TiersConstants.BUILDER_ID,
+                    expectedActive = false
                 )
             }
         }
@@ -212,7 +216,9 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
                     expectedFeatures = features,
                     expectedConditionInfo = expectedConditionInfo,
                     expectedAnyName = TierAnyName.Visible.Disabled,
-                    expectedButtonState = TierButton.Pay.Disabled
+                    expectedButtonState = TierButton.Pay.Disabled,
+                    expectedId = TiersConstants.BUILDER_ID,
+                    expectedActive = false
                 )
             }
         }
@@ -265,7 +271,9 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
                     expectedFeatures = features,
                     expectedConditionInfo = expectedConditionInfo,
                     expectedAnyName = TierAnyName.Visible.Disabled,
-                    expectedButtonState = TierButton.Pay.Disabled
+                    expectedButtonState = TierButton.Pay.Disabled,
+                    expectedId = TiersConstants.BUILDER_ID,
+                    expectedActive = false
                 )
             }
         }
@@ -318,7 +326,9 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
                     expectedFeatures = features,
                     expectedConditionInfo = expectedConditionInfo,
                     expectedAnyName = TierAnyName.Visible.Enter,
-                    expectedButtonState = TierButton.Pay.Disabled
+                    expectedButtonState = TierButton.Pay.Disabled,
+                    expectedId = TiersConstants.BUILDER_ID,
+                    expectedActive = false
                 )
             }
         }

@@ -1,8 +1,8 @@
 package com.anytypeio.anytype.payments.viewmodel
 
-import androidx.annotation.StringRes
 import com.anytypeio.anytype.presentation.membership.models.TierId
 
+@Deprecated("Use TierView instead")
 sealed class Tier {
     abstract val id: TierId
     abstract val isCurrent: Boolean
@@ -55,54 +55,3 @@ sealed class Tier {
     ) : Tier()
 }
 
-
-data class MembershipTierPreviewView(
-    val id: TierId,
-    @StringRes val title: Int,
-    @StringRes val subtitle: Int,
-    val conditionInfo: MembershipTierConditionInfo,
-    val isCurrent: Boolean,
-)
-
-data class MembershipTierView(
-    val id: TierId,
-    @StringRes val title: Int,
-    @StringRes val subtitle: Int,
-    val features: List<String>,
-    val membershipAnyName: MembershipTierAnyName,
-    val conditionInfo: MembershipTierConditionInfo,
-    val buttonState: MembershipTierButton,
-)
-
-sealed class MembershipTierConditionInfo {
-    data object Hidden : MembershipTierConditionInfo()
-    sealed class Visible : MembershipTierConditionInfo() {
-        data class Valid(val interval: String) : Visible()
-        data class Price(val price: String, val interval: String) : Visible()
-        data class Free(val email: String) : Visible()
-        data class Email(val email: String) : Visible()
-    }
-}
-
-sealed class MembershipTierButton {
-    data object Hidden : MembershipTierButton()
-    sealed class Submit : MembershipTierButton() {
-        data object Enabled : Submit()
-        data object Disabled : Submit()
-    }
-
-    sealed class Pay : MembershipTierButton() {
-        data object Enabled : Submit()
-        data object Disabled : Submit()
-    }
-}
-
-sealed class MembershipTierAnyName {
-    data object Hidden : MembershipTierAnyName()
-    sealed class Editable : MembershipTierAnyName() {
-        data object Enter : Editable()
-        data object Validating : Editable()
-        data object Validated : Editable()
-        data class Error(val message: String) : Editable()
-    }
-}

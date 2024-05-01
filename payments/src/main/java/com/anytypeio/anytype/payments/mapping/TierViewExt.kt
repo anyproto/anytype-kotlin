@@ -109,8 +109,19 @@ private fun MembershipTierData.toButtonView(
                     TierEmail.Visible.Validating -> TierButton.Submit.Disabled
                 }
             } else {
-                //todo: add logic for other tiers
-                TierButton.Info.Disabled
+                when (paymentMethod) {
+                    MembershipPaymentMethod.METHOD_NONE,
+                    MembershipPaymentMethod.METHOD_CRYPTO -> TierButton.Manage.External.Disabled
+                    MembershipPaymentMethod.METHOD_STRIPE -> TierButton.Manage.External.Enabled(
+                        stripeManageUrl
+                    )
+                    MembershipPaymentMethod.METHOD_INAPP_APPLE -> TierButton.Manage.External.Enabled(
+                        iosManageUrl
+                    )
+                    MembershipPaymentMethod.METHOD_INAPP_GOOGLE -> TierButton.Manage.External.Enabled(
+                        androidManageUrl
+                    )
+                }
             }
         } else {
             if (billingPurchaseState is BillingPurchaseState.HasPurchases) {

@@ -135,31 +135,7 @@ class PaymentsViewModel(
     }
 
     fun onActionCode(code: String, tierId: TierId) {
-//        Timber.d("onActionCode: tierId:$tierId, code:$code, _tiers:${_tiers}")
-//        viewModelScope.launch {
-//            codeState.value = PaymentsCodeState.Visible.Loading(tierId = tierId)
-//            welcomeState.value =
-//                PaymentsWelcomeState.Initial(tier = _tiers.first { it.id == tierId })
-//            val updatedTiers = _tiers.map {
-//                val isCurrent = it.id == tierId
-//                when (it) {
-//                    is Tier.Builder -> it.copy(isCurrent = isCurrent)
-//                    is Tier.CoCreator -> it.copy(isCurrent = isCurrent)
-//                    is Tier.Custom -> it.copy(isCurrent = isCurrent)
-//                    is Tier.Explorer -> it.copy(isCurrent = isCurrent)
-//                }
-//            }
-//            _tiers.clear()
-//            _tiers.addAll(updatedTiers)
-//            viewState.value = PaymentsMainState.PaymentSuccess(_tiers)
-//            command.value = PaymentsNavigation.Welcome
-//        }
-    }
-
-    fun onSubmitEmailButtonClicked(tierId: TierId, email: String) {
-        Timber.d("onSubmitEmailButtonClicked: email:$email")
-        codeState.value = PaymentsCodeState.Visible.Initial(tierId = tierId)
-        command.value = PaymentsNavigation.Code
+        //todo implement
     }
 
     fun onTierAction(action: TierAction) {
@@ -254,24 +230,7 @@ class PaymentsViewModel(
     }
 
     fun onPayButtonClicked(tierId: TierId, name: String) {
-//        Timber.d("onPayButtonClicked: tierId:$tierId, name:$name")
-//        val tierState = tierState.value as? MembershipTierState.Visible.Initial ?: return
-//        viewModelScope.launch {
-//            val params = IsMembershipNameValid.Params(
-//                tier = tierId.value,
-//                name = name
-//            )
-//            isMembershipNameValid.async(params).fold(
-//                onSuccess = {
-//                    Timber.d("Name is valid")
-//                    proceedWithResolveName(tierId, name)
-//                },
-//                onFailure = { error ->
-//
-//                    Timber.e("Error validating name: $error")
-//                }
-//            )
-//        }
+        //todo implement
     }
 
     private suspend fun proceedWithResolveName(tierId: TierId, name: String) {

@@ -236,13 +236,3 @@ private fun MembershipTierData.getTierEmail(isActive: Boolean, membershipEmail: 
     }
     return TierEmail.Hidden
 }
-
-private fun TierEmail.getButtonState(): TierButton {
-    return when (this) {
-        TierEmail.Hidden -> TierButton.Hidden
-        TierEmail.Visible.Validated -> TierButton.Submit.Enabled
-        TierEmail.Visible.Enter -> TierButton.Submit.Disabled
-        is TierEmail.Visible.Error -> TierButton.Submit.Disabled
-        TierEmail.Visible.Validating -> TierButton.Submit.Disabled
-    }
-}

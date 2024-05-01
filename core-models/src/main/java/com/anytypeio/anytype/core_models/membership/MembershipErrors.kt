@@ -30,33 +30,32 @@ sealed class MembershipErrors : Exception() {
         data class CanNotConnect(override val message: String) : ResolveName()
     }
 
-//    sealed class GetPaymentUrl : MembershipErrors() {
-//        data class TierNotFound(val message: String) : GetPaymentUrl()
-//        data class TierInvalid(val message: String) : GetPaymentUrl()
-//        data class PaymentMethodInvalid(val message: String) : GetPaymentUrl()
-//        data class BadAnyName(val message: String) : GetPaymentUrl()
-//        data class MembershipAlreadyExists(val message: String) : GetPaymentUrl()
-//    }
-//
-//    sealed class FinalizePayment : MembershipErrors() {
-//        data class MembershipNotFound(val message: String) : FinalizePayment()
-//        data class MembershipWrongState(val message: String) : FinalizePayment()
-//    }
-//
-//    sealed class GetVerificationEmail : MembershipErrors() {
-//        data class EmailWrongFormat(val message: String) : GetVerificationEmail()
-//        data class EmailAlreadyVerified(val message: String) : GetVerificationEmail()
-//        data class EmailAlreadySent(val message: String) : GetVerificationEmail()
-//        data class EmailFailedToSend(val message: String) : GetVerificationEmail()
-//        data class MembershipAlreadyExists(val message: String) : GetVerificationEmail()
-//    }
-//
-//    sealed class VerifyEmailCode : MembershipErrors() {
-//        data class EmailAlreadyVerified(val message: String) : VerifyEmailCode()
-//        data class CodeExpired(val message: String) : VerifyEmailCode()
-//        data class CodeWrong(val message: String) : VerifyEmailCode()
-//        data class MembershipNotFound(val message: String) : VerifyEmailCode()
-//        data class MembershipAlreadyActive(val message: String) : VerifyEmailCode()
-//    }
+    sealed class GetPaymentUrl : MembershipErrors() {
+        data class TierNotFound(override val message: String) : GetPaymentUrl()
+        data class TierInvalid(override val message: String) : GetPaymentUrl()
+        data class PaymentMethodInvalid(override val message: String) : GetPaymentUrl()
+        data class BadAnyName(override val message: String) : GetPaymentUrl()
+        data class MembershipAlreadyExists(override val message: String) : GetPaymentUrl()
+    }
 
+    sealed class FinalizePayment : MembershipErrors() {
+        data class MembershipNotFound(override val message: String) : FinalizePayment()
+        data class MembershipWrongState(override val message: String) : FinalizePayment()
+    }
+
+    sealed class GetVerificationEmail : MembershipErrors() {
+        data class EmailWrongFormat(override val message: String) : GetVerificationEmail()
+        data class EmailAlreadyVerified(override val message: String) : GetVerificationEmail()
+        data class EmailAlreadySent(override val message: String) : GetVerificationEmail()
+        data class EmailFailedToSend(override val message: String) : GetVerificationEmail()
+        data class MembershipAlreadyExists(override val message: String) : GetVerificationEmail()
+    }
+
+    sealed class VerifyEmailCode : MembershipErrors() {
+        data class EmailAlreadyVerified(override val message: String) : VerifyEmailCode()
+        data class CodeExpired(override val message: String) : VerifyEmailCode()
+        data class CodeWrong(override val message: String) : VerifyEmailCode()
+        data class MembershipNotFound(override val message: String) : VerifyEmailCode()
+        data class MembershipAlreadyActive(override val message: String) : VerifyEmailCode()
+    }
 }

@@ -1124,7 +1124,7 @@ class Middleware @Inject constructor(
         val request = Rpc.Object.Open.Request(objectId = id)
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectOpen(request)
-        //if (BuildConfig.DEBUG) logResponse(response)
+        if (BuildConfig.DEBUG) logResponse(response)
         return response.objectView?.toCore() ?: throw IllegalStateException("Object view was null")
     }
 
@@ -1252,7 +1252,7 @@ class Middleware @Inject constructor(
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectSearch(request)
-        //if (BuildConfig.DEBUG) logResponse(response)
+        if (BuildConfig.DEBUG) logResponse(response)
         return response.records.map { it?.toMap() ?: emptyMap() }
     }
 
@@ -1287,7 +1287,7 @@ class Middleware @Inject constructor(
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectSearchSubscribe(request)
-        //if (BuildConfig.DEBUG) logResponse(response)
+        if (BuildConfig.DEBUG) logResponse(response)
         return SearchResult(
             results = response.records.mapNotNull { record ->
                 if (record != null && record.isNotEmpty())

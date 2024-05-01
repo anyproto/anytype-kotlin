@@ -26,11 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.core_models.membership.Membership
-import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
-import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
 import com.anytypeio.anytype.core_models.membership.Membership.Status
-import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.BodyRegular
@@ -353,41 +349,6 @@ fun Announcement(
         }
         Spacer(modifier = Modifier.height(10.dp))
     }
-}
-
-@Preview
-@Composable
-fun MyOptionMembership() {
-//    OptionMembership(
-//        image = R.drawable.ic_membership,
-//        text = "Membership",
-//        membershipStatus = MembershipStatus(
-//            activeTier = MembershipTierData(
-//                id = 1507,
-//                name = "Builder",
-//                description = "pulvinar",
-//                isTest = false,
-//                periodType = MembershipPeriodType.PERIOD_TYPE_DAYS,
-//                periodValue = 5927,
-//                priceStripeUsdCents = 3808,
-//                anyNamesCountIncluded = 7517,
-//                anyNameMinLength = 2357,
-//                features = listOf(),
-//                colorStr = "molestie",
-//                stripeProductId = null,
-//                stripeManageUrl = null,
-//                iosProductId = null,
-//                iosManageUrl = null,
-//                androidProductId = null,
-//                androidManageUrl = null
-//            ),
-//            status = Membership.Status.STATUS_UNKNOWN,
-//            dateEnds = 2710,
-//            paymentMethod = MembershipPaymentMethod.METHOD_CRYPTO,
-//            anyName = "Rickey Robbins",
-//            tiers = listOf()
-//        )
-//    )
 }
 
 @Preview

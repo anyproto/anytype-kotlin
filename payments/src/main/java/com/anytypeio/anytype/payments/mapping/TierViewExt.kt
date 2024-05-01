@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.payments.mapping
 
 import com.android.billingclient.api.ProductDetails
+import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
@@ -20,6 +21,21 @@ import com.anytypeio.anytype.payments.playbilling.BillingPurchaseState
 import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
 import com.anytypeio.anytype.presentation.membership.models.TierId
 
+private fun MembershipStatus.isTierActive(tierId: Int): Boolean {
+    return when (this.status) {
+        Membership.Status.STATUS_ACTIVE -> activeTier.value == tierId
+        else -> false
+    }
+}
+
+private fun MembershipTierData.isActiveTierPurchasedOnAndroid(activePaymentMethod: MembershipPaymentMethod): Boolean {
+    val androidProductId = this.androidProductId
+    return when (activePaymentMethod) {
+        MembershipPaymentMethod.METHOD_INAPP_GOOGLE -> return !androidProductId.isNullOrBlank()
+        else -> false
+    }
+}
+
 fun MembershipTierData.toView(
     membershipStatus: MembershipStatus,
     billingClientState: BillingClientState,
@@ -35,15 +51,20 @@ fun MembershipTierData.toView(
         conditionInfo = getConditionInfo(
             isActive = isActive,
             billingClientState = billingClientState,
-            paymentMethod = membershipStatus.paymentMethod
+            paymentMethod = membershipStatus.paymentMethod,
+            membershipValidUntil = membershipStatus.dateEnds
         ),
         isActive = isActive,
         features = features,
-        membershipAnyName = getAnyName(isActive, billingClientState),
+        membershipAnyName = getAnyName(
+            isActive = isActive,
+            billingClientState = billingClientState,
+        ),
         buttonState = toButtonView(
             isActive = isActive,
             billingPurchaseState = billingPurchaseState,
-            emailState = emailState
+            emailState = emailState,
+            paymentMethod = membershipStatus.paymentMethod
         ),
         email = emailState
     )
@@ -62,7 +83,8 @@ fun MembershipTierData.toPreviewView(
         conditionInfo = getConditionInfo(
             isActive = isActive,
             billingClientState = billingClientState,
-            paymentMethod = membershipStatus.paymentMethod
+            paymentMethod = membershipStatus.paymentMethod,
+            membershipValidUntil = membershipStatus.dateEnds
         ),
         isActive = isActive
     )
@@ -71,13 +93,15 @@ fun MembershipTierData.toPreviewView(
 private fun MembershipTierData.toButtonView(
     isActive: Boolean,
     billingPurchaseState: BillingPurchaseState,
-    emailState: TierEmail
+    emailState: TierEmail,
+    paymentMethod: MembershipPaymentMethod
 ): TierButton {
     val androidProductId = this.androidProductId
     return if (isActive) {
-        if (androidProductId == null) {
+        val wasPurchasedOnAndroid = isActiveTierPurchasedOnAndroid(paymentMethod)
+        if (!wasPurchasedOnAndroid) {
             if (id == EXPLORER_ID) {
-                when (emailState)  {
+                when (emailState) {
                     TierEmail.Hidden -> TierButton.Hidden
                     TierEmail.Visible.Enter -> TierButton.Submit.Disabled
                     is TierEmail.Visible.Error -> TierButton.Submit.Disabled
@@ -136,10 +160,14 @@ private fun MembershipTierData.getAnyName(
 private fun MembershipTierData.getConditionInfo(
     isActive: Boolean,
     billingClientState: BillingClientState,
+    membershipValidUntil: Long,
     paymentMethod: MembershipPaymentMethod
 ): TierConditionInfo {
     return if (isActive) {
-        createConditionInfoForCurrentTier(paymentMethod)
+        createConditionInfoForCurrentTier(
+            membershipValidUntil = membershipValidUntil,
+            paymentMethod = paymentMethod
+        )
     } else {
         if (androidProductId == null) {
             createConditionInfoForNonBillingTier()
@@ -149,14 +177,17 @@ private fun MembershipTierData.getConditionInfo(
     }
 }
 
-private fun MembershipTierData.createConditionInfoForCurrentTier(paymentMethod: MembershipPaymentMethod): TierConditionInfo {
+private fun MembershipTierData.createConditionInfoForCurrentTier(
+    membershipValidUntil: Long,
+    paymentMethod: MembershipPaymentMethod
+): TierConditionInfo {
     return if (priceStripeUsdCents == 0) {
         TierConditionInfo.Visible.Free(
             period = convertToTierViewPeriod(this)
         )
     } else {
         TierConditionInfo.Visible.Valid(
-            period = convertToTierViewPeriod(this),
+            dateEnds = membershipValidUntil,
             payedBy = paymentMethod
         )
     }
@@ -169,10 +200,15 @@ private fun MembershipTierData.createConditionInfoForNonBillingTier(): TierCondi
         )
     } else {
         TierConditionInfo.Visible.Price(
-            price = "$$priceStripeUsdCents",
+            price = formatPriceInCents(priceStripeUsdCents),
             period = convertToTierViewPeriod(this)
         )
     }
+}
+
+private fun formatPriceInCents(priceInCents: Int): String {
+    val dollars = priceInCents / 100.0
+    return "$%.2f".format(dollars)
 }
 
 private fun MembershipTierData.createConditionInfoForBillingTier(billingClientState: BillingClientState): TierConditionInfo {

@@ -10,6 +10,7 @@ import com.anytypeio.anytype.payments.constants.TiersConstants
 import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierConditionInfo
+import com.anytypeio.anytype.payments.models.TierEmail
 import com.anytypeio.anytype.payments.models.TierPeriod
 import com.anytypeio.anytype.payments.models.TierPreviewView
 import com.anytypeio.anytype.payments.playbilling.BillingPurchaseState
@@ -134,6 +135,7 @@ class TierAndroidActiveTests : MembershipTestsSetup() {
                     expectedAnyName = TierAnyName.Hidden,
                     expectedButtonState = TierButton.Manage.Android.Disabled,
                     tierView = result.tierView,
+                    expectedEmailState = TierEmail.Hidden
                 )
             }
         }
@@ -188,6 +190,7 @@ class TierAndroidActiveTests : MembershipTestsSetup() {
                     expectedAnyName = TierAnyName.Hidden,
                     expectedButtonState = TierButton.Manage.Android.Disabled,
                     tierView = result.tierView,
+                    expectedEmailState = TierEmail.Hidden
                 )
             }
         }
@@ -244,6 +247,7 @@ class TierAndroidActiveTests : MembershipTestsSetup() {
                     expectedAnyName = TierAnyName.Hidden,
                     expectedButtonState = TierButton.Manage.Android.Enabled(androidProductId),
                     tierView = result.tierView,
+                    expectedEmailState = TierEmail.Hidden
                 )
             }
         }

@@ -4,12 +4,15 @@ import com.android.billingclient.api.ProductDetails
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
+import com.anytypeio.anytype.payments.constants.TiersConstants
 import com.anytypeio.anytype.payments.constants.TiersConstants.ERROR_PRODUCT_NOT_FOUND
 import com.anytypeio.anytype.payments.constants.TiersConstants.ERROR_PRODUCT_PRICE
+import com.anytypeio.anytype.payments.constants.TiersConstants.EXPLORER_ID
 import com.anytypeio.anytype.payments.models.BillingPriceInfo
 import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierConditionInfo
+import com.anytypeio.anytype.payments.models.TierEmail
 import com.anytypeio.anytype.payments.models.TierPeriod
 import com.anytypeio.anytype.payments.models.TierPreviewView
 import com.anytypeio.anytype.payments.models.TierView
@@ -40,7 +43,8 @@ fun MembershipTierData.toView(
         buttonState = toButtonView(
             isActive = isActive,
             billingPurchaseState = billingPurchaseState
-        )
+        ),
+        email = getTierEmail(isActive, membershipStatus.userEmail)
     )
 }
 
@@ -209,4 +213,13 @@ private fun convertToTierViewPeriod(tier: MembershipTierData): TierPeriod {
         MembershipPeriodType.PERIOD_TYPE_MONTHS -> TierPeriod.Month(tier.periodValue)
         MembershipPeriodType.PERIOD_TYPE_YEARS -> TierPeriod.Year(tier.periodValue)
     }
+}
+
+private fun MembershipTierData.getTierEmail(isActive: Boolean, membershipEmail: String): TierEmail {
+    if (isActive) {
+        if (id == EXPLORER_ID && membershipEmail.isBlank()) {
+            return TierEmail.Visible.Enter
+        }
+    }
+    return TierEmail.Hidden
 }

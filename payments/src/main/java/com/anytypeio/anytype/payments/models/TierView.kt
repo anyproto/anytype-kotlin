@@ -22,7 +22,8 @@ data class TierView(
     val conditionInfo: TierConditionInfo,
     val features: List<String>,
     val membershipAnyName: TierAnyName,
-    val buttonState: TierButton
+    val buttonState: TierButton,
+    val email: TierEmail
 )
 
 sealed class TierConditionInfo {
@@ -89,7 +90,6 @@ sealed class TierAnyName {
 sealed class TierEmail {
     data object Hidden : TierEmail()
     sealed class Visible : TierEmail() {
-        data object Disabled : Visible()
         data object Enter : Visible()
         data object Validating : Visible()
         data object Validated : Visible()

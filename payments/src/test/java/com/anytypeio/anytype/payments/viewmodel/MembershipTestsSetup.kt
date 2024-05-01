@@ -15,6 +15,7 @@ import com.anytypeio.anytype.payments.constants.TiersConstants
 import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierConditionInfo
+import com.anytypeio.anytype.payments.models.TierEmail
 import com.anytypeio.anytype.payments.models.TierView
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
 import com.anytypeio.anytype.payments.playbilling.BillingClientState
@@ -96,6 +97,7 @@ open class MembershipTestsSetup {
         expectedConditionInfo: TierConditionInfo.Visible,
         expectedAnyName: TierAnyName,
         expectedButtonState: TierButton,
+        expectedEmailState: TierEmail,
         tierView: TierView
     ) {
         assertEquals(expectedId, tierView.id.value)
@@ -104,6 +106,7 @@ open class MembershipTestsSetup {
         assertEquals("Condition info", expectedConditionInfo, tierView.conditionInfo)
         assertEquals("Any name", expectedAnyName, tierView.membershipAnyName, )
         assertEquals("Button state", expectedButtonState, tierView.buttonState)
+        assertEquals("Email state", expectedEmailState, tierView.email)
     }
 
     protected fun stubMembershipProvider(membershipStatus: MembershipStatus?) {

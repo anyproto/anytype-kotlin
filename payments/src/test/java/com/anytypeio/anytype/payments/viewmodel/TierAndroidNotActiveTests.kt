@@ -13,6 +13,7 @@ import com.anytypeio.anytype.payments.models.PeriodUnit
 import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierConditionInfo
+import com.anytypeio.anytype.payments.models.TierEmail
 import com.anytypeio.anytype.payments.models.TierPreviewView
 import com.anytypeio.anytype.payments.playbilling.BillingClientState
 import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
@@ -124,7 +125,8 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
                     expectedAnyName = TierAnyName.Visible.Disabled,
                     expectedButtonState = TierButton.Pay.Disabled,
                     expectedId = TiersConstants.BUILDER_ID,
-                    expectedActive = false
+                    expectedActive = false,
+                    expectedEmailState = TierEmail.Hidden
                 )
             }
         }
@@ -167,7 +169,8 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
                     expectedAnyName = TierAnyName.Visible.Disabled,
                     expectedButtonState = TierButton.Pay.Disabled,
                     expectedId = TiersConstants.BUILDER_ID,
-                    expectedActive = false
+                    expectedActive = false,
+                    expectedEmailState = TierEmail.Hidden
                 )
             }
         }
@@ -223,7 +226,8 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
                     expectedAnyName = TierAnyName.Visible.Disabled,
                     expectedButtonState = TierButton.Pay.Disabled,
                     expectedId = TiersConstants.BUILDER_ID,
-                    expectedActive = false
+                    expectedActive = false,
+                    expectedEmailState = TierEmail.Hidden
                 )
             }
         }
@@ -279,7 +283,8 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
                     expectedAnyName = TierAnyName.Visible.Disabled,
                     expectedButtonState = TierButton.Pay.Disabled,
                     expectedId = TiersConstants.BUILDER_ID,
-                    expectedActive = false
+                    expectedActive = false,
+                    expectedEmailState = TierEmail.Hidden
                 )
             }
         }
@@ -341,7 +346,8 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
                     expectedAnyName = TierAnyName.Visible.Enter,
                     expectedButtonState = TierButton.Pay.Disabled,
                     expectedId = TiersConstants.BUILDER_ID,
-                    expectedActive = false
+                    expectedActive = false,
+                    expectedEmailState = TierEmail.Hidden
                 )
             }
         }
@@ -398,7 +404,8 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
                     expectedAnyName = TierAnyName.Visible.Disabled,
                     expectedButtonState = TierButton.Pay.Disabled,
                     expectedId = TiersConstants.BUILDER_ID,
-                    expectedActive = false
+                    expectedActive = false,
+                    expectedEmailState = TierEmail.Hidden
                 )
             }
         }
@@ -455,7 +462,8 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
                     expectedAnyName = TierAnyName.Visible.Disabled,
                     expectedButtonState = TierButton.Pay.Disabled,
                     expectedId = TiersConstants.BUILDER_ID,
-                    expectedActive = false
+                    expectedActive = false,
+                    expectedEmailState = TierEmail.Hidden
                 )
             }
         }

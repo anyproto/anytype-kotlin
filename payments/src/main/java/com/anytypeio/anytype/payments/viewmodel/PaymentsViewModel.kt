@@ -6,26 +6,19 @@ import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.membership.MembershipErrors
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
-import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.payments.GetMembershipPaymentUrl
 import com.anytypeio.anytype.domain.payments.IsMembershipNameValid
 import com.anytypeio.anytype.domain.payments.ResolveMembershipName
 import com.anytypeio.anytype.payments.constants.TiersConstants.EXPLORER_ID
-import com.anytypeio.anytype.payments.constants.TiersConstants.MEMBERSHIP_NAME_MIN_LENGTH
 import com.anytypeio.anytype.payments.mapping.toMainView
 import com.anytypeio.anytype.payments.mapping.toView
-import com.anytypeio.anytype.payments.models.TierAnyName
-import com.anytypeio.anytype.payments.models.TierButton
-import com.anytypeio.anytype.payments.models.TierView
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
 import com.anytypeio.anytype.payments.playbilling.BillingClientState
 import com.anytypeio.anytype.payments.playbilling.BillingPurchaseState
 import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
 import com.anytypeio.anytype.presentation.membership.models.TierId
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -135,31 +128,7 @@ class PaymentsViewModel(
     }
 
     fun onActionCode(code: String, tierId: TierId) {
-//        Timber.d("onActionCode: tierId:$tierId, code:$code, _tiers:${_tiers}")
-//        viewModelScope.launch {
-//            codeState.value = PaymentsCodeState.Visible.Loading(tierId = tierId)
-//            welcomeState.value =
-//                PaymentsWelcomeState.Initial(tier = _tiers.first { it.id == tierId })
-//            val updatedTiers = _tiers.map {
-//                val isCurrent = it.id == tierId
-//                when (it) {
-//                    is Tier.Builder -> it.copy(isCurrent = isCurrent)
-//                    is Tier.CoCreator -> it.copy(isCurrent = isCurrent)
-//                    is Tier.Custom -> it.copy(isCurrent = isCurrent)
-//                    is Tier.Explorer -> it.copy(isCurrent = isCurrent)
-//                }
-//            }
-//            _tiers.clear()
-//            _tiers.addAll(updatedTiers)
-//            viewState.value = PaymentsMainState.PaymentSuccess(_tiers)
-//            command.value = PaymentsNavigation.Welcome
-//        }
-    }
-
-    fun onSubmitEmailButtonClicked(tierId: TierId, email: String) {
-        Timber.d("onSubmitEmailButtonClicked: email:$email")
-        codeState.value = PaymentsCodeState.Visible.Initial(tierId = tierId)
-        command.value = PaymentsNavigation.Code
+        //todo implement
     }
 
     fun onTierAction(action: TierAction) {
@@ -170,153 +139,12 @@ class PaymentsViewModel(
         }
     }
 
-    private var validateNameJob: Job? = null
-
     private fun proceedWithValidatingName(tierId: TierId, name: String) {
-        val tierView = (tierState.value as? MembershipTierState.Visible)?.tierView ?: return
-        if (name.length < MEMBERSHIP_NAME_MIN_LENGTH) {
-            when (tierView.membershipAnyName) {
-                is TierAnyName.Visible.Error -> setAnyNameStateToEnter(tierView)
-                TierAnyName.Visible.Validated -> setAnyNameStateToEnter(tierView)
-                else -> {}
-            }
-            return
-        }
-        if (validateNameJob?.isActive == true) {
-            validateNameJob?.cancel()
-        }
-        setAnyNameStateToValidating(tierView)
-        validateNameJob = viewModelScope.launch {
-            val params = IsMembershipNameValid.Params(
-                tier = tierId.value,
-                name = name
-            )
-            isMembershipNameValid.async(params).fold(
-                onSuccess = {
-                    Timber.d("Name is valid")
-                    setAnyNameStateToValidated(tierView)
-                },
-                onFailure = { error ->
-                    when (error) {
-                        is MembershipErrors.IsNameValid.TooShort -> {
-                            Timber.d("Name is too short")
-                            setAnyNameStateToError(tierView, error.message)
-                        }
-                        is MembershipErrors.IsNameValid.TooLong -> {
-                            Timber.d("Name is too long")
-                            setAnyNameStateToError(tierView, error.message)
-                        }
-                        is MembershipErrors.IsNameValid.HasInvalidChars -> {
-                            Timber.d("Name has invalid chars")
-                            setAnyNameStateToError(tierView, error.message)
-                        }
-                        is MembershipErrors.IsNameValid.CanNotReserve -> {
-                            Timber.d("Can not reserve name")
-                            setAnyNameStateToError(tierView, error.message)
-                        }
-                        else -> {
-                            Timber.e("Error validating name: $error")
-                            setAnyNameStateToError(tierView, error.message ?: "Error validating name")
-                        }
-                    }
-                }
-            )
-        }
-    }
-
-    private fun setAnyNameStateToEnter(tierView: TierView) {
-        val updatedTierState = tierView.copy(
-            membershipAnyName = TierAnyName.Visible.Enter
-        )
-        tierState.value = MembershipTierState.Visible(updatedTierState)
-    }
-
-    private fun setAnyNameStateToValidating(tierView: TierView) {
-        val updatedTierState = tierView.copy(
-            membershipAnyName = TierAnyName.Visible.Validating
-        )
-        tierState.value = MembershipTierState.Visible(updatedTierState)
-    }
-
-    private fun setAnyNameStateToError(tierView: TierView, message: String) {
-        val updatedTierState = tierView.copy(
-            membershipAnyName = TierAnyName.Visible.Error(message)
-        )
-        tierState.value = MembershipTierState.Visible(updatedTierState)
-    }
-
-    private fun setAnyNameStateToValidated(tierView: TierView) {
-        val updatedTierState = tierView.copy(
-            membershipAnyName = TierAnyName.Visible.Validated,
-            buttonState = TierButton.Pay.Enabled
-        )
-        tierState.value = MembershipTierState.Visible(updatedTierState)
+        //todo implement
     }
 
     fun onPayButtonClicked(tierId: TierId, name: String) {
-//        Timber.d("onPayButtonClicked: tierId:$tierId, name:$name")
-//        val tierState = tierState.value as? MembershipTierState.Visible.Initial ?: return
-//        viewModelScope.launch {
-//            val params = IsMembershipNameValid.Params(
-//                tier = tierId.value,
-//                name = name
-//            )
-//            isMembershipNameValid.async(params).fold(
-//                onSuccess = {
-//                    Timber.d("Name is valid")
-//                    proceedWithResolveName(tierId, name)
-//                },
-//                onFailure = { error ->
-//
-//                    Timber.e("Error validating name: $error")
-//                }
-//            )
-//        }
-    }
-
-    private suspend fun proceedWithResolveName(tierId: TierId, name: String) {
-        viewModelScope.launch {
-            val params = ResolveMembershipName.Params(
-                name = name
-            )
-            resolveMembershipName.async(params).fold(
-                onSuccess = {
-                    Timber.d("Name resolved")
-                    proceedWithPurchase(tierId, name)
-                },
-                onFailure = { error ->
-                    Timber.e("Error resolving name: $error")
-                }
-            )
-        }
-    }
-
-    private suspend fun proceedWithPurchase(tierId: TierId, name: String) {
-        val tier = membershipStatusState.value?.tiers?.find { it.id == tierId.value } ?: return
-        Timber.d("Tier: $tier")
-        val androidProductId = tier.androidProductId
-        if (androidProductId == null) {
-            Timber.e("Tier ${tier.id} has no androidProductId")
-            return
-        }
-        getMembershipPaymentUrl.async(
-            GetMembershipPaymentUrl.Params(
-                tierId = tier.id,
-                name = name
-            )
-        ).fold(
-            onSuccess = { url ->
-                Timber.d("Payment url: $url")
-                buyBasePlans(
-                    billingId = url.billingId,
-                    product = androidProductId,
-                    upDowngrade = false
-                )
-            },
-            onFailure = { error ->
-                Timber.e("Error getting payment url: $error")
-            }
-        )
+        //todo implement
     }
 
     fun onDismissTier() {

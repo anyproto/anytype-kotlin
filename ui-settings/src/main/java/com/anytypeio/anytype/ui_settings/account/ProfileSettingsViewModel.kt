@@ -23,6 +23,8 @@ import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.search.PROFILE_SUBSCRIPTION_ID
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendScreenSettingsDeleteEvent
+import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
+import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon
 import kotlinx.coroutines.Job
@@ -40,13 +42,15 @@ class ProfileSettingsViewModel(
     private val setObjectDetails: SetObjectDetails,
     private val configStorage: ConfigStorage,
     private val urlBuilder: UrlBuilder,
-    private val setImageIcon: SetDocumentImageIcon
+    private val setImageIcon: SetDocumentImageIcon,
+    private val membershipProvider: MembershipProvider
 ) : BaseViewModel() {
 
     private val jobs = mutableListOf<Job>()
 
     val isLoggingOut = MutableStateFlow(false)
     val debugSyncReportUri = MutableStateFlow<Uri?>(null)
+    val membershipStatusState = MutableStateFlow<MembershipStatus?>(null)
 
     private val profileId = configStorage.get().profile
 
@@ -79,6 +83,11 @@ class ProfileSettingsViewModel(
             analytics.sendEvent(
                 eventName = EventsDictionary.screenSettingsAccount
             )
+        }
+        viewModelScope.launch {
+            membershipProvider.status().collect { status ->
+                membershipStatusState.value = status
+            }
         }
     }
 
@@ -175,7 +184,8 @@ class ProfileSettingsViewModel(
         private val setObjectDetails: SetObjectDetails,
         private val configStorage: ConfigStorage,
         private val urlBuilder: UrlBuilder,
-        private val setDocumentImageIcon: SetDocumentImageIcon
+        private val setDocumentImageIcon: SetDocumentImageIcon,
+        private val membershipProvider: MembershipProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -186,7 +196,8 @@ class ProfileSettingsViewModel(
                 setObjectDetails = setObjectDetails,
                 configStorage = configStorage,
                 urlBuilder = urlBuilder,
-                setImageIcon = setDocumentImageIcon
+                setImageIcon = setDocumentImageIcon,
+                membershipProvider = membershipProvider
             ) as T
         }
     }

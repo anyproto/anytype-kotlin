@@ -2594,11 +2594,24 @@ class Middleware @Inject constructor(
     fun membershipIsNameValid(command: Command.Membership.IsNameValid) {
         val request = Rpc.Membership.IsNameValid.Request(
             requestedTier = command.tier,
-            nsName = command.name
+            nsName = command.name,
+            nsNameType = command.nameType.toMw()
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.membershipIsNameValid(request)
         if (BuildConfig.DEBUG) logResponse(response)
+    }
+
+    @Throws
+    fun membershipResolveName(command: Command.Membership.ResolveName): Boolean {
+        val request = Rpc.NameService.ResolveName.Request(
+            nsName = command.name,
+            nsNameType = command.nameType.toMw()
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.membershipResolveName(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.available
     }
 
     @Throws

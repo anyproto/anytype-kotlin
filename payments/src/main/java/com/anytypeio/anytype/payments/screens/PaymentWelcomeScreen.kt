@@ -27,7 +27,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.payments.R
-import com.anytypeio.anytype.presentation.membership.models.Tier
+import com.anytypeio.anytype.payments.viewmodel.Tier
 import com.anytypeio.anytype.payments.viewmodel.PaymentsWelcomeState
 import com.anytypeio.anytype.presentation.membership.models.TierId
 
@@ -65,7 +65,7 @@ private fun WelcomeContent(tierResources: TierResources, onDismiss: () -> Unit) 
             modifier = Modifier.wrapContentSize(),
             painter = painterResource(id = tierResources.mediumIcon!!),
             contentDescription = "logo",
-            tint = tierResources.radialGradient
+            tint = tierResources.colors.gradientStart
         )
         Spacer(modifier = Modifier.height(14.dp))
         Text(
@@ -105,5 +105,13 @@ private fun WelcomeContent(tierResources: TierResources, onDismiss: () -> Unit) 
 @Composable
 fun PaymentWelcomeScreenPreview() {
     PaymentWelcomeScreen(
-        PaymentsWelcomeState.Initial(Tier.Explorer(TierId("Free"), true, "01-01-2025")), {})
+        PaymentsWelcomeState.Initial(
+            Tier.Explorer(
+                TierId(22),
+                true,
+                "01-01-2025",
+                color = "green",
+                features = listOf("Feature 1", "Feature 2"),
+            )
+        ), {})
 }

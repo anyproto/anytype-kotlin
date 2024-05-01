@@ -30,8 +30,6 @@ import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.other.MediaPermissionHelper
-import com.anytypeio.anytype.payments.viewmodel.PaymentsViewModel
-import com.anytypeio.anytype.payments.viewmodel.PaymentsViewModelFactory
 import com.anytypeio.anytype.ui.auth.account.DeleteAccountWarning
 import com.anytypeio.anytype.ui.profile.KeychainPhraseDialog
 import com.anytypeio.anytype.ui_settings.account.ProfileSettingsScreen
@@ -47,13 +45,9 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
     lateinit var factory: ProfileSettingsViewModel.Factory
 
     @Inject
-    lateinit var factoryPayments: PaymentsViewModelFactory
-
-    @Inject
     lateinit var toggles: FeatureToggles
 
     private val vm by viewModels<ProfileSettingsViewModel> { factory }
-    private val viewModelPayments by viewModels<PaymentsViewModel> { factoryPayments }
 
     private val onKeychainPhraseClicked = {
         val bundle =
@@ -120,7 +114,7 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
                                 findNavController().navigate(R.id.paymentsScreen)
                             }
                         ),
-                        activeTierName = viewModelPayments.activeTierName.collectAsStateWithLifecycle().value,
+                        membershipStatus = vm.membershipStatusState.collectAsStateWithLifecycle().value,
                         onSpacesClicked = throttledClick(
                             onClick = {
                                 runCatching {

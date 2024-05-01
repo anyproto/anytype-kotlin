@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.ui.settings.ProfileSettingsFragment
 import com.anytypeio.anytype.ui_settings.account.ProfileSettingsViewModel
@@ -49,7 +50,8 @@ object ProfileModule {
         setObjectDetails: SetObjectDetails,
         configStorage: ConfigStorage,
         urlBuilder: UrlBuilder,
-        setDocumentImageIcon: SetDocumentImageIcon
+        setDocumentImageIcon: SetDocumentImageIcon,
+        membershipProvider: MembershipProvider
     ): ProfileSettingsViewModel.Factory = ProfileSettingsViewModel.Factory(
         deleteAccount = deleteAccount,
         analytics = analytics,
@@ -57,7 +59,8 @@ object ProfileModule {
         setObjectDetails = setObjectDetails,
         configStorage = configStorage,
         urlBuilder = urlBuilder,
-        setDocumentImageIcon = setDocumentImageIcon
+        setDocumentImageIcon = setDocumentImageIcon,
+        membershipProvider = membershipProvider
     )
 
     @Provides

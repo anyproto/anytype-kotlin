@@ -1428,6 +1428,7 @@
     <string name="payments_tier_custom_description">Membership tailored to your specific needs and preferences</string>
 
     <string name="payments_button_learn">Learn more</string>
+    <string name="payments_button_manage">Manage</string>
     <string name="payments_button_contact">Contact</string>
 
     <string name="payments_member_link">Membership levels details</string>
@@ -1444,7 +1445,10 @@
     <string name="payments_tier_details_name_domain">.any</string>
     <string name="payments_tier_details_name_min">Min 7 characters</string>
     <string name="payments_tier_details_name_error">This name is already taken!</string>
-    <string name="payments_tier_details_name_success">This name is up for grabs!</string>
+    <string name="payments_tier_details_name_validated">This name is up for grabs!</string>
+    <string name="payments_tier_details_name_validating">Validating name</string>
+    <string name="payments_tier_details_free_forever">Forever free</string>
+    <string name="payments_tier_details_valid_until">Valid until %1$s</string>
 
     <string name="payments_tier_details_info_explorer">Dive into the network and enjoy the thrill of one-on-one collaboration</string>
     <string-array name="payments_benefits_explorer">
@@ -1517,6 +1521,7 @@
 
 
     <string name="three_dots_text_placeholder">...</string>
+    <string name="membership_btn_join">Join</string>
 
     <string name="notifications_prompt_get_notified">Get notified</string>
     <string name="notifications_prompt_secondary_button_text">Not now</string>
@@ -1525,5 +1530,18 @@
 
     <string name="clipboard_panel_create_bookmark_from_clipboard">Create bookmark from clipboard</string>
     <string name="error_unexpected_layout">Error: unexpected layout</string>
+
+    <plurals name="period_years">
+        <item quantity="one">year</item>
+        <item quantity="other">%d years</item>
+    </plurals>
+    <plurals name="period_months">
+        <item quantity="one">month</item>
+        <item quantity="other">%d months</item>
+    </plurals>
+    <plurals name="period_days">
+        <item quantity="one">day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
 
 </resources>

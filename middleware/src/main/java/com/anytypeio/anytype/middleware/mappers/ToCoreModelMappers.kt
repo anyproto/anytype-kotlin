@@ -47,7 +47,6 @@ import com.anytypeio.anytype.core_models.membership.EmailVerificationStatus
 import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
-import com.anytypeio.anytype.core_models.membership.MembershipStatusModel
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_models.membership.NameServiceNameType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
@@ -55,6 +54,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
+import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.middleware.interactor.toCoreModels
 import com.google.gson.GsonBuilder
 
@@ -977,12 +977,12 @@ fun MNotification.toCoreModel(): Notification {
 //endregion
 
 //region MEMBERSHIP
-fun MMembershipStatus.toCoreModel(): MembershipStatusModel {
+fun MMembershipStatus.toCoreModel(): Membership.Status {
     return when (this) {
-        MMembershipStatus.StatusUnknown -> MembershipStatusModel.STATUS_UNKNOWN
-        MMembershipStatus.StatusPending -> MembershipStatusModel.STATUS_PENDING
-        MMembershipStatus.StatusActive -> MembershipStatusModel.STATUS_ACTIVE
-        MMembershipStatus.StatusPendingRequiresFinalization -> MembershipStatusModel.STATUS_PENDING_FINALIZATION
+        MMembershipStatus.StatusUnknown -> Membership.Status.STATUS_UNKNOWN
+        MMembershipStatus.StatusPending -> Membership.Status.STATUS_PENDING
+        MMembershipStatus.StatusActive -> Membership.Status.STATUS_ACTIVE
+        MMembershipStatus.StatusPendingRequiresFinalization -> Membership.Status.STATUS_PENDING_FINALIZATION
     }
 }
 
@@ -1035,12 +1035,12 @@ fun MMembershipTierData.toCoreModel() : MembershipTierData {
         anyNameMinLength = anyNameMinLength,
         features = features,
         colorStr = colorStr,
-        stripeProductId = stripeProductId,
-        stripeManageUrl = stripeManageUrl,
-        iosProductId = iosProductId,
-        iosManageUrl = iosManageUrl,
-        androidProductId = androidProductId,
-        androidManageUrl = androidManageUrl
+        stripeProductId = stripeProductId.ifEmpty { null },
+        stripeManageUrl = stripeManageUrl.ifEmpty { null },
+        iosProductId = iosProductId.ifEmpty { null },
+        iosManageUrl = iosManageUrl.ifEmpty { null },
+        androidProductId = androidProductId.ifEmpty { null },
+        androidManageUrl = androidManageUrl.ifEmpty { null },
     )
 }
 

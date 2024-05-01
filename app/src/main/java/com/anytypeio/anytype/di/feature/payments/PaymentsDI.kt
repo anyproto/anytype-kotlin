@@ -9,10 +9,13 @@ import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.payments.GetMembershipTiers
+import com.anytypeio.anytype.domain.payments.GetMembershipPaymentUrl
+import com.anytypeio.anytype.domain.payments.IsMembershipNameValid
+import com.anytypeio.anytype.domain.payments.ResolveMembershipName
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
 import com.anytypeio.anytype.ui.payments.PaymentsFragment
 import com.anytypeio.anytype.payments.viewmodel.PaymentsViewModelFactory
+import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import dagger.Binds
 import dagger.Component
 import dagger.Module
@@ -50,10 +53,26 @@ object PaymentsModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideGetTiersUseCase(
+    fun provideGetPaymentsUrl(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
-    ): GetMembershipTiers = GetMembershipTiers(repo = repo, dispatchers = dispatchers)
+    ): GetMembershipPaymentUrl = GetMembershipPaymentUrl(repo = repo, dispatchers = dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideIsNameValid(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): IsMembershipNameValid = IsMembershipNameValid(repo = repo, dispatchers = dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideResolveName(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): ResolveMembershipName = ResolveMembershipName(repo = repo, dispatchers = dispatchers)
 
     @Module
     interface Declarations {
@@ -74,4 +93,5 @@ interface PaymentsComponentDependencies : ComponentDependencies {
     fun authRepository(): AuthRepository
     fun blockRepository(): BlockRepository
     fun appCoroutineDispatchers(): AppCoroutineDispatchers
+    fun provideMembershipProvider(): MembershipProvider
 }

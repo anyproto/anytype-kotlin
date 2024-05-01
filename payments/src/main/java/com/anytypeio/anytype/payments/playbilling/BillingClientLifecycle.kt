@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.MutableLiveData
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingFlowParams
@@ -17,10 +16,9 @@ import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
-import com.anytypeio.anytype.payments.constants.BillingConstants
-import com.anytypeio.anytype.payments.constants.BillingConstants.suscriptionTiers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -32,7 +30,8 @@ class BillingClientLifecycle(
 ) : DefaultLifecycleObserver, PurchasesUpdatedListener, BillingClientStateListener,
     ProductDetailsResponseListener, PurchasesResponseListener {
 
-    private val _subscriptionPurchases = MutableStateFlow<List<Purchase>>(emptyList())
+    private val _subscriptionPurchases =
+        MutableStateFlow<BillingPurchaseState>(BillingPurchaseState.Loading)
 
     /**
      * Purchases are collectable. This list will be updated when the Billing Library
@@ -48,12 +47,22 @@ class BillingClientLifecycle(
     /**
      * ProductDetails for all known products.
      */
-    val builderSubProductWithProductDetails = MutableLiveData<ProductDetails?>()
+    private val _builderSubProductWithProductDetails =
+        MutableStateFlow<BillingClientState>(BillingClientState.Loading)
+    val builderSubProductWithProductDetails: StateFlow<BillingClientState> =
+        _builderSubProductWithProductDetails
 
     /**
      * Instantiate a new BillingClient instance.
      */
     private lateinit var billingClient: BillingClient
+
+    private val subscriptionIds = mutableListOf<String>()
+
+    fun setupSubIds(ids: List<String>) {
+        subscriptionIds.clear()
+        subscriptionIds.addAll(ids)
+    }
 
     override fun onCreate(owner: LifecycleOwner) {
         Timber.d("ON_CREATE")
@@ -89,6 +98,10 @@ class BillingClientLifecycle(
             // You can query product details and purchases here.
             querySubscriptionProductDetails()
             querySubscriptionPurchases()
+        } else {
+            Timber.e("onBillingSetupFinished: BillingResponse $responseCode")
+            _builderSubProductWithProductDetails.value =
+                BillingClientState.Error("BillingResponse $responseCode")
         }
     }
 
@@ -112,7 +125,7 @@ class BillingClientLifecycle(
         val params = QueryProductDetailsParams.newBuilder()
 
         val productList: MutableList<QueryProductDetailsParams.Product> = arrayListOf()
-        for (product in suscriptionTiers) {
+        for (product in subscriptionIds) {
             productList.add(
                 QueryProductDetailsParams.Product.newBuilder()
                     .setProductId(product)
@@ -148,6 +161,8 @@ class BillingClientLifecycle(
             processProductDetails(productDetailsList)
         } else {
             Timber.e("onProductDetailsResponse: ${billingResult.responseCode}")
+            _builderSubProductWithProductDetails.value =
+                BillingClientState.Error("onProductDetailsResponse: ${billingResult.responseCode}")
         }
     }
 
@@ -160,7 +175,7 @@ class BillingClientLifecycle(
      *
      */
     private fun processProductDetails(productDetailsList: MutableList<ProductDetails>) {
-        val expectedProductDetailsCount = suscriptionTiers.size
+        val expectedProductDetailsCount = subscriptionIds.size
         if (productDetailsList.isEmpty()) {
             Timber.e("Expected ${expectedProductDetailsCount}, Found null ProductDetails.")
             postProductDetails(emptyList())
@@ -177,17 +192,23 @@ class BillingClientLifecycle(
      *
      */
     private fun postProductDetails(productDetailsList: List<ProductDetails>) {
+        val result = mutableListOf<ProductDetails>()
         productDetailsList.forEach { productDetails ->
             when (productDetails.productType) {
                 BillingClient.ProductType.SUBS -> {
-                    when (productDetails.productId) {
-                        BillingConstants.SUBSCRIPTION_BUILDER -> {
-                            Timber.d("Builder Subscription ProductDetails: $productDetails")
-                            builderSubProductWithProductDetails.postValue(productDetails)
-                        }
+                    if (subscriptionIds.contains(productDetails.productId)) {
+                        Timber.d("Subscription ProductDetails: $productDetails")
+                        result.add(productDetails)
                     }
                 }
             }
+        }
+        if (result.isNotEmpty()) {
+            _builderSubProductWithProductDetails.value = BillingClientState.Connected(result)
+        } else {
+            Timber.e("No product details found for subscriptionIds: $subscriptionIds")
+            _builderSubProductWithProductDetails.value =
+                BillingClientState.Error("No product details found for subscriptionIds: $subscriptionIds")
         }
     }
 
@@ -197,7 +218,7 @@ class BillingClientLifecycle(
      * New purchases will be provided to the PurchasesUpdatedListener.
      * You still need to check the Google Play Billing API to know when purchase tokens are removed.
      */
-    fun querySubscriptionPurchases() {
+    private fun querySubscriptionPurchases() {
         if (!billingClient.isReady) {
             Timber.w("querySubscriptionPurchases: BillingClient is not ready")
             billingClient.startConnection(this)
@@ -253,6 +274,9 @@ class BillingClientLifecycle(
                             "not recognize the configuration."
                 )
             }
+            else -> {
+                Timber.e("onPurchasesUpdated: BillingResponseCode $responseCode")
+            }
         }
     }
 
@@ -261,7 +285,7 @@ class BillingClientLifecycle(
      * on the sever.
      */
     private fun processPurchases(purchasesList: List<Purchase>?) {
-        Timber.d( "processPurchases: ${purchasesList?.size} purchase(s)")
+        Timber.d("processPurchases: ${purchasesList?.size} purchase(s)")
         purchasesList?.let { list ->
             if (isUnchangedPurchaseList(list)) {
                 Timber.d("processPurchases: Purchase list has not changed")
@@ -270,10 +294,19 @@ class BillingClientLifecycle(
             scope.launch(dispatchers.io) {
                 val subscriptionPurchaseList = list.filter { purchase ->
                     purchase.products.any { product ->
-                        product in suscriptionTiers
+                        product in subscriptionIds
                     }
                 }
-                _subscriptionPurchases.emit(subscriptionPurchaseList)
+                if (subscriptionPurchaseList.isEmpty()) {
+                    Timber.d("processPurchases: No subscription purchases found")
+                    _subscriptionPurchases.emit(BillingPurchaseState.NoPurchases)
+                } else {
+                    _subscriptionPurchases.emit(
+                        BillingPurchaseState.HasPurchases(
+                            subscriptionPurchaseList
+                        )
+                    )
+                }
             }
             logAcknowledgementStatus(list)
         }
@@ -331,4 +364,17 @@ class BillingClientLifecycle(
         Timber.d("launchBillingFlow: BillingResponse $responseCode $debugMessage")
         return responseCode
     }
+}
+
+sealed class BillingClientState {
+    data object Loading : BillingClientState()
+    data class Error(val message: String) : BillingClientState()
+    //Connected state is suppose that we have non empty list of product details
+    data class Connected(val productDetails: List<ProductDetails>) : BillingClientState()
+}
+
+sealed class BillingPurchaseState {
+    data object Loading : BillingPurchaseState()
+    data class HasPurchases(val purchases: List<Purchase>) : BillingPurchaseState()
+    data object NoPurchases : BillingPurchaseState()
 }

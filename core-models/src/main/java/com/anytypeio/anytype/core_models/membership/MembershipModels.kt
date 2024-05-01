@@ -2,7 +2,7 @@ package com.anytypeio.anytype.core_models.membership
 
 data class Membership(
     val tier: Int,
-    val membershipStatusModel: MembershipStatusModel,
+    val membershipStatusModel: Status,
     val dateStarted: Long,
     val dateEnds: Long,
     val isAutoRenew: Boolean,
@@ -14,13 +14,13 @@ data class Membership(
 ) {
 
     data class Event(val membership: Membership)
-}
 
-enum class MembershipStatusModel {
-    STATUS_UNKNOWN,
-    STATUS_PENDING,
-    STATUS_ACTIVE,
-    STATUS_PENDING_FINALIZATION
+    enum class Status {
+        STATUS_UNKNOWN,
+        STATUS_PENDING,
+        STATUS_ACTIVE,
+        STATUS_PENDING_FINALIZATION
+    }
 }
 
 enum class MembershipPaymentMethod {

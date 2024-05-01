@@ -228,4 +228,16 @@
 
     <color name="payments_tier_current_background">#F6F6F6</color>
 
+    <color name="tier_gradient_red_start">#FBEAEA</color>
+    <color name="tier_gradient_red_end">#F05F5F</color>
+
+    <color name="tier_gradient_blue_start">#E4E7FF</color>
+    <color name="tier_gradient_blue_end">#A5AEFF</color>
+
+    <color name="tier_gradient_teal_start">#CFFAFF</color>
+    <color name="tier_gradient_teal_end">#24BFD4</color>
+
+    <color name="tier_gradient_purple_start">#FBEAFF</color>
+    <color name="tier_gradient_purple_end">#E86DE3</color>
+
 </resources>

@@ -9,11 +9,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
+import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -45,7 +47,11 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        lifecycle.addObserver(billingClientLifecycle)
+        lifecycleScope.subscribe(vm.initBillingClient) { init ->
+            if (init) {
+                lifecycle.addObserver(billingClientLifecycle)
+            }
+        }
     }
 
     @OptIn(ExperimentalMaterialNavigationApi::class)
@@ -133,8 +139,7 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
         TierScreen(
             state = vm.tierState.collectAsStateWithLifecycle().value,
             onDismiss = vm::onDismissTier,
-            actionPay = vm::onPayButtonClicked,
-            actionSubmitEmail = vm::onSubmitEmailButtonClicked
+            actionTier = vm::onTierAction,
         )
     }
 
@@ -154,6 +159,11 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
             state = vm.welcomeState.collectAsStateWithLifecycle().value,
             onDismiss = vm::onDismissWelcome
         )
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupBottomSheetBehavior(DEFAULT_PADDING_TOP)
     }
 
     override fun injectDependencies() {

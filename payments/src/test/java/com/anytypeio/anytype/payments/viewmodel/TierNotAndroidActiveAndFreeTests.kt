@@ -10,6 +10,7 @@ import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierConditionInfo
 import com.anytypeio.anytype.payments.models.TierEmail
+import com.anytypeio.anytype.payments.models.TierPeriod
 import com.anytypeio.anytype.payments.models.TierPreviewView
 import com.anytypeio.anytype.payments.playbilling.BillingClientState
 import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
@@ -45,7 +46,7 @@ class TierNotAndroidActiveAndFreeTests : MembershipTestsSetup() {
         )
     }
 
-    private fun setupMembershipStatus(tiers: List<MembershipTierData>): MembershipStatus {
+    private fun setupMembershipStatus(tiers: List<MembershipTierData>, email: String): MembershipStatus {
         return MembershipStatus(
             activeTier = TierId(TiersConstants.EXPLORER_ID),
             status = Membership.Status.STATUS_ACTIVE,
@@ -54,7 +55,7 @@ class TierNotAndroidActiveAndFreeTests : MembershipTestsSetup() {
             anyName = "",
             tiers = tiers,
             formattedDateEnds = "formattedDateEnds-${RandomString.make()}",
-            userEmail = ""
+            userEmail = email
         )
     }
 
@@ -65,7 +66,7 @@ class TierNotAndroidActiveAndFreeTests : MembershipTestsSetup() {
 
             stubPurchaseState()
             stubBilling(billingClientState = BillingClientState.Loading)
-            stubMembershipProvider(setupMembershipStatus(tiers))
+            stubMembershipProvider(setupMembershipStatus(tiers, ""))
 
             val viewModel = buildViewModel()
             val viewStateFlow = viewModel.viewState.testIn(backgroundScope)
@@ -76,30 +77,71 @@ class TierNotAndroidActiveAndFreeTests : MembershipTestsSetup() {
 
             viewStateFlow.awaitItem().let { result ->
                 assertIs<MembershipMainState.Default>(result)
-                val tier: TierPreviewView = result.tiers.find { it.id.value == TiersConstants.BUILDER_ID }!!
-                TestCase.assertEquals(TiersConstants.BUILDER_ID, tier.id.value)
-                TestCase.assertEquals(false, tier.isActive)
-                TestCase.assertEquals(TierConditionInfo.Visible.LoadingBillingClient, tier.conditionInfo)
+                val tier: TierPreviewView = result.tiers.find { it.id.value == TiersConstants.EXPLORER_ID }!!
+                TestCase.assertEquals(TiersConstants.EXPLORER_ID, tier.id.value)
+                TestCase.assertEquals(true, tier.isActive)
+                TestCase.assertEquals(TierConditionInfo.Visible.Free(TierPeriod.Unlimited), tier.conditionInfo)
             }
 
-            viewModel.onTierClicked(TierId(TiersConstants.BUILDER_ID))
+            viewModel.onTierClicked(TierId(TiersConstants.EXPLORER_ID))
 
-            //STATE : BUILDER, NOT CURRENT, LOADING BILLING
+            //STATE : EXPLORER, CURRENT, WITHOUT EMAIL
             tierStateFlow.awaitItem().let { result ->
                 assertIs<MembershipTierState.Visible>(result)
                 validateTierView(
                     tierView = result.tierView,
                     expectedFeatures = features,
-                    expectedConditionInfo = TierConditionInfo.Visible.LoadingBillingClient,
-                    expectedAnyName = TierAnyName.Visible.Disabled,
-                    expectedButtonState = TierButton.Pay.Disabled,
-                    expectedId = TiersConstants.BUILDER_ID,
-                    expectedActive = false,
+                    expectedConditionInfo = TierConditionInfo.Visible.Free(TierPeriod.Unlimited),
+                    expectedAnyName = TierAnyName.Hidden,
+                    expectedButtonState = TierButton.Submit.Disabled,
+                    expectedId = TiersConstants.EXPLORER_ID,
+                    expectedActive = true,
                     expectedEmailState = TierEmail.Visible.Enter
                 )
             }
         }
     }
 
+    @Test
+    fun `when free plan is active, with email, don't show email form`() = runTest {
+        turbineScope {
+            val (features, tiers) = commonTestSetup()
 
+            stubPurchaseState()
+            stubBilling(billingClientState = BillingClientState.Loading)
+            stubMembershipProvider(setupMembershipStatus(tiers, "test@any.io"))
+
+            val viewModel = buildViewModel()
+            val viewStateFlow = viewModel.viewState.testIn(backgroundScope)
+            val tierStateFlow = viewModel.tierState.testIn(backgroundScope)
+
+            assertIs<MembershipMainState.Loading>(viewStateFlow.awaitItem())
+            assertIs<MembershipTierState.Hidden>(tierStateFlow.awaitItem())
+
+            viewStateFlow.awaitItem().let { result ->
+                assertIs<MembershipMainState.Default>(result)
+                val tier: TierPreviewView = result.tiers.find { it.id.value == TiersConstants.EXPLORER_ID }!!
+                TestCase.assertEquals(TiersConstants.EXPLORER_ID, tier.id.value)
+                TestCase.assertEquals(true, tier.isActive)
+                TestCase.assertEquals(TierConditionInfo.Visible.Free(TierPeriod.Unlimited), tier.conditionInfo)
+            }
+
+            viewModel.onTierClicked(TierId(TiersConstants.EXPLORER_ID))
+
+            //STATE : EXPLORER, CURRENT, WITHOUT EMAIL
+            tierStateFlow.awaitItem().let { result ->
+                assertIs<MembershipTierState.Visible>(result)
+                validateTierView(
+                    tierView = result.tierView,
+                    expectedFeatures = features,
+                    expectedConditionInfo = TierConditionInfo.Visible.Free(TierPeriod.Unlimited),
+                    expectedAnyName = TierAnyName.Hidden,
+                    expectedButtonState = TierButton.Hidden,
+                    expectedId = TiersConstants.EXPLORER_ID,
+                    expectedActive = true,
+                    expectedEmailState = TierEmail.Hidden
+                )
+            }
+        }
+    }
 }

@@ -4,7 +4,6 @@ import com.android.billingclient.api.ProductDetails
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
-import com.anytypeio.anytype.payments.constants.TiersConstants
 import com.anytypeio.anytype.payments.constants.TiersConstants.ERROR_PRODUCT_NOT_FOUND
 import com.anytypeio.anytype.payments.constants.TiersConstants.ERROR_PRODUCT_PRICE
 import com.anytypeio.anytype.payments.constants.TiersConstants.EXPLORER_ID
@@ -28,6 +27,7 @@ fun MembershipTierData.toView(
 ): TierView {
     val tierId = TierId(id)
     val isActive = membershipStatus.isTierActive(id)
+    val emailState = getTierEmail(isActive, membershipStatus.userEmail)
     return TierView(
         id = tierId,
         title = tierId.getTierTitle(),
@@ -42,9 +42,10 @@ fun MembershipTierData.toView(
         membershipAnyName = getAnyName(isActive, billingClientState),
         buttonState = toButtonView(
             isActive = isActive,
-            billingPurchaseState = billingPurchaseState
+            billingPurchaseState = billingPurchaseState,
+            emailState = emailState
         ),
-        email = getTierEmail(isActive, membershipStatus.userEmail)
+        email = emailState
     )
 }
 
@@ -69,15 +70,27 @@ fun MembershipTierData.toPreviewView(
 
 private fun MembershipTierData.toButtonView(
     isActive: Boolean,
-    billingPurchaseState: BillingPurchaseState
+    billingPurchaseState: BillingPurchaseState,
+    emailState: TierEmail
 ): TierButton {
-    val subId = androidProductId
+    val androidProductId = this.androidProductId
     return if (isActive) {
-        if (subId == null) {
-            TierButton.Info.Enabled("")
+        if (androidProductId == null) {
+            if (id == EXPLORER_ID) {
+                when (emailState)  {
+                    TierEmail.Hidden -> TierButton.Hidden
+                    TierEmail.Visible.Enter -> TierButton.Submit.Disabled
+                    is TierEmail.Visible.Error -> TierButton.Submit.Disabled
+                    TierEmail.Visible.Validated -> TierButton.Submit.Enabled
+                    TierEmail.Visible.Validating -> TierButton.Submit.Disabled
+                }
+            } else {
+                //todo: add logic for other tiers
+                TierButton.Info.Disabled
+            }
         } else {
             if (billingPurchaseState is BillingPurchaseState.HasPurchases) {
-                TierButton.Manage.Android.Enabled(subId)
+                TierButton.Manage.Android.Enabled(androidProductId)
             } else {
                 TierButton.Manage.Android.Disabled
             }
@@ -222,4 +235,14 @@ private fun MembershipTierData.getTierEmail(isActive: Boolean, membershipEmail: 
         }
     }
     return TierEmail.Hidden
+}
+
+private fun TierEmail.getButtonState(): TierButton {
+    return when (this) {
+        TierEmail.Hidden -> TierButton.Hidden
+        TierEmail.Visible.Validated -> TierButton.Submit.Enabled
+        TierEmail.Visible.Enter -> TierButton.Submit.Disabled
+        is TierEmail.Visible.Error -> TierButton.Submit.Disabled
+        TierEmail.Visible.Validating -> TierButton.Submit.Disabled
+    }
 }

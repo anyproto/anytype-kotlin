@@ -54,6 +54,11 @@ sealed class TierButton {
         data object Disabled : Submit()
     }
 
+    sealed class Change : TierButton() {
+        data object Enabled : Submit()
+        data object Disabled : Submit()
+    }
+
     sealed class Info : TierButton() {
         data class Enabled(val url: String) : Info()
         data object Disabled : Info()

@@ -1531,6 +1531,13 @@
     <string name="clipboard_panel_create_bookmark_from_clipboard">Create bookmark from clipboard</string>
     <string name="error_unexpected_layout">Error: unexpected layout</string>
 
+    <string name="membership_price_pending">Pending...</string>"
+    <string name="per_period">per %1$s</string>
+    <string name="free_for">Free for %1$s</string>
+    <string name="free_for_unknown">Free until...</string>
+    <string name="membership_valid_forever">Valid forever</string>
+    <string name="membership_valid_for_unknown">Valid until...</string>
+
     <plurals name="period_years">
         <item quantity="one">year</item>
         <item quantity="other">%d years</item>
@@ -1538,6 +1545,10 @@
     <plurals name="period_months">
         <item quantity="one">month</item>
         <item quantity="other">%d months</item>
+    </plurals>
+    <plurals name="period_weeks">
+        <item quantity="one">week</item>
+        <item quantity="other">%d weeks</item>
     </plurals>
     <plurals name="period_days">
         <item quantity="one">day</item>

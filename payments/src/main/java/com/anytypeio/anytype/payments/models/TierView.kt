@@ -30,7 +30,7 @@ sealed class TierConditionInfo {
     data object Hidden : TierConditionInfo()
     sealed class Visible : TierConditionInfo() {
         data object LoadingBillingClient : Visible()
-        data class Valid(val dateEnds: Long, val payedBy : MembershipPaymentMethod) : Visible()
+        data class Valid(val period: TierPeriod, val dateEnds: Long, val payedBy : MembershipPaymentMethod) : Visible()
         data class Price(val price: String, val period: TierPeriod) : Visible()
         data class PriceBilling(val price: BillingPriceInfo) : Visible()
         data class Free(val period: TierPeriod) : Visible()

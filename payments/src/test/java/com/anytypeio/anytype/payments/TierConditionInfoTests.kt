@@ -4,14 +4,11 @@ import app.cash.turbine.turbineScope
 import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
-import com.anytypeio.anytype.payments.MembershipTestsSetup
-import com.anytypeio.anytype.payments.StubMembershipTierData
 import com.anytypeio.anytype.payments.constants.TiersConstants
 import com.anytypeio.anytype.payments.models.TierConditionInfo
 import com.anytypeio.anytype.payments.models.TierPeriod
 import com.anytypeio.anytype.payments.playbilling.BillingPurchaseState
 import com.anytypeio.anytype.payments.viewmodel.MembershipMainState
-import com.anytypeio.anytype.payments.viewmodel.MembershipTierState
 import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
 import com.anytypeio.anytype.presentation.membership.models.TierId
 import kotlin.test.assertIs
@@ -21,9 +18,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class TierConditionInfoTests : MembershipTestsSetup() {
-
-
-
+    
     @Test
     fun `when tier not active and free 1`() = runTest {
         turbineScope {
@@ -462,7 +457,8 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             assertEquals(
                 TierConditionInfo.Visible.Valid(
                     dateEnds = 1714199910,
-                    payedBy = MembershipPaymentMethod.METHOD_INAPP_GOOGLE
+                    payedBy = MembershipPaymentMethod.METHOD_INAPP_GOOGLE,
+                    period = TierPeriod.Year(2)
                 ), tier.conditionInfo
             )
         }

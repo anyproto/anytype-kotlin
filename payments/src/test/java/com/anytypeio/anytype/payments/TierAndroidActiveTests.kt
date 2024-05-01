@@ -115,7 +115,8 @@ class TierAndroidActiveTests : MembershipTestsSetup() {
                 TestCase.assertEquals(
                     TierConditionInfo.Visible.Valid(
                         dateEnds = dateEnds,
-                        payedBy = MembershipPaymentMethod.METHOD_INAPP_GOOGLE
+                        payedBy = MembershipPaymentMethod.METHOD_INAPP_GOOGLE,
+                        period = validPeriod
                     ),
                     tier.conditionInfo
                 )
@@ -132,7 +133,8 @@ class TierAndroidActiveTests : MembershipTestsSetup() {
                     expectedFeatures = features,
                     expectedConditionInfo = TierConditionInfo.Visible.Valid(
                         dateEnds = dateEnds,
-                        payedBy = MembershipPaymentMethod.METHOD_INAPP_GOOGLE
+                        payedBy = MembershipPaymentMethod.METHOD_INAPP_GOOGLE,
+                        period = validPeriod
                     ),
                     expectedAnyName = TierAnyName.Hidden,
                     expectedButtonState = TierButton.Manage.Android.Disabled,
@@ -170,7 +172,8 @@ class TierAndroidActiveTests : MembershipTestsSetup() {
                 TestCase.assertEquals(
                     TierConditionInfo.Visible.Valid(
                         dateEnds = dateEnds,
-                        payedBy = MembershipPaymentMethod.METHOD_INAPP_GOOGLE
+                        payedBy = MembershipPaymentMethod.METHOD_INAPP_GOOGLE,
+                        period = validPeriod
                     ),
                     tier.conditionInfo
                 )
@@ -187,7 +190,8 @@ class TierAndroidActiveTests : MembershipTestsSetup() {
                     expectedFeatures = features,
                     expectedConditionInfo = TierConditionInfo.Visible.Valid(
                         dateEnds = dateEnds,
-                        payedBy = MembershipPaymentMethod.METHOD_INAPP_GOOGLE
+                        payedBy = MembershipPaymentMethod.METHOD_INAPP_GOOGLE,
+                        period = validPeriod
                     ),
                     expectedAnyName = TierAnyName.Hidden,
                     expectedButtonState = TierButton.Manage.Android.Disabled,
@@ -227,7 +231,8 @@ class TierAndroidActiveTests : MembershipTestsSetup() {
                 TestCase.assertEquals(
                     TierConditionInfo.Visible.Valid(
                         dateEnds = dateEnds,
-                        payedBy = MembershipPaymentMethod.METHOD_INAPP_GOOGLE
+                        payedBy = MembershipPaymentMethod.METHOD_INAPP_GOOGLE,
+                        period = validPeriod
                     ),
                     tier.conditionInfo
                 )
@@ -244,7 +249,8 @@ class TierAndroidActiveTests : MembershipTestsSetup() {
                     expectedFeatures = features,
                     expectedConditionInfo = TierConditionInfo.Visible.Valid(
                         dateEnds = dateEnds,
-                        payedBy = MembershipPaymentMethod.METHOD_INAPP_GOOGLE
+                        payedBy = MembershipPaymentMethod.METHOD_INAPP_GOOGLE,
+                        period = validPeriod
                     ),
                     expectedAnyName = TierAnyName.Hidden,
                     expectedButtonState = TierButton.Manage.Android.Enabled(androidProductId),

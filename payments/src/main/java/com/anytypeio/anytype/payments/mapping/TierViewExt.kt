@@ -188,7 +188,9 @@ private fun MembershipTierData.createConditionInfoForCurrentTier(
     } else {
         TierConditionInfo.Visible.Valid(
             dateEnds = membershipValidUntil,
-            payedBy = paymentMethod
+            payedBy = paymentMethod,
+            period = convertToTierViewPeriod(this)
+
         )
     }
 }

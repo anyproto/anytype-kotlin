@@ -16,4 +16,6 @@ object TiersConstants {
 
     const val ERROR_PRODUCT_NOT_FOUND = "Product not found"
     const val ERROR_PRODUCT_PRICE = "Price of the product is not available"
+
+    const val MEMBERSHIP_NAME_MIN_LENGTH = 7
 }

@@ -40,7 +40,7 @@ import org.mockito.MockitoAnnotations
 
 open class MembershipTestsSetup {
 
-    private val dispatcher = StandardTestDispatcher(TestCoroutineScheduler())
+    val dispatcher = StandardTestDispatcher(TestCoroutineScheduler())
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val dispatchers = AppCoroutineDispatchers(
@@ -84,7 +84,7 @@ open class MembershipTestsSetup {
     )
 
     @Before
-    fun setUp() {
+    open fun setUp() {
         MockitoAnnotations.openMocks(this)
         getMembershipPaymentUrl = GetMembershipPaymentUrl(dispatchers, repo)
     }

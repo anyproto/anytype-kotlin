@@ -18,6 +18,7 @@ import com.anytypeio.anytype.payments.models.TierConditionInfo
 import com.anytypeio.anytype.payments.models.TierView
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
 import com.anytypeio.anytype.payments.playbilling.BillingClientState
+import com.anytypeio.anytype.payments.playbilling.BillingPurchaseState
 import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
 import com.anytypeio.anytype.presentation.membership.models.TierId
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
@@ -89,13 +90,13 @@ open class MembershipTestsSetup {
     }
 
     protected fun validateTierView(
-        tierView: TierView,
         expectedId: Int,
         expectedActive: Boolean,
         expectedFeatures: List<String>,
         expectedConditionInfo: TierConditionInfo.Visible,
         expectedAnyName: TierAnyName,
-        expectedButtonState: TierButton
+        expectedButtonState: TierButton,
+        tierView: TierView
     ) {
         assertEquals(expectedId, tierView.id.value)
         assertEquals("is Active", expectedActive, tierView.isActive)
@@ -133,6 +134,12 @@ open class MembershipTestsSetup {
             onBlocking { builderSubProductWithProductDetails }.thenReturn(
                 MutableStateFlow(billingClientState)
             )
+        }
+    }
+
+    protected fun stubPurchaseState(purchaseState: BillingPurchaseState = BillingPurchaseState.NoPurchases) {
+        billingClientLifecycle.stub {
+            onBlocking { subscriptionPurchases }.thenReturn(MutableStateFlow(purchaseState))
         }
     }
 

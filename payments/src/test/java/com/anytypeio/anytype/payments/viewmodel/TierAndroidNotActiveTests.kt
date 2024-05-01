@@ -93,6 +93,7 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
         turbineScope {
             val (features, tiers) = commonTestSetup()
 
+            stubPurchaseState()
             stubBilling(billingClientState = BillingClientState.Loading)
             stubMembershipProvider(setupMembershipStatus(tiers))
 
@@ -136,6 +137,7 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
             val errorMessage = "error-${RandomString.make()}"
 
             stubMembershipProvider(setupMembershipStatus(tiers))
+            stubPurchaseState()
             stubBilling(billingClientState = BillingClientState.Error(errorMessage))
 
             val viewModel = buildViewModel()
@@ -177,6 +179,7 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
             val (features, tiers) = commonTestSetup()
 
             stubMembershipProvider(setupMembershipStatus(tiers))
+            stubPurchaseState()
 
             val product = Mockito.mock(ProductDetails::class.java)
             val subscriptionOfferDetails = listOf(Mockito.mock(ProductDetails.SubscriptionOfferDetails::class.java))
@@ -232,6 +235,7 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
             val (features, tiers) = commonTestSetup()
 
             stubMembershipProvider(setupMembershipStatus(tiers))
+            stubPurchaseState()
 
             val product = Mockito.mock(ProductDetails::class.java)
             val subscriptionOfferDetails = listOf(Mockito.mock(ProductDetails.SubscriptionOfferDetails::class.java))
@@ -286,6 +290,7 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
         turbineScope {
             val (features, tiers) = commonTestSetup()
 
+            stubPurchaseState()
             stubMembershipProvider(setupMembershipStatus(tiers))
 
             val product = Mockito.mock(ProductDetails::class.java)
@@ -347,6 +352,7 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
         turbineScope {
             val (features, tiers) = commonTestSetup()
 
+            stubPurchaseState()
             stubMembershipProvider(setupMembershipStatus(tiers))
 
             val product = Mockito.mock(ProductDetails::class.java)
@@ -403,6 +409,7 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
         turbineScope {
             val (features, tiers) = commonTestSetup()
 
+            stubPurchaseState()
             stubMembershipProvider(setupMembershipStatus(tiers))
 
             val product = Mockito.mock(ProductDetails::class.java)

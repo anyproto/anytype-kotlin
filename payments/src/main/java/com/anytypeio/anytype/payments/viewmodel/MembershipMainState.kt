@@ -1,6 +1,8 @@
 package com.anytypeio.anytype.payments.viewmodel
 
 import androidx.annotation.StringRes
+import com.anytypeio.anytype.payments.models.TierPreviewView
+import com.anytypeio.anytype.payments.models.TierView
 import com.anytypeio.anytype.presentation.membership.models.TierId
 
 
@@ -10,7 +12,7 @@ sealed class MembershipMainState {
         @StringRes val title: Int,
         @StringRes val subtitle: Int?,
         val showBanner: Boolean,
-        val tiers: List<MembershipTierPreviewView>,
+        val tiers: List<TierPreviewView>,
         val membershipLevelDetails: String,
         val privacyPolicy: String,
         val termsOfService: String,
@@ -23,7 +25,7 @@ sealed class MembershipMainState {
 sealed class MembershipTierState {
     data object Hidden : MembershipTierState()
 
-    data class Visible(val tierView: MembershipTierView) : MembershipTierState() {
+    data class Visible(val tierView: TierView) : MembershipTierState() {
 
 //        sealed class Inactive : Visible() {
 ////            data class AvailableToSubscribeOnAndroid(
@@ -50,7 +52,7 @@ sealed class MembershipNameState {
 
 sealed class PaymentsErrorState {
     object Hidden : PaymentsErrorState()
-    data class TierNotFound(val tierId: TierId) : PaymentsErrorState()
+    data class TierNotFound(val message: String) : PaymentsErrorState()
     data object MembershipStatusEmpty : PaymentsErrorState()
 }
 

@@ -30,7 +30,8 @@ class BillingClientLifecycle(
 ) : DefaultLifecycleObserver, PurchasesUpdatedListener, BillingClientStateListener,
     ProductDetailsResponseListener, PurchasesResponseListener {
 
-    private val _subscriptionPurchases = MutableStateFlow<List<Purchase>>(emptyList())
+    private val _subscriptionPurchases =
+        MutableStateFlow<BillingPurchaseState>(BillingPurchaseState.Loading)
 
     /**
      * Purchases are collectable. This list will be updated when the Billing Library
@@ -217,7 +218,7 @@ class BillingClientLifecycle(
      * New purchases will be provided to the PurchasesUpdatedListener.
      * You still need to check the Google Play Billing API to know when purchase tokens are removed.
      */
-    fun querySubscriptionPurchases() {
+    private fun querySubscriptionPurchases() {
         if (!billingClient.isReady) {
             Timber.w("querySubscriptionPurchases: BillingClient is not ready")
             billingClient.startConnection(this)
@@ -296,7 +297,16 @@ class BillingClientLifecycle(
                         product in subscriptionIds
                     }
                 }
-                _subscriptionPurchases.emit(subscriptionPurchaseList)
+                if (subscriptionPurchaseList.isEmpty()) {
+                    Timber.d("processPurchases: No subscription purchases found")
+                    _subscriptionPurchases.emit(BillingPurchaseState.NoPurchases)
+                } else {
+                    _subscriptionPurchases.emit(
+                        BillingPurchaseState.HasPurchases(
+                            subscriptionPurchaseList
+                        )
+                    )
+                }
             }
             logAcknowledgementStatus(list)
         }
@@ -361,4 +371,10 @@ sealed class BillingClientState {
     data class Error(val message: String) : BillingClientState()
     //Connected state is suppose that we have non empty list of product details
     data class Connected(val productDetails: List<ProductDetails>) : BillingClientState()
+}
+
+sealed class BillingPurchaseState {
+    data object Loading : BillingPurchaseState()
+    data class HasPurchases(val purchases: List<Purchase>) : BillingPurchaseState()
+    data object NoPurchases : BillingPurchaseState()
 }

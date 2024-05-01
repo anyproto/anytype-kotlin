@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.payments.models
 
 import androidx.annotation.StringRes
+import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.presentation.membership.models.TierId
 
 //This is a data class that represents a tier preview view in the main Membership screen
@@ -28,7 +29,7 @@ sealed class TierConditionInfo {
     data object Hidden : TierConditionInfo()
     sealed class Visible : TierConditionInfo() {
         data object LoadingBillingClient : Visible()
-        data class Valid(val period: TierPeriod) : Visible()
+        data class Valid(val period: TierPeriod, val payedBy : MembershipPaymentMethod) : Visible()
         data class Price(val price: String, val period: TierPeriod) : Visible()
         data class PriceBilling(val price: BillingPriceInfo) : Visible()
         data class Free(val period: TierPeriod) : Visible()

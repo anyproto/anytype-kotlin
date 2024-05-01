@@ -94,7 +94,8 @@ interface MembershipProvider {
                 formattedDateEnds = membership.dateEnds.formatToDateString(
                     pattern = DATE_FORMAT,
                     locale = localeProvider.locale()
-                )
+                ),
+                userEmail = membership.userEmail
             )
         }
 

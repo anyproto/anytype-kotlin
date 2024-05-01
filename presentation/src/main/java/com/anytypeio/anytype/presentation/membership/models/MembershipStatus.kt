@@ -11,7 +11,8 @@ data class MembershipStatus(
     val anyName: String,
     val tiers: List<MembershipTierData>,
     val dateEnds: Long,
-    val formattedDateEnds: String
+    val formattedDateEnds: String,
+    val userEmail: String = ""
 )
 
 @JvmInline

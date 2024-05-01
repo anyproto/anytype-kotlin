@@ -86,6 +86,17 @@ sealed class TierAnyName {
     }
 }
 
+sealed class TierEmail {
+    data object Hidden : TierEmail()
+    sealed class Visible : TierEmail() {
+        data object Disabled : Visible()
+        data object Enter : Visible()
+        data object Validating : Visible()
+        data object Validated : Visible()
+        data class Error(val message: String) : Visible()
+    }
+}
+
 data class BillingPriceInfo(val formattedPrice: String, val period: PeriodDescription)
 data class PeriodDescription(val amount: Int, val unit: PeriodUnit)
 enum class PeriodUnit { YEARS, MONTHS, DAYS }

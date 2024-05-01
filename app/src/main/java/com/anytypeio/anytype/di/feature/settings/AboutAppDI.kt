@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.auth.interactor.GetLibraryVersion
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.ui.settings.AboutAppFragment
 import com.anytypeio.anytype.ui_settings.about.AboutAppViewModel
 import dagger.Binds
@@ -65,6 +66,7 @@ interface AboutAppDependencies : ComponentDependencies {
     fun configStorage(): ConfigStorage
     fun analytics(): Analytics
     fun dispatchers(): AppCoroutineDispatchers
+    fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
 }
 
 @Scope

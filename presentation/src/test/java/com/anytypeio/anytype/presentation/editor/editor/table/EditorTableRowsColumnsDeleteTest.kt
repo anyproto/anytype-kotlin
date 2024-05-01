@@ -14,10 +14,12 @@ import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.editor.EditorPresentationTestSetup
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -30,7 +32,7 @@ class EditorTableRowsColumnsDeleteTest : EditorPresentationTestSetup() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+    val coroutineTestRule = DefaultCoroutineTestRule()
 
     @Before
     fun setup() {
@@ -38,12 +40,13 @@ class EditorTableRowsColumnsDeleteTest : EditorPresentationTestSetup() {
         stubSpaceManager()
         stubGetNetworkMode()
         stubFileLimitEvents()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     private var tableId = MockDataFactory.randomUuid()
 
     @Test
-    fun `when table contains only one row table widget shouldn't has delete button`() {
+    fun `when table contains only one row table widget shouldn't has delete button`() = runTest {
         //SETUP
         val columns = StubTableColumns(size = 4)
         val rows = StubTableRows(size = 1)
@@ -63,22 +66,23 @@ class EditorTableRowsColumnsDeleteTest : EditorPresentationTestSetup() {
         val vm = buildViewModel()
         vm.apply {
             onStart(id = root, space = defaultSpace)
-
+            advanceUntilIdle()
             onBlockFocusChanged(
                 id = cells[0].id,
                 hasFocus = true
             )
-
+            advanceUntilIdle()
             onBlockToolbarBlockActionsClicked()
-
+            advanceUntilIdle()
             onBlockFocusChanged(
                 id = cells[0].id,
                 hasFocus = false
             )
-
+            advanceUntilIdle()
             onSimpleTableWidgetItemClicked(
                 item = SimpleTableWidgetItem.Tab.Row
             )
+            advanceUntilIdle()
         }
 
         //EXPECTED
@@ -135,7 +139,7 @@ class EditorTableRowsColumnsDeleteTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `when table contains only one column table widget shouldn't has delete button`() {
+    fun `when table contains only one column table widget shouldn't has delete button`() = runTest {
         //SETUP
         val columns = StubTableColumns(size = 1)
         val rows = StubTableRows(size = 3)
@@ -155,22 +159,23 @@ class EditorTableRowsColumnsDeleteTest : EditorPresentationTestSetup() {
         val vm = buildViewModel()
         vm.apply {
             onStart(id = root, space = defaultSpace)
-
+            advanceUntilIdle()
             onBlockFocusChanged(
                 id = cells[0].id,
                 hasFocus = true
             )
-
+            advanceUntilIdle()
             onBlockToolbarBlockActionsClicked()
-
+            advanceUntilIdle()
             onBlockFocusChanged(
                 id = cells[0].id,
                 hasFocus = false
             )
-
+            advanceUntilIdle()
             onSimpleTableWidgetItemClicked(
                 item = SimpleTableWidgetItem.Tab.Column
             )
+            advanceUntilIdle()
         }
 
         //EXPECTED

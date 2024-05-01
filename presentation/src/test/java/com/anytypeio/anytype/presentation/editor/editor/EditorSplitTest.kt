@@ -12,10 +12,11 @@ import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.SplitBlock
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.After
 import org.junit.Before
@@ -34,7 +35,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+    val coroutineTestRule = DefaultCoroutineTestRule(UnconfinedTestDispatcher())
 
     @get:Rule
     val timberTestRule: TimberTestRule = TimberTestRule.builder()
@@ -50,6 +51,7 @@ class EditorSplitTest : EditorPresentationTestSetup() {
         stubSpaceManager()
         stubGetNetworkMode()
         stubFileLimitEvents()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @After

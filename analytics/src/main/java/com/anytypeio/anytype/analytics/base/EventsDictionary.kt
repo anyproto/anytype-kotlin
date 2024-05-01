@@ -324,4 +324,6 @@ object EventsPropertiesKey {
     const val view = "view"
     const val step = "step"
     const val name = "name"
+    const val spaceType = "spaceType"
+    const val permissions = "permissions"
 }

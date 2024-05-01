@@ -33,6 +33,7 @@ import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -83,12 +84,13 @@ class ObjectSetViewModelFactory(
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val dispatchers: AppCoroutineDispatchers,
     private val getNetworkMode: GetNetworkMode,
-    private val dateProvider: DateProvider
+    private val dateProvider: DateProvider,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return ObjectSetViewModel(
-            params = params,
+            vmParams = params,
             permissions = permissions,
             openObjectSet = openObjectSet,
             closeBlock = closeBlock,
@@ -128,7 +130,8 @@ class ObjectSetViewModelFactory(
             dispatchers = dispatchers,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             getNetworkMode = getNetworkMode,
-            dateProvider = dateProvider
+            dateProvider = dateProvider,
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
         ) as T
     }
 }

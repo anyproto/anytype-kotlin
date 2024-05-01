@@ -181,11 +181,11 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
-        coroutineTestRule.advanceTime(1200)
+        advanceUntilIdle()
 
         verifyNoInteractions(setObjectInternalFlags)
 
-        coroutineTestRule.advanceTime(100)
+        advanceUntilIdle()
     }
 
     @Test

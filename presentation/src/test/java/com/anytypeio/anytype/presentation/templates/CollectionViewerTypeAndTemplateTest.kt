@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.StubDataViewViewRelation
 import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.StubRelationLink
 import com.anytypeio.anytype.core_models.StubRelationObject
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
@@ -83,6 +84,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         viewModel = givenViewModel()
         stubAddObjectToCollection()
         stubObservePermissions()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @After

@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.networkmode.SetNetworkMode
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.settings.PreferencesViewModel
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.NetworkModeCopyFileToCacheDirectory
@@ -64,4 +65,5 @@ interface AppPreferencesDependencies : ComponentDependencies {
     fun dispatchers(): AppCoroutineDispatchers
     fun authRepository(): AuthRepository
     fun analytics(): Analytics
+    fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
 }

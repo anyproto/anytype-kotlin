@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.getSpaceWithTechSpace
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -24,13 +25,15 @@ class BackLinkOrAddToObjectViewModel(
     searchObjects: SearchObjects,
     getObjectTypes: GetObjectTypes,
     private val analytics: Analytics,
-    private val spaceManager: SpaceManager
+    private val spaceManager: SpaceManager,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
 ) : ObjectSearchViewModel(
     urlBuilder = urlBuilder,
     getObjectTypes = getObjectTypes,
     searchObjects = searchObjects,
     analytics = analytics,
-    spaceManager = spaceManager
+    spaceManager = spaceManager,
+    analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
 ) {
 
     private val _commands = MutableSharedFlow<Command>(replay = 0)

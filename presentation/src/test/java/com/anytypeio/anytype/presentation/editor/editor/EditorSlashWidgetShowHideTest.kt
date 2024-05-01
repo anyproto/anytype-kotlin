@@ -4,16 +4,18 @@ import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
+import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
-import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 class EditorSlashWidgetShowHideTest : EditorPresentationTestSetup() {
 
@@ -22,7 +24,7 @@ class EditorSlashWidgetShowHideTest : EditorPresentationTestSetup() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+    val coroutineTestRule = DefaultCoroutineTestRule()
 
     @get:Rule
     val timberTestRule: TimberTestRule = TimberTestRule.builder()
@@ -38,10 +40,11 @@ class EditorSlashWidgetShowHideTest : EditorPresentationTestSetup() {
         stubSpaceManager()
         stubGetNetworkMode()
         stubFileLimitEvents()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @Test
-    fun `should show slash widget when slash event start happened`() {
+    fun `should show slash widget when slash event start happened`() = runTest {
 
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
@@ -52,17 +55,21 @@ class EditorSlashWidgetShowHideTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.apply {
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING
@@ -74,7 +81,7 @@ class EditorSlashWidgetShowHideTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should hide other toolbars when slash event start happened`() {
+    fun `should hide other toolbars when slash event start happened`() = runTest {
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
 
@@ -84,17 +91,21 @@ class EditorSlashWidgetShowHideTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.apply {
             onBlockFocusChanged(
                 id = block.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Start(
                     cursorCoordinate = 100,
                     slashStart = 0
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING

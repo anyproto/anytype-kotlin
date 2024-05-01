@@ -15,11 +15,13 @@ import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.model.Focusable
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
 import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -34,7 +36,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+    val coroutineTestRule = DefaultCoroutineTestRule()
 
     private val title = Block(
         id = MockDataFactory.randomUuid(),
@@ -63,10 +65,11 @@ class EditorFocusTest : EditorPresentationTestSetup() {
         stubGetNetworkMode()
         stubFileLimitEvents()
         stubInterceptEvents()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @Test
-    fun `should clear focus internally and re-render on hide-keyboard event`() {
+    fun `should clear focus internally and re-render on hide-keyboard event`() = runTest {
 
         // SETUP
 
@@ -104,6 +107,8 @@ class EditorFocusTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         val testViewStateObserver = vm.state.test()
 
         val testFocusObserver = vm.focus.test()
@@ -120,15 +125,19 @@ class EditorFocusTest : EditorPresentationTestSetup() {
             hasFocus = true
         )
 
+        advanceUntilIdle()
+
         testFocusObserver.assertValue(block.id)
 
         vm.onHideKeyboardClicked()
+
+        advanceUntilIdle()
 
         testFocusObserver.assertValue(EditorViewModel.EMPTY_FOCUS_ID)
     }
 
     @Test
-    fun `should focus on start if title is empty`() {
+    fun `should focus on start if title is empty`() = runTest {
 
         // SETUP
 
@@ -157,6 +166,8 @@ class EditorFocusTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         val testViewStateObserver = vm.state.test()
         val testFocusObserver = vm.focus.test()
 
@@ -171,7 +182,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should not focus on start if title is not empty`() {
+    fun `should not focus on start if title is not empty`() = runTest {
 
         // SETUP
 
@@ -196,6 +207,8 @@ class EditorFocusTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         val testViewStateObserver = vm.state.test()
         val testFocusObserver = vm.focus.test()
 
@@ -210,7 +223,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should update views on hide-keyboard event`() {
+    fun `should update views on hide-keyboard event`() = runTest {
 
         // SETUP
 
@@ -257,6 +270,8 @@ class EditorFocusTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
+        advanceUntilIdle()
+
         vm.state.test().apply {
             assertValue { value ->
                 check(value is ViewState.Success)
@@ -271,7 +286,11 @@ class EditorFocusTest : EditorPresentationTestSetup() {
             hasFocus = true
         )
 
+        advanceUntilIdle()
+
         vm.onHideKeyboardClicked()
+
+        advanceUntilIdle()
 
         vm.state.test().apply {
             assertValue { value ->
@@ -284,7 +303,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
 
         vm.onOutsideClicked()
 
-        coroutineTestRule.advanceUntilIdle()
+        advanceUntilIdle()
 
         vm.state.test().apply {
             try {
@@ -303,7 +322,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should close keyboard and clear focus when system close keyboard happened`() {
+    fun `should close keyboard and clear focus when system close keyboard happened`() = runTest {
 
         // SETUP
 
@@ -327,16 +346,26 @@ class EditorFocusTest : EditorPresentationTestSetup() {
         // TESTING
 
         vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
+
         vm.onSelectionChanged(
             id = paragraph.id,
             selection = IntRange(0, 0)
         )
+
+        advanceUntilIdle()
+
         vm.onBlockFocusChanged(
             id = paragraph.id,
             hasFocus = true
         )
 
+        advanceUntilIdle()
+
         vm.onBackPressedCallback()
+
+        advanceUntilIdle()
 
         vm.controlPanelViewState.test().assertValue(
             ControlPanelState(
@@ -346,7 +375,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `when set focus in text block - Main toolbar should be with Any type`() {
+    fun `when set focus in text block - Main toolbar should be with Any type`() = runTest {
 
         // SETUP
         val title = StubTitle()
@@ -369,14 +398,17 @@ class EditorFocusTest : EditorPresentationTestSetup() {
         // TESTING Click on text block
         vm.apply {
             onStart(id = root, space = defaultSpace)
+            advanceUntilIdle()
             onBlockFocusChanged(
                 id = first.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSelectionChanged(
                 id = first.id,
                 selection = IntRange(0, 0)
             )
+            advanceUntilIdle()
         }
 
         // EXPECTED
@@ -398,7 +430,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `when set focus in title block - Main toolbar should be with Title type`() {
+    fun `when set focus in title block - Main toolbar should be with Title type`() = runTest {
 
         // SETUP
         val title = StubTitle()
@@ -421,14 +453,17 @@ class EditorFocusTest : EditorPresentationTestSetup() {
         // TESTING Click on title block
         vm.apply {
             onStart(id = root, space = defaultSpace)
+            advanceUntilIdle()
             onBlockFocusChanged(
                 id = title.id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSelectionChanged(
                 id = title.id,
                 selection = IntRange(0, 0)
             )
+            advanceUntilIdle()
         }
 
         // EXPECTED
@@ -450,7 +485,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `when set focus in cell block - Main toolbar should be with Cell type`() {
+    fun `when set focus in cell block - Main toolbar should be with Cell type`() = runTest {
 
         // SETUP
         val title = StubTitle()
@@ -488,14 +523,17 @@ class EditorFocusTest : EditorPresentationTestSetup() {
         // TESTING Click on cell block
         vm.apply {
             onStart(id = root, space = defaultSpace)
+            advanceUntilIdle()
             onBlockFocusChanged(
                 id = cells[0].id,
                 hasFocus = true
             )
+            advanceUntilIdle()
             onSelectionChanged(
                 id = cells[0].id,
                 selection = IntRange(0, 0)
             )
+            advanceUntilIdle()
         }
 
         // EXPECTED

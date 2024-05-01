@@ -32,6 +32,7 @@ import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel
@@ -222,4 +223,5 @@ interface CollectionDependencies : ComponentDependencies {
     fun logger(): Logger
     fun dateProvider(): DateProvider
     fun dateTypeNameProvider(): DateTypeNameProvider
+    fun analyticsHelperDelegate(): AnalyticSpaceHelperDelegate
 }

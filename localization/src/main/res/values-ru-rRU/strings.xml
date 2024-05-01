@@ -1188,15 +1188,15 @@
     <string name="multiplayer_notification_new_join_request">Новая заявка на вступление</string>
     <string name="multiplayer_notification_member_joined_space_with_read_only_rights">%1$s присоединился %2$s к пространству с правами доступа только для чтения</string>
     <string name="multiplayer_notification_member_joined_space_with_editor_only_rights">%1$s присоединился %2$s к пространству с правами доступа редактирования</string>
-    <string name="multiplayer_notification_member_request_approved">Request approved</string>
+    <string name="multiplayer_notification_member_request_approved">Запрос одобрен</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Ваш запрос на присоединение к пространству %1$s был одобрен с правами доступа только для чтения. Пространство будет доступно на вашем устройстве в ближайшее время.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Ваш запрос на присоединение к пространству %1$s был одобрен с правами на редактирование. Пространство будет доступно в ближайшее время на устройстве.</string>
     <string name="multiplayer_notification_member_removed_from_space">Вы были удалены из пространства, или оно было удалено владельцем.</string>
-    <string name="multiplayer_notification_member_permissions_changed">Permissions changed</string>
+    <string name="multiplayer_notification_member_permissions_changed">Разрешения изменены</string>
     <string name="multiplayer_notification_member_permission_change_read">Ваши права доступа были изменены на только для чтения в пространстве %1$s.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Права доступа были изменены на редактирование в пространстве %1$s.</string>
     <string name="multiplayer_notification_member_join_request_declined">Your request to join the %1$s space has been declined.</string>
-    <string name="multiplayer_notification_request_declined">Request declined</string>
+    <string name="multiplayer_notification_request_declined">Заявка отклонена</string>
     <string name="multiplayer_notification_view_request">Вид</string>
     <string name="multiplayer_notification_go_to_space">Перейти в пространство</string>
     <string name="multiplayer_toast_permission_not_allowed">Changing permissions is not allowed</string>
@@ -1213,7 +1213,10 @@
     <string name="multiplayer_spaces">Пространства</string>
     <string name="multiplayer_space_status_joining">Присоединяется</string>
     <string name="multiplayer_space_status_active">Активно</string>
-    <string name="multiplayer_space_status_removing">Removed</string>
+    <string name="multiplayer_space_status_removing">Удалено</string>
+    <string name="multiplayer_cancel_join_request">Отменить запрос на присоединение</string>
+    <string name="multiplayer_cancel_join_request_msg">You will have to send join request again</string>
+    <string name="multiplayer_do_not_cancel_join_request">Do not cancel</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Членство</string>
@@ -1311,7 +1314,7 @@
     <string name="gallery_experience_alert_button_error">Закрыть</string>
     <string name="three_dots_text_placeholder">...</string>
     <string name="notifications_prompt_get_notified">Get notified</string>
-    <string name="notifications_prompt_secondary_button_text">Not now</string>
+    <string name="notifications_prompt_secondary_button_text">Не сейчас</string>
     <string name="notifications_prompt_description">Please enable notifications to stay informed about any requests to join or leave spaces.</string>
     <string name="notifications_prompt_primary_button_text">Enable</string>
     <string name="clipboard_panel_create_bookmark_from_clipboard">Create bookmark from clipboard</string>

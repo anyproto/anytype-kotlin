@@ -17,8 +17,10 @@ import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.objects.getProperName
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -34,7 +36,7 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+    val coroutineTestRule = DefaultCoroutineTestRule()
 
     val space = defaultSpace
 
@@ -45,6 +47,7 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
         stubGetNetworkMode()
         stubFileLimitEvents()
         stubClosePage()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -54,7 +57,7 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should invoke CreateBlockLinkWithObject UseCase on clicked on object type item with bottom position when text block is not empty`() {
+    fun `should invoke CreateBlockLinkWithObject UseCase on clicked on object type item with bottom position when text block is not empty`() = runTest {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
@@ -71,16 +74,23 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
         stubSpaceManager(defaultSpace)
 
         val vm = buildViewModel()
+
         vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
+
         vm.apply {
             onBlockFocusChanged(a.id, true)
+            advanceUntilIdle()
             onSlashTextWatcherEvent(SlashEvent.Start(100, 0))
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Filter(
                     filter = "/",
                     viewType = Types.HOLDER_NUMBERED
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING
@@ -97,6 +107,8 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
             )
         )
 
+        advanceUntilIdle()
+
         val params = CreateBlockLinkWithObject.Params(
             context = root,
             target = a.id,
@@ -111,7 +123,7 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should invoke CreateBlockLinkWithObject UseCase on clicked on object type item with replace position when text block is empty`() {
+    fun `should invoke CreateBlockLinkWithObject UseCase on clicked on object type item with replace position when text block is empty`() = runTest {
         // SETUP
 
         val paragraph = StubParagraph(text = "")
@@ -132,15 +144,21 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
         vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
+
         vm.apply {
             onBlockFocusChanged(paragraph.id, true)
+            advanceUntilIdle()
             onSlashTextWatcherEvent(SlashEvent.Start(1, 0))
+            advanceUntilIdle()
             onSlashTextWatcherEvent(
                 SlashEvent.Filter(
                     filter = "/",
                     viewType = Types.HOLDER_NUMBERED
                 )
             )
+            advanceUntilIdle()
         }
 
         // TESTING
@@ -157,6 +175,8 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
             )
         )
 
+        advanceUntilIdle()
+
         val params = CreateBlockLinkWithObject.Params(
             context = root,
             target = paragraph.id,
@@ -166,6 +186,8 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
             space = space,
             template = null
         )
+
+        advanceUntilIdle()
 
         verifyBlocking(createBlockLinkWithObject, times(1)) { async(params) }
     }

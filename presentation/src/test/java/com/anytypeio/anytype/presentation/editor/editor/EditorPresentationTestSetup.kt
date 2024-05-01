@@ -98,6 +98,7 @@ import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.DocumentExternalEventReducer
@@ -121,6 +122,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import org.mockito.Mock
+import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -366,6 +368,9 @@ open class EditorPresentationTestSetup {
     lateinit var storelessSubscriptionContainer: StorelessSubscriptionContainer
 
     @Mock
+    lateinit var analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+
+    @Mock
     lateinit var getNetworkMode: GetNetworkMode
 
     var permissions: UserPermissionProvider = UserPermissionProviderStub()
@@ -426,7 +431,9 @@ open class EditorPresentationTestSetup {
             createTable = createTable,
             fillTableRow = fillTableRow,
             clearBlockContent = clearBlockContent,
-            clearBlockStyle = clearBlockStyle
+            clearBlockStyle = clearBlockStyle,
+            analyticsSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            spaceManager = spaceManager
         )
 
         dispatcher = Dispatcher.Default()
@@ -486,11 +493,12 @@ open class EditorPresentationTestSetup {
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             dispatchers = dispatchers,
             getNetworkMode = getNetworkMode,
-            params = EditorViewModel.Params(
+            vmParams = EditorViewModel.Params(
                 ctx = root,
                 space = SpaceId(defaultSpace)
             ),
-            permissions = permissions
+            permissions = permissions,
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
         )
     }
 
@@ -840,7 +848,17 @@ open class EditorPresentationTestSetup {
         )
     }
 
+    fun stubAnalyticSpaceHelperDelegate() {
+        Mockito.`when`(analyticSpaceHelperDelegate.provideParams(defaultSpace))
+            .thenReturn(AnalyticSpaceHelperDelegate.Params.EMPTY)
+
+        analyticSpaceHelperDelegate.stub {
+            on { provideParams(defaultSpace) } doReturn AnalyticSpaceHelperDelegate.Params.EMPTY
+        }
+    }
+
     fun proceedWithDefaultBeforeTestStubbing() {
+        stubAnalyticSpaceHelperDelegate()
         stubSpaceManager()
         stubUserPermission()
         stubGetNetworkMode()

@@ -8,12 +8,14 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.GetRelations
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.getPropName
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddRelationEvent
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
@@ -27,18 +29,19 @@ class RelationAddToObjectViewModel(
     private val addRelationToObject: AddRelationToObject,
     private val dispatcher: Dispatcher<Payload>,
     private val analytics: Analytics,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     val storeOfRelations: StoreOfRelations,
     appCoroutineDispatchers: AppCoroutineDispatchers,
     getRelations: GetRelations,
     addObjectToWorkspace: AddObjectToWorkspace,
-    spaceManager: SpaceManager
+    private val spaceManager: SpaceManager
 ) : RelationAddViewModelBase(
     relationsProvider = relationsProvider,
     appCoroutineDispatchers = appCoroutineDispatchers,
     getRelations = getRelations,
     addObjectToWorkspace = addObjectToWorkspace,
     spaceManager = spaceManager
-) {
+), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val commands = MutableSharedFlow<Command>(replay = 0)
 
@@ -61,7 +64,8 @@ class RelationAddToObjectViewModel(
                         sendAnalyticsAddRelationEvent(
                             analytics = analytics,
                             type = screenType,
-                            format = format.getPropName()
+                            format = format.getPropName(),
+                            spaceParams = provideParams(spaceManager.get())
                         )
                         isDismissed.value = true
                     }
@@ -83,7 +87,8 @@ class RelationAddToObjectViewModel(
         private val appCoroutineDispatchers: AppCoroutineDispatchers,
         private val getRelations: GetRelations,
         private val addObjectToWorkspace: AddObjectToWorkspace,
-        private val spaceManager: SpaceManager
+        private val spaceManager: SpaceManager,
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -96,7 +101,8 @@ class RelationAddToObjectViewModel(
                 appCoroutineDispatchers = appCoroutineDispatchers,
                 getRelations = getRelations,
                 addObjectToWorkspace = addObjectToWorkspace,
-                spaceManager = spaceManager
+                spaceManager = spaceManager,
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
             ) as T
         }
     }

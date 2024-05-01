@@ -18,6 +18,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -153,6 +154,7 @@ class BlockReadModeTest : EditorViewModelTest() {
         stubObserveEvents(flow)
         stubOpenPage()
         stubUserPermission()
+        stubAnalyticSpaceHelperDelegate()
         givenViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
@@ -212,6 +214,7 @@ class BlockReadModeTest : EditorViewModelTest() {
         stubObserveEvents(flow)
         stubOpenPage()
         stubUserPermission()
+        stubAnalyticSpaceHelperDelegate()
         givenViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
@@ -247,6 +250,7 @@ class BlockReadModeTest : EditorViewModelTest() {
         stubObserveEvents(flow)
         stubOpenPage()
         stubUserPermission()
+        stubAnalyticSpaceHelperDelegate()
         givenViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
@@ -302,17 +306,20 @@ class BlockReadModeTest : EditorViewModelTest() {
     }
 
     @Test
-    fun `should enter edit mode after action menu is closed by action item delete`() {
+    fun `should enter edit mode after action menu is closed by action item delete`() = runTest {
 
         val paragraphs = blocks
         stubObserveEvents(flow)
         stubOpenPage()
         stubUserPermission()
+        stubAnalyticSpaceHelperDelegate()
+        stubUnlinkBlocks(root)
+
         givenViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
 
-        coroutineTestRule.advanceTime(100)
+        coroutineTestRule.advanceUntilIdle()
 
         // TESTING
 
@@ -323,7 +330,11 @@ class BlockReadModeTest : EditorViewModelTest() {
             )
         )
 
+        coroutineTestRule.advanceUntilIdle()
+
         vm.onMultiSelectAction(ActionItemType.Delete)
+
+        coroutineTestRule.advanceUntilIdle()
 
         val testObserver = vm.state.test()
 
@@ -340,12 +351,13 @@ class BlockReadModeTest : EditorViewModelTest() {
     }
 
     @Test
-    fun `should be in read mode and selected after action item duplicate`() {
+    fun `should be in read mode and selected after action item duplicate`() = runTest {
 
         val paragraphs = blocks
         stubObserveEvents(flow)
         stubOpenPage()
         stubUserPermission()
+        stubAnalyticSpaceHelperDelegate()
         stubDuplicateBlock(
             newBlockId = MockDataFactory.randomUuid(),
             root = root

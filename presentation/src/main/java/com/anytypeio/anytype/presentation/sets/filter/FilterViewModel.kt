@@ -24,6 +24,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
 import com.anytypeio.anytype.presentation.extension.checkboxFilterValue
 import com.anytypeio.anytype.presentation.extension.hasValue
@@ -769,7 +770,8 @@ open class FilterViewModel(
                         analytics = analytics,
                         event = ObjectStateAnalyticsEvent.CHANGE_FILTER_VALUE,
                         startTime = startTime,
-                        condition = updatedFilter.condition
+                        condition = updatedFilter.condition,
+                        spaceParams = AnalyticSpaceHelperDelegate.Params.EMPTY
                     )
                     isCompleted.emit(true)
                 }

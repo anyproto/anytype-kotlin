@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.types.CreateObjectType
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.types.CreateObjectTypeViewModel
 import com.anytypeio.anytype.ui.types.create.CreateObjectTypeFragment
 import dagger.Binds
@@ -69,4 +70,5 @@ interface CreateObjectTypeDependencies : ComponentDependencies {
     fun urlBuilder(): UrlBuilder
     fun analytics(): Analytics
     fun spaceManager(): SpaceManager
+    fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
 }

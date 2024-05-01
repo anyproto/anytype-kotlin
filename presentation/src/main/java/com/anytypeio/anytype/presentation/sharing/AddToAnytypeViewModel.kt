@@ -31,6 +31,7 @@ import com.anytypeio.anytype.domain.objects.CreateBookmarkObject
 import com.anytypeio.anytype.domain.objects.CreatePrefilledNote
 import com.anytypeio.anytype.domain.spaces.GetSpaceViews
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
@@ -59,8 +60,9 @@ class AddToAnytypeViewModel(
     private val analytics: Analytics,
     private val uploadFile: UploadFile,
     private val fileSharer: FileSharer,
-    private val permissions: Permissions
-) : BaseViewModel() {
+    private val permissions: Permissions,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val selectedSpaceId = MutableStateFlow(NO_VALUE)
 
@@ -97,18 +99,19 @@ class AddToAnytypeViewModel(
                     combine(
                         spaces,
                         selectedSpaceId,
-                    ) { spaces, selected ->
+                        permissions.all()
+                    ) { spaces, selected, currPermissions ->
                         val isSelectedSpaceAvailable = if (selected.isEmpty()) {
                             false
                         } else {
-                            permissions.get(SpaceId(selected))?.isOwnerOrEditor() == true
+                            currPermissions[selected]?.isOwnerOrEditor() == true
                         }
                         spaces.filter { wrapper ->
                             val space = wrapper.targetSpaceId
                             if (space.isNullOrEmpty())
                                 false
                             else {
-                                permissions.get(SpaceId(space))?.isOwnerOrEditor() == true
+                                currPermissions[space]?.isOwnerOrEditor() == true
                             }
                         }.mapIndexed { index, space ->
                             SpaceView(
@@ -138,89 +141,95 @@ class AddToAnytypeViewModel(
             val targetSpaceView = spaceViews.value.firstOrNull { view ->
                 view.isSelected
             }
-            val targetSpaceId = targetSpaceView?.obj?.targetSpaceId!!
-            val paths = uris.mapNotNull { uri ->
-                fileSharer.getPath(uri)
-            }
-            val files = mutableListOf<Id>()
-            paths.forEach { path ->
-                uploadFile.async(
-                    UploadFile.Params(
-                        path = path,
-                        space = SpaceId(targetSpaceId),
-                        // Temporary workaround to fix issue on the MW side.
-                        type = Block.Content.File.Type.NONE
-                    )
-                ).fold(
-                    onSuccess = { obj ->
-                        files.add(obj.id)
-                    },
-                    onFailure = { e ->
-                        Timber.e(e, "Error while uploading file").also {
-                            sendToast(e.msg())
-                        }
-                    }
-                )
-            }
-            when (files.size) {
-                0 -> {
-                    sendToast("Could not upload files")
+            val targetSpaceId = targetSpaceView?.obj?.targetSpaceId
+
+            if (targetSpaceView != null && targetSpaceId != null) {
+                val paths = uris.mapNotNull { uri ->
+                    fileSharer.getPath(uri)
                 }
-                1 -> {
-                    // No need to create a wrapper object, opening file object directly instead
-                    if (targetSpaceId == spaceManager.get()) {
-                        navigation.emit(
-                            OpenObjectNavigation.OpenEditor(
-                                target = files.first(),
-                                space = targetSpaceId
-                            )
-                        )
-                    } else {
-                        with(commands) {
-                            emit(Command.ObjectAddToSpaceToast(targetSpaceView.obj.name))
-                            emit(Command.Dismiss)
-                        }
-                    }
-                }
-                else -> {
-                    // Creating a wrapper object for file objects
-                    val startTime = System.currentTimeMillis()
-                    createPrefilledNote.async(
-                        CreatePrefilledNote.Params(
-                            text = EMPTY_STRING_VALUE,
-                            space = targetSpaceId,
-                            details = mapOf(
-                                Relations.ORIGIN to ObjectOrigin.SHARING_EXTENSION.code.toDouble()
-                            ),
-                            attachments = files
+                val files = mutableListOf<Id>()
+                paths.forEach { path ->
+                    uploadFile.async(
+                        UploadFile.Params(
+                            path = path,
+                            space = SpaceId(targetSpaceId),
+                            // Temporary workaround to fix issue on the MW side.
+                            type = Block.Content.File.Type.NONE
                         )
                     ).fold(
-                        onSuccess = { result ->
-                            sendAnalyticsObjectCreateEvent(
-                                analytics = analytics,
-                                objType = MarketplaceObjectTypeIds.NOTE,
-                                route = EventsDictionary.Routes.sharingExtension,
-                                startTime = startTime
-                            )
-                            if (targetSpaceId == spaceManager.get()) {
-                                navigation.emit(
-                                    OpenObjectNavigation.OpenEditor(
-                                        target = result,
-                                        space = targetSpaceId
-                                    )
-                                )
-                            } else {
-                                with(commands) {
-                                    emit(Command.ObjectAddToSpaceToast(targetSpaceView.obj.name))
-                                    emit(Command.Dismiss)
-                                }
-                            }
+                        onSuccess = { obj ->
+                            files.add(obj.id)
                         },
-                        onFailure = {
-                            Timber.d(it, "Error while creating note")
-                            sendToast("Error while creating note: ${it.msg()}")
+                        onFailure = { e ->
+                            Timber.e(e, "Error while uploading file").also {
+                                sendToast(e.msg())
+                            }
                         }
                     )
+                }
+                when (files.size) {
+                    0 -> {
+                        sendToast("Could not upload files")
+                    }
+
+                    1 -> {
+                        // No need to create a wrapper object, opening file object directly instead
+                        if (targetSpaceId == spaceManager.get()) {
+                            navigation.emit(
+                                OpenObjectNavigation.OpenEditor(
+                                    target = files.first(),
+                                    space = targetSpaceId
+                                )
+                            )
+                        } else {
+                            with(commands) {
+                                emit(Command.ObjectAddToSpaceToast(targetSpaceView.obj.name))
+                                emit(Command.Dismiss)
+                            }
+                        }
+                    }
+
+                    else -> {
+                        // Creating a wrapper object for file objects
+                        val startTime = System.currentTimeMillis()
+                        createPrefilledNote.async(
+                            CreatePrefilledNote.Params(
+                                text = EMPTY_STRING_VALUE,
+                                space = targetSpaceId,
+                                details = mapOf(
+                                    Relations.ORIGIN to ObjectOrigin.SHARING_EXTENSION.code.toDouble()
+                                ),
+                                attachments = files
+                            )
+                        ).fold(
+                            onSuccess = { result ->
+                                sendAnalyticsObjectCreateEvent(
+                                    analytics = analytics,
+                                    objType = MarketplaceObjectTypeIds.NOTE,
+                                    route = EventsDictionary.Routes.sharingExtension,
+                                    startTime = startTime,
+                                    spaceParams = provideParams(spaceManager.get())
+                                )
+                                if (targetSpaceId == spaceManager.get()) {
+                                    navigation.emit(
+                                        OpenObjectNavigation.OpenEditor(
+                                            target = result,
+                                            space = targetSpaceId
+                                        )
+                                    )
+                                } else {
+                                    with(commands) {
+                                        emit(Command.ObjectAddToSpaceToast(targetSpaceView.obj.name))
+                                        emit(Command.Dismiss)
+                                    }
+                                }
+                            },
+                            onFailure = {
+                                Timber.d(it, "Error while creating note")
+                                sendToast("Error while creating note: ${it.msg()}")
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -248,7 +257,8 @@ class AddToAnytypeViewModel(
                             analytics = analytics,
                             objType = MarketplaceObjectTypeIds.BOOKMARK,
                             route = EventsDictionary.Routes.sharingExtension,
-                            startTime = startTime
+                            startTime = startTime,
+                            spaceParams = provideParams(spaceManager.get())
                         )
                         if (targetSpaceId == spaceManager.get()) {
                             navigation.emit(
@@ -295,7 +305,8 @@ class AddToAnytypeViewModel(
                             analytics = analytics,
                             objType = MarketplaceObjectTypeIds.NOTE,
                             route = EventsDictionary.Routes.sharingExtension,
-                            startTime = startTime
+                            startTime = startTime,
+                            spaceParams = provideParams(spaceManager.get())
                         )
                         if (targetSpaceId == spaceManager.get()) {
                             navigation.emit(
@@ -372,7 +383,8 @@ class AddToAnytypeViewModel(
         private val analytics: Analytics,
         private val uploadFile: UploadFile,
         private val fileSharer: FileSharer,
-        private val permissions: Permissions
+        private val permissions: Permissions,
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -386,7 +398,8 @@ class AddToAnytypeViewModel(
                 analytics = analytics,
                 uploadFile = uploadFile,
                 fileSharer = fileSharer,
-                permissions = permissions
+                permissions = permissions,
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
             ) as T
         }
     }

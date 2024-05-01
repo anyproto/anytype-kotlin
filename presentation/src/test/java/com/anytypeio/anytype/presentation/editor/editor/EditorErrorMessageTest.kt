@@ -3,12 +3,13 @@ package com.anytypeio.anytype.presentation.editor.editor
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.domain.base.Either
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -24,7 +25,7 @@ class EditorErrorMessageTest : EditorPresentationTestSetup() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+    val coroutineTestRule = DefaultCoroutineTestRule()
 
     @Before
     fun setup() {
@@ -33,10 +34,11 @@ class EditorErrorMessageTest : EditorPresentationTestSetup() {
         stubGetNetworkMode()
         stubFileLimitEvents()
         stubInterceptEvents()
+        stubAnalyticSpaceHelperDelegate()
     }
 
     @Test
-    fun `should not consume toast with message about downloading file if subscribed after message`() {
+    fun `should not consume toast with message about downloading file if subscribed after message`() = runTest {
 
         val consumed = mutableListOf<String>()
 
@@ -69,26 +71,27 @@ class EditorErrorMessageTest : EditorPresentationTestSetup() {
 
         vm.onStart(id = root, space = defaultSpace)
 
-        runBlockingTest {
+        advanceUntilIdle()
 
-            val subscription1 = launch { vm.toasts.collect { consumed.add(it) } }
+        val subscription1 = launch { vm.toasts.collect { consumed.add(it) } }
 
-            // Launching operation that triggers a toast
+        // Launching operation that triggers a toast
 
-            vm.startDownloadingFile(blockId = file.id)
+        vm.startDownloadingFile(blockId = file.id)
 
-            val subscription2 = launch { vm.toasts.collect { consumed.add(it) } }
+        advanceUntilIdle()
 
-            subscription1.cancel()
-            subscription2.cancel()
+        val subscription2 = launch { vm.toasts.collect { consumed.add(it) } }
 
-            // Checking that we have only one toast event consumed by subscribers
+        subscription1.cancel()
+        subscription2.cancel()
 
-            assertEquals(
-                expected = 1,
-                actual = consumed.size
-            )
-        }
+        // Checking that we have only one toast event consumed by subscribers
+
+        assertEquals(
+            expected = 1,
+            actual = consumed.size
+        )
     }
 
     private fun stubDownloadFile() {

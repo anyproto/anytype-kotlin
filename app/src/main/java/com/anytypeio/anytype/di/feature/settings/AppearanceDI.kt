@@ -7,6 +7,7 @@ import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.theme.GetTheme
 import com.anytypeio.anytype.domain.theme.SetTheme
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.ui.settings.AppearanceFragment
 import com.anytypeio.anytype.ui_settings.appearance.AppearanceViewModel
 import dagger.Component
@@ -65,4 +66,5 @@ object AppearanceModule {
 interface AppearanceDependencies : ComponentDependencies {
     fun userUserSettingsRepository(): UserSettingsRepository
     fun analytics(): Analytics
+    fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
 }

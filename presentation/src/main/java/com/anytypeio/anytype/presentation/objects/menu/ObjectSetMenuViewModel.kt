@@ -19,6 +19,7 @@ import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.objects.ObjectAction
@@ -46,7 +47,8 @@ class ObjectSetMenuViewModel(
     private val analytics: Analytics,
     private val addObjectToCollection: AddObjectToCollection,
     private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader,
-    private val deepLinkResolver: DeepLinkResolver
+    private val deepLinkResolver: DeepLinkResolver,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
     addToFavorite = addToFavorite,
@@ -61,7 +63,8 @@ class ObjectSetMenuViewModel(
     addObjectToCollection = addObjectToCollection,
     debugGoroutinesShareDownloader = debugGoroutinesShareDownloader,
     createWidget = createWidget,
-    spaceManager = spaceManager
+    spaceManager = spaceManager,
+    analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
 ) {
 
     @Suppress("UNCHECKED_CAST")
@@ -81,7 +84,8 @@ class ObjectSetMenuViewModel(
         private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader,
         private val createWidget: CreateWidget,
         private val spaceManager: SpaceManager,
-        private val deepLinkResolver: DeepLinkResolver
+        private val deepLinkResolver: DeepLinkResolver,
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectSetMenuViewModel(
@@ -100,7 +104,8 @@ class ObjectSetMenuViewModel(
                 debugGoroutinesShareDownloader = debugGoroutinesShareDownloader,
                 createWidget = createWidget,
                 spaceManager = spaceManager,
-                deepLinkResolver = deepLinkResolver
+                deepLinkResolver = deepLinkResolver,
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
             ) as T
         }
     }

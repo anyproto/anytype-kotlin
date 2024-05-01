@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
 import com.anytypeio.anytype.domain.workspace.SpacesUsageInfo
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.settings.SpacesStorageViewModelFactory
 import com.anytypeio.anytype.ui.settings.SpacesStorageFragment
 import dagger.Binds
@@ -104,4 +105,5 @@ interface SpacesStorageDependencies : ComponentDependencies {
     fun authRepo(): AuthRepository
     fun logger(): Logger
     fun spaceManager(): SpaceManager
+    fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
 }

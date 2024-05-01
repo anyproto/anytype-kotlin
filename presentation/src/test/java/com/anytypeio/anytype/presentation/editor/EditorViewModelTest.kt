@@ -94,10 +94,10 @@ import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
-import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.MockBlockFactory
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -134,22 +134,16 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert.assertThrows
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -365,6 +359,9 @@ open class EditorViewModelTest {
     lateinit var storelessSubscriptionContainer: StorelessSubscriptionContainer
 
     @Mock
+    lateinit var analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+
+    @Mock
     lateinit var permissions: UserPermissionProvider
 
     lateinit var vm: EditorViewModel
@@ -406,6 +403,7 @@ open class EditorViewModelTest {
     private val storeOfObjectTypes: StoreOfObjectTypes = DefaultStoreOfObjectTypes()
 
     val defaultSpace = MockDataFactory.randomString()
+    val spaceId = SpaceId(defaultSpace)
 
     @Before
     fun setup() {
@@ -420,6 +418,7 @@ open class EditorViewModelTest {
                 get()
             } doReturn defaultSpace
         }
+        stubAnalyticSpaceHelperDelegate()
         stubFileLimitEvents()
         stubUpdateBlocksMark()
         stubOpenPage(root, emptyList())
@@ -455,7 +454,7 @@ open class EditorViewModelTest {
         val param = OpenPage.Params(
             obj = root,
             saveAsLastOpened = true,
-            space = SpaceId(defaultSpace)
+            space = spaceId
         )
 
         stubInterceptEvents()
@@ -1088,6 +1087,7 @@ open class EditorViewModelTest {
         stubObserveEvents(events)
         stubOpenPage()
         stubUserPermission()
+        stubAnalyticSpaceHelperDelegate()
         givenViewModel(builder)
 
         vm.onStart(id = root, space = defaultSpace)
@@ -2014,7 +2014,7 @@ open class EditorViewModelTest {
         }
     }
 
-    private fun stubUnlinkBlocks(root: String) {
+    fun stubUnlinkBlocks(root: String) {
         unlinkBlocks.stub {
             onBlocking { invoke(any()) } doReturn Either.Right(
                 Payload(
@@ -2233,22 +2233,27 @@ open class EditorViewModelTest {
         stubOpenPage(context = root)
         stubCreateBlock(root)
         stubUnlinkBlocks(root)
+        stubInterceptThreadStatus()
         givenViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
 
-        coroutineTestRule.advanceTime(100)
+        advanceUntilIdle()
 
         vm.onBlockFocusChanged(
             id = child,
             hasFocus = true
         )
 
+        advanceUntilIdle()
+
         vm.onEndLineEnterClicked(
             id = child,
             text = page.last().content<Block.Content.Text>().text,
             marks = emptyList()
         )
+
+        advanceUntilIdle()
 
         verify(createBlock, times(1)).async(
             params = eq(
@@ -3692,7 +3697,7 @@ open class EditorViewModelTest {
                 async(
                     OpenPage.Params(
                         obj = context,
-                        space = SpaceId(defaultSpace),
+                        space = spaceId,
                         saveAsLastOpened = true
                     )
                 )
@@ -3916,7 +3921,9 @@ open class EditorViewModelTest {
                 createTable = createTable,
                 fillTableRow = fillTableRow,
                 clearBlockContent = clearBlockContent,
-                clearBlockStyle = clearBlockStyle
+                clearBlockStyle = clearBlockStyle,
+                analyticsSpaceHelperDelegate = analyticSpaceHelperDelegate,
+                spaceManager = spaceManager,
             ),
             analytics = analytics,
             dispatcher = Dispatcher.Default(),
@@ -3947,11 +3954,12 @@ open class EditorViewModelTest {
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             dispatchers = dispatchers,
             getNetworkMode = getNetworkMode,
-            params = EditorViewModel.Params(
+            vmParams = EditorViewModel.Params(
                 ctx = root,
-                space = SpaceId(defaultSpace)
+                space = spaceId
             ),
-            permissions = permissions
+            permissions = permissions,
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
         )
     }
 
@@ -4389,13 +4397,19 @@ open class EditorViewModelTest {
     }
 
     fun stubUserPermission(
-        space: SpaceId = SpaceId(defaultSpace),
+        space: SpaceId = spaceId,
         permission: SpaceMemberPermissions = SpaceMemberPermissions.OWNER
     ) {
         permissions.stub {
             on {
                 observe(space = space)
             } doReturn flowOf(permission)
+        }
+    }
+
+    fun stubAnalyticSpaceHelperDelegate() {
+        analyticSpaceHelperDelegate.stub {
+            on { provideParams(defaultSpace) } doReturn AnalyticSpaceHelperDelegate.Params.EMPTY
         }
     }
 }

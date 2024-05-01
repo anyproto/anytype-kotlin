@@ -24,22 +24,7 @@ sealed class MembershipMainState {
 
 sealed class MembershipTierState {
     data object Hidden : MembershipTierState()
-
     data class Visible(val tierView: TierView) : MembershipTierState() {
-
-//        sealed class Inactive : Visible() {
-////            data class AvailableToSubscribeOnAndroid(
-////                override val tier: Tier,
-////                val nameState: MembershipNameState
-////            ) : Inactive()
-//
-//            data class UnavailableToSubscribeOnAndroid(override val tierView: MembershipTierView) : Inactive()
-//        }
-//
-////        sealed class Active : Visible() {
-////            data class AvailableToManageOnAndroid(override val tier: Tier) : Active()
-////            data class UnavailableToManageOnAndroid(override val tier: Tier) : Active()
-////        }
     }
 }
 

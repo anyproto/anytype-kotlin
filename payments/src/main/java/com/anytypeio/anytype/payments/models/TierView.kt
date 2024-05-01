@@ -75,7 +75,7 @@ sealed class TierButton {
             data object Disabled : Android()
         }
         sealed class External : Manage() {
-            data object Enabled : External()
+            data class Enabled(val manageUrl: String?) : External()
             data object Disabled : External()
         }
     }

@@ -18,7 +18,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class TierConditionInfoTests : MembershipTestsSetup() {
-    
+
     @Test
     fun `when tier not active and free 1`() = runTest {
         turbineScope {

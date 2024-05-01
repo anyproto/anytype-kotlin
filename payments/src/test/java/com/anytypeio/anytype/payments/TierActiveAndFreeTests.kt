@@ -24,11 +24,11 @@ import net.bytebuddy.utility.RandomString
 import org.junit.Test
 
 /**
- * Tests for the active free tier without active android subscription
+ * Tier - active and free | without androidId
  * TierPreview = [Title|Subtitle|ConditionInfo.Valid]
  * Tier = [Title|Subtitle|Features|ConditionInfo.Valid|TierEmail|ButtonSubmit ot ButtonChange]
  */
-class TierNotAndroidActiveAndFreeTests : MembershipTestsSetup() {
+class TierActiveAndFreeTests : MembershipTestsSetup() {
 
     private fun commonTestSetup(): Pair<List<String>, List<MembershipTierData>> {
         val features = listOf("feature-${RandomString.make()}", "feature-${RandomString.make()}")

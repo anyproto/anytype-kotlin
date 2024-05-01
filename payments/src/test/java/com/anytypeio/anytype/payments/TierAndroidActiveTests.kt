@@ -26,7 +26,7 @@ import org.junit.Test
 import org.mockito.Mockito
 
 /**
- * Tests for the active tier which was boughted through the Gooogle Play Store.
+ * Tier - active and non free | with androidId | purchased through Android
  * TierPreview = [Title|Subtitle|ConditionInfo.Valid]
  * Tier = [Title|Subtitle|Features|ConditionInfo.Valid|ButtonManage]
  */

@@ -66,7 +66,8 @@ fun MembershipTierData.toView(
             emailState = emailState,
             paymentMethod = membershipStatus.paymentMethod
         ),
-        email = emailState
+        email = emailState,
+        color = colorStr
     )
 }
 
@@ -86,7 +87,8 @@ fun MembershipTierData.toPreviewView(
             paymentMethod = membershipStatus.paymentMethod,
             membershipValidUntil = membershipStatus.dateEnds
         ),
-        isActive = isActive
+        isActive = isActive,
+        color = colorStr
     )
 }
 

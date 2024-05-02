@@ -97,7 +97,8 @@ private fun ConditionInfoPreviewText(text: String, textColor: Int = R.color.text
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(24.dp),
+            .height(24.dp)
+            .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -119,6 +120,7 @@ private fun ConditionInfoPreviewPriceAndText(price: String, period: String) {
         modifier = Modifier
             .fillMaxWidth()
             .height(24.dp)
+            .padding(horizontal = 16.dp)
     ) {
         Text(
             modifier = Modifier

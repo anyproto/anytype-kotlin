@@ -61,7 +61,7 @@ sealed class PaymentsCodeState {
 
 sealed class PaymentsWelcomeState {
     object Hidden : PaymentsWelcomeState()
-    data class Initial(val tier: Tier) : PaymentsWelcomeState()
+    data class Initial(val tier: TierView) : PaymentsWelcomeState()
 }
 
 sealed class PaymentsNavigation(val route: String) {

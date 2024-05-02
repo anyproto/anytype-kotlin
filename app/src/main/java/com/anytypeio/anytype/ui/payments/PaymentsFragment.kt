@@ -23,7 +23,7 @@ import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
 import com.anytypeio.anytype.payments.screens.CodeScreen
 import com.anytypeio.anytype.payments.screens.MainPaymentsScreen
 import com.anytypeio.anytype.payments.screens.PaymentWelcomeScreen
-import com.anytypeio.anytype.payments.screens.TierScreen
+import com.anytypeio.anytype.payments.screens.TierViewScreen
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.payments.viewmodel.PaymentsNavigation
 import com.anytypeio.anytype.payments.viewmodel.PaymentsViewModel
@@ -136,7 +136,7 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
 
     @Composable
     private fun InitTierScreen() {
-        TierScreen(
+        TierViewScreen(
             state = vm.tierState.collectAsStateWithLifecycle().value,
             onDismiss = vm::onDismissTier,
             actionTier = vm::onTierAction,

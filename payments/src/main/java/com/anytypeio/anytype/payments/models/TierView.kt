@@ -11,6 +11,7 @@ data class TierPreviewView(
     @StringRes val title: Int,
     @StringRes val subtitle: Int,
     val conditionInfo: TierConditionInfo,
+    val color: String = "red"
 )
 
 //This is a data class that represents a tier view when tier is opened
@@ -23,7 +24,8 @@ data class TierView(
     val features: List<String>,
     val membershipAnyName: TierAnyName,
     val buttonState: TierButton,
-    val email: TierEmail
+    val email: TierEmail,
+    val color: String = "red"
 )
 
 sealed class TierConditionInfo {
@@ -50,11 +52,6 @@ sealed class TierPeriod {
 sealed class TierButton {
     data object Hidden : TierButton()
     sealed class Submit : TierButton() {
-        data object Enabled : Submit()
-        data object Disabled : Submit()
-    }
-
-    sealed class Change : TierButton() {
         data object Enabled : Submit()
         data object Disabled : Submit()
     }

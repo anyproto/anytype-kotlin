@@ -55,7 +55,8 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.fontRiccioneRegular
-import com.anytypeio.anytype.payments.viewmodel.Tier
+import com.anytypeio.anytype.payments.models.TierPreviewView
+import com.anytypeio.anytype.payments.models.TierView
 import com.anytypeio.anytype.payments.viewmodel.MembershipMainState
 import com.anytypeio.anytype.presentation.membership.models.TierId
 
@@ -88,7 +89,7 @@ fun MainPaymentsScreen(state: MembershipMainState, tierClicked: (TierId) -> Unit
                     InfoCards()
                     Spacer(modifier = Modifier.height(32.dp))
                 }
-                //TiersList(tiers = state.tiers, onClick = tierClicked)
+                TiersList(tiers = state.tiers, onClick = tierClicked)
                 Spacer(modifier = Modifier.height(32.dp))
                 LinkButton(text = stringResource(id = R.string.payments_member_link), action = {})
                 Divider()
@@ -175,7 +176,7 @@ private fun Subtitle(@StringRes subtitle: Int) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TiersList(tiers: List<Tier>, onClick: (TierId) -> Unit) {
+fun TiersList(tiers: List<TierPreviewView>, onClick: (TierId) -> Unit) {
     val itemsScroll = rememberLazyListState()
     LazyRow(
         state = itemsScroll,
@@ -186,7 +187,7 @@ fun TiersList(tiers: List<Tier>, onClick: (TierId) -> Unit) {
         flingBehavior = rememberSnapFlingBehavior(lazyListState = itemsScroll)
     ) {
         itemsIndexed(tiers) { _, tier ->
-            TierView(
+            TierPreviewView(
                 onClick = onClick,
                 tier = tier
             )

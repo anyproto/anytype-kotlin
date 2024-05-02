@@ -56,7 +56,6 @@ import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.fontRiccioneRegular
 import com.anytypeio.anytype.payments.models.TierPreviewView
-import com.anytypeio.anytype.payments.models.TierView
 import com.anytypeio.anytype.payments.viewmodel.MembershipMainState
 import com.anytypeio.anytype.presentation.membership.models.TierId
 

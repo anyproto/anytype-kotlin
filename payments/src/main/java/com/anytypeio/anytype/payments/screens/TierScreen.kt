@@ -36,6 +36,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.payments.R
+import com.anytypeio.anytype.payments.constants.TiersConstants.BUILDER_ID
 import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierConditionInfo
@@ -165,6 +166,11 @@ private fun TierViewVisible(
             if (state.tierView.isActive) {
                 ConditionInfoView(state = state.tierView.conditionInfo)
             } else {
+                AnyNameView(
+                    anyNameState = state.tierView.membershipAnyName,
+                    actionPay = actionTier,
+                    tierId = state.tierView.id
+                )
                 ConditionInfoView(state = state.tierView.conditionInfo)
                 Spacer(modifier = Modifier.height(14.dp))
                 MainButton(buttonState = state.tierView.buttonState)
@@ -249,11 +255,7 @@ fun TierViewScreenPreview() {
                     "Feature 2",
                     "Feature 3",
                     "Feature 1",
-                    "Feature 2",
-                    "Feature 3",
-                    "Feature 1",
-                    "Feature 2",
-                    "Feature 3"
+                    "Feature 2"
                 ),
                 isActive = false,
                 conditionInfo = TierConditionInfo.Visible.Price(
@@ -261,10 +263,10 @@ fun TierViewScreenPreview() {
                     period = TierPeriod.Year(1)
                 ),
                 buttonState = TierButton.Pay.Disabled,
-                id = TierId(value = 2705),
+                id = TierId(value = BUILDER_ID),
                 membershipAnyName = TierAnyName.Visible.Enter,
                 email = TierEmail.Hidden,
-                color = "red"
+                color = "teal"
             )
         ),
         actionTier = {},

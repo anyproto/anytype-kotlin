@@ -1,5 +1,8 @@
 package com.anytypeio.anytype.payments.viewmodel
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.text2.input.TextFieldState
+import androidx.compose.foundation.text2.input.textAsFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.billingclient.api.BillingFlowParams
@@ -25,15 +28,19 @@ import com.anytypeio.anytype.payments.playbilling.BillingPurchaseState
 import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
 import com.anytypeio.anytype.presentation.membership.models.TierId
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
+@OptIn(ExperimentalFoundationApi::class, FlowPreview::class)
 class PaymentsViewModel(
     private val analytics: Analytics,
     private val billingClientLifecycle: BillingClientLifecycle,
@@ -70,6 +77,9 @@ class PaymentsViewModel(
     val initBillingClient = MutableStateFlow(false)
     private val membershipStatusState = MutableStateFlow<MembershipStatus?>(null)
     private val showTierState = MutableStateFlow(0)
+
+    @OptIn(ExperimentalFoundationApi::class)
+    val anyNameState = TextFieldState(initialText = "")
 
     init {
         Timber.d("PaymentsViewModel init")
@@ -114,6 +124,13 @@ class PaymentsViewModel(
                     tierState.value = MembershipTierState.Hidden
                 }
             }
+        }
+        viewModelScope.launch {
+            anyNameState.textAsFlow()
+                .debounce(500)
+                .collectLatest {
+                    Timber.d("AnyNameState: $it")
+                }
         }
     }
 
@@ -162,6 +179,7 @@ class PaymentsViewModel(
             validateNameJob?.cancel()
         }
         setAnyNameStateToValidating(tierView)
+        return
         validateNameJob = viewModelScope.launch {
             val params = IsMembershipNameValid.Params(
                 tier = tierId.value,
@@ -281,6 +299,7 @@ class PaymentsViewModel(
     fun onDismissTier() {
         Timber.d("onDismissTier")
         command.value = PaymentsNavigation.Dismiss
+        showTierState.value = 0
     }
 
     fun onDismissCode() {

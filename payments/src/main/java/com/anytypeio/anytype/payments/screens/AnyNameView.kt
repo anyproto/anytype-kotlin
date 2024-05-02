@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.payments.screens
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +13,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text2.BasicTextField2
+import androidx.compose.foundation.text2.input.TextFieldLineLimits
+import androidx.compose.foundation.text2.input.TextFieldState
+import androidx.compose.foundation.text2.input.rememberTextFieldState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,6 +33,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -41,15 +47,22 @@ import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.viewmodel.TierAction
 import com.anytypeio.anytype.presentation.membership.models.TierId
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun AnyNameView(tierId: TierId, anyNameState: TierAnyName, actionPay: (TierAction) -> Unit) {
+fun AnyNameView(tierId: TierId, anyNameState: TierAnyName, actionPay: (TierAction) -> Unit, anyNameTextField: TextFieldState) {
 
     if (anyNameState != TierAnyName.Hidden) {
-        var innerValue by remember { mutableStateOf("") }
-
         val focusRequester = remember { FocusRequester() }
         val focusManager = LocalFocusManager.current
         val keyboardController = LocalSoftwareKeyboardController.current
+        val enabled = when (anyNameState) {
+            TierAnyName.Hidden -> false
+            TierAnyName.Visible.Disabled -> false
+            TierAnyName.Visible.Enter -> true
+            is TierAnyName.Visible.Error -> true
+            TierAnyName.Visible.Validated -> true
+            TierAnyName.Visible.Validating -> false
+        }
 
         Column(
             modifier = Modifier
@@ -78,48 +91,19 @@ fun AnyNameView(tierId: TierId, anyNameState: TierAnyName, actionPay: (TierActio
             )
             Spacer(modifier = Modifier.height(10.dp))
             Row(modifier = Modifier.fillMaxWidth()) {
-            BasicTextField(
-                value = innerValue,
-                onValueChange = {
-                    innerValue = it
-                    actionPay(TierAction.UpdateName(tierId = tierId, name = it))
-                },
-                textStyle = BodyRegular.copy(color = colorResource(id = com.anytypeio.anytype.core_ui.R.color.text_primary)),
-                singleLine = true,
-                enabled = true,
-                cursorBrush = SolidColor(colorResource(id = com.anytypeio.anytype.core_ui.R.color.text_primary)),
+            BasicTextField2(
                 modifier = Modifier
                     .weight(1f)
                     .wrapContentHeight()
-                    .padding(start = 0.dp, top = 2.dp)
-                    .focusRequester(focusRequester)
-                    .onFocusChanged { focusState ->
-                        if (focusState.isFocused) {
-
-                        } else {
-
-                        }
-                    },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text
+                    .focusRequester(focusRequester),
+                state = anyNameTextField,
+                textStyle = BodyRegular.copy(color = colorResource(id = R.color.text_primary)),
+                enabled = true,
+                cursorBrush = SolidColor(colorResource(id = R.color.text_primary)),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Done,
                 ),
-                keyboardActions = KeyboardActions {
-                    keyboardController?.hide()
-                    focusManager.clearFocus()
-                },
-                decorationBox = { innerTextField ->
-                    if (innerValue.isEmpty()) {
-                        Text(
-                            text = stringResource(id = R.string.payments_tier_details_name_hint),
-                            style = BodyRegular,
-                            color = colorResource(id = R.color.text_tertiary),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight()
-                        )
-                    }
-                    innerTextField()
-                }
+                lineLimits = TextFieldLineLimits.SingleLine
             )
             Text(
                 text = stringResource(id = R.string.payments_tier_details_name_domain),

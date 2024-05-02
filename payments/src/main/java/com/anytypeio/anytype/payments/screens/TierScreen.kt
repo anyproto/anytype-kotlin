@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.payments.screens
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -48,12 +50,13 @@ import com.anytypeio.anytype.payments.viewmodel.TierAction
 import com.anytypeio.anytype.presentation.membership.models.TierId
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun TierViewScreen(
     state: MembershipTierState,
     onDismiss: () -> Unit,
-    actionTier: (TierAction) -> Unit
+    actionTier: (TierAction) -> Unit,
+    anyNameTextField: TextFieldState
 ) {
     if (state is MembershipTierState.Visible) {
         val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -70,16 +73,19 @@ fun TierViewScreen(
                 TierViewVisible(
                     state = state,
                     actionTier = actionTier,
+                    anyNameTextField = anyNameTextField
                 )
             }
         )
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun TierViewVisible(
     state: MembershipTierState.Visible,
-    actionTier: (TierAction) -> Unit
+    actionTier: (TierAction) -> Unit,
+    anyNameTextField: TextFieldState
 ) {
     Column(
         modifier = Modifier
@@ -169,7 +175,8 @@ private fun TierViewVisible(
                 AnyNameView(
                     anyNameState = state.tierView.membershipAnyName,
                     actionPay = actionTier,
-                    tierId = state.tierView.id
+                    tierId = state.tierView.id,
+                    anyNameTextField = anyNameTextField
                 )
                 ConditionInfoView(state = state.tierView.conditionInfo)
                 Spacer(modifier = Modifier.height(14.dp))
@@ -239,6 +246,7 @@ private fun getButtonText(buttonState: TierButton): Pair<Int, Boolean> {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Preview
 @Composable
 fun TierViewScreenPreview() {
@@ -270,6 +278,7 @@ fun TierViewScreenPreview() {
             )
         ),
         actionTier = {},
-        onDismiss = {}
+        onDismiss = {},
+        anyNameTextField = TextFieldState()
     )
 }

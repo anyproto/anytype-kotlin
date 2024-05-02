@@ -192,18 +192,11 @@ private fun MembershipTierData.createConditionInfoForCurrentTier(
     membershipValidUntil: Long,
     paymentMethod: MembershipPaymentMethod
 ): TierConditionInfo {
-    return if (priceStripeUsdCents == 0) {
-        TierConditionInfo.Visible.Free(
-            period = convertToTierViewPeriod(this)
-        )
-    } else {
-        TierConditionInfo.Visible.Valid(
-            dateEnds = membershipValidUntil,
-            payedBy = paymentMethod,
-            period = convertToTierViewPeriod(this)
-
-        )
-    }
+    return TierConditionInfo.Visible.Valid(
+        dateEnds = membershipValidUntil,
+        payedBy = paymentMethod,
+        period = convertToTierViewPeriod(this)
+    )
 }
 
 private fun MembershipTierData.createConditionInfoForNonBillingTier(): TierConditionInfo {

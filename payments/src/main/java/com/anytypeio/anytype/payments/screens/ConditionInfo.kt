@@ -64,6 +64,7 @@ fun ConditionInfoPreview(
         }
 
         is TierConditionInfo.Visible.Free -> {
+            //todo: add some refactoring here
             val text = when (state.period) {
                 is TierPeriod.Day -> stringResource(id = R.string.free_for, getDate(state.period))
                 is TierPeriod.Month -> stringResource(id = R.string.free_for, getDate(state.period))

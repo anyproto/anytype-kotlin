@@ -22,6 +22,9 @@ import com.anytypeio.anytype.payments.R
 import com.anytypeio.anytype.payments.mapping.LocalizedPeriodString
 import com.anytypeio.anytype.payments.mapping.ToValidUntilString
 import com.anytypeio.anytype.payments.mapping.toPeriodDescription
+import com.anytypeio.anytype.payments.models.BillingPriceInfo
+import com.anytypeio.anytype.payments.models.PeriodDescription
+import com.anytypeio.anytype.payments.models.PeriodUnit
 import com.anytypeio.anytype.payments.models.TierConditionInfo
 import com.anytypeio.anytype.payments.models.TierPeriod
 import java.time.Instant
@@ -53,7 +56,11 @@ fun ConditionInfoPreview(
         }
 
         is TierConditionInfo.Visible.PriceBilling -> {
-
+            val periodString = stringResource(id = R.string.per_period, LocalizedPeriodString(desc = state.price.period))
+            ConditionInfoPreviewPriceAndText(
+                price = state.price.formattedPrice,
+                period = periodString
+            )
         }
 
         is TierConditionInfo.Visible.Free -> {
@@ -219,6 +226,32 @@ fun MyConditionInfoValid3() {
             dateEnds = 1714199910L,
             payedBy = MembershipPaymentMethod.METHOD_CRYPTO,
             period = TierPeriod.Unknown
+        )
+    )
+}
+
+@Preview
+@Composable
+fun MyConditionInfoPriceBilling1() {
+    ConditionInfoPreview(
+        TierConditionInfo.Visible.PriceBilling(
+            price = BillingPriceInfo(
+                formattedPrice = "$99",
+                period = PeriodDescription(1, PeriodUnit.YEARS)
+            ),
+        )
+    )
+}
+
+@Preview
+@Composable
+fun MyConditionInfoPriceBilling2() {
+    ConditionInfoPreview(
+        TierConditionInfo.Visible.PriceBilling(
+            price = BillingPriceInfo(
+                formattedPrice = "$300",
+                period = PeriodDescription(3, PeriodUnit.YEARS)
+            ),
         )
     )
 }

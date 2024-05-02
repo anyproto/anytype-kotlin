@@ -1,14 +1,17 @@
 package com.anytypeio.anytype.payments.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -26,13 +29,22 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.views.BodyCallout
+import com.anytypeio.anytype.core_ui.views.ButtonPrimary
+import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.payments.R
+import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
+import com.anytypeio.anytype.payments.models.TierConditionInfo
+import com.anytypeio.anytype.payments.models.TierEmail
+import com.anytypeio.anytype.payments.models.TierPeriod
+import com.anytypeio.anytype.payments.models.TierView
 import com.anytypeio.anytype.payments.viewmodel.MembershipTierState
 import com.anytypeio.anytype.payments.viewmodel.TierAction
+import com.anytypeio.anytype.presentation.membership.models.TierId
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,7 +80,7 @@ private fun TierViewVisible(
     state: MembershipTierState.Visible,
     actionTier: (TierAction) -> Unit
 ) {
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(
@@ -78,7 +90,8 @@ private fun TierViewVisible(
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
+                .wrapContentHeight()
                 .verticalScroll(rememberScrollState())
         ) {
             val tierResources: TierResources = mapTierToResources(state.tierView)
@@ -133,11 +146,73 @@ private fun TierViewVisible(
             )
             Spacer(modifier = Modifier.height(6.dp))
             state.tierView.features.forEach { benefit ->
-                //Benefit(benefit = benefit)
+                Benefit(benefit = benefit)
                 Spacer(modifier = Modifier.height(6.dp))
             }
-
+            Spacer(modifier = Modifier.height(30.dp))
         }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .background(
+                    shape = RoundedCornerShape(16.dp),
+                    color = colorResource(id = R.color.background_primary)
+                )
+                .weight(1f, true)
+        ) {
+            Spacer(modifier = Modifier.height(26.dp))
+            if (state.tierView.isActive) {
+                ConditionInfoView(state = state.tierView.conditionInfo)
+            } else {
+                ConditionInfoView(state = state.tierView.conditionInfo)
+                Spacer(modifier = Modifier.height(14.dp))
+                MainButton(buttonState = state.tierView.buttonState)
+            }
+        }
+    }
+}
+
+@Composable
+fun Benefit(benefit: String) {
+    Box(
+        modifier = Modifier
+            .wrapContentHeight()
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)
+    ) {
+        Image(
+            modifier = Modifier
+                .wrapContentSize()
+                .align(Alignment.CenterStart),
+            painter = painterResource(id = R.drawable.ic_check_16),
+            contentDescription = "text check icon"
+        )
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 22.dp)
+                .align(Alignment.CenterStart),
+            text = benefit,
+            style = BodyCallout,
+            color = colorResource(id = R.color.text_primary)
+        )
+    }
+}
+
+@Composable
+private fun MainButton(buttonState: TierButton) {
+    if (buttonState !is TierButton.Hidden) {
+        val (stringRes, enabled) = getButtonText(buttonState)
+        ButtonPrimary(
+            enabled = enabled,
+            text = stringResource(id = stringRes),
+            onClick = { },
+            size = ButtonSize.Large,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
+        )
     }
 }
 
@@ -145,15 +220,54 @@ private fun TierViewVisible(
 private fun getButtonText(buttonState: TierButton): Pair<Int, Boolean> {
     return when (buttonState)  {
         TierButton.Hidden -> Pair(0, false)
-        TierButton.Info.Disabled -> Pair(com.anytypeio.anytype.core_ui.R.string.payments_button_info, false)
-        is TierButton.Info.Enabled -> Pair(com.anytypeio.anytype.core_ui.R.string.payments_button_info, true)
-        TierButton.Manage.Android.Disabled -> Pair(com.anytypeio.anytype.core_ui.R.string.payments_button_manage, false)
-        is TierButton.Manage.Android.Enabled -> Pair(com.anytypeio.anytype.core_ui.R.string.payments_button_manage, true)
-        TierButton.Manage.External.Disabled -> Pair(com.anytypeio.anytype.core_ui.R.string.payments_button_manage, false)
-        is TierButton.Manage.External.Enabled -> Pair(com.anytypeio.anytype.core_ui.R.string.payments_button_manage, true)
-        TierButton.Submit.Disabled -> Pair(com.anytypeio.anytype.core_ui.R.string.payments_button_submit, false)
-        TierButton.Submit.Enabled -> Pair(com.anytypeio.anytype.core_ui.R.string.payments_button_submit, true)
-        TierButton.Pay.Disabled -> Pair(com.anytypeio.anytype.core_ui.R.string.payments_button_pay, false)
-        TierButton.Pay.Enabled -> Pair(com.anytypeio.anytype.core_ui.R.string.payments_button_pay, true)
+        TierButton.Info.Disabled -> Pair(R.string.payments_button_info, false)
+        is TierButton.Info.Enabled -> Pair(R.string.payments_button_info, true)
+        TierButton.Manage.Android.Disabled -> Pair(R.string.payments_button_manage, false)
+        is TierButton.Manage.Android.Enabled -> Pair(R.string.payments_button_manage, true)
+        TierButton.Manage.External.Disabled -> Pair(R.string.payments_button_manage, false)
+        is TierButton.Manage.External.Enabled -> Pair(R.string.payments_button_manage, true)
+        TierButton.Submit.Disabled -> Pair(R.string.payments_button_submit, false)
+        TierButton.Submit.Enabled -> Pair(R.string.payments_button_submit, true)
+        TierButton.Pay.Disabled -> Pair(R.string.payments_button_pay, false)
+        TierButton.Pay.Enabled -> Pair(R.string.payments_button_pay, true)
     }
+}
+
+@Preview
+@Composable
+fun TierViewScreenPreview() {
+    TierViewScreen(
+        state = MembershipTierState.Visible(
+            tierView = TierView(
+                title = R.string.payments_tier_builder,
+                subtitle = R.string.payments_tier_builder_description,
+                features = listOf(
+                    "Feature 1",
+                    "Feature 2",
+                    "Feature 3",
+                    "Feature 1",
+                    "Feature 2",
+                    "Feature 3",
+                    "Feature 1",
+                    "Feature 2",
+                    "Feature 3",
+                    "Feature 1",
+                    "Feature 2",
+                    "Feature 3"
+                ),
+                isActive = false,
+                conditionInfo = TierConditionInfo.Visible.Price(
+                    price = "99.00",
+                    period = TierPeriod.Year(1)
+                ),
+                buttonState = TierButton.Pay.Disabled,
+                id = TierId(value = 2705),
+                membershipAnyName = TierAnyName.Visible.Enter,
+                email = TierEmail.Hidden,
+                color = "red"
+            )
+        ),
+        actionTier = {},
+        onDismiss = {}
+    )
 }

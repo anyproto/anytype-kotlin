@@ -85,6 +85,7 @@ fun ConditionInfoView(
 private fun ConditionInfoViewPriceAndText(price: String, period: String) {
     Row(
         modifier = Modifier
+            .padding(horizontal = 20.dp)
             .fillMaxWidth()
             .height(32.dp)
     ) {
@@ -114,7 +115,7 @@ private fun ConditionInfoViewPriceAndText(price: String, period: String) {
 
 @Composable
 fun ConditionInfoViewValid(text: String) {
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
         Text(
             modifier = Modifier
                 .fillMaxWidth(),
@@ -169,7 +170,7 @@ fun ConditionInfoViewFree(text: String) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth().padding(horizontal = 20.dp),
             text = stringResource(id = R.string.payments_tier_current_title),
             color = colorResource(id = R.color.text_primary),
             style = BodyBold,

@@ -215,8 +215,12 @@ private fun MembershipTierData.createConditionInfoForNonBillingTier(): TierCondi
 }
 
 private fun formatPriceInCents(priceInCents: Int): String {
-    val dollars = priceInCents / 100.0
-    return "$%.2f".format(dollars)
+    val dollars = priceInCents / 100
+    return if (priceInCents % 100 == 0) {
+        "$$dollars"
+    } else {
+        "$%.2f".format(dollars + (priceInCents % 100) / 100.0)
+    }
 }
 
 private fun MembershipTierData.createConditionInfoForBillingTier(billingClientState: BillingClientState): TierConditionInfo {

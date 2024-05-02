@@ -100,8 +100,8 @@ private fun ConditionInfoViewPriceAndText(price: String, period: String) {
         Text(
             modifier = Modifier
                 .fillMaxWidth()
-                .align(Alignment.CenterVertically)
-                .padding(start = 4.dp),
+                .align(Alignment.Bottom)
+                .padding(start = 4.dp, bottom = 1.dp),
             text = period,
             color = colorResource(id = R.color.text_primary),
             style = Relations1,

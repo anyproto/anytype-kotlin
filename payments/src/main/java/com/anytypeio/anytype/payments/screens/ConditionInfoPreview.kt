@@ -132,8 +132,8 @@ private fun ConditionInfoPreviewPriceAndText(price: String, period: String) {
         Text(
             modifier = Modifier
                 .fillMaxWidth()
-                .align(Alignment.CenterVertically)
-                .padding(start = 4.dp),
+                .align(Alignment.Bottom)
+                .padding(start = 4.dp, bottom = 2.dp),
             text = period,
             color = colorResource(id = R.color.text_primary),
             style = Caption1Regular,

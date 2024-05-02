@@ -226,7 +226,7 @@
     <color name="widget_edit_view_stroke_color_active">@color/palette_system_amber_50</color>
     <color name="widget_edit_view_stroke_color_inactive">@color/shape_primary</color>
 
-    <color name="payments_tier_current_background">#F6F6F6</color>
+    <color name="payments_tier_current_background">#F2F2F2</color>
 
     <color name="tier_gradient_red_start">#FBEAEA</color>
     <color name="tier_gradient_red_end">#F05F5F</color>

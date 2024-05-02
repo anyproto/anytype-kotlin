@@ -86,6 +86,6 @@ fun TierPeriod.ToValidUntilString(formattedDate: String): String {
     return when (this) {
         is TierPeriod.Unknown -> stringResource(id = R.string.membership_valid_for_unknown)
         is TierPeriod.Unlimited -> stringResource(id = R.string.membership_valid_forever)
-        else -> stringResource(id = R.string.payments_tier_details_valid_until, formattedDate)
+        else -> formattedDate
     }
 }

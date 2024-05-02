@@ -1535,6 +1535,7 @@
     <string name="per_period">per %1$s</string>
     <string name="free_for">Free for %1$s</string>
     <string name="free_for_unknown">Free until...</string>
+    <string name="free_until">Free until</string>
     <string name="membership_valid_forever">Valid forever</string>
     <string name="membership_valid_for_unknown">Valid until...</string>
 

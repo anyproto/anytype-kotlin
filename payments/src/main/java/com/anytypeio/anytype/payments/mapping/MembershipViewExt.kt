@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.payments.mapping
 
-import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.payments.constants.TiersConstants.ACTIVE_TIERS_WITH_BANNERS
 import com.anytypeio.anytype.payments.constants.TiersConstants.MEMBERSHIP_CONTACT_EMAIL
@@ -36,11 +35,4 @@ fun MembershipStatus.toMainView(
         contactEmail = MEMBERSHIP_CONTACT_EMAIL,
         showBanner = showBanner
     )
-}
-
-fun MembershipStatus.isTierActive(tierId: Int): Boolean {
-    return when (this.status) {
-        Membership.Status.STATUS_ACTIVE -> activeTier.value == tierId
-        else -> false
-    }
 }

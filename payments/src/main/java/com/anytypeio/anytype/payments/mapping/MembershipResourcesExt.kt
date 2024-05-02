@@ -2,10 +2,12 @@ package com.anytypeio.anytype.payments.mapping
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.payments.constants.TiersConstants
 import com.anytypeio.anytype.payments.models.PeriodDescription
 import com.anytypeio.anytype.payments.models.PeriodUnit
+import com.anytypeio.anytype.payments.models.TierPeriod
 import com.anytypeio.anytype.presentation.membership.models.TierId
 import java.time.Period
 
@@ -48,10 +50,42 @@ fun LocalizedPeriodString(desc: PeriodDescription?): String {
         PeriodUnit.YEARS -> R.plurals.period_years
         PeriodUnit.MONTHS -> R.plurals.period_months
         PeriodUnit.DAYS -> R.plurals.period_days
+        PeriodUnit.WEEKS -> R.plurals.period_weeks
     }
     return pluralStringResource(
         id = quantityStringId,
         count = desc.amount,
         formatArgs = arrayOf(desc.amount)
     )
+}
+
+fun TierPeriod.toPeriodDescription(): PeriodDescription {
+    return when (this) {
+        is TierPeriod.Unknown -> PeriodDescription(0, PeriodUnit.DAYS)
+        is TierPeriod.Unlimited -> PeriodDescription(Int.MAX_VALUE, PeriodUnit.DAYS)
+        is TierPeriod.Year -> PeriodDescription(count, PeriodUnit.YEARS)
+        is TierPeriod.Month -> PeriodDescription(count, PeriodUnit.MONTHS)
+        is TierPeriod.Week -> PeriodDescription(count, PeriodUnit.WEEKS)
+        is TierPeriod.Day -> PeriodDescription(count, PeriodUnit.DAYS)
+    }
+}
+
+fun TierPeriod.toFreeUntilString(): Int {
+    return when (this) {
+        is TierPeriod.Unknown -> R.string.free_for_unknown
+        is TierPeriod.Unlimited -> R.string.payments_tier_details_free_forever
+        is TierPeriod.Year -> R.string.free_for
+        is TierPeriod.Month -> R.string.free_for
+        is TierPeriod.Week -> R.string.free_for
+        is TierPeriod.Day -> R.string.free_for
+    }
+}
+
+@Composable
+fun TierPeriod.ToValidUntilString(formattedDate: String): String {
+    return when (this) {
+        is TierPeriod.Unknown -> stringResource(id = R.string.membership_valid_for_unknown)
+        is TierPeriod.Unlimited -> stringResource(id = R.string.membership_valid_forever)
+        else -> stringResource(id = R.string.payments_tier_details_valid_until, formattedDate)
+    }
 }

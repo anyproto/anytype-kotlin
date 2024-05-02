@@ -239,16 +239,6 @@ private fun getButtonText(tier: Tier): String {
 }
 
 @Composable
-private fun expirationText(formattedDateEnds: String, tier: Tier): String {
-    return when (tier) {
-        is Tier.Explorer -> stringResource(id = R.string.payments_tier_details_free_forever)
-        is Tier.Builder -> stringResource(id = R.string.payments_tier_details_valid_until, formattedDateEnds)
-        is Tier.CoCreator -> stringResource(id = R.string.payments_tier_details_valid_until, formattedDateEnds)
-        is Tier.Custom -> stringResource(id = R.string.payments_tier_details_valid_until, formattedDateEnds)
-    }
-}
-
-@Composable
 private fun toValue(colorCode: String): TierColors {
     return TierColors(
         gradientStart = colorCode.gradientStart(),

@@ -27,6 +27,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -89,19 +91,21 @@ private fun TierViewVisible(
     actionTier: (TierAction) -> Unit,
     anyNameTextField: TextFieldState
 ) {
+    val scrollState = rememberScrollState()
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 color = colorResource(id = R.color.shape_tertiary),
                 shape = RoundedCornerShape(16.dp)
-            ),
+            )
+            .verticalScroll(scrollState),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .verticalScroll(rememberScrollState())
+                //.verticalScroll(rememberScrollState())
         ) {
             val tierResources: TierResources = mapTierToResources(state.tierView)
             val brush = Brush.verticalGradient(
@@ -192,6 +196,7 @@ private fun TierViewVisible(
                     actionTier = actionTier
                 )
             }
+            Spacer(modifier = Modifier.height(300.dp))
         }
     }
 }
@@ -312,7 +317,7 @@ fun TierViewScreenPreview() {
                     "Feature 1",
                     "Feature 2"
                 ),
-                isActive = true,
+                isActive = false,
                 conditionInfo = TierConditionInfo.Visible.Valid(
                     dateEnds = 1714199910,
                     period = TierPeriod.Year(1),

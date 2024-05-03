@@ -94,7 +94,8 @@ private fun TierViewVisible(
     val scrollState = rememberScrollState()
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
+            .wrapContentHeight(align = Alignment.Top)
             .background(
                 color = colorResource(id = R.color.shape_tertiary),
                 shape = RoundedCornerShape(16.dp)
@@ -105,7 +106,6 @@ private fun TierViewVisible(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                //.verticalScroll(rememberScrollState())
         ) {
             val tierResources: TierResources = mapTierToResources(state.tierView)
             val brush = Brush.verticalGradient(
@@ -167,12 +167,11 @@ private fun TierViewVisible(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight()
+                .wrapContentHeight()
                 .background(
                     shape = RoundedCornerShape(16.dp),
                     color = colorResource(id = R.color.background_primary)
                 )
-                .weight(1f, true)
         ) {
             Spacer(modifier = Modifier.height(26.dp))
             if (state.tierView.isActive) {

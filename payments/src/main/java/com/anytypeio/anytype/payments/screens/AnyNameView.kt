@@ -39,8 +39,6 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.payments.R
 import com.anytypeio.anytype.payments.models.TierAnyName
-import com.anytypeio.anytype.payments.viewmodel.TierAction
-import com.anytypeio.anytype.presentation.membership.models.TierId
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

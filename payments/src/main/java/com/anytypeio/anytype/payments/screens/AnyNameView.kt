@@ -18,6 +18,7 @@ import androidx.compose.foundation.text2.input.TextFieldLineLimits
 import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -51,13 +52,15 @@ fun AnyNameView(
         val focusRequester = remember { FocusRequester() }
         val focusManager = LocalFocusManager.current
         val keyboardController = LocalSoftwareKeyboardController.current
-        val enabled = when (anyNameState) {
+        val anyNameEnabled = remember { mutableStateOf(false) }
+
+        anyNameEnabled.value = when (anyNameState) {
             TierAnyName.Hidden -> false
             TierAnyName.Visible.Disabled -> false
             TierAnyName.Visible.Enter -> true
             is TierAnyName.Visible.Error -> true
             is TierAnyName.Visible.Validated -> true
-            TierAnyName.Visible.Validating -> false
+            TierAnyName.Visible.Validating -> true
         }
 
         Column(
@@ -94,7 +97,7 @@ fun AnyNameView(
                     .focusRequester(focusRequester),
                 state = anyNameTextField,
                 textStyle = BodyRegular.copy(color = colorResource(id = R.color.text_primary)),
-                enabled = enabled,
+                enabled = anyNameEnabled.value,
                 cursorBrush = SolidColor(colorResource(id = R.color.text_primary)),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Done,

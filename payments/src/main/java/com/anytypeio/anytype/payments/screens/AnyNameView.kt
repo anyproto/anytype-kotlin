@@ -94,7 +94,7 @@ fun AnyNameView(
                     .focusRequester(focusRequester),
                 state = anyNameTextField,
                 textStyle = BodyRegular.copy(color = colorResource(id = R.color.text_primary)),
-                enabled = true,
+                enabled = enabled,
                 cursorBrush = SolidColor(colorResource(id = R.color.text_primary)),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Done,

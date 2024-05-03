@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.ui.payments
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +20,7 @@ import androidx.navigation.compose.rememberNavController
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
@@ -84,6 +87,21 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
                     navController.navigate(PaymentsNavigation.Welcome.route)
                 }
                 PaymentsNavigation.Dismiss -> navController.popBackStack()
+                is PaymentsNavigation.OpenUrl -> {
+                    try {
+                        if (command.url == null) {
+                            toast("Url is null")
+                            return@subscribe
+                        }
+                        Intent(Intent.ACTION_VIEW).apply {
+                            data = Uri.parse(command.url)
+                        }.let {
+                            startActivity(it)
+                        }
+                    } catch (e: Throwable) {
+                        toast("Couldn't parse url: ${command.url}")
+                    }
+                }
                 else -> {}
             }
         }

@@ -84,7 +84,7 @@ sealed class TierAnyName {
         data object Disabled : Visible()
         data object Enter : Visible()
         data object Validating : Visible()
-        data object Validated : Visible()
+        data class Validated(val validatedName: String) : Visible()
         data class Error(val message: String) : Visible()
     }
 }

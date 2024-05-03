@@ -36,7 +36,7 @@ sealed class MembershipNameState {
 }
 
 sealed class PaymentsErrorState {
-    object Hidden : PaymentsErrorState()
+    data object Hidden : PaymentsErrorState()
     data class TierNotFound(val message: String) : PaymentsErrorState()
     data object MembershipStatusEmpty : PaymentsErrorState()
 }
@@ -44,6 +44,7 @@ sealed class PaymentsErrorState {
 sealed class TierAction {
     data class UpdateName(val tierId: TierId, val name: String) : TierAction()
     data class PayClicked(val tierId: TierId) : TierAction()
+    data class ManagePayment(val tierId: TierId) : TierAction()
 }
 
 sealed class PaymentsCodeState {
@@ -60,14 +61,15 @@ sealed class PaymentsCodeState {
 }
 
 sealed class PaymentsWelcomeState {
-    object Hidden : PaymentsWelcomeState()
+    data object Hidden : PaymentsWelcomeState()
     data class Initial(val tier: TierView) : PaymentsWelcomeState()
 }
 
 sealed class PaymentsNavigation(val route: String) {
-    object Main : PaymentsNavigation("main")
-    object Tier : PaymentsNavigation("tier")
-    object Code : PaymentsNavigation("code")
-    object Welcome : PaymentsNavigation("welcome")
-    object Dismiss : PaymentsNavigation("")
+    data object Main : PaymentsNavigation("main")
+    data object Tier : PaymentsNavigation("tier")
+    data object Code : PaymentsNavigation("code")
+    data object Welcome : PaymentsNavigation("welcome")
+    data object Dismiss : PaymentsNavigation("")
+    data class OpenUrl(val url: String?) : PaymentsNavigation("")
 }

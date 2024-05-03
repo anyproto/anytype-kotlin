@@ -2,6 +2,7 @@ package com.anytypeio.anytype.payments.viewmodel
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.text2.input.TextFieldState
+import androidx.compose.foundation.text2.input.clearText
 import androidx.compose.foundation.text2.input.textAsFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,6 +11,7 @@ import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.membership.MembershipErrors
+import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.payments.GetMembershipPaymentUrl
@@ -107,13 +109,15 @@ class PaymentsViewModel(
                 if (showTier != 0) {
                     val tier = membershipStatus?.tiers?.find { it.id == showTier }
                     if (tier != null) {
-                        tierState.value = MembershipTierState.Visible(
+                        val newTierState = MembershipTierState.Visible(
                             tier.toView(
                                 membershipStatus = membershipStatus,
                                 billingClientState = billingClientState,
                                 billingPurchaseState = billingPurchasesState
                             )
                         )
+                        Timber.d("Show tier: $newTierState")
+                        tierState.value = newTierState
                         command.value = PaymentsNavigation.Tier
                     } else {
                         Timber.e("Tier $showTier not found in tiers list")
@@ -122,15 +126,36 @@ class PaymentsViewModel(
                     }
                 } else {
                     tierState.value = MembershipTierState.Hidden
+                    anyNameState.clearText()
                 }
             }
         }
         viewModelScope.launch {
             anyNameState.textAsFlow()
-                .debounce(500)
+                .debounce(NAME_VALIDATION_DELAY)
                 .collectLatest {
-                    Timber.d("AnyNameState: $it")
+                    proceedWithValidatingName(it.toString())
                 }
+        }
+        viewModelScope.launch {
+            purchases.collectLatest { billingPurchaseState ->
+                logAcknowledgementStatus(billingPurchaseState)
+            }
+        }
+    }
+
+    private suspend fun logAcknowledgementStatus(billingPurchaseState: BillingPurchaseState) {
+        when (billingPurchaseState) {
+            is BillingPurchaseState.HasPurchases -> {
+                //need to check if the purchase is acknowledged
+                billingPurchaseState.purchases.forEach { purchase ->
+                    if (!purchase.isAcknowledged) {
+                        Timber.e("Purchase not acknowledged: ${purchase.purchaseToken}")
+                        billingClientLifecycle.acknowledgePurchase(purchase.purchaseToken)
+                    }
+                }
+            }
+            else -> {}
         }
     }
 
@@ -158,19 +183,20 @@ class PaymentsViewModel(
     fun onTierAction(action: TierAction) {
         Timber.d("onTierAction: action:$action")
         when (action) {
-            is TierAction.UpdateName -> proceedWithValidatingName(action.tierId, action.name)
-            is TierAction.PayClicked -> onPayButtonClicked(action.tierId, "")
+            is TierAction.UpdateName -> {}
+            is TierAction.PayClicked -> onPayButtonClicked(action.tierId)
+            is TierAction.ManagePayment -> onManageTierClicked(action.tierId)
         }
     }
 
     private var validateNameJob: Job? = null
 
-    private fun proceedWithValidatingName(tierId: TierId, name: String) {
+    private fun proceedWithValidatingName(name: String) {
         val tierView = (tierState.value as? MembershipTierState.Visible)?.tierView ?: return
         if (name.length < MEMBERSHIP_NAME_MIN_LENGTH) {
             when (tierView.membershipAnyName) {
                 is TierAnyName.Visible.Error -> setAnyNameStateToEnter(tierView)
-                TierAnyName.Visible.Validated -> setAnyNameStateToEnter(tierView)
+                is TierAnyName.Visible.Validated -> setAnyNameStateToEnter(tierView)
                 else -> {}
             }
             return
@@ -179,16 +205,15 @@ class PaymentsViewModel(
             validateNameJob?.cancel()
         }
         setAnyNameStateToValidating(tierView)
-        return
         validateNameJob = viewModelScope.launch {
             val params = IsMembershipNameValid.Params(
-                tier = tierId.value,
+                tier = tierView.id.value,
                 name = name
             )
             isMembershipNameValid.async(params).fold(
                 onSuccess = {
                     Timber.d("Name is valid")
-                    setAnyNameStateToValidated(tierView)
+                    setAnyNameStateToValidated(tierView, name)
                 },
                 onFailure = { error ->
                     when (error) {
@@ -220,38 +245,68 @@ class PaymentsViewModel(
 
     private fun setAnyNameStateToEnter(tierView: TierView) {
         val updatedTierState = tierView.copy(
-            membershipAnyName = TierAnyName.Visible.Enter
+            membershipAnyName = TierAnyName.Visible.Enter,
+            buttonState = TierButton.Pay.Disabled
         )
         tierState.value = MembershipTierState.Visible(updatedTierState)
     }
 
     private fun setAnyNameStateToValidating(tierView: TierView) {
         val updatedTierState = tierView.copy(
-            membershipAnyName = TierAnyName.Visible.Validating
+            membershipAnyName = TierAnyName.Visible.Validating,
+            buttonState = TierButton.Pay.Disabled
         )
         tierState.value = MembershipTierState.Visible(updatedTierState)
     }
 
     private fun setAnyNameStateToError(tierView: TierView, message: String) {
         val updatedTierState = tierView.copy(
-            membershipAnyName = TierAnyName.Visible.Error(message)
+            membershipAnyName = TierAnyName.Visible.Error(message),
+            buttonState = TierButton.Pay.Disabled
         )
         tierState.value = MembershipTierState.Visible(updatedTierState)
     }
 
-    private fun setAnyNameStateToValidated(tierView: TierView) {
+    private fun setAnyNameStateToValidated(tierView: TierView, validatedName: String) {
         val updatedTierState = tierView.copy(
-            membershipAnyName = TierAnyName.Visible.Validated,
+            membershipAnyName = TierAnyName.Visible.Validated(validatedName),
             buttonState = TierButton.Pay.Enabled
         )
         tierState.value = MembershipTierState.Visible(updatedTierState)
     }
 
-    fun onPayButtonClicked(tierId: TierId, name: String) {
-        //todo implement
+    private fun onManageTierClicked(tierId: TierId) {
+        val membershipStatus = membershipStatusState.value ?: return
+        val tier = membershipStatus.tiers.find { it.id == tierId.value } ?: return
+        Timber.d("Manage tier: $tier")
+        command.value = when (membershipStatus.paymentMethod) {
+            MembershipPaymentMethod.METHOD_NONE -> {
+                PaymentsNavigation.OpenUrl(null)
+            }
+
+            MembershipPaymentMethod.METHOD_STRIPE -> {
+                PaymentsNavigation.OpenUrl(tier.stripeManageUrl)
+            }
+
+            MembershipPaymentMethod.METHOD_CRYPTO -> {
+                PaymentsNavigation.OpenUrl(null)
+            }
+
+            MembershipPaymentMethod.METHOD_INAPP_APPLE -> {
+                PaymentsNavigation.OpenUrl(tier.iosManageUrl)
+            }
+
+            MembershipPaymentMethod.METHOD_INAPP_GOOGLE -> {
+                PaymentsNavigation.OpenUrl(MANAGE_SUBSCRIPTION_URL)
+            }
+        }
     }
 
-    private suspend fun proceedWithResolveName(tierId: TierId, name: String) {
+    private fun onPayButtonClicked(tierId: TierId) {
+        proceedWithResolveName(tierId, anyNameState.text.toString())
+    }
+
+    private fun proceedWithResolveName(tierId: TierId, name: String) {
         viewModelScope.launch {
             val params = ResolveMembershipName.Params(
                 name = name
@@ -592,6 +647,8 @@ class PaymentsViewModel(
 
     companion object {
         const val EXPECTED_SUBSCRIPTION_PURCHASE_LIST_SIZE = 1
+        const val NAME_VALIDATION_DELAY = 300L
+        const val MANAGE_SUBSCRIPTION_URL = "https://play.google.com/store/account/subscriptions?sku=id_android_sub_builder&package=com.anytypeio.anytype"
     }
 }
 

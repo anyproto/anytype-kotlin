@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -57,10 +58,15 @@ import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.fontRiccioneRegular
 import com.anytypeio.anytype.payments.models.TierPreviewView
 import com.anytypeio.anytype.payments.viewmodel.MembershipMainState
+import com.anytypeio.anytype.payments.viewmodel.TierAction
 import com.anytypeio.anytype.presentation.membership.models.TierId
 
 @Composable
-fun MainPaymentsScreen(state: MembershipMainState, tierClicked: (TierId) -> Unit) {
+fun MainPaymentsScreen(
+    state: MembershipMainState,
+    tierClicked: (TierId) -> Unit,
+    tierAction: (TierAction) -> Unit
+) {
     Box(
         modifier = Modifier
             .nestedScroll(rememberNestedScrollInteropConnection())
@@ -90,13 +96,19 @@ fun MainPaymentsScreen(state: MembershipMainState, tierClicked: (TierId) -> Unit
                 }
                 TiersList(tiers = state.tiers, onClick = tierClicked)
                 Spacer(modifier = Modifier.height(32.dp))
-                LinkButton(text = stringResource(id = R.string.payments_member_link), action = {})
+                LinkButton(text = stringResource(id = R.string.payments_member_link), action = {
+                    tierAction(TierAction.OpenUrl(state.membershipLevelDetails))
+                })
                 Divider()
-                LinkButton(text = stringResource(id = R.string.payments_privacy_link), action = {})
+                LinkButton(text = stringResource(id = R.string.payments_privacy_link), action = {
+                    tierAction(TierAction.OpenUrl(state.privacyPolicy))
+                })
                 Divider()
-                LinkButton(text = stringResource(id = R.string.payments_terms_link), action = {})
+                LinkButton(text = stringResource(id = R.string.payments_terms_link), action = {
+                    tierAction(TierAction.OpenUrl(state.termsOfService))
+                })
                 Spacer(modifier = Modifier.height(32.dp))
-                BottomText()
+                BottomText(tierAction = tierAction)
             }
             if (state is MembershipMainState.ErrorState) {
                 Title()
@@ -262,7 +274,9 @@ fun LinkButton(text: String, action: () -> Unit) {
 }
 
 @Composable
-fun BottomText() {
+fun BottomText(
+    tierAction: (TierAction) -> Unit
+) {
     val start = stringResource(id = R.string.payments_let_us_link_start)
     val end = stringResource(id = R.string.payments_let_us_link_end)
     val buildString = buildAnnotatedString {
@@ -283,7 +297,8 @@ fun BottomText() {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
-            .wrapContentHeight(),
+            .wrapContentHeight()
+            .clickable { tierAction(TierAction.OpenEmail) },
         text = buildString,
         style = Caption1Regular,
         color = colorResource(id = R.color.text_primary)

@@ -33,8 +33,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
+import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.payments.R
@@ -171,16 +173,24 @@ private fun TierViewVisible(
             Spacer(modifier = Modifier.height(26.dp))
             if (state.tierView.isActive) {
                 ConditionInfoView(state = state.tierView.conditionInfo)
+                Spacer(modifier = Modifier.height(20.dp))
+                SecondaryButton(
+                    buttonState = state.tierView.buttonState,
+                    tierId = state.tierView.id,
+                    actionTier = actionTier
+                )
             } else {
                 AnyNameView(
                     anyNameState = state.tierView.membershipAnyName,
-                    actionPay = actionTier,
-                    tierId = state.tierView.id,
                     anyNameTextField = anyNameTextField
                 )
                 ConditionInfoView(state = state.tierView.conditionInfo)
                 Spacer(modifier = Modifier.height(14.dp))
-                MainButton(buttonState = state.tierView.buttonState)
+                MainButton(
+                    buttonState = state.tierView.buttonState,
+                    tierId = state.tierView.id,
+                    actionTier = actionTier
+                )
             }
         }
     }
@@ -214,13 +224,50 @@ fun Benefit(benefit: String) {
 }
 
 @Composable
-private fun MainButton(buttonState: TierButton) {
+private fun MainButton(
+    tierId: TierId,
+    buttonState: TierButton,
+    actionTier: (TierAction) -> Unit
+) {
     if (buttonState !is TierButton.Hidden) {
         val (stringRes, enabled) = getButtonText(buttonState)
         ButtonPrimary(
             enabled = enabled,
             text = stringResource(id = stringRes),
-            onClick = { },
+            onClick = {
+                      when (buttonState) {
+                          is TierButton.Pay.Enabled -> actionTier(TierAction.PayClicked(tierId))
+                          else -> {}
+                      }
+
+            },
+            size = ButtonSize.Large,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
+        )
+    }
+}
+
+@Composable
+private fun SecondaryButton(
+    tierId: TierId,
+    buttonState: TierButton,
+    actionTier: (TierAction) -> Unit
+) {
+    if (buttonState !is TierButton.Hidden) {
+        val (stringRes, enabled) = getButtonText(buttonState)
+        ButtonSecondary(
+            enabled = enabled,
+            text = stringResource(id = stringRes),
+            onClick = {
+                when (buttonState) {
+                    is TierButton.Pay.Enabled -> actionTier(TierAction.PayClicked(tierId))
+                    is TierButton.Manage.Android.Enabled -> actionTier(TierAction.ManagePayment(tierId))
+                    else -> {}
+                }
+
+            },
             size = ButtonSize.Large,
             modifier = Modifier
                 .fillMaxWidth()
@@ -265,12 +312,13 @@ fun TierViewScreenPreview() {
                     "Feature 1",
                     "Feature 2"
                 ),
-                isActive = false,
-                conditionInfo = TierConditionInfo.Visible.Price(
-                    price = "99.00",
-                    period = TierPeriod.Year(1)
+                isActive = true,
+                conditionInfo = TierConditionInfo.Visible.Valid(
+                    dateEnds = 1714199910,
+                    period = TierPeriod.Year(1),
+                    payedBy = MembershipPaymentMethod.METHOD_INAPP_GOOGLE
                 ),
-                buttonState = TierButton.Pay.Disabled,
+                buttonState = TierButton.Manage.Android.Enabled("eqweqw"),
                 id = TierId(value = BUILDER_ID),
                 membershipAnyName = TierAnyName.Visible.Enter,
                 email = TierEmail.Hidden,

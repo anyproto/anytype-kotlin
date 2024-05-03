@@ -55,7 +55,8 @@ fun MembershipTierData.toView(
             membershipValidUntil = membershipStatus.dateEnds
         ),
         isActive = isActive,
-        features = features,
+        //todo remove this take()
+        features = features.take(1),
         membershipAnyName = getAnyName(
             isActive = isActive,
             billingClientState = billingClientState,

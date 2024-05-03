@@ -186,6 +186,12 @@ class PaymentsViewModel(
             is TierAction.UpdateName -> {}
             is TierAction.PayClicked -> onPayButtonClicked(action.tierId)
             is TierAction.ManagePayment -> onManageTierClicked(action.tierId)
+            is TierAction.OpenUrl -> {
+                command.value = PaymentsNavigation.OpenUrl(action.url)
+            }
+            TierAction.OpenEmail -> {
+                command.value = PaymentsNavigation.OpenEmail
+            }
         }
     }
 

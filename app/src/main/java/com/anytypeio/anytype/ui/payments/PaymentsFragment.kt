@@ -76,43 +76,6 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        jobs += subscribe(vm.command) { command ->
-            when (command) {
-                PaymentsNavigation.Tier -> navController.navigate(PaymentsNavigation.Tier.route)
-                PaymentsNavigation.Code -> navController.navigate(PaymentsNavigation.Code.route)
-                PaymentsNavigation.Welcome -> {
-                    navController.popBackStack(PaymentsNavigation.Main.route, false)
-                    navController.navigate(PaymentsNavigation.Welcome.route)
-                }
-                PaymentsNavigation.Dismiss -> navController.popBackStack()
-                is PaymentsNavigation.OpenUrl -> {
-                    try {
-                        if (command.url == null) {
-                            toast("Url is null")
-                            return@subscribe
-                        }
-                        Intent(Intent.ACTION_VIEW).apply {
-                            data = Uri.parse(command.url)
-                        }.let {
-                            startActivity(it)
-                        }
-                    } catch (e: Throwable) {
-                        toast("Couldn't parse url: ${command.url}")
-                    }
-                }
-                else -> {}
-            }
-        }
-        jobs += subscribe(vm.launchBillingCommand) { event ->
-            billingClientLifecycle.launchBillingFlow(
-                activity = requireActivity(),
-                params = event
-            )
-        }
-    }
-
     @OptIn(ExperimentalMaterialNavigationApi::class)
     @Composable
     private fun SetupNavigation(
@@ -149,7 +112,8 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
         expand()
         MainPaymentsScreen(
             state = vm.viewState.collectAsStateWithLifecycle().value,
-            tierClicked = vm::onTierClicked
+            tierClicked = vm::onTierClicked,
+            tierAction = vm::onTierAction
         )
     }
 
@@ -185,6 +149,43 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupBottomSheetBehavior(DEFAULT_PADDING_TOP)
+        subscribe(vm.command) { command ->
+            when (command) {
+                PaymentsNavigation.Tier -> navController.navigate(PaymentsNavigation.Tier.route)
+                PaymentsNavigation.Code -> navController.navigate(PaymentsNavigation.Code.route)
+                PaymentsNavigation.Welcome -> {
+                    navController.popBackStack(PaymentsNavigation.Main.route, false)
+                    navController.navigate(PaymentsNavigation.Welcome.route)
+                }
+                PaymentsNavigation.Dismiss -> navController.popBackStack()
+                is PaymentsNavigation.OpenUrl -> {
+                    try {
+                        if (command.url == null) {
+                            toast("Url is null")
+                            return@subscribe
+                        }
+                        Intent(Intent.ACTION_VIEW).apply {
+                            data = Uri.parse(command.url)
+                        }.let {
+                            startActivity(it)
+                        }
+                    } catch (e: Throwable) {
+                        toast("Couldn't parse url: ${command.url}")
+                    }
+                }
+                PaymentsNavigation.Main -> {}
+                PaymentsNavigation.OpenEmail -> {
+                    toast("Not implemented yet")
+                }
+                null -> {}
+            }
+        }
+        subscribe(vm.launchBillingCommand) { event ->
+            billingClientLifecycle.launchBillingFlow(
+                activity = requireActivity(),
+                params = event
+            )
+        }
     }
 
     override fun injectDependencies() {

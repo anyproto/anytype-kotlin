@@ -45,6 +45,8 @@ sealed class TierAction {
     data class UpdateName(val tierId: TierId, val name: String) : TierAction()
     data class PayClicked(val tierId: TierId) : TierAction()
     data class ManagePayment(val tierId: TierId) : TierAction()
+    data class OpenUrl(val url: String) : TierAction()
+    data object OpenEmail : TierAction()
 }
 
 sealed class PaymentsCodeState {
@@ -72,4 +74,5 @@ sealed class PaymentsNavigation(val route: String) {
     data object Welcome : PaymentsNavigation("welcome")
     data object Dismiss : PaymentsNavigation("")
     data class OpenUrl(val url: String?) : PaymentsNavigation("")
+    data object OpenEmail : PaymentsNavigation("")
 }

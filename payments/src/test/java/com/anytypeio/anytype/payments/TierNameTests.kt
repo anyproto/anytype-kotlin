@@ -27,7 +27,6 @@ import com.anytypeio.anytype.presentation.membership.models.TierId
 import junit.framework.TestCase
 import kotlin.test.Test
 import kotlin.test.assertIs
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import net.bytebuddy.utility.RandomString
 import org.junit.Before
@@ -97,7 +96,6 @@ class TierNameTests : MembershipTestsSetup() {
         super.setUp()
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `test naming chain`() = runTest {
         turbineScope {
@@ -271,7 +269,7 @@ class TierNameTests : MembershipTestsSetup() {
                     tierView = result.tierView,
                     expectedFeatures = features,
                     expectedConditionInfo = expectedConditionInfo,
-                    expectedAnyName = TierAnyName.Visible.Validated,
+                    expectedAnyName = TierAnyName.Visible.Validated("anyNamee"),
                     expectedButtonState = TierButton.Pay.Enabled,
                     expectedId = TiersConstants.BUILDER_ID,
                     expectedActive = false,

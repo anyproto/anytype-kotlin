@@ -1177,7 +1177,7 @@
     <string name="multiplayer_read_only_access_error">Read-only access. Contact space owner for changes.</string>
     <string name="multiplayer_notification_member_user_sends_join_request">%1$s requested to join the %2$s space.</string>
     <string name="multiplayer_notification_member_user_sends_leave_request">%1$s requested to leave the %2$s space.</string>
-    <string name="multiplayer_notification_new_join_request">New join request</string>
+    <string name="multiplayer_notification_new_join_request">Neue Beitrittsanfrage</string>
     <string name="multiplayer_notification_member_joined_space_with_read_only_rights">%1$s joined %2$s space with read-only access rights</string>
     <string name="multiplayer_notification_member_joined_space_with_editor_only_rights">%1$s joined %2$s space with edit access rights</string>
     <string name="multiplayer_notification_member_request_approved">Anfrage genehmigt</string>

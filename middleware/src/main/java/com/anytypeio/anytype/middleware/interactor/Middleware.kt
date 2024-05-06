@@ -2216,14 +2216,15 @@ class Middleware @Inject constructor(
     fun addDataViewViewRelation(
         command: Command.AddRelation
     ): Payload {
-        val request = Rpc.BlockDataview.ViewRelation.Add.Request(
+        val request = Rpc.BlockDataview.ViewRelation.Replace.Request(
             contextId = command.ctx,
             blockId = command.dv,
             viewId = command.view,
-            relation = command.relation.toMiddlewareModel()
+            relation = command.relation.toMiddlewareModel(),
+            relationKey = command.relation.key
         )
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewAddViewRelation(request)
+        val response = service.blockDataViewReplaceViewRelation(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response.event.toPayload()
     }

@@ -341,6 +341,7 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun blockDataViewSortSort(request: Rpc.BlockDataview.Sort.SSort.Request): Rpc.BlockDataview.Sort.SSort.Response
 
+    @Deprecated("To be deleted. Use blockDataViewReplaceViewRelation")
     @Throws(Exception::class)
     fun blockDataViewAddViewRelation(request: Rpc.BlockDataview.ViewRelation.Add.Request): Rpc.BlockDataview.ViewRelation.Add.Response
 

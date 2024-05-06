@@ -288,30 +288,28 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         }
     }
 
-    override fun onNewIntent(intent: Intent?) {
+    override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         Timber.d("onNewIntent")
-        if (intent != null) {
-            when(intent.action) {
-                Intent.ACTION_VIEW -> {
-                    val data = intent.dataString
-                    if (data != null && DefaultDeepLinkResolver.isDeepLink(data)) {
-                        vm.onNewDeepLink(DefaultDeepLinkResolver.resolve(data))
-                    } else {
-                        intent.extras?.getString(DefaultAppActionManager.ACTION_CREATE_NEW_TYPE_KEY)?.let {
-                            vm.onIntentCreateObject(it)
-                        }
+        when(intent.action) {
+            Intent.ACTION_VIEW -> {
+                val data = intent.dataString
+                if (data != null && DefaultDeepLinkResolver.isDeepLink(data)) {
+                    vm.onNewDeepLink(DefaultDeepLinkResolver.resolve(data))
+                } else {
+                    intent.extras?.getString(DefaultAppActionManager.ACTION_CREATE_NEW_TYPE_KEY)?.let {
+                        vm.onIntentCreateObject(it)
                     }
                 }
-                Intent.ACTION_SEND -> {
-                    proceedWithShareIntent(intent, checkDeepLink = true)
-                }
-                Intent.ACTION_SEND_MULTIPLE -> {
-                    proceedWithShareIntent(intent, checkDeepLink = true)
-                }
-                AnytypeNotificationService.NOTIFICATION_INTENT_ACTION -> {
-                    proceedWithNotificationIntent(intent)
-                }
+            }
+            Intent.ACTION_SEND -> {
+                proceedWithShareIntent(intent, checkDeepLink = true)
+            }
+            Intent.ACTION_SEND_MULTIPLE -> {
+                proceedWithShareIntent(intent, checkDeepLink = true)
+            }
+            AnytypeNotificationService.NOTIFICATION_INTENT_ACTION -> {
+                proceedWithNotificationIntent(intent)
             }
         }
         if (BuildConfig.DEBUG) {

@@ -106,13 +106,6 @@ class HomeScreenFragment : BaseComposeFragment() {
                     onSpaceWidgetClicked = throttledClick(
                         onClick = vm::onSpaceSettingsClicked
                     ),
-                    onOpenSpacesClicked = throttledClick(
-                        onClick = {
-                            runCatching {
-                                findNavController().navigate(R.id.action_open_spaces)
-                            }
-                        }
-                    ),
                     onBundledWidgetClicked = vm::onBundledWidgetClicked,
                     onMove = vm::onMove,
                     onObjectCheckboxClicked = vm::onObjectCheckboxClicked,

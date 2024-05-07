@@ -27,7 +27,6 @@
     <string name="light">Licht</string>
     <string name="dark">Donker</string>
     <string name="system">Systeem</string>
-    <string name="account_default_name">U</string>
     <string name="settings">Instellingen</string>
     <string name="have_you_back_up_your_recovery_phrase">Heb je een back-up gemaakt van je herstelzin?</string>
     <string name="you_will_need_to_sign_in">Je zult dit nodig hebben om in te loggen. Bewaar dit op een veilige plek. Als je dit verliest, heb je niet langer toegang tot je account.</string>

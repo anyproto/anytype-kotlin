@@ -27,7 +27,6 @@
     <string name="light">Cahaya</string>
     <string name="dark">Gelap</string>
     <string name="system">Sistem</string>
-    <string name="account_default_name">U</string>
     <string name="settings">Setelan</string>
     <string name="have_you_back_up_your_recovery_phrase">Sudahkah kamu mencadangkan frasa pemulihanmu?</string>
     <string name="you_will_need_to_sign_in">Kamu membutuhkannya untuk masuk. Simpanlah dengan baik. Jika kamu kehilangan frasa ini, kamu tidak bisa mengakses akunmu.</string>

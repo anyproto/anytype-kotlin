@@ -32,7 +32,7 @@
     <string name="dark">Dark</string>
     <string name="system">System</string>
 
-    <string name="account_default_name">U</string>
+    <string name="account_default_name" translatable="false">U</string>
 
     <string name="settings">Settings</string>
 

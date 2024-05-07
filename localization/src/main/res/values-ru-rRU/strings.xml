@@ -27,7 +27,6 @@
     <string name="light">Светлый</string>
     <string name="dark">Тёмный</string>
     <string name="system">Системный</string>
-    <string name="account_default_name">U</string>
     <string name="settings">Настройки</string>
     <string name="have_you_back_up_your_recovery_phrase">Вы сделали резервную копию вашей фразы восстановления?</string>
     <string name="you_will_need_to_sign_in">Она понадобится вам для входа. Храните ее надежно. В случае потери, вы потеряете доступ к аккаунту.</string>

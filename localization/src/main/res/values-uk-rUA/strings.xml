@@ -27,7 +27,6 @@
     <string name="light">Світла</string>
     <string name="dark">Темна</string>
     <string name="system">Система</string>
-    <string name="account_default_name">U</string>
     <string name="settings">Налаштування</string>
     <string name="have_you_back_up_your_recovery_phrase">Ви зробили резервну копію своєї фрази відновлення?</string>
     <string name="you_will_need_to_sign_in">Вона знадобиться вам для входу. Зберігайте її надійно. У разі втрати, ви втратите доступ до облікового запису.</string>

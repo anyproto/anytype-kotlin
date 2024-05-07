@@ -27,7 +27,6 @@
     <string name="light">Claro</string>
     <string name="dark">Oscuro</string>
     <string name="system">Sistema</string>
-    <string name="account_default_name">U</string>
     <string name="settings">Ajustes</string>
     <string name="have_you_back_up_your_recovery_phrase">¿Ha realizado una copia de seguridad de su frase de recuperación?</string>
     <string name="you_will_need_to_sign_in">La necesitarás para iniciar sesión. Mantenla en un lugar seguro. Si la pierdes, ya no podrás acceder a tu cuenta.</string>

@@ -27,7 +27,6 @@
     <string name="light">Hell</string>
     <string name="dark">Dunkel</string>
     <string name="system">System</string>
-    <string name="account_default_name">U</string>
     <string name="settings">Einstellungen</string>
     <string name="have_you_back_up_your_recovery_phrase">Hast du deine Wiederherstellungsphrase gesichert?</string>
     <string name="you_will_need_to_sign_in">Du musst dich anmelden. Bewahre sie an einem sicheren Ort. Wenn du sie verlierst, kannst du nicht mehr auf dein Konto zugreifen.</string>

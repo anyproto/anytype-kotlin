@@ -27,7 +27,6 @@
     <string name="light">Lys</string>
     <string name="dark">Mørk</string>
     <string name="system">System</string>
-    <string name="account_default_name">U</string>
     <string name="settings">Innstillinger</string>
     <string name="have_you_back_up_your_recovery_phrase">Har du lagret din gjenopprettingsfrase?</string>
     <string name="you_will_need_to_sign_in">Du trenger den for å logge inn. Behold den på et trygt sted. Hvis du mister den, får du ikke lenger tilgang til kontoen din.</string>

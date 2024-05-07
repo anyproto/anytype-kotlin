@@ -27,7 +27,6 @@
     <string name="light">亮色</string>
     <string name="dark">暗色</string>
     <string name="system">跟随系统</string>
-    <string name="account_default_name">U</string>
     <string name="settings">设置</string>
     <string name="have_you_back_up_your_recovery_phrase">您是否备份了恢复短语?</string>
     <string name="you_will_need_to_sign_in">您将需要短语才能登录。将其保存在安全的地方。如果您丢失了它，您将无法再访问您的帐户。</string>

@@ -104,6 +104,6 @@ class ObjectLayoutFragment : BaseBottomSheetFragment<FragmentObjectLayoutBinding
         }
 
         const val CONTEXT_ID_KEY = "arg.object-layout.ctx"
-        const val SPACE_KEY = "arg.object-layout.ctx"
+        const val SPACE_KEY = "arg.object-layout.space"
     }
 }

@@ -428,9 +428,9 @@ private fun ListOfObjectsItem(
 ) {
     Box(
         modifier = Modifier
+            .animateContentSize()
             .fillMaxWidth()
             .padding(top = if (index == 0) 6.dp else 0.dp)
-            .animateContentSize()
             .then(
                 if (mode is InteractionMode.Edit)
                     Modifier.detectReorderAfterLongPress(lazyListState)
@@ -490,9 +490,9 @@ private fun SetOfObjectsItem(
 ) {
     Box(
         modifier = Modifier
+            .animateContentSize()
             .fillMaxWidth()
             .padding(top = if (index == 0) 6.dp else 0.dp)
-            .animateContentSize()
             .then(
                 if (mode is InteractionMode.Edit)
                     Modifier.detectReorderAfterLongPress(lazyListState)
@@ -608,9 +608,9 @@ private fun TreeWidgetItem(
 ) {
     Box(
         modifier = Modifier
+            .animateContentSize()
             .fillMaxWidth()
             .padding(top = if (index == 0) 6.dp else 0.dp)
-            .animateContentSize()
             .then(
                 if (mode is InteractionMode.Edit)
                     Modifier.detectReorderAfterLongPress(lazyListState)

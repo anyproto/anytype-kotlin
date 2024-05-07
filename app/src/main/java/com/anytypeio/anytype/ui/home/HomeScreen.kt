@@ -430,11 +430,7 @@ private fun ListOfObjectsItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = if (index == 0) 6.dp else 0.dp)
-            .animateContentSize(
-                animationSpec = spring(
-                    stiffness = Spring.StiffnessLow
-                )
-            )
+            .animateContentSize()
             .then(
                 if (mode is InteractionMode.Edit)
                     Modifier.detectReorderAfterLongPress(lazyListState)
@@ -496,11 +492,7 @@ private fun SetOfObjectsItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = if (index == 0) 6.dp else 0.dp)
-            .animateContentSize(
-                animationSpec = spring(
-                    stiffness = Spring.StiffnessLow
-                )
-            )
+            .animateContentSize()
             .then(
                 if (mode is InteractionMode.Edit)
                     Modifier.detectReorderAfterLongPress(lazyListState)
@@ -618,11 +610,7 @@ private fun TreeWidgetItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = if (index == 0) 6.dp else 0.dp)
-            .animateContentSize(
-                animationSpec = spring(
-                    stiffness = Spring.StiffnessLow
-                )
-            )
+            .animateContentSize()
             .then(
                 if (mode is InteractionMode.Edit)
                     Modifier.detectReorderAfterLongPress(lazyListState)

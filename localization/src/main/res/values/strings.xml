@@ -16,9 +16,9 @@
     <string name="clear_file_cache">Clear file cache</string>
     <string name="debug_sync_report">Debug Sync Report</string>
     <string name="debug">Debug</string>
-    <string name="account">Account</string>
-    <string name="reset_account">Reset account</string>
-    <string name="delete_account">Delete account</string>
+    <string name="account">Vault</string>
+    <string name="reset_account">Reset vault</string>
+    <string name="delete_account">Delete vault</string>
     <string name="space_debug">Space debug</string>
     <string name="data">Data</string>
     <string name="mode">Mode</string>
@@ -37,7 +37,7 @@
     <string name="settings">Settings</string>
 
     <string name="have_you_back_up_your_recovery_phrase">Have you backed up your Key?</string>
-    <string name="you_will_need_to_sign_in">You will need it to sign in. Keep it in a safe place. If you lose it, you can no longer access your account.</string>
+    <string name="you_will_need_to_sign_in">You will need it to sign in. Keep it in a safe place. If you lose it, you can no longer access your vault.</string>
 
     <string name="about_help_and_community">Help &amp; Community</string>
     <string name="about_what_is_new">What\'s new</string>
@@ -71,10 +71,10 @@
     <string name="remote_storage">Remote storage</string>
     <string name="contact_us">Contact us</string>
     <string name="get_more_space">Get more space</string>
-    <string name="account_name">Account name</string>
+    <string name="account_name">Name</string>
     <string name="space_settings">Space settings</string>
     <string name="data_management">Data management</string>
-    <string name="deleted_account_danger_zone_msg">Once you request your account to be deleted, you have 30 days to cancel this request. After 30 days, your encrypted account data is permanently removed from the backup node, you won\'t be able to sign into Anytype on new devices.</string>
+    <string name="deleted_account_danger_zone_msg">Once you request your vault to be deleted, you have 30 days to cancel this request. After 30 days, your encrypted vault data is permanently removed from the backup node, you won\'t be able to sign into Anytype on new devices.</string>
     <string name="danger_zone">Danger zone</string>
     <string name="snackbar_template_add">New template was added to the type</string>
     <string name="settings_membership">Membership</string>
@@ -487,7 +487,7 @@
     <string name="next">Next</string>
     <string name="limit_object_types">Limit object types</string>
 
-    <string name="deleted_account_msg">We\'re sorry to see you go. Once you request your account to be deleted, you have 30 days to cancel this request. After 30 days, your encrypted account data is permanently removed from the backup node.</string>
+    <string name="deleted_account_msg">We\'re sorry to see you go. Once you request your vault to be deleted, you have 30 days to cancel this request. After 30 days, your encrypted vault data is permanently removed from the backup node.</string>
     <string name="swipe_down_to_skip">Swipe down to skip</string>
     <string name="show">Show</string>
 
@@ -642,7 +642,7 @@
     <string name="other_settings">Other settings</string>
     <string name="your_page">Your public page</string>
     <string name="updates">Updates</string>
-    <string name="recovery_phrase_text">You\'ll need it to sign in. Keep it in a safe place. If you lose it, you can no longer access your account.</string>
+    <string name="recovery_phrase_text">You\'ll need it to sign in. Keep it in a safe place. If you lose it, you can no longer access your vault.</string>
     <string name="back_up_your_recovery_phrase">Back up your Key</string>
     <string name="i_ve_written_it_down">i\'ve written it down</string>
     <string name="keychain_mock">witch collapse practice feed shame open despair creek road again ice least lake tree young address brain envelope</string>
@@ -698,7 +698,7 @@
     <string name="move_into_this_page">Move into this page</string>
     <string name="move_into">Move into</string>
 
-    <string name="fetching_your_account">Fetching your account…</string>
+    <string name="fetching_your_account">Fetching your vault…</string>
     <string name="search_on_page">Search on page</string>
     <string name="object_view_type">Object view type</string>
     <string name="object_type_name">Object type name</string>
@@ -814,11 +814,11 @@
     <string name="unsplash">Unsplash</string>
     <string name="cancel_deletion">Cancel deletion</string>
     <string name="logout_and_clear_local_data">Logout and clear local data</string>
-    <string name="planned_for_deletion_in_n_days">This account is planned for deletion in %1$d days</string>
-    <string name="planned_for_deletion_tomorrow">This account is planned for deletion tomorrow</string>
-    <string name="planned_for_deletion_today">This account is planned for deletion today</string>
-    <string name="planned_for_deletion_unknown">This account is planned for deletion in ? days</string>
-    <string name="are_you_sure_to_delete_account">Are you sure to delete account?</string>
+    <string name="planned_for_deletion_in_n_days">This vault is planned for deletion in %1$d days</string>
+    <string name="planned_for_deletion_tomorrow">This vault is planned for deletion tomorrow</string>
+    <string name="planned_for_deletion_today">This vault is planned for deletion today</string>
+    <string name="planned_for_deletion_unknown">This vault is planned for deletion in ? days</string>
+    <string name="are_you_sure_to_delete_account">Are you sure to delete your vault?</string>
     <string name="deleted_account_warning_msg">You will be logged out on all other devices. You will have 30 days to recover it. Afterwards it will be deleted permanently.</string>
     <string name="use_template">Select template</string>
     <string name="swipe_to_choose">Use swipe to choose</string>
@@ -831,7 +831,7 @@
     <string name="fragment_relation_create_from_scratch_title">Select relation type</string>
 
     <string name="fragment_dashboard_restore">Restore</string>
-    <string name="your_account_deleted">Your account is deleted.</string>
+    <string name="your_account_deleted">Your vault is deleted.</string>
     <plurals name="fragment_dashboard_selected_count">
         <item quantity="one">%d object selected</item>
         <item quantity="other">%d objects selected</item>
@@ -872,7 +872,7 @@
     <string name="almost_there">Almost there!</string>
     <string name="i_did_not_not_complete_migration">I didn\'t complete migration</string>
     <string name="not_completed_migration_steps">I didn\'t complete migration</string>
-    <string name="almost_there_subtitle">To use this version of the app, please choose the correct option below to migrate your account.</string>
+    <string name="almost_there_subtitle">To use this version of the app, please choose the correct option below to migrate your vault.</string>
     <string name="i_completed_migration">I completed migration</string>
     <string name="here">here</string>
     <string name="update_steps_first">1. Download the desktop app </string>

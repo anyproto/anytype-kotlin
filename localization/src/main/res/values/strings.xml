@@ -37,7 +37,7 @@
     <string name="settings">Settings</string>
 
     <string name="have_you_back_up_your_recovery_phrase">Have you backed up your Key?</string>
-    <string name="you_will_need_to_sign_in">You will need it to sign in. Keep it in a safe place. If you lose it, you can no longer access your vault.</string>
+    <string name="you_will_need_to_sign_in">You will need it to enter your vault. Keep it in a safe place. If you lose it, you can no longer enter your vault.</string>
 
     <string name="about_help_and_community">Help &amp; Community</string>
     <string name="about_what_is_new">What\'s new</string>

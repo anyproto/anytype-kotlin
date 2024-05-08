@@ -984,13 +984,6 @@
     <string name="onboarding_login_or">OF</string>
     <string name="onboarding_entering_void_title">De Void binnengaan</string>
     <string name="onboarding_mnemonic_read_more">Lees meer</string>
-    <string name="onboqrding_what_is_recovery_phrase">Wat is een herstelzin?</string>
-    <string name="onboarding_recovery_phrase_description">De herstelzin bestaat uit een willekeurige combinatie van 12 woorden waarmee je account op magische wijze wordt gegenereerd op dit apparaat.</string>
-    <string name="onboarding_recovery_phrase_description_2">Degene die de herstelzin kent, is eigenaar van het account. </string>
-    <string name="onboarding_recovery_phrase_description_3">Op dit moment ben jij de enige persoon ter wereld die deze kent.</string>
-    <string name="onboarding_recovery_phrase_description_4">Daarom is het essentieel om jouw herstelzin veilig te bewaren. Als de enige eigenaar kan niemand je helpen als deze verloren is.</string>
-    <string name="onboarding_how_to_save_my_phrase">Hoe bewaar ik mijn zin?</string>
-    <string name="onboarding_how_to_save_my_phrase_2">De eenvoudigste manier om jouw herstelzin op te slaan is door deze op te slaan in je wachtwoordmanager.</string>
     <string name="onboarding_how_to_save_my_phrase_3">De meest veilige manier is om het op papier op te schrijven en het offline te houden, op een veilige plek. </string>
     <!--endregion-->
     <!--region OBJECT ACTIONS -->

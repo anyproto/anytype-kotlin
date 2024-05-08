@@ -984,13 +984,6 @@
     <string name="onboarding_login_or">OU</string>
     <string name="onboarding_entering_void_title">Entrando no vazio</string>
     <string name="onboarding_mnemonic_read_more">Ler mais</string>
-    <string name="onboqrding_what_is_recovery_phrase">O que é Frase de Recuperação?</string>
-    <string name="onboarding_recovery_phrase_description">Frase de Recuperação é uma combinação aleatória de 12 palavras a partir das quais sua conta é magicamente gerada neste dispositivo.</string>
-    <string name="onboarding_recovery_phrase_description_2">Quem sabe a Frase de Recuperação, tem a conta. </string>
-    <string name="onboarding_recovery_phrase_description_3">No momento, você é a única pessoa no mundo que sabe dela.</string>
-    <string name="onboarding_recovery_phrase_description_4">Por isso, é essencial manter a Frase de Recuperação segura. Como único proprietário, ninguém pode lhe ajudar se a perder.</string>
-    <string name="onboarding_how_to_save_my_phrase">Como salvar a minha Frase?</string>
-    <string name="onboarding_how_to_save_my_phrase_2">A maneira mais fácil de armazenar sua Frase de Recuperação é salvá-la em seu gerenciador de senhas.</string>
     <string name="onboarding_how_to_save_my_phrase_3">A forma mais segura é escrevê-la no papel e mantê-la fora do dispositivo, num lugar seguro e seguro.</string>
     <!--endregion-->
     <!--region OBJECT ACTIONS -->

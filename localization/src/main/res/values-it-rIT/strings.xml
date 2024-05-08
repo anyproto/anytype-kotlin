@@ -984,13 +984,6 @@
     <string name="onboarding_login_or">O</string>
     <string name="onboarding_entering_void_title">Entrando nel Void</string>
     <string name="onboarding_mnemonic_read_more">Leggi altro</string>
-    <string name="onboqrding_what_is_recovery_phrase">Che cos’è la Frase di Recupero?</string>
-    <string name="onboarding_recovery_phrase_description">La Frase di Recupero è una combinazione casuale di 12 parole da cui il tuo account viene magicamente generato su questo dispositivo</string>
-    <string name="onboarding_recovery_phrase_description_2">Chiunque conosca la Frase di Recupero possiede l\'account.</string>
-    <string name="onboarding_recovery_phrase_description_3">At this moment, you are the only person in the world who knows it.</string>
-    <string name="onboarding_recovery_phrase_description_4">Ecco perché è essenziale mantenere la Frase di Recupero al sicuro. Come unico proprietario, nessuno può aiutarti se la perdi.</string>
-    <string name="onboarding_how_to_save_my_phrase">How to save my Phrase?</string>
-    <string name="onboarding_how_to_save_my_phrase_2">Il modo più semplice per memorizzare la tua Frase di Recupero è quello di salvarla nel tuo gestore di password.</string>
     <string name="onboarding_how_to_save_my_phrase_3">Il modo più sicuro è scriverlo su carta e tenerlo offline, in un luogo sicuro.</string>
     <!--endregion-->
     <!--region OBJECT ACTIONS -->

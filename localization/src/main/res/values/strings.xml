@@ -1107,15 +1107,19 @@
 
     <string name="onboarding_mnemonic_read_more">Read more</string>
     <string name="onboarding_key_additional_info">You can find this key later in Anytype settings</string>
-    <string name="onboqrding_what_is_recovery_phrase">What is Recovery Phrase?</string>
-    <string name="onboarding_recovery_phrase_description">Recovery Phrase is a random combination of 12 words from which your account is magically generated on this device.</string>
-    <string name="onboarding_recovery_phrase_description_2">Whoever knows Recovery Phrase, owns the account. </string>
-    <string name="onboarding_recovery_phrase_description_3">At this moment, you are the only person in the world who knows it.</string>
-    <string name="onboarding_recovery_phrase_description_4">That\'s why it\'s essential to keep Recovery Phrase safe. As the sole owner, nobody can help you if it\'s lost.</string>
-    <string name="onboarding_how_to_save_my_phrase">How to save my Phrase?</string>
-    <string name="onboarding_how_to_save_my_phrase_2">The easiest way to store your Recovery Phrase is to save it in your password manager.</string>
+    <string name="onboarding_what_is_the_key">What is the Key?</string>
+    <string name="onboarding_recovery_phrase_description">It is represented by a recovery phrase – 12 random words from which your vault is magically generated on this device.</string>
+    <string name="onboarding_recovery_phrase_description_2">Whomever knows the combination of these words owns your vault. </string>
+    <string name="onboarding_recovery_phrase_description_3">Right now, you are the only person in the world who knows it.</string>
+    <string name="onboarding_recovery_phrase_description_4">All computational resources on Earth are not enough to break in. If you lose it, it cannot be recovered. So, store it somewhere safe!</string>
+    <string name="onboarding_how_to_save_my_phrase">How to save my Key?</string>
+    <string name="onboarding_how_to_save_my_phrase_2">The easiest way to store your Key is to save it in your password manager.</string>
     <string name="onboarding_how_to_save_my_phrase_3">The most secure way is to write it down on paper and keep it offline, in a safe and secure place.</string>
 
+
+    It is represented by a recovery phrase – 12 random words from which your vault is magically generated on this device.
+    Whomever knows the combination of these words owns your vault. **Right now, you are the only person in the world who knows it.**
+    All computational resources on Earth are not enough to break in. If you lose it, it cannot be recovered. So, store it somewhere safe!
     <!--endregion-->
 
     <!--region OBJECT ACTIONS -->

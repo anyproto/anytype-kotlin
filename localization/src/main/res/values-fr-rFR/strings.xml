@@ -984,13 +984,6 @@
     <string name="onboarding_login_or">OU</string>
     <string name="onboarding_entering_void_title">Entrer dans le Vide</string>
     <string name="onboarding_mnemonic_read_more">En savoir plus</string>
-    <string name="onboqrding_what_is_recovery_phrase">Qu\'est-ce que la phrase de récupération ?</string>
-    <string name="onboarding_recovery_phrase_description">La phrase de récupération est une combinaison aléatoire de 12 mots à partir desquels votre compte est généré comme par magie sur cet appareil.</string>
-    <string name="onboarding_recovery_phrase_description_2">Celui qui connaît votre Phrase de Récupération possède le compte. </string>
-    <string name="onboarding_recovery_phrase_description_3">En ce moment, vous êtes la seule personne au monde à le connaître.</string>
-    <string name="onboarding_recovery_phrase_description_4">C\'est pourquoi il est essentiel de garder la phrase de récupération en sécurité. En tant que propriétaire unique, personne ne peut vous aider si elle est perdue.</string>
-    <string name="onboarding_how_to_save_my_phrase">Comment sauvegarder ma phrase ?</string>
-    <string name="onboarding_how_to_save_my_phrase_2">La façon la plus simple de stocker votre phrase de récupération est de l’enregistrer dans votre gestionnaire de mots de passe.</string>
     <string name="onboarding_how_to_save_my_phrase_3">Le moyen le plus sûr est de l\'écrire sur papier et de le garder dans un endroit sûr et sécurisé.</string>
     <!--endregion-->
     <!--region OBJECT ACTIONS -->

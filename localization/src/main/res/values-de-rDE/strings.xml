@@ -984,13 +984,6 @@
     <string name="onboarding_login_or">ODER</string>
     <string name="onboarding_entering_void_title">Leere betreten</string>
     <string name="onboarding_mnemonic_read_more">Mehr lesen</string>
-    <string name="onboqrding_what_is_recovery_phrase">Was ist Wiederherstellungsphrase?</string>
-    <string name="onboarding_recovery_phrase_description">Wiederherstellungsphrase ist eine zufällige Kombination von 12 Wörtern, aus denen Ihr Konto auf diesem Gerät magisch generiert wird.</string>
-    <string name="onboarding_recovery_phrase_description_2">Wer die Wiederherstellungsphrase kennt, besitzt den Account. </string>
-    <string name="onboarding_recovery_phrase_description_3">Im Moment bist du der einzige Mensch der Welt, der sie kennt.</string>
-    <string name="onboarding_recovery_phrase_description_4">Deshalb ist es wichtig, dass Recovery Phrase sicher bleibt. Als einziger Besitzer kann dir niemand helfen, wenn es verloren geht.</string>
-    <string name="onboarding_how_to_save_my_phrase">Wie kann ich meine Phrase speichern?</string>
-    <string name="onboarding_how_to_save_my_phrase_2">Der einfachste Weg, Ihre Wiederherstellungsphrase zu speichern, ist die Speicherung in Ihrem Passwort-Manager.</string>
     <string name="onboarding_how_to_save_my_phrase_3">Am sichersten ist es, sie auf Papier aufzuschreiben und offline, an einem sicheren Ort.</string>
     <!--endregion-->
     <!--region OBJECT ACTIONS -->

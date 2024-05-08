@@ -982,13 +982,6 @@
     <string name="onboarding_login_or">或者</string>
     <string name="onboarding_entering_void_title">无效的输入</string>
     <string name="onboarding_mnemonic_read_more">了解更多</string>
-    <string name="onboqrding_what_is_recovery_phrase">什么是恢复短语？</string>
-    <string name="onboarding_recovery_phrase_description">恢复短语是12个单词的随机组合，您的帐户在此设备上神奇般地生成。</string>
-    <string name="onboarding_recovery_phrase_description_2">无论是谁，知道恢复短语，就拥有此账户。 </string>
-    <string name="onboarding_recovery_phrase_description_3">此时此刻，你是世界上唯一知道这一点的人。</string>
-    <string name="onboarding_recovery_phrase_description_4">这就是为什么必须确保恢复短语的安全。作为唯一的所有者，如果恢复短语丢失了，没有人可以帮助到您。</string>
-    <string name="onboarding_how_to_save_my_phrase">如何保存我的恢复短语？</string>
-    <string name="onboarding_how_to_save_my_phrase_2">保存恢复短语的最简单方法是将其保存在您的密码管理器中。</string>
     <string name="onboarding_how_to_save_my_phrase_3">最可靠的方法是现实中在纸面上写下，并放在一个安全可靠的地方。</string>
     <!--endregion-->
     <!--region OBJECT ACTIONS -->

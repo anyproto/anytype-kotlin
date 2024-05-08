@@ -982,13 +982,6 @@
     <string name="onboarding_login_or">ATAU</string>
     <string name="onboarding_entering_void_title">Memasuki Void</string>
     <string name="onboarding_mnemonic_read_more">Baca selengkapnya</string>
-    <string name="onboqrding_what_is_recovery_phrase">Apa itu Frasa Pemulihan?</string>
-    <string name="onboarding_recovery_phrase_description">Frasa Pemulihan adalah kombinasi 12 kata acak yang membuat akunmu di perangkat ini.</string>
-    <string name="onboarding_recovery_phrase_description_2">Siapa pun yang mengetahui Frasa Pemulihan, dialah yang memiliki akun tersebut.</string>
-    <string name="onboarding_recovery_phrase_description_3">At this moment, you are the only person in the world who knows it.</string>
-    <string name="onboarding_recovery_phrase_description_4">Itulah mengapa menjaga Frasa Pemulihan sangatlah penting. Karena kamu satu-satunya pemilik frasa ini, tidak ada yang bisa membantumu jika frasa ini hilang.</string>
-    <string name="onboarding_how_to_save_my_phrase">How to save my Phrase?</string>
-    <string name="onboarding_how_to_save_my_phrase_2">Cara paling mudah untuk menyimpan Frasa Pemulihan adalah dengan meyimpannya di manajer kata sandi.</string>
     <string name="onboarding_how_to_save_my_phrase_3">Sedangkan, cara yang paling aman adalah dengan menuliskannya pada secarik kertas dan menyimpan kertas itu di tempat yang aman.</string>
     <!--endregion-->
     <!--region OBJECT ACTIONS -->

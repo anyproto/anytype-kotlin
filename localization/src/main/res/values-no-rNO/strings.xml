@@ -984,13 +984,6 @@
     <string name="onboarding_login_or">ELLER</string>
     <string name="onboarding_entering_void_title">Går inn i Void</string>
     <string name="onboarding_mnemonic_read_more">Les mer</string>
-    <string name="onboqrding_what_is_recovery_phrase">Hva er gjenopprettingsfrase?</string>
-    <string name="onboarding_recovery_phrase_description">Gjenopprettingsfrasen er en tilfeldig kombinasjon av 12 ord som magisk genererer kontoen din på denne enheten.</string>
-    <string name="onboarding_recovery_phrase_description_2">Whoever knows Recovery Phrase, owns the account. </string>
-    <string name="onboarding_recovery_phrase_description_3">At this moment, you are the only person in the world who knows it.</string>
-    <string name="onboarding_recovery_phrase_description_4">Derfor er det avgjørende å oppbevare gjenopprettingsfrasen trygt. Som den eneste eieren, kan ingen hjelpe deg hvis den blir mistet.</string>
-    <string name="onboarding_how_to_save_my_phrase">How to save my Phrase?</string>
-    <string name="onboarding_how_to_save_my_phrase_2">Den enkleste måten å lagre gjenopprettingsfrasen er å lagre den i passordbehandleren.</string>
     <string name="onboarding_how_to_save_my_phrase_3">Den sikreste måten er å skrive den ned på papir og oppbevare den offline, på et trygt og sikkert sted.</string>
     <!--endregion-->
     <!--region OBJECT ACTIONS -->

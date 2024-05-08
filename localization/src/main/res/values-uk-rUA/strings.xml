@@ -804,7 +804,6 @@
     <string name="base_add_options_empty_subtitle">Start typing to create a new one</string>
     <string name="sync_status_local_only">Local-only</string>
     <string name="mail_more_space_body">Hi, Anytype team. I am reaching out to request an increase in my file storage capacity as I have run out of storage. My current limits is %1$s. My account id is %2$s. Cheers, %3$s</string>
-    <string name="your_recovery_phrase_can_t_be_empty">Your recovery phrase can\'t be empty</string>
     <string name="go_to_the_app">Перейти в застосунок</string>
     <string name="exiting_please_wait">Exiting... please wait</string>
     <string name="loading_please_wait">Loading... please wait</string>
@@ -990,7 +989,6 @@
     <string name="onboarding_soul_creation_description">This is how you will appear in the app</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
-    <string name="onboarding_type_recovery_phrase">Введіть вашу фразу відновлення</string>
     <string name="onboarding_login_or">АБО</string>
     <string name="onboarding_entering_void_title">Входимо до порожнечі</string>
     <string name="onboarding_mnemonic_read_more">Докладніше</string>

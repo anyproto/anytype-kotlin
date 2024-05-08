@@ -886,7 +886,6 @@
     <string name="sync_status_local_only">Local-only</string>
 
     <string name="mail_more_space_body">Hi, Anytype team. I am reaching out to request an increase in my file storage capacity as I have run out of storage. My current limits is %1$s. My account id is %2$s. Cheers, %3$s</string>
-    <string name="your_recovery_phrase_can_t_be_empty">Your recovery phrase can\'t be empty</string>
     <string name="go_to_the_app">Go to the app</string>
 
     <string name="exiting_please_wait">Exiting... please wait</string>
@@ -1085,6 +1084,7 @@
     <string name="onboarding_terms_and_policy_infix">" and "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
     <string name="onboarding_new_vault_button_text">New vault</string>
+    <string name="onboarding_enter_my_vault">Enter my Vault</string>
     <string name="onboarding_have_key_button_text">I have a Key</string>
     <string name="onboarding_get_my_key_button_text">Get my Key</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
@@ -1101,9 +1101,10 @@
     <string name="onboarding_soul_creation_description">Only seen by people you share something with. There is no central registry of these names.</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
-    <string name="onboarding_type_recovery_phrase">Type your recovery phrase</string>
+    <string name="onboarding_type_your_key">Type your Key</string>
     <string name="onboarding_login_or">OR</string>
     <string name="onboarding_entering_void_title">Entering the Void</string>
+    <string name="onboarding_your_key_can_t_be_empty">Your Key can\'t be empty</string>
 
     <string name="onboarding_mnemonic_read_more">Read more</string>
     <string name="onboarding_mnemonic_additional_info">You can find Recovery Phrase later in\nAnytype settings</string>

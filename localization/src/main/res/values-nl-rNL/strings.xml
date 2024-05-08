@@ -800,7 +800,6 @@
     <string name="base_add_options_empty_subtitle">Begin met typen om een nieuwe te maken</string>
     <string name="sync_status_local_only">Alleen lokaal</string>
     <string name="mail_more_space_body">Hallo Anytype team. Ik neem contact op met het verzoek om mijn opslagcapaciteit uit te breiden, omdat ik geen opslagruimte meer heb. Mijn huidige limiet is %1$s. Mijn account ID is %2$s. Cheers, %3$s</string>
-    <string name="your_recovery_phrase_can_t_be_empty">Jouw herstelzin mag niet leeg zijn</string>
     <string name="go_to_the_app">Ga naar de app</string>
     <string name="exiting_please_wait">Aan het afsluiten... een ogenblik geduld</string>
     <string name="loading_please_wait">Aan het laden... even geduld a.j.b.</string>
@@ -986,7 +985,6 @@
     <string name="onboarding_soul_creation_description">Dit is zoals je in de app zult verschijnen</string>
     <string name="onboarding_soul_creation_placeholder">Anytype identiteit</string>
     <string name="onboarding_soul_creation">Jouw identiteit aan het aanmaken…</string>
-    <string name="onboarding_type_recovery_phrase">Type je herstelzin</string>
     <string name="onboarding_login_or">OF</string>
     <string name="onboarding_entering_void_title">De Void binnengaan</string>
     <string name="onboarding_mnemonic_read_more">Lees meer</string>

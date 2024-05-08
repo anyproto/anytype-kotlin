@@ -800,7 +800,6 @@
     <string name="base_add_options_empty_subtitle">Beginne mit dem Schreiben, um ein neues zu erstellen</string>
     <string name="sync_status_local_only">Nur lokal</string>
     <string name="mail_more_space_body">Liebes Anytype Team, wäre es möglich den Speicherplatz zu erweitern, da mir der Speicher ausgegangen ist? Mein aktuelles Limit ist %1$s. Meine Account-ID ist %2$s. LG %3$s</string>
-    <string name="your_recovery_phrase_can_t_be_empty">Ihre Wiederherstellungsphrase darf nicht leer sein</string>
     <string name="go_to_the_app">Zur App gehen</string>
     <string name="exiting_please_wait">Beenden... bitte warten</string>
     <string name="loading_please_wait">Wird geladen... bitte warten</string>
@@ -986,7 +985,6 @@
     <string name="onboarding_soul_creation_description">So wirst du in der App erscheinen</string>
     <string name="onboarding_soul_creation_placeholder">Anytype-Identität</string>
     <string name="onboarding_soul_creation">Identität wird erstellt...</string>
-    <string name="onboarding_type_recovery_phrase">Geben Sie Ihre Wiederherstellungsphrase ein</string>
     <string name="onboarding_login_or">ODER</string>
     <string name="onboarding_entering_void_title">Leere betreten</string>
     <string name="onboarding_mnemonic_read_more">Mehr lesen</string>

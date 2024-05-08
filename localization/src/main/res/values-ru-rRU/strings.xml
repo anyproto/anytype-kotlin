@@ -804,7 +804,6 @@
     <string name="base_add_options_empty_subtitle">Начните ввод, чтобы создать новый</string>
     <string name="sync_status_local_only">Только локально</string>
     <string name="mail_more_space_body">Привет, команда Anytype. Обращаюсь с просьбой увеличить объем моего хранилища файлов, так как у меня закончилось свободное место. Мои текущие ограничения составляют %1$s. Идентификатор моей учетной записи: %2$s. С наилучшими пожеланиями, %3$s</string>
-    <string name="your_recovery_phrase_can_t_be_empty">Ваша фраза восстановления не может быть пустой</string>
     <string name="go_to_the_app">Перейти в приложение</string>
     <string name="exiting_please_wait">Выход... пожалуйста, подождите</string>
     <string name="loading_please_wait">Загружается... Пожалуйста, подождите</string>
@@ -990,7 +989,6 @@
     <string name="onboarding_soul_creation_description">This is how you will appear in the app</string>
     <string name="onboarding_soul_creation_placeholder">Идентификатор Anytype</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
-    <string name="onboarding_type_recovery_phrase">Введите свою фразу восстановления</string>
     <string name="onboarding_login_or">ИЛИ</string>
     <string name="onboarding_entering_void_title">Входим в пустоту</string>
     <string name="onboarding_mnemonic_read_more">Подробнее</string>

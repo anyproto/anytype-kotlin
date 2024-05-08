@@ -800,7 +800,6 @@
     <string name="base_add_options_empty_subtitle">Comece a digitar para criar um registro</string>
     <string name="sync_status_local_only">Somente local</string>
     <string name="mail_more_space_body">Olá, equipe Anytype. Estou entrando em contato para solicitar um aumento na minha capacidade de armazenamento de arquivos já que estou sem espaço. Meus limites atuais são %1$s. Meu ID de conta é %2$s. Abraço, %3$s</string>
-    <string name="your_recovery_phrase_can_t_be_empty">A sua frase de recuperação não pode ficar vazia</string>
     <string name="go_to_the_app">Ir para o aplicativo</string>
     <string name="exiting_please_wait">Saindo... por favor aguarde</string>
     <string name="loading_please_wait">Carregando... aguarde por favor.</string>
@@ -986,7 +985,6 @@
     <string name="onboarding_soul_creation_description">Você aparecerá assim no app</string>
     <string name="onboarding_soul_creation_placeholder">Identidade Anytype</string>
     <string name="onboarding_soul_creation">Criando a sua Identidade…</string>
-    <string name="onboarding_type_recovery_phrase">Digite sua frase de recuperação</string>
     <string name="onboarding_login_or">OU</string>
     <string name="onboarding_entering_void_title">Entrando no vazio</string>
     <string name="onboarding_mnemonic_read_more">Ler mais</string>

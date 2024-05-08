@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
@@ -184,7 +185,7 @@ fun SetProfileNameNextButton(
     val focus = LocalFocusManager.current
     Box(modifier = modifier) {
         OnBoardingButtonPrimary(
-            text = stringResource(id = R.string.next),
+            text = stringResource(id = R.string.onboarding_get_my_key_button_text),
             onClick = {
                 onNextClicked(text.value).also {
                     focus.clearFocus(force = true)
@@ -195,4 +196,14 @@ fun SetProfileNameNextButton(
             isLoading = isLoading
         )
     }
+}
+
+@Preview
+@Composable
+private fun SetProfileNameScreenPreview() {
+    SetProfileNameScreen(
+        onNextClicked = {},
+        onBackClicked = {},
+        isLoading = false
+    )
 }

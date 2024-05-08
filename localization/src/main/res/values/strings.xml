@@ -1086,6 +1086,7 @@
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
     <string name="onboarding_new_vault_button_text">New vault</string>
     <string name="onboarding_have_key_button_text">I have a Key</string>
+    <string name="onboarding_get_my_key_button_text">Get my Key</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
@@ -1096,8 +1097,8 @@
     <string name="onboarding_mnemonic_key_saved">Go to the app</string>
     <string name="onboarding_mnemonic_skip">Skip</string>
     <string name="onboarding_mnemonic_copy">Copy to clipboard</string>
-    <string name="onboarding_set_your_name_title">Choose your name</string>
-    <string name="onboarding_soul_creation_description">This is how you will appear in the app</string>
+    <string name="onboarding_set_your_name_title">Set your name</string>
+    <string name="onboarding_soul_creation_description">Only seen by people you share something with. There is no central registry of these names.</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
     <string name="onboarding_type_recovery_phrase">Type your recovery phrase</string>

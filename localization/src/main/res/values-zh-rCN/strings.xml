@@ -966,13 +966,10 @@
     <!--region ONBOARDING -->
     <string name="onboarding_auth_title">学习与思考集于一身的创作应用</string>
     <string name="onboarding_auth_subtitle">for those\nwho celebrate\ntrust &amp; autonomy</string>
-    <string name="onboarding_auth_description">Anytype 是您编写、计划、思考和组织集于一身，对您重要的安全空间。</string>
     <string name="onboarding_terms_and_policy_prefix">"继续即代表您同意"</string>
     <string name="onboarding_terms_and_policy_terms">\u00A0使用的条款\u00A0</string>
     <string name="onboarding_terms_and_policy_infix">" 和 "</string>
     <string name="onboarding_terms_and_policy_privacy">隐私\u00A0政策</string>
-    <string name="onboarding_join_button_text">加入</string>
-    <string name="onboarding_log_in_button_text">登录</string>
     <string name="onboarding_invite_code_title">填写邀请码</string>
     <string name="onboarding_invite_code_description">如果你没有，只需要打开anytype.io并注册到等候列表。</string>
     <string name="onboarding_void_title">这是您的 Void</string>

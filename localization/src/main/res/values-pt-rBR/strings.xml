@@ -968,13 +968,10 @@
     <!--region ONBOARDING -->
     <string name="onboarding_auth_title">o aplicativo para tudo</string>
     <string name="onboarding_auth_subtitle">para quem\nvaloriza\na confiança &amp; autonomia</string>
-    <string name="onboarding_auth_description">Anytype é seu lugar seguro para pensar, planejar, escrever, e organizar tudo que é importante para você</string>
     <string name="onboarding_terms_and_policy_prefix">"Ao continuar, você concorda com"</string>
     <string name="onboarding_terms_and_policy_terms">Termos\u00A0de\u00A0Uso</string>
     <string name="onboarding_terms_and_policy_infix">" e "</string>
     <string name="onboarding_terms_and_policy_privacy">Política\u00A0de\u00A0Privacidade</string>
-    <string name="onboarding_join_button_text">Junte-se</string>
-    <string name="onboarding_log_in_button_text">Entrar</string>
     <string name="onboarding_invite_code_title">Insira seu código de convite</string>
     <string name="onboarding_invite_code_description">Se você não tem um, basta acessar anytype.io\ne entre na lista de espera.</string>
     <string name="onboarding_void_title">Este é o seu Void</string>

@@ -67,7 +67,7 @@ fun WhatIsRecoveryPhraseScreen() {
         ) {
             Text(
                 modifier = Modifier,
-                text = stringResource(R.string.onboqrding_what_is_recovery_phrase),
+                text = stringResource(R.string.onboarding_what_is_the_key),
                 style = HeadlineHeading.copy(color = OnBoardingTextPrimaryColor)
             )
         }

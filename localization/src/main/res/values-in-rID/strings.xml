@@ -9,7 +9,7 @@
     <string name="personalization">Personalisasi</string>
     <string name="appearance">Penampilan</string>
     <string name="file_storage">Penyimpanan berkas</string>
-    <string name="recovery_phrase">Frasa pemulihan</string>
+    <string name="key">Frasa pemulihan</string>
     <string name="clear_file_cache">Bersihkan tembolok</string>
     <string name="debug_sync_report">Laporan Sinkronisasi Debug</string>
     <string name="debug">Awakutu</string>
@@ -798,7 +798,6 @@
     <string name="base_add_options_empty_subtitle">Start typing to create a new one</string>
     <string name="sync_status_local_only">Hanya Lokal</string>
     <string name="mail_more_space_body">Hi, Anytype team. I am reaching out to request an increase in my file storage capacity as I have run out of storage. My current limits is %1$s. My account id is %2$s. Cheers, %3$s</string>
-    <string name="your_recovery_phrase_can_t_be_empty">Your recovery phrase can\'t be empty</string>
     <string name="go_to_the_app">Ke aplikasi</string>
     <string name="exiting_please_wait">Exiting... please wait</string>
     <string name="loading_please_wait">Loading... please wait</string>
@@ -966,39 +965,23 @@
     <!--region ONBOARDING -->
     <string name="onboarding_auth_title">the everything app</string>
     <string name="onboarding_auth_subtitle">for those\nwho celebrate\ntrust &amp; autonomy</string>
-    <string name="onboarding_auth_description">Anytype adalah tempat aman bagimu untuk menulis, berpikir, merencanakan, dan mengorganisasikan apa pun yang penting bagimu.</string>
     <string name="onboarding_terms_and_policy_prefix">"By continuing you agree to "</string>
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
     <string name="onboarding_terms_and_policy_infix">" dan "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
-    <string name="onboarding_join_button_text">Gabung</string>
-    <string name="onboarding_log_in_button_text">Masuk</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
-    <string name="onboarding_mnemonic_title">Simpan Frasa Pemulihanmu</string>
-    <string name="onboarding_mnemonic_description">Ini adalah cara autentikasi baru yang memberimu kepemilikan penuh atas akun dan datamu.</string>
-    <string name="onboarding_mnemonic_show_key">Tampilkan Frasa Pemulihan</string>
-    <string name="onboarding_mnemonic_key_saved">Ke aplikasi</string>
-    <string name="onboarding_mnemonic_skip">Lewati</string>
-    <string name="onboarding_mnemonic_copy">Salin ke papan klip</string>
+    <string name="onboarding_key_skip">Lewati</string>
+    <string name="onboarding_key_copy">Salin ke papan klip</string>
     <string name="onboarding_set_your_name_title">Pilih namamu</string>
     <string name="onboarding_soul_creation_description">This is how you will appear in the app</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
-    <string name="onboarding_type_recovery_phrase">Masukkan frasa pemulihanmu</string>
     <string name="onboarding_login_or">ATAU</string>
     <string name="onboarding_entering_void_title">Memasuki Void</string>
     <string name="onboarding_mnemonic_read_more">Baca selengkapnya</string>
-    <string name="onboarding_mnemonic_additional_info">You can find Recovery Phrase later in\nAnytype settings</string>
-    <string name="onboqrding_what_is_recovery_phrase">Apa itu Frasa Pemulihan?</string>
-    <string name="onboarding_recovery_phrase_description">Frasa Pemulihan adalah kombinasi 12 kata acak yang membuat akunmu di perangkat ini.</string>
-    <string name="onboarding_recovery_phrase_description_2">Siapa pun yang mengetahui Frasa Pemulihan, dialah yang memiliki akun tersebut.</string>
-    <string name="onboarding_recovery_phrase_description_3">At this moment, you are the only person in the world who knows it.</string>
-    <string name="onboarding_recovery_phrase_description_4">Itulah mengapa menjaga Frasa Pemulihan sangatlah penting. Karena kamu satu-satunya pemilik frasa ini, tidak ada yang bisa membantumu jika frasa ini hilang.</string>
-    <string name="onboarding_how_to_save_my_phrase">How to save my Phrase?</string>
-    <string name="onboarding_how_to_save_my_phrase_2">Cara paling mudah untuk menyimpan Frasa Pemulihan adalah dengan meyimpannya di manajer kata sandi.</string>
     <string name="onboarding_how_to_save_my_phrase_3">Sedangkan, cara yang paling aman adalah dengan menuliskannya pada secarik kertas dan menyimpan kertas itu di tempat yang aman.</string>
     <!--endregion-->
     <!--region OBJECT ACTIONS -->

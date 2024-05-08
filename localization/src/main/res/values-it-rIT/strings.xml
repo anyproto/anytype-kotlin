@@ -975,12 +975,8 @@
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
-    <string name="onboarding_mnemonic_title">Salva la tua Frase di Recupero</string>
-    <string name="onboarding_mnemonic_description">È un metodo di autenticazione innovativo che ti garantisce la totale proprietà del tuo account e dei tuoi dati.</string>
-    <string name="onboarding_mnemonic_show_key">Mostra Frase di Recupero</string>
-    <string name="onboarding_mnemonic_key_saved">Vai all\'app</string>
-    <string name="onboarding_mnemonic_skip">Salta</string>
-    <string name="onboarding_mnemonic_copy">Copia negli appunti</string>
+    <string name="onboarding_key_skip">Salta</string>
+    <string name="onboarding_key_copy">Copia negli appunti</string>
     <string name="onboarding_set_your_name_title">Scegli il tuo nome</string>
     <string name="onboarding_soul_creation_description">This is how you will appear in the app</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
@@ -988,7 +984,6 @@
     <string name="onboarding_login_or">O</string>
     <string name="onboarding_entering_void_title">Entrando nel Void</string>
     <string name="onboarding_mnemonic_read_more">Leggi altro</string>
-    <string name="onboarding_mnemonic_additional_info">You can find Recovery Phrase later in\nAnytype settings</string>
     <string name="onboqrding_what_is_recovery_phrase">Che cos’è la Frase di Recupero?</string>
     <string name="onboarding_recovery_phrase_description">La Frase di Recupero è una combinazione casuale di 12 parole da cui il tuo account viene magicamente generato su questo dispositivo</string>
     <string name="onboarding_recovery_phrase_description_2">Chiunque conosca la Frase di Recupero possiede l\'account.</string>

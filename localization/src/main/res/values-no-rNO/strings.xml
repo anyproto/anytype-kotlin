@@ -975,12 +975,8 @@
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
-    <string name="onboarding_mnemonic_title">Lagre gjenopprettingsfrasen din</string>
-    <string name="onboarding_mnemonic_description">It\'s a novel way of authentication that gives you full ownership over your account and data.</string>
-    <string name="onboarding_mnemonic_show_key">Vis gjenopprettingsfrasen</string>
-    <string name="onboarding_mnemonic_key_saved">Gå til appen</string>
-    <string name="onboarding_mnemonic_skip">Hopp over</string>
-    <string name="onboarding_mnemonic_copy">Kopier til utklippstavlen</string>
+    <string name="onboarding_key_skip">Hopp over</string>
+    <string name="onboarding_key_copy">Kopier til utklippstavlen</string>
     <string name="onboarding_set_your_name_title">Velg ditt navn</string>
     <string name="onboarding_soul_creation_description">This is how you will appear in the app</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
@@ -988,7 +984,6 @@
     <string name="onboarding_login_or">ELLER</string>
     <string name="onboarding_entering_void_title">Går inn i Void</string>
     <string name="onboarding_mnemonic_read_more">Les mer</string>
-    <string name="onboarding_mnemonic_additional_info">You can find Recovery Phrase later in\nAnytype settings</string>
     <string name="onboqrding_what_is_recovery_phrase">Hva er gjenopprettingsfrase?</string>
     <string name="onboarding_recovery_phrase_description">Gjenopprettingsfrasen er en tilfeldig kombinasjon av 12 ord som magisk genererer kontoen din på denne enheten.</string>
     <string name="onboarding_recovery_phrase_description_2">Whoever knows Recovery Phrase, owns the account. </string>

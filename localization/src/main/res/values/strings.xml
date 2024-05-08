@@ -1091,12 +1091,11 @@
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
-    <string name="onboarding_mnemonic_title">Save your Recovery Phrase</string>
-    <string name="onboarding_mnemonic_description">It\'s a novel way of authentication that gives you full ownership over your account and data.</string>
-    <string name="onboarding_mnemonic_show_key">Show Recovery Phrase</string>
-    <string name="onboarding_mnemonic_key_saved">Go to the app</string>
-    <string name="onboarding_mnemonic_skip">Skip</string>
-    <string name="onboarding_mnemonic_copy">Copy to clipboard</string>
+    <string name="onboarding_this_is_your_key_title">This is your Key</string>
+    <string name="onboarding_key_description">It gives you full ownership over your vault. It cannot be recovered.</string>
+    <string name="onboarding_show_my_key">Show my Key</string>
+    <string name="onboarding_key_skip">Skip</string>
+    <string name="onboarding_key_copy">Copy to clipboard</string>
     <string name="onboarding_set_your_name_title">Set your name</string>
     <string name="onboarding_soul_creation_description">Only seen by people you share something with. There is no central registry of these names.</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
@@ -1107,7 +1106,7 @@
     <string name="onboarding_your_key_can_t_be_empty">Your Key can\'t be empty</string>
 
     <string name="onboarding_mnemonic_read_more">Read more</string>
-    <string name="onboarding_mnemonic_additional_info">You can find Recovery Phrase later in\nAnytype settings</string>
+    <string name="onboarding_key_additional_info">You can find this key later in Anytype settings</string>
     <string name="onboqrding_what_is_recovery_phrase">What is Recovery Phrase?</string>
     <string name="onboarding_recovery_phrase_description">Recovery Phrase is a random combination of 12 words from which your account is magically generated on this device.</string>
     <string name="onboarding_recovery_phrase_description_2">Whoever knows Recovery Phrase, owns the account. </string>

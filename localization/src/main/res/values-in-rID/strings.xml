@@ -973,12 +973,8 @@
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
-    <string name="onboarding_mnemonic_title">Simpan Frasa Pemulihanmu</string>
-    <string name="onboarding_mnemonic_description">Ini adalah cara autentikasi baru yang memberimu kepemilikan penuh atas akun dan datamu.</string>
-    <string name="onboarding_mnemonic_show_key">Tampilkan Frasa Pemulihan</string>
-    <string name="onboarding_mnemonic_key_saved">Ke aplikasi</string>
-    <string name="onboarding_mnemonic_skip">Lewati</string>
-    <string name="onboarding_mnemonic_copy">Salin ke papan klip</string>
+    <string name="onboarding_key_skip">Lewati</string>
+    <string name="onboarding_key_copy">Salin ke papan klip</string>
     <string name="onboarding_set_your_name_title">Pilih namamu</string>
     <string name="onboarding_soul_creation_description">This is how you will appear in the app</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
@@ -986,7 +982,6 @@
     <string name="onboarding_login_or">ATAU</string>
     <string name="onboarding_entering_void_title">Memasuki Void</string>
     <string name="onboarding_mnemonic_read_more">Baca selengkapnya</string>
-    <string name="onboarding_mnemonic_additional_info">You can find Recovery Phrase later in\nAnytype settings</string>
     <string name="onboqrding_what_is_recovery_phrase">Apa itu Frasa Pemulihan?</string>
     <string name="onboarding_recovery_phrase_description">Frasa Pemulihan adalah kombinasi 12 kata acak yang membuat akunmu di perangkat ini.</string>
     <string name="onboarding_recovery_phrase_description_2">Siapa pun yang mengetahui Frasa Pemulihan, dialah yang memiliki akun tersebut.</string>

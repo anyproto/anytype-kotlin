@@ -975,12 +975,8 @@
     <string name="onboarding_invite_code_description">Wenn du noch keinen hast, gehe einfach zu anytype.io\nund lass dich auf die Warteliste setzen.</string>
     <string name="onboarding_void_title">Das ist dein Void</string>
     <string name="onboarding_void_description">Es ist ein verschlüsselter Ort für alles, was du erstellst. Alles wird auf deinem Gerät gespeichert und im dezentralen Netzwerk gesichert.</string>
-    <string name="onboarding_mnemonic_title">Speichere deine Wiederherstellungsphrase</string>
-    <string name="onboarding_mnemonic_description">Es handelt sich um eine neuartige Authentifizierungsart, die dir volle Gewalt über deinen Account und deine Daten gibt.</string>
-    <string name="onboarding_mnemonic_show_key">Wiederherstellungsphrase anzeigen</string>
-    <string name="onboarding_mnemonic_key_saved">Zur App gehen</string>
-    <string name="onboarding_mnemonic_skip">Überspringen</string>
-    <string name="onboarding_mnemonic_copy">In die Zwischenablage kopieren</string>
+    <string name="onboarding_key_skip">Überspringen</string>
+    <string name="onboarding_key_copy">In die Zwischenablage kopieren</string>
     <string name="onboarding_set_your_name_title">Wähle deinen Namen</string>
     <string name="onboarding_soul_creation_description">So wirst du in der App erscheinen</string>
     <string name="onboarding_soul_creation_placeholder">Anytype-Identität</string>
@@ -988,7 +984,6 @@
     <string name="onboarding_login_or">ODER</string>
     <string name="onboarding_entering_void_title">Leere betreten</string>
     <string name="onboarding_mnemonic_read_more">Mehr lesen</string>
-    <string name="onboarding_mnemonic_additional_info">Du kannst die Wiederherstellungsphrase\nspäter in den Einstellungen finden</string>
     <string name="onboqrding_what_is_recovery_phrase">Was ist Wiederherstellungsphrase?</string>
     <string name="onboarding_recovery_phrase_description">Wiederherstellungsphrase ist eine zufällige Kombination von 12 Wörtern, aus denen Ihr Konto auf diesem Gerät magisch generiert wird.</string>
     <string name="onboarding_recovery_phrase_description_2">Wer die Wiederherstellungsphrase kennt, besitzt den Account. </string>

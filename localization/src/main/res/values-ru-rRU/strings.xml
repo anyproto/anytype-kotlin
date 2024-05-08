@@ -979,12 +979,8 @@
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
-    <string name="onboarding_mnemonic_title">Сохраните свою фразу восстановления</string>
-    <string name="onboarding_mnemonic_description">Это новый способ аутентификации, предоставляющий вам полный контроль над вашим аккаунтом и данными.</string>
-    <string name="onboarding_mnemonic_show_key">Показать фразу для восстановления</string>
-    <string name="onboarding_mnemonic_key_saved">Перейти в приложение</string>
-    <string name="onboarding_mnemonic_skip">Пропустить</string>
-    <string name="onboarding_mnemonic_copy">Копировать в буфер обмена</string>
+    <string name="onboarding_key_skip">Пропустить</string>
+    <string name="onboarding_key_copy">Копировать в буфер обмена</string>
     <string name="onboarding_set_your_name_title">Выберите имя</string>
     <string name="onboarding_soul_creation_description">This is how you will appear in the app</string>
     <string name="onboarding_soul_creation_placeholder">Идентификатор Anytype</string>
@@ -992,7 +988,6 @@
     <string name="onboarding_login_or">ИЛИ</string>
     <string name="onboarding_entering_void_title">Входим в пустоту</string>
     <string name="onboarding_mnemonic_read_more">Подробнее</string>
-    <string name="onboarding_mnemonic_additional_info">You can find Recovery Phrase later in\nAnytype settings</string>
     <string name="onboqrding_what_is_recovery_phrase">Что такое фраза восстановления?</string>
     <string name="onboarding_recovery_phrase_description">Фраза восстановления - это случайная комбинация из 12 слов. Волшебным образом из этих слов генерируется ваш аккаунт на устройстве.</string>
     <string name="onboarding_recovery_phrase_description_2">Whoever knows Recovery Phrase, owns the account. </string>

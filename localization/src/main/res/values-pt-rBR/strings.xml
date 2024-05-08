@@ -975,12 +975,8 @@
     <string name="onboarding_invite_code_description">Se você não tem um, basta acessar anytype.io\ne entre na lista de espera.</string>
     <string name="onboarding_void_title">Este é o seu Void</string>
     <string name="onboarding_void_description">É um local criptografado para tudo que você criar. Tudo é armazenado no seu dispositivo e salvo na rede distribuída.</string>
-    <string name="onboarding_mnemonic_title">Salve sua frase de recuperação</string>
-    <string name="onboarding_mnemonic_description">É uma nova forma de autenticação que te dá propriedade total sobre sua conta e seus dados.</string>
-    <string name="onboarding_mnemonic_show_key">Mostrar Frase de Recuperação</string>
-    <string name="onboarding_mnemonic_key_saved">Ir para o aplicativo</string>
-    <string name="onboarding_mnemonic_skip">Pular</string>
-    <string name="onboarding_mnemonic_copy">Copiar para área de transferência</string>
+    <string name="onboarding_key_skip">Pular</string>
+    <string name="onboarding_key_copy">Copiar para área de transferência</string>
     <string name="onboarding_set_your_name_title">Escolha seu nome</string>
     <string name="onboarding_soul_creation_description">Você aparecerá assim no app</string>
     <string name="onboarding_soul_creation_placeholder">Identidade Anytype</string>
@@ -988,7 +984,6 @@
     <string name="onboarding_login_or">OU</string>
     <string name="onboarding_entering_void_title">Entrando no vazio</string>
     <string name="onboarding_mnemonic_read_more">Ler mais</string>
-    <string name="onboarding_mnemonic_additional_info">Você pode encontrar a Frase de Recuperação depois nas configurações do \nAnytype</string>
     <string name="onboqrding_what_is_recovery_phrase">O que é Frase de Recuperação?</string>
     <string name="onboarding_recovery_phrase_description">Frase de Recuperação é uma combinação aleatória de 12 palavras a partir das quais sua conta é magicamente gerada neste dispositivo.</string>
     <string name="onboarding_recovery_phrase_description_2">Quem sabe a Frase de Recuperação, tem a conta. </string>

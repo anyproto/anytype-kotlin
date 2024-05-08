@@ -975,12 +975,8 @@
     <string name="onboarding_invite_code_description">Si no tienes uno, simplemente ve a anytype.io\ny regístrate en la lista de espera.</string>
     <string name="onboarding_void_title">Este es tu Vacío</string>
     <string name="onboarding_void_description">Es una ubicación encriptada para todo lo que creas. Todo se almacena en tu dispositivo y se realiza una copia de seguridad en la red distribuida.</string>
-    <string name="onboarding_mnemonic_title">Guarda tu Frase de Recuperación</string>
-    <string name="onboarding_mnemonic_description">Es una novedosa forma de autenticación que te da control total sobre tu cuenta y datos.</string>
-    <string name="onboarding_mnemonic_show_key">Mostrar Frase de Recuperación</string>
-    <string name="onboarding_mnemonic_key_saved">Ir a la aplicación</string>
-    <string name="onboarding_mnemonic_skip">Saltar</string>
-    <string name="onboarding_mnemonic_copy">Copiar al portapapeles</string>
+    <string name="onboarding_key_skip">Saltar</string>
+    <string name="onboarding_key_copy">Copiar al portapapeles</string>
     <string name="onboarding_set_your_name_title">Elige el nombre de la sala</string>
     <string name="onboarding_soul_creation_description">Así es como aparecerá en la aplicación</string>
     <string name="onboarding_soul_creation_placeholder">Identidad Anytype</string>
@@ -988,7 +984,6 @@
     <string name="onboarding_login_or">O</string>
     <string name="onboarding_entering_void_title">Entrando al Vacío </string>
     <string name="onboarding_mnemonic_read_more">Leer más</string>
-    <string name="onboarding_mnemonic_additional_info">Puedes encontrar la frase de recuperación más adelante en\nla configuración de Anytype</string>
     <string name="onboqrding_what_is_recovery_phrase">¿Qué es la frase de recuperación?</string>
     <string name="onboarding_recovery_phrase_description">La frase de recuperación es una combinación aleatoria de 12 palabras a partir de las cuales tu cuenta se genera mágicamente en este dispositivo.</string>
     <string name="onboarding_recovery_phrase_description_2">Quien conozca la frase de recuperación, es dueño de la cuenta. </string>

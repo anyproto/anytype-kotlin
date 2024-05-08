@@ -1823,6 +1823,9 @@ class MiddlewareServiceImplementation @Inject constructor(
                 Rpc.Space.InviteView.Response.Error.Code.INVITE_BAD_CONTENT -> {
                     throw SpaceInviteError.InvalidInvite()
                 }
+                Rpc.Space.InviteView.Response.Error.Code.SPACE_IS_DELETED -> {
+                    throw SpaceInviteError.SpaceDeleted()
+                }
                 else -> {
                     throw Exception(error.description)
                 }

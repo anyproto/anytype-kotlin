@@ -9,7 +9,7 @@
     <string name="personalization">Personnalisation</string>
     <string name="appearance">Apparence</string>
     <string name="file_storage">Stockage de fichiers</string>
-    <string name="recovery_phrase">Phrase de récupération</string>
+    <string name="key">Phrase de récupération</string>
     <string name="clear_file_cache">Vider le cache des fichiers</string>
     <string name="debug_sync_report">Rapport de débogage de synchronisation</string>
     <string name="debug">Débogage</string>

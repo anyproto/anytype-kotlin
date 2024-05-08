@@ -9,7 +9,7 @@
     <string name="personalization">Personlig tilpasning</string>
     <string name="appearance">Utseende</string>
     <string name="file_storage">Fillagring</string>
-    <string name="recovery_phrase">Gjenopprettingsfrase</string>
+    <string name="key">Gjenopprettingsfrase</string>
     <string name="clear_file_cache">Tøm filbuffer</string>
     <string name="debug_sync_report">Feilsøk synkroniseringsrapport</string>
     <string name="debug">Feilsøk</string>

@@ -9,7 +9,7 @@
     <string name="personalization">Personalisatie</string>
     <string name="appearance">Weergave</string>
     <string name="file_storage">Bestandsopslag</string>
-    <string name="recovery_phrase">Herstelzin</string>
+    <string name="key">Herstelzin</string>
     <string name="clear_file_cache">Wis bestandscache</string>
     <string name="debug_sync_report">Debug Sync Rapport</string>
     <string name="debug">Debug</string>

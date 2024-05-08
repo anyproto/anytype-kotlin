@@ -9,7 +9,7 @@
     <string name="personalization">Персонализация</string>
     <string name="appearance">Внешний вид</string>
     <string name="file_storage">Хранилище файлов</string>
-    <string name="recovery_phrase">Фраза для восстановления</string>
+    <string name="key">Фраза для восстановления</string>
     <string name="clear_file_cache">Очистить кэш-файлов</string>
     <string name="debug_sync_report">Отладочный отчет синхронизации</string>
     <string name="debug">Отладка</string>

@@ -9,7 +9,7 @@
     <string name="personalization">个性化</string>
     <string name="appearance">外观</string>
     <string name="file_storage">文件存储</string>
-    <string name="recovery_phrase">恢复短语</string>
+    <string name="key">恢复短语</string>
     <string name="clear_file_cache">清除文件缓存</string>
     <string name="debug_sync_report">调试同步报告</string>
     <string name="debug">调试</string>

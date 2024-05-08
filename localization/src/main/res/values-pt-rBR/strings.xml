@@ -9,7 +9,7 @@
     <string name="personalization">Personalização</string>
     <string name="appearance">Aparência</string>
     <string name="file_storage">Armazenamento de arquivos</string>
-    <string name="recovery_phrase">Frase de recuperação</string>
+    <string name="key">Frase de recuperação</string>
     <string name="clear_file_cache">Limpar cache de arquivos</string>
     <string name="debug_sync_report">Relatório de Depuração de Sincronização</string>
     <string name="debug">Depuração</string>
@@ -800,7 +800,6 @@
     <string name="base_add_options_empty_subtitle">Comece a digitar para criar um registro</string>
     <string name="sync_status_local_only">Somente local</string>
     <string name="mail_more_space_body">Olá, equipe Anytype. Estou entrando em contato para solicitar um aumento na minha capacidade de armazenamento de arquivos já que estou sem espaço. Meus limites atuais são %1$s. Meu ID de conta é %2$s. Abraço, %3$s</string>
-    <string name="your_recovery_phrase_can_t_be_empty">A sua frase de recuperação não pode ficar vazia</string>
     <string name="go_to_the_app">Ir para o aplicativo</string>
     <string name="exiting_please_wait">Saindo... por favor aguarde</string>
     <string name="loading_please_wait">Carregando... aguarde por favor.</string>
@@ -968,39 +967,23 @@
     <!--region ONBOARDING -->
     <string name="onboarding_auth_title">o aplicativo para tudo</string>
     <string name="onboarding_auth_subtitle">para quem\nvaloriza\na confiança &amp; autonomia</string>
-    <string name="onboarding_auth_description">Anytype é seu lugar seguro para pensar, planejar, escrever, e organizar tudo que é importante para você</string>
     <string name="onboarding_terms_and_policy_prefix">"Ao continuar, você concorda com"</string>
     <string name="onboarding_terms_and_policy_terms">Termos\u00A0de\u00A0Uso</string>
     <string name="onboarding_terms_and_policy_infix">" e "</string>
     <string name="onboarding_terms_and_policy_privacy">Política\u00A0de\u00A0Privacidade</string>
-    <string name="onboarding_join_button_text">Junte-se</string>
-    <string name="onboarding_log_in_button_text">Entrar</string>
     <string name="onboarding_invite_code_title">Insira seu código de convite</string>
     <string name="onboarding_invite_code_description">Se você não tem um, basta acessar anytype.io\ne entre na lista de espera.</string>
     <string name="onboarding_void_title">Este é o seu Void</string>
     <string name="onboarding_void_description">É um local criptografado para tudo que você criar. Tudo é armazenado no seu dispositivo e salvo na rede distribuída.</string>
-    <string name="onboarding_mnemonic_title">Salve sua frase de recuperação</string>
-    <string name="onboarding_mnemonic_description">É uma nova forma de autenticação que te dá propriedade total sobre sua conta e seus dados.</string>
-    <string name="onboarding_mnemonic_show_key">Mostrar Frase de Recuperação</string>
-    <string name="onboarding_mnemonic_key_saved">Ir para o aplicativo</string>
-    <string name="onboarding_mnemonic_skip">Pular</string>
-    <string name="onboarding_mnemonic_copy">Copiar para área de transferência</string>
+    <string name="onboarding_key_skip">Pular</string>
+    <string name="onboarding_key_copy">Copiar para área de transferência</string>
     <string name="onboarding_set_your_name_title">Escolha seu nome</string>
     <string name="onboarding_soul_creation_description">Você aparecerá assim no app</string>
     <string name="onboarding_soul_creation_placeholder">Identidade Anytype</string>
     <string name="onboarding_soul_creation">Criando a sua Identidade…</string>
-    <string name="onboarding_type_recovery_phrase">Digite sua frase de recuperação</string>
     <string name="onboarding_login_or">OU</string>
     <string name="onboarding_entering_void_title">Entrando no vazio</string>
     <string name="onboarding_mnemonic_read_more">Ler mais</string>
-    <string name="onboarding_mnemonic_additional_info">Você pode encontrar a Frase de Recuperação depois nas configurações do \nAnytype</string>
-    <string name="onboqrding_what_is_recovery_phrase">O que é Frase de Recuperação?</string>
-    <string name="onboarding_recovery_phrase_description">Frase de Recuperação é uma combinação aleatória de 12 palavras a partir das quais sua conta é magicamente gerada neste dispositivo.</string>
-    <string name="onboarding_recovery_phrase_description_2">Quem sabe a Frase de Recuperação, tem a conta. </string>
-    <string name="onboarding_recovery_phrase_description_3">No momento, você é a única pessoa no mundo que sabe dela.</string>
-    <string name="onboarding_recovery_phrase_description_4">Por isso, é essencial manter a Frase de Recuperação segura. Como único proprietário, ninguém pode lhe ajudar se a perder.</string>
-    <string name="onboarding_how_to_save_my_phrase">Como salvar a minha Frase?</string>
-    <string name="onboarding_how_to_save_my_phrase_2">A maneira mais fácil de armazenar sua Frase de Recuperação é salvá-la em seu gerenciador de senhas.</string>
     <string name="onboarding_how_to_save_my_phrase_3">A forma mais segura é escrevê-la no papel e mantê-la fora do dispositivo, num lugar seguro e seguro.</string>
     <!--endregion-->
     <!--region OBJECT ACTIONS -->

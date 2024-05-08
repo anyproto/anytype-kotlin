@@ -177,7 +177,7 @@ fun MnemonicButtons(
         when (state) {
             is OnboardingMnemonicViewModel.State.MnemonicOpened -> {
                 OnBoardingButtonPrimary(
-                    text = stringResource(id = R.string.onboarding_mnemonic_key_saved),
+                    text = stringResource(id = R.string.onboarding_enter_my_vault),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 16.dp, end = 16.dp, bottom = 24.dp),
@@ -189,14 +189,14 @@ fun MnemonicButtons(
                 Text(
                     style = Caption1Regular,
                     color = Color(0xff797976),
-                    text = stringResource(id = R.string.onboarding_mnemonic_additional_info),
+                    text = stringResource(id = R.string.onboarding_key_additional_info),
                     modifier = Modifier
                         .padding(bottom = 19.dp)
                         .fillMaxWidth(),
                     textAlign = TextAlign.Center
                 )
                 OnBoardingButtonPrimary(
-                    text = stringResource(id = R.string.onboarding_mnemonic_show_key),
+                    text = stringResource(id = R.string.onboarding_show_my_key),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
@@ -205,7 +205,7 @@ fun MnemonicButtons(
                     }, size = ButtonSize.Large
                 )
                 OnBoardingButtonSecondary(
-                    text = stringResource(id = R.string.onboarding_mnemonic_skip),
+                    text = stringResource(id = R.string.onboarding_key_skip),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(
@@ -236,7 +236,7 @@ fun MnemonicTitle() {
     ) {
         Text(
             modifier = Modifier,
-            text = stringResource(R.string.onboarding_mnemonic_title),
+            text = stringResource(R.string.onboarding_this_is_your_key_title),
             style = HeadlineHeading.copy(
                 color = OnBoardingTextPrimaryColor
             ),
@@ -289,7 +289,7 @@ fun MnemonicPhrase(
                 }
                 if (state is OnboardingMnemonicViewModel.State.MnemonicOpened) {
                     OnBoardingButtonSecondary(
-                        text = stringResource(id = R.string.onboarding_mnemonic_copy),
+                        text = stringResource(id = R.string.onboarding_key_copy),
                         modifier = Modifier
                             .align(CenterHorizontally)
                             .padding(bottom = 12.dp),
@@ -316,7 +316,7 @@ fun MnemonicDescription() {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = stringResource(id = R.string.onboarding_mnemonic_description),
+            text = stringResource(id = R.string.onboarding_key_description),
             style = HeadlineOnBoardingDescription.copy(
                 color = OnBoardingTextSecondaryColor,
                 textAlign = TextAlign.Center

@@ -32,6 +32,7 @@ import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.ColorButtonRegular
@@ -79,7 +80,7 @@ fun RecoveryScreen(
                 .align(Alignment.TopCenter)
                 .padding(top = 21.dp)
             ,
-            text = stringResource(id = R.string.login),
+            text = stringResource(id = R.string.onboarding_enter_my_vault),
             style = TitleLogin.copy(
                 color = OnBoardingTextPrimaryColor
             )
@@ -92,7 +93,7 @@ fun RecoveryScreen(
         val focus = LocalFocusManager.current
         val context = LocalContext.current
 
-        val emptyRecoveryPhraseError = stringResource(R.string.your_recovery_phrase_can_t_be_empty)
+        val emptyRecoveryPhraseError = stringResource(R.string.onboarding_your_key_can_t_be_empty)
 
         LazyColumn(
             content = {
@@ -118,7 +119,7 @@ fun RecoveryScreen(
                         ,
                         text = text,
                         singleLine = false,
-                        placeholder = stringResource(id = R.string.onboarding_type_recovery_phrase),
+                        placeholder = stringResource(id = R.string.onboarding_type_your_key),
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Done
                         ),
@@ -138,7 +139,7 @@ fun RecoveryScreen(
                 }
                 item {
                     OnBoardingButtonPrimary(
-                        text = stringResource(id = R.string.log_in),
+                        text = stringResource(id = R.string.onboarding_enter_my_vault),
                         onClick = {
                             onNextClicked.invoke(text.value).also {
                                 focus.clearFocus()
@@ -229,4 +230,16 @@ object MnemonicPhraseFormatter : VisualTransformation {
             OffsetMapping.Identity
         )
     }
+}
+
+@Preview
+@Composable
+fun RecoveryScreenPreview() {
+    RecoveryScreen(
+        onBackClicked = {},
+        onNextClicked = {},
+        onActionDoneClicked = {},
+        onScanQrClicked = {},
+        isLoading = false
+    )
 }

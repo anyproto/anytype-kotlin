@@ -9,7 +9,7 @@
     <string name="personalization">Personalisierung</string>
     <string name="appearance">Aussehen</string>
     <string name="file_storage">Dateispeicher</string>
-    <string name="recovery_phrase">Wiederherstellungsphrase</string>
+    <string name="key">Wiederherstellungsphrase</string>
     <string name="clear_file_cache">Dateicache leeren</string>
     <string name="debug_sync_report">Debug Sync Bericht</string>
     <string name="debug">Debug</string>
@@ -800,7 +800,6 @@
     <string name="base_add_options_empty_subtitle">Beginne mit dem Schreiben, um ein neues zu erstellen</string>
     <string name="sync_status_local_only">Nur lokal</string>
     <string name="mail_more_space_body">Liebes Anytype Team, wäre es möglich den Speicherplatz zu erweitern, da mir der Speicher ausgegangen ist? Mein aktuelles Limit ist %1$s. Meine Account-ID ist %2$s. LG %3$s</string>
-    <string name="your_recovery_phrase_can_t_be_empty">Ihre Wiederherstellungsphrase darf nicht leer sein</string>
     <string name="go_to_the_app">Zur App gehen</string>
     <string name="exiting_please_wait">Beenden... bitte warten</string>
     <string name="loading_please_wait">Wird geladen... bitte warten</string>
@@ -968,39 +967,23 @@
     <!--region ONBOARDING -->
     <string name="onboarding_auth_title">die Alles-App</string>
     <string name="onboarding_auth_subtitle">Für diejenigen\ndie eines feiern:\n Vertrauen &amp; Autonomie</string>
-    <string name="onboarding_auth_description">Anytype ist dein sicherer Ort zum Schreiben, Planen, Denken und Organisieren von allem, was dir wichtig ist.</string>
     <string name="onboarding_terms_and_policy_prefix">"Indem Sie fortfahren, stimmen Sie unseren"</string>
     <string name="onboarding_terms_and_policy_terms">Nutzungsbedingungen</string>
     <string name="onboarding_terms_and_policy_infix">" und "</string>
     <string name="onboarding_terms_and_policy_privacy">Datenschutzrichtlinie</string>
-    <string name="onboarding_join_button_text">Beitreten</string>
-    <string name="onboarding_log_in_button_text">Anmelden</string>
     <string name="onboarding_invite_code_title">Gib deinen Einladungscode ein</string>
     <string name="onboarding_invite_code_description">Wenn du noch keinen hast, gehe einfach zu anytype.io\nund lass dich auf die Warteliste setzen.</string>
     <string name="onboarding_void_title">Das ist dein Void</string>
     <string name="onboarding_void_description">Es ist ein verschlüsselter Ort für alles, was du erstellst. Alles wird auf deinem Gerät gespeichert und im dezentralen Netzwerk gesichert.</string>
-    <string name="onboarding_mnemonic_title">Speichere deine Wiederherstellungsphrase</string>
-    <string name="onboarding_mnemonic_description">Es handelt sich um eine neuartige Authentifizierungsart, die dir volle Gewalt über deinen Account und deine Daten gibt.</string>
-    <string name="onboarding_mnemonic_show_key">Wiederherstellungsphrase anzeigen</string>
-    <string name="onboarding_mnemonic_key_saved">Zur App gehen</string>
-    <string name="onboarding_mnemonic_skip">Überspringen</string>
-    <string name="onboarding_mnemonic_copy">In die Zwischenablage kopieren</string>
+    <string name="onboarding_key_skip">Überspringen</string>
+    <string name="onboarding_key_copy">In die Zwischenablage kopieren</string>
     <string name="onboarding_set_your_name_title">Wähle deinen Namen</string>
     <string name="onboarding_soul_creation_description">So wirst du in der App erscheinen</string>
     <string name="onboarding_soul_creation_placeholder">Anytype-Identität</string>
     <string name="onboarding_soul_creation">Identität wird erstellt...</string>
-    <string name="onboarding_type_recovery_phrase">Geben Sie Ihre Wiederherstellungsphrase ein</string>
     <string name="onboarding_login_or">ODER</string>
     <string name="onboarding_entering_void_title">Leere betreten</string>
     <string name="onboarding_mnemonic_read_more">Mehr lesen</string>
-    <string name="onboarding_mnemonic_additional_info">Du kannst die Wiederherstellungsphrase\nspäter in den Einstellungen finden</string>
-    <string name="onboqrding_what_is_recovery_phrase">Was ist Wiederherstellungsphrase?</string>
-    <string name="onboarding_recovery_phrase_description">Wiederherstellungsphrase ist eine zufällige Kombination von 12 Wörtern, aus denen Ihr Konto auf diesem Gerät magisch generiert wird.</string>
-    <string name="onboarding_recovery_phrase_description_2">Wer die Wiederherstellungsphrase kennt, besitzt den Account. </string>
-    <string name="onboarding_recovery_phrase_description_3">Im Moment bist du der einzige Mensch der Welt, der sie kennt.</string>
-    <string name="onboarding_recovery_phrase_description_4">Deshalb ist es wichtig, dass Recovery Phrase sicher bleibt. Als einziger Besitzer kann dir niemand helfen, wenn es verloren geht.</string>
-    <string name="onboarding_how_to_save_my_phrase">Wie kann ich meine Phrase speichern?</string>
-    <string name="onboarding_how_to_save_my_phrase_2">Der einfachste Weg, Ihre Wiederherstellungsphrase zu speichern, ist die Speicherung in Ihrem Passwort-Manager.</string>
     <string name="onboarding_how_to_save_my_phrase_3">Am sichersten ist es, sie auf Papier aufzuschreiben und offline, an einem sicheren Ort.</string>
     <!--endregion-->
     <!--region OBJECT ACTIONS -->

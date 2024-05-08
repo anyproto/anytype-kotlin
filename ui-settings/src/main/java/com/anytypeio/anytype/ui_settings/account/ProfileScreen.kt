@@ -45,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
@@ -148,7 +149,7 @@ fun ProfileSettingsScreen(
         item {
             Option(
                 image = R.drawable.ic_keychain_phrase,
-                text = stringResource(R.string.recovery_phrase),
+                text = stringResource(R.string.key),
                 onClick = onKeychainPhraseClicked
             )
         }
@@ -462,6 +463,26 @@ fun ProfileImageBlock(
             }
         }
     }
+}
+
+@Preview
+@Composable
+private fun ProfileSettingPreview() {
+    ProfileSettingsScreen(
+        onKeychainPhraseClicked = {},
+        onLogoutClicked = {},
+        isLogoutInProgress = false,
+        onNameChange = {},
+        onProfileIconClick = {},
+        account = ProfileSettingsViewModel.AccountProfile.Data(
+            "Walter",
+            icon = ProfileIconView.Placeholder("Walter")
+        ),
+        onAppearanceClicked = {},
+        onDataManagementClicked = {},
+        onAboutClicked = {},
+        onSpacesClicked = {}
+    )
 }
 
 private const val PROFILE_NAME_CHANGE_DELAY = 300L

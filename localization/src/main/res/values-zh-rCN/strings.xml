@@ -9,7 +9,7 @@
     <string name="personalization">个性化</string>
     <string name="appearance">外观</string>
     <string name="file_storage">文件存储</string>
-    <string name="recovery_phrase">恢复短语</string>
+    <string name="key">恢复短语</string>
     <string name="clear_file_cache">清除文件缓存</string>
     <string name="debug_sync_report">调试同步报告</string>
     <string name="debug">调试</string>
@@ -27,7 +27,6 @@
     <string name="light">亮色</string>
     <string name="dark">暗色</string>
     <string name="system">跟随系统</string>
-    <string name="account_default_name">U</string>
     <string name="settings">设置</string>
     <string name="have_you_back_up_your_recovery_phrase">您是否备份了恢复短语?</string>
     <string name="you_will_need_to_sign_in">您将需要短语才能登录。将其保存在安全的地方。如果您丢失了它，您将无法再访问您的帐户。</string>
@@ -799,7 +798,6 @@
     <string name="base_add_options_empty_subtitle">开始输入创建一个新的</string>
     <string name="sync_status_local_only">仅本地</string>
     <string name="mail_more_space_body">Hi, Anytype team. I am reaching out to request an increase in my file storage capacity as I have run out of storage. My current limits is %1$s. My account id is %2$s. Cheers, %3$s</string>
-    <string name="your_recovery_phrase_can_t_be_empty">您的恢复短语不能为空</string>
     <string name="go_to_the_app">进入应用</string>
     <string name="exiting_please_wait">正在退出... 请稍等</string>
     <string name="loading_please_wait">正在加载……请稍等</string>
@@ -967,39 +965,23 @@
     <!--region ONBOARDING -->
     <string name="onboarding_auth_title">学习与思考集于一身的创作应用</string>
     <string name="onboarding_auth_subtitle">for those\nwho celebrate\ntrust &amp; autonomy</string>
-    <string name="onboarding_auth_description">Anytype 是您编写、计划、思考和组织集于一身，对您重要的安全空间。</string>
     <string name="onboarding_terms_and_policy_prefix">"继续即代表您同意"</string>
     <string name="onboarding_terms_and_policy_terms">\u00A0使用的条款\u00A0</string>
     <string name="onboarding_terms_and_policy_infix">" 和 "</string>
     <string name="onboarding_terms_and_policy_privacy">隐私\u00A0政策</string>
-    <string name="onboarding_join_button_text">加入</string>
-    <string name="onboarding_log_in_button_text">登录</string>
     <string name="onboarding_invite_code_title">填写邀请码</string>
     <string name="onboarding_invite_code_description">如果你没有，只需要打开anytype.io并注册到等候列表。</string>
     <string name="onboarding_void_title">这是您的 Void</string>
     <string name="onboarding_void_description">这是您创建的所有内容的加密位置。所有内容都存储在您的设备上，并备份到分布式网络。</string>
-    <string name="onboarding_mnemonic_title">保存您的恢复短语</string>
-    <string name="onboarding_mnemonic_description">要登录您的帐户，您需要一个恢复短语。它是12个随机单词，就像所有数据的主密码。立即保存或稍后在设置中保存恢复短语。</string>
-    <string name="onboarding_mnemonic_show_key">显示恢复短语</string>
-    <string name="onboarding_mnemonic_key_saved">进入应用</string>
-    <string name="onboarding_mnemonic_skip">以后再做吧</string>
-    <string name="onboarding_mnemonic_copy">复制到剪贴板</string>
+    <string name="onboarding_key_skip">以后再做吧</string>
+    <string name="onboarding_key_copy">复制到剪贴板</string>
     <string name="onboarding_set_your_name_title">选择名称</string>
     <string name="onboarding_soul_creation_description">这将是您在应用中的显示方式。</string>
     <string name="onboarding_soul_creation_placeholder">Anytype 身份标识</string>
     <string name="onboarding_soul_creation">创建您的身份…</string>
-    <string name="onboarding_type_recovery_phrase">输入恢复短语</string>
     <string name="onboarding_login_or">或者</string>
     <string name="onboarding_entering_void_title">无效的输入</string>
     <string name="onboarding_mnemonic_read_more">了解更多</string>
-    <string name="onboarding_mnemonic_additional_info">恢复短语可以在 Anytype 设置中找到</string>
-    <string name="onboqrding_what_is_recovery_phrase">什么是恢复短语？</string>
-    <string name="onboarding_recovery_phrase_description">恢复短语是12个单词的随机组合，您的帐户在此设备上神奇般地生成。</string>
-    <string name="onboarding_recovery_phrase_description_2">无论是谁，知道恢复短语，就拥有此账户。 </string>
-    <string name="onboarding_recovery_phrase_description_3">此时此刻，你是世界上唯一知道这一点的人。</string>
-    <string name="onboarding_recovery_phrase_description_4">这就是为什么必须确保恢复短语的安全。作为唯一的所有者，如果恢复短语丢失了，没有人可以帮助到您。</string>
-    <string name="onboarding_how_to_save_my_phrase">如何保存我的恢复短语？</string>
-    <string name="onboarding_how_to_save_my_phrase_2">保存恢复短语的最简单方法是将其保存在您的密码管理器中。</string>
     <string name="onboarding_how_to_save_my_phrase_3">最可靠的方法是现实中在纸面上写下，并放在一个安全可靠的地方。</string>
     <!--endregion-->
     <!--region OBJECT ACTIONS -->

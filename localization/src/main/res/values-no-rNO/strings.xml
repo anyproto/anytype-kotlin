@@ -9,7 +9,7 @@
     <string name="personalization">Personlig tilpasning</string>
     <string name="appearance">Utseende</string>
     <string name="file_storage">Fillagring</string>
-    <string name="recovery_phrase">Gjenopprettingsfrase</string>
+    <string name="key">Gjenopprettingsfrase</string>
     <string name="clear_file_cache">Tøm filbuffer</string>
     <string name="debug_sync_report">Feilsøk synkroniseringsrapport</string>
     <string name="debug">Feilsøk</string>
@@ -27,7 +27,6 @@
     <string name="light">Lys</string>
     <string name="dark">Mørk</string>
     <string name="system">System</string>
-    <string name="account_default_name">U</string>
     <string name="settings">Innstillinger</string>
     <string name="have_you_back_up_your_recovery_phrase">Har du lagret din gjenopprettingsfrase?</string>
     <string name="you_will_need_to_sign_in">Du trenger den for å logge inn. Behold den på et trygt sted. Hvis du mister den, får du ikke lenger tilgang til kontoen din.</string>
@@ -801,7 +800,6 @@
     <string name="base_add_options_empty_subtitle">Start typing to create a new one</string>
     <string name="sync_status_local_only">Kun lokalt</string>
     <string name="mail_more_space_body">Hi, Anytype team. I am reaching out to request an increase in my file storage capacity as I have run out of storage. My current limits is %1$s. My account id is %2$s. Cheers, %3$s</string>
-    <string name="your_recovery_phrase_can_t_be_empty">Din gjenopprettingsfrase kan ikke være tom</string>
     <string name="go_to_the_app">Gå til appen</string>
     <string name="exiting_please_wait">Exiting... please wait</string>
     <string name="loading_please_wait">Loading... please wait</string>
@@ -969,39 +967,23 @@
     <!--region ONBOARDING -->
     <string name="onboarding_auth_title">the everything app</string>
     <string name="onboarding_auth_subtitle">for those\nwho celebrate\ntrust &amp; autonomy</string>
-    <string name="onboarding_auth_description">Anytype er ditt sikre sted å skrive, planlegge, tenke og organisere alt som betyr for deg.</string>
     <string name="onboarding_terms_and_policy_prefix">"By continuing you agree to "</string>
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
     <string name="onboarding_terms_and_policy_infix">" and "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
-    <string name="onboarding_join_button_text">Bli med</string>
-    <string name="onboarding_log_in_button_text">Logg inn</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
-    <string name="onboarding_mnemonic_title">Lagre gjenopprettingsfrasen din</string>
-    <string name="onboarding_mnemonic_description">It\'s a novel way of authentication that gives you full ownership over your account and data.</string>
-    <string name="onboarding_mnemonic_show_key">Vis gjenopprettingsfrasen</string>
-    <string name="onboarding_mnemonic_key_saved">Gå til appen</string>
-    <string name="onboarding_mnemonic_skip">Hopp over</string>
-    <string name="onboarding_mnemonic_copy">Kopier til utklippstavlen</string>
+    <string name="onboarding_key_skip">Hopp over</string>
+    <string name="onboarding_key_copy">Kopier til utklippstavlen</string>
     <string name="onboarding_set_your_name_title">Velg ditt navn</string>
     <string name="onboarding_soul_creation_description">This is how you will appear in the app</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
-    <string name="onboarding_type_recovery_phrase">Skriv inn gjenopprettingsfrasen din</string>
     <string name="onboarding_login_or">ELLER</string>
     <string name="onboarding_entering_void_title">Går inn i Void</string>
     <string name="onboarding_mnemonic_read_more">Les mer</string>
-    <string name="onboarding_mnemonic_additional_info">You can find Recovery Phrase later in\nAnytype settings</string>
-    <string name="onboqrding_what_is_recovery_phrase">Hva er gjenopprettingsfrase?</string>
-    <string name="onboarding_recovery_phrase_description">Gjenopprettingsfrasen er en tilfeldig kombinasjon av 12 ord som magisk genererer kontoen din på denne enheten.</string>
-    <string name="onboarding_recovery_phrase_description_2">Whoever knows Recovery Phrase, owns the account. </string>
-    <string name="onboarding_recovery_phrase_description_3">At this moment, you are the only person in the world who knows it.</string>
-    <string name="onboarding_recovery_phrase_description_4">Derfor er det avgjørende å oppbevare gjenopprettingsfrasen trygt. Som den eneste eieren, kan ingen hjelpe deg hvis den blir mistet.</string>
-    <string name="onboarding_how_to_save_my_phrase">How to save my Phrase?</string>
-    <string name="onboarding_how_to_save_my_phrase_2">Den enkleste måten å lagre gjenopprettingsfrasen er å lagre den i passordbehandleren.</string>
     <string name="onboarding_how_to_save_my_phrase_3">Den sikreste måten er å skrive den ned på papir og oppbevare den offline, på et trygt og sikkert sted.</string>
     <!--endregion-->
     <!--region OBJECT ACTIONS -->

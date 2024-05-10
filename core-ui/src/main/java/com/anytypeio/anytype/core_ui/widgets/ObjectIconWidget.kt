@@ -380,4 +380,11 @@ class ObjectIconWidget @JvmOverloads constructor(
             composeView.gone()
         }
     }
+
+    fun setIvEmojiSize(emojiSize: Int) {
+        binding.ivEmoji.updateLayoutParams<LayoutParams> {
+            this.height = emojiSize
+            this.width = emojiSize
+        }
+    }
 }

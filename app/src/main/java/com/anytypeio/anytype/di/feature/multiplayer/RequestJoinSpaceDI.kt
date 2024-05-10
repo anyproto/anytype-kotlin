@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
+import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.other.DefaultSpaceInviteResolver
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -67,4 +68,5 @@ interface RequestJoinSpaceDependencies : ComponentDependencies {
     fun logger(): Logger
     fun analytics(): Analytics
     fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
+    fun notificator(): SystemNotificationService
 }

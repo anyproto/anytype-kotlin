@@ -2,17 +2,17 @@
 middlewareVersion = "v0.33.2"
 kotlinVersion = '1.9.22'
 
-androidxCoreVersion = "1.12.0"
+androidxCoreVersion = "1.13.0"
 
-androidxComposeVersion = '1.6.4'
+androidxComposeVersion = '1.6.6'
 composeKotlinCompilerVersion = '1.5.10'
 composeMaterial3Version = '1.2.1'
-composeMaterialVersion = '1.6.4'
+composeMaterialVersion = '1.6.6'
 composeConstraintLayoutVersion = '1.0.1'
 
 dokkaVersion = '1.9.20'
 
-activityComposeVersion = '1.8.2'
+activityComposeVersion = '1.9.0'
 composeReorderableVersion = 'e9ef693f63'
 accompanistVersion = "0.34.0"
 appcompatVersion = '1.6.1'
@@ -65,7 +65,7 @@ timberVersion = '5.0.1'
 protobufJavaVersion = '3.25.2'
 protocVersion = '3.9.0'
 roomVersion = '2.6.1'
-dataStoreVersion = '1.0.0'
+dataStoreVersion = '1.1.0'
 amplitudeVersion = '3.35.1'
 coilComposeVersion = '2.6.0'
 sentryVersion = '7.6.0'

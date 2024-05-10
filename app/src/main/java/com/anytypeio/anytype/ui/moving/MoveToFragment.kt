@@ -308,11 +308,9 @@ interface OnMoveToAction {
 
 
 fun FragmentObjectSearchBinding.hideProgress() {
-    searchView.progressBar.invisible()
-    progressBarRecycler.invisible()
+    searchView.progressBar.hide()
 }
 
 fun FragmentObjectSearchBinding.showProgress() {
-    searchView.progressBar.visible()
-    progressBarRecycler.visible()
+    searchView.progressBar.show()
 }

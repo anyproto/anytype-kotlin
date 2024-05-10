@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.ui.types.views
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -10,7 +9,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.ui.types.views.LeadingIconDefaults.OffsetX
 
@@ -21,12 +22,18 @@ fun LeadingIcon(
 ) {
     val modifier = Modifier
         .offset(x = OffsetX)
-        .clickable { onClick() }
+        .noRippleClickable { onClick() }
     when (icon) {
         is ObjectIcon.Basic.Emoji -> {
             AndroidView(
                 modifier = modifier,
-                factory = { ctx -> ObjectIconWidget(ctx) },
+                factory = { ctx ->
+                    ObjectIconWidget(ctx).apply {
+                        setIvEmojiSize(
+                            ctx.dimen(R.dimen.dp_24).toInt()
+                        )
+                    }
+                },
                 update = { it.setIcon(icon) }
             )
         }

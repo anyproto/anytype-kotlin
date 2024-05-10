@@ -9,7 +9,7 @@
     <string name="personalization">Personalisatie</string>
     <string name="appearance">Weergave</string>
     <string name="file_storage">Bestandsopslag</string>
-    <string name="recovery_phrase">Herstelzin</string>
+    <string name="key">Herstelzin</string>
     <string name="clear_file_cache">Wis bestandscache</string>
     <string name="debug_sync_report">Debug Sync Rapport</string>
     <string name="debug">Debug</string>
@@ -27,7 +27,6 @@
     <string name="light">Licht</string>
     <string name="dark">Donker</string>
     <string name="system">Systeem</string>
-    <string name="account_default_name">U</string>
     <string name="settings">Instellingen</string>
     <string name="have_you_back_up_your_recovery_phrase">Heb je een back-up gemaakt van je herstelzin?</string>
     <string name="you_will_need_to_sign_in">Je zult dit nodig hebben om in te loggen. Bewaar dit op een veilige plek. Als je dit verliest, heb je niet langer toegang tot je account.</string>
@@ -801,7 +800,6 @@
     <string name="base_add_options_empty_subtitle">Begin met typen om een nieuwe te maken</string>
     <string name="sync_status_local_only">Alleen lokaal</string>
     <string name="mail_more_space_body">Hallo Anytype team. Ik neem contact op met het verzoek om mijn opslagcapaciteit uit te breiden, omdat ik geen opslagruimte meer heb. Mijn huidige limiet is %1$s. Mijn account ID is %2$s. Cheers, %3$s</string>
-    <string name="your_recovery_phrase_can_t_be_empty">Jouw herstelzin mag niet leeg zijn</string>
     <string name="go_to_the_app">Ga naar de app</string>
     <string name="exiting_please_wait">Aan het afsluiten... een ogenblik geduld</string>
     <string name="loading_please_wait">Aan het laden... even geduld a.j.b.</string>
@@ -969,39 +967,23 @@
     <!--region ONBOARDING -->
     <string name="onboarding_auth_title">de alles-app</string>
     <string name="onboarding_auth_subtitle">voor degenen \ndievertrouwen &amp; autonomie \nvieren</string>
-    <string name="onboarding_auth_description">Anytype is jouw veilige ruimte om te schrijven, te plannen, na te denken en te organiseren van de dingen die jij belangrijk vindt.</string>
     <string name="onboarding_terms_and_policy_prefix">"Door verder te gaan, ga je akkoord met "</string>
     <string name="onboarding_terms_and_policy_terms">Voorwaarden\u00A0van\u00A0gebruik</string>
     <string name="onboarding_terms_and_policy_infix">" en "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Beleid</string>
-    <string name="onboarding_join_button_text">Neem deel</string>
-    <string name="onboarding_log_in_button_text">Aanmelden</string>
     <string name="onboarding_invite_code_title">Voer jouw uitnodigingscode in</string>
     <string name="onboarding_invite_code_description">Als je er geen hebt, ga dan naar anytype.io\nen schrijf je in op de wachtlijst.</string>
     <string name="onboarding_void_title">Dit is jouw ruimte</string>
     <string name="onboarding_void_description">Het is een versleutelde locatie voor alles wat je aanmaakt. Alles wordt opgeslagen op jouw apparaat en opgeslagen op het gedistribueerde netwerk.</string>
-    <string name="onboarding_mnemonic_title">Sla je herstelzin op</string>
-    <string name="onboarding_mnemonic_description">Het is een nieuwe manier van authenticatie die jouw het volledige eigendom over jouw account en gegevens geeft. </string>
-    <string name="onboarding_mnemonic_show_key">Toon herstelzin</string>
-    <string name="onboarding_mnemonic_key_saved">Ga naar de app</string>
-    <string name="onboarding_mnemonic_skip">Sla over</string>
-    <string name="onboarding_mnemonic_copy">Kopieer naar klembord</string>
+    <string name="onboarding_key_skip">Sla over</string>
+    <string name="onboarding_key_copy">Kopieer naar klembord</string>
     <string name="onboarding_set_your_name_title">Kies je naam</string>
     <string name="onboarding_soul_creation_description">Dit is zoals je in de app zult verschijnen</string>
     <string name="onboarding_soul_creation_placeholder">Anytype identiteit</string>
     <string name="onboarding_soul_creation">Jouw identiteit aan het aanmaken…</string>
-    <string name="onboarding_type_recovery_phrase">Type je herstelzin</string>
     <string name="onboarding_login_or">OF</string>
     <string name="onboarding_entering_void_title">De Void binnengaan</string>
     <string name="onboarding_mnemonic_read_more">Lees meer</string>
-    <string name="onboarding_mnemonic_additional_info">Je kunt de herstelzin later in de Anytype instellingen terugvinden</string>
-    <string name="onboqrding_what_is_recovery_phrase">Wat is een herstelzin?</string>
-    <string name="onboarding_recovery_phrase_description">De herstelzin bestaat uit een willekeurige combinatie van 12 woorden waarmee je account op magische wijze wordt gegenereerd op dit apparaat.</string>
-    <string name="onboarding_recovery_phrase_description_2">Degene die de herstelzin kent, is eigenaar van het account. </string>
-    <string name="onboarding_recovery_phrase_description_3">Op dit moment ben jij de enige persoon ter wereld die deze kent.</string>
-    <string name="onboarding_recovery_phrase_description_4">Daarom is het essentieel om jouw herstelzin veilig te bewaren. Als de enige eigenaar kan niemand je helpen als deze verloren is.</string>
-    <string name="onboarding_how_to_save_my_phrase">Hoe bewaar ik mijn zin?</string>
-    <string name="onboarding_how_to_save_my_phrase_2">De eenvoudigste manier om jouw herstelzin op te slaan is door deze op te slaan in je wachtwoordmanager.</string>
     <string name="onboarding_how_to_save_my_phrase_3">De meest veilige manier is om het op papier op te schrijven en het offline te houden, op een veilige plek. </string>
     <!--endregion-->
     <!--region OBJECT ACTIONS -->

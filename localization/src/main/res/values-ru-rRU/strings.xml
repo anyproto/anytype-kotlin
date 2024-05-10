@@ -9,7 +9,7 @@
     <string name="personalization">Персонализация</string>
     <string name="appearance">Внешний вид</string>
     <string name="file_storage">Хранилище файлов</string>
-    <string name="recovery_phrase">Фраза для восстановления</string>
+    <string name="key">Фраза для восстановления</string>
     <string name="clear_file_cache">Очистить кэш-файлов</string>
     <string name="debug_sync_report">Отладочный отчет синхронизации</string>
     <string name="debug">Отладка</string>
@@ -27,7 +27,6 @@
     <string name="light">Светлый</string>
     <string name="dark">Тёмный</string>
     <string name="system">Системный</string>
-    <string name="account_default_name">U</string>
     <string name="settings">Настройки</string>
     <string name="have_you_back_up_your_recovery_phrase">Вы сделали резервную копию вашей фразы восстановления?</string>
     <string name="you_will_need_to_sign_in">Она понадобится вам для входа. Храните ее надежно. В случае потери, вы потеряете доступ к аккаунту.</string>
@@ -805,7 +804,6 @@
     <string name="base_add_options_empty_subtitle">Начните ввод, чтобы создать новый</string>
     <string name="sync_status_local_only">Только локально</string>
     <string name="mail_more_space_body">Привет, команда Anytype. Обращаюсь с просьбой увеличить объем моего хранилища файлов, так как у меня закончилось свободное место. Мои текущие ограничения составляют %1$s. Идентификатор моей учетной записи: %2$s. С наилучшими пожеланиями, %3$s</string>
-    <string name="your_recovery_phrase_can_t_be_empty">Ваша фраза восстановления не может быть пустой</string>
     <string name="go_to_the_app">Перейти в приложение</string>
     <string name="exiting_please_wait">Выход... пожалуйста, подождите</string>
     <string name="loading_please_wait">Загружается... Пожалуйста, подождите</string>
@@ -973,40 +971,23 @@
     <!--region ONBOARDING -->
     <string name="onboarding_auth_title">универсальное приложение</string>
     <string name="onboarding_auth_subtitle">for those\nwho celebrate\ntrust &amp; autonomy</string>
-    <string name="onboarding_auth_description">Anytype - это безопасное место для записи мыслей и заметок, планирования и организации всего что важно для вас.</string>
     <string name="onboarding_terms_and_policy_prefix">"By continuing you agree to "</string>
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
     <string name="onboarding_terms_and_policy_infix">" и "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
-    <string name="onboarding_join_button_text">Присоединись</string>
-    <string name="onboarding_log_in_button_text">Войти</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
-    <string name="onboarding_mnemonic_title">Сохраните свою фразу восстановления</string>
-    <string name="onboarding_mnemonic_description">Это новый способ аутентификации, предоставляющий вам полный контроль над вашим аккаунтом и данными.</string>
-    <string name="onboarding_mnemonic_show_key">Показать фразу для восстановления</string>
-    <string name="onboarding_mnemonic_key_saved">Перейти в приложение</string>
-    <string name="onboarding_mnemonic_skip">Пропустить</string>
-    <string name="onboarding_mnemonic_copy">Копировать в буфер обмена</string>
+    <string name="onboarding_key_skip">Пропустить</string>
+    <string name="onboarding_key_copy">Копировать в буфер обмена</string>
     <string name="onboarding_set_your_name_title">Выберите имя</string>
     <string name="onboarding_soul_creation_description">This is how you will appear in the app</string>
     <string name="onboarding_soul_creation_placeholder">Идентификатор Anytype</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
-    <string name="onboarding_type_recovery_phrase">Введите свою фразу восстановления</string>
     <string name="onboarding_login_or">ИЛИ</string>
     <string name="onboarding_entering_void_title">Входим в пустоту</string>
     <string name="onboarding_mnemonic_read_more">Подробнее</string>
-    <string name="onboarding_mnemonic_additional_info">You can find Recovery Phrase later in\nAnytype settings</string>
-    <string name="onboqrding_what_is_recovery_phrase">Что такое фраза восстановления?</string>
-    <string name="onboarding_recovery_phrase_description">Фраза восстановления - это случайная комбинация из 12 слов. Волшебным образом из этих слов генерируется ваш аккаунт на устройстве.</string>
-    <string name="onboarding_recovery_phrase_description_2">Whoever knows Recovery Phrase, owns the account. </string>
-    <string name="onboarding_recovery_phrase_description_3">At this moment, you are the only person in the world who knows it.</string>
-    <string name="onboarding_recovery_phrase_description_4">Очень важно держать вашу фразу восстановления в секрете. Никто не сможет вам помочь в случае ее утери.</string>
-    <string name="onboarding_how_to_save_my_phrase">How to save my Phrase?</string>
-    <string name="onboarding_how_to_save_my_phrase_2">Самый простой способ хранить вашу фразу восстановления - сохранить ее в вашем менеджере паролей.</string>
-    <string name="onboarding_how_to_save_my_phrase_3">Самый безопасный способ - записать ее на бумаге и оставить бумагу в безопасном месте.</string>
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
     <string name="object_action_duplicate">Дублировать</string>

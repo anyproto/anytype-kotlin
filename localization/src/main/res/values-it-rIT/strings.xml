@@ -9,7 +9,7 @@
     <string name="personalization">Personalizzazione</string>
     <string name="appearance">Aspetto</string>
     <string name="file_storage">Archiviazione File</string>
-    <string name="recovery_phrase">Frase di recupero</string>
+    <string name="key">Frase di recupero</string>
     <string name="clear_file_cache">Svuota la cache dei file</string>
     <string name="debug_sync_report">Debug Sync Report</string>
     <string name="debug">Debug</string>
@@ -27,7 +27,6 @@
     <string name="light">Chiaro</string>
     <string name="dark">Scuro</string>
     <string name="system">Sistema</string>
-    <string name="account_default_name">U</string>
     <string name="settings">Impostazioni</string>
     <string name="have_you_back_up_your_recovery_phrase">Hai effettuato il backup della tua frase di recupero?</string>
     <string name="you_will_need_to_sign_in">Ne avrai bisogno per accedere. Conservala in un luogo sicuro. In caso di smarrimento, perderai l\'accesso al tuo account.</string>
@@ -801,7 +800,6 @@
     <string name="base_add_options_empty_subtitle">Start typing to create a new one</string>
     <string name="sync_status_local_only">Solo-locale</string>
     <string name="mail_more_space_body">Hi, Anytype team. I am reaching out to request an increase in my file storage capacity as I have run out of storage. My current limits is %1$s. My account id is %2$s. Cheers, %3$s</string>
-    <string name="your_recovery_phrase_can_t_be_empty">Your recovery phrase can\'t be empty</string>
     <string name="go_to_the_app">Vai all\'app</string>
     <string name="exiting_please_wait">Exiting... please wait</string>
     <string name="loading_please_wait">Loading... please wait</string>
@@ -826,9 +824,9 @@
     <string name="space_type_default">Ingresso</string>
     <string name="space_type_default_space">Spazio d\'ingresso</string>
     <string name="space_type_private">Privato</string>
-    <string name="space_type_private_space">Private space</string>
+    <string name="space_type_private_space">Spazio privato</string>
     <string name="space_type_shared">Condiviso</string>
-    <string name="space_type_shared_space">Shared space</string>
+    <string name="space_type_shared_space">Spazio condiviso</string>
     <string name="space_type_unknown">Tipo sconosciuto</string>
     <string name="create_space_start_with">Start with</string>
     <string name="create_object_section_lists">Liste</string>
@@ -969,39 +967,23 @@
     <!--region ONBOARDING -->
     <string name="onboarding_auth_title">the everything app</string>
     <string name="onboarding_auth_subtitle">for those\nwho celebrate\ntrust &amp; autonomy</string>
-    <string name="onboarding_auth_description">Anytype è il tuo spazio sicuro per scrivere, pianificare, pensare e organizzare tutto ciò che conta per te.</string>
     <string name="onboarding_terms_and_policy_prefix">"By continuing you agree to "</string>
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
     <string name="onboarding_terms_and_policy_infix">" and "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
-    <string name="onboarding_join_button_text">Unisciti</string>
-    <string name="onboarding_log_in_button_text">Accedi</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
-    <string name="onboarding_mnemonic_title">Salva la tua Frase di Recupero</string>
-    <string name="onboarding_mnemonic_description">È un metodo di autenticazione innovativo che ti garantisce la totale proprietà del tuo account e dei tuoi dati.</string>
-    <string name="onboarding_mnemonic_show_key">Mostra Frase di Recupero</string>
-    <string name="onboarding_mnemonic_key_saved">Vai all\'app</string>
-    <string name="onboarding_mnemonic_skip">Salta</string>
-    <string name="onboarding_mnemonic_copy">Copia negli appunti</string>
+    <string name="onboarding_key_skip">Salta</string>
+    <string name="onboarding_key_copy">Copia negli appunti</string>
     <string name="onboarding_set_your_name_title">Scegli il tuo nome</string>
     <string name="onboarding_soul_creation_description">This is how you will appear in the app</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
-    <string name="onboarding_type_recovery_phrase">Digita la frase di recupero</string>
     <string name="onboarding_login_or">O</string>
     <string name="onboarding_entering_void_title">Entrando nel Void</string>
     <string name="onboarding_mnemonic_read_more">Leggi altro</string>
-    <string name="onboarding_mnemonic_additional_info">You can find Recovery Phrase later in\nAnytype settings</string>
-    <string name="onboqrding_what_is_recovery_phrase">Che cos’è la Frase di Recupero?</string>
-    <string name="onboarding_recovery_phrase_description">La Frase di Recupero è una combinazione casuale di 12 parole da cui il tuo account viene magicamente generato su questo dispositivo</string>
-    <string name="onboarding_recovery_phrase_description_2">Chiunque conosca la Frase di Recupero possiede l\'account.</string>
-    <string name="onboarding_recovery_phrase_description_3">At this moment, you are the only person in the world who knows it.</string>
-    <string name="onboarding_recovery_phrase_description_4">Ecco perché è essenziale mantenere la Frase di Recupero al sicuro. Come unico proprietario, nessuno può aiutarti se la perdi.</string>
-    <string name="onboarding_how_to_save_my_phrase">How to save my Phrase?</string>
-    <string name="onboarding_how_to_save_my_phrase_2">Il modo più semplice per memorizzare la tua Frase di Recupero è quello di salvarla nel tuo gestore di password.</string>
     <string name="onboarding_how_to_save_my_phrase_3">Il modo più sicuro è scriverlo su carta e tenerlo offline, in un luogo sicuro.</string>
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
@@ -1150,15 +1132,15 @@
     <string name="multiplayer_remove_member">Remove member</string>
     <string name="multiplayer_remove_member_warning_text">%1$s sarà rimosso/a dallo spazio</string>
     <string name="multiplayer_request_sent_toast">Richiesta inviata</string>
-    <string name="multiplayer_space_stop_sharing">Stop sharing</string>
+    <string name="multiplayer_space_stop_sharing">Interrompi condivisione</string>
     <string name="multiplayer_space_stop_sharing_space">Smetti di condividere lo spazio</string>
     <string name="multiplayer_space_stop_sharing_space_description">I partecipanti non si sincronizzeranno più con questo spazio e il link di condivisione verrà disattivato.</string>
     <string name="multiplayer_more_info">Ulteriori informazioni</string>
     <string name="multiplayer_sharing">Condivisione</string>
     <string name="multiplayer_space_type">Tipo</string>
     <string name="multiplayer_share">Condividi</string>
-    <string name="multiplayer_manage">Manage</string>
-    <string name="multiplayer_leave_space">Leave space</string>
+    <string name="multiplayer_manage">Gestisci</string>
+    <string name="multiplayer_leave_space">Lascia lo spazio</string>
     <string name="multiplayer_leave_space_warning_subtitle">Questo spazio verrà rimosso dai tuoi dispositivi e non avrai più accesso ad esso</string>
     <string name="multiplayer_generate_invite_link_description">Crea un link di invito per condividere lo spazio e aggiungere nuovi membri</string>
     <string name="multiplayer_generate_invite_link">Genera link di invito</string>
@@ -1213,11 +1195,11 @@
     <string name="payments_header">Membership</string>
     <string name="payments_subheader">Unire alla rete di Anytype significa contribuire alla sua storia</string>
     <string name="payments_card_text_1">Co-create the Vision</string>
-    <string name="payments_card_description_1">As a valued member your voice matters! Engage in exclusive events, shape strategic choices, and influence our roadmap.</string>
-    <string name="payments_card_text_2">Unlock Member Benefits</string>
-    <string name="payments_card_description_2">Members enjoy higher backup storage &amp; sync limits, invitations for multiple guests to collaborate in shared spaces, and a unique identity on the Anytype Network.</string>
-    <string name="payments_card_text_3">Support Digital Independence</string>
-    <string name="payments_card_description_3">Your contribution supports our team and endorses our vision of a user-owned, secure, and collaborative digital network.</string>
+    <string name="payments_card_description_1">In qualità di membro apprezzato, la tua voce conta! Partecipa a eventi esclusivi, contribuisci a scelte strategiche e influenza la nostra roadmap.</string>
+    <string name="payments_card_text_2">Sblocca i vantaggi per i membri</string>
+    <string name="payments_card_description_2">I membri godono di limiti più elevati di archiviazione e sincronizzazione dei backup, di inviti per più ospiti a collaborare in spazi condivisi e di un\'identità unica sulla Rete Anytype.</string>
+    <string name="payments_card_text_3">Sostenere l\'indipendenza digitale</string>
+    <string name="payments_card_description_3">Il tuo contributo sostiene il nostro team e avvalora la nostra visione di una rete digitale di proprietà degli utenti, sicura e collaborativa.</string>
     <string name="payments_card_text_4">Investi nella connettività</string>
     <string name="payments_card_description_4">Our network\'s value exceeds the sum of its parts. Your membership sustains the infrastructure for its growth which underpins this network.</string>
     <string name="payments_tier_explorer">Explorer</string>
@@ -1238,12 +1220,12 @@
     <string name="payments_current_label">Attuale</string>
     <!-- Tier details -->
     <string name="payments_tier_details_name_title">Scegli il tuo nome unico</string>
-    <string name="payments_tier_details_name_subtitle">This is your unique name on the Anytype network, confirming your Membership. It acts as your personal domain and cannot be changed.</string>
+    <string name="payments_tier_details_name_subtitle">Questo è il tuo nome univoco sulla rete Anytype, che conferma la vostra iscrizione. Funge da dominio personale e non può essere cambiato.</string>
     <string name="payments_tier_details_name_hint">Me stesso/a</string>
     <string name="payments_tier_details_name_domain">.any</string>
-    <string name="payments_tier_details_name_min">Min 7 characters</string>
+    <string name="payments_tier_details_name_min">Min. 7 caratteri</string>
     <string name="payments_tier_details_name_error">Questo nome è già stato preso!</string>
-    <string name="payments_tier_details_name_success">This name is up for grabs!</string>
+    <string name="payments_tier_details_name_success">Questo nome è disponibile!</string>
     <string name="payments_tier_details_info_explorer">Immergiti nella rete e goditi l\'emozione della collaborazione uno-a-uno</string>
     <string-array name="payments_benefits_explorer">
         <item>1 GB di spazio nella rete</item>
@@ -1274,8 +1256,8 @@
     <string name="payments_email_hint">E-mail</string>
     <string name="payments_tier_current_title">Il tuo stato attuale:</string>
     <string name="payments_tier_current_valid">Valido fino al</string>
-    <string name="payments_tier_current_paid_by">Paid by Card</string>
-    <string name="payments_tier_current_button">Manage payment</string>
+    <string name="payments_tier_current_paid_by">Pagato con carta</string>
+    <string name="payments_tier_current_button">Gestisci pagamento</string>
     <string name="payments_tier_current_change_email_button">Cambia email</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Inserisci il codice inviato alla tua email</string>
@@ -1284,7 +1266,7 @@
     <!-- Payments Welcome -->
     <string name="payments_welcome_title">Welcome to the network,\n%1$s</string>
     <string name="payments_welcome_subtitle">Un grande applauso per la tua curiosità!</string>
-    <string name="payments_welcome_button">Continue</string>
+    <string name="payments_welcome_button">Continua</string>
     <!-- Notifications -->
     <string name="notifications_alert_error_unknown">An unknown error has occurred. Please try again later.</string>
     <string name="notifications_alert_error_bad_input">Invalid input detected. Please check your data and try again.</string>
@@ -1298,8 +1280,8 @@
     <string name="gallery_experience_made">Realizzato da</string>
     <string name="gallery_experience_install">Installa</string>
     <string name="gallery_experience_install_new">Installa in un nuovo spazio</string>
-    <string name="gallery_experience_alert_title_success">Experience was installed</string>
-    <string name="gallery_experience_alert_subtitle_success">\"%1$s\" was installed to a new space. You can now open and start using it.</string>
+    <string name="gallery_experience_alert_title_success">Esperienza installata</string>
+    <string name="gallery_experience_alert_subtitle_success">\"%1$s\" è stato installato in un nuovo spazio. Ora puoi aprirlo e iniziare a utilizzarlo.</string>
     <string name="gallery_experience_alert_title_error">Ops!</string>
     <string name="gallery_experience_alert_button_space">Open space</string>
     <string name="gallery_experience_alert_button_error">Chiudi</string>

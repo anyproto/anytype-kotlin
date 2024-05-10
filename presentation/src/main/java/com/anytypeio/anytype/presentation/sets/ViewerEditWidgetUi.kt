@@ -1,8 +1,11 @@
 package com.anytypeio.anytype.presentation.sets
 
 import com.anytypeio.anytype.core_models.DVViewer
+import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 
 
@@ -40,13 +43,27 @@ suspend fun <T> List<T>.toView(
 ): List<String> =
     mapNotNull {
         val relation = storeOfRelations.getByKey(mapper(it))
-        val isRelationDoneOrName = relation?.key == "done" || relation?.key == "name"
+        val isRelationDoneOrName = relation?.key == Relations.DONE || relation?.key == Relations.NAME
         relation?.name.orEmpty()
             .takeIf { _ ->
                 relation != null && relation.isValid
                         && (isRelationDoneOrName || relation.isHidden != true)
             }
     }
+
+suspend fun List<DVViewerRelation>.toAppliedRelations(
+    storeOfRelations: StoreOfRelations,
+    mapper: (DVViewerRelation) -> Key
+): List<String> =
+    mapNotNull {
+        val relation = storeOfRelations.getByKey(mapper(it))
+        val isRelationDoneOrName = relation?.key == Relations.DONE || relation?.key == Relations.NAME
+        relation?.name.orEmpty()
+            .takeIf { _ ->
+                relation != null && relation.isValid && (!isRelationDoneOrName || relation.isHidden != true)
+            }
+    }
+
 
 suspend fun DVViewer.toViewerEditWidgetState(
     storeOfRelations: StoreOfRelations,
@@ -61,11 +78,13 @@ suspend fun DVViewer.toViewerEditWidgetState(
         name = dvViewer.name,
         sorts = dvViewer.sorts.toView(storeOfRelations) { it.relationKey },
         filters = dvViewer.filters.toView(storeOfRelations) { it.relation },
-        relations = dvViewer.viewerRelations.toView(storeOfRelations) { it.key },
+        relations = dvViewer.viewerRelations.filter { it.isVisible }.toAppliedRelations(
+            storeOfRelations = storeOfRelations,
+            mapper = { relation -> relation.key }
+        ),
         layout = dvViewer.type,
         isActive = isActive
     )
 }
 
-fun ViewerEditWidgetUi.isVisible(): Boolean =
-    this is ViewerEditWidgetUi.Data && showWidget
+fun ViewerEditWidgetUi.isVisible(): Boolean = this is ViewerEditWidgetUi.Data && showWidget

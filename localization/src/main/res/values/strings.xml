@@ -12,13 +12,13 @@
     <string name="personalization">Personalization</string>
     <string name="appearance">Appearance</string>
     <string name="file_storage">Files storage</string>
-    <string name="recovery_phrase">Recovery phrase</string>
+    <string name="key">Key</string>
     <string name="clear_file_cache">Clear file cache</string>
     <string name="debug_sync_report">Debug Sync Report</string>
     <string name="debug">Debug</string>
-    <string name="account">Account</string>
-    <string name="reset_account">Reset account</string>
-    <string name="delete_account">Delete account</string>
+    <string name="account">Vault</string>
+    <string name="reset_account">Reset vault</string>
+    <string name="delete_account">Delete vault</string>
     <string name="space_debug">Space debug</string>
     <string name="data">Data</string>
     <string name="mode">Mode</string>
@@ -32,12 +32,12 @@
     <string name="dark">Dark</string>
     <string name="system">System</string>
 
-    <string name="account_default_name">U</string>
+    <string name="account_default_name" translatable="false">U</string>
 
     <string name="settings">Settings</string>
 
-    <string name="have_you_back_up_your_recovery_phrase">Have you backed up your recovery phrase?</string>
-    <string name="you_will_need_to_sign_in">You will need it to sign in. Keep it in a safe place. If you lose it, you can no longer access your account.</string>
+    <string name="have_you_back_up_your_recovery_phrase">Have you backed up your Key?</string>
+    <string name="you_will_need_to_sign_in">You will need it to enter your vault. Keep it in a safe place. If you lose it, you can no longer enter your vault.</string>
 
     <string name="about_help_and_community">Help &amp; Community</string>
     <string name="about_what_is_new">What\'s new</string>
@@ -71,10 +71,10 @@
     <string name="remote_storage">Remote storage</string>
     <string name="contact_us">Contact us</string>
     <string name="get_more_space">Get more space</string>
-    <string name="account_name">Account name</string>
+    <string name="account_name">Name</string>
     <string name="space_settings">Space settings</string>
     <string name="data_management">Data management</string>
-    <string name="deleted_account_danger_zone_msg">Once you request your account to be deleted, you have 30 days to cancel this request. After 30 days, your encrypted account data is permanently removed from the backup node, you won\'t be able to sign into Anytype on new devices.</string>
+    <string name="deleted_account_danger_zone_msg">Once you request your vault to be deleted, you have 30 days to cancel this request. After 30 days, your encrypted vault data is permanently removed from the backup node, you won\'t be able to sign into Anytype on new devices.</string>
     <string name="danger_zone">Danger zone</string>
     <string name="snackbar_template_add">New template was added to the type</string>
     <string name="settings_membership">Membership</string>
@@ -487,7 +487,7 @@
     <string name="next">Next</string>
     <string name="limit_object_types">Limit object types</string>
 
-    <string name="deleted_account_msg">We\'re sorry to see you go. Once you request your account to be deleted, you have 30 days to cancel this request. After 30 days, your encrypted account data is permanently removed from the backup node.</string>
+    <string name="deleted_account_msg">We\'re sorry to see you go. Once you request your vault to be deleted, you have 30 days to cancel this request. After 30 days, your encrypted vault data is permanently removed from the backup node.</string>
     <string name="swipe_down_to_skip">Swipe down to skip</string>
     <string name="show">Show</string>
 
@@ -612,8 +612,8 @@
     <string name="start_login_text">With Anytype you can write notes and documents, manage tasks, share files and save important content from the web.</string>
     <string name="login">Login</string>
     <string name="sign_up">Sign up</string>
-    <string name="type_your_recovery_phrase">or type your recovery phrase</string>
-    <string name="login_with_recovery_phrase">Login with recovery phrase</string>
+    <string name="type_your_recovery_phrase">or type your Key</string>
+    <string name="login_with_recovery_phrase">Login with your Key</string>
     <string name="or_scan_qr_code">Scan QR code</string>
     <string name="choose_pin_code">Choose pin code</string>
     <string name="congratulations">Congratulations!</string>
@@ -642,8 +642,8 @@
     <string name="other_settings">Other settings</string>
     <string name="your_page">Your public page</string>
     <string name="updates">Updates</string>
-    <string name="recovery_phrase_text">You\'ll need it to sign in. Keep it in a safe place. If you lose it, you can no longer access your account.</string>
-    <string name="back_up_your_recovery_phrase">Back up your recovery phrase</string>
+    <string name="recovery_phrase_text">You\'ll need it to sign in. Keep it in a safe place. If you lose it, you can no longer access your vault.</string>
+    <string name="back_up_your_recovery_phrase">Back up your Key</string>
     <string name="i_ve_written_it_down">i\'ve written it down</string>
     <string name="keychain_mock">witch collapse practice feed shame open despair creek road again ice least lake tree young address brain envelope</string>
     <string name="show_and_copy_mnemonic">Show and copy phrase</string>
@@ -698,7 +698,7 @@
     <string name="move_into_this_page">Move into this page</string>
     <string name="move_into">Move into</string>
 
-    <string name="fetching_your_account">Fetching your account…</string>
+    <string name="fetching_your_account">Fetching your vault…</string>
     <string name="search_on_page">Search on page</string>
     <string name="object_view_type">Object view type</string>
     <string name="object_type_name">Object type name</string>
@@ -759,7 +759,7 @@
     <string name="btn_upload_storage">Upload from External storage</string>
     <string name="btn_upload">Upload</string>
 
-    <string name="alert_qr_camera">Go to Settings – Recovery Phrase on Desktop in order to find the QR code for login.</string>
+    <string name="alert_qr_camera">Go to Settings – Key on Desktop in order to find the QR code for login.</string>
     <string name="alert_qr_camera_ok">Ok</string>
     <string name="choose_option">Choose option</string>
     <string name="find_a_relation">Find a relation</string>
@@ -797,9 +797,9 @@
     <string name="shortcut_create_new_object_of_type">New %1$s</string>
     <string name="close">Close</string>
     <string name="go_to_settings">Go to settings</string>
-    <string name="do_not_forget_mnemonic_phrase">Don\'t forget to take and save your recovery phrase</string>
+    <string name="do_not_forget_mnemonic_phrase">Don\'t forget to take and save your Key</string>
     <string name="you_can_always_find_mnemonic_in_settings">You can always find the phrase in the settings on the dashboard screen.</string>
-    <string name="if_you_lose_recovery_phrase_warning">If you lose the recovery phrase and get logged out you will not be able to ever access your data again. Save this recovery phrase outside of Anytype for data recovery.</string>
+    <string name="if_you_lose_recovery_phrase_warning">If you lose the Key and get logged out you will not be able to ever access your data again. Save this Key outside of Anytype for data recovery.</string>
     <string name="card_size">Card size</string>
     <string name="clear_cache">Clear cache</string>
     <string name="clear_cache_title">Are you sure?</string>
@@ -814,24 +814,24 @@
     <string name="unsplash">Unsplash</string>
     <string name="cancel_deletion">Cancel deletion</string>
     <string name="logout_and_clear_local_data">Logout and clear local data</string>
-    <string name="planned_for_deletion_in_n_days">This account is planned for deletion in %1$d days</string>
-    <string name="planned_for_deletion_tomorrow">This account is planned for deletion tomorrow</string>
-    <string name="planned_for_deletion_today">This account is planned for deletion today</string>
-    <string name="planned_for_deletion_unknown">This account is planned for deletion in ? days</string>
-    <string name="are_you_sure_to_delete_account">Are you sure to delete account?</string>
+    <string name="planned_for_deletion_in_n_days">This vault is planned for deletion in %1$d days</string>
+    <string name="planned_for_deletion_tomorrow">This vault is planned for deletion tomorrow</string>
+    <string name="planned_for_deletion_today">This vault is planned for deletion today</string>
+    <string name="planned_for_deletion_unknown">This vault is planned for deletion in ? days</string>
+    <string name="are_you_sure_to_delete_account">Are you sure to delete your vault?</string>
     <string name="deleted_account_warning_msg">You will be logged out on all other devices. You will have 30 days to recover it. Afterwards it will be deleted permanently.</string>
     <string name="use_template">Select template</string>
     <string name="swipe_to_choose">Use swipe to choose</string>
     <string name="without_template">Without template</string>
     <string name="unsplash_generic_error">Error while searching for images on Unsplash. Please try again later.</string>
-    <string name="do_not_forget_to_save_recovery_phrase_msg">Don\'t forget to take and save your recovery phrase from settings</string>
+    <string name="do_not_forget_to_save_recovery_phrase_msg">Don\'t forget to take and save your Key from settings</string>
     <string name="unlock_your_object_to_add_new_relation">Unlock your object to add new relation</string>
     <string name="unlock_your_object_to_edit_relations">Unlock your object to edit relations</string>
 
     <string name="fragment_relation_create_from_scratch_title">Select relation type</string>
 
     <string name="fragment_dashboard_restore">Restore</string>
-    <string name="your_account_deleted">Your account is deleted.</string>
+    <string name="your_account_deleted">Your vault is deleted.</string>
     <plurals name="fragment_dashboard_selected_count">
         <item quantity="one">%d object selected</item>
         <item quantity="other">%d objects selected</item>
@@ -857,7 +857,7 @@
 
     <string name="snack_link_to">linked to</string>
     <string name="snack_move_to">moved to</string>
-    <string name="recovery_phrase_copied">Recovery phrase copied</string>
+    <string name="recovery_phrase_copied">Your Key copied</string>
 
 
     <string name="type_editing_title">Type settings</string>
@@ -872,7 +872,7 @@
     <string name="almost_there">Almost there!</string>
     <string name="i_did_not_not_complete_migration">I didn\'t complete migration</string>
     <string name="not_completed_migration_steps">I didn\'t complete migration</string>
-    <string name="almost_there_subtitle">To use this version of the app, please choose the correct option below to migrate your account.</string>
+    <string name="almost_there_subtitle">To use this version of the app, please choose the correct option below to migrate your vault.</string>
     <string name="i_completed_migration">I completed migration</string>
     <string name="here">here</string>
     <string name="update_steps_first">1. Download the desktop app </string>
@@ -886,7 +886,6 @@
     <string name="sync_status_local_only">Local-only</string>
 
     <string name="mail_more_space_body">Hi, Anytype team. I am reaching out to request an increase in my file storage capacity as I have run out of storage. My current limits is %1$s. My account id is %2$s. Cheers, %3$s</string>
-    <string name="your_recovery_phrase_can_t_be_empty">Your recovery phrase can\'t be empty</string>
     <string name="go_to_the_app">Go to the app</string>
 
     <string name="exiting_please_wait">Exiting... please wait</string>
@@ -1079,40 +1078,42 @@
 
     <string name="onboarding_auth_title">the everything app</string>
     <string name="onboarding_auth_subtitle">for those\nwho celebrate\ntrust &amp; autonomy</string>
-    <string name="onboarding_auth_description">Anytype is your safe space to write, plan, think and organise everything that matters to you.</string>
+    <string name="onboarding_auth_description">Create &amp; collaborate in spaces you own. Encrypted, offline &amp; open.</string>
     <string name="onboarding_terms_and_policy_prefix">"By continuing you agree to "</string>
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
     <string name="onboarding_terms_and_policy_infix">" and "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
-    <string name="onboarding_join_button_text">Join</string>
-    <string name="onboarding_log_in_button_text">Login</string>
+    <string name="onboarding_new_vault_button_text">New vault</string>
+    <string name="onboarding_enter_my_vault">Enter my Vault</string>
+    <string name="onboarding_have_key_button_text">I have a Key</string>
+    <string name="onboarding_get_my_key_button_text">Get my Key</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
-    <string name="onboarding_mnemonic_title">Save your Recovery Phrase</string>
-    <string name="onboarding_mnemonic_description">It\'s a novel way of authentication that gives you full ownership over your account and data.</string>
-    <string name="onboarding_mnemonic_show_key">Show Recovery Phrase</string>
-    <string name="onboarding_mnemonic_key_saved">Go to the app</string>
-    <string name="onboarding_mnemonic_skip">Skip</string>
-    <string name="onboarding_mnemonic_copy">Copy to clipboard</string>
-    <string name="onboarding_set_your_name_title">Choose your name</string>
-    <string name="onboarding_soul_creation_description">This is how you will appear in the app</string>
+    <string name="onboarding_this_is_your_key_title">This is your Key</string>
+    <string name="onboarding_key_description">It gives you full ownership over your vault. It cannot be recovered.</string>
+    <string name="onboarding_show_my_key">Show my Key</string>
+    <string name="onboarding_key_skip">Skip</string>
+    <string name="onboarding_key_copy">Copy to clipboard</string>
+    <string name="onboarding_set_your_name_title">Set your name</string>
+    <string name="onboarding_soul_creation_description">Only seen by people you share something with. There is no central registry of these names.</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
-    <string name="onboarding_type_recovery_phrase">Type your recovery phrase</string>
+    <string name="onboarding_type_your_key">Type your Key</string>
     <string name="onboarding_login_or">OR</string>
     <string name="onboarding_entering_void_title">Entering the Void</string>
+    <string name="onboarding_your_key_can_t_be_empty">Your Key can\'t be empty</string>
 
     <string name="onboarding_mnemonic_read_more">Read more</string>
-    <string name="onboarding_mnemonic_additional_info">You can find Recovery Phrase later in\nAnytype settings</string>
-    <string name="onboqrding_what_is_recovery_phrase">What is Recovery Phrase?</string>
-    <string name="onboarding_recovery_phrase_description">Recovery Phrase is a random combination of 12 words from which your account is magically generated on this device.</string>
-    <string name="onboarding_recovery_phrase_description_2">Whoever knows Recovery Phrase, owns the account. </string>
-    <string name="onboarding_recovery_phrase_description_3">At this moment, you are the only person in the world who knows it.</string>
-    <string name="onboarding_recovery_phrase_description_4">That\'s why it\'s essential to keep Recovery Phrase safe. As the sole owner, nobody can help you if it\'s lost.</string>
-    <string name="onboarding_how_to_save_my_phrase">How to save my Phrase?</string>
-    <string name="onboarding_how_to_save_my_phrase_2">The easiest way to store your Recovery Phrase is to save it in your password manager.</string>
+    <string name="onboarding_key_additional_info">You can find this key later in Anytype settings</string>
+    <string name="onboarding_what_is_the_key">What is the Key?</string>
+    <string name="onboarding_recovery_phrase_description">It is represented by a recovery phrase – 12 random words from which your vault is magically generated on this device.</string>
+    <string name="onboarding_recovery_phrase_description_2">Whomever knows the combination of these words owns your vault. </string>
+    <string name="onboarding_recovery_phrase_description_3">Right now, you are the only person in the world who knows it.</string>
+    <string name="onboarding_recovery_phrase_description_4">All computational resources on Earth are not enough to break in. If you lose it, it cannot be recovered. So, store it somewhere safe!</string>
+    <string name="onboarding_how_to_save_my_phrase">How to save my Key?</string>
+    <string name="onboarding_how_to_save_my_phrase_2">The easiest way to store your Key is to save it in your password manager.</string>
     <string name="onboarding_how_to_save_my_phrase_3">The most secure way is to write it down on paper and keep it offline, in a safe and secure place.</string>
 
     <!--endregion-->
@@ -1286,7 +1287,7 @@
 
     <!--region ONBOARDING ERRORS -->
 
-    <string name="error_invalid_recovery_phrase">Invalid recovery phrase</string>
+    <string name="error_invalid_recovery_phrase">Invalid Key</string>
     <string name="network">Network</string>
     <string name="network_with_colon">Network:</string>
     <string name="network_settings_anytype_network">Anytype network</string>

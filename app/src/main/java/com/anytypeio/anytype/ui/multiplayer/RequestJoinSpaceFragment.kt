@@ -1,13 +1,22 @@
 package com.anytypeio.anytype.ui.multiplayer
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
@@ -21,6 +30,7 @@ import com.anytypeio.anytype.core_ui.foundation.Announcement
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
 import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_BLUE
 import com.anytypeio.anytype.core_ui.foundation.GenericAlert
+import com.anytypeio.anytype.core_ui.foundation.Prompt
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
@@ -28,8 +38,11 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.common.TypedViewState
 import com.anytypeio.anytype.presentation.multiplayer.RequestJoinSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.RequestJoinSpaceViewModel.ErrorView
+import com.anytypeio.anytype.ui.notifications.NotificationPermissionPromptDialog
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
+import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
 
@@ -40,6 +53,7 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
 
     private val vm by viewModels<RequestJoinSpaceViewModel> { factory }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -48,7 +62,29 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
+                val bottomSheetState = rememberModalBottomSheetState()
+                val scope = rememberCoroutineScope()
+
+                val launcher = rememberLauncherForActivityResult(
+                    ActivityResultContracts.RequestPermission()
+                ) { isGranted: Boolean ->
+                    Timber.d("Permission granted: $isGranted")
+                    activity?.onRequestPermissionsResult(
+                        NotificationPermissionPromptDialog.REQUEST_CODE,
+                        arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                        if (isGranted)
+                            intArrayOf(PackageManager.PERMISSION_GRANTED)
+                        else
+                            intArrayOf(PackageManager.PERMISSION_DENIED)
+                    )
+                    scope.launch {
+                        bottomSheetState.hide()
+                    }.invokeOnCompletion {
+                        vm.onNotificationPromptDismissed()
+                    }
+                }
                 MaterialTheme(typography = typography) {
+                    val showModal = vm.showEnableNotificationDialog.collectAsStateWithLifecycle().value
                     when(val state = vm.state.collectAsStateWithLifecycle().value) {
                         is TypedViewState.Loading, is TypedViewState.Success -> {
                             val isLoading: Boolean
@@ -66,12 +102,40 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                                     createdByName = state.data.creatorName
                                 }
                             }
-                            JoinSpaceScreen(
-                                isLoading = isLoading,
-                                onRequestJoinSpaceClicked = vm::onRequestToJoinClicked,
-                                spaceName = spaceName,
-                                createdByName = createdByName
-                            )
+                            if (!showModal) {
+                                JoinSpaceScreen(
+                                    isLoading = isLoading,
+                                    onRequestJoinSpaceClicked = vm::onRequestToJoinClicked,
+                                    spaceName = spaceName,
+                                    createdByName = createdByName
+                                )
+                            } else {
+                                ModalBottomSheet(
+                                    onDismissRequest = {
+                                        vm.onNotificationPromptDismissed()
+                                    },
+                                    dragHandle = {},
+                                    containerColor = colorResource(id = R.color.background_secondary),
+                                    sheetState = bottomSheetState
+                                ) {
+                                    Prompt(
+                                        title = stringResource(R.string.notifications_prompt_get_notified),
+                                        description = stringResource(R.string.notifications_prompt_description),
+                                        primaryButtonText = stringResource(R.string.notifications_prompt_primary_button_text),
+                                        secondaryButtonText = stringResource(R.string.notifications_prompt_secondary_button_text),
+                                        onPrimaryButtonClicked = {
+                                            launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                        },
+                                        onSecondaryButtonClicked = {
+                                            scope.launch {
+                                                bottomSheetState.hide()
+                                            }.invokeOnCompletion {
+                                                vm.onNotificationPromptDismissed()
+                                            }
+                                        }
+                                    )
+                                }
+                            }
                         }
                         is TypedViewState.Error -> {
                             when(val err = state.error) {

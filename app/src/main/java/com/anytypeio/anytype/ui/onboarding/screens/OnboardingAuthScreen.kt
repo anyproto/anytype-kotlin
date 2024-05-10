@@ -108,7 +108,7 @@ fun AuthScreen(
 @Composable
 fun Title(modifier: Modifier = Modifier) {
     Image(
-        painter = painterResource(id = R.drawable.ic_the_everything_app) ,
+        painter = painterResource(id = R.drawable.ic_local_first_internet) ,
         contentDescription = "Everything app logo",
         modifier = modifier
     )
@@ -161,7 +161,7 @@ fun SignButtons(
 ) {
     Column {
         OnBoardingButtonPrimary(
-            text = stringResource(id = R.string.onboarding_join_button_text),
+            text = stringResource(id = R.string.onboarding_new_vault_button_text),
             onClick = onJoinClicked,
             enabled = true,
             size = ButtonSize.Large,
@@ -170,7 +170,7 @@ fun SignButtons(
                 .padding(start = 20.dp, end = 20.dp)
         )
         OnBoardingButtonSecondary(
-            text = stringResource(id = R.string.onboarding_log_in_button_text),
+            text = stringResource(id = R.string.onboarding_have_key_button_text),
             onClick = onLoginClicked,
             size = ButtonSize.Large,
             modifier = Modifier

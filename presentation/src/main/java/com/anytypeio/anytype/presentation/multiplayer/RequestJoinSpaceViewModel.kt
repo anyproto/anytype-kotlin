@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.multiplayer.CheckIsUserSpaceMember
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteView
 import com.anytypeio.anytype.domain.multiplayer.SendJoinSpaceRequest
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
+import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -35,11 +36,13 @@ class RequestJoinSpaceViewModel(
     private val checkIsUserSpaceMember: CheckIsUserSpaceMember,
     private val spaceManager: SpaceManager,
     private val saveCurrentSpace: SaveCurrentSpace,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val notificator: SystemNotificationService
 ) : BaseViewModel() {
 
     val state = MutableStateFlow<TypedViewState<SpaceInviteView, ErrorView>>(TypedViewState.Loading)
     val isRequestInProgress = MutableStateFlow(false)
+    val showEnableNotificationDialog = MutableStateFlow(false)
     val commands = MutableSharedFlow<Command>(0)
 
     init {
@@ -123,8 +126,13 @@ class RequestJoinSpaceViewModel(
                             },
                             onSuccess = {
                                 analytics.sendEvent(eventName = screenRequestSent)
-                                commands.emit(Command.Toast.RequestSent)
-                                commands.emit(Command.Dismiss)
+                                if (notificator.areNotificationsEnabled) {
+                                    commands.emit(Command.Toast.RequestSent)
+                                    commands.emit(Command.Dismiss)
+                                } else {
+                                    commands.emit(Command.Toast.RequestSent)
+                                    showEnableNotificationDialog.value = true
+                                }
                             }
                         )
                         isRequestInProgress.value = false
@@ -150,6 +158,12 @@ class RequestJoinSpaceViewModel(
         }
     }
 
+    fun onNotificationPromptDismissed() {
+        viewModelScope.launch {
+            commands.emit(Command.Dismiss)
+        }
+    }
+
     class Factory @Inject constructor(
         private val params: Params,
         private val getSpaceInviteView: GetSpaceInviteView,
@@ -158,7 +172,8 @@ class RequestJoinSpaceViewModel(
         private val checkIsUserSpaceMember: CheckIsUserSpaceMember,
         private val saveCurrentSpace: SaveCurrentSpace,
         private val spaceManager: SpaceManager,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val notificator: SystemNotificationService
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = RequestJoinSpaceViewModel(
@@ -169,7 +184,8 @@ class RequestJoinSpaceViewModel(
             checkIsUserSpaceMember = checkIsUserSpaceMember,
             saveCurrentSpace = saveCurrentSpace,
             spaceManager = spaceManager,
-            analytics = analytics
+            analytics = analytics,
+            notificator = notificator
         ) as T
     }
 

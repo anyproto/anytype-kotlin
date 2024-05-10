@@ -1,9 +1,12 @@
 package com.anytypeio.anytype.ui.payments
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -17,13 +20,14 @@ import androidx.navigation.compose.rememberNavController
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
 import com.anytypeio.anytype.payments.screens.CodeScreen
 import com.anytypeio.anytype.payments.screens.MainPaymentsScreen
 import com.anytypeio.anytype.payments.screens.PaymentWelcomeScreen
-import com.anytypeio.anytype.payments.screens.TierScreen
+import com.anytypeio.anytype.payments.screens.TierViewScreen
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.payments.viewmodel.PaymentsNavigation
 import com.anytypeio.anytype.payments.viewmodel.PaymentsViewModel
@@ -72,28 +76,6 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        jobs += subscribe(vm.command) { command ->
-            when (command) {
-                PaymentsNavigation.Tier -> navController.navigate(PaymentsNavigation.Tier.route)
-                PaymentsNavigation.Code -> navController.navigate(PaymentsNavigation.Code.route)
-                PaymentsNavigation.Welcome -> {
-                    navController.popBackStack(PaymentsNavigation.Main.route, false)
-                    navController.navigate(PaymentsNavigation.Welcome.route)
-                }
-                PaymentsNavigation.Dismiss -> navController.popBackStack()
-                else -> {}
-            }
-        }
-        jobs += subscribe(vm.launchBillingCommand) { event ->
-            billingClientLifecycle.launchBillingFlow(
-                activity = requireActivity(),
-                params = event
-            )
-        }
-    }
-
     @OptIn(ExperimentalMaterialNavigationApi::class)
     @Composable
     private fun SetupNavigation(
@@ -130,16 +112,19 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
         expand()
         MainPaymentsScreen(
             state = vm.viewState.collectAsStateWithLifecycle().value,
-            tierClicked = vm::onTierClicked
+            tierClicked = vm::onTierClicked,
+            tierAction = vm::onTierAction
         )
     }
 
+    @OptIn(ExperimentalFoundationApi::class)
     @Composable
     private fun InitTierScreen() {
-        TierScreen(
+        TierViewScreen(
             state = vm.tierState.collectAsStateWithLifecycle().value,
             onDismiss = vm::onDismissTier,
             actionTier = vm::onTierAction,
+            anyNameTextField = vm.anyNameState
         )
     }
 
@@ -164,6 +149,43 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupBottomSheetBehavior(DEFAULT_PADDING_TOP)
+        subscribe(vm.command) { command ->
+            when (command) {
+                PaymentsNavigation.Tier -> navController.navigate(PaymentsNavigation.Tier.route)
+                PaymentsNavigation.Code -> navController.navigate(PaymentsNavigation.Code.route)
+                PaymentsNavigation.Welcome -> {
+                    navController.popBackStack(PaymentsNavigation.Main.route, false)
+                    navController.navigate(PaymentsNavigation.Welcome.route)
+                }
+                PaymentsNavigation.Dismiss -> navController.popBackStack()
+                is PaymentsNavigation.OpenUrl -> {
+                    try {
+                        if (command.url == null) {
+                            toast("Url is null")
+                            return@subscribe
+                        }
+                        Intent(Intent.ACTION_VIEW).apply {
+                            data = Uri.parse(command.url)
+                        }.let {
+                            startActivity(it)
+                        }
+                    } catch (e: Throwable) {
+                        toast("Couldn't parse url: ${command.url}")
+                    }
+                }
+                PaymentsNavigation.Main -> {}
+                PaymentsNavigation.OpenEmail -> {
+                    toast("Not implemented yet")
+                }
+                null -> {}
+            }
+        }
+        subscribe(vm.launchBillingCommand) { event ->
+            billingClientLifecycle.launchBillingFlow(
+                activity = requireActivity(),
+                params = event
+            )
+        }
     }
 
     override fun injectDependencies() {

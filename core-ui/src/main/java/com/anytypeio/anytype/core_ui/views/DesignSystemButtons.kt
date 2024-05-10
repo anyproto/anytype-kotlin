@@ -537,6 +537,20 @@ fun MyPrimaryButton() {
 
 @Composable
 @Preview
+fun MyPrimaryButtonDisabled() {
+    ButtonPrimary(
+        onClick = {},
+        size = ButtonSize.Large,
+        text = "Login",
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp),
+        enabled = false
+    )
+}
+
+@Composable
+@Preview
 fun MyPrimaryButtonDark() {
     ButtonPrimaryDarkTheme(
         onClick = {},

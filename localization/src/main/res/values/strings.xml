@@ -1429,8 +1429,11 @@
     <string name="payments_tier_custom_description">Membership tailored to your specific needs and preferences</string>
 
     <string name="payments_button_learn">Learn more</string>
-    <string name="payments_button_manage">Manage</string>
+    <string name="payments_button_manage">Manage payment</string>
     <string name="payments_button_contact">Contact</string>
+    <string name="payments_button_info">More info</string>
+    <string name="payments_button_submit">Submit</string>
+    <string name="payments_button_pay">Pay by card</string>
 
     <string name="payments_member_link">Membership levels details</string>
     <string name="payments_privacy_link">Privacy policy</string>
@@ -1446,7 +1449,7 @@
     <string name="payments_tier_details_name_domain">.any</string>
     <string name="payments_tier_details_name_min">Min 7 characters</string>
     <string name="payments_tier_details_name_error">This name is already taken!</string>
-    <string name="payments_tier_details_name_validated">This name is up for grabs!</string>
+    <string name="payments_tier_details_name_validated">This name [%1$s] is up for grabs!</string>
     <string name="payments_tier_details_name_validating">Validating name</string>
     <string name="payments_tier_details_free_forever">Forever free</string>
     <string name="payments_tier_details_valid_until">Valid until %1$s</string>
@@ -1536,6 +1539,7 @@
     <string name="per_period">per %1$s</string>
     <string name="free_for">Free for %1$s</string>
     <string name="free_for_unknown">Free until...</string>
+    <string name="free_until">Free until</string>
     <string name="membership_valid_forever">Valid forever</string>
     <string name="membership_valid_for_unknown">Valid until...</string>
 

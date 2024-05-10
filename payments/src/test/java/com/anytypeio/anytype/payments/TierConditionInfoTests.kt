@@ -323,8 +323,10 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             //Asserts
             assertEquals(TiersConstants.EXPLORER_ID, tier.id.value)
             assertEquals(
-                TierConditionInfo.Visible.Free(
-                    period = TierPeriod.Unlimited
+                TierConditionInfo.Visible.Valid(
+                    period = TierPeriod.Unlimited,
+                    dateEnds = 1714199910,
+                    payedBy = MembershipPaymentMethod.METHOD_CRYPTO
                 ), tier.conditionInfo
             )
         }
@@ -367,8 +369,10 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             //Asserts
             assertEquals(TiersConstants.EXPLORER_ID, tier.id.value)
             assertEquals(
-                TierConditionInfo.Visible.Free(
-                    period = TierPeriod.Unknown
+                TierConditionInfo.Visible.Valid(
+                    period = TierPeriod.Unknown,
+                    dateEnds = 1714199910,
+                    payedBy = MembershipPaymentMethod.METHOD_CRYPTO
                 ), tier.conditionInfo
             )
         }
@@ -411,8 +415,10 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             //Asserts
             assertEquals(TiersConstants.EXPLORER_ID, tier.id.value)
             assertEquals(
-                TierConditionInfo.Visible.Free(
-                    period = TierPeriod.Year(2)
+                TierConditionInfo.Visible.Valid(
+                    period = TierPeriod.Year(2),
+                    dateEnds = 1714199910,
+                    payedBy = MembershipPaymentMethod.METHOD_CRYPTO
                 ), tier.conditionInfo
             )
         }

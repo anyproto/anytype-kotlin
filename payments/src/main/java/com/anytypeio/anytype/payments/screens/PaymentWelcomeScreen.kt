@@ -27,7 +27,12 @@ import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.payments.R
-import com.anytypeio.anytype.payments.viewmodel.Tier
+import com.anytypeio.anytype.payments.models.TierAnyName
+import com.anytypeio.anytype.payments.models.TierButton
+import com.anytypeio.anytype.payments.models.TierConditionInfo
+import com.anytypeio.anytype.payments.models.TierEmail
+import com.anytypeio.anytype.payments.models.TierPeriod
+import com.anytypeio.anytype.payments.models.TierView
 import com.anytypeio.anytype.payments.viewmodel.PaymentsWelcomeState
 import com.anytypeio.anytype.presentation.membership.models.TierId
 
@@ -46,7 +51,7 @@ fun PaymentWelcomeScreen(state: PaymentsWelcomeState, onDismiss: () -> Unit) {
             containerColor = colorResource(id = R.color.background_secondary),
             content = {
                 val tierResources = mapTierToResources(state.tier)
-                if (tierResources != null) WelcomeContent(tierResources, onDismiss)
+                WelcomeContent(state.tier, tierResources, onDismiss)
             },
             shape = RoundedCornerShape(16.dp),
             dragHandle = null
@@ -55,7 +60,7 @@ fun PaymentWelcomeScreen(state: PaymentsWelcomeState, onDismiss: () -> Unit) {
 }
 
 @Composable
-private fun WelcomeContent(tierResources: TierResources, onDismiss: () -> Unit) {
+private fun WelcomeContent(tierView: TierView, tierResources: TierResources, onDismiss: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -72,7 +77,7 @@ private fun WelcomeContent(tierResources: TierResources, onDismiss: () -> Unit) 
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp),
-            text = stringResource(id = R.string.payments_welcome_title, tierResources.title),
+            text = stringResource(id = R.string.payments_welcome_title, stringResource(id = tierView.title)),
             color = colorResource(id = R.color.text_primary),
             style = HeadlineHeading,
             textAlign = TextAlign.Center
@@ -106,12 +111,21 @@ private fun WelcomeContent(tierResources: TierResources, onDismiss: () -> Unit) 
 fun PaymentWelcomeScreenPreview() {
     PaymentWelcomeScreen(
         PaymentsWelcomeState.Initial(
-            Tier.Explorer(
-                TierId(22),
-                true,
-                "01-01-2025",
-                color = "green",
-                features = listOf("Feature 1", "Feature 2"),
+            tier = TierView(
+                id = TierId(value = 3506),
+                isActive = false,
+                title = R.string.title,
+                subtitle = R.string.subheading,
+                conditionInfo = TierConditionInfo.Visible.Price(
+                    price = "$99.9", period = TierPeriod.Year(1)
+
+                ),
+                features = listOf(),
+                membershipAnyName = TierAnyName.Visible.Enter,
+                buttonState = TierButton.Manage.Android.Enabled(""),
+                email = TierEmail.Visible.Enter,
+                color = "dolores"
             )
-        ), {})
+        )
+    ) { }
 }

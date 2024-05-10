@@ -66,7 +66,8 @@ fun MembershipTierData.toView(
             emailState = emailState,
             paymentMethod = membershipStatus.paymentMethod
         ),
-        email = emailState
+        email = emailState,
+        color = colorStr
     )
 }
 
@@ -86,7 +87,8 @@ fun MembershipTierData.toPreviewView(
             paymentMethod = membershipStatus.paymentMethod,
             membershipValidUntil = membershipStatus.dateEnds
         ),
-        isActive = isActive
+        isActive = isActive,
+        color = colorStr
     )
 }
 
@@ -97,6 +99,7 @@ private fun MembershipTierData.toButtonView(
     paymentMethod: MembershipPaymentMethod
 ): TierButton {
     val androidProductId = this.androidProductId
+    val androidInfoUrl = this.androidManageUrl
     return if (isActive) {
         val wasPurchasedOnAndroid = isActiveTierPurchasedOnAndroid(paymentMethod)
         if (!wasPurchasedOnAndroid) {
@@ -119,7 +122,7 @@ private fun MembershipTierData.toButtonView(
                         iosManageUrl
                     )
                     MembershipPaymentMethod.METHOD_INAPP_GOOGLE -> TierButton.Manage.External.Enabled(
-                        androidManageUrl
+                        androidInfoUrl
                     )
                 }
             }
@@ -132,7 +135,11 @@ private fun MembershipTierData.toButtonView(
         }
     } else {
         if (androidProductId == null) {
-            TierButton.Info.Enabled("")
+            if (androidInfoUrl == null) {
+                TierButton.Info.Disabled
+            } else {
+                TierButton.Info.Enabled(androidInfoUrl)
+            }
         } else {
             TierButton.Pay.Disabled
         }
@@ -192,18 +199,11 @@ private fun MembershipTierData.createConditionInfoForCurrentTier(
     membershipValidUntil: Long,
     paymentMethod: MembershipPaymentMethod
 ): TierConditionInfo {
-    return if (priceStripeUsdCents == 0) {
-        TierConditionInfo.Visible.Free(
-            period = convertToTierViewPeriod(this)
-        )
-    } else {
-        TierConditionInfo.Visible.Valid(
-            dateEnds = membershipValidUntil,
-            payedBy = paymentMethod,
-            period = convertToTierViewPeriod(this)
-
-        )
-    }
+    return TierConditionInfo.Visible.Valid(
+        dateEnds = membershipValidUntil,
+        payedBy = paymentMethod,
+        period = convertToTierViewPeriod(this)
+    )
 }
 
 private fun MembershipTierData.createConditionInfoForNonBillingTier(): TierConditionInfo {
@@ -220,8 +220,12 @@ private fun MembershipTierData.createConditionInfoForNonBillingTier(): TierCondi
 }
 
 private fun formatPriceInCents(priceInCents: Int): String {
-    val dollars = priceInCents / 100.0
-    return "$%.2f".format(dollars)
+    val dollars = priceInCents / 100
+    return if (priceInCents % 100 == 0) {
+        "$$dollars"
+    } else {
+        "$%.2f".format(dollars + (priceInCents % 100) / 100.0)
+    }
 }
 
 private fun MembershipTierData.createConditionInfoForBillingTier(billingClientState: BillingClientState): TierConditionInfo {

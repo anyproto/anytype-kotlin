@@ -7,7 +7,6 @@ import com.anytypeio.anytype.payments.constants.TiersConstants.MEMBERSHIP_LEVEL_
 import com.anytypeio.anytype.payments.constants.TiersConstants.PRIVACY_POLICY
 import com.anytypeio.anytype.payments.constants.TiersConstants.TERMS_OF_SERVICE
 import com.anytypeio.anytype.payments.playbilling.BillingClientState
-import com.anytypeio.anytype.payments.playbilling.BillingPurchaseState
 import com.anytypeio.anytype.payments.viewmodel.MembershipMainState
 import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
 

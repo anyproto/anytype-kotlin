@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -35,20 +33,22 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
-import com.anytypeio.anytype.core_ui.views.HeadlineTitle
-import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.fontInterSemibold
+import com.anytypeio.anytype.payments.constants.TiersConstants.BUILDER_ID
+import com.anytypeio.anytype.payments.constants.TiersConstants.CO_CREATOR_ID
+import com.anytypeio.anytype.payments.constants.TiersConstants.EXPLORER_ID
+import com.anytypeio.anytype.payments.models.TierPreviewView
+import com.anytypeio.anytype.payments.models.TierView
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
-import com.anytypeio.anytype.payments.viewmodel.Tier
 import com.anytypeio.anytype.presentation.membership.models.TierId
 
 @Composable
-fun TierView(
-    tier: Tier,
+fun TierPreviewView(
+    tier: TierPreviewView,
     onClick: (TierId) -> Unit
 ) {
-    val resources = mapTierToResources(tier) ?: return
+    val resources = mapTierPreviewToResources(tier)
 
     val brush = Brush.verticalGradient(
         listOf(
@@ -87,7 +87,7 @@ fun TierView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 17.dp, top = 10.dp),
-                text = resources.title,
+                text = stringResource(id = tier.title),
                 color = colorResource(id = R.color.text_primary),
                 style = titleTextStyle,
                 textAlign = TextAlign.Start
@@ -97,27 +97,14 @@ fun TierView(
                     .fillMaxWidth()
                     .height(96.dp)
                     .padding(start = 16.dp, end = 16.dp, top = 5.dp),
-                text = resources.subtitle,
+                text = stringResource(id = tier.subtitle),
                 color = colorResource(id = R.color.text_primary),
                 style = Caption1Regular,
                 textAlign = TextAlign.Start
             )
-            if (tier.isCurrent) {
-//                ValidUntilText(
-//                    expirationText(
-//                        formattedDateEnds = membershipStatus.formattedDateEnds,
-//                        tier = tier
-//                    )
-//                )
-            } else {
-                //PriceText(price = tier.price, interval = tier.interval)
-            }
-//            Price(tier = tier)
-//            TierPreviewButton(tier = tier) {
-//                onClick()
-//            }
+            ConditionInfoPreview(state = tier.conditionInfo)
             ButtonPrimary(
-                text = resources.btnText,
+                text = stringResource(id = R.string.payments_button_learn),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
@@ -127,7 +114,7 @@ fun TierView(
             Spacer(modifier = Modifier.height(10.dp))
         }
 
-        if (tier.isCurrent) {
+        if (tier.isActive) {
             Text(
                 modifier = Modifier
                     .wrapContentSize()
@@ -149,97 +136,65 @@ fun TierView(
 }
 
 @Composable
-private fun PriceText(price: String, interval: String) {
-    Row() {
-        Text(
-            modifier = Modifier
-                .wrapContentWidth()
-                .padding(start = 20.dp),
-            text = price,
-            color = colorResource(id = R.color.text_primary),
-            style = HeadlineTitle,
-            textAlign = TextAlign.Start
-        )
-        Text(
-            modifier = Modifier
-                .wrapContentWidth()
-                .align(Alignment.Bottom)
-                .padding(bottom = 4.dp, start = 6.dp),
-            text = interval,
-            color = colorResource(id = R.color.text_primary),
-            style = Relations1,
-            textAlign = TextAlign.Start
-        )
-    }
-}
-
-@Composable
-private fun ValidUntilText(text: String) {
-    Text(
-        modifier = Modifier.padding(start = 16.dp),
-        text = text,
-        style = Caption1Regular,
-        color = colorResource(id = R.color.text_primary)
-    )
-}
-
-@Composable
-fun mapTierToResources(tier: Tier?): TierResources? {
-    return when (tier) {
-        is Tier.Builder -> TierResources(
-            title = stringResource(id = R.string.payments_tier_builder),
-            subtitle = stringResource(id = R.string.payments_tier_builder_description),
+fun mapTierToResources(tier: TierView): TierResources {
+    return when (tier.id.value) {
+        BUILDER_ID -> TierResources(
             mediumIcon = R.drawable.logo_builder_96,
             smallIcon = R.drawable.logo_builder_64,
             colors = toValue(tier.color),
             features = tier.features,
-            btnText = getButtonText(tier)
         )
 
-        is Tier.CoCreator -> TierResources(
-            title = stringResource(id = R.string.payments_tier_cocreator),
-            subtitle = stringResource(id = R.string.payments_tier_cocreator_description),
+        CO_CREATOR_ID -> TierResources(
             mediumIcon = R.drawable.logo_co_creator_96,
             smallIcon = R.drawable.logo_co_creator_64,
             colors = toValue(tier.color),
             features = tier.features,
-            btnText = getButtonText(tier)
         )
-
-        is Tier.Custom -> TierResources(
-            title = stringResource(id = R.string.payments_tier_custom),
-            subtitle = stringResource(id = R.string.payments_tier_custom_description),
-            smallIcon = R.drawable.logo_custom_64,
-            mediumIcon = R.drawable.logo_custom_64,
-            colors = toValue(tier.color),
-            features = tier.features,
-            btnText = getButtonText(tier)
-        )
-
-        is Tier.Explorer -> TierResources(
-            title = stringResource(id = R.string.payments_tier_explorer),
-            subtitle = stringResource(id = R.string.payments_tier_explorer_description),
+        EXPLORER_ID -> TierResources(
             mediumIcon = R.drawable.logo_explorer_96,
             smallIcon = R.drawable.logo_explorer_64,
             colors = toValue(tier.color),
             features = tier.features,
-            btnText = getButtonText(tier)
         )
-        else -> null
+        else -> TierResources(
+            smallIcon = R.drawable.logo_custom_64,
+            mediumIcon = R.drawable.logo_custom_64,
+            colors = toValue(tier.color),
+            features = tier.features,
+        )
     }
 }
 
 @Composable
-private fun getButtonText(tier: Tier): String {
-    return if (tier.isCurrent) {
-        stringResource(id = R.string.payments_button_manage)
-    } else {
-        stringResource(id = R.string.payments_button_learn)
+fun mapTierPreviewToResources(tier: TierPreviewView): TierResources {
+    return when (tier.id.value) {
+        BUILDER_ID -> TierResources(
+            mediumIcon = R.drawable.logo_builder_96,
+            smallIcon = R.drawable.logo_builder_64,
+            colors = toValue(tier.color)
+        )
+
+        CO_CREATOR_ID -> TierResources(
+            mediumIcon = R.drawable.logo_co_creator_96,
+            smallIcon = R.drawable.logo_co_creator_64,
+            colors = toValue(tier.color)
+        )
+        EXPLORER_ID -> TierResources(
+            mediumIcon = R.drawable.logo_explorer_96,
+            smallIcon = R.drawable.logo_explorer_64,
+            colors = toValue(tier.color)
+        )
+        else -> TierResources(
+            smallIcon = R.drawable.logo_custom_64,
+            mediumIcon = R.drawable.logo_custom_64,
+            colors = toValue(tier.color)
+        )
     }
 }
 
 @Composable
-private fun toValue(colorCode: String): TierColors {
+fun toValue(colorCode: String): TierColors {
     return TierColors(
         gradientStart = colorCode.gradientStart(),
         gradientEnd = colorCode.gradientEnd()
@@ -247,7 +202,7 @@ private fun toValue(colorCode: String): TierColors {
 }
 
 @Composable
-private fun String.gradientStart(): Color = when (this) {
+fun String.gradientStart(): Color = when (this) {
     CoverColor.RED.code -> colorResource(id = R.color.tier_gradient_red_start)
     CoverColor.BLUE.code -> colorResource(id = R.color.tier_gradient_blue_start)
     CoverColor.GREEN.code -> colorResource(id = R.color.tier_gradient_teal_start)
@@ -273,13 +228,10 @@ val titleTextStyle = TextStyle(
 )
 
 data class TierResources(
-    val title: String,
-    val subtitle: String,
     val mediumIcon: Int,
     val smallIcon: Int,
     val colors: TierColors,
-    val features: List<String>,
-    val btnText: String
+    val features: List<String> = emptyList()
 )
 
 data class TierColors(

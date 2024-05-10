@@ -57,7 +57,7 @@ interface MembershipProvider {
                     events.lastOrNull()?.membership
                 }.filterNotNull()
                 .map { membership ->
-                    val tiers = proceedWithGettingTiers().filter { SHOW_TEST_TIERS || !it.isTest }
+                    val tiers = proceedWithGettingTiers().filter { SHOW_TEST_TIERS || !it.isTest }.sortedBy { it.id }
                     toMembershipStatus(
                         membership = membership,
                         tiers = tiers
@@ -74,7 +74,7 @@ interface MembershipProvider {
 
         private suspend fun proceedWithGettingTiers(): List<MembershipTierData> {
             val tiersParams = Command.Membership.GetTiers(
-                noCache = false,
+                noCache = true,
                 locale = localeProvider.language()
             )
             return repo.membershipGetTiers(tiersParams)
@@ -100,8 +100,7 @@ interface MembershipProvider {
         }
 
         companion object {
-            const val DEFAULT_LOCALE = "en"
-            const val SHOW_TEST_TIERS = false
+            const val SHOW_TEST_TIERS = true
             const val DATE_FORMAT = "d MMM yyyy"
         }
     }

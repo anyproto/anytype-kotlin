@@ -87,7 +87,11 @@ class TierActiveAndFreeTests : MembershipTestsSetup() {
                 TestCase.assertEquals(TiersConstants.EXPLORER_ID, tier.id.value)
                 TestCase.assertEquals(true, tier.isActive)
                 TestCase.assertEquals(
-                    TierConditionInfo.Visible.Free(TierPeriod.Unlimited),
+                    TierConditionInfo.Visible.Valid(
+                        period = TierPeriod.Unlimited,
+                        dateEnds = 0,
+                        payedBy = MembershipPaymentMethod.METHOD_NONE
+                    ),
                     tier.conditionInfo
                 )
             }
@@ -100,7 +104,11 @@ class TierActiveAndFreeTests : MembershipTestsSetup() {
                 validateTierView(
                     tierView = result.tierView,
                     expectedFeatures = features,
-                    expectedConditionInfo = TierConditionInfo.Visible.Free(TierPeriod.Unlimited),
+                    expectedConditionInfo = TierConditionInfo.Visible.Valid(
+                        period = TierPeriod.Unlimited,
+                        dateEnds = 0,
+                        payedBy = MembershipPaymentMethod.METHOD_NONE
+                    ),
                     expectedAnyName = TierAnyName.Hidden,
                     expectedButtonState = TierButton.Submit.Disabled,
                     expectedId = TiersConstants.EXPLORER_ID,
@@ -134,7 +142,11 @@ class TierActiveAndFreeTests : MembershipTestsSetup() {
                 TestCase.assertEquals(TiersConstants.EXPLORER_ID, tier.id.value)
                 TestCase.assertEquals(true, tier.isActive)
                 TestCase.assertEquals(
-                    TierConditionInfo.Visible.Free(TierPeriod.Unlimited),
+                    TierConditionInfo.Visible.Valid(
+                        period = TierPeriod.Unlimited,
+                        dateEnds = 0,
+                        payedBy = MembershipPaymentMethod.METHOD_NONE
+                    ),
                     tier.conditionInfo
                 )
             }
@@ -147,7 +159,11 @@ class TierActiveAndFreeTests : MembershipTestsSetup() {
                 validateTierView(
                     tierView = result.tierView,
                     expectedFeatures = features,
-                    expectedConditionInfo = TierConditionInfo.Visible.Free(TierPeriod.Unlimited),
+                    expectedConditionInfo = TierConditionInfo.Visible.Valid(
+                        period = TierPeriod.Unlimited,
+                        dateEnds = 0,
+                        payedBy = MembershipPaymentMethod.METHOD_NONE
+                    ),
                     expectedAnyName = TierAnyName.Hidden,
                     expectedButtonState = TierButton.Hidden,
                     expectedId = TiersConstants.EXPLORER_ID,

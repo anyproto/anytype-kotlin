@@ -20,7 +20,6 @@ import com.anytypeio.anytype.core_ui.views.BodyBold
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.payments.R
 import com.anytypeio.anytype.payments.mapping.LocalizedPeriodString
-import com.anytypeio.anytype.payments.mapping.ToValidUntilString
 import com.anytypeio.anytype.payments.mapping.toPeriodDescription
 import com.anytypeio.anytype.payments.models.BillingPriceInfo
 import com.anytypeio.anytype.payments.models.PeriodDescription
@@ -46,8 +45,12 @@ fun ConditionInfoPreview(
 
         is TierConditionInfo.Visible.Valid -> {
             val validUntilDate = formatTimestamp(state.dateEnds)
-            val text = state.period.ToValidUntilString(formattedDate = validUntilDate)
-            ConditionInfoPreviewText(text = text)
+            val result = when (state.period)  {
+                TierPeriod.Unknown -> stringResource(id = R.string.membership_valid_for_unknown)
+                TierPeriod.Unlimited -> stringResource(id = R.string.payments_tier_details_free_forever)
+                else -> stringResource(id = R.string.payments_tier_details_valid_until, validUntilDate)
+            }
+            ConditionInfoPreviewText(text = result)
         }
 
         is TierConditionInfo.Visible.Price -> {
@@ -83,7 +86,7 @@ fun ConditionInfoPreview(
 }
 
 @Composable
-private fun getDate(tierPeriod: TierPeriod): String {
+fun getDate(tierPeriod: TierPeriod): String {
     tierPeriod.toPeriodDescription().let { desc ->
         return LocalizedPeriodString(desc)
     }
@@ -94,7 +97,8 @@ private fun ConditionInfoPreviewText(text: String, textColor: Int = R.color.text
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(24.dp),
+            .height(24.dp)
+            .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -116,6 +120,7 @@ private fun ConditionInfoPreviewPriceAndText(price: String, period: String) {
         modifier = Modifier
             .fillMaxWidth()
             .height(24.dp)
+            .padding(horizontal = 16.dp)
     ) {
         Text(
             modifier = Modifier
@@ -129,8 +134,8 @@ private fun ConditionInfoPreviewPriceAndText(price: String, period: String) {
         Text(
             modifier = Modifier
                 .fillMaxWidth()
-                .align(Alignment.CenterVertically)
-                .padding(start = 4.dp),
+                .align(Alignment.Bottom)
+                .padding(start = 4.dp, bottom = 2.dp),
             text = period,
             color = colorResource(id = R.color.text_primary),
             style = Caption1Regular,
@@ -141,7 +146,7 @@ private fun ConditionInfoPreviewPriceAndText(price: String, period: String) {
     }
 }
 
-private fun formatTimestamp(timestamp: Long, locale: java.util.Locale = java.util.Locale.getDefault()): String {
+fun formatTimestamp(timestamp: Long, locale: java.util.Locale = java.util.Locale.getDefault()): String {
     val dateTime = Instant.ofEpochSecond(timestamp).atZone(ZoneId.systemDefault()).toLocalDate()
     val formatter = DateTimeFormatter.ofPattern("d MMM uuuu", locale)
     return dateTime.format(formatter)
@@ -197,7 +202,7 @@ fun MyConditionInfoPreview8() {
 
 @Preview
 @Composable
-fun MyConditionInfoValid1() {
+fun MyConditionInfoValidValidUntilDate() {
     ConditionInfoPreview(
         TierConditionInfo.Visible.Valid(
             dateEnds = 1714199910L,
@@ -209,7 +214,7 @@ fun MyConditionInfoValid1() {
 
 @Preview
 @Composable
-fun MyConditionInfoValid2() {
+fun MyConditionInfoValidForever() {
     ConditionInfoPreview(
         TierConditionInfo.Visible.Valid(
             dateEnds = 1714199910L,
@@ -221,12 +226,24 @@ fun MyConditionInfoValid2() {
 
 @Preview
 @Composable
-fun MyConditionInfoValid3() {
+fun MyConditionInfoValidUnknown() {
     ConditionInfoPreview(
         TierConditionInfo.Visible.Valid(
             dateEnds = 1714199910L,
             payedBy = MembershipPaymentMethod.METHOD_CRYPTO,
             period = TierPeriod.Unknown
+        )
+    )
+}
+
+@Preview
+@Composable
+fun MyConditionInfoValidFree() {
+    ConditionInfoPreview(
+        TierConditionInfo.Visible.Valid(
+            dateEnds = 0,
+            payedBy = MembershipPaymentMethod.METHOD_CRYPTO,
+            period = TierPeriod.Unlimited
         )
     )
 }

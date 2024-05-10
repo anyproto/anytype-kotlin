@@ -42,7 +42,6 @@ sealed class PaymentsErrorState {
 }
 
 sealed class TierAction {
-    data class UpdateName(val tierId: TierId, val name: String) : TierAction()
     data class PayClicked(val tierId: TierId) : TierAction()
     data class ManagePayment(val tierId: TierId) : TierAction()
     data class OpenUrl(val url: String) : TierAction()

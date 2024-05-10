@@ -183,7 +183,6 @@ class PaymentsViewModel(
     fun onTierAction(action: TierAction) {
         Timber.d("onTierAction: action:$action")
         when (action) {
-            is TierAction.UpdateName -> {}
             is TierAction.PayClicked -> onPayButtonClicked(action.tierId)
             is TierAction.ManagePayment -> onManageTierClicked(action.tierId)
             is TierAction.OpenUrl -> {

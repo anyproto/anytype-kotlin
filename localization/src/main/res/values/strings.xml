@@ -1431,7 +1431,7 @@
     <string name="payments_button_learn">Learn more</string>
     <string name="payments_button_manage">Manage payment</string>
     <string name="payments_button_contact">Contact</string>
-    <string name="payments_button_info">Info</string>
+    <string name="payments_button_info">More info</string>
     <string name="payments_button_submit">Submit</string>
     <string name="payments_button_pay">Pay by card</string>
 

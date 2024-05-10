@@ -99,6 +99,7 @@ private fun MembershipTierData.toButtonView(
     paymentMethod: MembershipPaymentMethod
 ): TierButton {
     val androidProductId = this.androidProductId
+    val androidInfoUrl = this.androidManageUrl
     return if (isActive) {
         val wasPurchasedOnAndroid = isActiveTierPurchasedOnAndroid(paymentMethod)
         if (!wasPurchasedOnAndroid) {
@@ -121,7 +122,7 @@ private fun MembershipTierData.toButtonView(
                         iosManageUrl
                     )
                     MembershipPaymentMethod.METHOD_INAPP_GOOGLE -> TierButton.Manage.External.Enabled(
-                        androidManageUrl
+                        androidInfoUrl
                     )
                 }
             }
@@ -134,7 +135,11 @@ private fun MembershipTierData.toButtonView(
         }
     } else {
         if (androidProductId == null) {
-            TierButton.Info.Enabled("")
+            if (androidInfoUrl == null) {
+                TierButton.Info.Disabled
+            } else {
+                TierButton.Info.Enabled(androidInfoUrl)
+            }
         } else {
             TierButton.Pay.Disabled
         }

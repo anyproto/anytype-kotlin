@@ -499,7 +499,9 @@ private fun ProfileSettingPreview() {
         onAppearanceClicked = {},
         onDataManagementClicked = {},
         onAboutClicked = {},
-        onSpacesClicked = {}
+        onSpacesClicked = {},
+        onMembershipClicked = {},
+        membershipStatus = null
     )
 }
 

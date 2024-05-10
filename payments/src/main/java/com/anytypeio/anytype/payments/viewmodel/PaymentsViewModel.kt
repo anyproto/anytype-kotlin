@@ -151,7 +151,7 @@ class PaymentsViewModel(
                 billingPurchaseState.purchases.forEach { purchase ->
                     if (!purchase.isAcknowledged) {
                         Timber.e("Purchase not acknowledged: ${purchase.purchaseToken}")
-                        billingClientLifecycle.acknowledgePurchase(purchase.purchaseToken)
+                        //billingClientLifecycle.acknowledgePurchase(purchase.purchaseToken)
                     }
                 }
             }

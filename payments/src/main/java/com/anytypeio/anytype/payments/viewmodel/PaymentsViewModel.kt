@@ -187,9 +187,14 @@ class PaymentsViewModel(
             is TierAction.OpenUrl -> {
                 command.value = PaymentsNavigation.OpenUrl(action.url)
             }
-            TierAction.OpenEmail -> {
-                command.value = PaymentsNavigation.OpenEmail
-            }
+            TierAction.OpenEmail -> proceedWithSupportEmail()
+        }
+    }
+
+    private fun proceedWithSupportEmail() {
+        viewModelScope.launch {
+            val anyId = getAccount.async(Unit).getOrNull()
+            command.value = PaymentsNavigation.OpenEmail(anyId?.id)
         }
     }
 

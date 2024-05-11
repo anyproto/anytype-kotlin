@@ -73,5 +73,5 @@ sealed class PaymentsNavigation(val route: String) {
     data object Welcome : PaymentsNavigation("welcome")
     data object Dismiss : PaymentsNavigation("")
     data class OpenUrl(val url: String?) : PaymentsNavigation("")
-    data object OpenEmail : PaymentsNavigation("")
+    data class OpenEmail(val accountId: String?) : PaymentsNavigation("")
 }

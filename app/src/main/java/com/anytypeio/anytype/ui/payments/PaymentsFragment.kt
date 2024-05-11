@@ -17,10 +17,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.intents.SystemAction
+import com.anytypeio.anytype.core_utils.intents.proceedWithAction
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
@@ -174,8 +177,14 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
                     }
                 }
                 PaymentsNavigation.Main -> {}
-                PaymentsNavigation.OpenEmail -> {
-                    toast("Not implemented yet")
+                is PaymentsNavigation.OpenEmail -> {
+                    val mail = resources.getString(R.string.payments_email_to)
+                    val subject = resources.getString(R.string.payments_email_subject, command.accountId)
+                    val body = resources.getString(R.string.payments_email_body)
+                    val mailBody = mail +
+                            "?subject=$subject" +
+                            "&body=$body"
+                    proceedWithAction(SystemAction.MailTo(mailBody))
                 }
                 null -> {}
             }

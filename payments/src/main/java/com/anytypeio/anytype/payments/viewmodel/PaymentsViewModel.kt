@@ -83,6 +83,9 @@ class PaymentsViewModel(
     @OptIn(ExperimentalFoundationApi::class)
     val anyNameState = TextFieldState(initialText = "")
 
+    @OptIn(ExperimentalFoundationApi::class)
+    val anyEmailState = TextFieldState(initialText = "")
+
     init {
         Timber.d("PaymentsViewModel init")
         viewModelScope.launch {

@@ -111,6 +111,7 @@ private fun MembershipTierData.toButtonView(
                     is TierEmail.Visible.Error -> TierButton.Submit.Disabled
                     TierEmail.Visible.Validated -> TierButton.Submit.Enabled
                     TierEmail.Visible.Validating -> TierButton.Submit.Disabled
+                    is TierEmail.Visible.ErrorOther -> TierButton.Submit.Disabled
                 }
             } else {
                 when (paymentMethod) {

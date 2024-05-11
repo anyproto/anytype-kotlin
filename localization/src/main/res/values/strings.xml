@@ -1481,8 +1481,8 @@
     <string name="payments_detials_button_pay">Pay by Card</string>
     <string name="payments_detials_button_submit">Submit</string>
     <string name="payments_details_whats_included">What’s included</string>
-    <string name="payments_email_title">Get your free membership</string>
-    <string name="payments_email_subtitle">We need your email to keep spam at bay and the fun in play!</string>
+    <string name="payments_email_title">Get updates and enjoy free perks!</string>
+    <string name="payments_email_subtitle">It is not linked to your account in any way.</string>
     <string name="payments_email_checkbox_text">I\'d like to get updates on products and enjoy free perks!</string>
     <string name="payments_email_hint">E-mail</string>
 
@@ -1527,6 +1527,17 @@ Please provide specific details of your needs here.</string>
     <string name="membership_any_name_not_reserved">This name is not available</string>
     <string name="membership_any_name_null_error">Empty error</string>
     <string name="membership_any_name_unknown">Unknown error</string>
+
+    <string name="membership_email_wrong_format">Email has wrong format</string>
+    <string name="membership_email_already_verified">Email is already verified</string>
+    <string name="membership_email_already_sent">Email is already sent</string>
+    <string name="membership_email_failed_to_send">Email failed to send</string>
+    <string name="membership_email_membership_already_exists">Membership already exists</string>
+
+    <string name="membership_email_code_expired">Code expired</string>
+    <string name="membership_email_code_wrong">Code is wrong</string>
+    <string name="membership_email_membership_not_found">Membership not found</string>
+    <string name="membership_email_membership_already_active">Membership already active</string>
 
 
     <!-- Notifications -->

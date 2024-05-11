@@ -98,7 +98,8 @@ sealed class TierEmail {
         data object Enter : Visible()
         data object Validating : Visible()
         data object Validated : Visible()
-        data class Error(val message: String) : Visible()
+        data class Error(val membershipErrors: MembershipErrors) : Visible()
+        data class ErrorOther(val message: String?) : Visible()
     }
 }
 

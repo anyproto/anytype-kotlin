@@ -45,6 +45,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.payments.R
 import com.anytypeio.anytype.payments.constants.TiersConstants.BUILDER_ID
+import com.anytypeio.anytype.payments.constants.TiersConstants.EXPLORER_ID
 import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierConditionInfo
@@ -63,7 +64,8 @@ fun TierViewScreen(
     state: MembershipTierState,
     onDismiss: () -> Unit,
     actionTier: (TierAction) -> Unit,
-    anyNameTextField: TextFieldState
+    anyNameTextField: TextFieldState,
+    anyEmailTextField: TextFieldState
 ) {
     if (state is MembershipTierState.Visible) {
         val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -80,7 +82,8 @@ fun TierViewScreen(
                 TierViewVisible(
                     state = state,
                     actionTier = actionTier,
-                    anyNameTextField = anyNameTextField
+                    anyNameTextField = anyNameTextField,
+                    anyEmailTextField = anyEmailTextField
                 )
             },
         )
@@ -92,7 +95,8 @@ fun TierViewScreen(
 private fun TierViewVisible(
     state: MembershipTierState.Visible,
     actionTier: (TierAction) -> Unit,
-    anyNameTextField: TextFieldState
+    anyNameTextField: TextFieldState,
+    anyEmailTextField: TextFieldState
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -179,6 +183,10 @@ private fun TierViewVisible(
             Spacer(modifier = Modifier.height(26.dp))
             if (state.tierView.isActive) {
                 ConditionInfoView(state = state.tierView.conditionInfo)
+                MembershipEmailScreen(
+                    state = state.tierView.email,
+                    anyEmailTextField = anyEmailTextField
+                )
                 Spacer(modifier = Modifier.height(20.dp))
                 SecondaryButton(
                     buttonState = state.tierView.buttonState,
@@ -319,27 +327,24 @@ fun TierViewScreenPreview() {
                     "Feature 1",
                     "Feature 2",
                     "Feature 3",
-                    "Feature 1",
-                    "Feature 2",
-                    "Feature 3",
-                    "Feature 1",
-                    "Feature 2"
+                    "Feature 1"
                 ),
-                isActive = false,
+                isActive = true,
                 conditionInfo = TierConditionInfo.Visible.Valid(
                     dateEnds = 1714199910,
                     period = TierPeriod.Year(1),
                     payedBy = MembershipPaymentMethod.METHOD_INAPP_GOOGLE
                 ),
                 buttonState = TierButton.Manage.Android.Enabled("eqweqw"),
-                id = TierId(value = BUILDER_ID),
-                membershipAnyName = TierAnyName.Visible.Enter,
-                email = TierEmail.Hidden,
+                id = TierId(value = EXPLORER_ID),
+                membershipAnyName = TierAnyName.Hidden,
+                email = TierEmail.Visible.Enter,
                 color = "teal"
             )
         ),
         actionTier = {},
         onDismiss = {},
-        anyNameTextField = TextFieldState()
+        anyNameTextField = TextFieldState(),
+        anyEmailTextField = TextFieldState()
     )
 }

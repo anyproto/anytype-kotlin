@@ -127,7 +127,8 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
             state = vm.tierState.collectAsStateWithLifecycle().value,
             onDismiss = vm::onDismissTier,
             actionTier = vm::onTierAction,
-            anyNameTextField = vm.anyNameState
+            anyNameTextField = vm.anyNameState,
+            anyEmailTextField = vm.anyEmailState
         )
     }
 

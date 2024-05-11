@@ -92,52 +92,66 @@ fun AnyNameView(
             )
             Spacer(modifier = Modifier.height(10.dp))
             Row(modifier = Modifier.fillMaxWidth()) {
-            BasicTextField2(
-                modifier = Modifier
-                    .weight(1f)
-                    .wrapContentHeight()
-                    .focusRequester(focusRequester),
-                state = anyNameTextField,
-                textStyle = BodyRegular.copy(color = colorResource(id = R.color.text_primary)),
-                enabled = anyNameEnabled.value,
-                cursorBrush = SolidColor(colorResource(id = R.color.text_primary)),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Done,
-                ),
-                keyboardActions = KeyboardActions {
-                    keyboardController?.hide()
-                    focusManager.clearFocus()
-                },
-                lineLimits = TextFieldLineLimits.SingleLine,
-                interactionSource = remember { MutableInteractionSource() }
-            )
+                BasicTextField2(
+                    modifier = Modifier
+                        .weight(1f)
+                        .wrapContentHeight()
+                        .focusRequester(focusRequester),
+                    state = anyNameTextField,
+                    textStyle = BodyRegular.copy(color = colorResource(id = R.color.text_primary)),
+                    enabled = anyNameEnabled.value,
+                    cursorBrush = SolidColor(colorResource(id = R.color.text_primary)),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        imeAction = ImeAction.Done,
+                    ),
+                    keyboardActions = KeyboardActions {
+                        keyboardController?.hide()
+                        focusManager.clearFocus()
+                    },
+                    lineLimits = TextFieldLineLimits.SingleLine,
+                    interactionSource = remember { MutableInteractionSource() }
+                )
+                Text(
+                    text = stringResource(id = R.string.payments_tier_details_name_domain),
+                    style = BodyRegular,
+                    color = colorResource(id = R.color.text_primary)
+                )
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+            val (messageTextColor, messageText) = when (anyNameState) {
+                TierAnyName.Hidden -> Color.Transparent to ""
+                TierAnyName.Visible.Disabled -> colorResource(id = R.color.text_secondary) to stringResource(
+                    id = R.string.payments_tier_details_name_min
+                )
+
+                TierAnyName.Visible.Enter -> colorResource(id = R.color.text_secondary) to stringResource(
+                    id = R.string.payments_tier_details_name_min
+                )
+
+                is TierAnyName.Visible.Error -> ErrorMessage(anyNameState)
+                is TierAnyName.Visible.Validated -> colorResource(id = R.color.palette_dark_lime) to stringResource(
+                    id = R.string.payments_tier_details_name_validated,
+                    anyNameState.validatedName
+                )
+
+                TierAnyName.Visible.Validating -> colorResource(id = R.color.palette_dark_orange) to stringResource(
+                    id = R.string.payments_tier_details_name_validating
+                )
+
+                is TierAnyName.Visible.ErrorOther -> colorResource(id = R.color.palette_system_red) to (anyNameState.message
+                    ?: stringResource(id = R.string.membership_any_name_unknown))
+            }
+            Spacer(modifier = Modifier.height(10.dp))
             Text(
-                text = stringResource(id = R.string.payments_tier_details_name_domain),
-                style = BodyRegular,
-                color = colorResource(id = R.color.text_primary)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                text = messageText,
+                color = messageTextColor,
+                style = Relations2,
+                textAlign = TextAlign.Center
             )
-        }
-        Spacer(modifier = Modifier.height(12.dp))
-        Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
-        val (messageTextColor, messageText) = when (anyNameState) {
-            TierAnyName.Hidden -> Color.Transparent to ""
-            TierAnyName.Visible.Disabled -> colorResource(id = R.color.text_secondary) to stringResource(id = R.string.payments_tier_details_name_min)
-            TierAnyName.Visible.Enter -> colorResource(id = R.color.text_secondary) to stringResource(id = R.string.payments_tier_details_name_min)
-            is TierAnyName.Visible.Error -> ErrorMessage(anyNameState)
-            is TierAnyName.Visible.Validated -> colorResource(id = R.color.palette_dark_lime) to stringResource(id = R.string.payments_tier_details_name_validated, anyNameState.validatedName)
-            TierAnyName.Visible.Validating -> colorResource(id = R.color.palette_dark_orange) to stringResource(id = R.string.payments_tier_details_name_validating)
-            is TierAnyName.Visible.ErrorOther -> colorResource(id = R.color.palette_system_red) to (anyNameState.message ?: stringResource(id = R.string.membership_any_name_unknown))
-        }
-        Spacer(modifier = Modifier.height(10.dp))
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp),
-            text = messageText,
-            color = messageTextColor,
-            style = Relations2,
-            textAlign = TextAlign.Center
-        )
         }
     }
 }

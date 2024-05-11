@@ -362,6 +362,45 @@ class PaymentsViewModel(
         )
     }
 
+    private fun proceedWithGettingEmailStatus() {
+        viewModelScope.launch {
+            getMembershipEmailStatus.async(Unit).fold(
+                onSuccess = { status ->
+                    Timber.d("Email status: $status")
+                },
+                onFailure = { error ->
+                    Timber.e("Error getting email status: $error")
+                }
+            )
+        }
+    }
+
+    private fun proceedWithSettingEmail(email: String, subscribeToNewsletter: Boolean) {
+        viewModelScope.launch {
+            setMembershipEmail.async(SetMembershipEmail.Params(email, subscribeToNewsletter)).fold(
+                onSuccess = {
+                    Timber.d("Email set")
+                },
+                onFailure = { error ->
+                    Timber.e("Error setting email: $error")
+                }
+            )
+        }
+    }
+
+    private fun proceedWithValidatingEmailCode(code: String) {
+        viewModelScope.launch {
+            verifyMembershipEmailCode.async(VerifyMembershipEmailCode.Params(code)).fold(
+                onSuccess = {
+                    Timber.d("Email code verified")
+                },
+                onFailure = { error ->
+                    Timber.e("Error verifying email code: $error")
+                }
+            )
+        }
+    }
+
     fun onDismissTier() {
         Timber.d("onDismissTier")
         command.value = PaymentsNavigation.Dismiss

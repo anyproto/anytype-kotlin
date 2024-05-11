@@ -2092,7 +2092,7 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Membership.GetVerificationEmail.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Membership.GetVerificationEmail.Response.Error.Code.NULL) {
-            throw Exception(error.description)
+            throw error.toCore()
         } else {
             return response
         }
@@ -2105,7 +2105,7 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Membership.VerifyEmailCode.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Membership.VerifyEmailCode.Response.Error.Code.NULL) {
-            throw Exception(error.description)
+            throw error.toCore()
         } else {
             return response
         }

@@ -49,6 +49,13 @@ sealed class MembershipErrors : Exception() {
         data class EmailAlreadySent(override val message: String) : GetVerificationEmail()
         data class EmailFailedToSend(override val message: String) : GetVerificationEmail()
         data class MembershipAlreadyExists(override val message: String) : GetVerificationEmail()
+        data class Null(override val message: String) : GetVerificationEmail()
+        data class BadInput(override val message: String) : GetVerificationEmail()
+        data class UnknownError(override val message: String) : GetVerificationEmail()
+        data class NotLoggedIn(override val message: String) : GetVerificationEmail()
+        data class PaymentNodeError(override val message: String) : GetVerificationEmail()
+        data class CacheError(override val message: String) : GetVerificationEmail()
+        data class CanNotConnect(override val message: String) : GetVerificationEmail()
     }
 
     sealed class VerifyEmailCode : MembershipErrors() {
@@ -57,5 +64,12 @@ sealed class MembershipErrors : Exception() {
         data class CodeWrong(override val message: String) : VerifyEmailCode()
         data class MembershipNotFound(override val message: String) : VerifyEmailCode()
         data class MembershipAlreadyActive(override val message: String) : VerifyEmailCode()
+        data class Null(override val message: String) : VerifyEmailCode()
+        data class BadInput(override val message: String) : VerifyEmailCode()
+        data class UnknownError(override val message: String) : VerifyEmailCode()
+        data class NotLoggedIn(override val message: String) : VerifyEmailCode()
+        data class PaymentNodeError(override val message: String) : VerifyEmailCode()
+        data class CacheError(override val message: String) : VerifyEmailCode()
+        data class CanNotConnect(override val message: String) : VerifyEmailCode()
     }
 }

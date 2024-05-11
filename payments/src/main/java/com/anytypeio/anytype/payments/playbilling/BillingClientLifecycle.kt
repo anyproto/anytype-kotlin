@@ -237,7 +237,10 @@ class BillingClientLifecycle(
         billingResult: BillingResult,
         purchasesList: MutableList<Purchase>
     ) {
-        processPurchases(purchasesList)
+        processPurchases(
+            purchasesList = purchasesList,
+            isNewPurchase = false
+        )
     }
 
     /**
@@ -254,9 +257,15 @@ class BillingClientLifecycle(
             BillingClient.BillingResponseCode.OK -> {
                 if (purchases == null) {
                     Timber.d("onPurchasesUpdated: null purchase list")
-                    processPurchases(null)
+                    processPurchases(
+                        purchasesList = null,
+                        isNewPurchase = true
+                    )
                 } else {
-                    processPurchases(purchases)
+                    processPurchases(
+                        purchasesList = purchases,
+                        isNewPurchase = true
+                    )
                 }
             }
 
@@ -284,7 +293,7 @@ class BillingClientLifecycle(
      * Send purchase to StateFlow, which will trigger network call to verify the subscriptions
      * on the sever.
      */
-    private fun processPurchases(purchasesList: List<Purchase>?) {
+    private fun processPurchases(purchasesList: List<Purchase>?, isNewPurchase: Boolean) {
         Timber.d("processPurchases: ${purchasesList?.size} purchase(s)")
         purchasesList?.let { list ->
             if (isUnchangedPurchaseList(list)) {
@@ -303,7 +312,8 @@ class BillingClientLifecycle(
                 } else {
                     _subscriptionPurchases.emit(
                         BillingPurchaseState.HasPurchases(
-                            subscriptionPurchaseList
+                            purchases = subscriptionPurchaseList,
+                            isNewPurchase = isNewPurchase
                         )
                     )
                 }
@@ -375,6 +385,6 @@ sealed class BillingClientState {
 
 sealed class BillingPurchaseState {
     data object Loading : BillingPurchaseState()
-    data class HasPurchases(val purchases: List<Purchase>) : BillingPurchaseState()
+    data class HasPurchases(val purchases: List<Purchase>, val isNewPurchase: Boolean) : BillingPurchaseState()
     data object NoPurchases : BillingPurchaseState()
 }

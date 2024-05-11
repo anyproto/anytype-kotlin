@@ -206,6 +206,12 @@ class PaymentsViewModel(
                 command.value = PaymentsNavigation.OpenUrl(action.url)
             }
             TierAction.OpenEmail -> proceedWithSupportEmail()
+            is TierAction.SubmitClicked -> {
+                proceedWithSettingEmail(
+                    email = anyEmailState.text.toString(),
+                    subscribeToNewsletter = false
+                )
+            }
         }
     }
 

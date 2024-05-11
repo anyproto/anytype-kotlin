@@ -107,11 +107,11 @@ private fun MembershipTierData.toButtonView(
             if (id == EXPLORER_ID) {
                 when (emailState) {
                     TierEmail.Hidden -> TierButton.Hidden
-                    TierEmail.Visible.Enter -> TierButton.Submit.Disabled
-                    is TierEmail.Visible.Error -> TierButton.Submit.Disabled
+                    TierEmail.Visible.Enter -> TierButton.Submit.Enabled
+                    is TierEmail.Visible.Error -> TierButton.Submit.Enabled
                     TierEmail.Visible.Validated -> TierButton.Submit.Enabled
                     TierEmail.Visible.Validating -> TierButton.Submit.Disabled
-                    is TierEmail.Visible.ErrorOther -> TierButton.Submit.Disabled
+                    is TierEmail.Visible.ErrorOther -> TierButton.Submit.Enabled
                 }
             } else {
                 when (paymentMethod) {

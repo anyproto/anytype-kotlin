@@ -14,9 +14,12 @@ import com.anytypeio.anytype.core_models.membership.MembershipErrors
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.payments.GetMembershipEmailStatus
 import com.anytypeio.anytype.domain.payments.GetMembershipPaymentUrl
 import com.anytypeio.anytype.domain.payments.IsMembershipNameValid
 import com.anytypeio.anytype.domain.payments.ResolveMembershipName
+import com.anytypeio.anytype.domain.payments.SetMembershipEmail
+import com.anytypeio.anytype.domain.payments.VerifyMembershipEmailCode
 import com.anytypeio.anytype.payments.constants.TiersConstants.EXPLORER_ID
 import com.anytypeio.anytype.payments.constants.TiersConstants.MEMBERSHIP_NAME_MIN_LENGTH
 import com.anytypeio.anytype.payments.mapping.toMainView
@@ -50,7 +53,10 @@ class PaymentsViewModel(
     private val membershipProvider: MembershipProvider,
     private val getMembershipPaymentUrl: GetMembershipPaymentUrl,
     private val isMembershipNameValid: IsMembershipNameValid,
-    private val resolveMembershipName: ResolveMembershipName
+    private val resolveMembershipName: ResolveMembershipName,
+    private val setMembershipEmail: SetMembershipEmail,
+    private val verifyMembershipEmailCode: VerifyMembershipEmailCode,
+    private val getMembershipEmailStatus: GetMembershipEmailStatus
 ) : ViewModel() {
 
     val viewState = MutableStateFlow<MembershipMainState>(MembershipMainState.Loading)

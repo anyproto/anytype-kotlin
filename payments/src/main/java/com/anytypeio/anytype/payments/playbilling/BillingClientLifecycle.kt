@@ -310,6 +310,7 @@ class BillingClientLifecycle(
                     Timber.d("processPurchases: No subscription purchases found")
                     _subscriptionPurchases.emit(BillingPurchaseState.NoPurchases)
                 } else {
+                    Timber.d("processPurchases: Subscription purchases found ${subscriptionPurchaseList[0]}")
                     _subscriptionPurchases.emit(
                         BillingPurchaseState.HasPurchases(
                             purchases = subscriptionPurchaseList,

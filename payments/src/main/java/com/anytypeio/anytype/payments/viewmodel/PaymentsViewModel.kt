@@ -335,8 +335,7 @@ class PaymentsViewModel(
                 Timber.d("Payment url: $url")
                 buyBasePlans(
                     billingId = url.billingId,
-                    product = androidProductId,
-                    upDowngrade = false
+                    product = androidProductId
                 )
             },
             onFailure = { error ->
@@ -369,12 +368,10 @@ class PaymentsViewModel(
      *
      * @param tag String representing tags associated with offers and base plans.
      * @param product Product being purchased.
-     * @param upDowngrade Boolean indicating if the purchase is an upgrade or downgrade and
-     * when converting from one base plan to another.
      *
      */
-    private fun buyBasePlans(billingId: String, product: String, upDowngrade: Boolean) {
-        Timber.d("buyBasePlans: billingId:$billingId, product:$product, upDowngrade:$upDowngrade")
+    private fun buyBasePlans(billingId: String, product: String) {
+        Timber.d("buyBasePlans: billingId:$billingId, product:$product")
         //todo check if the user has already purchased the product
         val isProductOnServer = false//serverHasSubscription(subscriptions.value, product)
         val billingPurchaseState = purchases.value
@@ -437,7 +434,6 @@ class PaymentsViewModel(
         val offerToken: String = builderOffers?.let { leastPricedOfferToken(it) }.toString()
         launchFlow(
             billingId = billingId,
-            upDowngrade = upDowngrade,
             offerToken = offerToken,
             productDetails = builderSubProductDetails
         )
@@ -529,50 +525,17 @@ class PaymentsViewModel(
     }
 
     /**
-     * BillingFlowParams Builder for upgrades and downgrades.
-     *
-     * @param productDetails ProductDetails object returned by the library.
-     * @param offerToken the least priced offer's offer id token returned by
-     * [leastPricedOfferToken].
-     * @param oldToken the purchase token of the subscription purchase being upgraded or downgraded.
-     *
-     * @return [BillingFlowParams] builder.
-     */
-    private fun upDowngradeBillingFlowParamsBuilder(
-        productDetails: ProductDetails, offerToken: String, oldToken: String
-    ): BillingFlowParams {
-        return BillingFlowParams.newBuilder()
-            .setProductDetailsParamsList(
-                listOf(
-                    BillingFlowParams.ProductDetailsParams.newBuilder()
-                        .setProductDetails(productDetails)
-                        .setOfferToken(offerToken)
-                        .build()
-                )
-            ).setSubscriptionUpdateParams(
-                BillingFlowParams.SubscriptionUpdateParams.newBuilder()
-                    .setOldPurchaseToken(oldToken)
-                    .setSubscriptionReplacementMode(
-                        BillingFlowParams.SubscriptionUpdateParams.ReplacementMode.CHARGE_FULL_PRICE
-                    ).build()
-            ).build()
-    }
-
-    /**
      * Launches the billing flow for a subscription product purchase.
      * A user can only have one subscription purchase on the device at a time. If the user
      * has more than one subscription purchase on the device, the app should not allow the
      * user to purchase another subscription.
      *
-     * @param upDowngrade Boolean indicating if the purchase is an upgrade or downgrade and
-     * when converting from one base plan to another.
      * @param offerToken String representing the offer token of the lowest priced offer.
      * @param productDetails ProductDetails of the product being purchased.
      *
      */
     private fun launchFlow(
         billingId: String,
-        upDowngrade: Boolean,
         offerToken: String,
         productDetails: ProductDetails
     ) {
@@ -587,22 +550,12 @@ class PaymentsViewModel(
             )
         }
 
-        val oldToken = (billingPurchaseState as? BillingPurchaseState.HasPurchases)?.purchases?.firstOrNull { it.purchaseToken.isNotEmpty() }?.purchaseToken ?: ""
-
         viewModelScope.launch {
-            val billingParams: BillingFlowParams = if (upDowngrade) {
-                upDowngradeBillingFlowParamsBuilder(
-                    productDetails = productDetails,
-                    offerToken = offerToken,
-                    oldToken = oldToken
-                )
-            } else {
-                billingFlowParamsBuilder(
-                    productDetails = productDetails,
-                    offerToken = offerToken,
-                    billingId = billingId
-                )
-            }
+            val billingParams: BillingFlowParams = billingFlowParamsBuilder(
+                productDetails = productDetails,
+                offerToken = offerToken,
+                billingId = billingId
+            )
             _launchBillingCommand.emit(billingParams)
         }
     }

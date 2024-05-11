@@ -54,6 +54,7 @@ import com.anytypeio.anytype.payments.models.TierView
 import com.anytypeio.anytype.payments.viewmodel.MembershipTierState
 import com.anytypeio.anytype.payments.viewmodel.TierAction
 import com.anytypeio.anytype.presentation.membership.models.TierId
+import timber.log.Timber
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -193,7 +194,7 @@ private fun TierViewVisible(
                 Spacer(modifier = Modifier.height(14.dp))
                 MainButton(
                     buttonState = state.tierView.buttonState,
-                    tierId = state.tierView.id,
+                    tierView = state.tierView,
                     actionTier = actionTier
                 )
             }
@@ -231,7 +232,7 @@ fun Benefit(benefit: String) {
 
 @Composable
 private fun MainButton(
-    tierId: TierId,
+    tierView: TierView,
     buttonState: TierButton,
     actionTier: (TierAction) -> Unit
 ) {
@@ -242,8 +243,14 @@ private fun MainButton(
             text = stringResource(id = stringRes),
             onClick = {
                       when (buttonState) {
-                          is TierButton.Pay.Enabled -> actionTier(TierAction.PayClicked(tierId))
-                          else -> {}
+                          is TierButton.Pay.Enabled -> actionTier(TierAction.PayClicked(tierView.id))
+                          is TierButton.Info.Enabled -> actionTier(TierAction.OpenUrl(tierView.urlInfo))
+                          is TierButton.Manage.Android.Enabled -> TODO()
+                          is TierButton.Manage.External.Enabled -> TODO()
+                          TierButton.Submit.Enabled -> TODO()
+                          else -> {
+                              Timber.d("MainButton: skipped action: $buttonState")
+                          }
                       }
 
             },

@@ -67,7 +67,8 @@ fun MembershipTierData.toView(
             paymentMethod = membershipStatus.paymentMethod
         ),
         email = emailState,
-        color = colorStr
+        color = colorStr,
+        urlInfo = androidManageUrl
     )
 }
 

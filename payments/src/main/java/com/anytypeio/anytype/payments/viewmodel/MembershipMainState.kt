@@ -44,7 +44,7 @@ sealed class PaymentsErrorState {
 sealed class TierAction {
     data class PayClicked(val tierId: TierId) : TierAction()
     data class ManagePayment(val tierId: TierId) : TierAction()
-    data class OpenUrl(val url: String) : TierAction()
+    data class OpenUrl(val url: String?) : TierAction()
     data object OpenEmail : TierAction()
 }
 

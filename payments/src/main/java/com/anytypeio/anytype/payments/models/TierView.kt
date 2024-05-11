@@ -26,7 +26,8 @@ data class TierView(
     val membershipAnyName: TierAnyName,
     val buttonState: TierButton,
     val email: TierEmail,
-    val color: String = "red"
+    val color: String = "red",
+    val urlInfo: String? = null
 )
 
 sealed class TierConditionInfo {

@@ -149,6 +149,10 @@ class PaymentsViewModel(
             is BillingPurchaseState.HasPurchases -> {
                 if (billingPurchaseState.isNewPurchase) {
                     //Got new purchase, show success screen
+                    val tierView =
+                        (tierState.value as? MembershipTierState.Visible)?.tierView ?: return
+                    showTierState.value = 0
+                    welcomeState.value = PaymentsWelcomeState.Initial(tierView)
                     command.value = PaymentsNavigation.Welcome
                 }
                 //check if the purchase is acknowledged,

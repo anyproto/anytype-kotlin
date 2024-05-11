@@ -319,7 +319,6 @@ class BillingClientLifecycle(
                     )
                 }
             }
-            logAcknowledgementStatus(list)
         }
     }
 
@@ -332,32 +331,6 @@ class BillingClientLifecycle(
             cachedPurchasesList = purchasesList
         }
         return isUnchanged
-    }
-
-    /**
-     * Log the number of purchases that are acknowledge and not acknowledged.
-     *
-     * https://developer.android.com/google/play/billing/billing_library_releases_notes#2_0_acknowledge
-     *
-     * When the purchase is first received, it will not be acknowledge.
-     * This application sends the purchase token to the server for registration. After the
-     * purchase token is registered to an account, the Android app acknowledges the purchase token.
-     * The next time the purchase list is updated, it will contain acknowledged purchases.
-     */
-    private fun logAcknowledgementStatus(purchasesList: List<Purchase>) {
-        var acknowledgedCounter = 0
-        var unacknowledgedCounter = 0
-        for (purchase in purchasesList) {
-            if (purchase.isAcknowledged) {
-                acknowledgedCounter++
-            } else {
-                unacknowledgedCounter++
-            }
-        }
-        Timber.d(
-            "logAcknowledgementStatus: acknowledged=$acknowledgedCounter " +
-                    "unacknowledged=$unacknowledgedCounter"
-        )
     }
 
     /**

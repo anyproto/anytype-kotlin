@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.payments.models
 
 import androidx.annotation.StringRes
+import com.anytypeio.anytype.core_models.membership.MembershipErrors
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.presentation.membership.models.TierId
 
@@ -85,7 +86,8 @@ sealed class TierAnyName {
         data object Enter : Visible()
         data object Validating : Visible()
         data class Validated(val validatedName: String) : Visible()
-        data class Error(val message: String) : Visible()
+        data class Error(val membershipErrors: MembershipErrors) : Visible()
+        data class ErrorOther(val message: String?) : Visible()
     }
 }
 

@@ -1498,12 +1498,12 @@
     <string name="payments_code_resend_in">Resend in %1$n sec</string>
 
 
-    <!-- Payments Welcome -->
+    <!-- Membership Welcome -->
     <string name="payments_welcome_title">Welcome to the network,\n%1$s</string>
     <string name="payments_welcome_subtitle">Big cheers for your curiosity!</string>
     <string name="payments_welcome_button">Continue</string>
 
-    <!-- Payments Email -->
+    <!-- Membership Email -->
     <string name="payments_email_to">membership-upgrade@anytype.io</string>
     <string name="payments_email_subject">Upgrade %1$s</string>
     <string name="payments_email_body">Hello Anytype team! I would like to extend my current membership for more (please choose an option):\n
@@ -1512,6 +1512,22 @@
 - Additional shared spaces\n
 Specifically,
 Please provide specific details of your needs here.</string>
+
+    <!-- Membership name errors -->
+    <string name="membership_name_bad_input">Something wrong with input, try again</string>
+    <string name="membership_name_cache_error">Error on our side, try again later</string>
+    <string name="membership_name_cant_connect">Can not connect, check your internet connection</string>
+    <string name="membership_name_invalid_chars">Name has invalid characters</string>
+    <string name="membership_name_not_logged">You are not logged in! 😵‍💫</string>
+    <string name="membership_name_payment_node_error">Error on our side, try again later</string>
+    <string name="membership_name_tier_features_no_name">Name is not available for this tier</string>
+    <string name="membership_name_tier_not_found">Tier not found, try again later</string>
+    <string name="membership_name_too_long">Name is too long</string>
+    <string name="membership_name_too_short">Name is too short</string>
+    <string name="membership_any_name_not_reserved">This name is not available</string>
+    <string name="membership_any_name_null_error">Empty error</string>
+    <string name="membership_any_name_unknown">Unknown error</string>
+
 
     <!-- Notifications -->
     <string name="notifications_alert_error_unknown">An unknown error has occurred. Please try again later.</string>

@@ -225,28 +225,8 @@ class PaymentsViewModel(
                     setAnyNameStateToValidated(tierView, name)
                 },
                 onFailure = { error ->
-                    when (error) {
-                        is MembershipErrors.IsNameValid.TooShort -> {
-                            Timber.d("Name is too short")
-                            setAnyNameStateToError(tierView, error.message)
-                        }
-                        is MembershipErrors.IsNameValid.TooLong -> {
-                            Timber.d("Name is too long")
-                            setAnyNameStateToError(tierView, error.message)
-                        }
-                        is MembershipErrors.IsNameValid.HasInvalidChars -> {
-                            Timber.d("Name has invalid chars")
-                            setAnyNameStateToError(tierView, error.message)
-                        }
-                        is MembershipErrors.IsNameValid.CanNotReserve -> {
-                            Timber.d("Can not reserve name")
-                            setAnyNameStateToError(tierView, error.message)
-                        }
-                        else -> {
-                            Timber.e("Error validating name: $error")
-                            setAnyNameStateToError(tierView, error.message ?: "Error validating name")
-                        }
-                    }
+                    Timber.w("Error validating name: $error")
+                    setAnyNameStateToError(tierView, error)
                 }
             )
         }
@@ -268,9 +248,14 @@ class PaymentsViewModel(
         tierState.value = MembershipTierState.Visible(updatedTierState)
     }
 
-    private fun setAnyNameStateToError(tierView: TierView, message: String) {
+    private fun setAnyNameStateToError(tierView: TierView, error: Throwable) {
+        val state = if (error is MembershipErrors) {
+            TierAnyName.Visible.Error(error)
+        } else {
+            TierAnyName.Visible.ErrorOther(error.message)
+        }
         val updatedTierState = tierView.copy(
-            membershipAnyName = TierAnyName.Visible.Error(message),
+            membershipAnyName = state,
             buttonState = TierButton.Pay.Disabled
         )
         tierState.value = MembershipTierState.Visible(updatedTierState)

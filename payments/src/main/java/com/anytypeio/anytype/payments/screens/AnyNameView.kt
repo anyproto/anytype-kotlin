@@ -33,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.membership.MembershipErrors
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.views.BodyBold
 import com.anytypeio.anytype.core_ui.views.BodyCallout
@@ -61,6 +62,7 @@ fun AnyNameView(
             is TierAnyName.Visible.Error -> true
             is TierAnyName.Visible.Validated -> true
             TierAnyName.Visible.Validating -> true
+            is TierAnyName.Visible.ErrorOther -> true
         }
 
         Column(
@@ -121,9 +123,10 @@ fun AnyNameView(
             TierAnyName.Hidden -> Color.Transparent to ""
             TierAnyName.Visible.Disabled -> colorResource(id = R.color.text_secondary) to stringResource(id = R.string.payments_tier_details_name_min)
             TierAnyName.Visible.Enter -> colorResource(id = R.color.text_secondary) to stringResource(id = R.string.payments_tier_details_name_min)
-            is TierAnyName.Visible.Error -> colorResource(id = R.color.palette_system_red) to stringResource(id = R.string.payments_tier_details_name_error)
+            is TierAnyName.Visible.Error -> ErrorMessage(anyNameState)
             is TierAnyName.Visible.Validated -> colorResource(id = R.color.palette_dark_lime) to stringResource(id = R.string.payments_tier_details_name_validated, anyNameState.validatedName)
             TierAnyName.Visible.Validating -> colorResource(id = R.color.palette_dark_orange) to stringResource(id = R.string.payments_tier_details_name_validating)
+            is TierAnyName.Visible.ErrorOther -> colorResource(id = R.color.palette_system_red) to (anyNameState.message ?: stringResource(id = R.string.membership_any_name_unknown))
         }
         Spacer(modifier = Modifier.height(10.dp))
         Text(
@@ -137,4 +140,26 @@ fun AnyNameView(
         )
         }
     }
+}
+
+@Composable
+private fun ErrorMessage(state: TierAnyName.Visible.Error): Pair<Color, String> {
+    val color = colorResource(id = R.color.palette_system_red)
+    val res = when (state.membershipErrors) {
+        is MembershipErrors.IsNameValid.BadInput -> R.string.membership_name_bad_input
+        is MembershipErrors.IsNameValid.CacheError -> R.string.membership_name_cache_error
+        is MembershipErrors.IsNameValid.CanNotConnect -> R.string.membership_name_cant_connect
+        is MembershipErrors.IsNameValid.CanNotReserve -> R.string.membership_any_name_not_reserved
+        is MembershipErrors.IsNameValid.HasInvalidChars -> R.string.membership_name_invalid_chars
+        is MembershipErrors.IsNameValid.NotLoggedIn -> R.string.membership_name_not_logged
+        is MembershipErrors.IsNameValid.Null -> R.string.membership_any_name_null_error
+        is MembershipErrors.IsNameValid.PaymentNodeError -> R.string.membership_name_payment_node_error
+        is MembershipErrors.IsNameValid.TierFeaturesNoName -> R.string.membership_name_tier_features_no_name
+        is MembershipErrors.IsNameValid.TierNotFound -> R.string.membership_name_tier_not_found
+        is MembershipErrors.IsNameValid.TooLong -> R.string.membership_name_too_long
+        is MembershipErrors.IsNameValid.TooShort -> R.string.membership_name_too_short
+        is MembershipErrors.IsNameValid.UnknownError -> R.string.membership_any_name_unknown
+        else -> R.string.membership_any_name_unknown
+    }
+    return color to stringResource(id = res)
 }

@@ -2,10 +2,8 @@ package com.anytypeio.anytype.payments.playbilling
 
 import android.app.Activity
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import com.android.billingclient.api.AcknowledgePurchaseParams
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingFlowParams
@@ -18,9 +16,7 @@ import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
-import kotlin.math.pow
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -368,111 +364,7 @@ class BillingClientLifecycle(
         Timber.d("launchBillingFlow: BillingResponse $responseCode $debugMessage")
         return responseCode
     }
-
-    /**
-     * Acknowledge a purchase.
-     *
-     * https://developer.android.com/google/play/billing/billing_library_releases_notes#2_0_acknowledge
-     *
-     * Apps should acknowledge the purchase after confirming that the purchase token
-     * has been associated with a user. This app only acknowledges purchases after
-     * successfully receiving the subscription data back from the server.
-     *
-     * Developers can choose to acknowledge purchases from a server using the
-     * Google Play Developer API. The server has direct access to the user database,
-     * so using the Google Play Developer API for acknowledgement might be more reliable.
-     * TODO(134506821): Acknowledge purchases on the server.
-     * TODO: Remove client side purchase acknowledgement after removing the associated tests.
-     * If the purchase token is not acknowledged within 3 days,
-     * then Google Play will automatically refund and revoke the purchase.
-     * This behavior helps ensure that users are not charged for subscriptions unless the
-     * user has successfully received access to the content.
-     * This eliminates a category of issues where users complain to developers
-     * that they paid for something that the app is not giving to them.
-     */
-    suspend fun acknowledgePurchase(purchaseToken: String) {
-        val params = AcknowledgePurchaseParams.newBuilder()
-            .setPurchaseToken(purchaseToken)
-            .build()
-
-        for (trial in 1..MAX_RETRY_ATTEMPT) {
-            var response = BillingResponse(500)
-            var bResult: BillingResult? = null
-            billingClient.acknowledgePurchase(params) { billingResult ->
-                response = BillingResponse(billingResult.responseCode)
-                bResult = billingResult
-            }
-
-            when {
-                response.isOk -> {
-                    Log.i(TAG, "Acknowledge success - token: $purchaseToken")
-                }
-
-                response.canFailGracefully -> {
-                    // Ignore the error
-                    Log.i(TAG, "Token $purchaseToken is already owned.")
-                }
-
-                response.isRecoverableError -> {
-                    // Retry to ack because these errors may be recoverable.
-                    val duration = 500L * 2.0.pow(trial).toLong()
-                    delay(duration)
-                    if (trial < MAX_RETRY_ATTEMPT) {
-                        Log.w(
-                            TAG,
-                            "Retrying($trial) to acknowledge for token $purchaseToken - " +
-                                    "code: ${bResult!!.responseCode}, message: " +
-                                    bResult!!.debugMessage
-                        )
-                    }
-                }
-
-                response.isNonrecoverableError || response.isTerribleFailure -> {
-                    Log.e(
-                        TAG,
-                        "Failed to acknowledge for token $purchaseToken - " +
-                                "code: ${bResult!!.responseCode}, message: " +
-                                bResult!!.debugMessage
-                    )
-                    break
-                }
-            }
-        }
-    }
-
-
-    companion object {
-        private const val MAX_RETRY_ATTEMPT = 3
-        private const val TAG = "BillingLifecycle"
-    }
 }
-
-@JvmInline
-private value class BillingResponse(val code: Int) {
-    val isOk: Boolean
-        get() = code == BillingClient.BillingResponseCode.OK
-    val canFailGracefully: Boolean
-        get() = code == BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED
-    val isRecoverableError: Boolean
-        get() = code in setOf(
-            BillingClient.BillingResponseCode.ERROR,
-            BillingClient.BillingResponseCode.SERVICE_DISCONNECTED,
-        )
-    val isNonrecoverableError: Boolean
-        get() = code in setOf(
-            BillingClient.BillingResponseCode.SERVICE_UNAVAILABLE,
-            BillingClient.BillingResponseCode.BILLING_UNAVAILABLE,
-            BillingClient.BillingResponseCode.DEVELOPER_ERROR,
-        )
-    val isTerribleFailure: Boolean
-        get() = code in setOf(
-            BillingClient.BillingResponseCode.ITEM_UNAVAILABLE,
-            BillingClient.BillingResponseCode.FEATURE_NOT_SUPPORTED,
-            BillingClient.BillingResponseCode.ITEM_NOT_OWNED,
-            BillingClient.BillingResponseCode.USER_CANCELED,
-        )
-}
-
 
 sealed class BillingClientState {
     data object Loading : BillingClientState()

@@ -139,15 +139,20 @@ class PaymentsViewModel(
         }
         viewModelScope.launch {
             purchases.collectLatest { billingPurchaseState ->
-                logAcknowledgementStatus(billingPurchaseState)
+                checkPurchaseStatus(billingPurchaseState)
             }
         }
     }
 
-    private suspend fun logAcknowledgementStatus(billingPurchaseState: BillingPurchaseState) {
+    private fun checkPurchaseStatus(billingPurchaseState: BillingPurchaseState) {
         when (billingPurchaseState) {
             is BillingPurchaseState.HasPurchases -> {
-                //need to check if the purchase is acknowledged
+                if (billingPurchaseState.isNewPurchase) {
+                    //Got new purchase, show success screen
+                    command.value = PaymentsNavigation.Welcome
+                }
+                //check if the purchase is acknowledged,
+                //logic for acknowledging the purchase is on the server side GO-3409
                 billingPurchaseState.purchases.forEach { purchase ->
                     if (!purchase.isAcknowledged) {
                         Timber.e("Purchase not acknowledged: ${purchase.purchaseToken}")

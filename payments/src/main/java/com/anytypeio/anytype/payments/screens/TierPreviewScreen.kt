@@ -87,7 +87,7 @@ fun TierPreviewView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 17.dp, top = 10.dp),
-                text = stringResource(id = tier.title),
+                text = tier.title,
                 color = colorResource(id = R.color.text_primary),
                 style = titleTextStyle,
                 textAlign = TextAlign.Start
@@ -97,7 +97,7 @@ fun TierPreviewView(
                     .fillMaxWidth()
                     .height(96.dp)
                     .padding(start = 16.dp, end = 16.dp, top = 5.dp),
-                text = stringResource(id = tier.subtitle),
+                text = tier.subtitle,
                 color = colorResource(id = R.color.text_primary),
                 style = Caption1Regular,
                 textAlign = TextAlign.Start

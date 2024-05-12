@@ -44,10 +44,12 @@ fun MembershipTierData.toView(
     val tierId = TierId(id)
     val isActive = membershipStatus.isTierActive(id)
     val emailState = getTierEmail(isActive, membershipStatus.userEmail)
+    val tierName = name
+    val tierDescription = description
     return TierView(
         id = tierId,
-        title = tierId.getTierTitle(),
-        subtitle = tierId.getTierSubtitle(),
+        title = tierName,
+        subtitle = tierDescription,
         conditionInfo = getConditionInfo(
             isActive = isActive,
             billingClientState = billingClientState,
@@ -78,10 +80,12 @@ fun MembershipTierData.toPreviewView(
 ): TierPreviewView {
     val tierId = TierId(id)
     val isActive = membershipStatus.isTierActive(id)
+    val tierName = name
+    val tierDescription = description
     return TierPreviewView(
         id = tierId,
-        title = tierId.getTierTitle(),
-        subtitle = tierId.getTierSubtitle(),
+        title = tierName,
+        subtitle = tierDescription,
         conditionInfo = getConditionInfo(
             isActive = isActive,
             billingClientState = billingClientState,

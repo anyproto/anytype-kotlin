@@ -2,7 +2,6 @@ package com.anytypeio.anytype.payments.mapping
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.pluralStringResource
-import androidx.compose.ui.res.stringResource
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.payments.constants.TiersConstants
 import com.anytypeio.anytype.payments.models.PeriodDescription
@@ -67,25 +66,5 @@ fun TierPeriod.toPeriodDescription(): PeriodDescription {
         is TierPeriod.Month -> PeriodDescription(count, PeriodUnit.MONTHS)
         is TierPeriod.Week -> PeriodDescription(count, PeriodUnit.WEEKS)
         is TierPeriod.Day -> PeriodDescription(count, PeriodUnit.DAYS)
-    }
-}
-
-fun TierPeriod.toFreeUntilString(): Int {
-    return when (this) {
-        is TierPeriod.Unknown -> R.string.free_for_unknown
-        is TierPeriod.Unlimited -> R.string.payments_tier_details_free_forever
-        is TierPeriod.Year -> R.string.free_for
-        is TierPeriod.Month -> R.string.free_for
-        is TierPeriod.Week -> R.string.free_for
-        is TierPeriod.Day -> R.string.free_for
-    }
-}
-
-@Composable
-fun TierPeriod.ToValidUntilString(formattedDate: String): String {
-    return when (this) {
-        is TierPeriod.Unknown -> stringResource(id = R.string.membership_valid_for_unknown)
-        is TierPeriod.Unlimited -> stringResource(id = R.string.membership_valid_forever)
-        else -> formattedDate
     }
 }

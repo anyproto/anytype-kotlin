@@ -41,6 +41,7 @@ import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.bottomSheet
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import javax.inject.Inject
+import timber.log.Timber
 
 class PaymentsFragment : BaseBottomSheetComposeFragment() {
 
@@ -153,6 +154,7 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
         super.onViewCreated(view, savedInstanceState)
         setupBottomSheetBehavior(DEFAULT_PADDING_TOP)
         subscribe(vm.command) { command ->
+            Timber.d("PaymentsFragment command: $command")
             when (command) {
                 PaymentsNavigation.Tier -> navController.navigate(PaymentsNavigation.Tier.route)
                 PaymentsNavigation.Code -> navController.navigate(PaymentsNavigation.Code.route)

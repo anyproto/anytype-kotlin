@@ -9,9 +9,12 @@ import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.payments.GetMembershipEmailStatus
 import com.anytypeio.anytype.domain.payments.GetMembershipPaymentUrl
 import com.anytypeio.anytype.domain.payments.IsMembershipNameValid
 import com.anytypeio.anytype.domain.payments.ResolveMembershipName
+import com.anytypeio.anytype.domain.payments.SetMembershipEmail
+import com.anytypeio.anytype.domain.payments.VerifyMembershipEmailCode
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
 import com.anytypeio.anytype.ui.payments.PaymentsFragment
 import com.anytypeio.anytype.payments.viewmodel.PaymentsViewModelFactory
@@ -65,6 +68,30 @@ object PaymentsModule {
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
     ): IsMembershipNameValid = IsMembershipNameValid(repo = repo, dispatchers = dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideGetEmailStatus(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): GetMembershipEmailStatus = GetMembershipEmailStatus(repo = repo, dispatchers = dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideSetMembershipEmail(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetMembershipEmail = SetMembershipEmail(repo = repo, dispatchers = dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideVerifyEmailCode(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): VerifyMembershipEmailCode = VerifyMembershipEmailCode(repo = repo, dispatchers = dispatchers)
 
     @JvmStatic
     @Provides

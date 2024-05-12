@@ -30,5 +30,41 @@ fun Rpc.NameService.ResolveName.Response.Error.toCore(): MembershipErrors.Resolv
     }
 }
 
+fun Rpc.Membership.GetVerificationEmail.Response.Error.toCore(): MembershipErrors.GetVerificationEmail {
+    return when (this.code) {
+        GetVerificationEmailErrorCode.EMAIL_WRONG_FORMAT -> MembershipErrors.GetVerificationEmail.EmailWrongFormat(description)
+        GetVerificationEmailErrorCode.EMAIL_ALREADY_VERIFIED -> MembershipErrors.GetVerificationEmail.EmailAlreadyVerified(description)
+        GetVerificationEmailErrorCode.EMAIL_FAILED_TO_SEND -> MembershipErrors.GetVerificationEmail.EmailFailedToSend(description)
+        GetVerificationEmailErrorCode.MEMBERSHIP_ALREADY_EXISTS -> MembershipErrors.GetVerificationEmail.MembershipAlreadyExists(description)
+        GetVerificationEmailErrorCode.NULL -> MembershipErrors.GetVerificationEmail.Null("Null error code")
+        GetVerificationEmailErrorCode.UNKNOWN_ERROR -> MembershipErrors.GetVerificationEmail.UnknownError(description)
+        GetVerificationEmailErrorCode.BAD_INPUT -> MembershipErrors.GetVerificationEmail.BadInput(description)
+        GetVerificationEmailErrorCode.NOT_LOGGED_IN -> MembershipErrors.GetVerificationEmail.NotLoggedIn(description)
+        GetVerificationEmailErrorCode.PAYMENT_NODE_ERROR -> MembershipErrors.GetVerificationEmail.PaymentNodeError(description)
+        GetVerificationEmailErrorCode.CACHE_ERROR -> MembershipErrors.GetVerificationEmail.CacheError(description)
+        GetVerificationEmailErrorCode.EMAIL_ALREDY_SENT -> MembershipErrors.GetVerificationEmail.EmailAlreadySent(description)
+        GetVerificationEmailErrorCode.CAN_NOT_CONNECT -> MembershipErrors.GetVerificationEmail.CanNotConnect(description)
+    }
+}
+
+fun Rpc.Membership.VerifyEmailCode.Response.Error.toCore(): MembershipErrors.VerifyEmailCode {
+    return when (this.code) {
+        VerifyEmailErrorCode.NULL -> MembershipErrors.VerifyEmailCode.Null("Null error code")
+        VerifyEmailErrorCode.UNKNOWN_ERROR -> MembershipErrors.VerifyEmailCode.UnknownError(description)
+        VerifyEmailErrorCode.BAD_INPUT -> MembershipErrors.VerifyEmailCode.BadInput(description)
+        VerifyEmailErrorCode.NOT_LOGGED_IN -> MembershipErrors.VerifyEmailCode.NotLoggedIn(description)
+        VerifyEmailErrorCode.PAYMENT_NODE_ERROR -> MembershipErrors.VerifyEmailCode.PaymentNodeError(description)
+        VerifyEmailErrorCode.CACHE_ERROR -> MembershipErrors.VerifyEmailCode.CacheError(description)
+        VerifyEmailErrorCode.CAN_NOT_CONNECT -> MembershipErrors.VerifyEmailCode.CanNotConnect(description)
+        VerifyEmailErrorCode.EMAIL_ALREADY_VERIFIED -> MembershipErrors.VerifyEmailCode.EmailAlreadyVerified(description)
+        VerifyEmailErrorCode.CODE_EXPIRED -> MembershipErrors.VerifyEmailCode.CodeExpired(description)
+        VerifyEmailErrorCode.CODE_WRONG -> MembershipErrors.VerifyEmailCode.CodeWrong(description)
+        VerifyEmailErrorCode.MEMBERSHIP_NOT_FOUND -> MembershipErrors.VerifyEmailCode.MembershipNotFound(description)
+        VerifyEmailErrorCode.MEMBERSHIP_ALREADY_ACTIVE -> MembershipErrors.VerifyEmailCode.MembershipAlreadyActive(description)
+    }
+}
+
 typealias IsNameValidErrorCode = Rpc.Membership.IsNameValid.Response.Error.Code
 typealias ResolveNameErrorCode = Rpc.NameService.ResolveName.Response.Error.Code
+typealias GetVerificationEmailErrorCode = Rpc.Membership.GetVerificationEmail.Response.Error.Code
+typealias VerifyEmailErrorCode = Rpc.Membership.VerifyEmailCode.Response.Error.Code

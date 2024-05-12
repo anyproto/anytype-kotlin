@@ -1,9 +1,13 @@
 package com.anytypeio.anytype.payments.screens
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
@@ -16,10 +20,12 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.views.BodyRegular
@@ -48,13 +54,19 @@ fun PaymentWelcomeScreen(state: PaymentsWelcomeState, onDismiss: () -> Unit) {
                 .wrapContentHeight(),
             sheetState = sheetState,
             onDismissRequest = onDismiss,
-            containerColor = colorResource(id = R.color.background_secondary),
+            containerColor = Color.Transparent,
             content = {
-                val tierResources = mapTierToResources(state.tier)
-                WelcomeContent(state.tier, tierResources, onDismiss)
+                BoxWithConstraints(
+                    Modifier.navigationBarsPadding()
+                ) {
+                    val boxWithConstraintsScope = this
+                    val tierResources = mapTierToResources(state.tier)
+                    WelcomeContent(state.tier, tierResources, onDismiss)
+                }
             },
             shape = RoundedCornerShape(16.dp),
-            dragHandle = null
+            dragHandle = null,
+            windowInsets = WindowInsets(0, 0, 0, 0)
         )
     }
 }
@@ -62,9 +74,16 @@ fun PaymentWelcomeScreen(state: PaymentsWelcomeState, onDismiss: () -> Unit) {
 @Composable
 private fun WelcomeContent(tierView: TierView, tierResources: TierResources, onDismiss: () -> Unit) {
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 20.dp)
+            .background(
+                shape = RoundedCornerShape(16.dp),
+                color = colorResource(id = R.color.background_primary)
+            ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
         Spacer(modifier = Modifier.height(36.dp))
         Icon(
             modifier = Modifier.wrapContentSize(),
@@ -106,7 +125,7 @@ private fun WelcomeContent(tierView: TierView, tierResources: TierResources, onD
 }
 
 
-@Preview
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF, device = Devices.PIXEL_4_XL)
 @Composable
 fun PaymentWelcomeScreenPreview() {
     PaymentWelcomeScreen(

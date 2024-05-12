@@ -52,7 +52,8 @@ fun ConditionInfoView(
                 TierPeriod.Unlimited -> stringResource(id = R.string.payments_tier_details_free_forever)
                 else -> validUntilDate
             }
-            ConditionInfoViewValid(text = result)
+            val showPayedBy = state.payedBy != MembershipPaymentMethod.METHOD_NONE
+            ConditionInfoViewValid(textValidUntil = result, showPayedBy = showPayedBy)
         }
 
         is TierConditionInfo.Visible.Price -> {
@@ -114,7 +115,7 @@ private fun ConditionInfoViewPriceAndText(price: String, period: String) {
 }
 
 @Composable
-fun ConditionInfoViewValid(text: String) {
+fun ConditionInfoViewValid(textValidUntil: String, showPayedBy: Boolean = true) {
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
         Text(
             modifier = Modifier
@@ -147,20 +148,22 @@ fun ConditionInfoViewValid(text: String) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 4.dp),
-                text = text,
+                text = textValidUntil,
                 color = colorResource(id = R.color.text_primary),
                 style = HeadlineTitle,
                 textAlign = TextAlign.Center
             )
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 23.dp),
-                text = stringResource(id = R.string.payments_tier_current_paid_by),
-                color = colorResource(id = R.color.text_secondary),
-                style = Relations2,
-                textAlign = TextAlign.Center
-            )
+            if (showPayedBy) {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 23.dp),
+                    text = stringResource(id = R.string.payments_tier_current_paid_by),
+                    color = colorResource(id = R.color.text_secondary),
+                    style = Relations2,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }

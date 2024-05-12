@@ -1434,6 +1434,7 @@
     <string name="payments_button_info">More info</string>
     <string name="payments_button_submit">Submit</string>
     <string name="payments_button_pay">Pay by card</string>
+    <string name="payments_button_change_email">Change e-mail</string>
 
     <string name="payments_member_link">Membership levels details</string>
     <string name="payments_privacy_link">Privacy policy</string>
@@ -1451,7 +1452,7 @@
     <string name="payments_tier_details_name_error">This name is already taken!</string>
     <string name="payments_tier_details_name_validated">This name [%1$s] is up for grabs!</string>
     <string name="payments_tier_details_name_validating">Validating name</string>
-    <string name="payments_tier_details_free_forever">Forever free</string>
+    <string name="payments_tier_details_free_forever">Forever</string>
     <string name="payments_tier_details_valid_until">Valid until %1$s</string>
 
     <string name="payments_tier_details_info_explorer">Dive into the network and enjoy the thrill of one-on-one collaboration</string>
@@ -1481,8 +1482,8 @@
     <string name="payments_detials_button_pay">Pay by Card</string>
     <string name="payments_detials_button_submit">Submit</string>
     <string name="payments_details_whats_included">What’s included</string>
-    <string name="payments_email_title">Get your free membership</string>
-    <string name="payments_email_subtitle">We need your email to keep spam at bay and the fun in play!</string>
+    <string name="payments_email_title">Get updates and enjoy free perks!</string>
+    <string name="payments_email_subtitle">It is not linked to your account in any way.</string>
     <string name="payments_email_checkbox_text">I\'d like to get updates on products and enjoy free perks!</string>
     <string name="payments_email_hint">E-mail</string>
 
@@ -1495,13 +1496,51 @@
     <!-- Payments Code -->
     <string name="payments_code_title">Enter the code sent to your email</string>
     <string name="payments_code_resend">Resend</string>
-    <string name="payments_code_resend_in">Resend in %1$n sec</string>
+    <string name="payments_code_resend_in">Resend in %1$d sec</string>
 
 
-    <!-- Payments Welcome -->
+    <!-- Membership Welcome -->
     <string name="payments_welcome_title">Welcome to the network,\n%1$s</string>
     <string name="payments_welcome_subtitle">Big cheers for your curiosity!</string>
     <string name="payments_welcome_button">Continue</string>
+
+    <!-- Membership Email -->
+    <string name="payments_email_to">membership-upgrade@anytype.io</string>
+    <string name="payments_email_subject">Upgrade %1$s</string>
+    <string name="payments_email_body">Hello Anytype team! I would like to extend my current membership for more (please choose an option):\n
+- Extra remote storage\n
+- More space editors\n
+- Additional shared spaces\n
+Specifically,
+Please provide specific details of your needs here.</string>
+
+    <!-- Membership name errors -->
+    <string name="membership_name_bad_input">Something wrong with input, try again</string>
+    <string name="membership_name_cache_error">Error on our side, try again later</string>
+    <string name="membership_name_cant_connect">Can not connect, check your internet connection</string>
+    <string name="membership_name_invalid_chars">Name has invalid characters</string>
+    <string name="membership_name_not_logged">You are not logged in! 😵‍💫</string>
+    <string name="membership_name_payment_node_error">Error on our side, try again later</string>
+    <string name="membership_name_tier_features_no_name">Name is not available for this tier</string>
+    <string name="membership_name_tier_not_found">Tier not found, try again later</string>
+    <string name="membership_name_too_long">Name is too long</string>
+    <string name="membership_name_too_short">Name is too short</string>
+    <string name="membership_any_name_not_reserved">This name is not available</string>
+    <string name="membership_any_name_null_error">Empty error</string>
+    <string name="membership_any_name_unknown">Unknown error</string>
+
+    <string name="membership_email_wrong_format">Email has wrong format</string>
+    <string name="membership_email_already_verified">Email is already verified</string>
+    <string name="membership_email_already_sent">Email is already sent</string>
+    <string name="membership_email_failed_to_send">Email failed to send</string>
+    <string name="membership_email_membership_already_exists">Membership already exists</string>
+
+    <string name="membership_email_code_expired">Code expired</string>
+    <string name="membership_email_code_wrong">Code is wrong</string>
+    <string name="membership_email_code_success">Code is correct</string>
+    <string name="membership_email_membership_not_found">Membership not found</string>
+    <string name="membership_email_membership_already_active">Membership already active</string>
+
 
     <!-- Notifications -->
     <string name="notifications_alert_error_unknown">An unknown error has occurred. Please try again later.</string>

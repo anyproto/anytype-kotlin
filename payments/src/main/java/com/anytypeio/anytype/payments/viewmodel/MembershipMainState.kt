@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.payments.viewmodel
 
 import androidx.annotation.StringRes
+import com.anytypeio.anytype.core_models.membership.MembershipErrors
 import com.anytypeio.anytype.payments.models.TierPreviewView
 import com.anytypeio.anytype.payments.models.TierView
 import com.anytypeio.anytype.presentation.membership.models.TierId
@@ -43,21 +44,25 @@ sealed class PaymentsErrorState {
 
 sealed class TierAction {
     data class PayClicked(val tierId: TierId) : TierAction()
+    data object SubmitClicked : TierAction()
     data class ManagePayment(val tierId: TierId) : TierAction()
-    data class OpenUrl(val url: String) : TierAction()
+    data class OpenUrl(val url: String?) : TierAction()
     data object OpenEmail : TierAction()
+    data object OnResendCodeClicked : TierAction()
+    data class OnVerifyCodeClicked(val code: String) : TierAction()
+    data object ChangeEmail : TierAction()
 }
 
-sealed class PaymentsCodeState {
-    object Hidden : PaymentsCodeState()
+sealed class MembershipEmailCodeState {
+    data object Hidden : MembershipEmailCodeState()
 
-    sealed class Visible : PaymentsCodeState() {
-        abstract val tierId: TierId
+    sealed class Visible : MembershipEmailCodeState() {
 
-        data class Initial(override val tierId: TierId) : Visible()
-        data class Loading(override val tierId: TierId) : Visible()
-        data class Success(override val tierId: TierId) : Visible()
-        data class Error(override val tierId: TierId, val message: String) : Visible()
+        data object Initial : Visible()
+        data object Loading : Visible()
+        data object Success : Visible()
+        data class Error(val error: MembershipErrors.VerifyEmailCode) : Visible()
+        data class ErrorOther(val message: String?) : Visible()
     }
 }
 
@@ -73,5 +78,5 @@ sealed class PaymentsNavigation(val route: String) {
     data object Welcome : PaymentsNavigation("welcome")
     data object Dismiss : PaymentsNavigation("")
     data class OpenUrl(val url: String?) : PaymentsNavigation("")
-    data object OpenEmail : PaymentsNavigation("")
+    data class OpenEmail(val accountId: String?) : PaymentsNavigation("")
 }

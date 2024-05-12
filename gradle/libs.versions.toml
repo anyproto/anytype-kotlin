@@ -173,8 +173,8 @@ playBilling = { module = "com.android.billingclient:billing", version = "6.2.1" 
 [bundles]
 
 [plugins]
-application = { id = "com.android.application", version = "8.3.2" }
-library = { id = "com.android.library", version = "8.3.2" }
+application = { id = "com.android.application", version = "8.4.0" }
+library = { id = "com.android.library", version = "8.4.0" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinVersion" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokkaVersion" }
 kserialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinVersion" }

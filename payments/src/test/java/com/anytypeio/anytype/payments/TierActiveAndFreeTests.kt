@@ -110,7 +110,7 @@ class TierActiveAndFreeTests : MembershipTestsSetup() {
                         payedBy = MembershipPaymentMethod.METHOD_NONE
                     ),
                     expectedAnyName = TierAnyName.Hidden,
-                    expectedButtonState = TierButton.Submit.Disabled,
+                    expectedButtonState = TierButton.Submit.Enabled,
                     expectedId = TiersConstants.EXPLORER_ID,
                     expectedActive = true,
                     expectedEmailState = TierEmail.Visible.Enter
@@ -165,7 +165,7 @@ class TierActiveAndFreeTests : MembershipTestsSetup() {
                         payedBy = MembershipPaymentMethod.METHOD_NONE
                     ),
                     expectedAnyName = TierAnyName.Hidden,
-                    expectedButtonState = TierButton.Hidden,
+                    expectedButtonState = TierButton.ChangeEmail,
                     expectedId = TiersConstants.EXPLORER_ID,
                     expectedActive = true,
                     expectedEmailState = TierEmail.Hidden

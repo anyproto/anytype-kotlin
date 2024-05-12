@@ -211,7 +211,7 @@ class TierAndroidActiveTests : MembershipTestsSetup() {
             val purchase = Mockito.mock(Purchase::class.java)
             Mockito.`when`(purchase.products).thenReturn(listOf(androidProductId))
             Mockito.`when`(purchase.isAcknowledged).thenReturn(true)
-            stubPurchaseState(BillingPurchaseState.HasPurchases(listOf(purchase)))
+            stubPurchaseState(BillingPurchaseState.HasPurchases(listOf(purchase), false))
             stubMembershipProvider(setupMembershipStatus(tiers))
 
             val viewModel = buildViewModel()

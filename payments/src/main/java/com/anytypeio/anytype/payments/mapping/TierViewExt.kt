@@ -63,11 +63,12 @@ fun MembershipTierData.toView(
         buttonState = toButtonView(
             isActive = isActive,
             billingPurchaseState = billingPurchaseState,
-            emailState = emailState,
-            paymentMethod = membershipStatus.paymentMethod
+            paymentMethod = membershipStatus.paymentMethod,
+            membershipEmail = membershipStatus.userEmail
         ),
         email = emailState,
-        color = colorStr
+        color = colorStr,
+        urlInfo = androidManageUrl
     )
 }
 
@@ -95,8 +96,8 @@ fun MembershipTierData.toPreviewView(
 private fun MembershipTierData.toButtonView(
     isActive: Boolean,
     billingPurchaseState: BillingPurchaseState,
-    emailState: TierEmail,
-    paymentMethod: MembershipPaymentMethod
+    paymentMethod: MembershipPaymentMethod,
+    membershipEmail: String
 ): TierButton {
     val androidProductId = this.androidProductId
     val androidInfoUrl = this.androidManageUrl
@@ -104,12 +105,10 @@ private fun MembershipTierData.toButtonView(
         val wasPurchasedOnAndroid = isActiveTierPurchasedOnAndroid(paymentMethod)
         if (!wasPurchasedOnAndroid) {
             if (id == EXPLORER_ID) {
-                when (emailState) {
-                    TierEmail.Hidden -> TierButton.Hidden
-                    TierEmail.Visible.Enter -> TierButton.Submit.Disabled
-                    is TierEmail.Visible.Error -> TierButton.Submit.Disabled
-                    TierEmail.Visible.Validated -> TierButton.Submit.Enabled
-                    TierEmail.Visible.Validating -> TierButton.Submit.Disabled
+                if (membershipEmail.isBlank()) {
+                    TierButton.Submit.Enabled
+                } else {
+                    TierButton.ChangeEmail
                 }
             } else {
                 when (paymentMethod) {

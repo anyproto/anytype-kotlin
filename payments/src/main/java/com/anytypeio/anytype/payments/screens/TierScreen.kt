@@ -45,6 +45,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.payments.R
 import com.anytypeio.anytype.payments.constants.TiersConstants.BUILDER_ID
+import com.anytypeio.anytype.payments.constants.TiersConstants.EXPLORER_ID
 import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierConditionInfo
@@ -54,6 +55,7 @@ import com.anytypeio.anytype.payments.models.TierView
 import com.anytypeio.anytype.payments.viewmodel.MembershipTierState
 import com.anytypeio.anytype.payments.viewmodel.TierAction
 import com.anytypeio.anytype.presentation.membership.models.TierId
+import timber.log.Timber
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -62,7 +64,8 @@ fun TierViewScreen(
     state: MembershipTierState,
     onDismiss: () -> Unit,
     actionTier: (TierAction) -> Unit,
-    anyNameTextField: TextFieldState
+    anyNameTextField: TextFieldState,
+    anyEmailTextField: TextFieldState
 ) {
     if (state is MembershipTierState.Visible) {
         val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -79,7 +82,8 @@ fun TierViewScreen(
                 TierViewVisible(
                     state = state,
                     actionTier = actionTier,
-                    anyNameTextField = anyNameTextField
+                    anyNameTextField = anyNameTextField,
+                    anyEmailTextField = anyEmailTextField
                 )
             },
         )
@@ -91,7 +95,8 @@ fun TierViewScreen(
 private fun TierViewVisible(
     state: MembershipTierState.Visible,
     actionTier: (TierAction) -> Unit,
-    anyNameTextField: TextFieldState
+    anyNameTextField: TextFieldState,
+    anyEmailTextField: TextFieldState
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -178,6 +183,10 @@ private fun TierViewVisible(
             Spacer(modifier = Modifier.height(26.dp))
             if (state.tierView.isActive) {
                 ConditionInfoView(state = state.tierView.conditionInfo)
+                MembershipEmailScreen(
+                    state = state.tierView.email,
+                    anyEmailTextField = anyEmailTextField
+                )
                 Spacer(modifier = Modifier.height(20.dp))
                 SecondaryButton(
                     buttonState = state.tierView.buttonState,
@@ -193,7 +202,7 @@ private fun TierViewVisible(
                 Spacer(modifier = Modifier.height(14.dp))
                 MainButton(
                     buttonState = state.tierView.buttonState,
-                    tierId = state.tierView.id,
+                    tierView = state.tierView,
                     actionTier = actionTier
                 )
             }
@@ -231,7 +240,7 @@ fun Benefit(benefit: String) {
 
 @Composable
 private fun MainButton(
-    tierId: TierId,
+    tierView: TierView,
     buttonState: TierButton,
     actionTier: (TierAction) -> Unit
 ) {
@@ -242,8 +251,14 @@ private fun MainButton(
             text = stringResource(id = stringRes),
             onClick = {
                       when (buttonState) {
-                          is TierButton.Pay.Enabled -> actionTier(TierAction.PayClicked(tierId))
-                          else -> {}
+                          is TierButton.Pay.Enabled -> actionTier(TierAction.PayClicked(tierView.id))
+                          is TierButton.Info.Enabled -> actionTier(TierAction.OpenUrl(tierView.urlInfo))
+                          is TierButton.Manage.Android.Enabled -> TODO()
+                          is TierButton.Manage.External.Enabled -> TODO()
+                          TierButton.Submit.Enabled -> actionTier(TierAction.SubmitClicked)
+                          else -> {
+                              Timber.d("MainButton: skipped action: $buttonState")
+                          }
                       }
 
             },
@@ -270,6 +285,8 @@ private fun SecondaryButton(
                 when (buttonState) {
                     is TierButton.Pay.Enabled -> actionTier(TierAction.PayClicked(tierId))
                     is TierButton.Manage.Android.Enabled -> actionTier(TierAction.ManagePayment(tierId))
+                    TierButton.Submit.Enabled -> actionTier(TierAction.SubmitClicked)
+                    TierButton.ChangeEmail -> actionTier(TierAction.ChangeEmail)
                     else -> {}
                 }
 
@@ -296,6 +313,7 @@ private fun getButtonText(buttonState: TierButton): Pair<Int, Boolean> {
         TierButton.Submit.Enabled -> Pair(R.string.payments_button_submit, true)
         TierButton.Pay.Disabled -> Pair(R.string.payments_button_pay, false)
         TierButton.Pay.Enabled -> Pair(R.string.payments_button_pay, true)
+        TierButton.ChangeEmail -> Pair(R.string.payments_button_change_email, true)
     }
 }
 
@@ -312,27 +330,24 @@ fun TierViewScreenPreview() {
                     "Feature 1",
                     "Feature 2",
                     "Feature 3",
-                    "Feature 1",
-                    "Feature 2",
-                    "Feature 3",
-                    "Feature 1",
-                    "Feature 2"
+                    "Feature 1"
                 ),
-                isActive = false,
+                isActive = true,
                 conditionInfo = TierConditionInfo.Visible.Valid(
                     dateEnds = 1714199910,
                     period = TierPeriod.Year(1),
                     payedBy = MembershipPaymentMethod.METHOD_INAPP_GOOGLE
                 ),
                 buttonState = TierButton.Manage.Android.Enabled("eqweqw"),
-                id = TierId(value = BUILDER_ID),
-                membershipAnyName = TierAnyName.Visible.Enter,
-                email = TierEmail.Hidden,
+                id = TierId(value = EXPLORER_ID),
+                membershipAnyName = TierAnyName.Hidden,
+                email = TierEmail.Visible.Enter,
                 color = "teal"
             )
         ),
         actionTier = {},
         onDismiss = {},
-        anyNameTextField = TextFieldState()
+        anyNameTextField = TextFieldState(),
+        anyEmailTextField = TextFieldState()
     )
 }

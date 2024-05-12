@@ -26,13 +26,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
@@ -47,47 +51,65 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.membership.MembershipErrors
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyBold
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.payments.R
-import com.anytypeio.anytype.payments.viewmodel.PaymentsCodeState
-import com.anytypeio.anytype.presentation.membership.models.TierId
+import com.anytypeio.anytype.payments.viewmodel.MembershipEmailCodeState
+import com.anytypeio.anytype.payments.viewmodel.TierAction
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CodeScreen(
-    state: PaymentsCodeState,
-    actionResend: () -> Unit,
-    actionCode: (String, TierId) -> Unit,
+    state: MembershipEmailCodeState,
+    action: (TierAction) -> Unit,
     onDismiss: () -> Unit
 ) {
-    if (state is PaymentsCodeState.Visible) {
+    if (state is MembershipEmailCodeState.Visible) {
         val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
         ModalBottomSheet(
             sheetState = sheetState,
             onDismissRequest = onDismiss,
             containerColor = colorResource(id = R.color.background_primary),
-            content = { ModalCodeContent(state = state, actionCode = { code ->  actionCode(code, state.tierId)}) }
+            content = {
+                ModalCodeContent(
+                    state = state,
+                    action = action
+                )
+            }
         )
     }
 }
 
 @Composable
-private fun ModalCodeContent(state: PaymentsCodeState.Visible, actionCode: (String) -> Unit) {
+private fun ModalCodeContent(
+    state: MembershipEmailCodeState.Visible,
+    action: (TierAction) -> Unit
+) {
     val focusRequesters = remember { List(4) { FocusRequester() } }
     val enteredDigits = remember { mutableStateListOf<Char>() }
     val focusManager = LocalFocusManager.current
 
+    var timeLeft by remember { mutableStateOf(RESEND_DELAY) }
+    LaunchedEffect(key1 = timeLeft) {
+        if (timeLeft > 0) {
+            delay(1000)
+            timeLeft--
+        }
+    }
+
     LaunchedEffect(key1 = enteredDigits.size) {
         if (enteredDigits.size == 4) {
             val code = enteredDigits.joinToString("")
-            actionCode(code)
+            action(TierAction.OnVerifyCodeClicked(code))
         }
     }
 
     LaunchedEffect(key1 = state) {
-        if (state is PaymentsCodeState.Visible.Loading) {
+        if (state is MembershipEmailCodeState.Visible.Loading) {
             focusManager.clearFocus(true)
         }
     }
@@ -118,7 +140,7 @@ private fun ModalCodeContent(state: PaymentsCodeState.Visible, actionCode: (Stri
             ) {
                 focusRequesters.forEachIndexed { index, focusRequester ->
                     CodeNumber(
-                        isEnabled = state !is PaymentsCodeState.Visible.Loading,
+                        isEnabled = state !is MembershipEmailCodeState.Visible.Loading,
                         modifier = modifier,
                         focusRequester = focusRequester,
                         onDigitEntered = { digit ->
@@ -135,20 +157,40 @@ private fun ModalCodeContent(state: PaymentsCodeState.Visible, actionCode: (Stri
                     if (index < 3) Spacer(modifier = Modifier.width(8.dp))
                 }
             }
-            if (state is PaymentsCodeState.Visible.Error) {
-                Text(
-                    text = state.message,
-                    color = colorResource(id = R.color.palette_system_red),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 20.dp, end = 20.dp, top = 7.dp),
-                    textAlign = TextAlign.Center
+            val (messageTextColor, messageText) = when (state) {
+                is MembershipEmailCodeState.Visible.Error -> ErrorMessage(state)
+                is MembershipEmailCodeState.Visible.ErrorOther -> colorResource(id = R.color.palette_system_red) to state.message
+                MembershipEmailCodeState.Visible.Success -> colorResource(id = R.color.palette_dark_lime) to stringResource(
+                    id = R.string.membership_email_code_success
                 )
+
+                else -> Color.Transparent to ""
             }
-            Spacer(modifier = Modifier.height(149.dp))
             Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = stringResource(id = com.anytypeio.anytype.localization.R.string.payments_code_resend),
+                text = messageText.orEmpty(),
+                color = messageTextColor,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, end = 20.dp, top = 7.dp),
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(149.dp))
+            val (resendEnabled, resendText) = if (timeLeft == 0) {
+                true to stringResource(id = R.string.payments_code_resend)
+            } else {
+                false to stringResource(id = R.string.payments_code_resend_in, timeLeft)
+            }
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .noRippleThrottledClickable {
+                        if (resendEnabled) {
+                            timeLeft = RESEND_DELAY
+                            action(TierAction.OnResendCodeClicked)
+                        }
+                    }
+                    .alpha(if (resendEnabled) 1f else 0.5f),
+                text = resendText,
                 style = PreviewTitle1Regular,
                 color = colorResource(id = R.color.text_tertiary),
                 textAlign = TextAlign.Center
@@ -156,7 +198,7 @@ private fun ModalCodeContent(state: PaymentsCodeState.Visible, actionCode: (Stri
         }
         AnimatedVisibility(
             modifier = Modifier.align(Alignment.Center),
-            visible = state is PaymentsCodeState.Visible.Loading,
+            visible = state is MembershipEmailCodeState.Visible.Loading,
             enter = fadeIn(),
             exit = fadeOut()
         ) {
@@ -227,11 +269,34 @@ private fun CodeNumber(
     )
 }
 
+@Composable
+private fun ErrorMessage(state: MembershipEmailCodeState.Visible.Error): Pair<Color, String> {
+    val color = colorResource(id = R.color.palette_system_red)
+    val message = when (state.error) {
+        is MembershipErrors.VerifyEmailCode.BadInput -> R.string.membership_name_bad_input
+        is MembershipErrors.VerifyEmailCode.CacheError -> R.string.membership_name_cache_error
+        is MembershipErrors.VerifyEmailCode.CanNotConnect -> R.string.membership_name_cant_connect
+        is MembershipErrors.VerifyEmailCode.CodeExpired -> R.string.membership_email_code_expired
+        is MembershipErrors.VerifyEmailCode.CodeWrong -> R.string.membership_email_code_wrong
+        is MembershipErrors.VerifyEmailCode.EmailAlreadyVerified -> R.string.membership_email_already_verified
+        is MembershipErrors.VerifyEmailCode.MembershipAlreadyActive -> R.string.membership_email_membership_already_active
+        is MembershipErrors.VerifyEmailCode.MembershipNotFound -> R.string.membership_email_membership_not_found
+        is MembershipErrors.VerifyEmailCode.NotLoggedIn -> R.string.membership_name_not_logged
+        is MembershipErrors.VerifyEmailCode.Null -> R.string.membership_any_name_null_error
+        is MembershipErrors.VerifyEmailCode.PaymentNodeError -> R.string.membership_name_payment_node_error
+        is MembershipErrors.VerifyEmailCode.UnknownError -> R.string.membership_any_name_unknown
+        else -> R.string.membership_any_name_unknown
+    }
+    return color to stringResource(id = message)
+}
+
+const val RESEND_DELAY = 60
+
 @Preview
 @Composable
 fun EnterCodeModalPreview() {
     ModalCodeContent(
-        state = PaymentsCodeState.Visible.Loading(TierId(1)),
-        actionCode = { _ -> }
+        state = MembershipEmailCodeState.Visible.Loading,
+        action = {}
     )
 }

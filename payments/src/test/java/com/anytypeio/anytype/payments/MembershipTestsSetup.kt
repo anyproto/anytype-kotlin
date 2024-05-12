@@ -8,9 +8,12 @@ import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.payments.GetMembershipEmailStatus
 import com.anytypeio.anytype.domain.payments.GetMembershipPaymentUrl
 import com.anytypeio.anytype.domain.payments.IsMembershipNameValid
 import com.anytypeio.anytype.domain.payments.ResolveMembershipName
+import com.anytypeio.anytype.domain.payments.SetMembershipEmail
+import com.anytypeio.anytype.domain.payments.VerifyMembershipEmailCode
 import com.anytypeio.anytype.payments.constants.TiersConstants
 import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
@@ -71,6 +74,15 @@ open class MembershipTestsSetup {
 
     @Mock
     lateinit var resolveMembershipName: ResolveMembershipName
+
+    @Mock
+    lateinit var setMembershipEmail: SetMembershipEmail
+
+    @Mock
+    lateinit var verifyMembershipEmailCode: VerifyMembershipEmailCode
+
+    @Mock
+    lateinit var getMembershipEmailStatus: GetMembershipEmailStatus
 
     private lateinit var getMembershipPaymentUrl: GetMembershipPaymentUrl
     protected val androidProductId = "id_android_builder"
@@ -154,6 +166,9 @@ open class MembershipTestsSetup {
         membershipProvider = membershipProvider,
         getMembershipPaymentUrl = getMembershipPaymentUrl,
         isMembershipNameValid = isMembershipNameValid,
-        resolveMembershipName = resolveMembershipName
+        resolveMembershipName = resolveMembershipName,
+        setMembershipEmail = setMembershipEmail,
+        verifyMembershipEmailCode = verifyMembershipEmailCode,
+        getMembershipEmailStatus = getMembershipEmailStatus,
     )
 }

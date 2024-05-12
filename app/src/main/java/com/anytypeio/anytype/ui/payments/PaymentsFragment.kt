@@ -17,10 +17,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.intents.SystemAction
+import com.anytypeio.anytype.core_utils.intents.proceedWithAction
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
@@ -38,6 +41,7 @@ import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.bottomSheet
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import javax.inject.Inject
+import timber.log.Timber
 
 class PaymentsFragment : BaseBottomSheetComposeFragment() {
 
@@ -124,7 +128,8 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
             state = vm.tierState.collectAsStateWithLifecycle().value,
             onDismiss = vm::onDismissTier,
             actionTier = vm::onTierAction,
-            anyNameTextField = vm.anyNameState
+            anyNameTextField = vm.anyNameState,
+            anyEmailTextField = vm.anyEmailState
         )
     }
 
@@ -132,8 +137,7 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
     private fun InitCodeScreen() {
         CodeScreen(
             state = vm.codeState.collectAsStateWithLifecycle().value,
-            actionResend = { },
-            actionCode = vm::onActionCode,
+            action = vm::onTierAction,
             onDismiss = vm::onDismissCode
         )
     }
@@ -150,6 +154,7 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
         super.onViewCreated(view, savedInstanceState)
         setupBottomSheetBehavior(DEFAULT_PADDING_TOP)
         subscribe(vm.command) { command ->
+            Timber.d("PaymentsFragment command: $command")
             when (command) {
                 PaymentsNavigation.Tier -> navController.navigate(PaymentsNavigation.Tier.route)
                 PaymentsNavigation.Code -> navController.navigate(PaymentsNavigation.Code.route)
@@ -174,8 +179,14 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
                     }
                 }
                 PaymentsNavigation.Main -> {}
-                PaymentsNavigation.OpenEmail -> {
-                    toast("Not implemented yet")
+                is PaymentsNavigation.OpenEmail -> {
+                    val mail = resources.getString(R.string.payments_email_to)
+                    val subject = resources.getString(R.string.payments_email_subject, command.accountId)
+                    val body = resources.getString(R.string.payments_email_body)
+                    val mailBody = mail +
+                            "?subject=$subject" +
+                            "&body=$body"
+                    proceedWithAction(SystemAction.MailTo(mailBody))
                 }
                 null -> {}
             }

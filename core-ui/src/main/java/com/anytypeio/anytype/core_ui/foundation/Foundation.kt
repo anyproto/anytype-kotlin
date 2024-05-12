@@ -142,7 +142,9 @@ fun OptionMembership(
         modifier = Modifier
             .fillMaxWidth()
             .height(52.dp)
-            .clickable(onClick = onClick)
+            .noRippleThrottledClickable {
+                if (membershipStatus?.status != null) onClick()
+            }
 
     ) {
         Image(
@@ -176,9 +178,11 @@ fun OptionMembership(
                     Arrow()
                 }
             }
+
             Status.STATUS_UNKNOWN -> {
-                Box(modifier = Modifier
-                    .weight(1.0f, true),
+                Box(
+                    modifier = Modifier
+                        .weight(1.0f, true),
                     contentAlignment = Alignment.CenterEnd
                 ) {
                     Text(
@@ -197,7 +201,21 @@ fun OptionMembership(
                     )
                 }
             }
-            else -> {}
+
+            else -> {
+                Box(
+                    modifier = Modifier.weight(1.0f, true),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .padding(horizontal = 38.dp),
+                        text = stringResource(id = R.string.membership_price_pending),
+                        color = colorResource(R.color.text_secondary),
+                        style = BodyRegular
+                    )
+                }
+            }
         }
     }
 }

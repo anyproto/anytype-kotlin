@@ -2088,6 +2088,10 @@ class MiddlewareServiceImplementation @Inject constructor(
     override fun membershipGetVerificationEmail(request: Rpc.Membership.GetVerificationEmail.Request): Rpc.Membership.GetVerificationEmail.Response {
         val encoded = Service.membershipGetVerificationEmail(
             Rpc.Membership.GetVerificationEmail.Request.ADAPTER.encode(request)
+        ) ?: return Rpc.Membership.GetVerificationEmail.Response(
+            error = Rpc.Membership.GetVerificationEmail.Response.Error(
+                code = Rpc.Membership.GetVerificationEmail.Response.Error.Code.NULL
+            )
         )
         val response = Rpc.Membership.GetVerificationEmail.Response.ADAPTER.decode(encoded)
         val error = response.error
@@ -2101,6 +2105,10 @@ class MiddlewareServiceImplementation @Inject constructor(
     override fun membershipVerifyEmailCode(request: Rpc.Membership.VerifyEmailCode.Request): Rpc.Membership.VerifyEmailCode.Response {
         val encoded = Service.membershipVerifyEmailCode(
             Rpc.Membership.VerifyEmailCode.Request.ADAPTER.encode(request)
+        ) ?: return Rpc.Membership.VerifyEmailCode.Response(
+            error = Rpc.Membership.VerifyEmailCode.Response.Error(
+                code = Rpc.Membership.VerifyEmailCode.Response.Error.Code.NULL
+            )
         )
         val response = Rpc.Membership.VerifyEmailCode.Response.ADAPTER.decode(encoded)
         val error = response.error

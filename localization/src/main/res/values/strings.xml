@@ -1434,6 +1434,7 @@
     <string name="payments_button_info">More info</string>
     <string name="payments_button_submit">Submit</string>
     <string name="payments_button_pay">Pay by card</string>
+    <string name="payments_button_change_email">Change e-mail</string>
 
     <string name="payments_member_link">Membership levels details</string>
     <string name="payments_privacy_link">Privacy policy</string>
@@ -1495,7 +1496,7 @@
     <!-- Payments Code -->
     <string name="payments_code_title">Enter the code sent to your email</string>
     <string name="payments_code_resend">Resend</string>
-    <string name="payments_code_resend_in">Resend in %1$n sec</string>
+    <string name="payments_code_resend_in">Resend in %1$d sec</string>
 
 
     <!-- Membership Welcome -->
@@ -1536,6 +1537,7 @@ Please provide specific details of your needs here.</string>
 
     <string name="membership_email_code_expired">Code expired</string>
     <string name="membership_email_code_wrong">Code is wrong</string>
+    <string name="membership_email_code_success">Code is correct</string>
     <string name="membership_email_membership_not_found">Membership not found</string>
     <string name="membership_email_membership_already_active">Membership already active</string>
 

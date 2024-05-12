@@ -966,7 +966,7 @@ class BlockMiddleware(
     }
 
     override suspend fun membershipIsNameValid(command: Command.Membership.IsNameValid) {
-        return middleware.membershipIsNameValid(command)
+        middleware.membershipIsNameValid(command)
     }
 
     override suspend fun membershipResolveName(command: Command.Membership.ResolveName): Boolean {
@@ -982,7 +982,7 @@ class BlockMiddleware(
     }
 
     override suspend fun membershipFinalize(command: Command.Membership.Finalize) {
-        return middleware.membershipFinalize(command)
+        middleware.membershipFinalize(command)
     }
 
     override suspend fun membershipGetVerificationEmailStatus(): EmailVerificationStatus {
@@ -990,11 +990,11 @@ class BlockMiddleware(
     }
 
     override suspend fun membershipGetVerificationEmail(command: Command.Membership.GetVerificationEmail) {
-        return middleware.membershipGetVerificationEmail(command)
+        middleware.membershipGetVerificationEmail(command)
     }
 
     override suspend fun membershipVerifyEmailCode(command: Command.Membership.VerifyEmailCode) {
-        return middleware.membershipVerifyEmailCode(command)
+        middleware.membershipVerifyEmailCode(command)
     }
 
     override suspend fun membershipGetTiers(command: Command.Membership.GetTiers): List<MembershipTierData> {

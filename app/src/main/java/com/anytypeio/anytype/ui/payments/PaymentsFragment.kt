@@ -136,8 +136,7 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
     private fun InitCodeScreen() {
         CodeScreen(
             state = vm.codeState.collectAsStateWithLifecycle().value,
-            actionResend = { },
-            actionCode = vm::onActionCode,
+            action = vm::onTierAction,
             onDismiss = vm::onDismissCode
         )
     }

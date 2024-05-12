@@ -10,6 +10,7 @@ import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.membership.EmailVerificationStatus
 import com.anytypeio.anytype.core_models.membership.MembershipErrors
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
@@ -26,6 +27,7 @@ import com.anytypeio.anytype.payments.mapping.toMainView
 import com.anytypeio.anytype.payments.mapping.toView
 import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
+import com.anytypeio.anytype.payments.models.TierEmail
 import com.anytypeio.anytype.payments.models.TierView
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
 import com.anytypeio.anytype.payments.playbilling.BillingClientState
@@ -35,6 +37,7 @@ import com.anytypeio.anytype.presentation.membership.models.TierId
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -60,7 +63,7 @@ class PaymentsViewModel(
 ) : ViewModel() {
 
     val viewState = MutableStateFlow<MembershipMainState>(MembershipMainState.Loading)
-    val codeState = MutableStateFlow<PaymentsCodeState>(PaymentsCodeState.Hidden)
+    val codeState = MutableStateFlow<MembershipEmailCodeState>(MembershipEmailCodeState.Hidden)
     val tierState = MutableStateFlow<MembershipTierState>(MembershipTierState.Hidden)
     val welcomeState = MutableStateFlow<PaymentsWelcomeState>(PaymentsWelcomeState.Hidden)
     val errorState = MutableStateFlow<PaymentsErrorState>(PaymentsErrorState.Hidden)
@@ -193,10 +196,6 @@ class PaymentsViewModel(
         showTierState.value = tierId.value
     }
 
-    fun onActionCode(code: String, tierId: TierId) {
-        //todo implement
-    }
-
     fun onTierAction(action: TierAction) {
         Timber.d("onTierAction: action:$action")
         when (action) {
@@ -211,6 +210,23 @@ class PaymentsViewModel(
                     email = anyEmailState.text.toString(),
                     subscribeToNewsletter = false
                 )
+            }
+            TierAction.OnResendCodeClicked -> {
+                proceedWithSettingEmail(
+                    email = anyEmailState.text.toString(),
+                    subscribeToNewsletter = false
+                )
+            }
+            is TierAction.OnVerifyCodeClicked -> {
+                proceedWithValidatingEmailCode(action.code)
+            }
+            TierAction.ChangeEmail -> {
+                val tierView = (tierState.value as? MembershipTierState.Visible)?.tierView ?: return
+                val updatedTierState = tierView.copy(
+                    email = TierEmail.Visible.Enter,
+                    buttonState = TierButton.Submit.Enabled
+                )
+                tierState.value = MembershipTierState.Visible(updatedTierState)
             }
         }
     }
@@ -237,7 +253,7 @@ class PaymentsViewModel(
         if (validateNameJob?.isActive == true) {
             validateNameJob?.cancel()
         }
-        setAnyNameStateToValidating(tierView)
+        setValidatingAnyNameState(tierView)
         validateNameJob = viewModelScope.launch {
             val params = IsMembershipNameValid.Params(
                 tier = tierView.id.value,
@@ -246,11 +262,11 @@ class PaymentsViewModel(
             isMembershipNameValid.async(params).fold(
                 onSuccess = {
                     Timber.d("Name is valid")
-                    setAnyNameStateToValidated(tierView, name)
+                    setValidatedAnyNameState(tierView, name)
                 },
                 onFailure = { error ->
                     Timber.w("Error validating name: $error")
-                    setAnyNameStateToError(tierView, error)
+                    setErrorAnyNameState(tierView, error)
                 }
             )
         }
@@ -264,7 +280,7 @@ class PaymentsViewModel(
         tierState.value = MembershipTierState.Visible(updatedTierState)
     }
 
-    private fun setAnyNameStateToValidating(tierView: TierView) {
+    private fun setValidatingAnyNameState(tierView: TierView) {
         val updatedTierState = tierView.copy(
             membershipAnyName = TierAnyName.Visible.Validating,
             buttonState = TierButton.Pay.Disabled
@@ -272,7 +288,7 @@ class PaymentsViewModel(
         tierState.value = MembershipTierState.Visible(updatedTierState)
     }
 
-    private fun setAnyNameStateToError(tierView: TierView, error: Throwable) {
+    private fun setErrorAnyNameState(tierView: TierView, error: Throwable) {
         val state = if (error is MembershipErrors) {
             TierAnyName.Visible.Error(error)
         } else {
@@ -285,10 +301,32 @@ class PaymentsViewModel(
         tierState.value = MembershipTierState.Visible(updatedTierState)
     }
 
-    private fun setAnyNameStateToValidated(tierView: TierView, validatedName: String) {
+    private fun setValidatedAnyNameState(tierView: TierView, validatedName: String) {
         val updatedTierState = tierView.copy(
             membershipAnyName = TierAnyName.Visible.Validated(validatedName),
             buttonState = TierButton.Pay.Enabled
+        )
+        tierState.value = MembershipTierState.Visible(updatedTierState)
+    }
+
+    private fun setErrorEmailCodeState(error: Throwable)  {
+        val state = if (error is MembershipErrors.VerifyEmailCode) {
+            MembershipEmailCodeState.Visible.Error(error)
+        } else {
+            MembershipEmailCodeState.Visible.ErrorOther(error.message)
+        }
+        codeState.value = state
+    }
+
+    private fun setErrorSettingEmailState(error: Throwable) {
+        val tierView = (tierState.value as? MembershipTierState.Visible)?.tierView ?: return
+        val state = if (error is MembershipErrors.GetVerificationEmail) {
+            TierEmail.Visible.Error(error)
+        } else {
+            TierEmail.Visible.ErrorOther(error.message)
+        }
+        val updatedTierState = tierView.copy(
+            email = state
         )
         tierState.value = MembershipTierState.Visible(updatedTierState)
     }
@@ -372,6 +410,23 @@ class PaymentsViewModel(
         viewModelScope.launch {
             getMembershipEmailStatus.async(Unit).fold(
                 onSuccess = { status ->
+                    val tierView =
+                        (tierState.value as? MembershipTierState.Visible)?.tierView ?: return@fold
+                    when (status) {
+                        EmailVerificationStatus.STATUS_VERIFIED -> {
+                            if (tierView.id.value == EXPLORER_ID) {
+                                val updatedState = tierView.copy(
+                                    email = TierEmail.Hidden,
+                                    buttonState = TierButton.ChangeEmail
+                                )
+                                tierState.value = MembershipTierState.Visible(updatedState)
+                            } else {
+                                codeState.value = MembershipEmailCodeState.Visible.Initial
+                                command.value = PaymentsNavigation.Code
+                            }
+                        }
+                        else -> {}
+                    }
                     Timber.d("Email status: $status")
                 },
                 onFailure = { error ->
@@ -382,26 +437,36 @@ class PaymentsViewModel(
     }
 
     private fun proceedWithSettingEmail(email: String, subscribeToNewsletter: Boolean) {
+        val params = SetMembershipEmail.Params(email, subscribeToNewsletter)
         viewModelScope.launch {
-            setMembershipEmail.async(SetMembershipEmail.Params(email, subscribeToNewsletter)).fold(
+            setMembershipEmail.async(params).fold(
                 onSuccess = {
                     Timber.d("Email set")
+                    codeState.value = MembershipEmailCodeState.Visible.Initial
+                    command.value = PaymentsNavigation.Code
                 },
                 onFailure = { error ->
                     Timber.e("Error setting email: $error")
+                    setErrorSettingEmailState(error)
                 }
             )
         }
     }
 
     private fun proceedWithValidatingEmailCode(code: String) {
+        codeState.value = MembershipEmailCodeState.Visible.Loading
         viewModelScope.launch {
             verifyMembershipEmailCode.async(VerifyMembershipEmailCode.Params(code)).fold(
                 onSuccess = {
                     Timber.d("Email code verified")
+                    codeState.value = MembershipEmailCodeState.Visible.Success
+                    delay(500)
+                    command.value = PaymentsNavigation.Dismiss
+                    proceedWithGettingEmailStatus()
                 },
                 onFailure = { error ->
                     Timber.e("Error verifying email code: $error")
+                    setErrorEmailCodeState(error)
                 }
             )
         }
@@ -410,17 +475,20 @@ class PaymentsViewModel(
     fun onDismissTier() {
         Timber.d("onDismissTier")
         command.value = PaymentsNavigation.Dismiss
+        tierState.value = MembershipTierState.Hidden
         showTierState.value = 0
     }
 
     fun onDismissCode() {
         Timber.d("onDismissCode")
         command.value = PaymentsNavigation.Dismiss
+        codeState.value = MembershipEmailCodeState.Hidden
     }
 
     fun onDismissWelcome() {
         Timber.d("onDismissWelcome")
         command.value = PaymentsNavigation.Dismiss
+        welcomeState.value = PaymentsWelcomeState.Hidden
     }
 
     private fun hasBanner(activeTierId: Int) = activeTierId == EXPLORER_ID

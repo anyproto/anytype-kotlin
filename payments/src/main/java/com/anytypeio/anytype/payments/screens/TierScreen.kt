@@ -286,6 +286,7 @@ private fun SecondaryButton(
                     is TierButton.Pay.Enabled -> actionTier(TierAction.PayClicked(tierId))
                     is TierButton.Manage.Android.Enabled -> actionTier(TierAction.ManagePayment(tierId))
                     TierButton.Submit.Enabled -> actionTier(TierAction.SubmitClicked)
+                    TierButton.ChangeEmail -> actionTier(TierAction.ChangeEmail)
                     else -> {}
                 }
 
@@ -312,6 +313,7 @@ private fun getButtonText(buttonState: TierButton): Pair<Int, Boolean> {
         TierButton.Submit.Enabled -> Pair(R.string.payments_button_submit, true)
         TierButton.Pay.Disabled -> Pair(R.string.payments_button_pay, false)
         TierButton.Pay.Enabled -> Pair(R.string.payments_button_pay, true)
+        TierButton.ChangeEmail -> Pair(R.string.payments_button_change_email, true)
     }
 }
 

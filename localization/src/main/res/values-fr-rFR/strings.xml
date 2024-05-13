@@ -9,7 +9,7 @@
     <string name="personalization">Personnalisation</string>
     <string name="appearance">Apparence</string>
     <string name="file_storage">Stockage de fichiers</string>
-    <string name="key">Phrase de récupération</string>
+    <string name="recovery_phrase">Phrase de récupération</string>
     <string name="clear_file_cache">Vider le cache des fichiers</string>
     <string name="debug_sync_report">Rapport de débogage de synchronisation</string>
     <string name="debug">Débogage</string>
@@ -800,6 +800,7 @@
     <string name="base_add_options_empty_subtitle">Commencez à écrire pour créer un nouvel élément</string>
     <string name="sync_status_local_only">Local seulement</string>
     <string name="mail_more_space_body">Bonjour, l\'équipe Anytype. Je suis en contact pour demander une augmentation de ma capacité de stockage de fichiers car je n\'ai plus de stockage. Mes limites actuelles sont %1$s. Mon identifiant de compte est %2$s. À bientôt, %3$s</string>
+    <string name="your_recovery_phrase_can_t_be_empty">Votre phrase de récupération ne peut pas être vide</string>
     <string name="go_to_the_app">Accéder à l\'application</string>
     <string name="exiting_please_wait">Fermeture en cours... Veuillez patienter</string>
     <string name="loading_please_wait">Chargement en cours... veuillez patienter</string>
@@ -967,23 +968,39 @@
     <!--region ONBOARDING -->
     <string name="onboarding_auth_title">the everything app</string>
     <string name="onboarding_auth_subtitle">for those\nwho celebrate\ntrust &amp; autonomy</string>
+    <string name="onboarding_auth_description">Anytype est votre lieu sûr pour écrire, planifier, penser et organiser tout ce qui compte pour vous.</string>
     <string name="onboarding_terms_and_policy_prefix">"By continuing you agree to "</string>
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
     <string name="onboarding_terms_and_policy_infix">" and "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
+    <string name="onboarding_join_button_text">Rejoindre</string>
+    <string name="onboarding_log_in_button_text">Connexion</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
-    <string name="onboarding_key_skip">Ignorer</string>
-    <string name="onboarding_key_copy">Copier dans le presse-papier</string>
+    <string name="onboarding_mnemonic_title">Sauvegardez votre phrase de récupération</string>
+    <string name="onboarding_mnemonic_description">C’est un nouveau moyen d’authentification qui vous octroie la pleine propriété de votre compte et de vos données.</string>
+    <string name="onboarding_mnemonic_show_key">Afficher la phrase de récupération</string>
+    <string name="onboarding_mnemonic_key_saved">Accéder à l\'application</string>
+    <string name="onboarding_mnemonic_skip">Ignorer</string>
+    <string name="onboarding_mnemonic_copy">Copier dans le presse-papier</string>
     <string name="onboarding_set_your_name_title">Choisissez votre nom</string>
     <string name="onboarding_soul_creation_description">This is how you will appear in the app</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
+    <string name="onboarding_type_recovery_phrase">Saisissez votre phrase de récupération</string>
     <string name="onboarding_login_or">OU</string>
     <string name="onboarding_entering_void_title">Entrer dans le Vide</string>
     <string name="onboarding_mnemonic_read_more">En savoir plus</string>
+    <string name="onboarding_mnemonic_additional_info">Vous pouvez trouver la phrase de récupération plus tard dans les paramètres de Anytype</string>
+    <string name="onboqrding_what_is_recovery_phrase">Qu\'est-ce que la phrase de récupération ?</string>
+    <string name="onboarding_recovery_phrase_description">La phrase de récupération est une combinaison aléatoire de 12 mots à partir desquels votre compte est généré comme par magie sur cet appareil.</string>
+    <string name="onboarding_recovery_phrase_description_2">Celui qui connaît votre Phrase de Récupération possède le compte. </string>
+    <string name="onboarding_recovery_phrase_description_3">En ce moment, vous êtes la seule personne au monde à le connaître.</string>
+    <string name="onboarding_recovery_phrase_description_4">C\'est pourquoi il est essentiel de garder la phrase de récupération en sécurité. En tant que propriétaire unique, personne ne peut vous aider si elle est perdue.</string>
+    <string name="onboarding_how_to_save_my_phrase">Comment sauvegarder ma phrase ?</string>
+    <string name="onboarding_how_to_save_my_phrase_2">La façon la plus simple de stocker votre phrase de récupération est de l’enregistrer dans votre gestionnaire de mots de passe.</string>
     <string name="onboarding_how_to_save_my_phrase_3">Le moyen le plus sûr est de l\'écrire sur papier et de le garder dans un endroit sûr et sécurisé.</string>
     <!--endregion-->
     <!--region OBJECT ACTIONS -->

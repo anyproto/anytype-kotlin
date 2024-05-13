@@ -116,7 +116,7 @@ class PaymentsViewModel(
                 showTierState,
                 purchases
             ) { membershipStatus, billingClientState, showTier, purchases ->
-                TierResult(membershipStatus,billingClientState, showTier, purchases)
+                TierResult(membershipStatus, billingClientState, showTier, purchases)
             }.collect { (membershipStatus, billingClientState, showTier, billingPurchasesState) ->
                 if (showTier != 0) {
                     val tier = membershipStatus?.tiers?.find { it.id == showTier }
@@ -133,7 +133,8 @@ class PaymentsViewModel(
                         command.value = PaymentsNavigation.Tier
                     } else {
                         Timber.e("Tier $showTier not found in tiers list")
-                        errorState.value = PaymentsErrorState.TierNotFound("Tier $showTier not found in tiers list")
+                        errorState.value =
+                            PaymentsErrorState.TierNotFound("Tier $showTier not found in tiers list")
                         tierState.value = MembershipTierState.Hidden
                     }
                 } else {
@@ -262,7 +263,7 @@ class PaymentsViewModel(
             isMembershipNameValid.async(params).fold(
                 onSuccess = {
                     Timber.d("Name is valid")
-                    setValidatedAnyNameState(tierView, name)
+                    proceedWithResolveName(tierView, name)
                 },
                 onFailure = { error ->
                     Timber.w("Error validating name: $error")
@@ -309,7 +310,7 @@ class PaymentsViewModel(
         tierState.value = MembershipTierState.Visible(updatedTierState)
     }
 
-    private fun setErrorEmailCodeState(error: Throwable)  {
+    private fun setErrorEmailCodeState(error: Throwable) {
         val state = if (error is MembershipErrors.VerifyEmailCode) {
             MembershipEmailCodeState.Visible.Error(error)
         } else {
@@ -359,27 +360,32 @@ class PaymentsViewModel(
     }
 
     private fun onPayButtonClicked(tierId: TierId) {
-        proceedWithResolveName(tierId, anyNameState.text.toString())
+        proceedWithPurchase(tierId, anyNameState.text.toString())
     }
 
-    private fun proceedWithResolveName(tierId: TierId, name: String) {
+    private fun proceedWithResolveName(tierView: TierView, name: String) {
         viewModelScope.launch {
             val params = ResolveMembershipName.Params(
                 name = name
             )
             resolveMembershipName.async(params).fold(
-                onSuccess = {
-                    Timber.d("Name resolved")
-                    proceedWithPurchase(tierId, name)
+                onSuccess = { isAvailable ->
+                    Timber.d("Name is available: $isAvailable")
+                    if (isAvailable) {
+                        setValidatedAnyNameState(tierView, name)
+                    } else {
+                        setErrorAnyNameState(tierView, MembershipErrors.ResolveName.NotAvailable)
+                    }
                 },
                 onFailure = { error ->
                     Timber.e("Error resolving name: $error")
+                    setErrorAnyNameState(tierView, error)
                 }
             )
         }
     }
 
-    private suspend fun proceedWithPurchase(tierId: TierId, name: String) {
+    private fun proceedWithPurchase(tierId: TierId, name: String) {
         val tier = membershipStatusState.value?.tiers?.find { it.id == tierId.value } ?: return
         Timber.d("Tier: $tier")
         val androidProductId = tier.androidProductId
@@ -387,23 +393,25 @@ class PaymentsViewModel(
             Timber.e("Tier ${tier.id} has no androidProductId")
             return
         }
-        getMembershipPaymentUrl.async(
-            GetMembershipPaymentUrl.Params(
-                tierId = tier.id,
-                name = name
-            )
-        ).fold(
-            onSuccess = { url ->
-                Timber.d("Payment url: $url")
-                buyBasePlans(
-                    billingId = url.billingId,
-                    product = androidProductId
+        viewModelScope.launch {
+            getMembershipPaymentUrl.async(
+                GetMembershipPaymentUrl.Params(
+                    tierId = tier.id,
+                    name = name
                 )
-            },
-            onFailure = { error ->
-                Timber.e("Error getting payment url: $error")
-            }
-        )
+            ).fold(
+                onSuccess = { url ->
+                    Timber.d("Payment url: $url")
+                    buyBasePlans(
+                        billingId = url.billingId,
+                        product = androidProductId
+                    )
+                },
+                onFailure = { error ->
+                    Timber.e("Error getting payment url: $error")
+                }
+            )
+        }
     }
 
     private fun proceedWithGettingEmailStatus() {
@@ -415,6 +423,7 @@ class PaymentsViewModel(
                     when (status) {
                         EmailVerificationStatus.STATUS_VERIFIED -> {
                             if (tierView.id.value == EXPLORER_ID) {
+                                anyEmailState.clearText()
                                 val updatedState = tierView.copy(
                                     email = TierEmail.Hidden,
                                     buttonState = TierButton.ChangeEmail
@@ -506,7 +515,7 @@ class PaymentsViewModel(
         //todo check if the user has already purchased the product
         val isProductOnServer = false//serverHasSubscription(subscriptions.value, product)
         val billingPurchaseState = purchases.value
-        val isProductOnDevice = if (billingPurchaseState is BillingPurchaseState.HasPurchases)  {
+        val isProductOnDevice = if (billingPurchaseState is BillingPurchaseState.HasPurchases) {
             deviceHasGooglePlaySubscription(billingPurchaseState.purchases, product)
         } else {
             false
@@ -726,7 +735,8 @@ class PaymentsViewModel(
     companion object {
         const val EXPECTED_SUBSCRIPTION_PURCHASE_LIST_SIZE = 1
         const val NAME_VALIDATION_DELAY = 300L
-        const val MANAGE_SUBSCRIPTION_URL = "https://play.google.com/store/account/subscriptions?sku=id_android_sub_builder&package=com.anytypeio.anytype"
+        const val MANAGE_SUBSCRIPTION_URL =
+            "https://play.google.com/store/account/subscriptions?sku=id_android_sub_builder&package=com.anytypeio.anytype"
     }
 }
 

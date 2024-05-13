@@ -105,5 +105,6 @@
     <color name="context_menu_background">#302F2B</color>
 
     <color name="date_selected_container_color">#483308</color>
+    <color name="payments_tier_current_background">#1F1E1D</color>
 
 </resources>

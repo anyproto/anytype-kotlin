@@ -96,7 +96,7 @@ private fun WelcomeContent(tierView: TierView, tierResources: TierResources, onD
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp),
-            text = stringResource(id = R.string.payments_welcome_title, stringResource(id = tierView.title)),
+            text = stringResource(id = R.string.payments_welcome_title, tierView.title),
             color = colorResource(id = R.color.text_primary),
             style = HeadlineHeading,
             textAlign = TextAlign.Center
@@ -133,8 +133,8 @@ fun PaymentWelcomeScreenPreview() {
             tier = TierView(
                 id = TierId(value = 3506),
                 isActive = false,
-                title = R.string.title,
-                subtitle = R.string.subheading,
+                title = "Tier Title",
+                subtitle = "Tier Subtitle",
                 conditionInfo = TierConditionInfo.Visible.Price(
                     price = "$99.9", period = TierPeriod.Year(1)
 

@@ -28,6 +28,7 @@ sealed class MembershipErrors : Exception() {
         data class UnknownError(override val message: String) : ResolveName()
         data class BadInput(override val message: String) : ResolveName()
         data class CanNotConnect(override val message: String) : ResolveName()
+        data object NotAvailable : ResolveName()
     }
 
     sealed class GetPaymentUrl : MembershipErrors() {

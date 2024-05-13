@@ -9,8 +9,8 @@ import com.anytypeio.anytype.presentation.membership.models.TierId
 data class TierPreviewView(
     val id: TierId,
     val isActive: Boolean,
-    @StringRes val title: Int,
-    @StringRes val subtitle: Int,
+    val title: String,
+    val subtitle: String,
     val conditionInfo: TierConditionInfo,
     val color: String = "red"
 )
@@ -19,8 +19,8 @@ data class TierPreviewView(
 data class TierView(
     val id: TierId,
     val isActive: Boolean,
-    @StringRes val title: Int,
-    @StringRes val subtitle: Int,
+    val title: String,
+    val subtitle: String,
     val conditionInfo: TierConditionInfo,
     val features: List<String>,
     val membershipAnyName: TierAnyName,

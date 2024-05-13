@@ -27,22 +27,13 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -89,9 +80,10 @@ private fun ModalCodeContent(
     state: MembershipEmailCodeState.Visible,
     action: (TierAction) -> Unit
 ) {
-    val focusRequesters = remember { List(4) { FocusRequester() } }
-    val enteredDigits = remember { mutableStateListOf<Char>() }
+    var enteredDigits by remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
+    val borderColor = colorResource(id = R.color.shape_primary)
+    val borderSelectedColor = colorResource(id = R.color.shape_secondary)
 
     var timeLeft by remember { mutableStateOf(RESEND_DELAY) }
     LaunchedEffect(key1 = timeLeft) {
@@ -101,10 +93,9 @@ private fun ModalCodeContent(
         }
     }
 
-    LaunchedEffect(key1 = enteredDigits.size) {
-        if (enteredDigits.size == 4) {
-            val code = enteredDigits.joinToString("")
-            action(TierAction.OnVerifyCodeClicked(code))
+    LaunchedEffect(key1 = enteredDigits.length) {
+        if (enteredDigits.length == 4) {
+            action(TierAction.OnVerifyCodeClicked(enteredDigits))
         }
     }
 
@@ -119,8 +110,8 @@ private fun ModalCodeContent(
             Spacer(modifier = Modifier.padding(118.dp))
             Text(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp),
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 16.dp),
                 text = stringResource(id = com.anytypeio.anytype.localization.R.string.payments_code_title),
                 style = BodyBold,
                 color = colorResource(
@@ -129,34 +120,45 @@ private fun ModalCodeContent(
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(44.dp))
-            val modifier = Modifier
-                .width(48.dp)
-                .height(64.dp)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.CenterHorizontally),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                focusRequesters.forEachIndexed { index, focusRequester ->
-                    CodeNumber(
-                        isEnabled = state !is MembershipEmailCodeState.Visible.Loading,
-                        modifier = modifier,
-                        focusRequester = focusRequester,
-                        onDigitEntered = { digit ->
-                            if (enteredDigits.size < 4) {
-                                enteredDigits.add(digit)
-                            }
-                            if (index < 3) focusRequesters[index + 1].requestFocus()
-                        },
-                        onBackspace = {
-                            if (enteredDigits.isNotEmpty()) enteredDigits.removeLast()
-                            if (index > 0) focusRequesters[index - 1].requestFocus()
+
+            BasicTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = enteredDigits,
+                    onValueChange = {
+                        if (it.length <= 4) {
+                            enteredDigits = it
                         }
-                    )
-                    if (index < 3) Spacer(modifier = Modifier.width(8.dp))
-                }
-            }
+                    },
+                    keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Next,
+                            keyboardType = KeyboardType.Number
+                    ),
+                    decorationBox = {
+                        Row(horizontalArrangement = Arrangement.Center) {
+                            repeat(4) { index ->
+                                val char = when {
+                                    index >= enteredDigits.length -> ""
+                                    else -> enteredDigits[index].toString()
+                                }
+                                val isFocused = index == enteredDigits.length
+                                Text(modifier = Modifier
+                                        .width(50.dp)
+                                        .border(BorderStroke(
+                                                if (isFocused) 2.dp else 1.dp,
+                                                if (isFocused) borderSelectedColor else borderColor),
+                                                RoundedCornerShape(8.dp)
+                                        )
+                                    .padding(vertical = 16.dp),
+                                        text = char,
+                                        style = HeadlineTitle,
+                                        color = colorResource(id = R.color.text_primary),
+                                        textAlign = TextAlign.Center
+                                )
+                                if (index < 3) Spacer(modifier = Modifier.width(15.dp))
+                            }
+                        }
+                    }
+            )
             val (messageTextColor, messageText) = when (state) {
                 is MembershipEmailCodeState.Visible.Error -> ErrorMessage(state)
                 is MembershipEmailCodeState.Visible.ErrorOther -> colorResource(id = R.color.palette_system_red) to state.message
@@ -170,8 +172,8 @@ private fun ModalCodeContent(
                 text = messageText.orEmpty(),
                 color = messageTextColor,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 20.dp, end = 20.dp, top = 7.dp),
+                        .fillMaxWidth()
+                        .padding(start = 20.dp, end = 20.dp, top = 7.dp),
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(149.dp))
@@ -182,14 +184,14 @@ private fun ModalCodeContent(
             }
             Text(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .noRippleThrottledClickable {
-                        if (resendEnabled) {
-                            timeLeft = RESEND_DELAY
-                            action(TierAction.OnResendCodeClicked)
+                        .fillMaxWidth()
+                        .noRippleThrottledClickable {
+                            if (resendEnabled) {
+                                timeLeft = RESEND_DELAY
+                                action(TierAction.OnResendCodeClicked)
+                            }
                         }
-                    }
-                    .alpha(if (resendEnabled) 1f else 0.5f),
+                        .alpha(if (resendEnabled) 1f else 0.5f),
                 text = resendText,
                 style = PreviewTitle1Regular,
                 color = colorResource(id = R.color.text_tertiary),
@@ -210,63 +212,6 @@ private fun ModalCodeContent(
             )
         }
     }
-}
-
-@Composable
-private fun CodeNumber(
-    isEnabled: Boolean,
-    focusRequester: FocusRequester,
-    onDigitEntered: (Char) -> Unit,
-    onBackspace: () -> Unit,
-    modifier: Modifier
-) {
-    val (text, setText) = remember { mutableStateOf("") }
-
-    val borderColor = colorResource(id = R.color.shape_primary)
-    BasicTextField(
-        value = text,
-        onValueChange = { newValue ->
-            when {
-                newValue.length == 1 && newValue[0].isDigit() && text.isEmpty() -> {
-                    setText(newValue)
-                    onDigitEntered(newValue[0])
-                }
-
-                newValue.isEmpty() -> {
-                    if (text.isNotEmpty()) {
-                        setText("")
-                        onBackspace()
-                    }
-                }
-            }
-        },
-        modifier = modifier
-            .focusRequester(focusRequester)
-            .onKeyEvent { event ->
-                if (event.type == KeyEventType.KeyUp && event.key == Key.Backspace && text.isEmpty()) {
-                    onBackspace()
-                    true
-                } else false
-            },
-        singleLine = true,
-        enabled = isEnabled,
-        cursorBrush = SolidColor(colorResource(id = R.color.text_primary)),
-        keyboardOptions = KeyboardOptions(
-            imeAction = ImeAction.Next,
-            keyboardType = KeyboardType.Number
-        ),
-        decorationBox = { innerTextField ->
-            Box(
-                modifier = Modifier
-                    .border(BorderStroke(1.dp, borderColor), RoundedCornerShape(8.dp))
-                    .padding(horizontal = 15.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                innerTextField()
-            }
-        },
-        textStyle = HeadlineTitle.copy(color = colorResource(id = R.color.text_primary))
-    )
 }
 
 @Composable
@@ -296,7 +241,7 @@ const val RESEND_DELAY = 60
 @Composable
 fun EnterCodeModalPreview() {
     ModalCodeContent(
-        state = MembershipEmailCodeState.Visible.Loading,
+        state = MembershipEmailCodeState.Visible.Initial,
         action = {}
     )
 }

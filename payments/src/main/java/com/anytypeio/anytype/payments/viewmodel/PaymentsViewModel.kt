@@ -423,6 +423,7 @@ class PaymentsViewModel(
                     when (status) {
                         EmailVerificationStatus.STATUS_VERIFIED -> {
                             if (tierView.id.value == EXPLORER_ID) {
+                                anyEmailState.clearText()
                                 val updatedState = tierView.copy(
                                     email = TierEmail.Hidden,
                                     buttonState = TierButton.ChangeEmail

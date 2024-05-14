@@ -444,7 +444,7 @@ class PaymentsViewModel(
     }
 
     private fun proceedWithSettingEmail(email: String) {
-        val params = SetMembershipEmail.Params(email)
+        val params = SetMembershipEmail.Params(email, true)
         viewModelScope.launch {
             setMembershipEmail.async(params).fold(
                 onSuccess = {

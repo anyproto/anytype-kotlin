@@ -14,12 +14,13 @@ class SetMembershipEmail @Inject constructor(
     override suspend fun doWork(params: Params) {
         val command = Command.Membership.GetVerificationEmail(
             email = params.email,
-            subscribeToNewsletter = true
+            subscribeToNewsletter = params.subscribeToNewsletter
         )
         repo.membershipGetVerificationEmail(command)
     }
 
     data class Params(
-        val email: String
+        val email: String,
+        val subscribeToNewsletter: Boolean
     )
 }

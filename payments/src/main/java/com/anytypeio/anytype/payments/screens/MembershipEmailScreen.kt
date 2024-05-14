@@ -3,6 +3,7 @@ package com.anytypeio.anytype.payments.screens
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
@@ -51,6 +53,7 @@ fun MembershipEmailScreen(
         val focusManager = LocalFocusManager.current
         val keyboardController = LocalSoftwareKeyboardController.current
         val anyEmailEnabled = remember { mutableStateOf(false) }
+        val showHint = remember { mutableStateOf(false) }
 
         anyEmailEnabled.value = when (state) {
             TierEmail.Hidden -> false
@@ -87,25 +90,37 @@ fun MembershipEmailScreen(
                 textAlign = TextAlign.Start
             )
             Spacer(modifier = Modifier.height(10.dp))
-            BasicTextField2(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .focusRequester(focusRequester),
-                state = anyEmailTextField,
-                textStyle = BodyRegular.copy(color = colorResource(id = R.color.text_primary)),
-                enabled = anyEmailEnabled.value,
-                cursorBrush = SolidColor(colorResource(id = R.color.text_primary)),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Done,
-                ),
-                keyboardActions = KeyboardActions {
-                    keyboardController?.hide()
-                    focusManager.clearFocus()
-                },
-                lineLimits = TextFieldLineLimits.SingleLine,
-                interactionSource = remember { MutableInteractionSource() }
-            )
+            Box(modifier = Modifier) {
+                BasicTextField2(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .focusRequester(focusRequester)
+                        .onFocusChanged {
+                            showHint.value = !it.isFocused && anyEmailTextField.text.isEmpty()
+                        },
+                    state = anyEmailTextField,
+                    textStyle = BodyRegular.copy(color = colorResource(id = R.color.text_primary)),
+                    enabled = anyEmailEnabled.value,
+                    cursorBrush = SolidColor(colorResource(id = R.color.text_primary)),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        imeAction = ImeAction.Done,
+                    ),
+                    keyboardActions = KeyboardActions {
+                        keyboardController?.hide()
+                        focusManager.clearFocus()
+                    },
+                    lineLimits = TextFieldLineLimits.SingleLine,
+                    interactionSource = remember { MutableInteractionSource() }
+                )
+                if (showHint.value) {
+                    Text(
+                        text = stringResource(id = R.string.payments_email_hint),
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_tertiary)
+                    )
+                }
+            }
             Spacer(modifier = Modifier.height(12.dp))
             Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
             val (messageTextColor, messageText) = when (state) {
@@ -153,6 +168,6 @@ fun ErrorMessage(state: TierEmail.Visible.Error): Pair<Color, String> {
 fun MembershipEmailScreenPreview() {
     MembershipEmailScreen(
         state = TierEmail.Visible.Error(MembershipErrors.GetVerificationEmail.EmailWrongFormat("error")),
-        anyEmailTextField = TextFieldState(initialText = "e-mail")
+        anyEmailTextField = TextFieldState(initialText = "")
     )
 }

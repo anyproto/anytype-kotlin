@@ -209,13 +209,11 @@ class PaymentsViewModel(
             is TierAction.SubmitClicked -> {
                 proceedWithSettingEmail(
                     email = anyEmailState.text.toString(),
-                    subscribeToNewsletter = false
                 )
             }
             TierAction.OnResendCodeClicked -> {
                 proceedWithSettingEmail(
                     email = anyEmailState.text.toString(),
-                    subscribeToNewsletter = false
                 )
             }
             is TierAction.OnVerifyCodeClicked -> {
@@ -445,8 +443,8 @@ class PaymentsViewModel(
         }
     }
 
-    private fun proceedWithSettingEmail(email: String, subscribeToNewsletter: Boolean) {
-        val params = SetMembershipEmail.Params(email, subscribeToNewsletter)
+    private fun proceedWithSettingEmail(email: String) {
+        val params = SetMembershipEmail.Params(email, true)
         viewModelScope.launch {
             setMembershipEmail.async(params).fold(
                 onSuccess = {

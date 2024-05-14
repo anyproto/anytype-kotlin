@@ -3,6 +3,7 @@ package com.anytypeio.anytype.payments.screens
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -54,6 +55,7 @@ fun AnyNameView(
         val focusManager = LocalFocusManager.current
         val keyboardController = LocalSoftwareKeyboardController.current
         val anyNameEnabled = remember { mutableStateOf(false) }
+        val showHint = remember { mutableStateOf(false) }
 
         anyNameEnabled.value = when (anyNameState) {
             TierAnyName.Hidden -> false
@@ -91,31 +93,43 @@ fun AnyNameView(
                 textAlign = TextAlign.Start
             )
             Spacer(modifier = Modifier.height(10.dp))
-            Row(modifier = Modifier.fillMaxWidth()) {
-                BasicTextField2(
-                    modifier = Modifier
-                        .weight(1f)
-                        .wrapContentHeight()
-                        .focusRequester(focusRequester),
-                    state = anyNameTextField,
-                    textStyle = BodyRegular.copy(color = colorResource(id = R.color.text_primary)),
-                    enabled = anyNameEnabled.value,
-                    cursorBrush = SolidColor(colorResource(id = R.color.text_primary)),
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        imeAction = ImeAction.Done,
-                    ),
-                    keyboardActions = KeyboardActions {
-                        keyboardController?.hide()
-                        focusManager.clearFocus()
-                    },
-                    lineLimits = TextFieldLineLimits.SingleLine,
-                    interactionSource = remember { MutableInteractionSource() }
-                )
-                Text(
-                    text = stringResource(id = R.string.payments_tier_details_name_domain),
-                    style = BodyRegular,
-                    color = colorResource(id = R.color.text_primary)
-                )
+            Box {
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    BasicTextField2(
+                        modifier = Modifier
+                            .weight(1f)
+                            .wrapContentHeight()
+                            .focusRequester(focusRequester)
+                            .onFocusChanged {
+                                showHint.value = !it.isFocused && anyNameTextField.text.isEmpty()
+                            },
+                        state = anyNameTextField,
+                        textStyle = BodyRegular.copy(color = colorResource(id = R.color.text_primary)),
+                        enabled = anyNameEnabled.value,
+                        cursorBrush = SolidColor(colorResource(id = R.color.text_primary)),
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            imeAction = ImeAction.Done,
+                        ),
+                        keyboardActions = KeyboardActions {
+                            keyboardController?.hide()
+                            focusManager.clearFocus()
+                        },
+                        lineLimits = TextFieldLineLimits.SingleLine,
+                        interactionSource = remember { MutableInteractionSource() }
+                    )
+                    Text(
+                        text = stringResource(id = R.string.payments_tier_details_name_domain),
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_primary)
+                    )
+                }
+                if (showHint.value) {
+                    Text(
+                        text = stringResource(id = R.string.payments_tier_details_name_hint),
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_tertiary)
+                    )
+                }
             }
             Spacer(modifier = Modifier.height(12.dp))
             Divider(paddingStart = 0.dp, paddingEnd = 0.dp)

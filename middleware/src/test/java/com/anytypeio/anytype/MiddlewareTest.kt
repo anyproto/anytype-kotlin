@@ -254,11 +254,11 @@ class MiddlewareTest {
 
         val emojiValue = command.emoji
 
-        val emojiDetail = Rpc.Object.SetDetails.Detail(
+        val emojiDetail = anytype.model.Detail(
             key = emojiIconKey, value_ = emojiValue
         )
 
-        val imageDetail = Rpc.Object.SetDetails.Detail(
+        val imageDetail = anytype.model.Detail(
             key = imageIconKey
         )
 
@@ -295,11 +295,11 @@ class MiddlewareTest {
 
         val imageIconValue = command.id
 
-        val imageIconDetail = Rpc.Object.SetDetails.Detail(imageIconKey, imageIconValue)
+        val imageIconDetail = anytype.model.Detail(imageIconKey, imageIconValue)
 
         val emojiIconKey = "iconEmoji"
 
-        val emojiIconDetail = Rpc.Object.SetDetails.Detail(emojiIconKey)
+        val emojiIconDetail = anytype.model.Detail(emojiIconKey)
 
         val request = Rpc.Object.SetDetails.Request(
             contextId = command.context,
@@ -334,7 +334,7 @@ class MiddlewareTest {
 
         val value = command.title
 
-        val details = Rpc.Object.SetDetails.Detail(key, value)
+        val details = anytype.model.Detail(key, value)
 
         val request = Rpc.Object.SetDetails.Request(
             contextId = command.context,

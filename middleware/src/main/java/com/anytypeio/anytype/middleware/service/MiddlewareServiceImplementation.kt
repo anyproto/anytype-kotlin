@@ -2033,13 +2033,13 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
-    override fun membershipGetPaymentUrl(request: Rpc.Membership.GetPaymentUrl.Request): Rpc.Membership.GetPaymentUrl.Response {
-        val encoded = Service.membershipGetPaymentUrl(
-            Rpc.Membership.GetPaymentUrl.Request.ADAPTER.encode(request)
+    override fun membershipRegisterPaymentRequest(request: Rpc.Membership.RegisterPaymentRequest.Request): Rpc.Membership.RegisterPaymentRequest.Response {
+        val encoded = Service.membershipRegisterPaymentRequest(
+            Rpc.Membership.RegisterPaymentRequest.Request.ADAPTER.encode(request)
         )
-        val response = Rpc.Membership.GetPaymentUrl.Response.ADAPTER.decode(encoded)
+        val response = Rpc.Membership.RegisterPaymentRequest.Response.ADAPTER.decode(encoded)
         val error = response.error
-        if (error != null && error.code != Rpc.Membership.GetPaymentUrl.Response.Error.Code.NULL) {
+        if (error != null && error.code != Rpc.Membership.RegisterPaymentRequest.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response

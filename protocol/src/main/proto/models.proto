@@ -112,6 +112,7 @@ message Block {
         AlignLeft = 0;
         AlignCenter = 1;
         AlignRight = 2;
+        AlignJustify = 3;
     }
 
     enum VerticalAlign {
@@ -1274,4 +1275,9 @@ message MembershipTierData {
     // Android platform-specific data:
     string androidProductId = 17;
     string androidManageUrl = 18;
+}
+
+message Detail {
+    string key = 1;
+    google.protobuf.Value value = 2; // NUll - removes key
 }

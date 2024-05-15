@@ -88,3 +88,4 @@ typealias MMembershipTierData = anytype.model.MembershipTierData
 typealias MMembershipTierDataPeriodType = anytype.model.MembershipTierData.PeriodType
 typealias MNameServiceNameType = anytype.model.NameserviceNameType
 typealias MEmailVerificationStatus = anytype.model.Membership.EmailVerificationStatus
+typealias MDetail = anytype.model.Detail

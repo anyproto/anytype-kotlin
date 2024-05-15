@@ -44,6 +44,7 @@ import com.anytypeio.anytype.middleware.BuildConfig
 import com.anytypeio.anytype.middleware.auth.toAccountSetup
 import com.anytypeio.anytype.middleware.const.Constants
 import com.anytypeio.anytype.middleware.mappers.MDVFilter
+import com.anytypeio.anytype.middleware.mappers.MDetail
 import com.anytypeio.anytype.middleware.mappers.MNetworkMode
 import com.anytypeio.anytype.middleware.mappers.MRelationFormat
 import com.anytypeio.anytype.middleware.mappers.config
@@ -1193,11 +1194,11 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun objectRemoveCover(ctx: String): Payload {
-        val coverIdDetail = anytype.model.Detail(
+        val coverIdDetail = MDetail(
             key = coverIdKey,
             value_ = null
         )
-        val coverTypeDetail = anytype.model.Detail(
+        val coverTypeDetail = MDetail(
             key = coverTypeKey,
             value_ = Constants.COVER_TYPE_NONE.toDouble()
         )
@@ -1213,11 +1214,11 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun objectRemoveIcon(ctx: String): Payload {
-        val imageDetail = anytype.model.Detail(
+        val imageDetail = MDetail(
             key = Relations.ICON_IMAGE,
             value_ = null
         )
-        val emojiDetail = anytype.model.Detail(
+        val emojiDetail = MDetail(
             key = Relations.ICON_EMOJI,
             value_ = null
         )
@@ -1320,11 +1321,11 @@ class Middleware @Inject constructor(
         ctx: String,
         color: String
     ): Payload {
-        val coverIdDetail = anytype.model.Detail(
+        val coverIdDetail = MDetail(
             key = coverIdKey,
             value_ = color
         )
-        val coverTypeDetail = anytype.model.Detail(
+        val coverTypeDetail = MDetail(
             key = coverTypeKey,
             value_ = Constants.COVER_TYPE_COLOR.toDouble()
         )
@@ -1343,11 +1344,11 @@ class Middleware @Inject constructor(
         ctx: String,
         gradient: String
     ): Payload {
-        val coverIdDetail = anytype.model.Detail(
+        val coverIdDetail = MDetail(
             key = coverIdKey,
             value_ = gradient
         )
-        val coverTypeDetail = anytype.model.Detail(
+        val coverTypeDetail = MDetail(
             key = coverTypeKey,
             value_ = Constants.COVER_TYPE_GRADIENT.toDouble()
         )
@@ -1366,11 +1367,11 @@ class Middleware @Inject constructor(
         ctx: String,
         hash: String
     ): Payload {
-        val coverIdDetail = anytype.model.Detail(
+        val coverIdDetail = MDetail(
             key = coverIdKey,
             value_ = hash
         )
-        val coverTypeDetail = anytype.model.Detail(
+        val coverTypeDetail = MDetail(
             key = coverTypeKey,
             value_ = Constants.COVER_TYPE_UPLOADED_IMAGE.toDouble()
         )
@@ -1390,7 +1391,7 @@ class Middleware @Inject constructor(
         key: String,
         value: Any?
     ): Payload {
-        val detail = anytype.model.Detail(
+        val detail = MDetail(
             key = key,
             value_ = value
         )
@@ -1410,7 +1411,7 @@ class Middleware @Inject constructor(
         details: Struct
     ): Payload {
         val detailsList = details.map { entry ->
-            anytype.model.Detail(
+            MDetail(
                 key = entry.key,
                 value_ = entry.value
             )
@@ -1428,12 +1429,12 @@ class Middleware @Inject constructor(
     @Throws(Exception::class)
     fun objectSetEmojiIcon(command: Command.SetDocumentEmojiIcon): Payload {
 
-        val emojiDetail = anytype.model.Detail(
+        val emojiDetail = MDetail(
             key = Relations.ICON_EMOJI,
             value_ = command.emoji
         )
 
-        val imageDetail = anytype.model.Detail(
+        val imageDetail = MDetail(
             key = Relations.ICON_IMAGE,
             value_ = null
         )
@@ -1455,11 +1456,11 @@ class Middleware @Inject constructor(
     @Throws(Exception::class)
     fun objectSetImageIcon(command: Command.SetDocumentImageIcon): Payload {
 
-        val imageDetail = anytype.model.Detail(
+        val imageDetail = MDetail(
             key = Relations.ICON_IMAGE,
             value_ = command.id
         )
-        val emojiDetail = anytype.model.Detail(
+        val emojiDetail = MDetail(
             key = Relations.ICON_EMOJI,
             value_ = null
         )
@@ -1556,7 +1557,7 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun objectSetTitle(command: Command.UpdateTitle) {
-        val detail = anytype.model.Detail(
+        val detail = MDetail(
             key = Relations.NAME,
             value_ = command.title
         )

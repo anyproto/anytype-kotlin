@@ -205,6 +205,7 @@ fun Block.Align.getPropName() = when (this) {
     Block.Align.AlignCenter -> "center"
     Block.Align.AlignLeft -> "left"
     Block.Align.AlignRight -> "right"
+    Block.Align.AlignJustify -> "justify"
 }
 
 fun Block.Content.Text.Mark.Type.getPropName() = when (this) {

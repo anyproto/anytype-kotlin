@@ -1171,7 +1171,7 @@
     <string name="multiplayer_delete_link">Elimina link</string>
     <string name="multiplayer_delete_link_description">I nuovi membri non saranno in grado di unirsi allo spazio. È possibile generare un nuovo link in qualsiasi momento.</string>
     <string name="multiplayer_already_space_member">Sei già membro di questo spazio</string>
-    <string name="multiplayer_open_space">Open space</string>
+    <string name="multiplayer_open_space">Apri spazio</string>
     <string name="multiplayer_error_space_deleted">Spazio eliminato</string>
     <string name="multiplayer_error_space_not_found">Spazio non trovato</string>
     <string name="multiplayer_read_only_access_error">Accesso in sola lettura. Contatta il proprietario dello spazio per modifiche.</string>
@@ -1211,14 +1211,14 @@
     <!--region PAYMENTS -->
     <string name="payments_header">Membership</string>
     <string name="payments_subheader">Unire alla rete di Anytype significa contribuire alla sua storia</string>
-    <string name="payments_card_text_1">Co-create the Vision</string>
+    <string name="payments_card_text_1">Co-creare la Visione</string>
     <string name="payments_card_description_1">In qualità di membro apprezzato, la tua voce conta! Partecipa a eventi esclusivi, contribuisci a scelte strategiche e influenza la nostra roadmap.</string>
     <string name="payments_card_text_2">Sblocca i vantaggi per i membri</string>
     <string name="payments_card_description_2">I membri godono di limiti più elevati di archiviazione e sincronizzazione dei backup, di inviti per più ospiti a collaborare in spazi condivisi e di un\'identità unica sulla Rete Anytype.</string>
     <string name="payments_card_text_3">Sostenere l\'indipendenza digitale</string>
     <string name="payments_card_description_3">Il tuo contributo sostiene il nostro team e avvalora la nostra visione di una rete digitale di proprietà degli utenti, sicura e collaborativa.</string>
     <string name="payments_card_text_4">Investi nella connettività</string>
-    <string name="payments_card_description_4">Our network\'s value exceeds the sum of its parts. Your membership sustains the infrastructure for its growth which underpins this network.</string>
+    <string name="payments_card_description_4">Il valore della nostra rete supera la somma delle sue parti. La tua iscrizione sostiene l\'infrastruttura per la sua crescita, che è alla base di questa rete.</string>
     <string name="payments_tier_explorer">Explorer</string>
     <string name="payments_tier_explorer_description">Immergiti nella rete e goditi l\'emozione della collaborazione uno-a-uno</string>
     <string name="payments_tier_builder">Builder</string>
@@ -1279,20 +1279,20 @@
     <!-- Payments Code -->
     <string name="payments_code_title">Inserisci il codice inviato alla tua email</string>
     <string name="payments_code_resend">Invia di nuovo</string>
-    <string name="payments_code_resend_in">Resend in %1$n sec</string>
+    <string name="payments_code_resend_in">Invia nuovamente tra %1$n secondi</string>
     <!-- Payments Welcome -->
-    <string name="payments_welcome_title">Welcome to the network,\n%1$s</string>
+    <string name="payments_welcome_title">Benvenuto/a nella rete, %1$s</string>
     <string name="payments_welcome_subtitle">Un grande applauso per la tua curiosità!</string>
     <string name="payments_welcome_button">Continua</string>
     <!-- Notifications -->
-    <string name="notifications_alert_error_unknown">An unknown error has occurred. Please try again later.</string>
-    <string name="notifications_alert_error_bad_input">Invalid input detected. Please check your data and try again.</string>
-    <string name="notifications_alert_error_internal">An internal error has occurred. Our team has been notified.</string>
-    <string name="notifications_alert_error_no_objects_to_import">No items found to import. Please select valid objects for import.</string>
-    <string name="notifications_alert_error_import_canceled">The import process has been canceled by the user.</string>
-    <string name="notifications_alert_error_limit_exceeded">The import limit for rows or relations has been exceeded. Please reduce the amount and try again.</string>
-    <string name="notifications_alert_error_file_load">There was an error loading the file. Please check the file and try again.</string>
-    <string name="notifications_alert_error_insufficient_permissions">You do not have the necessary permissions to perform this action. Please check your permissions and try again.</string>
+    <string name="notifications_alert_error_unknown">Si è verificato un errore sconosciuto. Ti preghiamo di riprovare più tardi.</string>
+    <string name="notifications_alert_error_bad_input">Rilevato un inserimento non valido. Per favore controlla i tuoi dati e riprova.</string>
+    <string name="notifications_alert_error_internal">Si è verificato un errore interno. Il nostro team è stato notificato.</string>
+    <string name="notifications_alert_error_no_objects_to_import">Non è stato trovato nessun elemento da importare. Per favore seleziona oggetti validi per l\'importazione.</string>
+    <string name="notifications_alert_error_import_canceled">Il processo di importazione è stato annullato dall\'utente.</string>
+    <string name="notifications_alert_error_limit_exceeded">Il limite di importazione per righe o relazioni è stato superato. Si prega di ridurre la quantità e riprovare.</string>
+    <string name="notifications_alert_error_file_load">Si è verificato un errore durante il caricamento del file. Controlla il file e riprova.</string>
+    <string name="notifications_alert_error_insufficient_permissions">Non hai i permessi necessari per eseguire questa azione. Controlla le tue autorizzazioni e riprova.</string>
     <!-- Gallery Experience -->
     <string name="gallery_experience_made">Realizzato da</string>
     <string name="gallery_experience_install">Installa</string>
@@ -1300,7 +1300,7 @@
     <string name="gallery_experience_alert_title_success">Esperienza installata</string>
     <string name="gallery_experience_alert_subtitle_success">\"%1$s\" è stato installato in un nuovo spazio. Ora puoi aprirlo e iniziare a utilizzarlo.</string>
     <string name="gallery_experience_alert_title_error">Ops!</string>
-    <string name="gallery_experience_alert_button_space">Open space</string>
+    <string name="gallery_experience_alert_button_space">Apri spazio</string>
     <string name="gallery_experience_alert_button_error">Chiudi</string>
     <string name="three_dots_text_placeholder">...</string>
     <string name="notifications_prompt_get_notified">Ricevi notifiche</string>

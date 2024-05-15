@@ -312,6 +312,7 @@ message Rpc {
                         REQUEST_FAILED = 105;
                         LIMIT_REACHED = 106;
                         NOT_SHAREABLE = 107;
+                        DIFFERENT_NETWORK = 108;
                     }
                 }
             }
@@ -2122,13 +2123,9 @@ message Rpc {
         }
 
         message SetDetails {
-            message Detail {
-                string key = 1;
-                google.protobuf.Value value = 2; // NUll - removes key
-            }
             message Request {
                 string contextId = 1;
-                repeated Detail details = 2;
+                repeated anytype.model.Detail details = 2;
             }
             message Response {
                 Error error = 1;
@@ -2359,6 +2356,31 @@ message Rpc {
                         NULL = 0;
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
+
+        message ListSetDetails {
+
+            message Request {
+                repeated string objectIds = 1;
+                repeated anytype.model.Detail details = 2;
+            }
+
+            message Response {
+                Error error = 1;
+                ResponseEvent event = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
                     }
                 }
             }
@@ -4019,6 +4041,7 @@ message Rpc {
                 string contextId = 1;
                 repeated string blockIds = 2;
                 string objectTypeUniqueKey = 3;
+                string templateId = 4;
             }
 
             message Response {
@@ -4927,6 +4950,31 @@ message Rpc {
                 }
             }
         }
+
+        message SetTargetObjectId {
+            message Request {
+                string contextId = 1;
+                string blockId = 2;
+                string objectId = 3;
+            }
+
+            message Response {
+                Error error = 1;
+                ResponseEvent event = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
         message CreateAndUpload {
             message Request {
                 string contextId = 1;
@@ -5089,11 +5137,13 @@ message Rpc {
                 repeated anytype.model.InternalFlag internalFlags = 7;
                 string spaceId = 8;
                 string objectTypeUniqueKey = 9;
+                anytype.model.Block block = 10;
 
                 // link block params
                 string targetId = 2; // id of the closest simple block
                 anytype.model.Block.Position position = 4;
-                google.protobuf.Struct fields = 6; // link block fields
+                google.protobuf.Struct fields = 6; // deprecated link block fields
+
             }
 
             message Response {
@@ -6414,9 +6464,9 @@ message Rpc {
         }
     }
 
-    /** 
+    /**
     * A Membership is a bundle of several "Features"
-    * every user should have one and only one tier 
+    * every user should have one and only one tier
     * users can not have N tiers (no combining)
     */
     message Membership {
@@ -6459,7 +6509,7 @@ message Rpc {
         }
 
         /**
-        * Check if the requested name is valid for the requested tier
+        * Check if the requested name is valid and vacant for the requested tier
         * before requesting a payment link and paying
         */
         message IsNameValid {
@@ -6497,6 +6547,9 @@ message Rpc {
                         // for some probable future use (if needed)
                         CAN_NOT_RESERVE = 11;
                         CAN_NOT_CONNECT = 12;
+                        // Same as if NameService.ResolveName returned that name is already
+                        // occupied by some user
+                        NAME_IS_RESERVED = 13;
                     }
                 }
             }
@@ -6507,10 +6560,10 @@ message Rpc {
         * Generate a link to Stripe where user can pay for the membership (for desktop client)
         * TODO: GO-3347 rename GetPaymentUrl to RegisterPaymentRequest
         */
-        message GetPaymentUrl {
+        message RegisterPaymentRequest {
             message Request {
                 uint32 requestedTier = 1;
-                
+
                 anytype.model.Membership.PaymentMethod paymentMethod = 2;
 
                 // if empty - then no name requested
@@ -6541,7 +6594,7 @@ message Rpc {
                         NOT_LOGGED_IN = 3;
                         PAYMENT_NODE_ERROR = 4;
                         CACHE_ERROR = 5;
-                        
+
                         TIER_NOT_FOUND = 6;
                         TIER_INVALID = 7;
                         PAYMENT_METHOD_INVALID = 8;
@@ -6553,7 +6606,7 @@ message Rpc {
             }
         }
 
-        /** 
+        /**
         * Generate a link to the portal where user can:
         * a) change his billing details
         * b) see payment info, invoices, etc
@@ -6561,7 +6614,7 @@ message Rpc {
         */
         message GetPortalLinkUrl {
             message Request {
-                
+
             }
 
             message Response {
@@ -6656,7 +6709,7 @@ message Rpc {
         /**
         * Send an e-mail with verification code to the user
         * can be called multiple times but with some timeout (N seconds) between calls
-        */ 
+        */
         message GetVerificationEmail {
             message Request {
                 string email = 1;
@@ -6684,16 +6737,16 @@ message Rpc {
                         EMAIL_ALREADY_VERIFIED = 7;
                         EMAIL_ALREDY_SENT = 8;
                         EMAIL_FAILED_TO_SEND = 9;
-                        
-                        MEMBERSHIP_ALREADY_EXISTS = 10;  
-                        CAN_NOT_CONNECT = 11;                      
+
+                        MEMBERSHIP_ALREADY_EXISTS = 10;
+                        CAN_NOT_CONNECT = 11;
                     }
                 }
             }
         }
 
         /**
-        * Verify the e-mail address of the user 
+        * Verify the e-mail address of the user
         * need a correct code that was sent to the user when calling GetVerificationEmail
         */
         message VerifyEmailCode {
@@ -6788,6 +6841,7 @@ message Rpc {
                         NOT_LOGGED_IN = 3;
                         PAYMENT_NODE_ERROR = 4;
                         CACHE_ERROR = 5;
+                        INVALID_RECEIPT = 6;
                     }
                 }
             }
@@ -6806,11 +6860,11 @@ message Rpc {
                 Error error = 1;
 
                 bool available = 2;
-  
+
                 // EOA -> SCW -> name
                 // This field is non-empty only if name is "already registered"
                 string ownerScwEthAddress = 3;
-                
+
                 // This field is non-empty only if name is "already registered"
                 string ownerEthAddress = 4;
 
@@ -6848,10 +6902,10 @@ message Rpc {
                 Error error = 1;
 
                 bool found = 2;
-                
+
                 // not including suffix
                 string nsName = 3;
-                
+
                 anytype.model.NameserviceNameType nsNameType = 4;
 
                 message Error {
@@ -6867,7 +6921,7 @@ message Rpc {
                 }
             }
         }
-        
+
         message ResolveSpaceId {
             message Request {
                 string spaceId = 1;
@@ -6877,10 +6931,10 @@ message Rpc {
                 Error error = 1;
 
                 bool found = 2;
-                
+
                 // not including suffix
                 string nsName = 3;
-                
+
                 anytype.model.NameserviceNameType nsNameType = 4;
 
                 message Error {
@@ -6900,7 +6954,7 @@ message Rpc {
         message UserAccount {
             message Get {
                 message Request {
-                    
+
                 }
 
                 message Response {
@@ -6910,7 +6964,7 @@ message Rpc {
                     // user can buy many names, but
                     // only 1 name can be set as "current": ETH address <-> name
                     string nsNameAttached = 2;
-                
+
                     anytype.model.NameserviceNameType nsNameType = 3;
 
                     // Number of names that the user can reserve

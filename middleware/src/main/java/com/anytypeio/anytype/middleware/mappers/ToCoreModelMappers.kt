@@ -487,6 +487,7 @@ fun MBAlign.toCoreModelsAlign(): Block.Align = when (this) {
     MBAlign.AlignLeft -> Block.Align.AlignLeft
     MBAlign.AlignCenter -> Block.Align.AlignCenter
     MBAlign.AlignRight -> Block.Align.AlignRight
+    MBAlign.AlignJustify -> Block.Align.AlignJustify
 }
 
 fun MBTextStyle.toCoreModels(): Block.Content.Text.Style = when (this) {

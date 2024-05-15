@@ -279,7 +279,8 @@ fun Block.Align?.toMiddlewareModel(): MBAlign = when (this) {
     Block.Align.AlignLeft -> MBAlign.AlignLeft
     Block.Align.AlignCenter -> MBAlign.AlignCenter
     Block.Align.AlignRight -> MBAlign.AlignRight
-    else -> MBAlign.AlignLeft
+    Block.Align.AlignJustify -> MBAlign.AlignJustify
+    null -> MBAlign.AlignLeft
 }
 
 fun Block.Content.Text.Style.toMiddlewareModel(): MBTextStyle = when (this) {

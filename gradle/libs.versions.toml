@@ -1,5 +1,5 @@
 [versions]
-middlewareVersion = "v0.33.2"
+middlewareVersion = "v0.34.0-rc2"
 kotlinVersion = '1.9.22'
 
 androidxCoreVersion = "1.13.0"
@@ -173,8 +173,8 @@ playBilling = { module = "com.android.billingclient:billing", version = "6.2.0" 
 [bundles]
 
 [plugins]
-application = { id = "com.android.application", version = "8.3.2" }
-library = { id = "com.android.library", version = "8.3.2" }
+application = { id = "com.android.application", version = "8.4.0" }
+library = { id = "com.android.library", version = "8.4.0" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinVersion" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokkaVersion" }
 kserialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinVersion" }

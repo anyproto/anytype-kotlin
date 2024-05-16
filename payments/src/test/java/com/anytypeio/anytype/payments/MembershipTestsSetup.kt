@@ -11,7 +11,6 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.payments.GetMembershipEmailStatus
 import com.anytypeio.anytype.domain.payments.GetMembershipPaymentUrl
 import com.anytypeio.anytype.domain.payments.IsMembershipNameValid
-import com.anytypeio.anytype.domain.payments.ResolveMembershipName
 import com.anytypeio.anytype.domain.payments.SetMembershipEmail
 import com.anytypeio.anytype.domain.payments.VerifyMembershipEmailCode
 import com.anytypeio.anytype.payments.constants.TiersConstants
@@ -71,9 +70,6 @@ open class MembershipTestsSetup {
 
     @Mock
     lateinit var isMembershipNameValid: IsMembershipNameValid
-
-    @Mock
-    lateinit var resolveMembershipName: ResolveMembershipName
 
     @Mock
     lateinit var setMembershipEmail: SetMembershipEmail
@@ -166,7 +162,6 @@ open class MembershipTestsSetup {
         membershipProvider = membershipProvider,
         getMembershipPaymentUrl = getMembershipPaymentUrl,
         isMembershipNameValid = isMembershipNameValid,
-        resolveMembershipName = resolveMembershipName,
         setMembershipEmail = setMembershipEmail,
         verifyMembershipEmailCode = verifyMembershipEmailCode,
         getMembershipEmailStatus = getMembershipEmailStatus,

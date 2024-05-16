@@ -430,7 +430,6 @@ interface BlockRemote {
 
     suspend fun membershipStatus(command: Command.Membership.GetStatus): Membership?
     suspend fun membershipIsNameValid(command: Command.Membership.IsNameValid)
-    suspend fun membershipResolveName(command: Command.Membership.ResolveName): Boolean
     suspend fun membershipGetPaymentUrl(command: Command.Membership.GetPaymentUrl): GetPaymentUrlResponse
     suspend fun membershipGetPortalLinkUrl(): String
     suspend fun membershipFinalize(command: Command.Membership.Finalize)

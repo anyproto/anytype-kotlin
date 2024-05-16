@@ -2605,18 +2605,6 @@ class Middleware @Inject constructor(
     }
 
     @Throws
-    fun membershipResolveName(command: Command.Membership.ResolveName): Boolean {
-        val request = Rpc.NameService.ResolveName.Request(
-            nsName = command.name,
-            nsNameType = command.nameType.toMw()
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.membershipResolveName(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-        return response.available
-    }
-
-    @Throws
     fun membershipGetPaymentUrl(command: Command.Membership.GetPaymentUrl): GetPaymentUrlResponse {
         val request = Rpc.Membership.RegisterPaymentRequest.Request(
             requestedTier = command.tier,

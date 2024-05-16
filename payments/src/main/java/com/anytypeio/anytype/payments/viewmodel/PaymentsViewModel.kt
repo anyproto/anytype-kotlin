@@ -18,7 +18,6 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.payments.GetMembershipEmailStatus
 import com.anytypeio.anytype.domain.payments.GetMembershipPaymentUrl
 import com.anytypeio.anytype.domain.payments.IsMembershipNameValid
-import com.anytypeio.anytype.domain.payments.ResolveMembershipName
 import com.anytypeio.anytype.domain.payments.SetMembershipEmail
 import com.anytypeio.anytype.domain.payments.VerifyMembershipEmailCode
 import com.anytypeio.anytype.payments.constants.TiersConstants.EXPLORER_ID
@@ -56,7 +55,6 @@ class PaymentsViewModel(
     private val membershipProvider: MembershipProvider,
     private val getMembershipPaymentUrl: GetMembershipPaymentUrl,
     private val isMembershipNameValid: IsMembershipNameValid,
-    private val resolveMembershipName: ResolveMembershipName,
     private val setMembershipEmail: SetMembershipEmail,
     private val verifyMembershipEmailCode: VerifyMembershipEmailCode,
     private val getMembershipEmailStatus: GetMembershipEmailStatus
@@ -261,7 +259,7 @@ class PaymentsViewModel(
             isMembershipNameValid.async(params).fold(
                 onSuccess = {
                     Timber.d("Name is valid")
-                    proceedWithResolveName(tierView, name)
+                    setValidatedAnyNameState(tierView, name)
                 },
                 onFailure = { error ->
                     Timber.w("Error validating name: $error")
@@ -359,28 +357,6 @@ class PaymentsViewModel(
 
     private fun onPayButtonClicked(tierId: TierId) {
         proceedWithPurchase(tierId, anyNameState.text.toString())
-    }
-
-    private fun proceedWithResolveName(tierView: TierView, name: String) {
-        viewModelScope.launch {
-            val params = ResolveMembershipName.Params(
-                name = name
-            )
-            resolveMembershipName.async(params).fold(
-                onSuccess = { isAvailable ->
-                    Timber.d("Name is available: $isAvailable")
-                    if (isAvailable) {
-                        setValidatedAnyNameState(tierView, name)
-                    } else {
-                        setErrorAnyNameState(tierView, MembershipErrors.ResolveName.NotAvailable)
-                    }
-                },
-                onFailure = { error ->
-                    Timber.e("Error resolving name: $error")
-                    setErrorAnyNameState(tierView, error)
-                }
-            )
-        }
     }
 
     private fun proceedWithPurchase(tierId: TierId, name: String) {

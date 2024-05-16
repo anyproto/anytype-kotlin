@@ -969,10 +969,6 @@ class BlockMiddleware(
         middleware.membershipIsNameValid(command)
     }
 
-    override suspend fun membershipResolveName(command: Command.Membership.ResolveName): Boolean {
-        return middleware.membershipResolveName(command)
-    }
-
     override suspend fun membershipGetPaymentUrl(command: Command.Membership.GetPaymentUrl): GetPaymentUrlResponse {
         return middleware.membershipGetPaymentUrl(command)
     }

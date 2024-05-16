@@ -187,6 +187,7 @@ private fun ErrorMessage(state: TierAnyName.Visible.Error): Pair<Color, String> 
         is MembershipErrors.IsNameValid.TooLong -> R.string.membership_name_too_long
         is MembershipErrors.IsNameValid.TooShort -> R.string.membership_name_too_short
         is MembershipErrors.IsNameValid.UnknownError -> R.string.membership_any_name_unknown
+        is MembershipErrors.IsNameValid.NameIsReserved -> R.string.membership_any_name_not_reserved
         is MembershipErrors.ResolveName.BadInput -> R.string.membership_name_bad_input
         is MembershipErrors.ResolveName.CanNotConnect -> R.string.membership_name_cant_connect
         is MembershipErrors.ResolveName.Null -> R.string.membership_any_name_null_error

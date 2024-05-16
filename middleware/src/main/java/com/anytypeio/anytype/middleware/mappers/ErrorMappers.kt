@@ -5,7 +5,7 @@ import com.anytypeio.anytype.core_models.membership.MembershipErrors
 
 fun Rpc.Membership.IsNameValid.Response.Error.toCore(): MembershipErrors.IsNameValid {
     return when (this.code) {
-        IsNameValidErrorCode.NULL -> MembershipErrors.IsNameValid.Null("Null error code1234")
+        IsNameValidErrorCode.NULL -> MembershipErrors.IsNameValid.Null("Null error code")
         IsNameValidErrorCode.UNKNOWN_ERROR -> MembershipErrors.IsNameValid.UnknownError(description)
         IsNameValidErrorCode.BAD_INPUT -> MembershipErrors.IsNameValid.BadInput(description)
         IsNameValidErrorCode.TOO_SHORT -> MembershipErrors.IsNameValid.TooShort(description)
@@ -18,6 +18,7 @@ fun Rpc.Membership.IsNameValid.Response.Error.toCore(): MembershipErrors.IsNameV
         IsNameValidErrorCode.CACHE_ERROR -> MembershipErrors.IsNameValid.CacheError(description)
         IsNameValidErrorCode.CAN_NOT_RESERVE -> MembershipErrors.IsNameValid.CanNotReserve(description)
         IsNameValidErrorCode.CAN_NOT_CONNECT -> MembershipErrors.IsNameValid.CanNotConnect(description)
+        IsNameValidErrorCode.NAME_IS_RESERVED -> MembershipErrors.IsNameValid.NameIsReserved(description)
     }
 }
 

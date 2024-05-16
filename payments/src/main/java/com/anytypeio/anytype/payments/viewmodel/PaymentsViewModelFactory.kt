@@ -7,7 +7,6 @@ import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.payments.GetMembershipEmailStatus
 import com.anytypeio.anytype.domain.payments.GetMembershipPaymentUrl
 import com.anytypeio.anytype.domain.payments.IsMembershipNameValid
-import com.anytypeio.anytype.domain.payments.ResolveMembershipName
 import com.anytypeio.anytype.domain.payments.SetMembershipEmail
 import com.anytypeio.anytype.domain.payments.VerifyMembershipEmailCode
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
@@ -21,7 +20,6 @@ class PaymentsViewModelFactory @Inject constructor(
     private val membershipProvider: MembershipProvider,
     private val getMembershipPaymentUrl: GetMembershipPaymentUrl,
     private val isMembershipNameValid: IsMembershipNameValid,
-    private val resolveMembershipName: ResolveMembershipName,
     private val setMembershipEmail: SetMembershipEmail,
     private val verifyMembershipEmailCode: VerifyMembershipEmailCode,
     private val getMembershipEmailStatus: GetMembershipEmailStatus
@@ -35,7 +33,6 @@ class PaymentsViewModelFactory @Inject constructor(
             membershipProvider = membershipProvider,
             getMembershipPaymentUrl = getMembershipPaymentUrl,
             isMembershipNameValid = isMembershipNameValid,
-            resolveMembershipName = resolveMembershipName,
             setMembershipEmail = setMembershipEmail,
             verifyMembershipEmailCode = verifyMembershipEmailCode,
             getMembershipEmailStatus = getMembershipEmailStatus

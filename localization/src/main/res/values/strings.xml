@@ -1525,7 +1525,7 @@ Please provide specific details of your needs here.</string>
     <string name="membership_name_tier_not_found">Tier not found, try again later</string>
     <string name="membership_name_too_long">Name is too long</string>
     <string name="membership_name_too_short">Name is too short</string>
-    <string name="membership_any_name_not_reserved">This name is not available</string>
+    <string name="membership_any_name_not_reserved">This name cannot be reserved</string>
     <string name="membership_any_name_null_error">Empty error</string>
     <string name="membership_any_name_unknown">Unknown error</string>
 

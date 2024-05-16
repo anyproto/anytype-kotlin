@@ -72,9 +72,6 @@ open class MembershipTestsSetup {
     lateinit var isMembershipNameValid: IsMembershipNameValid
 
     @Mock
-    lateinit var resolveMembershipName: ResolveMembershipName
-
-    @Mock
     lateinit var setMembershipEmail: SetMembershipEmail
 
     @Mock
@@ -165,7 +162,6 @@ open class MembershipTestsSetup {
         membershipProvider = membershipProvider,
         getMembershipPaymentUrl = getMembershipPaymentUrl,
         isMembershipNameValid = isMembershipNameValid,
-        resolveMembershipName = resolveMembershipName,
         setMembershipEmail = setMembershipEmail,
         verifyMembershipEmailCode = verifyMembershipEmailCode,
         getMembershipEmailStatus = getMembershipEmailStatus,

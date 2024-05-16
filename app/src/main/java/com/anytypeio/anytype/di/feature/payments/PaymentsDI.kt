@@ -12,7 +12,6 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.payments.GetMembershipEmailStatus
 import com.anytypeio.anytype.domain.payments.GetMembershipPaymentUrl
 import com.anytypeio.anytype.domain.payments.IsMembershipNameValid
-import com.anytypeio.anytype.domain.payments.ResolveMembershipName
 import com.anytypeio.anytype.domain.payments.SetMembershipEmail
 import com.anytypeio.anytype.domain.payments.VerifyMembershipEmailCode
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
@@ -92,14 +91,6 @@ object PaymentsModule {
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
     ): VerifyMembershipEmailCode = VerifyMembershipEmailCode(repo = repo, dispatchers = dispatchers)
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideResolveName(
-        repo: BlockRepository,
-        dispatchers: AppCoroutineDispatchers
-    ): ResolveMembershipName = ResolveMembershipName(repo = repo, dispatchers = dispatchers)
 
     @Module
     interface Declarations {

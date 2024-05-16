@@ -550,9 +550,6 @@ interface MiddlewareService {
     fun membershipIsNameValid(request: Rpc.Membership.IsNameValid.Request): Rpc.Membership.IsNameValid.Response
 
     @Throws(Exception::class)
-    fun membershipResolveName(request: Rpc.NameService.ResolveName.Request): Rpc.NameService.ResolveName.Response
-
-    @Throws(Exception::class)
     fun membershipRegisterPaymentRequest(request: Rpc.Membership.RegisterPaymentRequest.Request): Rpc.Membership.RegisterPaymentRequest.Response
 
     @Throws(Exception::class)

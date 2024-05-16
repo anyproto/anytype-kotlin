@@ -2020,19 +2020,6 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
-    override fun membershipResolveName(request: Rpc.NameService.ResolveName.Request): Rpc.NameService.ResolveName.Response {
-        val encoded = Service.nameServiceResolveName(
-            Rpc.NameService.ResolveName.Request.ADAPTER.encode(request)
-        )
-        val response = Rpc.NameService.ResolveName.Response.ADAPTER.decode(encoded)
-        val error = response.error
-        if (error != null && error.code != Rpc.NameService.ResolveName.Response.Error.Code.NULL) {
-            throw error.toCore()
-        } else {
-            return response
-        }
-    }
-
     override fun membershipRegisterPaymentRequest(request: Rpc.Membership.RegisterPaymentRequest.Request): Rpc.Membership.RegisterPaymentRequest.Response {
         val encoded = Service.membershipRegisterPaymentRequest(
             Rpc.Membership.RegisterPaymentRequest.Request.ADAPTER.encode(request)

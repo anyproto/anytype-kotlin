@@ -259,7 +259,7 @@ class PaymentsViewModel(
             isMembershipNameValid.async(params).fold(
                 onSuccess = {
                     Timber.d("Name is valid")
-                    proceedWithResolveName(tierView, name)
+                    setValidatedAnyNameState(tierView, name)
                 },
                 onFailure = { error ->
                     Timber.w("Error validating name: $error")

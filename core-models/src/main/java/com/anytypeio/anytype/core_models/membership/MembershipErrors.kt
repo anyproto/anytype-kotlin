@@ -21,6 +21,7 @@ sealed class MembershipErrors : Exception() {
         data class TierNotFound(override val message: String) : IsNameValid()
         data class CanNotReserve(override val message: String) : IsNameValid()
         data class CanNotConnect(override val message: String) : IsNameValid()
+        data class NameIsReserved(override val message: String) : IsNameValid()
     }
 
     sealed class ResolveName : MembershipErrors() {

@@ -66,7 +66,7 @@ class PaymentsViewModel(
     val welcomeState = MutableStateFlow<PaymentsWelcomeState>(PaymentsWelcomeState.Hidden)
     val errorState = MutableStateFlow<PaymentsErrorState>(PaymentsErrorState.Hidden)
 
-    val command = MutableStateFlow<PaymentsNavigation?>(null)
+    val command = MutableSharedFlow<PaymentsNavigation?>(0)
 
     /**
      * Local billing purchase data.
@@ -128,7 +128,7 @@ class PaymentsViewModel(
                         )
                         Timber.d("Show tier: $newTierState")
                         tierState.value = newTierState
-                        command.value = PaymentsNavigation.Tier
+                        onCommand(PaymentsNavigation.Tier)
                     } else {
                         Timber.e("Tier $showTier not found in tiers list")
                         errorState.value =
@@ -164,7 +164,7 @@ class PaymentsViewModel(
                         (tierState.value as? MembershipTierState.Visible)?.tierView ?: return
                     showTierState.value = 0
                     welcomeState.value = PaymentsWelcomeState.Initial(tierView)
-                    command.value = PaymentsNavigation.Welcome
+                    onCommand(PaymentsNavigation.Welcome)
                 }
                 //check if the purchase is acknowledged,
                 //logic for acknowledging the purchase is on the server side GO-3409
@@ -201,7 +201,7 @@ class PaymentsViewModel(
             is TierAction.PayClicked -> onPayButtonClicked(action.tierId)
             is TierAction.ManagePayment -> onManageTierClicked(action.tierId)
             is TierAction.OpenUrl -> {
-                command.value = PaymentsNavigation.OpenUrl(action.url)
+                onCommand(PaymentsNavigation.OpenUrl(action.url))
             }
             TierAction.OpenEmail -> proceedWithSupportEmail()
             is TierAction.SubmitClicked -> {
@@ -231,7 +231,7 @@ class PaymentsViewModel(
     private fun proceedWithSupportEmail() {
         viewModelScope.launch {
             val anyId = getAccount.async(Unit).getOrNull()
-            command.value = PaymentsNavigation.OpenEmail(anyId?.id)
+            onCommand(PaymentsNavigation.OpenEmail(anyId?.id))
         }
     }
 
@@ -328,11 +328,27 @@ class PaymentsViewModel(
         tierState.value = MembershipTierState.Visible(updatedTierState)
     }
 
+    private fun setValidatingEmailState() {
+        val tierView = (tierState.value as? MembershipTierState.Visible)?.tierView ?: return
+        val updatedTierState = tierView.copy(
+            email = TierEmail.Visible.Validating
+        )
+        tierState.value = MembershipTierState.Visible(updatedTierState)
+    }
+
+    private fun setValidatedEmailState() {
+        val tierView = (tierState.value as? MembershipTierState.Visible)?.tierView ?: return
+        val updatedTierState = tierView.copy(
+            email = TierEmail.Visible.Validated
+        )
+        tierState.value = MembershipTierState.Visible(updatedTierState)
+    }
+
     private fun onManageTierClicked(tierId: TierId) {
         val membershipStatus = membershipStatusState.value ?: return
         val tier = membershipStatus.tiers.find { it.id == tierId.value } ?: return
         Timber.d("Manage tier: $tier")
-        command.value = when (membershipStatus.paymentMethod) {
+        val navigationCommand = when (membershipStatus.paymentMethod) {
             MembershipPaymentMethod.METHOD_NONE -> {
                 PaymentsNavigation.OpenUrl(null)
             }
@@ -353,6 +369,7 @@ class PaymentsViewModel(
                 PaymentsNavigation.OpenUrl(MANAGE_SUBSCRIPTION_URL)
             }
         }
+        onCommand(navigationCommand)
     }
 
     private fun onPayButtonClicked(tierId: TierId) {
@@ -405,7 +422,7 @@ class PaymentsViewModel(
                                 tierState.value = MembershipTierState.Visible(updatedState)
                             } else {
                                 codeState.value = MembershipEmailCodeState.Visible.Initial
-                                command.value = PaymentsNavigation.Code
+                                onCommand(PaymentsNavigation.Code)
                             }
                         }
                         else -> {}
@@ -420,13 +437,15 @@ class PaymentsViewModel(
     }
 
     private fun proceedWithSettingEmail(email: String) {
+        setValidatingEmailState()
         val params = SetMembershipEmail.Params(email, true)
         viewModelScope.launch {
             setMembershipEmail.async(params).fold(
                 onSuccess = {
                     Timber.d("Email set")
+                    setValidatedEmailState()
                     codeState.value = MembershipEmailCodeState.Visible.Initial
-                    command.value = PaymentsNavigation.Code
+                    onCommand(PaymentsNavigation.Code)
                 },
                 onFailure = { error ->
                     Timber.e("Error setting email: $error")
@@ -444,7 +463,7 @@ class PaymentsViewModel(
                     Timber.d("Email code verified")
                     codeState.value = MembershipEmailCodeState.Visible.Success
                     delay(500)
-                    command.value = PaymentsNavigation.Dismiss
+                    onCommand(PaymentsNavigation.Dismiss)
                     proceedWithGettingEmailStatus()
                 },
                 onFailure = { error ->
@@ -457,21 +476,27 @@ class PaymentsViewModel(
 
     fun onDismissTier() {
         Timber.d("onDismissTier")
-        command.value = PaymentsNavigation.Dismiss
+        onCommand(PaymentsNavigation.Dismiss)
         tierState.value = MembershipTierState.Hidden
         showTierState.value = 0
     }
 
     fun onDismissCode() {
         Timber.d("onDismissCode")
-        command.value = PaymentsNavigation.Dismiss
+        onCommand(PaymentsNavigation.Dismiss)
         codeState.value = MembershipEmailCodeState.Hidden
     }
 
     fun onDismissWelcome() {
         Timber.d("onDismissWelcome")
-        command.value = PaymentsNavigation.Dismiss
+        onCommand(PaymentsNavigation.Dismiss)
         welcomeState.value = PaymentsWelcomeState.Hidden
+    }
+
+    private fun onCommand(navigationCommand: PaymentsNavigation) {
+        viewModelScope.launch {
+            command.emit(navigationCommand)
+        }
     }
 
     private fun hasBanner(activeTierId: Int) = activeTierId == EXPLORER_ID

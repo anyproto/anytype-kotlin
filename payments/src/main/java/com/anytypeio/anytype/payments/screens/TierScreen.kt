@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,7 +29,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.ParagraphStyle
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
@@ -39,6 +44,8 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.payments.R
 import com.anytypeio.anytype.payments.constants.TiersConstants.EXPLORER_ID
+import com.anytypeio.anytype.payments.constants.TiersConstants.PRIVACY_POLICY
+import com.anytypeio.anytype.payments.constants.TiersConstants.TERMS_OF_SERVICE
 import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierConditionInfo
@@ -198,6 +205,10 @@ private fun TierViewVisible(
                     tierView = state.tierView,
                     actionTier = actionTier
                 )
+                when (state.tierView.buttonState)  {
+                    TierButton.Pay.Enabled -> AgreeText(actionTier)
+                    else -> {}
+                }
             }
             Spacer(modifier = Modifier.height(300.dp))
         }
@@ -264,6 +275,57 @@ private fun MainButton(
 }
 
 @Composable
+private fun AgreeText(
+    actionTier: (TierAction) -> Unit
+) {
+    val start = stringResource(id = R.string.membership_agree_start)
+    val middle = stringResource(id = R.string.membership_agree_middle)
+    val terms = stringResource(id = R.string.membership_agree_terms)
+    val privacy = stringResource(id = R.string.membership_agree_privacy)
+    val annotatedString = buildAnnotatedString {
+        append(start)
+        append(" ")
+        pushStringAnnotation(tag = TAG_TERMS, annotation = TERMS_OF_SERVICE)
+        withStyle(
+            style = SpanStyle(
+                color = colorResource(id = R.color.text_secondary)
+            )
+        ) { append(terms) }
+        pop()
+        append(" ")
+        append(middle)
+        append(" ")
+        pushStringAnnotation(tag = TAG_PRIVACY, annotation = PRIVACY_POLICY)
+        withStyle(
+            style = SpanStyle(
+                color = colorResource(id = R.color.text_secondary)
+            )
+        ) { append(privacy) }
+        pop()
+    }
+    Spacer(modifier = Modifier.height(16.dp))
+    ClickableText(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp),
+        text = annotatedString,
+        style = BodyCallout.copy(
+            textAlign = TextAlign.Center,
+            color = colorResource(id = R.color.text_tertiary)
+        ),
+        onClick = { offset ->
+            annotatedString.getStringAnnotations(tag = TAG_TERMS, start = offset, end = offset)
+                .firstOrNull()?.let { annotation ->
+                    actionTier(TierAction.OpenUrl(annotation.item))
+                }
+            annotatedString.getStringAnnotations(tag = TAG_PRIVACY, start = offset, end = offset)
+                .firstOrNull()?.let { annotation ->
+                    actionTier(TierAction.OpenUrl(annotation.item))
+                }
+        })
+}
+
+@Composable
 private fun SecondaryButton(
     tierId: TierId,
     buttonState: TierButton,
@@ -325,13 +387,13 @@ fun TierViewScreenPreview() {
                     "Feature 3",
                     "Feature 1"
                 ),
-                isActive = true,
+                isActive = false,
                 conditionInfo = TierConditionInfo.Visible.Valid(
                     dateEnds = 1714199910,
                     period = TierPeriod.Year(1),
                     payedBy = MembershipPaymentMethod.METHOD_INAPP_GOOGLE
                 ),
-                buttonState = TierButton.Manage.Android.Enabled("eqweqw"),
+                buttonState = TierButton.Pay.Enabled,
                 id = TierId(value = EXPLORER_ID),
                 membershipAnyName = TierAnyName.Hidden,
                 email = TierEmail.Visible.Enter,
@@ -344,3 +406,6 @@ fun TierViewScreenPreview() {
         anyEmailTextField = TextFieldState()
     )
 }
+
+const val TAG_TERMS = "terms"
+const val TAG_PRIVACY = "privacy"

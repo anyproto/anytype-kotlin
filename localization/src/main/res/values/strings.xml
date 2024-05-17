@@ -1581,6 +1581,10 @@ Please provide specific details of your needs here.</string>
     <string name="free_until">Free until</string>
     <string name="membership_valid_forever">Valid forever</string>
     <string name="membership_valid_for_unknown">Valid until...</string>
+    <string name="membership_agree_start">By continuing you agree to our</string>
+    <string name="membership_agree_terms">Terms of Use</string>
+    <string name="membership_agree_middle">and</string>
+    <string name="membership_agree_privacy">Privacy Policy</string>
 
     <plurals name="period_years">
         <item quantity="one">year</item>

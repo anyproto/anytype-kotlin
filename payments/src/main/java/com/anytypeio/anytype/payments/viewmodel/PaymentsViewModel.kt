@@ -328,6 +328,22 @@ class PaymentsViewModel(
         tierState.value = MembershipTierState.Visible(updatedTierState)
     }
 
+    private fun setValidatingEmailState() {
+        val tierView = (tierState.value as? MembershipTierState.Visible)?.tierView ?: return
+        val updatedTierState = tierView.copy(
+            email = TierEmail.Visible.Validating
+        )
+        tierState.value = MembershipTierState.Visible(updatedTierState)
+    }
+
+    private fun setValidatedEmailState() {
+        val tierView = (tierState.value as? MembershipTierState.Visible)?.tierView ?: return
+        val updatedTierState = tierView.copy(
+            email = TierEmail.Visible.Validated
+        )
+        tierState.value = MembershipTierState.Visible(updatedTierState)
+    }
+
     private fun onManageTierClicked(tierId: TierId) {
         val membershipStatus = membershipStatusState.value ?: return
         val tier = membershipStatus.tiers.find { it.id == tierId.value } ?: return
@@ -420,11 +436,13 @@ class PaymentsViewModel(
     }
 
     private fun proceedWithSettingEmail(email: String) {
+        setValidatingEmailState()
         val params = SetMembershipEmail.Params(email, true)
         viewModelScope.launch {
             setMembershipEmail.async(params).fold(
                 onSuccess = {
                     Timber.d("Email set")
+                    setValidatedEmailState()
                     codeState.value = MembershipEmailCodeState.Visible.Initial
                     command.value = PaymentsNavigation.Code
                 },

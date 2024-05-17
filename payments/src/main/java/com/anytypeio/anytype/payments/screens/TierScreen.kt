@@ -29,7 +29,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
@@ -206,7 +205,7 @@ private fun TierViewVisible(
                     actionTier = actionTier
                 )
                 when (state.tierView.buttonState)  {
-                    TierButton.Pay.Enabled -> AgreeText(actionTier)
+                    TierButton.Pay.Enabled -> TermsAndPrivacyText(actionTier)
                     else -> {}
                 }
             }
@@ -275,7 +274,7 @@ private fun MainButton(
 }
 
 @Composable
-private fun AgreeText(
+private fun TermsAndPrivacyText(
     actionTier: (TierAction) -> Unit
 ) {
     val start = stringResource(id = R.string.membership_agree_start)

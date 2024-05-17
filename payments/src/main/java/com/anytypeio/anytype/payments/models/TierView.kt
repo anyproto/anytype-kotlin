@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.payments.models
 
-import androidx.annotation.StringRes
 import com.anytypeio.anytype.core_models.membership.MembershipErrors
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.presentation.membership.models.TierId

@@ -1531,7 +1531,7 @@ Please provide specific details of your needs here.</string>
 
     <string name="membership_email_wrong_format">Email has wrong format</string>
     <string name="membership_email_already_verified">Email is already verified</string>
-    <string name="membership_email_already_sent">Email is already sent, wait for the email or try again after 1 minute</string>
+    <string name="membership_email_already_sent">Email is already sent, try again after 1 minute</string>
     <string name="membership_email_failed_to_send">Email failed to send</string>
     <string name="membership_email_membership_already_exists">Membership already exists</string>
 

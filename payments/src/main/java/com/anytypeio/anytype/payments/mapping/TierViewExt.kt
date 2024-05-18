@@ -61,12 +61,12 @@ fun MembershipTierData.toView(
         membershipAnyName = getAnyName(
             isActive = isActive,
             billingClientState = billingClientState,
+            anyName = membershipStatus.anyName
         ),
         buttonState = toButtonView(
             isActive = isActive,
             billingPurchaseState = billingPurchaseState,
-            paymentMethod = membershipStatus.paymentMethod,
-            membershipEmail = membershipStatus.userEmail
+            membershipStatus = membershipStatus
         ),
         email = emailState,
         color = colorStr,
@@ -100,22 +100,21 @@ fun MembershipTierData.toPreviewView(
 private fun MembershipTierData.toButtonView(
     isActive: Boolean,
     billingPurchaseState: BillingPurchaseState,
-    paymentMethod: MembershipPaymentMethod,
-    membershipEmail: String
+    membershipStatus: MembershipStatus
 ): TierButton {
     val androidProductId = this.androidProductId
     val androidInfoUrl = this.androidManageUrl
     return if (isActive) {
-        val wasPurchasedOnAndroid = isActiveTierPurchasedOnAndroid(paymentMethod)
+        val wasPurchasedOnAndroid = isActiveTierPurchasedOnAndroid(membershipStatus.paymentMethod)
         if (!wasPurchasedOnAndroid) {
             if (id == EXPLORER_ID) {
-                if (membershipEmail.isBlank()) {
+                if (membershipStatus.userEmail.isBlank()) {
                     TierButton.Submit.Enabled
                 } else {
                     TierButton.ChangeEmail
                 }
             } else {
-                when (paymentMethod) {
+                when (membershipStatus.paymentMethod) {
                     MembershipPaymentMethod.METHOD_NONE,
                     MembershipPaymentMethod.METHOD_CRYPTO -> TierButton.Manage.External.Disabled
                     MembershipPaymentMethod.METHOD_STRIPE -> TierButton.Manage.External.Enabled(
@@ -144,14 +143,19 @@ private fun MembershipTierData.toButtonView(
                 TierButton.Info.Enabled(androidInfoUrl)
             }
         } else {
-            TierButton.Pay.Disabled
+            if (membershipStatus.anyName.isBlank()) {
+                TierButton.Pay.Disabled
+            } else {
+                TierButton.Pay.Enabled
+            }
         }
     }
 }
 
 private fun MembershipTierData.getAnyName(
     isActive: Boolean,
-    billingClientState: BillingClientState
+    billingClientState: BillingClientState,
+    anyName: String,
 ): TierAnyName {
     return if (isActive) {
         TierAnyName.Hidden
@@ -168,7 +172,11 @@ private fun MembershipTierData.getAnyName(
                     if (product.billingPriceInfo() == null) {
                         TierAnyName.Visible.Disabled
                     } else {
-                        TierAnyName.Visible.Enter
+                        if (anyName.isBlank()) {
+                            TierAnyName.Visible.Enter
+                        } else {
+                            TierAnyName.Visible.Purchased(anyName)
+                        }
                     }
                 }
             } else {

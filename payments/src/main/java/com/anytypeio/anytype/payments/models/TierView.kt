@@ -90,6 +90,7 @@ sealed class TierAnyName {
         data class Validated(val validatedName: String) : Visible()
         data class Error(val membershipErrors: MembershipErrors) : Visible()
         data class ErrorOther(val message: String?) : Visible()
+        data class Purchased(val name: String) : Visible()
     }
 }
 

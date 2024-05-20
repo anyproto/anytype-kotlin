@@ -1,5 +1,8 @@
 package com.anytypeio.anytype.ui.spaces
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -35,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.Dragger
@@ -199,14 +203,29 @@ private fun SelectSpaceProfileHeader(
             .height(68.dp)
             .padding(bottom = 6.dp)
     ) {
-        SelectSpaceProfileIcon(
+        val isReady = profile is SelectSpaceView.Profile.Default
+        AnimatedVisibility(
+            visible = isReady,
             modifier = Modifier.align(Alignment.CenterStart),
-            name = profile.name,
-            icon = profile.icon,
-            onProfileIconClick = onProfileClicked
-        )
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            if (profile is SelectSpaceView.Profile.Default) {
+                SelectSpaceProfileIcon(
+                    modifier = Modifier,
+                    name = profile.name,
+                    icon = profile.icon,
+                    onProfileIconClick = onProfileClicked
+                )
+            }
+        }
+        val name = if (profile is SelectSpaceView.Profile.Default) {
+            profile.name.orNull() ?: stringResource(id = R.string.untitled)
+        } else {
+            EMPTY_STRING_VALUE
+        }
         Text(
-            text = profile.name.orNull() ?: stringResource(id = R.string.untitled),
+            text = name,
             style = HeadlineHeading,
             color = Color.White,
             modifier = Modifier

@@ -270,6 +270,15 @@ sealed class ObjectWrapper {
                     ?: SpaceStatus.UNKNOWN
             }
 
+        val spaceLocalStatus: SpaceStatus
+            get() {
+                val code = getValue<Double?>(Relations.SPACE_LOCAL_STATUS)
+                return SpaceStatus
+                    .entries
+                    .firstOrNull { it.code == code?.toInt() }
+                    ?: SpaceStatus.UNKNOWN
+            }
+
         val spaceAccessType: SpaceAccessType?
             get() {
                 val code = getValue<Double?>(Relations.SPACE_ACCESS_TYPE)

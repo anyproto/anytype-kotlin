@@ -10,8 +10,8 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
-import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -70,4 +70,5 @@ interface SelectSpaceDependencies : ComponentDependencies {
     fun logger(): Logger
     fun configStorage(): ConfigStorage
     fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
+    fun spaceViewContainer(): SpaceViewSubscriptionContainer
 }

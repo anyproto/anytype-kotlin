@@ -6,12 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
-import com.anytypeio.anytype.core_models.DVFilter
-import com.anytypeio.anytype.core_models.DVFilterCondition
-import com.anytypeio.anytype.core_models.DVSort
-import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
@@ -21,9 +16,9 @@ import com.anytypeio.anytype.core_utils.ext.allUniqueBy
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
-import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
@@ -39,6 +34,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -48,7 +44,8 @@ class SelectSpaceViewModel(
     private val spaceGradientProvider: SpaceGradientProvider,
     private val urlBuilder: UrlBuilder,
     private val saveCurrentSpace: SaveCurrentSpace,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val spaceViewContainer: SpaceViewSubscriptionContainer,
 ) : BaseViewModel() {
 
     val views = MutableStateFlow<List<SelectSpaceView>>(emptyList())
@@ -83,75 +80,42 @@ class SelectSpaceViewModel(
             }
         }
 
-    private val spaces: Flow<List<ObjectWrapper.SpaceView>> = container.subscribe(
-        StoreSearchParams(
-            subscription = SELECT_SPACE_SUBSCRIPTION,
-            keys = listOf(
-                Relations.ID,
-                Relations.TARGET_SPACE_ID,
-                Relations.NAME,
-                Relations.ICON_IMAGE,
-                Relations.ICON_EMOJI,
-                Relations.ICON_OPTION,
-                Relations.SPACE_ACCOUNT_STATUS,
-                Relations.SPACE_ACCESS_TYPE
-            ),
-            filters = listOf(
-                DVFilter(
-                    relation = Relations.LAYOUT,
-                    value = ObjectType.Layout.SPACE_VIEW.code.toDouble(),
-                    condition = DVFilterCondition.EQUAL
-                ),
-                DVFilter(
-                    relation = Relations.SPACE_ACCOUNT_STATUS,
-                    value = buildList {
-                        add(SpaceStatus.SPACE_DELETED.code.toDouble())
-                        add(SpaceStatus.SPACE_REMOVING.code.toDouble())
-                    },
-                    condition = DVFilterCondition.NOT_IN
-                ),
-                DVFilter(
-                    relation = Relations.SPACE_LOCAL_STATUS,
-                    value = SpaceStatus.OK.code.toDouble(),
-                    condition = DVFilterCondition.EQUAL
-                )
-            ),
-            sorts = listOf(
-                DVSort(
-                    relationKey = Relations.LAST_OPENED_DATE,
-                    type = DVSortType.DESC,
-                    includeTime = true
-                )
-            )
-        )
-    ).catch {
-        Timber.e(it, "Error in spaces subscriptions")
-        emit(emptyList())
-    }.map { spaces ->
-        if (BuildConfig.DEBUG) {
-            assert(spaces.allUniqueBy { it.id }) {
-                "There were duplicated objects. Need to investigate this issue"
+    private val spaces: Flow<List<ObjectWrapper.SpaceView>> = spaceViewContainer
+        .observe()
+        .map { results ->
+            results.filter { space ->
+                space.spaceLocalStatus == SpaceStatus.OK
+                        && !space.spaceAccountStatus.isDeletedOrRemoving()
             }
         }
-        spaces.distinctBy { it.id }.map { obj ->
-            ObjectWrapper.SpaceView(obj.map)
+        .catch {
+            Timber.e(it, "Error in spaces subscriptions")
+            emit(emptyList())
+        }.map { spaces ->
+            if (BuildConfig.DEBUG) {
+                assert(spaces.allUniqueBy { it.id }) {
+                    "There were duplicated objects. Need to investigate this issue"
+                }
+            }
+            spaces.distinctBy { it.id }
         }
-    }
 
     private fun buildUI() {
         jobs += viewModelScope.launch {
             combine(
                 spaces,
-                profile,
-                spaceManager.observe()
-            ) { spaces, profile, config ->
-                buildList {
-                    add(
-                        SelectSpaceView.Profile(
-                            name = profile.name.orEmpty(),
-                            icon = profile.profileIcon(builder = urlBuilder)
-                        )
+                profile.map<ObjectWrapper.Basic, SelectSpaceView.Profile> { profile ->
+                    SelectSpaceView.Profile.Default(
+                        name = profile.name.orEmpty(),
+                        icon = profile.profileIcon(builder = urlBuilder)
                     )
+                }.onStart {
+                    emit(SelectSpaceView.Profile.Loading)
+                },
+                spaceManager.observe()
+            ) { spaces, profile: SelectSpaceView.Profile, config ->
+                buildList {
+                    add(profile)
                     val spaceViews = spaces.mapNotNull { wrapper ->
                         val space = wrapper.targetSpaceId
                         if (space != null) {
@@ -254,23 +218,25 @@ class SelectSpaceViewModel(
     }
 
     class Factory @Inject constructor(
-        private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
+        private val container: StorelessSubscriptionContainer,
         private val spaceManager: SpaceManager,
         private val spaceGradientProvider: SpaceGradientProvider,
         private val urlBuilder: UrlBuilder,
         private val saveCurrentSpace: SaveCurrentSpace,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val spaceViewContainer: SpaceViewSubscriptionContainer
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
             modelClass: Class<T>
         ) = SelectSpaceViewModel(
-            container = storelessSubscriptionContainer,
+            container = container,
             spaceManager = spaceManager,
             spaceGradientProvider = spaceGradientProvider,
             urlBuilder = urlBuilder,
             saveCurrentSpace = saveCurrentSpace,
-            analytics = analytics
+            analytics = analytics,
+            spaceViewContainer = spaceViewContainer
         ) as T
     }
 
@@ -295,11 +261,14 @@ sealed class SelectSpaceView {
     data class Space(
         val view: WorkspaceView
     ) : SelectSpaceView()
-    data class Profile(
-        val name: String,
-        val icon: ProfileIconView,
-    ) : SelectSpaceView()
-    object Create : SelectSpaceView()
+    sealed class Profile : SelectSpaceView() {
+        data class Default(
+            val name: String,
+            val icon: ProfileIconView,
+        ) : Profile()
+        data object Loading : Profile()
+    }
+    data object Create : SelectSpaceView()
 }
 
 sealed class Command {

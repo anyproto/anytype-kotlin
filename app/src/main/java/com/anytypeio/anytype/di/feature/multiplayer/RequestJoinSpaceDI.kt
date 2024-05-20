@@ -7,6 +7,7 @@ import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -69,4 +70,5 @@ interface RequestJoinSpaceDependencies : ComponentDependencies {
     fun analytics(): Analytics
     fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
     fun notificator(): SystemNotificationService
+    fun configStorage(): ConfigStorage
 }

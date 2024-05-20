@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.getOrDefault
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.multiplayer.CheckIsUserSpaceMember
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteView
 import com.anytypeio.anytype.domain.multiplayer.SendJoinSpaceRequest
@@ -37,7 +38,8 @@ class RequestJoinSpaceViewModel(
     private val spaceManager: SpaceManager,
     private val saveCurrentSpace: SaveCurrentSpace,
     private val analytics: Analytics,
-    private val notificator: SystemNotificationService
+    private val notificator: SystemNotificationService,
+    private val configStorage: ConfigStorage
 ) : BaseViewModel() {
 
     val state = MutableStateFlow<TypedViewState<SpaceInviteView, ErrorView>>(TypedViewState.Loading)
@@ -114,7 +116,7 @@ class RequestJoinSpaceViewModel(
                         sendJoinSpaceRequest.async(
                             SendJoinSpaceRequest.Params(
                                 space = curr.data.space,
-                                network = spaceManager.getConfig()?.network,
+                                network = configStorage.getOrNull()?.network,
                                 inviteFileKey = fileKey,
                                 inviteContentId = contentId
                             )
@@ -173,7 +175,8 @@ class RequestJoinSpaceViewModel(
         private val saveCurrentSpace: SaveCurrentSpace,
         private val spaceManager: SpaceManager,
         private val analytics: Analytics,
-        private val notificator: SystemNotificationService
+        private val notificator: SystemNotificationService,
+        private val configStorage: ConfigStorage
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = RequestJoinSpaceViewModel(
@@ -185,7 +188,8 @@ class RequestJoinSpaceViewModel(
             saveCurrentSpace = saveCurrentSpace,
             spaceManager = spaceManager,
             analytics = analytics,
-            notificator = notificator
+            notificator = notificator,
+            configStorage = configStorage
         ) as T
     }
 

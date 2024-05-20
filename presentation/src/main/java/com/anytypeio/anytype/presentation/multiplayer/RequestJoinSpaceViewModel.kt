@@ -114,7 +114,7 @@ class RequestJoinSpaceViewModel(
                         sendJoinSpaceRequest.async(
                             SendJoinSpaceRequest.Params(
                                 space = curr.data.space,
-                                network = null,
+                                network = spaceManager.getConfig()?.network,
                                 inviteFileKey = fileKey,
                                 inviteContentId = contentId
                             )

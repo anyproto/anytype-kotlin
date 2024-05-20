@@ -435,8 +435,9 @@ data class Block(
      * Block alignment property
      */
     sealed class Align {
-        object AlignLeft : Align()
-        object AlignCenter : Align()
-        object AlignRight : Align()
+        data object AlignLeft : Align()
+        data object AlignCenter : Align()
+        data object AlignRight : Align()
+        data object AlignJustify : Align()
     }
 }

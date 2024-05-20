@@ -19,6 +19,8 @@ sealed class WidgetView {
 
     abstract val id: Id
 
+    data class Loading(override val id: Id) : WidgetView()
+
     data class Tree(
         override val id: Id,
         val source: Widget.Source,

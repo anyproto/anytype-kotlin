@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 
 class DataViewListWidgetContainer(
     private val widget: Widget.List,
@@ -43,9 +44,11 @@ class DataViewListWidgetContainer(
             buildViewFlow()
         else
             emptyFlow()
+    }.onStart {
+        emit(WidgetView.Loading(widget.id))
     }
 
-    private fun buildViewFlow() = combine(
+    private fun buildViewFlow() : Flow<WidgetView> = combine(
         activeView.distinctUntilChanged(),
         isWidgetCollapsed
     ) { view, isCollapsed -> view to isCollapsed }.flatMapLatest { (view, isCollapsed) ->

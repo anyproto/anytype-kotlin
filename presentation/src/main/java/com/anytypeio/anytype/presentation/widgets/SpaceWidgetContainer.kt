@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.onStart
 
 class SpaceWidgetContainer @Inject constructor(
     private val spaceManager: SpaceManager,
@@ -30,7 +31,9 @@ class SpaceWidgetContainer @Inject constructor(
     private val members: ActiveSpaceMemberSubscriptionContainer
 ) : WidgetContainer {
 
-    override val view: Flow<WidgetView> = buildFlow()
+    override val view: Flow<WidgetView> = buildFlow().onStart {
+        emit(WidgetView.Loading("space!"))
+    }
 
     private fun buildFlow() : Flow<WidgetView> {
         return spaceManager.observe().flatMapLatest { config ->

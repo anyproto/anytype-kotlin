@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 
 class ListWidgetContainer(
     private val widget: Widget.List,
@@ -40,11 +41,15 @@ class ListWidgetContainer(
 ) : WidgetContainer {
 
     override val view: Flow<WidgetView> = isSessionActive.flatMapLatest { isActive ->
-        if (isActive) buildViewFlow()
-        else emptyFlow()
+        if (isActive)
+            buildViewFlow()
+        else
+            emptyFlow()
+    }.onStart {
+        emit(WidgetView.Loading(widget.id))
     }
 
-    private fun buildViewFlow() = isWidgetCollapsed.flatMapLatest { isCollapsed ->
+    private fun buildViewFlow() : Flow<WidgetView> = isWidgetCollapsed.flatMapLatest { isCollapsed ->
         if (isCollapsed) {
             flowOf(
                 WidgetView.ListOfObjects(

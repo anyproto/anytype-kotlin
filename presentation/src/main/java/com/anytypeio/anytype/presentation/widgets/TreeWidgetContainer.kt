@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
@@ -48,9 +49,13 @@ class TreeWidgetContainer(
             buildViewFlow()
         else
             emptyFlow()
+    }.onStart {
+        emit(
+            WidgetView.Loading(widget.id)
+        )
     }
 
-    private fun buildViewFlow() = combine(
+    private fun buildViewFlow() : Flow<WidgetView> = combine(
         expandedBranches,
         isWidgetCollapsed
     ) { paths, isWidgetCollapsed ->

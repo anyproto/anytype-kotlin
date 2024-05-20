@@ -363,6 +363,9 @@ private fun WidgetList(
                         )
                     }
                 }
+                is WidgetView.Loading -> {
+                    // Draw nothing
+                }
                 is WidgetView.Bin -> {
                     BinWidgetCard(
                         onDropDownMenuAction = { action ->

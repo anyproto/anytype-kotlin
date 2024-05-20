@@ -9,7 +9,7 @@
     <string name="personalization">Personalizzazione</string>
     <string name="appearance">Aspetto</string>
     <string name="file_storage">Archiviazione File</string>
-    <string name="key">Frase di recupero</string>
+    <string name="recovery_phrase">Frase di recupero</string>
     <string name="clear_file_cache">Svuota la cache dei file</string>
     <string name="debug_sync_report">Debug Sync Report</string>
     <string name="debug">Debug</string>
@@ -800,6 +800,7 @@
     <string name="base_add_options_empty_subtitle">Start typing to create a new one</string>
     <string name="sync_status_local_only">Solo-locale</string>
     <string name="mail_more_space_body">Hi, Anytype team. I am reaching out to request an increase in my file storage capacity as I have run out of storage. My current limits is %1$s. My account id is %2$s. Cheers, %3$s</string>
+    <string name="your_recovery_phrase_can_t_be_empty">Your recovery phrase can\'t be empty</string>
     <string name="go_to_the_app">Vai all\'app</string>
     <string name="exiting_please_wait">Exiting... please wait</string>
     <string name="loading_please_wait">Loading... please wait</string>
@@ -967,23 +968,39 @@
     <!--region ONBOARDING -->
     <string name="onboarding_auth_title">the everything app</string>
     <string name="onboarding_auth_subtitle">for those\nwho celebrate\ntrust &amp; autonomy</string>
+    <string name="onboarding_auth_description">Anytype è il tuo spazio sicuro per scrivere, pianificare, pensare e organizzare tutto ciò che conta per te.</string>
     <string name="onboarding_terms_and_policy_prefix">"By continuing you agree to "</string>
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
     <string name="onboarding_terms_and_policy_infix">" and "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
+    <string name="onboarding_join_button_text">Unisciti</string>
+    <string name="onboarding_log_in_button_text">Accedi</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
-    <string name="onboarding_key_skip">Salta</string>
-    <string name="onboarding_key_copy">Copia negli appunti</string>
+    <string name="onboarding_mnemonic_title">Salva la tua Frase di Recupero</string>
+    <string name="onboarding_mnemonic_description">È un metodo di autenticazione innovativo che ti garantisce la totale proprietà del tuo account e dei tuoi dati.</string>
+    <string name="onboarding_mnemonic_show_key">Mostra Frase di Recupero</string>
+    <string name="onboarding_mnemonic_key_saved">Vai all\'app</string>
+    <string name="onboarding_mnemonic_skip">Salta</string>
+    <string name="onboarding_mnemonic_copy">Copia negli appunti</string>
     <string name="onboarding_set_your_name_title">Scegli il tuo nome</string>
     <string name="onboarding_soul_creation_description">This is how you will appear in the app</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
+    <string name="onboarding_type_recovery_phrase">Digita la frase di recupero</string>
     <string name="onboarding_login_or">O</string>
     <string name="onboarding_entering_void_title">Entrando nel Void</string>
     <string name="onboarding_mnemonic_read_more">Leggi altro</string>
+    <string name="onboarding_mnemonic_additional_info">You can find Recovery Phrase later in\nAnytype settings</string>
+    <string name="onboqrding_what_is_recovery_phrase">Che cos’è la Frase di Recupero?</string>
+    <string name="onboarding_recovery_phrase_description">La Frase di Recupero è una combinazione casuale di 12 parole da cui il tuo account viene magicamente generato su questo dispositivo</string>
+    <string name="onboarding_recovery_phrase_description_2">Chiunque conosca la Frase di Recupero possiede l\'account.</string>
+    <string name="onboarding_recovery_phrase_description_3">At this moment, you are the only person in the world who knows it.</string>
+    <string name="onboarding_recovery_phrase_description_4">Ecco perché è essenziale mantenere la Frase di Recupero al sicuro. Come unico proprietario, nessuno può aiutarti se la perdi.</string>
+    <string name="onboarding_how_to_save_my_phrase">How to save my Phrase?</string>
+    <string name="onboarding_how_to_save_my_phrase_2">Il modo più semplice per memorizzare la tua Frase di Recupero è quello di salvarla nel tuo gestore di password.</string>
     <string name="onboarding_how_to_save_my_phrase_3">Il modo più sicuro è scriverlo su carta e tenerlo offline, in un luogo sicuro.</string>
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
@@ -1154,7 +1171,7 @@
     <string name="multiplayer_delete_link">Elimina link</string>
     <string name="multiplayer_delete_link_description">I nuovi membri non saranno in grado di unirsi allo spazio. È possibile generare un nuovo link in qualsiasi momento.</string>
     <string name="multiplayer_already_space_member">Sei già membro di questo spazio</string>
-    <string name="multiplayer_open_space">Open space</string>
+    <string name="multiplayer_open_space">Apri spazio</string>
     <string name="multiplayer_error_space_deleted">Spazio eliminato</string>
     <string name="multiplayer_error_space_not_found">Spazio non trovato</string>
     <string name="multiplayer_read_only_access_error">Accesso in sola lettura. Contatta il proprietario dello spazio per modifiche.</string>
@@ -1194,14 +1211,14 @@
     <!--region PAYMENTS -->
     <string name="payments_header">Membership</string>
     <string name="payments_subheader">Unire alla rete di Anytype significa contribuire alla sua storia</string>
-    <string name="payments_card_text_1">Co-create the Vision</string>
+    <string name="payments_card_text_1">Co-creare la Visione</string>
     <string name="payments_card_description_1">In qualità di membro apprezzato, la tua voce conta! Partecipa a eventi esclusivi, contribuisci a scelte strategiche e influenza la nostra roadmap.</string>
     <string name="payments_card_text_2">Sblocca i vantaggi per i membri</string>
     <string name="payments_card_description_2">I membri godono di limiti più elevati di archiviazione e sincronizzazione dei backup, di inviti per più ospiti a collaborare in spazi condivisi e di un\'identità unica sulla Rete Anytype.</string>
     <string name="payments_card_text_3">Sostenere l\'indipendenza digitale</string>
     <string name="payments_card_description_3">Il tuo contributo sostiene il nostro team e avvalora la nostra visione di una rete digitale di proprietà degli utenti, sicura e collaborativa.</string>
     <string name="payments_card_text_4">Investi nella connettività</string>
-    <string name="payments_card_description_4">Our network\'s value exceeds the sum of its parts. Your membership sustains the infrastructure for its growth which underpins this network.</string>
+    <string name="payments_card_description_4">Il valore della nostra rete supera la somma delle sue parti. La tua iscrizione sostiene l\'infrastruttura per la sua crescita, che è alla base di questa rete.</string>
     <string name="payments_tier_explorer">Explorer</string>
     <string name="payments_tier_explorer_description">Immergiti nella rete e goditi l\'emozione della collaborazione uno-a-uno</string>
     <string name="payments_tier_builder">Builder</string>
@@ -1262,20 +1279,20 @@
     <!-- Payments Code -->
     <string name="payments_code_title">Inserisci il codice inviato alla tua email</string>
     <string name="payments_code_resend">Invia di nuovo</string>
-    <string name="payments_code_resend_in">Resend in %1$n sec</string>
+    <string name="payments_code_resend_in">Invia nuovamente tra %1$n secondi</string>
     <!-- Payments Welcome -->
-    <string name="payments_welcome_title">Welcome to the network,\n%1$s</string>
+    <string name="payments_welcome_title">Benvenuto/a nella rete, %1$s</string>
     <string name="payments_welcome_subtitle">Un grande applauso per la tua curiosità!</string>
     <string name="payments_welcome_button">Continua</string>
     <!-- Notifications -->
-    <string name="notifications_alert_error_unknown">An unknown error has occurred. Please try again later.</string>
-    <string name="notifications_alert_error_bad_input">Invalid input detected. Please check your data and try again.</string>
-    <string name="notifications_alert_error_internal">An internal error has occurred. Our team has been notified.</string>
-    <string name="notifications_alert_error_no_objects_to_import">No items found to import. Please select valid objects for import.</string>
-    <string name="notifications_alert_error_import_canceled">The import process has been canceled by the user.</string>
-    <string name="notifications_alert_error_limit_exceeded">The import limit for rows or relations has been exceeded. Please reduce the amount and try again.</string>
-    <string name="notifications_alert_error_file_load">There was an error loading the file. Please check the file and try again.</string>
-    <string name="notifications_alert_error_insufficient_permissions">You do not have the necessary permissions to perform this action. Please check your permissions and try again.</string>
+    <string name="notifications_alert_error_unknown">Si è verificato un errore sconosciuto. Ti preghiamo di riprovare più tardi.</string>
+    <string name="notifications_alert_error_bad_input">Rilevato un inserimento non valido. Per favore controlla i tuoi dati e riprova.</string>
+    <string name="notifications_alert_error_internal">Si è verificato un errore interno. Il nostro team è stato notificato.</string>
+    <string name="notifications_alert_error_no_objects_to_import">Non è stato trovato nessun elemento da importare. Per favore seleziona oggetti validi per l\'importazione.</string>
+    <string name="notifications_alert_error_import_canceled">Il processo di importazione è stato annullato dall\'utente.</string>
+    <string name="notifications_alert_error_limit_exceeded">Il limite di importazione per righe o relazioni è stato superato. Si prega di ridurre la quantità e riprovare.</string>
+    <string name="notifications_alert_error_file_load">Si è verificato un errore durante il caricamento del file. Controlla il file e riprova.</string>
+    <string name="notifications_alert_error_insufficient_permissions">Non hai i permessi necessari per eseguire questa azione. Controlla le tue autorizzazioni e riprova.</string>
     <!-- Gallery Experience -->
     <string name="gallery_experience_made">Realizzato da</string>
     <string name="gallery_experience_install">Installa</string>
@@ -1283,7 +1300,7 @@
     <string name="gallery_experience_alert_title_success">Esperienza installata</string>
     <string name="gallery_experience_alert_subtitle_success">\"%1$s\" è stato installato in un nuovo spazio. Ora puoi aprirlo e iniziare a utilizzarlo.</string>
     <string name="gallery_experience_alert_title_error">Ops!</string>
-    <string name="gallery_experience_alert_button_space">Open space</string>
+    <string name="gallery_experience_alert_button_space">Apri spazio</string>
     <string name="gallery_experience_alert_button_error">Chiudi</string>
     <string name="three_dots_text_placeholder">...</string>
     <string name="notifications_prompt_get_notified">Ricevi notifiche</string>

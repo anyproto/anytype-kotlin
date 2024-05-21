@@ -65,6 +65,7 @@ fun AnyNameView(
             is TierAnyName.Visible.Validated -> true
             TierAnyName.Visible.Validating -> true
             is TierAnyName.Visible.ErrorOther -> true
+            is TierAnyName.Visible.Purchased -> false
         }
 
         Column(
@@ -95,33 +96,49 @@ fun AnyNameView(
             Spacer(modifier = Modifier.height(10.dp))
             Box {
                 Row(modifier = Modifier.fillMaxWidth()) {
-                    BasicTextField2(
-                        modifier = Modifier
-                            .weight(1f)
-                            .wrapContentHeight()
-                            .focusRequester(focusRequester)
-                            .onFocusChanged {
-                                showHint.value = !it.isFocused && anyNameTextField.text.isEmpty()
+                    if (anyNameState is TierAnyName.Visible.Purchased) {
+                        Text(
+                            modifier = Modifier
+                                .weight(1f)
+                                .wrapContentHeight(),
+                            text = anyNameState.name,
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.text_tertiary)
+                        )
+                        Text(
+                            text = stringResource(id = R.string.payments_tier_details_name_domain),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.text_tertiary)
+                        )
+                    } else {
+                        BasicTextField2(
+                            modifier = Modifier
+                                .weight(1f)
+                                .wrapContentHeight()
+                                .focusRequester(focusRequester)
+                                .onFocusChanged {
+                                    showHint.value = !it.isFocused && anyNameTextField.text.isEmpty()
+                                },
+                            state = anyNameTextField,
+                            textStyle = BodyRegular.copy(color = colorResource(id = R.color.text_primary)),
+                            enabled = anyNameEnabled.value,
+                            cursorBrush = SolidColor(colorResource(id = R.color.text_primary)),
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                imeAction = ImeAction.Done,
+                            ),
+                            keyboardActions = KeyboardActions {
+                                keyboardController?.hide()
+                                focusManager.clearFocus()
                             },
-                        state = anyNameTextField,
-                        textStyle = BodyRegular.copy(color = colorResource(id = R.color.text_primary)),
-                        enabled = anyNameEnabled.value,
-                        cursorBrush = SolidColor(colorResource(id = R.color.text_primary)),
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            imeAction = ImeAction.Done,
-                        ),
-                        keyboardActions = KeyboardActions {
-                            keyboardController?.hide()
-                            focusManager.clearFocus()
-                        },
-                        lineLimits = TextFieldLineLimits.SingleLine,
-                        interactionSource = remember { MutableInteractionSource() }
-                    )
-                    Text(
-                        text = stringResource(id = R.string.payments_tier_details_name_domain),
-                        style = BodyRegular,
-                        color = colorResource(id = R.color.text_primary)
-                    )
+                            lineLimits = TextFieldLineLimits.SingleLine,
+                            interactionSource = remember { MutableInteractionSource() }
+                        )
+                        Text(
+                            text = stringResource(id = R.string.payments_tier_details_name_domain),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                    }
                 }
                 if (showHint.value) {
                     Text(
@@ -155,6 +172,8 @@ fun AnyNameView(
 
                 is TierAnyName.Visible.ErrorOther -> colorResource(id = R.color.palette_system_red) to (anyNameState.message
                     ?: stringResource(id = R.string.membership_any_name_unknown))
+
+                is TierAnyName.Visible.Purchased ->  Color.Transparent to ""
             }
             Spacer(modifier = Modifier.height(10.dp))
             Text(

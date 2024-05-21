@@ -394,7 +394,7 @@ fun TierViewScreenPreview() {
                 ),
                 buttonState = TierButton.Pay.Enabled,
                 id = TierId(value = EXPLORER_ID),
-                membershipAnyName = TierAnyName.Hidden,
+                membershipAnyName = TierAnyName.Visible.Purchased("someanyname111"),
                 email = TierEmail.Visible.Enter,
                 color = "teal"
             )

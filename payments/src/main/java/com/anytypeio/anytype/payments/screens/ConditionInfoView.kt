@@ -79,6 +79,11 @@ fun ConditionInfoView(
         is TierConditionInfo.Visible.Error -> {
             ConditionInfoViewPriceAndText(price = "", period = state.message)
         }
+
+        TierConditionInfo.Visible.Pending -> ConditionInfoViewPriceAndText(
+            period = stringResource(id = R.string.membership_price_pending),
+            price = ""
+        )
     }
 }
 
@@ -273,5 +278,11 @@ fun MyConditionInfoViewPrice2() {
 @Composable
 fun MyConditionInfoViewLoading() {
     ConditionInfoView(TierConditionInfo.Visible.LoadingBillingClient)
+}
+
+@Preview
+@Composable
+fun MyConditionInfoViewPending() {
+    ConditionInfoView(TierConditionInfo.Visible.Pending)
 }
 

@@ -38,6 +38,7 @@ sealed class TierConditionInfo {
         data class PriceBilling(val price: BillingPriceInfo) : Visible()
         data class Free(val period: TierPeriod) : Visible()
         data class Error(val message: String) : Visible()
+        data object Pending : Visible()
     }
 }
 
@@ -90,6 +91,7 @@ sealed class TierAnyName {
         data class Validated(val validatedName: String) : Visible()
         data class Error(val membershipErrors: MembershipErrors) : Visible()
         data class ErrorOther(val message: String?) : Visible()
+        data class Purchased(val name: String) : Visible()
     }
 }
 

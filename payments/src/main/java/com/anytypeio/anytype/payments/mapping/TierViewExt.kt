@@ -53,20 +53,19 @@ fun MembershipTierData.toView(
         conditionInfo = getConditionInfo(
             isActive = isActive,
             billingClientState = billingClientState,
-            paymentMethod = membershipStatus.paymentMethod,
-            membershipValidUntil = membershipStatus.dateEnds
+            membershipStatus = membershipStatus
         ),
         isActive = isActive,
         features = features,
         membershipAnyName = getAnyName(
             isActive = isActive,
             billingClientState = billingClientState,
+            membershipStatus = membershipStatus
         ),
         buttonState = toButtonView(
             isActive = isActive,
             billingPurchaseState = billingPurchaseState,
-            paymentMethod = membershipStatus.paymentMethod,
-            membershipEmail = membershipStatus.userEmail
+            membershipStatus = membershipStatus
         ),
         email = emailState,
         color = colorStr,
@@ -89,8 +88,7 @@ fun MembershipTierData.toPreviewView(
         conditionInfo = getConditionInfo(
             isActive = isActive,
             billingClientState = billingClientState,
-            paymentMethod = membershipStatus.paymentMethod,
-            membershipValidUntil = membershipStatus.dateEnds
+            membershipStatus = membershipStatus
         ),
         isActive = isActive,
         color = colorStr
@@ -100,22 +98,21 @@ fun MembershipTierData.toPreviewView(
 private fun MembershipTierData.toButtonView(
     isActive: Boolean,
     billingPurchaseState: BillingPurchaseState,
-    paymentMethod: MembershipPaymentMethod,
-    membershipEmail: String
+    membershipStatus: MembershipStatus
 ): TierButton {
     val androidProductId = this.androidProductId
     val androidInfoUrl = this.androidManageUrl
     return if (isActive) {
-        val wasPurchasedOnAndroid = isActiveTierPurchasedOnAndroid(paymentMethod)
+        val wasPurchasedOnAndroid = isActiveTierPurchasedOnAndroid(membershipStatus.paymentMethod)
         if (!wasPurchasedOnAndroid) {
             if (id == EXPLORER_ID) {
-                if (membershipEmail.isBlank()) {
+                if (membershipStatus.userEmail.isBlank()) {
                     TierButton.Submit.Enabled
                 } else {
                     TierButton.ChangeEmail
                 }
             } else {
-                when (paymentMethod) {
+                when (membershipStatus.paymentMethod) {
                     MembershipPaymentMethod.METHOD_NONE,
                     MembershipPaymentMethod.METHOD_CRYPTO -> TierButton.Manage.External.Disabled
                     MembershipPaymentMethod.METHOD_STRIPE -> TierButton.Manage.External.Enabled(
@@ -144,35 +141,50 @@ private fun MembershipTierData.toButtonView(
                 TierButton.Info.Enabled(androidInfoUrl)
             }
         } else {
-            TierButton.Pay.Disabled
+            if (membershipStatus.anyName.isBlank()) {
+                TierButton.Pay.Disabled
+            } else {
+                TierButton.Pay.Enabled
+            }
         }
     }
 }
 
 private fun MembershipTierData.getAnyName(
     isActive: Boolean,
-    billingClientState: BillingClientState
+    billingClientState: BillingClientState,
+    membershipStatus: MembershipStatus
 ): TierAnyName {
-    return if (isActive) {
-        TierAnyName.Hidden
+    if (isActive) {
+        return TierAnyName.Hidden
     } else {
         if (androidProductId == null) {
-            TierAnyName.Hidden
+            return TierAnyName.Hidden
         } else {
+            if (membershipStatus.status == Membership.Status.STATUS_PENDING ||
+                membershipStatus.status == Membership.Status.STATUS_PENDING_FINALIZATION
+            ) {
+                return TierAnyName.Hidden
+            }
+
             if (billingClientState is BillingClientState.Connected) {
                 val product =
                     billingClientState.productDetails.find { it.productId == androidProductId }
                 if (product == null) {
-                    TierAnyName.Visible.Disabled
+                    return TierAnyName.Visible.Disabled
                 } else {
                     if (product.billingPriceInfo() == null) {
-                        TierAnyName.Visible.Disabled
+                        return TierAnyName.Visible.Disabled
                     } else {
-                        TierAnyName.Visible.Enter
+                        if (membershipStatus.anyName.isBlank()) {
+                            return TierAnyName.Visible.Enter
+                        } else {
+                            return TierAnyName.Visible.Purchased(membershipStatus.anyName)
+                        }
                     }
                 }
             } else {
-                TierAnyName.Visible.Disabled
+                return TierAnyName.Visible.Disabled
             }
         }
     }
@@ -181,19 +193,18 @@ private fun MembershipTierData.getAnyName(
 private fun MembershipTierData.getConditionInfo(
     isActive: Boolean,
     billingClientState: BillingClientState,
-    membershipValidUntil: Long,
-    paymentMethod: MembershipPaymentMethod
+    membershipStatus: MembershipStatus
 ): TierConditionInfo {
     return if (isActive) {
         createConditionInfoForCurrentTier(
-            membershipValidUntil = membershipValidUntil,
-            paymentMethod = paymentMethod
+            membershipValidUntil = membershipStatus.dateEnds,
+            paymentMethod = membershipStatus.paymentMethod
         )
     } else {
         if (androidProductId == null) {
             createConditionInfoForNonBillingTier()
         } else {
-            createConditionInfoForBillingTier(billingClientState)
+            createConditionInfoForBillingTier(billingClientState, membershipStatus)
         }
     }
 }
@@ -231,7 +242,16 @@ private fun formatPriceInCents(priceInCents: Int): String {
     }
 }
 
-private fun MembershipTierData.createConditionInfoForBillingTier(billingClientState: BillingClientState): TierConditionInfo {
+private fun MembershipTierData.createConditionInfoForBillingTier(
+    billingClientState: BillingClientState,
+    membershipStatus: MembershipStatus
+): TierConditionInfo {
+    if (
+        membershipStatus.status == Membership.Status.STATUS_PENDING ||
+        membershipStatus.status == Membership.Status.STATUS_PENDING_FINALIZATION
+    ) {
+        return TierConditionInfo.Visible.Pending
+    }
     return when (billingClientState) {
         BillingClientState.Loading -> {
             TierConditionInfo.Visible.LoadingBillingClient

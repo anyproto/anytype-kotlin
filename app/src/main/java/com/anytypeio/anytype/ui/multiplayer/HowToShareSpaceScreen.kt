@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
-import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 
 @Preview
@@ -47,9 +46,9 @@ fun HowToShareSpaceScreen() {
         Spacer(modifier = Modifier.height(12.dp))
         Row(Modifier.padding(horizontal = 20.dp)) {
             Text(
-                text = " • ",
+                text = "1. ",
                 color = colorResource(id = R.color.text_primary),
-                style = BodyRegular
+                style = BodyCalloutRegular
             )
             Spacer(Modifier.width(4.dp))
             Text(
@@ -58,11 +57,12 @@ fun HowToShareSpaceScreen() {
                 style = BodyCalloutRegular
             )
         }
+        Spacer(Modifier.height(8.dp))
         Row(Modifier.padding(horizontal = 20.dp)) {
             Text(
-                text = " • ",
+                text = "2. ",
                 color = colorResource(id = R.color.text_primary),
-                style = BodyRegular
+                style = BodyCalloutRegular
             )
             Spacer(Modifier.width(4.dp))
             Text(
@@ -71,11 +71,12 @@ fun HowToShareSpaceScreen() {
                 style = BodyCalloutRegular
             )
         }
+        Spacer(Modifier.height(8.dp))
         Row(Modifier.padding(horizontal = 20.dp)) {
             Text(
-                text = " • ",
+                text = "3. ",
                 color = colorResource(id = R.color.text_primary),
-                style = BodyRegular
+                style = BodyCalloutRegular
             )
             Spacer(Modifier.width(4.dp))
             Text(

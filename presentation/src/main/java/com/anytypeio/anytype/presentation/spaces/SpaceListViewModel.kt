@@ -60,7 +60,6 @@ class SpaceListViewModel(
                                 defaultValue = SpaceMemberPermissions.NO_PERMISSIONS
                             ),
                             actions = buildList {
-
                                 val space = spaceView.targetSpaceId?.let { id ->
                                     SpaceId(id)
                                 } ?: return@buildList

@@ -38,6 +38,7 @@ sealed class TierConditionInfo {
         data class PriceBilling(val price: BillingPriceInfo) : Visible()
         data class Free(val period: TierPeriod) : Visible()
         data class Error(val message: String) : Visible()
+        data object Pending : Visible()
     }
 }
 

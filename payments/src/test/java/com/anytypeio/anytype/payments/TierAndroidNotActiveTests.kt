@@ -79,10 +79,14 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
         )
     }
 
-    private fun setupMembershipStatus(tiers: List<MembershipTierData>, anyName: String = ""): MembershipStatus {
+    private fun setupMembershipStatus(
+        tiers: List<MembershipTierData>,
+        anyName: String = "",
+        status : Membership.Status = Membership.Status.STATUS_ACTIVE
+    ): MembershipStatus {
         return MembershipStatus(
             activeTier = TierId(TiersConstants.EXPLORER_ID),
-            status = Membership.Status.STATUS_ACTIVE,
+            status = status,
             dateEnds = 1714199910,
             paymentMethod = MembershipPaymentMethod.METHOD_NONE,
             anyName = anyName,
@@ -531,6 +535,69 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
                     expectedConditionInfo = expectedConditionInfo,
                     expectedAnyName = TierAnyName.Visible.Purchased(anyName),
                     expectedButtonState = TierButton.Pay.Enabled,
+                    expectedId = TiersConstants.BUILDER_ID,
+                    expectedActive = false,
+                    expectedEmailState = TierEmail.Hidden
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `test pending state`() = runTest {
+        turbineScope {
+            val (features, tiers) = commonTestSetup()
+
+            stubPurchaseState()
+            stubMembershipProvider(
+                setupMembershipStatus(
+                    tiers = tiers,
+                    status = Membership.Status.STATUS_PENDING
+                )
+            )
+
+            val product = Mockito.mock(ProductDetails::class.java)
+            val subscriptionOfferDetails = listOf(Mockito.mock(ProductDetails.SubscriptionOfferDetails::class.java))
+            val pricingPhases = Mockito.mock(ProductDetails.PricingPhases::class.java)
+            val pricingPhaseList = listOf(Mockito.mock(ProductDetails.PricingPhase::class.java))
+
+            Mockito.`when`(product.productId).thenReturn(androidProductId)
+            Mockito.`when`(product?.subscriptionOfferDetails).thenReturn(subscriptionOfferDetails)
+            Mockito.`when`(subscriptionOfferDetails[0].pricingPhases).thenReturn(pricingPhases)
+            Mockito.`when`(pricingPhases?.pricingPhaseList).thenReturn(pricingPhaseList)
+            val formattedPrice = "$9.99" // You can set any desired formatted price here
+            Mockito.`when`(pricingPhaseList[0]?.formattedPrice).thenReturn(formattedPrice)
+            Mockito.`when`(pricingPhaseList[0]?.billingPeriod).thenReturn("P1Y")
+            stubBilling(billingClientState = BillingClientState.Connected(listOf(product)))
+
+            val viewModel = buildViewModel()
+            val viewStateFlow = viewModel.viewState.testIn(backgroundScope)
+            val tierStateFlow = viewModel.tierState.testIn(backgroundScope)
+
+            assertIs<MembershipMainState.Loading>(viewStateFlow.awaitItem())
+            assertIs<MembershipTierState.Hidden>(tierStateFlow.awaitItem())
+
+            val expectedConditionInfo = TierConditionInfo.Visible.Pending
+
+            viewStateFlow.awaitItem().let { result ->
+                assertIs<MembershipMainState.Default>(result)
+                val tier: TierPreviewView = result.tiers.find { it.id.value == TiersConstants.BUILDER_ID }!!
+                assertEquals(TiersConstants.BUILDER_ID, tier.id.value)
+                assertEquals(false, tier.isActive)
+                assertEquals(expectedConditionInfo, tier.conditionInfo)
+            }
+
+            viewModel.onTierClicked(TierId(TiersConstants.BUILDER_ID))
+
+            //STATE : BUILDER, NOT CURRENT, BUILDER PRODUCT, CORRECT PRICE, MEMBERSHIP PENDING
+            tierStateFlow.awaitItem().let { result ->
+                assertIs<MembershipTierState.Visible>(result)
+                validateTierView(
+                    tierView = result.tierView,
+                    expectedFeatures = features,
+                    expectedConditionInfo = expectedConditionInfo,
+                    expectedAnyName = TierAnyName.Hidden,
+                    expectedButtonState = TierButton.Pay.Disabled,
                     expectedId = TiersConstants.BUILDER_ID,
                     expectedActive = false,
                     expectedEmailState = TierEmail.Hidden

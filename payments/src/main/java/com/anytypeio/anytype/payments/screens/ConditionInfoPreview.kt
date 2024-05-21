@@ -82,6 +82,8 @@ fun ConditionInfoPreview(
         is TierConditionInfo.Visible.Error -> {
             ConditionInfoPreviewText(text = state.message, textColor = R.color.palette_dark_red)
         }
+
+        TierConditionInfo.Visible.Pending -> ConditionInfoPreviewText(text = stringResource(id = R.string.membership_price_pending))
     }
 }
 

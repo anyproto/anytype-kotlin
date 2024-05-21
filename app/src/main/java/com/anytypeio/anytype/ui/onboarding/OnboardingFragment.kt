@@ -483,10 +483,16 @@ class OnboardingFragment : Fragment() {
         MnemonicPhraseScreenWrapper(
             viewModel = vm,
             onCheckLaterClicked = {
-                findNavController().navigate(R.id.action_openHome)
+                findNavController().navigate(
+                    R.id.action_openHome,
+                    HomeScreenFragment.args(deepLink)
+                )
             },
             onGoToAppClicked = {
-                findNavController().navigate(R.id.action_openHome)
+                findNavController().navigate(
+                    R.id.action_openHome,
+                    HomeScreenFragment.args(deepLink)
+                )
             },
             copyMnemonicToClipboard = ::copyMnemonicToClipboard,
             vm = vm,

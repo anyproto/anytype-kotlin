@@ -135,6 +135,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                 } else {
                     deepLink = null
                 }
+                Timber.d("Deep link: ${deepLink}")
                 findNavController().navigate(
                     R.id.action_splashFragment_to_authStart,
                     OnboardingFragment.args(deepLink)

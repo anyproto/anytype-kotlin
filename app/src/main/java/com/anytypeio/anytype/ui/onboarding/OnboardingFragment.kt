@@ -48,6 +48,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
@@ -65,6 +66,7 @@ import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.MNEMONIC_WORD_COUNT
 import com.anytypeio.anytype.core_ui.MnemonicPhrasePaletteColors
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
+import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.insets.RootViewDeferringInsetsCallback
 import com.anytypeio.anytype.di.common.componentManager
@@ -74,6 +76,7 @@ import com.anytypeio.anytype.presentation.onboarding.OnboardingStartViewModel.Si
 import com.anytypeio.anytype.presentation.onboarding.OnboardingViewModel
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel
+import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.onboarding.screens.AuthScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signin.RecoveryScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.MnemonicPhraseScreenWrapper
@@ -93,6 +96,8 @@ import kotlinx.coroutines.delay
 import timber.log.Timber
 
 class OnboardingFragment : Fragment() {
+
+    private val deepLink: String? get() = argOrNull(ONBOARDING_DEEP_LINK_KEY)
 
     @Inject
     lateinit var factory: OnboardingViewModel.Factory
@@ -354,7 +359,10 @@ class OnboardingFragment : Fragment() {
                     }
                     OnboardingMnemonicLoginViewModel.Navigation.NavigateToHomeScreen -> {
                         runCatching {
-                            findNavController().navigate(R.id.action_openHome)
+                            findNavController().navigate(
+                                R.id.action_openHome,
+                                HomeScreenFragment.args(deepLink)
+                            )
                         }.onFailure {
                             Timber.e(it, "Error while trying to open home screen from onboarding")
                         }
@@ -622,6 +630,13 @@ class OnboardingFragment : Fragment() {
             onboardingStartComponent.release()
         }
         componentManager().onboardingComponent.release()
+    }
+
+    companion object {
+        fun args(deepLink: String?) = bundleOf(
+            ONBOARDING_DEEP_LINK_KEY to deepLink
+        )
+        private const val ONBOARDING_DEEP_LINK_KEY = "arg.onboarding.deep-link-key"
     }
 }
 

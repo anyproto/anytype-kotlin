@@ -25,6 +25,7 @@ import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import com.anytypeio.anytype.presentation.splash.SplashViewModelFactory
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
+import com.anytypeio.anytype.ui.onboarding.OnboardingFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import javax.inject.Inject
 import kotlinx.coroutines.launch
@@ -122,8 +123,22 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                 )
             }
             is SplashViewModel.Command.NavigateToAuthStart -> {
+                val intent = activity?.intent
+                val deepLink: String?
+                if (intent != null && intent.action == Intent.ACTION_VIEW) {
+                    val data = intent.dataString
+                    deepLink = if (data != null && DefaultDeepLinkResolver.isDeepLink(data)) {
+                        data
+                    } else {
+                        null
+                    }
+                } else {
+                    deepLink = null
+                }
+                Timber.d("Deep link: ${deepLink}")
                 findNavController().navigate(
-                    R.id.action_splashFragment_to_authStart
+                    R.id.action_splashFragment_to_authStart,
+                    OnboardingFragment.args(deepLink)
                 )
             }
             is SplashViewModel.Command.NavigateToMigration -> {
@@ -132,8 +147,8 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                 )
             }
             is SplashViewModel.Command.CheckAppStartIntent -> {
-                val intent = requireActivity().intent
-                Timber.d("Timber intent: ${intent}")
+                val intent = activity?.intent
+                Timber.d("Timber intent: $intent")
                 if (intent != null && intent.action == Intent.ACTION_VIEW) {
                     val data = intent.dataString
                     if (data != null && DefaultDeepLinkResolver.isDeepLink(data)) {

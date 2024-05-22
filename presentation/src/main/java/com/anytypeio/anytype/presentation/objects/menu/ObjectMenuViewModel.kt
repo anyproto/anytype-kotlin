@@ -236,11 +236,7 @@ class ObjectMenuViewModel(
 
     override fun onRelationsClicked() {
         viewModelScope.launch {
-            if (objectRestrictions.contains(ObjectRestriction.RELATIONS)) {
-                _toasts.emit(NOT_ALLOWED)
-            } else {
-                commands.emit(Command.OpenObjectRelations)
-            }
+            commands.emit(Command.OpenObjectRelations)
         }
     }
 

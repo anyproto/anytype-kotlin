@@ -9,10 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -22,6 +20,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -44,7 +43,6 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.ButtonWarning
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
-import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
 import com.anytypeio.anytype.core_utils.ui.ViewState
@@ -120,7 +118,8 @@ fun SpaceSettingsScreen(
                     SHARED_SPACE_TYPE -> {
                         SharedSpaceSharing(
                             onManageSharedSpaceClicked = onManageSharedSpaceClicked,
-                            isUserOwner = state.data.permissions == SpaceMemberPermissions.OWNER
+                            isUserOwner = state.data.permissions == SpaceMemberPermissions.OWNER,
+                            requests = state.data.requests
                         )
                     }
                 }
@@ -365,7 +364,8 @@ fun PrivateSpaceSharing(
 @Composable
 fun SharedSpaceSharing(
     onManageSharedSpaceClicked: () -> Unit,
-    isUserOwner: Boolean
+    isUserOwner: Boolean,
+    requests: Int = 0
 ) {
     Box(
         modifier = Modifier
@@ -390,10 +390,20 @@ fun SharedSpaceSharing(
         ) {
             Text(
                 modifier = Modifier.align(Alignment.CenterVertically),
-                text = if (isUserOwner)
-                    stringResource(id = R.string.multiplayer_manage)
-                else
-                    stringResource(id = R.string.multiplayer_members),
+                text = if (isUserOwner) {
+                    if (requests > 0) {
+                        pluralStringResource(
+                            R.plurals.multiplayer_number_of_join_requests,
+                            requests,
+                            requests,
+                            requests
+                        )
+                    } else {
+                        stringResource(id = R.string.multiplayer_manage)
+                    }
+                } else {
+                    stringResource(id = R.string.multiplayer_members)
+                },
                 color = colorResource(id = R.color.text_secondary),
                 style = BodyRegular
             )

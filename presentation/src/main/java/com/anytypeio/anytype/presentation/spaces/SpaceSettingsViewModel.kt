@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SpaceType
 import com.anytypeio.anytype.core_models.UNKNOWN_SPACE_TYPE
 import com.anytypeio.anytype.core_models.asSpaceType
+import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -81,6 +82,11 @@ class SpaceSettingsViewModel(
                 spaceViewContainer.isSharingLimitReached(userPermissionProvider.all())
             ) { spaceView, permission, shareLimitReached ->
                 val store = activeSpaceMemberSubscriptionContainer.get(params.space)
+                val requests: Int = if (store is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
+                    store.members.count { it.status == ParticipantStatus.JOINING }
+                } else {
+                    0
+                }
                 val spaceMember = if (store is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
                     store.members.find { it.id == spaceView.getValue<Id>(Relations.CREATOR) }
                 } else {
@@ -102,7 +108,8 @@ class SpaceSettingsViewModel(
                     isDeletable = resolveIsSpaceDeletable(spaceView),
                     spaceType = spaceView.spaceAccessType?.asSpaceType() ?: UNKNOWN_SPACE_TYPE,
                     permissions = permission ?: SpaceMemberPermissions.NO_PERMISSIONS,
-                    shareLimitReached = shareLimitReached
+                    shareLimitReached = shareLimitReached,
+                    requests = requests
                 )
             }.collect { spaceData ->
                 Timber.d("Space data: ${spaceData}")
@@ -298,7 +305,8 @@ class SpaceSettingsViewModel(
         val isDeletable: Boolean = false,
         val spaceType: SpaceType,
         val permissions: SpaceMemberPermissions,
-        val shareLimitReached: Boolean = false
+        val shareLimitReached: Boolean = false,
+        val requests: Int = 0
     )
 
     sealed class Command {

@@ -14,7 +14,7 @@
     <string name="debug_sync_report">Debug Sync Report</string>
     <string name="debug">Debug</string>
     <string name="account">Cassaforte</string>
-    <string name="reset_account">Reset vault</string>
+    <string name="reset_account">Reimposta cassaforte</string>
     <string name="delete_account">Elimina cassaforte</string>
     <string name="space_debug">Space debug</string>
     <string name="data">Dati</string>
@@ -28,7 +28,7 @@
     <string name="dark">Scuro</string>
     <string name="system">Sistema</string>
     <string name="settings">Impostazioni</string>
-    <string name="have_you_back_up_your_recovery_phrase">Have you backed up your Key?</string>
+    <string name="have_you_back_up_your_recovery_phrase">Hai eseguito il backup della tua chiave?</string>
     <string name="you_will_need_to_sign_in">Ne avrai bisogno per entrare nella tua cassaforte. Tienila in un posto sicuro. Se la perdi, non puoi più entrare nella tua cassaforte.</string>
     <string name="about_help_and_community">Aiuto &amp; Community</string>
     <string name="about_what_is_new">Novità</string>
@@ -63,7 +63,7 @@
     <string name="account_name">Nome</string>
     <string name="space_settings">Impostazioni dello Spazio</string>
     <string name="data_management">Gestione dati</string>
-    <string name="deleted_account_danger_zone_msg">Once you request your vault to be deleted, you have 30 days to cancel this request. After 30 days, your encrypted vault data is permanently removed from the backup node, you won\'t be able to sign into Anytype on new devices.</string>
+    <string name="deleted_account_danger_zone_msg">Una volta che hai richiesto l\'eliminazione della tua cassaforte, hai 30 giorni per annullare questa richiesta. Dopo 30 giorni, i dati della tua cassaforte crittografata verranno rimossi in modo permanente dal nodo di backup e non sarai più in grado di accedere a Anytype su nuovi dispositivi.</string>
     <string name="danger_zone">Zona di pericolo</string>
     <string name="snackbar_template_add">Nuovo modello è stato aggiunto al tipo</string>
     <string name="settings_membership">Membership</string>
@@ -439,7 +439,7 @@
     <string name="paste_link">Collegamento</string>
     <string name="next">Avanti</string>
     <string name="limit_object_types">Limita tipi di oggetto</string>
-    <string name="deleted_account_msg">We\'re sorry to see you go. Once you request your vault to be deleted, you have 30 days to cancel this request. After 30 days, your encrypted vault data is permanently removed from the backup node.</string>
+    <string name="deleted_account_msg">Ci dispiace vederti andare. Una volta richiesta l\'eliminazione della tua cassaforte, hai 30 giorni di tempo per annullare la richiesta. Dopo 30 giorni, i dati crittografati della tua cassaforte verranno eliminati definitivamente dal nodo di backup.</string>
     <string name="swipe_down_to_skip">Scorri verso il basso per saltare</string>
     <string name="show">Mostra</string>
     <string name="this_type_has_templates">This type has %1$d templates</string>
@@ -554,8 +554,8 @@
     <string name="start_login_text">Con Anytype puoi scrivere note e documenti, gestire task, condividere file e salvare contenuti importanti dal web.</string>
     <string name="login">Accedi</string>
     <string name="sign_up">Registrati</string>
-    <string name="type_your_recovery_phrase">or type your Key</string>
-    <string name="login_with_recovery_phrase">Login with your Key</string>
+    <string name="type_your_recovery_phrase">o digita la tua Chiave</string>
+    <string name="login_with_recovery_phrase">Accedi con la tua chiave</string>
     <string name="or_scan_qr_code">Scansiona codice QR</string>
     <string name="choose_pin_code">Scegli il codice pin</string>
     <string name="congratulations">Congratulazioni!</string>
@@ -583,7 +583,7 @@
     <string name="other_settings">Altre impostazioni</string>
     <string name="your_page">La tua pagina pubblica</string>
     <string name="updates">Aggiornamenti</string>
-    <string name="recovery_phrase_text">You\'ll need it to sign in. Keep it in a safe place. If you lose it, you can no longer access your vault.</string>
+    <string name="recovery_phrase_text">Ne avrai bisogno per accedere. Conservala in un luogo sicuro. Se la perdi, non potrai più accedere alla tua cassaforte.</string>
     <string name="back_up_your_recovery_phrase">Back up your Key</string>
     <string name="i_ve_written_it_down">Ho preso nota</string>
     <string name="keychain_mock">witch collapse practice feed shame open despair creek road again ice least lake tree young address brain envelope</string>

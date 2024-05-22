@@ -584,7 +584,7 @@
     <string name="your_page">La tua pagina pubblica</string>
     <string name="updates">Aggiornamenti</string>
     <string name="recovery_phrase_text">Ne avrai bisogno per accedere. Conservala in un luogo sicuro. Se la perdi, non potrai più accedere alla tua cassaforte.</string>
-    <string name="back_up_your_recovery_phrase">Back up your Key</string>
+    <string name="back_up_your_recovery_phrase">Esegui il backup della tua Chiave</string>
     <string name="i_ve_written_it_down">Ho preso nota</string>
     <string name="keychain_mock">witch collapse practice feed shame open despair creek road again ice least lake tree young address brain envelope</string>
     <string name="show_and_copy_mnemonic">Mostra e copia frase</string>
@@ -634,7 +634,7 @@
     <string name="link">Collegamento</string>
     <string name="move_into_this_page">Sposta in questa pagina</string>
     <string name="move_into">Sposta in</string>
-    <string name="fetching_your_account">Fetching your vault…</string>
+    <string name="fetching_your_account">Recupero della cassaforte…</string>
     <string name="search_on_page">Search on page</string>
     <string name="object_view_type">Object view type</string>
     <string name="object_type_name">Object type name</string>
@@ -692,7 +692,7 @@
     <string name="btn_upload_gallery">Upload from Gallery</string>
     <string name="btn_upload_storage">Upload from External storage</string>
     <string name="btn_upload">Carica</string>
-    <string name="alert_qr_camera">Go to Settings – Key on Desktop in order to find the QR code for login.</string>
+    <string name="alert_qr_camera">Vai su Impostazioni - Chiave sul Desktop per trovare il codice QR per l\'accesso.</string>
     <string name="alert_qr_camera_ok">Ok</string>
     <string name="choose_option">Choose option</string>
     <string name="find_a_relation">Find a relation</string>
@@ -727,9 +727,9 @@
     <string name="shortcut_create_new_object_of_type">Nuovo %1$s</string>
     <string name="close">Chiudi</string>
     <string name="go_to_settings">Go to settings</string>
-    <string name="do_not_forget_mnemonic_phrase">Don\'t forget to take and save your Key</string>
+    <string name="do_not_forget_mnemonic_phrase">Non dimenticare di prendere nota della tua Chiave e salvarla.</string>
     <string name="you_can_always_find_mnemonic_in_settings">You can always find the phrase in the settings on the dashboard screen.</string>
-    <string name="if_you_lose_recovery_phrase_warning">If you lose the Key and get logged out you will not be able to ever access your data again. Save this Key outside of Anytype for data recovery.</string>
+    <string name="if_you_lose_recovery_phrase_warning">Se perdi la Chiave e ti disconnetti, non potrai più accedere ai tuoi dati. Salva questa Chiave al di fuori di Anytype per il recupero dei dati.</string>
     <string name="card_size">Dimensione della Card</string>
     <string name="clear_cache">Clear cache</string>
     <string name="clear_cache_title">Sei sicuro/a?</string>
@@ -743,22 +743,22 @@
     <string name="unsplash">Unsplash</string>
     <string name="cancel_deletion">Annulla eliminazione</string>
     <string name="logout_and_clear_local_data">Logout and clear local data</string>
-    <string name="planned_for_deletion_in_n_days">This vault is planned for deletion in %1$d days</string>
-    <string name="planned_for_deletion_tomorrow">This vault is planned for deletion tomorrow</string>
-    <string name="planned_for_deletion_today">This vault is planned for deletion today</string>
-    <string name="planned_for_deletion_unknown">This vault is planned for deletion in ? days</string>
-    <string name="are_you_sure_to_delete_account">Are you sure to delete your vault?</string>
+    <string name="planned_for_deletion_in_n_days">Questa cassaforte è pianificata per l\'eliminazione in %1$d</string>
+    <string name="planned_for_deletion_tomorrow">Questa cassaforte è pianificata per l\'eliminazione domani</string>
+    <string name="planned_for_deletion_today">Questa cassaforte è pianificata per l\'eliminazione oggi</string>
+    <string name="planned_for_deletion_unknown">L\'eliminazione di questa cassaforte è prevista tra ? giorni.</string>
+    <string name="are_you_sure_to_delete_account">Sei sicuro di voler eliminare la tua cassaforte?</string>
     <string name="deleted_account_warning_msg">You will be logged out on all other devices. You will have 30 days to recover it. Afterwards it will be deleted permanently.</string>
     <string name="use_template">Seleziona modello</string>
     <string name="swipe_to_choose">Use swipe to choose</string>
     <string name="without_template">Without template</string>
     <string name="unsplash_generic_error">Error while searching for images on Unsplash. Please try again later.</string>
-    <string name="do_not_forget_to_save_recovery_phrase_msg">Don\'t forget to take and save your Key from settings</string>
+    <string name="do_not_forget_to_save_recovery_phrase_msg">Non dimenticare di prendere nota della tua Chiave dalle impostazioni e salvarla.</string>
     <string name="unlock_your_object_to_add_new_relation">Unlock your object to add new relation</string>
     <string name="unlock_your_object_to_edit_relations">Unlock your object to edit relations</string>
     <string name="fragment_relation_create_from_scratch_title">Selezione il tipo della Relazione</string>
     <string name="fragment_dashboard_restore">Ripristina</string>
-    <string name="your_account_deleted">Your vault is deleted.</string>
+    <string name="your_account_deleted">La tua cassaforte è stata eliminata.</string>
     <plurals name="fragment_dashboard_selected_count">
         <item quantity="one">%d object selected</item>
         <item quantity="other">%d objects selected</item>
@@ -776,7 +776,7 @@
     </string-array>
     <string name="snack_link_to">collegato a</string>
     <string name="snack_move_to">moved to</string>
-    <string name="recovery_phrase_copied">Your Key copied</string>
+    <string name="recovery_phrase_copied">Chiave copiata</string>
     <string name="type_editing_title">Type settings</string>
     <string name="relation_editing_title">Relation settings</string>
     <string name="type_editing_uninstall">Rimuovi</string>
@@ -788,7 +788,7 @@
     <string name="almost_there">Almost there!</string>
     <string name="i_did_not_not_complete_migration">Non ho completato la migrazione</string>
     <string name="not_completed_migration_steps">Non ho completato la migrazione</string>
-    <string name="almost_there_subtitle">To use this version of the app, please choose the correct option below to migrate your vault.</string>
+    <string name="almost_there_subtitle">Per utilizzare questa versione dell\'app, scegli l\'opzione corretta qui sotto per migrare la tua cassaforte</string>
     <string name="i_completed_migration">I completed migration</string>
     <string name="here">here</string>
     <string name="update_steps_first">1. Download the desktop app </string>
@@ -967,12 +967,12 @@
     <!--region ONBOARDING -->
     <string name="onboarding_auth_title">the everything app</string>
     <string name="onboarding_auth_subtitle">for those\nwho celebrate\ntrust &amp; autonomy</string>
-    <string name="onboarding_auth_description">Create &amp; collaborate in spaces you own. Encrypted, offline &amp; open.</string>
+    <string name="onboarding_auth_description">Crea &amp; collabora negli spazi che possiedi. Crittografati, offline &amp; open source.</string>
     <string name="onboarding_terms_and_policy_prefix">"By continuing you agree to "</string>
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
     <string name="onboarding_terms_and_policy_infix">" and "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
-    <string name="onboarding_new_vault_button_text">New vault</string>
+    <string name="onboarding_new_vault_button_text">Nuova cassaforte</string>
     <string name="onboarding_enter_my_vault">Entra nella mia Cassaforte</string>
     <string name="onboarding_have_key_button_text">Ho una Chiave</string>
     <string name="onboarding_get_my_key_button_text">Ottieni la mia Chiave</string>
@@ -981,7 +981,7 @@
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
     <string name="onboarding_this_is_your_key_title">Questa è la tua Chiave</string>
-    <string name="onboarding_key_description">It gives you full ownership over your vault. It cannot be recovered.</string>
+    <string name="onboarding_key_description">Ti dà piena proprietà sulla tua cassaforte. Non può essere recuperata.</string>
     <string name="onboarding_show_my_key">Mostra la mia Chiave</string>
     <string name="onboarding_key_skip">Salta</string>
     <string name="onboarding_key_copy">Copia negli appunti</string>
@@ -989,19 +989,19 @@
     <string name="onboarding_soul_creation_description">Visibile solo alle persone con cui condividi qualcosa. Non esiste un registro centrale di questi nomi.</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
-    <string name="onboarding_type_your_key">Type your Key</string>
+    <string name="onboarding_type_your_key">Digita la tua Chiave</string>
     <string name="onboarding_login_or">O</string>
     <string name="onboarding_entering_void_title">Entrando nel Void</string>
-    <string name="onboarding_your_key_can_t_be_empty">Your Key can\'t be empty</string>
+    <string name="onboarding_your_key_can_t_be_empty">La tua Chiave non può essere vuota</string>
     <string name="onboarding_mnemonic_read_more">Leggi altro</string>
     <string name="onboarding_key_additional_info">Puoi trovare questa chiave in seguito nelle impostazioni di Anytype</string>
     <string name="onboarding_what_is_the_key">Cos\'è una Chiave?</string>
     <string name="onboarding_recovery_phrase_description">È rappresentata da una frase di recupero – 12 parole casuali da cui la tua cassaforte viene magicamente generata su questo dispositivo.</string>
-    <string name="onboarding_recovery_phrase_description_2">Whomever knows the combination of these words owns your vault. </string>
-    <string name="onboarding_recovery_phrase_description_3">Right now, you are the only person in the world who knows it.</string>
+    <string name="onboarding_recovery_phrase_description_2">Chiunque conosca la combinazione di queste parole possiede la tua cassaforte.</string>
+    <string name="onboarding_recovery_phrase_description_3">In questo momento, sei l\'unica persona al mondo a conoscerla.</string>
     <string name="onboarding_recovery_phrase_description_4">Tutte le risorse di calcolo presenti sulla Terra non sono sufficienti per irrompere. Se la perdi, non può essere recuperata. Quindi, conservala in un posto sicuro!</string>
-    <string name="onboarding_how_to_save_my_phrase">How to save my Key?</string>
-    <string name="onboarding_how_to_save_my_phrase_2">The easiest way to store your Key is to save it in your password manager.</string>
+    <string name="onboarding_how_to_save_my_phrase">Come salvare la mia Chiave?</string>
+    <string name="onboarding_how_to_save_my_phrase_2">Il modo più semplice per conservare la tua Chiave è salvarla nel tuo gestore di password.</string>
     <string name="onboarding_how_to_save_my_phrase_3">Il modo più sicuro è scriverlo su carta e tenerlo offline, in un luogo sicuro.</string>
     <!--endregion-->
     <!--region OBJECT ACTIONS -->

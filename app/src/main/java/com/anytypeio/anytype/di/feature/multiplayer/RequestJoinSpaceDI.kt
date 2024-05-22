@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.other.DefaultSpaceInviteResolver
@@ -71,4 +72,5 @@ interface RequestJoinSpaceDependencies : ComponentDependencies {
     fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
     fun notificator(): SystemNotificationService
     fun configStorage(): ConfigStorage
+    fun spaceViewContainer(): SpaceViewSubscriptionContainer
 }

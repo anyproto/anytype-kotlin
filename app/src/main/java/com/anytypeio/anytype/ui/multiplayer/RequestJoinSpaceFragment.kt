@@ -156,7 +156,41 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                                 is ErrorView.InvalidLink -> {
                                     GenericAlert(
                                         config = AlertConfig.WithOneButton(
-                                            title = "This link does not seem to work",
+                                            title = stringResource(R.string.multiplayer_invite_link_this_link_does_not_seem_to_work),
+                                            firstButtonText = stringResource(id = R.string.button_okay),
+                                            firstButtonType = BUTTON_SECONDARY,
+                                            description = EMPTY_STRING_VALUE,
+                                            icon = AlertConfig.Icon(
+                                                gradient = GRADIENT_TYPE_BLUE,
+                                                icon = R.drawable.ic_alert_message
+                                            )
+                                        ),
+                                        onFirstButtonClicked = {
+                                            dismiss()
+                                        }
+                                    )
+                                }
+                                is ErrorView.SpaceDeleted -> {
+                                    GenericAlert(
+                                        config = AlertConfig.WithOneButton(
+                                            title = stringResource(R.string.multiplayer_invite_link_space_deleted),
+                                            firstButtonText = stringResource(id = R.string.button_okay),
+                                            firstButtonType = BUTTON_SECONDARY,
+                                            description = EMPTY_STRING_VALUE,
+                                            icon = AlertConfig.Icon(
+                                                gradient = GRADIENT_TYPE_BLUE,
+                                                icon = R.drawable.ic_alert_message
+                                            )
+                                        ),
+                                        onFirstButtonClicked = {
+                                            dismiss()
+                                        }
+                                    )
+                                }
+                                is ErrorView.SpaceNotFound -> {
+                                    GenericAlert(
+                                        config = AlertConfig.WithOneButton(
+                                            title = stringResource(R.string.multiplayer_invite_link_space_not_found),
                                             firstButtonText = stringResource(id = R.string.button_okay),
                                             firstButtonType = BUTTON_SECONDARY,
                                             description = EMPTY_STRING_VALUE,

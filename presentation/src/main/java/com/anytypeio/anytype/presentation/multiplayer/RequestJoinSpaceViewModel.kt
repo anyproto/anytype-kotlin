@@ -83,12 +83,14 @@ class RequestJoinSpaceViewModel(
                                     )
                                 }
                                 is SpaceInviteError.SpaceDeleted -> {
-                                    commands.emit(Command.Toast.SpaceDeleted)
-                                    commands.emit(Command.Dismiss)
+                                    state.value = TypedViewState.Error(
+                                        ErrorView.SpaceDeleted
+                                    )
                                 }
                                 is SpaceInviteError.SpaceNotFound -> {
-                                    commands.emit(Command.Toast.SpaceNotFound)
-                                    commands.emit(Command.Dismiss)
+                                    state.value = TypedViewState.Error(
+                                        ErrorView.SpaceNotFound
+                                    )
                                 }
                             }
                         }
@@ -206,6 +208,8 @@ class RequestJoinSpaceViewModel(
 
     sealed class ErrorView {
         data object InvalidLink : ErrorView()
+        data object SpaceDeleted : ErrorView()
+        data object SpaceNotFound : ErrorView()
         data class AlreadySpaceMember(val space: SpaceId) : ErrorView()
      }
 }

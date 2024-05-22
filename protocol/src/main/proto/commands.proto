@@ -6557,8 +6557,7 @@ message Rpc {
 
         /**
         * Generate a unique id for payment request (for mobile clients)
-        * Generate a link to Stripe where user can pay for the membership (for desktop client)
-        * TODO: GO-3347 rename GetPaymentUrl to RegisterPaymentRequest
+        * Generate a link to Stripe/Crypto where user can pay for the membership (for desktop client)
         */
         message RegisterPaymentRequest {
             message Request {
@@ -6571,6 +6570,12 @@ message Rpc {
                 string nsName = 3;
 
                 anytype.model.NameserviceNameType nsNameType = 4;
+
+                // for some tiers and payment methods (like crypto) we need an e-mail
+                // please get if either from:
+                // 1. Membership.GetStatus() -> anytype.model.Membership.userEmail field
+                // 2. Ask user from the UI
+                string userEmail = 5;
             }
 
             message Response {
@@ -6601,6 +6606,8 @@ message Rpc {
                         BAD_ANYNAME = 9;
                         MEMBERSHIP_ALREADY_EXISTS = 10;
                         CAN_NOT_CONNECT = 11;
+                        // for tiers and payment methods that require that
+                        EMAIL_WRONG_FORMAT = 12;
                     }
                 }
             }
@@ -6819,11 +6826,8 @@ message Rpc {
 
         message VerifyAppStoreReceipt {
             message Request {
-                // billingId is used to identify payment request on payment node side
-                string billingId = 1;
-
                 // receipt is a JWT-encoded string including info about subscription purchase
-                string receipt = 2;
+                string receipt = 1;
             }
 
             message Response {

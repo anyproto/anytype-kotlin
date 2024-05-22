@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
 import com.anytypeio.anytype.core_utils.R
 import com.anytypeio.anytype.core_utils.ext.LONG_THROTTLE_DURATION
+import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import com.google.android.material.R.id.design_bottom_sheet as BOTTOM_SHEET_ID
 
 abstract class BaseBottomSheetFragment<T : ViewBinding>(
@@ -73,7 +75,13 @@ abstract class BaseBottomSheetFragment<T : ViewBinding>(
 
     protected fun DialogFragment.showChildFragment(tag: String? = null) {
         jobs += this@BaseBottomSheetFragment.lifecycleScope.launch {
-            throttleFlow.emit { show(this@BaseBottomSheetFragment.childFragmentManager, tag) }
+            throttleFlow.emit {
+                try {
+                    show(this@BaseBottomSheetFragment.childFragmentManager, tag)
+                } catch (e: Exception) {
+                    Timber.e("Error while navigation: ${e.msg()}")
+                }
+            }
         }
     }
 

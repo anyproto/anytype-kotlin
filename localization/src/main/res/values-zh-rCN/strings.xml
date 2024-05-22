@@ -1205,6 +1205,9 @@
     <string name="multiplayer_cancel_join_request">取消加入请求</string>
     <string name="multiplayer_cancel_join_request_msg">您将需要再次发送加入请求</string>
     <string name="multiplayer_do_not_cancel_join_request">不要取消</string>
+    <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">This link does not seem to work</string>
+    <string name="multiplayer_invite_link_space_deleted">This invite link is no longer valid because the space has been deleted.</string>
+    <string name="multiplayer_invite_link_space_not_found">This invite link is no longer valid because the space was not found.</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">会员</string>

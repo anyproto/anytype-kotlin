@@ -1018,7 +1018,7 @@ class ObjectSetViewModel(
         stateReducer.state.value.dataViewState() ?: return
         viewModelScope.launch {
             val obj = objectStore.get(target)
-            if (obj != null) {
+            if (obj?.spaceId != null) {
                 proceedWithNavigation(
                     target = target,
                     layout = obj.layout,

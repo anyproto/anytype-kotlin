@@ -1202,6 +1202,10 @@
         <item quantity="one">%1$d Mitglied</item>
         <item quantity="other">%1$d Mitglieder</item>
     </plurals>
+    <plurals name="multiplayer_number_of_join_requests">
+        <item quantity="one">%1$d request</item>
+        <item quantity="other">%1$d requests</item>
+    </plurals>
     <string name="multiplayer_you_as_member">du</string>
     <string name="multiplayer_spaces">Spaces</string>
     <string name="multiplayer_space_status_joining">Beitreten</string>

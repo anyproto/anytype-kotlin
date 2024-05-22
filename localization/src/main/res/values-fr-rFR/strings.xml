@@ -1202,6 +1202,10 @@
         <item quantity="one">%1$d membre</item>
         <item quantity="other">%1$d membres</item>
     </plurals>
+    <plurals name="multiplayer_number_of_join_requests">
+        <item quantity="one">%1$d requête</item>
+        <item quantity="other">%1$d requests</item>
+    </plurals>
     <string name="multiplayer_you_as_member">vous</string>
     <string name="multiplayer_spaces">Espaces</string>
     <string name="multiplayer_space_status_joining">Connexion</string>
@@ -1210,9 +1214,9 @@
     <string name="multiplayer_cancel_join_request">Annuler la demande d\'adhésion</string>
     <string name="multiplayer_cancel_join_request_msg">Vous devrez envoyer à nouveau la demande d\'accès</string>
     <string name="multiplayer_do_not_cancel_join_request">Ne pas annuler</string>
-    <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">This link does not seem to work</string>
-    <string name="multiplayer_invite_link_space_deleted">This invite link is no longer valid because the space has been deleted.</string>
-    <string name="multiplayer_invite_link_space_not_found">This invite link is no longer valid because the space was not found.</string>
+    <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">Ce lien ne semble pas fonctionner</string>
+    <string name="multiplayer_invite_link_space_deleted">Ce lien d\'invitation n\'est plus valide car l\'espace a été supprimé.</string>
+    <string name="multiplayer_invite_link_space_not_found">Ce lien d\'invitation n\'est plus valide car l\'espace n\'a pas été trouvé.</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Adhésion</string>

@@ -204,6 +204,23 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                                         }
                                     )
                                 }
+                                is ErrorView.RequestAlreadySent -> {
+                                    GenericAlert(
+                                        config = AlertConfig.WithOneButton(
+                                            title = stringResource(R.string.multiplayer_invite_link_request_already_sent),
+                                            firstButtonText = stringResource(id = R.string.button_okay),
+                                            firstButtonType = BUTTON_SECONDARY,
+                                            description = EMPTY_STRING_VALUE,
+                                            icon = AlertConfig.Icon(
+                                                gradient = GRADIENT_TYPE_BLUE,
+                                                icon = R.drawable.ic_alert_message
+                                            )
+                                        ),
+                                        onFirstButtonClicked = {
+                                            dismiss()
+                                        }
+                                    )
+                                }
                             }
                         }
                     }

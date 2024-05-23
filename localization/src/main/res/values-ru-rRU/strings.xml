@@ -9,13 +9,13 @@
     <string name="personalization">Персонализация</string>
     <string name="appearance">Внешний вид</string>
     <string name="file_storage">Хранилище файлов</string>
-    <string name="recovery_phrase">Фраза для восстановления</string>
+    <string name="key">Ключ</string>
     <string name="clear_file_cache">Очистить кэш-файлов</string>
     <string name="debug_sync_report">Отладочный отчет синхронизации</string>
     <string name="debug">Отладка</string>
-    <string name="account">Учетная запись</string>
-    <string name="reset_account">Сброс учетной записи</string>
-    <string name="delete_account">Удалить аккаунт</string>
+    <string name="account">Хранилище</string>
+    <string name="reset_account">Reset vault</string>
+    <string name="delete_account">Удалить хранилище</string>
     <string name="space_debug">Отладка области</string>
     <string name="data">Данные</string>
     <string name="mode">Режим</string>
@@ -28,8 +28,8 @@
     <string name="dark">Тёмный</string>
     <string name="system">Системный</string>
     <string name="settings">Настройки</string>
-    <string name="have_you_back_up_your_recovery_phrase">Вы сделали резервную копию вашей фразы восстановления?</string>
-    <string name="you_will_need_to_sign_in">Она понадобится вам для входа. Храните ее надежно. В случае потери, вы потеряете доступ к аккаунту.</string>
+    <string name="have_you_back_up_your_recovery_phrase">Have you backed up your Key?</string>
+    <string name="you_will_need_to_sign_in">Он необходим для входа в хранилище. Храните его в безопасном месте. Если Вы его потеряете - больше не сможете войти в своё хранилище.</string>
     <string name="about_help_and_community">Помощь и сообщество</string>
     <string name="about_what_is_new">Что нового</string>
     <string name="about_anytype_community">Сообщество Anytype</string>
@@ -60,10 +60,10 @@
     <string name="remote_storage">Удалённое хранилище</string>
     <string name="contact_us">Связаться с нами</string>
     <string name="get_more_space">Увеличить объем хранилища</string>
-    <string name="account_name">Имя учетной записи</string>
+    <string name="account_name">Название</string>
     <string name="space_settings">Настройки пространства</string>
     <string name="data_management">Управление данными</string>
-    <string name="deleted_account_danger_zone_msg">Нам жаль, что вы уходите. После того, как вы запросите удаление вашего аккаунта, у вас есть 30 дней, чтобы отменить этот запрос. После 30 дней данные вашей учетной записи удаляются из резервной копии без возможности восстановления, вы не сможете войти в Anytype на новых устройствах.</string>
+    <string name="deleted_account_danger_zone_msg">Once you request your vault to be deleted, you have 30 days to cancel this request. After 30 days, your encrypted vault data is permanently removed from the backup node, you won\'t be able to sign into Anytype on new devices.</string>
     <string name="danger_zone">Осторожно!</string>
     <string name="snackbar_template_add">Новый шаблон добавлен к типу</string>
     <string name="settings_membership">Членство</string>
@@ -441,7 +441,7 @@
     <string name="paste_link">Ссылка</string>
     <string name="next">Далее</string>
     <string name="limit_object_types">Ограничить типы объектов</string>
-    <string name="deleted_account_msg">Мы сожалеем, что вы приняли решение уйти. После запроса на удаление аккаунта у вас есть 30 дней на отмену этого запроса. После этого срока ваши зашифрованные данные аккаунта будут безвозвратно удалены из резервной копии</string>
+    <string name="deleted_account_msg">We\'re sorry to see you go. Once you request your vault to be deleted, you have 30 days to cancel this request. After 30 days, your encrypted vault data is permanently removed from the backup node.</string>
     <string name="swipe_down_to_skip">Смахните вниз, чтобы пропустить</string>
     <string name="show">Показать</string>
     <string name="this_type_has_templates">Этот тип имеет %1$d шаблонов</string>
@@ -556,8 +556,8 @@
     <string name="start_login_text">С помощью Anytype вы можете писать заметки и документы, управлять задачами, делиться файлами и сохранять важные материалы из Интернета.</string>
     <string name="login">Войти</string>
     <string name="sign_up">Зарегистрироваться</string>
-    <string name="type_your_recovery_phrase">Сохраните свою фразу восстановления</string>
-    <string name="login_with_recovery_phrase">Войти с помощью фразы восстановления</string>
+    <string name="type_your_recovery_phrase">or type your Key</string>
+    <string name="login_with_recovery_phrase">Login with your Key</string>
     <string name="or_scan_qr_code">Сканировать QR-код</string>
     <string name="choose_pin_code">Укажите PIN-код</string>
     <string name="congratulations">Поздравляем!</string>
@@ -585,8 +585,8 @@
     <string name="other_settings">Другие настройки</string>
     <string name="your_page">Ваша общая страница</string>
     <string name="updates">Обновления</string>
-    <string name="recovery_phrase_text">Она понадобится вам для входа. Храните её в безопасном месте. Если вы потеряете её, вы больше не сможете получить доступ к своему аккаунту.</string>
-    <string name="back_up_your_recovery_phrase">Создайте резервную копию фразы восстановления</string>
+    <string name="recovery_phrase_text">You\'ll need it to sign in. Keep it in a safe place. If you lose it, you can no longer access your vault.</string>
+    <string name="back_up_your_recovery_phrase">Back up your Key</string>
     <string name="i_ve_written_it_down">Я записал</string>
     <string name="keychain_mock">witch collapse practice feed shame open despair creek road again ice least lake tree young address brain envelope</string>
     <string name="show_and_copy_mnemonic">Показать и скопировать фразу</string>
@@ -636,7 +636,7 @@
     <string name="link">Ссылка</string>
     <string name="move_into_this_page">Переместить на страницу</string>
     <string name="move_into">Переместить в</string>
-    <string name="fetching_your_account">Получение аккаунта…</string>
+    <string name="fetching_your_account">Fetching your vault…</string>
     <string name="search_on_page">Поиск на странице</string>
     <string name="object_view_type">Тип просмотра объекта</string>
     <string name="object_type_name">Название типа объекта</string>
@@ -694,7 +694,7 @@
     <string name="btn_upload_gallery">Загрузить из галереи</string>
     <string name="btn_upload_storage">Загрузить с внешнего накопителя</string>
     <string name="btn_upload">Загрузить</string>
-    <string name="alert_qr_camera">Перейдите в Настройки – Фраза восстановления на рабочем столе, чтобы найти QR-код для входа.</string>
+    <string name="alert_qr_camera">Go to Settings – Key on Desktop in order to find the QR code for login.</string>
     <string name="alert_qr_camera_ok">Ок</string>
     <string name="choose_option">Выберите вариант</string>
     <string name="find_a_relation">Найти отношение</string>
@@ -729,9 +729,9 @@
     <string name="shortcut_create_new_object_of_type">Новый %1$s</string>
     <string name="close">Закрыть</string>
     <string name="go_to_settings">Перейти к настройкам</string>
-    <string name="do_not_forget_mnemonic_phrase">Не забудьте взять и сохранить вашу фразу восстановления</string>
+    <string name="do_not_forget_mnemonic_phrase">Don\'t forget to take and save your Key</string>
     <string name="you_can_always_find_mnemonic_in_settings">Фразу всегда можно найти в настройках на рабочем столе.</string>
-    <string name="if_you_lose_recovery_phrase_warning">Если вы потеряете фразу восстановления и выйдите из системы, вы никогда не сможете получить доступ к вашим данным снова. Сохраните эту фразу восстановления вне Anytype для восстановления данных.</string>
+    <string name="if_you_lose_recovery_phrase_warning">If you lose the Key and get logged out you will not be able to ever access your data again. Save this Key outside of Anytype for data recovery.</string>
     <string name="card_size">Размер карточки</string>
     <string name="clear_cache">Очистить кэш</string>
     <string name="clear_cache_title">Вы уверены?</string>
@@ -745,22 +745,22 @@
     <string name="unsplash">Unsplash</string>
     <string name="cancel_deletion">Отменить удаление</string>
     <string name="logout_and_clear_local_data">Выйти и очистить локальные данные</string>
-    <string name="planned_for_deletion_in_n_days">Данная учетная запись планируется к удалению через %1$d дней</string>
-    <string name="planned_for_deletion_tomorrow">Данная учетная запись планируется к удалению завтра </string>
-    <string name="planned_for_deletion_today">Данная учетная запись планируется к удалению сегодня</string>
-    <string name="planned_for_deletion_unknown">Данная учетная запись планируется к удалению через ? дней</string>
-    <string name="are_you_sure_to_delete_account">Вы действительно хотите удалить аккаунт?</string>
+    <string name="planned_for_deletion_in_n_days">This vault is planned for deletion in %1$d days</string>
+    <string name="planned_for_deletion_tomorrow">This vault is planned for deletion tomorrow</string>
+    <string name="planned_for_deletion_today">This vault is planned for deletion today</string>
+    <string name="planned_for_deletion_unknown">This vault is planned for deletion in ? days</string>
+    <string name="are_you_sure_to_delete_account">Are you sure to delete your vault?</string>
     <string name="deleted_account_warning_msg">Произойдет выход из вашего аккаунта на всех устройствах. У вас будет 30 дней, чтобы восстановить его. После этого он будет удален навсегда.</string>
     <string name="use_template">Выбрать шаблон</string>
     <string name="swipe_to_choose">Используйте свайп для выбора</string>
     <string name="without_template">Без шаблона</string>
     <string name="unsplash_generic_error">Ошибка при поиске изображений на Unsplash. Пожалуйста, повторите попытку позже.</string>
-    <string name="do_not_forget_to_save_recovery_phrase_msg">Не забудьте взять и сохранить вашу фразу восстановления из настроек</string>
+    <string name="do_not_forget_to_save_recovery_phrase_msg">Don\'t forget to take and save your Key from settings</string>
     <string name="unlock_your_object_to_add_new_relation">Разблокируйте объект, чтобы добавить новое отношение</string>
     <string name="unlock_your_object_to_edit_relations">Разблокируйте ваш объект для редактирования отношений</string>
     <string name="fragment_relation_create_from_scratch_title">Выберите тип свойства</string>
     <string name="fragment_dashboard_restore">Восстановить</string>
-    <string name="your_account_deleted">Ваш аккаунт удален</string>
+    <string name="your_account_deleted">Your vault is deleted.</string>
     <plurals name="fragment_dashboard_selected_count">
         <item quantity="one">Выбрано %d объект</item>
         <item quantity="few">Выбрано %d объекта</item>
@@ -780,7 +780,7 @@
     </string-array>
     <string name="snack_link_to">связано с</string>
     <string name="snack_move_to">перемещен в</string>
-    <string name="recovery_phrase_copied">Фраза для восстановления скопирована</string>
+    <string name="recovery_phrase_copied">Your Key copied</string>
     <string name="type_editing_title">Настройки типа</string>
     <string name="relation_editing_title">Настройки отношений</string>
     <string name="type_editing_uninstall">Удалить</string>
@@ -792,7 +792,7 @@
     <string name="almost_there">Почти готово!</string>
     <string name="i_did_not_not_complete_migration">Я не завершил процесс миграции</string>
     <string name="not_completed_migration_steps">Я не завершил процесс миграции</string>
-    <string name="almost_there_subtitle">Чтобы использовать эту версию приложения, пожалуйста, выберите правильный вариант ниже для миграции учетной записи.</string>
+    <string name="almost_there_subtitle">To use this version of the app, please choose the correct option below to migrate your vault.</string>
     <string name="i_completed_migration">Я завершил миграцию</string>
     <string name="here">здесь</string>
     <string name="update_steps_first">Скачать десктопное приложение</string>
@@ -804,7 +804,6 @@
     <string name="base_add_options_empty_subtitle">Начните ввод, чтобы создать новый</string>
     <string name="sync_status_local_only">Только локально</string>
     <string name="mail_more_space_body">Привет, команда Anytype. Обращаюсь с просьбой увеличить объем моего хранилища файлов, так как у меня закончилось свободное место. Мои текущие ограничения составляют %1$s. Идентификатор моей учетной записи: %2$s. С наилучшими пожеланиями, %3$s</string>
-    <string name="your_recovery_phrase_can_t_be_empty">Ваша фраза восстановления не может быть пустой</string>
     <string name="go_to_the_app">Перейти в приложение</string>
     <string name="exiting_please_wait">Выход... пожалуйста, подождите</string>
     <string name="loading_please_wait">Загружается... Пожалуйста, подождите</string>
@@ -972,39 +971,41 @@
     <!--region ONBOARDING -->
     <string name="onboarding_auth_title">универсальное приложение</string>
     <string name="onboarding_auth_subtitle">for those\nwho celebrate\ntrust &amp; autonomy</string>
-    <string name="onboarding_auth_description">Anytype - это безопасное место для записи мыслей и заметок, планирования и организации всего что важно для вас.</string>
+    <string name="onboarding_auth_description">Create &amp; collaborate in spaces you own. Encrypted, offline &amp; open.</string>
     <string name="onboarding_terms_and_policy_prefix">"By continuing you agree to "</string>
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
     <string name="onboarding_terms_and_policy_infix">" и "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
-    <string name="onboarding_join_button_text">Присоединись</string>
-    <string name="onboarding_log_in_button_text">Войти</string>
+    <string name="onboarding_new_vault_button_text">New vault</string>
+    <string name="onboarding_enter_my_vault">Get my Key</string>
+    <string name="onboarding_have_key_button_text">У меня есть Ключ</string>
+    <string name="onboarding_get_my_key_button_text">Получить мой Ключ</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
-    <string name="onboarding_mnemonic_title">Сохраните свою фразу восстановления</string>
-    <string name="onboarding_mnemonic_description">Это новый способ аутентификации, предоставляющий вам полный контроль над вашим аккаунтом и данными.</string>
-    <string name="onboarding_mnemonic_show_key">Показать фразу для восстановления</string>
-    <string name="onboarding_mnemonic_key_saved">Перейти в приложение</string>
-    <string name="onboarding_mnemonic_skip">Пропустить</string>
-    <string name="onboarding_mnemonic_copy">Копировать в буфер обмена</string>
-    <string name="onboarding_set_your_name_title">Выберите имя</string>
-    <string name="onboarding_soul_creation_description">This is how you will appear in the app</string>
+    <string name="onboarding_this_is_your_key_title">Это Ваш Ключ</string>
+    <string name="onboarding_key_description">It gives you full ownership over your vault. It cannot be recovered.</string>
+    <string name="onboarding_show_my_key">Показать мой Ключ</string>
+    <string name="onboarding_key_skip">Пропустить</string>
+    <string name="onboarding_key_copy">Копировать в буфер обмена</string>
+    <string name="onboarding_set_your_name_title">Установите ваше имя</string>
+    <string name="onboarding_soul_creation_description">Only seen by people you share something with. There is no central registry of these names.</string>
     <string name="onboarding_soul_creation_placeholder">Идентификатор Anytype</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
-    <string name="onboarding_type_recovery_phrase">Введите свою фразу восстановления</string>
+    <string name="onboarding_type_your_key">Type your Key</string>
     <string name="onboarding_login_or">ИЛИ</string>
     <string name="onboarding_entering_void_title">Входим в пустоту</string>
+    <string name="onboarding_your_key_can_t_be_empty">Your Key can\'t be empty</string>
     <string name="onboarding_mnemonic_read_more">Подробнее</string>
-    <string name="onboarding_mnemonic_additional_info">You can find Recovery Phrase later in\nAnytype settings</string>
-    <string name="onboqrding_what_is_recovery_phrase">Что такое фраза восстановления?</string>
-    <string name="onboarding_recovery_phrase_description">Фраза восстановления - это случайная комбинация из 12 слов. Волшебным образом из этих слов генерируется ваш аккаунт на устройстве.</string>
-    <string name="onboarding_recovery_phrase_description_2">Whoever knows Recovery Phrase, owns the account. </string>
-    <string name="onboarding_recovery_phrase_description_3">At this moment, you are the only person in the world who knows it.</string>
-    <string name="onboarding_recovery_phrase_description_4">Очень важно держать вашу фразу восстановления в секрете. Никто не сможет вам помочь в случае ее утери.</string>
-    <string name="onboarding_how_to_save_my_phrase">How to save my Phrase?</string>
-    <string name="onboarding_how_to_save_my_phrase_2">Самый простой способ хранить вашу фразу восстановления - сохранить ее в вашем менеджере паролей.</string>
+    <string name="onboarding_key_additional_info">Вы можете найти этот ключ позже в настройках Anytype</string>
+    <string name="onboarding_what_is_the_key">Что такое Ключ?</string>
+    <string name="onboarding_recovery_phrase_description">It is represented by a recovery phrase – 12 random words from which your vault is magically generated on this device.</string>
+    <string name="onboarding_recovery_phrase_description_2">Whomever knows the combination of these words owns your vault. </string>
+    <string name="onboarding_recovery_phrase_description_3">Right now, you are the only person in the world who knows it.</string>
+    <string name="onboarding_recovery_phrase_description_4">Даже всех вычислительных ресурсов на Земле недостаточно для его взлома. Если Вы потеряете его, он не может быть восстановлен. Так что храните его где-нибудь в безопасном месте!</string>
+    <string name="onboarding_how_to_save_my_phrase">How to save my Key?</string>
+    <string name="onboarding_how_to_save_my_phrase_2">The easiest way to store your Key is to save it in your password manager.</string>
     <string name="onboarding_how_to_save_my_phrase_3">Самый безопасный способ - записать ее на бумаге и оставить бумагу в безопасном месте.</string>
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
@@ -1072,7 +1073,7 @@
         <item quantity="one">%d ссылка</item>
         <item quantity="few">%d links</item>
         <item quantity="many">%d links</item>
-        <item quantity="other">%d links</item>
+        <item quantity="other">%d ссылки</item>
     </plurals>
     <!--region ORIGIN RELATION VALUES -->
     <string name="date_type_tomorrow">Завтра</string>
@@ -1113,7 +1114,7 @@
     <string name="create_object">Создать объект</string>
     <string name="msg_query_cannot_be_changed">Этот запрос может быть изменен только на компьютере</string>
     <!--region ONBOARDING ERRORS -->
-    <string name="error_invalid_recovery_phrase">Неверная фраза восстановления</string>
+    <string name="error_invalid_recovery_phrase">Неправильный ключ</string>
     <string name="network">Сеть</string>
     <string name="network_with_colon">Сеть:</string>
     <string name="network_settings_anytype_network">Anytype network</string>
@@ -1174,6 +1175,9 @@
     <string name="multiplayer_how_to_share_space_qr_code">Показать этот QR-код человеку, с которым вы хотели бы сотрудничать.</string>
     <string name="multiplayer_how_to_share_space_step_2">Нажав на ссылку, человек запросит вступление в пространство.</string>
     <string name="multiplayer_how_to_share_space_step_3">После одобрения запроса Вы можете выбрать права доступа для этого человека.</string>
+    <string name="multiplayer_how_share_one">1.</string>
+    <string name="multiplayer_how_share_two">2.</string>
+    <string name="multiplayer_how_share_three">3.</string>
     <string name="multiplayer_delete_space_sharing_link">Отозвать публичную ссылку</string>
     <string name="multiplayer_delete_link">Удалить ссылку</string>
     <string name="multiplayer_delete_link_description">Новые участники не смогут присоединиться к пространству. Вы можете создать новую ссылку в любое время.</string>
@@ -1208,6 +1212,12 @@
         <item quantity="many">%1$d members</item>
         <item quantity="other">%1$d members</item>
     </plurals>
+    <plurals name="multiplayer_number_of_join_requests">
+        <item quantity="one">%1$d request</item>
+        <item quantity="few">%1$d requests</item>
+        <item quantity="many">%1$d requests</item>
+        <item quantity="other">%1$d requests</item>
+    </plurals>
     <string name="multiplayer_you_as_member">you</string>
     <string name="multiplayer_spaces">Пространства</string>
     <string name="multiplayer_space_status_joining">Присоединяется</string>
@@ -1216,6 +1226,9 @@
     <string name="multiplayer_cancel_join_request">Отменить запрос на присоединение</string>
     <string name="multiplayer_cancel_join_request_msg">You will have to send join request again</string>
     <string name="multiplayer_do_not_cancel_join_request">Do not cancel</string>
+    <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">This link does not seem to work</string>
+    <string name="multiplayer_invite_link_space_deleted">This invite link is no longer valid because the space has been deleted.</string>
+    <string name="multiplayer_invite_link_space_not_found">This invite link is no longer valid because the space was not found.</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Членство</string>
@@ -1281,7 +1294,7 @@
     <string name="payments_email_checkbox_text">Я бы хотел получать новости о продуктах и пользоваться бесплатными преимуществами!</string>
     <string name="payments_email_hint">E-mail</string>
     <string name="payments_tier_current_title">Ваш текущий статус:</string>
-    <string name="payments_tier_current_valid">Valid until</string>
+    <string name="payments_tier_current_valid">Действительно до</string>
     <string name="payments_tier_current_paid_by">Оплачено картами</string>
     <string name="payments_tier_current_button">Управление платежами</string>
     <string name="payments_tier_current_change_email_button">Изменить E-mail</string>
@@ -1315,7 +1328,7 @@
     <string name="notifications_prompt_get_notified">Get notified</string>
     <string name="notifications_prompt_secondary_button_text">Не сейчас</string>
     <string name="notifications_prompt_description">Please enable notifications to stay informed about any requests to join or leave spaces.</string>
-    <string name="notifications_prompt_primary_button_text">Enable</string>
-    <string name="clipboard_panel_create_bookmark_from_clipboard">Create bookmark from clipboard</string>
-    <string name="error_unexpected_layout">Error: unexpected layout</string>
+    <string name="notifications_prompt_primary_button_text">Включить</string>
+    <string name="clipboard_panel_create_bookmark_from_clipboard">Создать закладку из буфера обмена</string>
+    <string name="error_unexpected_layout">Ошибка: непредвиденный макет</string>
 </resources>

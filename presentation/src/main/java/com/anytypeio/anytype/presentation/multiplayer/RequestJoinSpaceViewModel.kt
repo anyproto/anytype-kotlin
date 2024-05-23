@@ -10,6 +10,7 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteError
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.getOrDefault
@@ -18,6 +19,7 @@ import com.anytypeio.anytype.domain.multiplayer.CheckIsUserSpaceMember
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteView
 import com.anytypeio.anytype.domain.multiplayer.SendJoinSpaceRequest
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -39,7 +41,8 @@ class RequestJoinSpaceViewModel(
     private val saveCurrentSpace: SaveCurrentSpace,
     private val analytics: Analytics,
     private val notificator: SystemNotificationService,
-    private val configStorage: ConfigStorage
+    private val configStorage: ConfigStorage,
+    private val spaceViewContainer: SpaceViewSubscriptionContainer
 ) : BaseViewModel() {
 
     val state = MutableStateFlow<TypedViewState<SpaceInviteView, ErrorView>>(TypedViewState.Loading)
@@ -71,7 +74,12 @@ class RequestJoinSpaceViewModel(
                                 ErrorView.AlreadySpaceMember(view.space)
                             )
                         } else {
-                            state.value = TypedViewState.Success(view)
+                            val spaceView = spaceViewContainer.get(view.space)
+                            if (spaceView != null && spaceView.spaceAccountStatus == SpaceStatus.SPACE_JOINING) {
+                                state.value = TypedViewState.Error(ErrorView.RequestAlreadySent)
+                            } else {
+                                state.value = TypedViewState.Success(view)
+                            }
                         }
                     },
                     onFailure = { e ->
@@ -83,12 +91,14 @@ class RequestJoinSpaceViewModel(
                                     )
                                 }
                                 is SpaceInviteError.SpaceDeleted -> {
-                                    commands.emit(Command.Toast.SpaceDeleted)
-                                    commands.emit(Command.Dismiss)
+                                    state.value = TypedViewState.Error(
+                                        ErrorView.SpaceDeleted
+                                    )
                                 }
                                 is SpaceInviteError.SpaceNotFound -> {
-                                    commands.emit(Command.Toast.SpaceNotFound)
-                                    commands.emit(Command.Dismiss)
+                                    state.value = TypedViewState.Error(
+                                        ErrorView.SpaceNotFound
+                                    )
                                 }
                             }
                         }
@@ -176,7 +186,8 @@ class RequestJoinSpaceViewModel(
         private val spaceManager: SpaceManager,
         private val analytics: Analytics,
         private val notificator: SystemNotificationService,
-        private val configStorage: ConfigStorage
+        private val configStorage: ConfigStorage,
+        private val spaceViewContainer: SpaceViewSubscriptionContainer
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = RequestJoinSpaceViewModel(
@@ -189,7 +200,8 @@ class RequestJoinSpaceViewModel(
             spaceManager = spaceManager,
             analytics = analytics,
             notificator = notificator,
-            configStorage = configStorage
+            configStorage = configStorage,
+            spaceViewContainer = spaceViewContainer
         ) as T
     }
 
@@ -206,6 +218,9 @@ class RequestJoinSpaceViewModel(
 
     sealed class ErrorView {
         data object InvalidLink : ErrorView()
+        data object SpaceDeleted : ErrorView()
+        data object SpaceNotFound : ErrorView()
         data class AlreadySpaceMember(val space: SpaceId) : ErrorView()
+        data object RequestAlreadySent: ErrorView()
      }
 }

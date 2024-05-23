@@ -9,13 +9,13 @@
     <string name="personalization">Personalizzazione</string>
     <string name="appearance">Aspetto</string>
     <string name="file_storage">Archiviazione File</string>
-    <string name="recovery_phrase">Frase di recupero</string>
+    <string name="key">Chiave</string>
     <string name="clear_file_cache">Svuota la cache dei file</string>
     <string name="debug_sync_report">Debug Sync Report</string>
     <string name="debug">Debug</string>
-    <string name="account">Account</string>
-    <string name="reset_account">Ripristina account</string>
-    <string name="delete_account">Elimina account</string>
+    <string name="account">Cassaforte</string>
+    <string name="reset_account">Reimposta cassaforte</string>
+    <string name="delete_account">Elimina cassaforte</string>
     <string name="space_debug">Space debug</string>
     <string name="data">Dati</string>
     <string name="mode">Modalità</string>
@@ -28,8 +28,8 @@
     <string name="dark">Scuro</string>
     <string name="system">Sistema</string>
     <string name="settings">Impostazioni</string>
-    <string name="have_you_back_up_your_recovery_phrase">Hai effettuato il backup della tua frase di recupero?</string>
-    <string name="you_will_need_to_sign_in">Ne avrai bisogno per accedere. Conservala in un luogo sicuro. In caso di smarrimento, perderai l\'accesso al tuo account.</string>
+    <string name="have_you_back_up_your_recovery_phrase">Hai eseguito il backup della tua chiave?</string>
+    <string name="you_will_need_to_sign_in">Ne avrai bisogno per entrare nella tua cassaforte. Tienila in un posto sicuro. Se la perdi, non puoi più entrare nella tua cassaforte.</string>
     <string name="about_help_and_community">Aiuto &amp; Community</string>
     <string name="about_what_is_new">Novità</string>
     <string name="about_anytype_community">Community di Anytype</string>
@@ -60,10 +60,10 @@
     <string name="remote_storage">Archiviazione remota</string>
     <string name="contact_us">Contattaci</string>
     <string name="get_more_space">Ottieni più spazio</string>
-    <string name="account_name">Nome account</string>
+    <string name="account_name">Nome</string>
     <string name="space_settings">Impostazioni dello Spazio</string>
     <string name="data_management">Gestione dati</string>
-    <string name="deleted_account_danger_zone_msg">Una volta richiesta la cancellazione dell\'account, hai 30 giorni per annullare la richiesta. Dopo 30 giorni, i tuoi dati crittografati vengono eliminati definitivamente dal nodo di backup, non sarà più possibile accedere a Anytype su nuovi dispositivi.</string>
+    <string name="deleted_account_danger_zone_msg">Una volta che hai richiesto l\'eliminazione della tua cassaforte, hai 30 giorni per annullare questa richiesta. Dopo 30 giorni, i dati della tua cassaforte crittografata verranno rimossi in modo permanente dal nodo di backup e non sarai più in grado di accedere a Anytype su nuovi dispositivi.</string>
     <string name="danger_zone">Zona di pericolo</string>
     <string name="snackbar_template_add">Nuovo modello è stato aggiunto al tipo</string>
     <string name="settings_membership">Membership</string>
@@ -439,7 +439,7 @@
     <string name="paste_link">Collegamento</string>
     <string name="next">Avanti</string>
     <string name="limit_object_types">Limita tipi di oggetto</string>
-    <string name="deleted_account_msg">We\'re sorry to see you go. Once you request your account to be deleted, you have 30 days to cancel this request. After 30 days, your encrypted account data is permanently removed from the backup node.</string>
+    <string name="deleted_account_msg">Ci dispiace vederti andare. Una volta richiesta l\'eliminazione della tua cassaforte, hai 30 giorni di tempo per annullare la richiesta. Dopo 30 giorni, i dati crittografati della tua cassaforte verranno eliminati definitivamente dal nodo di backup.</string>
     <string name="swipe_down_to_skip">Scorri verso il basso per saltare</string>
     <string name="show">Mostra</string>
     <string name="this_type_has_templates">This type has %1$d templates</string>
@@ -554,8 +554,8 @@
     <string name="start_login_text">Con Anytype puoi scrivere note e documenti, gestire task, condividere file e salvare contenuti importanti dal web.</string>
     <string name="login">Accedi</string>
     <string name="sign_up">Registrati</string>
-    <string name="type_your_recovery_phrase">oppure digita la frase di recupero</string>
-    <string name="login_with_recovery_phrase">Accedi con la frase di recupero</string>
+    <string name="type_your_recovery_phrase">o digita la tua Chiave</string>
+    <string name="login_with_recovery_phrase">Accedi con la tua chiave</string>
     <string name="or_scan_qr_code">Scansiona codice QR</string>
     <string name="choose_pin_code">Scegli il codice pin</string>
     <string name="congratulations">Congratulazioni!</string>
@@ -583,8 +583,8 @@
     <string name="other_settings">Altre impostazioni</string>
     <string name="your_page">La tua pagina pubblica</string>
     <string name="updates">Aggiornamenti</string>
-    <string name="recovery_phrase_text">Ti servirà per accedere. Conservala in un posto sicuro. Se la perdi, non potrai più accedere al tuo account.</string>
-    <string name="back_up_your_recovery_phrase">Esegui il backup della tua frase di recupero</string>
+    <string name="recovery_phrase_text">Ne avrai bisogno per accedere. Conservala in un luogo sicuro. Se la perdi, non potrai più accedere alla tua cassaforte.</string>
+    <string name="back_up_your_recovery_phrase">Esegui il backup della tua Chiave</string>
     <string name="i_ve_written_it_down">Ho preso nota</string>
     <string name="keychain_mock">witch collapse practice feed shame open despair creek road again ice least lake tree young address brain envelope</string>
     <string name="show_and_copy_mnemonic">Mostra e copia frase</string>
@@ -634,7 +634,7 @@
     <string name="link">Collegamento</string>
     <string name="move_into_this_page">Sposta in questa pagina</string>
     <string name="move_into">Sposta in</string>
-    <string name="fetching_your_account">Fetching your account…</string>
+    <string name="fetching_your_account">Recupero della cassaforte…</string>
     <string name="search_on_page">Search on page</string>
     <string name="object_view_type">Object view type</string>
     <string name="object_type_name">Object type name</string>
@@ -692,7 +692,7 @@
     <string name="btn_upload_gallery">Upload from Gallery</string>
     <string name="btn_upload_storage">Upload from External storage</string>
     <string name="btn_upload">Carica</string>
-    <string name="alert_qr_camera">Go to Settings – Recovery Phrase on Desktop in order to find the QR code for login.</string>
+    <string name="alert_qr_camera">Vai su Impostazioni - Chiave sul Desktop per trovare il codice QR per l\'accesso.</string>
     <string name="alert_qr_camera_ok">Ok</string>
     <string name="choose_option">Choose option</string>
     <string name="find_a_relation">Find a relation</string>
@@ -727,9 +727,9 @@
     <string name="shortcut_create_new_object_of_type">Nuovo %1$s</string>
     <string name="close">Chiudi</string>
     <string name="go_to_settings">Go to settings</string>
-    <string name="do_not_forget_mnemonic_phrase">Non dimenticare di prendere e salvare la tua frase di recupero</string>
+    <string name="do_not_forget_mnemonic_phrase">Non dimenticare di prendere nota della tua Chiave e salvarla.</string>
     <string name="you_can_always_find_mnemonic_in_settings">You can always find the phrase in the settings on the dashboard screen.</string>
-    <string name="if_you_lose_recovery_phrase_warning">If you lose the recovery phrase and get logged out you will not be able to ever access your data again. Save this recovery phrase outside of Anytype for data recovery.</string>
+    <string name="if_you_lose_recovery_phrase_warning">Se perdi la Chiave e ti disconnetti, non potrai più accedere ai tuoi dati. Salva questa Chiave al di fuori di Anytype per il recupero dei dati.</string>
     <string name="card_size">Dimensione della Card</string>
     <string name="clear_cache">Clear cache</string>
     <string name="clear_cache_title">Sei sicuro/a?</string>
@@ -743,22 +743,22 @@
     <string name="unsplash">Unsplash</string>
     <string name="cancel_deletion">Annulla eliminazione</string>
     <string name="logout_and_clear_local_data">Logout and clear local data</string>
-    <string name="planned_for_deletion_in_n_days">This account is planned for deletion in %1$d days</string>
-    <string name="planned_for_deletion_tomorrow">This account is planned for deletion tomorrow</string>
-    <string name="planned_for_deletion_today">This account is planned for deletion today</string>
-    <string name="planned_for_deletion_unknown">This account is planned for deletion in ? days</string>
-    <string name="are_you_sure_to_delete_account">Sei sicuro di voler eliminare l\'account?</string>
+    <string name="planned_for_deletion_in_n_days">Questa cassaforte è pianificata per l\'eliminazione in %1$d</string>
+    <string name="planned_for_deletion_tomorrow">Questa cassaforte è pianificata per l\'eliminazione domani</string>
+    <string name="planned_for_deletion_today">Questa cassaforte è pianificata per l\'eliminazione oggi</string>
+    <string name="planned_for_deletion_unknown">L\'eliminazione di questa cassaforte è prevista tra ? giorni.</string>
+    <string name="are_you_sure_to_delete_account">Sei sicuro di voler eliminare la tua cassaforte?</string>
     <string name="deleted_account_warning_msg">You will be logged out on all other devices. You will have 30 days to recover it. Afterwards it will be deleted permanently.</string>
     <string name="use_template">Seleziona modello</string>
     <string name="swipe_to_choose">Use swipe to choose</string>
     <string name="without_template">Without template</string>
     <string name="unsplash_generic_error">Error while searching for images on Unsplash. Please try again later.</string>
-    <string name="do_not_forget_to_save_recovery_phrase_msg">Non dimenticare di prendere e salvare la tua frase di recupero dalle impostazioni</string>
+    <string name="do_not_forget_to_save_recovery_phrase_msg">Non dimenticare di prendere nota della tua Chiave dalle impostazioni e salvarla.</string>
     <string name="unlock_your_object_to_add_new_relation">Unlock your object to add new relation</string>
     <string name="unlock_your_object_to_edit_relations">Unlock your object to edit relations</string>
     <string name="fragment_relation_create_from_scratch_title">Selezione il tipo della Relazione</string>
     <string name="fragment_dashboard_restore">Ripristina</string>
-    <string name="your_account_deleted">Your account is deleted.</string>
+    <string name="your_account_deleted">La tua cassaforte è stata eliminata.</string>
     <plurals name="fragment_dashboard_selected_count">
         <item quantity="one">%d object selected</item>
         <item quantity="other">%d objects selected</item>
@@ -776,7 +776,7 @@
     </string-array>
     <string name="snack_link_to">collegato a</string>
     <string name="snack_move_to">moved to</string>
-    <string name="recovery_phrase_copied">Frase di recupero copiata</string>
+    <string name="recovery_phrase_copied">Chiave copiata</string>
     <string name="type_editing_title">Type settings</string>
     <string name="relation_editing_title">Relation settings</string>
     <string name="type_editing_uninstall">Rimuovi</string>
@@ -788,7 +788,7 @@
     <string name="almost_there">Almost there!</string>
     <string name="i_did_not_not_complete_migration">Non ho completato la migrazione</string>
     <string name="not_completed_migration_steps">Non ho completato la migrazione</string>
-    <string name="almost_there_subtitle">To use this version of the app, please choose the correct option below to migrate your account.</string>
+    <string name="almost_there_subtitle">Per utilizzare questa versione dell\'app, scegli l\'opzione corretta qui sotto per migrare la tua cassaforte</string>
     <string name="i_completed_migration">I completed migration</string>
     <string name="here">here</string>
     <string name="update_steps_first">1. Download the desktop app </string>
@@ -800,7 +800,6 @@
     <string name="base_add_options_empty_subtitle">Start typing to create a new one</string>
     <string name="sync_status_local_only">Solo-locale</string>
     <string name="mail_more_space_body">Hi, Anytype team. I am reaching out to request an increase in my file storage capacity as I have run out of storage. My current limits is %1$s. My account id is %2$s. Cheers, %3$s</string>
-    <string name="your_recovery_phrase_can_t_be_empty">Your recovery phrase can\'t be empty</string>
     <string name="go_to_the_app">Vai all\'app</string>
     <string name="exiting_please_wait">Exiting... please wait</string>
     <string name="loading_please_wait">Loading... please wait</string>
@@ -968,39 +967,41 @@
     <!--region ONBOARDING -->
     <string name="onboarding_auth_title">the everything app</string>
     <string name="onboarding_auth_subtitle">for those\nwho celebrate\ntrust &amp; autonomy</string>
-    <string name="onboarding_auth_description">Anytype è il tuo spazio sicuro per scrivere, pianificare, pensare e organizzare tutto ciò che conta per te.</string>
+    <string name="onboarding_auth_description">Crea &amp; collabora negli spazi che possiedi. Crittografati, offline &amp; open source.</string>
     <string name="onboarding_terms_and_policy_prefix">"By continuing you agree to "</string>
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
     <string name="onboarding_terms_and_policy_infix">" and "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
-    <string name="onboarding_join_button_text">Unisciti</string>
-    <string name="onboarding_log_in_button_text">Accedi</string>
+    <string name="onboarding_new_vault_button_text">Nuova cassaforte</string>
+    <string name="onboarding_enter_my_vault">Entra nella mia Cassaforte</string>
+    <string name="onboarding_have_key_button_text">Ho una Chiave</string>
+    <string name="onboarding_get_my_key_button_text">Ottieni la mia Chiave</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
-    <string name="onboarding_mnemonic_title">Salva la tua Frase di Recupero</string>
-    <string name="onboarding_mnemonic_description">È un metodo di autenticazione innovativo che ti garantisce la totale proprietà del tuo account e dei tuoi dati.</string>
-    <string name="onboarding_mnemonic_show_key">Mostra Frase di Recupero</string>
-    <string name="onboarding_mnemonic_key_saved">Vai all\'app</string>
-    <string name="onboarding_mnemonic_skip">Salta</string>
-    <string name="onboarding_mnemonic_copy">Copia negli appunti</string>
-    <string name="onboarding_set_your_name_title">Scegli il tuo nome</string>
-    <string name="onboarding_soul_creation_description">This is how you will appear in the app</string>
+    <string name="onboarding_this_is_your_key_title">Questa è la tua Chiave</string>
+    <string name="onboarding_key_description">Ti dà piena proprietà sulla tua cassaforte. Non può essere recuperata.</string>
+    <string name="onboarding_show_my_key">Mostra la mia Chiave</string>
+    <string name="onboarding_key_skip">Salta</string>
+    <string name="onboarding_key_copy">Copia negli appunti</string>
+    <string name="onboarding_set_your_name_title">Imposta il tuo nome</string>
+    <string name="onboarding_soul_creation_description">Visibile solo alle persone con cui condividi qualcosa. Non esiste un registro centrale di questi nomi.</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
-    <string name="onboarding_type_recovery_phrase">Digita la frase di recupero</string>
+    <string name="onboarding_type_your_key">Digita la tua Chiave</string>
     <string name="onboarding_login_or">O</string>
     <string name="onboarding_entering_void_title">Entrando nel Void</string>
+    <string name="onboarding_your_key_can_t_be_empty">La tua Chiave non può essere vuota</string>
     <string name="onboarding_mnemonic_read_more">Leggi altro</string>
-    <string name="onboarding_mnemonic_additional_info">You can find Recovery Phrase later in\nAnytype settings</string>
-    <string name="onboqrding_what_is_recovery_phrase">Che cos’è la Frase di Recupero?</string>
-    <string name="onboarding_recovery_phrase_description">La Frase di Recupero è una combinazione casuale di 12 parole da cui il tuo account viene magicamente generato su questo dispositivo</string>
-    <string name="onboarding_recovery_phrase_description_2">Chiunque conosca la Frase di Recupero possiede l\'account.</string>
-    <string name="onboarding_recovery_phrase_description_3">At this moment, you are the only person in the world who knows it.</string>
-    <string name="onboarding_recovery_phrase_description_4">Ecco perché è essenziale mantenere la Frase di Recupero al sicuro. Come unico proprietario, nessuno può aiutarti se la perdi.</string>
-    <string name="onboarding_how_to_save_my_phrase">How to save my Phrase?</string>
-    <string name="onboarding_how_to_save_my_phrase_2">Il modo più semplice per memorizzare la tua Frase di Recupero è quello di salvarla nel tuo gestore di password.</string>
+    <string name="onboarding_key_additional_info">Puoi trovare questa chiave in seguito nelle impostazioni di Anytype</string>
+    <string name="onboarding_what_is_the_key">Cos\'è una Chiave?</string>
+    <string name="onboarding_recovery_phrase_description">È rappresentata da una frase di recupero – 12 parole casuali da cui la tua cassaforte viene magicamente generata su questo dispositivo.</string>
+    <string name="onboarding_recovery_phrase_description_2">Chiunque conosca la combinazione di queste parole possiede la tua cassaforte.</string>
+    <string name="onboarding_recovery_phrase_description_3">In questo momento, sei l\'unica persona al mondo a conoscerla.</string>
+    <string name="onboarding_recovery_phrase_description_4">Tutte le risorse di calcolo presenti sulla Terra non sono sufficienti per irrompere. Se la perdi, non può essere recuperata. Quindi, conservala in un posto sicuro!</string>
+    <string name="onboarding_how_to_save_my_phrase">Come salvare la mia Chiave?</string>
+    <string name="onboarding_how_to_save_my_phrase_2">Il modo più semplice per conservare la tua Chiave è salvarla nel tuo gestore di password.</string>
     <string name="onboarding_how_to_save_my_phrase_3">Il modo più sicuro è scriverlo su carta e tenerlo offline, in un luogo sicuro.</string>
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
@@ -1106,7 +1107,7 @@
     <string name="create_object">Crea oggetto</string>
     <string name="msg_query_cannot_be_changed">Questa query può essere modificata solo su desktop</string>
     <!--region ONBOARDING ERRORS -->
-    <string name="error_invalid_recovery_phrase">Frase di recupero non valida</string>
+    <string name="error_invalid_recovery_phrase">Chiave non valida</string>
     <string name="network">Rete</string>
     <string name="network_with_colon">Rete:</string>
     <string name="network_settings_anytype_network">Rete Anytype</string>
@@ -1167,6 +1168,9 @@
     <string name="multiplayer_how_to_share_space_qr_code">Mostra questo codice QR alla persona con cui vuoi collaborare.</string>
     <string name="multiplayer_how_to_share_space_step_2">Cliccando sul link, una persona richiede di unirsi allo spazio.</string>
     <string name="multiplayer_how_to_share_space_step_3">Dopo aver approvato la richiesta, puoi scegliere i diritti di accesso per quella persona.</string>
+    <string name="multiplayer_how_share_one">1.</string>
+    <string name="multiplayer_how_share_two">2.</string>
+    <string name="multiplayer_how_share_three">3.</string>
     <string name="multiplayer_delete_space_sharing_link">Elimina link di condivisione</string>
     <string name="multiplayer_delete_link">Elimina link</string>
     <string name="multiplayer_delete_link_description">I nuovi membri non saranno in grado di unirsi allo spazio. È possibile generare un nuovo link in qualsiasi momento.</string>
@@ -1199,6 +1203,10 @@
         <item quantity="one">%1$d membro</item>
         <item quantity="other">%1$d membri</item>
     </plurals>
+    <plurals name="multiplayer_number_of_join_requests">
+        <item quantity="one">%1$d richiesta</item>
+        <item quantity="other">%1$d richieste</item>
+    </plurals>
     <string name="multiplayer_you_as_member">tu</string>
     <string name="multiplayer_spaces">Spazi</string>
     <string name="multiplayer_space_status_joining">Accesso in corso</string>
@@ -1207,6 +1215,9 @@
     <string name="multiplayer_cancel_join_request">Annulla richiesta di partecipazione</string>
     <string name="multiplayer_cancel_join_request_msg">Dovrai inviare nuovamente la richiesta di partecipazione</string>
     <string name="multiplayer_do_not_cancel_join_request">Non annullare</string>
+    <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">Questo link sembra non funzionare</string>
+    <string name="multiplayer_invite_link_space_deleted">Questo link di invito non è più valido perché lo spazio è stato eliminato.</string>
+    <string name="multiplayer_invite_link_space_not_found">Questo link di invito non è più valido perché lo spazio non è stato trovato.</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Membership</string>

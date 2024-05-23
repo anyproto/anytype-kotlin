@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.ui.multiplayer
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,10 +14,11 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -29,13 +29,18 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun IntroduceSpacesScreen() {
+fun IntroduceSpacesScreen(
+    onDoneClicked: () -> Unit
+) {
     ConstraintLayout(
         modifier = Modifier.fillMaxSize()
     ) {
+
+        val coroutineScope = rememberCoroutineScope()
         val (title, first, second, third, pager, dots, btn, close) = createRefs()
 
         Text(
@@ -47,16 +52,6 @@ fun IntroduceSpacesScreen() {
                 .padding(top = 40.dp)
                 .constrainAs(title) {}
                 .fillMaxWidth()
-        )
-
-        Image(
-            painter = painterResource(id = R.drawable.ic_close_round_22),
-            contentDescription = "Close button",
-            modifier = Modifier
-                .padding(end = 16.dp, top = 12.dp)
-                .constrainAs(close) {
-                    end.linkTo(parent.end)
-                }
         )
 
         val pagerState = rememberPagerState(pageCount = { 3 })
@@ -104,7 +99,7 @@ fun IntroduceSpacesScreen() {
         }
 
         Text(
-            text = "1. Tap the Space widget to access settings",
+            text = "1.  Tap the Space widget to access settings",
             style = BodyRegular,
             color = colorResource(id = R.color.text_primary),
             modifier = Modifier
@@ -115,7 +110,7 @@ fun IntroduceSpacesScreen() {
         )
 
         Text(
-            text = "2. Open Share section",
+            text = "2.  Open Share section",
             style = BodyRegular,
             color = colorResource(id = R.color.text_primary),
             modifier = Modifier
@@ -126,7 +121,7 @@ fun IntroduceSpacesScreen() {
         )
 
         Text(
-            text = "3. Generate an invite link and share it",
+            text = "3.  Generate an invite link and share it",
             style = BodyRegular,
             color = colorResource(id = R.color.text_primary),
             modifier = Modifier
@@ -137,9 +132,20 @@ fun IntroduceSpacesScreen() {
         )
 
         ButtonSecondary(
-            onClick = { /*TODO*/ },
-            size = ButtonSize.Large,
-            text = "Next",
+            onClick = {
+                coroutineScope.launch {
+                    if (pagerState.currentPage == 2) {
+                        onDoneClicked()
+                    } else {
+                        pagerState.animateScrollToPage(pagerState.currentPage.inc(), 0f)
+                    }
+                }
+            },
+            size = ButtonSize.LargeSecondary,
+            text = if (pagerState.currentPage == 2)
+                stringResource(id = R.string.done)
+            else
+                stringResource(id = R.string.next),
             modifier = Modifier
                 .padding(
                     start = 20.dp,
@@ -158,5 +164,7 @@ fun IntroduceSpacesScreen() {
 @Preview
 @Composable
 private fun ScreenPreview() {
-    IntroduceSpacesScreen()
+    IntroduceSpacesScreen(
+        onDoneClicked = {}
+    )
 }

@@ -2,11 +2,16 @@ package com.anytypeio.anytype.ui.multiplayer
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -25,11 +30,11 @@ import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun Screen() {
+fun IntroduceSpaceScreen() {
     ConstraintLayout(
         modifier = Modifier.fillMaxSize()
     ) {
-        val (title, first, second, third, pager, btn) = createRefs()
+        val (title, first, second, third, pager, dots, btn) = createRefs()
 
         Text(
             text = "Collaborate on spaces",
@@ -47,19 +52,44 @@ fun Screen() {
         HorizontalPager(
             state = pagerState,
             modifier = Modifier
+                .padding(bottom = 16.dp, top = 38.dp)
                 .constrainAs(pager) {
                     top.linkTo(title.bottom)
-                    bottom.linkTo(first.top)
+                    bottom.linkTo(dots.top)
                     height = Dimension.fillToConstraints
                 }
                 .fillMaxSize()
                 .background(Color.Red)
-        ) {
+        ) { page ->
             Text(
-                text = "Hello",
+                text = page.inc().toString(),
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
             )
         }
 
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 46.dp)
+                .constrainAs(dots) {
+                    bottom.linkTo(first.top)
+                },
+            horizontalArrangement = Arrangement.Center
+        ) {
+            repeat(3) { iteration ->
+                val color = if (pagerState.currentPage == iteration)
+                    colorResource(id = R.color.glyph_active)
+                else
+                    colorResource(id = R.color.glyph_inactive)
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = 5.dp)
+                        .background(color, CircleShape)
+                        .size(6.dp)
+                )
+            }
+        }
 
         Text(
             text = "1. Tap the Space widget to access settings",
@@ -115,6 +145,6 @@ fun Screen() {
 
 @Preview
 @Composable
-fun ScreenPreview() {
-    Screen()
+private fun ScreenPreview() {
+    IntroduceSpaceScreen()
 }

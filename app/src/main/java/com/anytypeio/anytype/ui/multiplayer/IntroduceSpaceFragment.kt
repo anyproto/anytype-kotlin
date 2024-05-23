@@ -21,7 +21,7 @@ class IntroduceSpaceFragment : BaseBottomSheetComposeFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MaterialTheme(typography = typography) {
-                    IntroduceSpaceScreen()
+                    IntroduceSpacesScreen()
                 }
             }
         }

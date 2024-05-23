@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.ui.multiplayer
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -30,11 +32,11 @@ import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun IntroduceSpaceScreen() {
+fun IntroduceSpacesScreen() {
     ConstraintLayout(
         modifier = Modifier.fillMaxSize()
     ) {
-        val (title, first, second, third, pager, dots, btn) = createRefs()
+        val (title, first, second, third, pager, dots, btn, close) = createRefs()
 
         Text(
             text = "Collaborate on spaces",
@@ -45,6 +47,16 @@ fun IntroduceSpaceScreen() {
                 .padding(top = 40.dp)
                 .constrainAs(title) {}
                 .fillMaxWidth()
+        )
+
+        Image(
+            painter = painterResource(id = R.drawable.ic_close_round_22),
+            contentDescription = "Close button",
+            modifier = Modifier
+                .padding(end = 16.dp, top = 12.dp)
+                .constrainAs(close) {
+                    end.linkTo(parent.end)
+                }
         )
 
         val pagerState = rememberPagerState(pageCount = { 3 })
@@ -146,5 +158,5 @@ fun IntroduceSpaceScreen() {
 @Preview
 @Composable
 private fun ScreenPreview() {
-    IntroduceSpaceScreen()
+    IntroduceSpacesScreen()
 }

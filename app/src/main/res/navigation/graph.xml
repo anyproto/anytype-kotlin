@@ -563,4 +563,8 @@
         android:id="@+id/requestNotificationPermissionDialog"
         android:name="com.anytypeio.anytype.ui.notifications.NotificationPermissionPromptDialog"/>
 
+    <dialog
+        android:id="@+id/multiplayerFeatureDialog"
+        android:name="com.anytypeio.anytype.ui.multiplayer.IntroduceSpaceFragment"/>
+
 </navigation>

@@ -14,7 +14,7 @@
     <string name="debug_sync_report">Debug Sync Bericht</string>
     <string name="debug">Debug</string>
     <string name="account">Tresor</string>
-    <string name="reset_account">Reset vault</string>
+    <string name="reset_account">Vault zurücksetzen</string>
     <string name="delete_account">Tresor löschen</string>
     <string name="space_debug">Space Debug</string>
     <string name="data">Daten</string>
@@ -28,7 +28,7 @@
     <string name="dark">Dunkel</string>
     <string name="system">System</string>
     <string name="settings">Einstellungen</string>
-    <string name="have_you_back_up_your_recovery_phrase">Have you backed up your Key?</string>
+    <string name="have_you_back_up_your_recovery_phrase">Hast du deinen Schlüssel gesichert?</string>
     <string name="you_will_need_to_sign_in">Du brauchst ihn um deinen Tresor zu öffnen. Bewahre ihn an einem sicheren Ort. Wenn du ihn verlierst, kannst du deinen Tresor nicht mehr öffnen.</string>
     <string name="about_help_and_community">Hilfe &amp; Community</string>
     <string name="about_what_is_new">Was ist neu?</string>
@@ -47,7 +47,7 @@
     <string name="about_meta_info_for_copy">Gerät: %1$s\nAndroid Version: %2$d\nApp Version: %3$s\nBuild Nummer: %4$d\nLibrary Version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nGeräte\u00A0ID:\u00A0%7$s\nAnalyse\u00A0ID:\u00A0%8$s</string>
     <string name="space">Space</string>
     <string name="space_name">Space-Name</string>
-    <string name="default_space">Entry space</string>
+    <string name="default_space">Standard Space</string>
     <string name="space_settings_apply_random_gradient">Zufälligen Farbverlauf anwenden</string>
     <string name="delete_space">Space löschen</string>
     <string name="you_can_store">Du kannst bis zu %1$s deiner Dateien auf unserem verschlüsselten und kostenlosen Backup-Knoten speichern. Wenn das Limit erreicht wurde, werden Dateien nur noch lokal gespeichert.</string>
@@ -63,7 +63,7 @@
     <string name="account_name">Name</string>
     <string name="space_settings">Space-Einstellungen</string>
     <string name="data_management">Dateiverwaltung</string>
-    <string name="deleted_account_danger_zone_msg">Once you request your vault to be deleted, you have 30 days to cancel this request. After 30 days, your encrypted vault data is permanently removed from the backup node, you won\'t be able to sign into Anytype on new devices.</string>
+    <string name="deleted_account_danger_zone_msg">Sobald die Löschung deines Tresors angefordert wurde, hast du 30 Tage um diese Anfrage zu widerrufen. Nach 30 Tagen werden deine verschlüsselten Tresor-Daten dauerhaft aus dem Backup-Knoten entfernt. Du kannst dich danach nicht auf neuen Geräten bei Anytype anmelden.</string>
     <string name="danger_zone">Gefahrenbereich</string>
     <string name="snackbar_template_add">Neue Vorlage wurde zum Typ hinzugefügt</string>
     <string name="settings_membership">Mitgliedschaft</string>
@@ -439,7 +439,7 @@
     <string name="paste_link">Link</string>
     <string name="next">Weiter</string>
     <string name="limit_object_types">Objekttypen einschränken</string>
-    <string name="deleted_account_msg">We\'re sorry to see you go. Once you request your vault to be deleted, you have 30 days to cancel this request. After 30 days, your encrypted vault data is permanently removed from the backup node.</string>
+    <string name="deleted_account_msg">Schade das du gehst. Nachdem du die Accountlöschung angefragt hast, kannst du 30 Tage diese Anfrage zurückzunehmen, bevor deine verschlüsselten Daten von unserem Backup-Knoten gelöscht werden.</string>
     <string name="swipe_down_to_skip">Zum Überspringen nach unten wischen</string>
     <string name="show">Zeigen</string>
     <string name="this_type_has_templates">Dieser Typ hat %1$d Vorlagen</string>
@@ -554,8 +554,8 @@
     <string name="start_login_text">Mit Anytype können Sie Notizen und Dokumente schreiben, Aufgaben verwalten, Dateien teilen und wichtiges aus dem Web speichern.</string>
     <string name="login">Anmelden</string>
     <string name="sign_up">Registrieren</string>
-    <string name="type_your_recovery_phrase">or type your Key</string>
-    <string name="login_with_recovery_phrase">Login with your Key</string>
+    <string name="type_your_recovery_phrase">oder gib deinen Schlüssel ein</string>
+    <string name="login_with_recovery_phrase">Melde dich mit deinem Schlüssel an</string>
     <string name="or_scan_qr_code">QR-Code scannen</string>
     <string name="choose_pin_code">PIN-Code wählen</string>
     <string name="congratulations">Glückwunsch!</string>
@@ -583,8 +583,8 @@
     <string name="other_settings">Sonstige Einstellungen</string>
     <string name="your_page">Deine öffentliche Seite</string>
     <string name="updates">Updates</string>
-    <string name="recovery_phrase_text">You\'ll need it to sign in. Keep it in a safe place. If you lose it, you can no longer access your vault.</string>
-    <string name="back_up_your_recovery_phrase">Back up your Key</string>
+    <string name="recovery_phrase_text">Du brauchst ihn, um dich einzuloggen. Behalte ihn an einem sicheren Ort. Wenn du ihn verlierst, kannst du nicht mehr auf deinen Vault zugreifen.</string>
+    <string name="back_up_your_recovery_phrase">Sichere deinen Schlüssel</string>
     <string name="i_ve_written_it_down">Ich hab\'s aufgeschrieben</string>
     <string name="keychain_mock">Hexe Kollaps Übung Feed Schande offen Verzweiflung Bach Straße erneut Eis geringste See Baum jung Adresse Gehirn Umschlag</string>
     <string name="show_and_copy_mnemonic">Phrase anzeigen und kopieren</string>
@@ -634,7 +634,7 @@
     <string name="link">Link</string>
     <string name="move_into_this_page">Auf diese Seite verschieben</string>
     <string name="move_into">Verschieben in</string>
-    <string name="fetching_your_account">Fetching your vault…</string>
+    <string name="fetching_your_account">Aubrufen deines Vaults...</string>
     <string name="search_on_page">Auf Seite suchen</string>
     <string name="object_view_type">Objektansichtstyp</string>
     <string name="object_type_name">Objekttypname</string>
@@ -727,7 +727,7 @@
     <string name="shortcut_create_new_object_of_type">Neues Objekt „%1$s“</string>
     <string name="close">Schließen</string>
     <string name="go_to_settings">Gehe zu Einstellung</string>
-    <string name="do_not_forget_mnemonic_phrase">Don\'t forget to take and save your Key</string>
+    <string name="do_not_forget_mnemonic_phrase">Vergiss nicht, deinen Schlüssel mitzunehmen und zu speichern</string>
     <string name="you_can_always_find_mnemonic_in_settings">Die Phrase findest du in den Einstellungen auf dem Dashboard-Bildschirm.</string>
     <string name="if_you_lose_recovery_phrase_warning">If you lose the Key and get logged out you will not be able to ever access your data again. Save this Key outside of Anytype for data recovery.</string>
     <string name="card_size">Kartengröße</string>
@@ -758,7 +758,7 @@
     <string name="unlock_your_object_to_edit_relations">Entsperre dein Objekt, um Beziehungen zu bearbeiten</string>
     <string name="fragment_relation_create_from_scratch_title">Relationstyp auswählen</string>
     <string name="fragment_dashboard_restore">Wiederherstellen</string>
-    <string name="your_account_deleted">Your vault is deleted.</string>
+    <string name="your_account_deleted">Dein Vault ist gelöscht.</string>
     <plurals name="fragment_dashboard_selected_count">
         <item quantity="one">%d Objekt ausgewählt</item>
         <item quantity="other">%d Objekte ausgewählt</item>
@@ -776,7 +776,7 @@
     </string-array>
     <string name="snack_link_to">verlinkt mit</string>
     <string name="snack_move_to">verschoben nach</string>
-    <string name="recovery_phrase_copied">Your Key copied</string>
+    <string name="recovery_phrase_copied">Schlüssel kopiert</string>
     <string name="type_editing_title">Typ-Einstellungen</string>
     <string name="relation_editing_title">Beziehungseinstellungen</string>
     <string name="type_editing_uninstall">Entfernen</string>
@@ -788,7 +788,7 @@
     <string name="almost_there">Fast geschafft!</string>
     <string name="i_did_not_not_complete_migration">Ich habe die Migration nicht abgeschlossen</string>
     <string name="not_completed_migration_steps">Ich habe die Migration nicht abgeschlossen</string>
-    <string name="almost_there_subtitle">To use this version of the app, please choose the correct option below to migrate your vault.</string>
+    <string name="almost_there_subtitle">Um diese Version der App zu verwenden, wähle bitte die richtige der unteren Option, um dein Konto zu übertragen.</string>
     <string name="i_completed_migration">Ich habe die Migration abgeschlossen</string>
     <string name="here">Hier</string>
     <string name="update_steps_first">1. Desktop-App herunterladen </string>
@@ -821,8 +821,8 @@
     <string name="anytype_update_alert_description">Einige deiner Daten wurden in einer neueren Version von Anytype verwaltet. Bitte aktualisiere die App, um mit allen Dokumenten und neuesten Funktionen zu arbeiten.</string>
     <string name="anytype_update_alert_title">Es ist Zeit für ein Update</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
-    <string name="space_type_default">Entry</string>
-    <string name="space_type_default_space">Entry space</string>
+    <string name="space_type_default">Eingang</string>
+    <string name="space_type_default_space">Standard Space</string>
     <string name="space_type_private">Privat</string>
     <string name="space_type_private_space">privater Bereich</string>
     <string name="space_type_shared">Geteilt</string>
@@ -967,12 +967,12 @@
     <!--region ONBOARDING -->
     <string name="onboarding_auth_title">die Alles-App</string>
     <string name="onboarding_auth_subtitle">Für diejenigen\ndie eines feiern:\n Vertrauen &amp; Autonomie</string>
-    <string name="onboarding_auth_description">Create &amp; collaborate in spaces you own. Encrypted, offline &amp; open.</string>
+    <string name="onboarding_auth_description">Erstellen und kooperieren Sie in Spaces, die ihnen gehören. Verschlüsselt, offline &amp; offen().</string>
     <string name="onboarding_terms_and_policy_prefix">"Indem Sie fortfahren, stimmen Sie unseren"</string>
     <string name="onboarding_terms_and_policy_terms">Nutzungsbedingungen</string>
     <string name="onboarding_terms_and_policy_infix">" und "</string>
     <string name="onboarding_terms_and_policy_privacy">Datenschutzrichtlinie</string>
-    <string name="onboarding_new_vault_button_text">New vault</string>
+    <string name="onboarding_new_vault_button_text">Neuer Vault</string>
     <string name="onboarding_enter_my_vault">Meinen Schlüssel holen</string>
     <string name="onboarding_have_key_button_text">Ich habe einen Schlüssel</string>
     <string name="onboarding_get_my_key_button_text">Meinen Schlüssel holen</string>
@@ -1000,8 +1000,8 @@
     <string name="onboarding_recovery_phrase_description_2">Whomever knows the combination of these words owns your vault. </string>
     <string name="onboarding_recovery_phrase_description_3">Right now, you are the only person in the world who knows it.</string>
     <string name="onboarding_recovery_phrase_description_4">Alle Rechenressourcen der Welt reichen nicht aus, um ihn zu knacken. Wenn du ihn verlierst, kann er nicht wiederhergestellt werden. Bewahre ihn also an einem sicheren Ort auf!</string>
-    <string name="onboarding_how_to_save_my_phrase">How to save my Key?</string>
-    <string name="onboarding_how_to_save_my_phrase_2">The easiest way to store your Key is to save it in your password manager.</string>
+    <string name="onboarding_how_to_save_my_phrase">Wie speicher ich meinen Schlüssel?</string>
+    <string name="onboarding_how_to_save_my_phrase_2">Am einfachsten speicherst du deinen Schlüssel in einem Password Manager</string>
     <string name="onboarding_how_to_save_my_phrase_3">Am sichersten ist es, sie auf Papier aufzuschreiben und offline, an einem sicheren Ort.</string>
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
@@ -1135,8 +1135,8 @@
     <string name="multiplayer_share_space">Geteilter Space</string>
     <string name="multiplayer_members_and_requests">Mitglieder und Anfragen</string>
     <string name="multiplayer_members">Mitglieder</string>
-    <string name="multiplayer_leave_request">Leave request</string>
-    <string name="multiplayer_join_request">Join request</string>
+    <string name="multiplayer_leave_request">Anfrage abgeben</string>
+    <string name="multiplayer_join_request">Beitrittsanfrage</string>
     <string name="multiplayer_approve_request">Genehmigen</string>
     <string name="multiplayer_view_request">Anfrage ansehen</string>
     <string name="multiplayer_owner">Eigentümer</string>
@@ -1150,19 +1150,19 @@
     <string name="multiplayer_remove_member_warning_text">%1$s will be removed from space</string>
     <string name="multiplayer_request_sent_toast">Anfrage gesendet</string>
     <string name="multiplayer_space_stop_sharing">Beende Teilen</string>
-    <string name="multiplayer_space_stop_sharing_space">Stop sharing the space</string>
+    <string name="multiplayer_space_stop_sharing_space">Space nichtmehr freigeben</string>
     <string name="multiplayer_space_stop_sharing_space_description">Teilnehmende werden nicht länger mit diesem Bereich synchronisieren und der \"Teilen\" -Link wird deaktiviert.</string>
     <string name="multiplayer_more_info">Mehr Informationen</string>
-    <string name="multiplayer_sharing">Sharing</string>
+    <string name="multiplayer_sharing">Teilen</string>
     <string name="multiplayer_space_type">Typ</string>
     <string name="multiplayer_share">Teilen</string>
     <string name="multiplayer_manage">Verwalten</string>
     <string name="multiplayer_leave_space">Bereich verlassen</string>
     <string name="multiplayer_leave_space_warning_subtitle">Dieser Bereich wird von Deinen Geräten entfernt und Du wirst keinen Zugang zu diesem Bereich mehr haben.</string>
-    <string name="multiplayer_generate_invite_link_description">Create invite link to share space and add new members</string>
+    <string name="multiplayer_generate_invite_link_description">Erstelle einen Einladungslink, um neue Mitglieder hinzuzufügen</string>
     <string name="multiplayer_generate_invite_link">Einladungslink generieren</string>
     <string name="multiplayer_show_qr_code">QR-Code anzeigen</string>
-    <string name="multiplayer_how_to_share_space">How to share a space?</string>
+    <string name="multiplayer_how_to_share_space">Wie teilt man einen Space?</string>
     <string name="multiplayer_how_to_share_space_step_1">Bitte gib den Link zu der Person an, mit der du zusammenarbeiten möchtest.</string>
     <string name="multiplayer_how_to_share_space_qr_code">Show this QR code to the person you\'d like to collaborate with.</string>
     <string name="multiplayer_how_to_share_space_step_2">By clicking the link, a person requests to join the space.</string>
@@ -1170,13 +1170,13 @@
     <string name="multiplayer_how_share_one">1.</string>
     <string name="multiplayer_how_share_two">2.</string>
     <string name="multiplayer_how_share_three">3.</string>
-    <string name="multiplayer_delete_space_sharing_link">Delete sharing link</string>
+    <string name="multiplayer_delete_space_sharing_link">Lösche Freigabelink</string>
     <string name="multiplayer_delete_link">Link löschen</string>
     <string name="multiplayer_delete_link_description">New members won’t be able to join the space. You can generate a new link anytime.</string>
     <string name="multiplayer_already_space_member">You are already a member of this space</string>
-    <string name="multiplayer_open_space">Open space</string>
-    <string name="multiplayer_error_space_deleted">Space deleted</string>
-    <string name="multiplayer_error_space_not_found">Space not found</string>
+    <string name="multiplayer_open_space">Öffne Space</string>
+    <string name="multiplayer_error_space_deleted">Space gelöscht</string>
+    <string name="multiplayer_error_space_not_found">Space nicht gefunden</string>
     <string name="multiplayer_read_only_access_error">Read-only access. Contact space owner for changes.</string>
     <string name="multiplayer_notification_member_user_sends_join_request">%1$s requested to join the %2$s space.</string>
     <string name="multiplayer_notification_member_user_sends_leave_request">%1$s requested to leave the %2$s space.</string>
@@ -1213,10 +1213,11 @@
     <string name="multiplayer_space_status_removing">Entfernt</string>
     <string name="multiplayer_cancel_join_request">Cancel join request</string>
     <string name="multiplayer_cancel_join_request_msg">You will have to send join request again</string>
-    <string name="multiplayer_do_not_cancel_join_request">Do not cancel</string>
-    <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">This link does not seem to work</string>
+    <string name="multiplayer_do_not_cancel_join_request">Nicht verwerfen</string>
+    <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">Der Link scheint nicht zu funktionieren</string>
     <string name="multiplayer_invite_link_space_deleted">This invite link is no longer valid because the space has been deleted.</string>
     <string name="multiplayer_invite_link_space_not_found">This invite link is no longer valid because the space was not found.</string>
+    <string name="multiplayer_invite_link_request_already_sent">Anfrage gesendet</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Mitgliedschaft</string>
@@ -1256,8 +1257,8 @@
     <string name="payments_tier_details_info_explorer">Tauche in das Netzwerk ein und genieße den Nervenkitzel der persönlichen Zusammenarbeit</string>
     <string-array name="payments_benefits_explorer">
         <item>1 GB Netzwerkspeicher</item>
-        <item>10 one-to-one spaces</item>
-        <item>Up to 10 shared spaces in read-only mode</item>
+        <item>10 Eins-zu-Eins Spaces</item>
+        <item>Bis zu 10 geteilte Spaces im schreibgeschützten Modus</item>
     </string-array>
     <string name="payments_tier_details_info_builder">Entfessle die Magie der Zusammenarbeit mit mehreren Teilnehmern und genieße erstklassige Unterstützung</string>
     <string-array name="payments_benefits_builder">
@@ -1307,10 +1308,10 @@
     <string name="gallery_experience_made">Erstellt von</string>
     <string name="gallery_experience_install">Installieren</string>
     <string name="gallery_experience_install_new">In neuen Space installieren</string>
-    <string name="gallery_experience_alert_title_success">Experience was installed</string>
-    <string name="gallery_experience_alert_subtitle_success">\"%1$s\" was installed to a new space. You can now open and start using it.</string>
+    <string name="gallery_experience_alert_title_success">Experience wurde installiert</string>
+    <string name="gallery_experience_alert_subtitle_success">\"%1$s\" wurde in einem neuen Space installiert. Sie können es nun öffnen und mit der Verwendung beginnen.</string>
     <string name="gallery_experience_alert_title_error">Hoppla!</string>
-    <string name="gallery_experience_alert_button_space">Open space</string>
+    <string name="gallery_experience_alert_button_space">Öffne Space</string>
     <string name="gallery_experience_alert_button_error">Schließen</string>
     <string name="three_dots_text_placeholder">...</string>
     <string name="notifications_prompt_get_notified">Benachrichtigung erhalten</string>

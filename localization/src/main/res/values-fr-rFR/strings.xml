@@ -1217,6 +1217,7 @@
     <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">Ce lien ne semble pas fonctionner</string>
     <string name="multiplayer_invite_link_space_deleted">Ce lien d\'invitation n\'est plus valide car l\'espace a été supprimé.</string>
     <string name="multiplayer_invite_link_space_not_found">Ce lien d\'invitation n\'est plus valide car l\'espace n\'a pas été trouvé.</string>
+    <string name="multiplayer_invite_link_request_already_sent">Demande envoyée</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Adhésion</string>

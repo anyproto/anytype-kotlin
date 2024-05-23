@@ -16,6 +16,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -37,11 +38,20 @@ fun IntroduceSpacesScreen(
     onDoneClicked: () -> Unit
 ) {
     ConstraintLayout(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color.White,
+                        Color(0xFFFEF2C6)
+                    )
+                )
+            )
     ) {
 
         val coroutineScope = rememberCoroutineScope()
-        val (title, first, second, third, pager, dots, btn, close) = createRefs()
+        val (title, first, second, third, pager, dots, btn) = createRefs()
 
         Text(
             text = "Collaborate on spaces",
@@ -66,7 +76,6 @@ fun IntroduceSpacesScreen(
                     height = Dimension.fillToConstraints
                 }
                 .fillMaxSize()
-                .background(Color.Red)
         ) { page ->
             Text(
                 text = page.inc().toString(),

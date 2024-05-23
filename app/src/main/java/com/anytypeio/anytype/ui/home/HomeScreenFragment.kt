@@ -98,11 +98,8 @@ class HomeScreenFragment : BaseComposeFragment() {
                     ),
                     onProfileClicked = throttledClick(
                         onClick = {
-//                            runCatching {
-//                                findNavController().navigate(R.id.action_open_spaces)
-//                            }
                             runCatching {
-                                findNavController().navigate(R.id.multiplayerFeatureDialog)
+                                findNavController().navigate(R.id.action_open_spaces)
                             }
                         }
                     ),

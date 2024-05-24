@@ -7,12 +7,14 @@ import com.anytypeio.anytype.payments.constants.TiersConstants.MEMBERSHIP_LEVEL_
 import com.anytypeio.anytype.payments.constants.TiersConstants.PRIVACY_POLICY
 import com.anytypeio.anytype.payments.constants.TiersConstants.TERMS_OF_SERVICE
 import com.anytypeio.anytype.payments.playbilling.BillingClientState
+import com.anytypeio.anytype.payments.playbilling.BillingPurchaseState
 import com.anytypeio.anytype.payments.viewmodel.MembershipMainState
 import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
 
 
 fun MembershipStatus.toMainView(
-    billingClientState: BillingClientState
+    billingClientState: BillingClientState,
+    billingPurchaseState: BillingPurchaseState
 ): MembershipMainState {
     val (showBanner, subtitle) = if (activeTier.value in ACTIVE_TIERS_WITH_BANNERS) {
         true to R.string.payments_subheader
@@ -25,7 +27,8 @@ fun MembershipStatus.toMainView(
         tiers = tiers.map {
             it.toPreviewView(
                 membershipStatus = this,
-                billingClientState = billingClientState
+                billingClientState = billingClientState,
+                billingPurchaseState = billingPurchaseState
             )
         },
         membershipLevelDetails = MEMBERSHIP_LEVEL_DETAILS,

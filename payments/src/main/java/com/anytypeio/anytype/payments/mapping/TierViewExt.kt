@@ -60,7 +60,8 @@ fun MembershipTierData.toView(
         membershipAnyName = getAnyName(
             isActive = isActive,
             billingClientState = billingClientState,
-            membershipStatus = membershipStatus
+            membershipStatus = membershipStatus,
+            billingPurchaseState = billingPurchaseState
         ),
         buttonState = toButtonView(
             isActive = isActive,
@@ -141,10 +142,21 @@ private fun MembershipTierData.toButtonView(
                 TierButton.Info.Enabled(androidInfoUrl)
             }
         } else {
-            if (membershipStatus.anyName.isBlank()) {
-                TierButton.Pay.Disabled
-            } else {
-                TierButton.Pay.Enabled
+            when (billingPurchaseState) {
+                is BillingPurchaseState.HasPurchases -> {
+                    //Tier has purchase, but it's not active yet, still waiting for a event from the mw
+                    TierButton.Hidden
+                }
+                BillingPurchaseState.Loading -> {
+                    TierButton.Hidden
+                }
+                BillingPurchaseState.NoPurchases -> {
+                    if (membershipStatus.anyName.isBlank()) {
+                        TierButton.Pay.Disabled
+                    } else {
+                        TierButton.Pay.Enabled
+                    }
+                }
             }
         }
     }
@@ -153,7 +165,8 @@ private fun MembershipTierData.toButtonView(
 private fun MembershipTierData.getAnyName(
     isActive: Boolean,
     billingClientState: BillingClientState,
-    membershipStatus: MembershipStatus
+    membershipStatus: MembershipStatus,
+    billingPurchaseState: BillingPurchaseState
 ): TierAnyName {
     if (isActive) {
         return TierAnyName.Hidden
@@ -164,6 +177,11 @@ private fun MembershipTierData.getAnyName(
             if (membershipStatus.status == Membership.Status.STATUS_PENDING ||
                 membershipStatus.status == Membership.Status.STATUS_PENDING_FINALIZATION
             ) {
+                return TierAnyName.Hidden
+            }
+
+            if (billingPurchaseState is BillingPurchaseState.Loading
+                || billingPurchaseState is BillingPurchaseState.HasPurchases) {
                 return TierAnyName.Hidden
             }
 

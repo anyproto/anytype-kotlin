@@ -100,11 +100,15 @@ class PaymentsViewModel(
                 membershipProvider.status()
                     .onEach { setupBillingClient(it) }
                     .onEach { membershipStatusState.value = it },
-                _billingClientState
-            ) { membershipStatus, billingClientState ->
-                membershipStatus to billingClientState
-            }.collect { (membershipStatus, billingClientState) ->
-                viewState.value = membershipStatus.toMainView(billingClientState)
+                _billingClientState,
+                purchases
+            ) { membershipStatus, billingClientState, purchases ->
+                MainResult(membershipStatus, billingClientState, purchases)
+            }.collect { (membershipStatus, billingClientState, purchases) ->
+                viewState.value = membershipStatus.toMainView(
+                    billingClientState = billingClientState,
+                    billingPurchaseState = purchases
+                )
             }
         }
         viewModelScope.launch {
@@ -742,5 +746,11 @@ data class TierResult(
     val membershipStatus: MembershipStatus?,
     val billingClientState: BillingClientState,
     val showTier: Int,
+    val purchases: BillingPurchaseState
+)
+
+data class MainResult(
+    val membershipStatus: MembershipStatus,
+    val billingClientState: BillingClientState,
     val purchases: BillingPurchaseState
 )

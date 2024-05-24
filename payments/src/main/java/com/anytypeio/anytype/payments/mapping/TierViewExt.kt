@@ -53,7 +53,8 @@ fun MembershipTierData.toView(
         conditionInfo = getConditionInfo(
             isActive = isActive,
             billingClientState = billingClientState,
-            membershipStatus = membershipStatus
+            membershipStatus = membershipStatus,
+            billingPurchaseState = billingPurchaseState
         ),
         isActive = isActive,
         features = features,
@@ -77,6 +78,7 @@ fun MembershipTierData.toView(
 fun MembershipTierData.toPreviewView(
     membershipStatus: MembershipStatus,
     billingClientState: BillingClientState,
+    billingPurchaseState: BillingPurchaseState
 ): TierPreviewView {
     val tierId = TierId(id)
     val isActive = membershipStatus.isTierActive(id)
@@ -89,7 +91,8 @@ fun MembershipTierData.toPreviewView(
         conditionInfo = getConditionInfo(
             isActive = isActive,
             billingClientState = billingClientState,
-            membershipStatus = membershipStatus
+            membershipStatus = membershipStatus,
+            billingPurchaseState = billingPurchaseState
         ),
         isActive = isActive,
         color = colorStr
@@ -211,7 +214,8 @@ private fun MembershipTierData.getAnyName(
 private fun MembershipTierData.getConditionInfo(
     isActive: Boolean,
     billingClientState: BillingClientState,
-    membershipStatus: MembershipStatus
+    membershipStatus: MembershipStatus,
+    billingPurchaseState: BillingPurchaseState
 ): TierConditionInfo {
     return if (isActive) {
         createConditionInfoForCurrentTier(
@@ -222,7 +226,7 @@ private fun MembershipTierData.getConditionInfo(
         if (androidProductId == null) {
             createConditionInfoForNonBillingTier()
         } else {
-            createConditionInfoForBillingTier(billingClientState, membershipStatus)
+            createConditionInfoForBillingTier(billingClientState, membershipStatus, billingPurchaseState)
         }
     }
 }
@@ -262,11 +266,18 @@ private fun formatPriceInCents(priceInCents: Int): String {
 
 private fun MembershipTierData.createConditionInfoForBillingTier(
     billingClientState: BillingClientState,
-    membershipStatus: MembershipStatus
+    membershipStatus: MembershipStatus,
+    billingPurchaseState: BillingPurchaseState
 ): TierConditionInfo {
     if (
         membershipStatus.status == Membership.Status.STATUS_PENDING ||
         membershipStatus.status == Membership.Status.STATUS_PENDING_FINALIZATION
+    ) {
+        return TierConditionInfo.Visible.Pending
+    }
+    if (
+        billingPurchaseState is BillingPurchaseState.Loading
+        || billingPurchaseState is BillingPurchaseState.HasPurchases
     ) {
         return TierConditionInfo.Visible.Pending
     }

@@ -61,7 +61,6 @@ enum class MembershipPeriodType {
 }
 
 data class GetPaymentUrlResponse(
-    val paymentUrl: String,
     val billingId: String
 )
 

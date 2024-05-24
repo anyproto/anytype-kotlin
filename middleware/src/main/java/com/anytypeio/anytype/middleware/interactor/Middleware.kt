@@ -2616,7 +2616,6 @@ class Middleware @Inject constructor(
         val response = service.membershipRegisterPaymentRequest(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return GetPaymentUrlResponse(
-            paymentUrl = response.paymentUrl,
             billingId = response.billingId
         )
     }

@@ -384,17 +384,16 @@ class PaymentsViewModel(
             Timber.e("Tier ${tier.id} has no androidProductId")
             return
         }
+        val params = GetMembershipPaymentUrl.Params(
+            tierId = tier.id,
+            name = name
+        )
         viewModelScope.launch {
-            getMembershipPaymentUrl.async(
-                GetMembershipPaymentUrl.Params(
-                    tierId = tier.id,
-                    name = name
-                )
-            ).fold(
-                onSuccess = { url ->
-                    Timber.d("Payment url: $url")
+            getMembershipPaymentUrl.async(params).fold(
+                onSuccess = { response ->
+                    Timber.d("Payment url: $response")
                     buyBasePlans(
-                        billingId = url.billingId,
+                        billingId = response.billingId,
                         product = androidProductId
                     )
                 },

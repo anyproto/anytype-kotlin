@@ -119,12 +119,20 @@ private fun MembershipTierData.toButtonView(
                 when (membershipStatus.paymentMethod) {
                     MembershipPaymentMethod.METHOD_NONE,
                     MembershipPaymentMethod.METHOD_CRYPTO -> TierButton.Manage.External.Disabled
-                    MembershipPaymentMethod.METHOD_STRIPE -> TierButton.Manage.External.Enabled(
-                        stripeManageUrl
-                    )
-                    MembershipPaymentMethod.METHOD_INAPP_APPLE -> TierButton.Manage.External.Enabled(
-                        iosManageUrl
-                    )
+                    MembershipPaymentMethod.METHOD_STRIPE -> {
+                        if(stripeManageUrl.isNullOrBlank()) {
+                            TierButton.Manage.External.Disabled
+                        } else {
+                            TierButton.Manage.External.Enabled(stripeManageUrl)
+                        }
+                    }
+                    MembershipPaymentMethod.METHOD_INAPP_APPLE -> {
+                        if (iosManageUrl.isNullOrBlank()) {
+                            TierButton.Manage.External.Disabled
+                        } else {
+                            TierButton.Manage.External.Enabled(iosManageUrl)
+                        }
+                    }
                     MembershipPaymentMethod.METHOD_INAPP_GOOGLE -> TierButton.Manage.External.Enabled(
                         androidInfoUrl
                     )

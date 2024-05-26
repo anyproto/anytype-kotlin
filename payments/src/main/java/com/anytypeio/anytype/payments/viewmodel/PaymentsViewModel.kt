@@ -120,6 +120,7 @@ class PaymentsViewModel(
             ) { membershipStatus, billingClientState, showTier, purchases ->
                 TierResult(membershipStatus, billingClientState, showTier, purchases)
             }.collect { (membershipStatus, billingClientState, showTier, billingPurchasesState) ->
+                Timber.d("TierResult: \n----------------------------\nmembershipStatus:[$membershipStatus],\n----------------------------\nbillingClientState:[$billingClientState],\n----------------------------\nbillingPurchasesState:[$billingPurchasesState]")
                 if (showTier != 0) {
                     val tier = membershipStatus?.tiers?.find { it.id == showTier }
                     if (tier != null) {
@@ -370,7 +371,13 @@ class PaymentsViewModel(
             }
 
             MembershipPaymentMethod.METHOD_INAPP_GOOGLE -> {
-                PaymentsNavigation.OpenUrl(MANAGE_SUBSCRIPTION_URL)
+                val androidProductId = tier.androidProductId
+                val url = if (androidProductId != null) {
+                    "https://play.google.com/store/account/subscriptions?sku=$androidProductId&package=io.anytype.app"
+                } else {
+                    null
+                }
+                PaymentsNavigation.OpenUrl(url)
             }
         }
         onCommand(navigationCommand)
@@ -737,8 +744,6 @@ class PaymentsViewModel(
     companion object {
         const val EXPECTED_SUBSCRIPTION_PURCHASE_LIST_SIZE = 1
         const val NAME_VALIDATION_DELAY = 300L
-        const val MANAGE_SUBSCRIPTION_URL =
-            "https://play.google.com/store/account/subscriptions?sku=id_android_sub_builder&package=com.anytypeio.anytype"
     }
 }
 

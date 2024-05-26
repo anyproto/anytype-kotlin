@@ -36,6 +36,8 @@ interface DataViewSubscription {
         offset: Long,
         dataViewRelationLinks: List<RelationLink>
     ): Flow<DataViewState>
+
+    suspend fun unsubscribe(ids: List<Id>)
 }
 
 class DefaultDataViewSubscription(
@@ -130,6 +132,10 @@ class DefaultDataViewSubscription(
             offset = offset
         )
         return dataViewSubscriptionContainer.observe(params)
+    }
+
+    override suspend fun unsubscribe(ids: List<Id>) {
+        dataViewSubscriptionContainer.unsubscribe(ids)
     }
 
     companion object {

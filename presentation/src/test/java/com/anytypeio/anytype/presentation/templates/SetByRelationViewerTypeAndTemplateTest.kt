@@ -10,7 +10,6 @@ import com.anytypeio.anytype.core_models.StubDataViewView
 import com.anytypeio.anytype.core_models.StubDataViewViewRelation
 import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.StubRelationLink
-import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
@@ -106,7 +105,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `set by relation, view type and template are empty, page template empty`() = runTest {
         val spaceId = defaultSpace
-        val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
+        val subscriptionId = DefaultDataViewSubscription.getDataViewSubscriptionId(root)
         val relationObject1 = ObjectWrapper.Relation(map = setByRelationMap)
         val dvViewerRelation1 =
             StubDataViewViewRelation(key = relationObject1.key, isVisible = true)
@@ -196,7 +195,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `set by relation, view type and template are empty, page template blank`() = runTest {
         val workspaceId = defaultSpace
-        val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
+        val subscriptionId = DefaultDataViewSubscription.getDataViewSubscriptionId(root)
         val relationObject1 = ObjectWrapper.Relation(map = setByRelationMap)
         val dvViewerRelation1 =
             StubDataViewViewRelation(key = relationObject1.key, isVisible = true)
@@ -286,7 +285,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `set by relation, view type and template are empty, page template custom`() = runTest {
         val workspaceId = defaultSpace
-        val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
+        val subscriptionId = DefaultDataViewSubscription.getDataViewSubscriptionId(root)
         val relationObject1 = ObjectWrapper.Relation(map = setByRelationMap)
         val dvViewerRelation1 =
             StubDataViewViewRelation(key = relationObject1.key, isVisible = true)
@@ -377,7 +376,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
     fun `set by relation, view type is custom and template is empty, custom type template is not empty`() =
         runTest {
             val spaceId = defaultSpace
-            val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
+            val subscriptionId = DefaultDataViewSubscription.getDataViewSubscriptionId(root)
             val relationObject1 = ObjectWrapper.Relation(map = setByRelationMap)
             val dvViewerRelation1 =
                 StubDataViewViewRelation(key = relationObject1.key, isVisible = true)
@@ -478,7 +477,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
     fun `set by relation, view type is custom and template is empty, custom type template is empty`() =
         runTest {
             val spaceId = defaultSpace
-            val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
+            val subscriptionId = DefaultDataViewSubscription.getDataViewSubscriptionId(root)
             val relationObject1 = ObjectWrapper.Relation(map = setByRelationMap)
             val dvViewerRelation1 =
                 StubDataViewViewRelation(key = relationObject1.key, isVisible = true)
@@ -579,7 +578,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
     fun `set by relation, view type is custom and template is empty, custom type template is blank`() =
         runTest {
             val spaceId = defaultSpace
-            val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
+            val subscriptionId = DefaultDataViewSubscription.getDataViewSubscriptionId(root)
             val relationObject1 = ObjectWrapper.Relation(map = setByRelationMap)
             val dvViewerRelation1 =
                 StubDataViewViewRelation(key = relationObject1.key, isVisible = true)
@@ -680,7 +679,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
     fun `set by relation, view type is custom and template is blank, custom type template is not empty`() =
         runTest {
             val spaceId = defaultSpace
-            val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
+            val subscriptionId = DefaultDataViewSubscription.getDataViewSubscriptionId(root)
             val relationObject1 = ObjectWrapper.Relation(map = setByRelationMap)
             val dvViewerRelation1 =
                 StubDataViewViewRelation(key = relationObject1.key, isVisible = true)
@@ -781,7 +780,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
     fun `set by relation, view type is custom and template is not empty, custom type template is different`() =
         runTest {
             val workspaceId = defaultSpace
-            val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
+            val subscriptionId = DefaultDataViewSubscription.getDataViewSubscriptionId(root)
             val relationObject1 = ObjectWrapper.Relation(map = setByRelationMap)
             val dvViewerRelation1 =
                 StubDataViewViewRelation(key = relationObject1.key, isVisible = true)

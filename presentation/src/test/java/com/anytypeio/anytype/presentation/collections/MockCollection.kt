@@ -237,7 +237,7 @@ class MockCollection(
     )
     val spaceId = space
 
-    val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(context)
+    val subscriptionId = DefaultDataViewSubscription.getDataViewSubscriptionId(context)
 
     val details = Block.Details(
         details = mapOf(

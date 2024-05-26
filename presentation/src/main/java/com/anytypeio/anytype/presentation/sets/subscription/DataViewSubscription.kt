@@ -71,7 +71,7 @@ class DefaultDataViewSubscription(
 
         val params = DataViewSubscriptionContainer.Params(
             collection = collection,
-            subscription = getSubscriptionId(context),
+            subscription = getDataViewSubscriptionId(context),
             sorts = activeViewer.sorts,
             filters = filters,
             sources = listOf(),
@@ -123,7 +123,7 @@ class DefaultDataViewSubscription(
         val keys = ObjectSearchConstants.defaultDataViewKeys + dataViewLinksKeys
 
         val params = DataViewSubscriptionContainer.Params(
-            subscription = getSubscriptionId(context),
+            subscription = getDataViewSubscriptionId(context),
             sorts = activeViewer.sorts,
             filters = filters,
             sources = query,
@@ -141,6 +141,6 @@ class DefaultDataViewSubscription(
     companion object {
         const val DATA_VIEW_SUBSCRIPTION_POSTFIX = "-dataview"
 
-        fun getSubscriptionId(context: Id) = "$context$DATA_VIEW_SUBSCRIPTION_POSTFIX"
+        fun getDataViewSubscriptionId(context: Id) = "$context$DATA_VIEW_SUBSCRIPTION_POSTFIX"
     }
 }

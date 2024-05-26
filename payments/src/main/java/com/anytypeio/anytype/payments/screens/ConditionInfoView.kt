@@ -53,7 +53,11 @@ fun ConditionInfoView(
                 else -> validUntilDate
             }
             val showPayedBy = state.payedBy != MembershipPaymentMethod.METHOD_NONE
-            ConditionInfoViewValid(textValidUntil = result, showPayedBy = showPayedBy)
+            ConditionInfoViewValid(
+                textValidUntil = result,
+                showPayedBy = showPayedBy,
+                paymentMethod = state.payedBy
+            )
         }
 
         is TierConditionInfo.Visible.Price -> {
@@ -120,7 +124,11 @@ private fun ConditionInfoViewPriceAndText(price: String, period: String) {
 }
 
 @Composable
-fun ConditionInfoViewValid(textValidUntil: String, showPayedBy: Boolean = true) {
+fun ConditionInfoViewValid(
+    textValidUntil: String,
+    showPayedBy: Boolean = true,
+    paymentMethod: MembershipPaymentMethod
+    ) {
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
         Text(
             modifier = Modifier
@@ -159,11 +167,19 @@ fun ConditionInfoViewValid(textValidUntil: String, showPayedBy: Boolean = true) 
                 textAlign = TextAlign.Center
             )
             if (showPayedBy) {
+                val payedBy = stringResource(id = R.string.payments_tier_current_paid_by)
+                val paymentText = when (paymentMethod) {
+                    MembershipPaymentMethod.METHOD_NONE -> ""
+                    MembershipPaymentMethod.METHOD_STRIPE -> "$payedBy ${stringResource(id = R.string.payments_tier_current_paid_by_card)}"
+                    MembershipPaymentMethod.METHOD_CRYPTO -> "$payedBy ${stringResource(id = R.string.payments_tier_current_paid_by_crypto)}"
+                    MembershipPaymentMethod.METHOD_INAPP_APPLE -> stringResource(id = R.string.payments_tier_current_paid_by_apple)
+                    MembershipPaymentMethod.METHOD_INAPP_GOOGLE -> stringResource(id = R.string.payments_tier_current_paid_by_google)
+                }
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 23.dp),
-                    text = stringResource(id = R.string.payments_tier_current_paid_by),
+                    text = paymentText,
                     color = colorResource(id = R.color.text_secondary),
                     style = Relations2,
                     textAlign = TextAlign.Center

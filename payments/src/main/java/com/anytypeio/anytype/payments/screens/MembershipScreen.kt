@@ -60,7 +60,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.fontRiccioneRegular
-import com.anytypeio.anytype.payments.models.TierPreviewView
+import com.anytypeio.anytype.payments.models.TierPreview
 import com.anytypeio.anytype.payments.viewmodel.MembershipMainState
 import com.anytypeio.anytype.payments.viewmodel.TierAction
 import com.anytypeio.anytype.presentation.membership.models.TierId
@@ -77,7 +77,7 @@ fun MainPaymentsScreen(
             .fillMaxWidth()
             .wrapContentHeight()
             .background(
-                color = colorResource(id = R.color.background_secondary),
+                color = colorResource(id = R.color.background_primary),
                 shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
             ),
     ) {
@@ -121,7 +121,7 @@ private fun MainContent(
                 InfoCards()
                 Spacer(modifier = Modifier.height(32.dp))
             }
-            TiersList(tiers = state.tiers, onClick = tierClicked)
+            TiersList(tiers = state.tiersPreview, onClick = tierClicked)
             Spacer(modifier = Modifier.height(32.dp))
             LinkButton(text = stringResource(id = R.string.payments_member_link), action = {
                 tierAction(TierAction.OpenUrl(state.membershipLevelDetails))
@@ -213,7 +213,7 @@ private fun Subtitle(@StringRes subtitle: Int) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TiersList(tiers: List<TierPreviewView>, onClick: (TierId) -> Unit) {
+fun TiersList(tiers: List<TierPreview>, onClick: (TierId) -> Unit) {
     val itemsScroll = rememberLazyListState()
     LazyRow(
         state = itemsScroll,

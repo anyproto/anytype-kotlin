@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
@@ -38,7 +39,7 @@ import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierConditionInfo
 import com.anytypeio.anytype.payments.models.TierEmail
 import com.anytypeio.anytype.payments.models.TierPeriod
-import com.anytypeio.anytype.payments.models.TierView
+import com.anytypeio.anytype.payments.models.Tier
 import com.anytypeio.anytype.payments.viewmodel.PaymentsWelcomeState
 import com.anytypeio.anytype.presentation.membership.models.TierId
 
@@ -72,7 +73,7 @@ fun PaymentWelcomeScreen(state: PaymentsWelcomeState, onDismiss: () -> Unit) {
 }
 
 @Composable
-private fun WelcomeContent(tierView: TierView, tierResources: TierResources, onDismiss: () -> Unit) {
+private fun WelcomeContent(tier: Tier, tierResources: TierResources, onDismiss: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -96,7 +97,7 @@ private fun WelcomeContent(tierView: TierView, tierResources: TierResources, onD
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp),
-            text = stringResource(id = R.string.payments_welcome_title, tierView.title),
+            text = stringResource(id = R.string.payments_welcome_title, tier.title),
             color = colorResource(id = R.color.text_primary),
             style = HeadlineHeading,
             textAlign = TextAlign.Center
@@ -130,7 +131,7 @@ private fun WelcomeContent(tierView: TierView, tierResources: TierResources, onD
 fun PaymentWelcomeScreenPreview() {
     PaymentWelcomeScreen(
         PaymentsWelcomeState.Initial(
-            tier = TierView(
+            tier = Tier(
                 id = TierId(value = 3506),
                 isActive = false,
                 title = "Tier Title",
@@ -143,7 +144,12 @@ fun PaymentWelcomeScreenPreview() {
                 membershipAnyName = TierAnyName.Visible.Enter,
                 buttonState = TierButton.Manage.Android.Enabled(""),
                 email = TierEmail.Visible.Enter,
-                color = "dolores"
+                color = "dolores",
+                stripeManageUrl = "",
+                iosManageUrl = "",
+                androidManageUrl = "",
+                androidProductId = "",
+                paymentMethod = MembershipPaymentMethod.METHOD_INAPP_GOOGLE
             )
         )
     ) { }

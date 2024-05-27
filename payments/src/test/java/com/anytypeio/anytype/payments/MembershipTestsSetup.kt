@@ -13,16 +13,16 @@ import com.anytypeio.anytype.domain.payments.GetMembershipPaymentUrl
 import com.anytypeio.anytype.domain.payments.IsMembershipNameValid
 import com.anytypeio.anytype.domain.payments.SetMembershipEmail
 import com.anytypeio.anytype.domain.payments.VerifyMembershipEmailCode
-import com.anytypeio.anytype.payments.constants.TiersConstants
+import com.anytypeio.anytype.payments.constants.MembershipConstants
 import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierConditionInfo
 import com.anytypeio.anytype.payments.models.TierEmail
-import com.anytypeio.anytype.payments.models.TierView
+import com.anytypeio.anytype.payments.models.Tier
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
 import com.anytypeio.anytype.payments.playbilling.BillingClientState
 import com.anytypeio.anytype.payments.playbilling.BillingPurchaseState
-import com.anytypeio.anytype.payments.viewmodel.PaymentsViewModel
+import com.anytypeio.anytype.payments.viewmodel.MembershipViewModel
 import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
 import com.anytypeio.anytype.presentation.membership.models.TierId
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
@@ -85,7 +85,7 @@ open class MembershipTestsSetup {
     protected val androidProductId = "id_android_builder"
 
     fun membershipStatus(tiers: List<MembershipTierData>) = MembershipStatus(
-        activeTier = TierId(TiersConstants.EXPLORER_ID),
+        activeTier = TierId(MembershipConstants.EXPLORER_ID),
         status = Membership.Status.STATUS_ACTIVE,
         dateEnds = 1714199910,
         paymentMethod = MembershipPaymentMethod.METHOD_NONE,
@@ -107,15 +107,15 @@ open class MembershipTestsSetup {
         expectedAnyName: TierAnyName,
         expectedButtonState: TierButton,
         expectedEmailState: TierEmail,
-        tierView: TierView
+        tier: Tier
     ) {
-        assertEquals(expectedId, tierView.id.value)
-        assertEquals("is Active", expectedActive, tierView.isActive)
-        assertEquals("Features", expectedFeatures, tierView.features)
-        assertEquals("Condition info", expectedConditionInfo, tierView.conditionInfo)
-        assertEquals("Any name", expectedAnyName, tierView.membershipAnyName, )
-        assertEquals("Button state", expectedButtonState, tierView.buttonState)
-        assertEquals("Email state", expectedEmailState, tierView.email)
+        assertEquals(expectedId, tier.id.value)
+        assertEquals("is Active", expectedActive, tier.isActive)
+        assertEquals("Features", expectedFeatures, tier.features)
+        assertEquals("Condition info", expectedConditionInfo, tier.conditionInfo)
+        assertEquals("Any name", expectedAnyName, tier.membershipAnyName, )
+        assertEquals("Button state", expectedButtonState, tier.buttonState)
+        assertEquals("Email state", expectedEmailState, tier.email)
     }
 
     protected fun stubMembershipProvider(membershipStatus: MembershipStatus?) {
@@ -155,7 +155,7 @@ open class MembershipTestsSetup {
         }
     }
 
-    protected fun buildViewModel() = PaymentsViewModel(
+    protected fun buildViewModel() = MembershipViewModel(
         analytics = analytics,
         billingClientLifecycle = billingClientLifecycle,
         getAccount = getAccount,

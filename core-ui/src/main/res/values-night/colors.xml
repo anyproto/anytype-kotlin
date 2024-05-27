@@ -107,4 +107,21 @@
     <color name="date_selected_container_color">#483308</color>
     <color name="payments_tier_current_background">#1F1E1D</color>
 
+    <color name="membership_info_gradient_green">#00000000</color>
+    <color name="membership_info_gradient_yellow">#00000000</color>
+    <color name="membership_info_gradient_pink">#00000000</color>
+    <color name="membership_info_gradient_purple">#00000000</color>
+
+    <color name="tier_gradient_red_start">#00000000</color>
+    <color name="tier_gradient_red_end">#F05F5F</color>
+
+    <color name="tier_gradient_blue_start">#00000000</color>
+    <color name="tier_gradient_blue_end">#A5AEFF</color>
+
+    <color name="tier_gradient_teal_start">#00000000</color>
+    <color name="tier_gradient_teal_end">#24BFD4</color>
+
+    <color name="tier_gradient_purple_start">#00000000</color>
+    <color name="tier_gradient_purple_end">#E86DE3</color>
+
 </resources>

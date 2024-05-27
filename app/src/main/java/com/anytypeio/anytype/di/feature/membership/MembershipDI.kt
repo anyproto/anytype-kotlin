@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.di.feature.payments
+package com.anytypeio.anytype.di.feature.membership
 
 import android.content.Context
 import androidx.lifecycle.ViewModelProvider
@@ -15,8 +15,8 @@ import com.anytypeio.anytype.domain.payments.IsMembershipNameValid
 import com.anytypeio.anytype.domain.payments.SetMembershipEmail
 import com.anytypeio.anytype.domain.payments.VerifyMembershipEmailCode
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
-import com.anytypeio.anytype.ui.payments.PaymentsFragment
-import com.anytypeio.anytype.payments.viewmodel.PaymentsViewModelFactory
+import com.anytypeio.anytype.ui.payments.MembershipFragment
+import com.anytypeio.anytype.payments.viewmodel.MembershipViewModelFactory
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import dagger.Binds
 import dagger.Component
@@ -24,25 +24,25 @@ import dagger.Module
 import dagger.Provides
 
 @Component(
-    dependencies = [PaymentsComponentDependencies::class],
+    dependencies = [MembershipComponentDependencies::class],
     modules = [
-        PaymentsModule::class,
-        PaymentsModule.Declarations::class
+        MembershipModule::class,
+        MembershipModule.Declarations::class
     ]
 )
 @PerScreen
-interface PaymentsComponent {
+interface MembershipComponent {
 
     @Component.Factory
     interface Factory {
-        fun create(dependencies: PaymentsComponentDependencies): PaymentsComponent
+        fun create(dependencies: MembershipComponentDependencies): MembershipComponent
     }
 
-    fun inject(fragment: PaymentsFragment)
+    fun inject(fragment: MembershipFragment)
 }
 
 @Module
-object PaymentsModule {
+object MembershipModule {
 
     @JvmStatic
     @Provides
@@ -98,13 +98,13 @@ object PaymentsModule {
         @PerScreen
         @Binds
         fun bindViewModelFactory(
-            factory: PaymentsViewModelFactory
+            factory: MembershipViewModelFactory
         ): ViewModelProvider.Factory
 
     }
 }
 
-interface PaymentsComponentDependencies : ComponentDependencies {
+interface MembershipComponentDependencies : ComponentDependencies {
     fun analytics(): Analytics
     fun context(): Context
     fun billingListener(): BillingClientLifecycle

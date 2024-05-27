@@ -5,13 +5,13 @@ import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
-import com.anytypeio.anytype.payments.constants.TiersConstants
+import com.anytypeio.anytype.payments.constants.MembershipConstants
 import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierConditionInfo
 import com.anytypeio.anytype.payments.models.TierEmail
 import com.anytypeio.anytype.payments.models.TierPeriod
-import com.anytypeio.anytype.payments.models.TierPreviewView
+import com.anytypeio.anytype.payments.models.TierPreview
 import com.anytypeio.anytype.payments.playbilling.BillingClientState
 import com.anytypeio.anytype.payments.viewmodel.MembershipMainState
 import com.anytypeio.anytype.payments.viewmodel.MembershipTierState
@@ -44,14 +44,14 @@ class TierActivePurchasedOniOSTests : MembershipTestsSetup() {
     private fun setupTierData(features: List<String>): List<MembershipTierData> {
         return listOf(
             StubMembershipTierData(
-                id = TiersConstants.EXPLORER_ID,
+                id = MembershipConstants.EXPLORER_ID,
                 androidProductId = null,
                 features = features,
                 periodType = MembershipPeriodType.PERIOD_TYPE_UNLIMITED,
                 priceStripeUsdCents = 0
             ),
             StubMembershipTierData(
-                id = TiersConstants.BUILDER_ID,
+                id = MembershipConstants.BUILDER_ID,
                 features = features,
                 periodValue = 1,
                 periodType = MembershipPeriodType.PERIOD_TYPE_YEARS,
@@ -59,7 +59,7 @@ class TierActivePurchasedOniOSTests : MembershipTestsSetup() {
                 iosManageUrl = iosManageUrl
             ),
             StubMembershipTierData(
-                id = TiersConstants.CO_CREATOR_ID,
+                id = MembershipConstants.CO_CREATOR_ID,
                 androidProductId = null,
                 features = features,
                 periodValue = 3,
@@ -79,7 +79,7 @@ class TierActivePurchasedOniOSTests : MembershipTestsSetup() {
 
     private fun setupMembershipStatus(tiers: List<MembershipTierData>): MembershipStatus {
         return MembershipStatus(
-            activeTier = TierId(TiersConstants.BUILDER_ID),
+            activeTier = TierId(MembershipConstants.BUILDER_ID),
             status = Membership.Status.STATUS_ACTIVE,
             dateEnds = dateEnds,
             paymentMethod = MembershipPaymentMethod.METHOD_INAPP_APPLE,
@@ -107,9 +107,9 @@ class TierActivePurchasedOniOSTests : MembershipTestsSetup() {
 
             viewStateFlow.awaitItem().let { result ->
                 assertIs<MembershipMainState.Default>(result)
-                val tier: TierPreviewView =
-                    result.tiers.find { it.id.value == TiersConstants.BUILDER_ID }!!
-                TestCase.assertEquals(TiersConstants.BUILDER_ID, tier.id.value)
+                val tier: TierPreview =
+                    result.tiersPreview.find { it.id.value == MembershipConstants.BUILDER_ID }!!
+                TestCase.assertEquals(MembershipConstants.BUILDER_ID, tier.id.value)
                 TestCase.assertEquals(true, tier.isActive)
                 TestCase.assertEquals(
                     TierConditionInfo.Visible.Valid(
@@ -121,12 +121,12 @@ class TierActivePurchasedOniOSTests : MembershipTestsSetup() {
                 )
             }
 
-            viewModel.onTierClicked(TierId(TiersConstants.BUILDER_ID))
+            viewModel.onTierClicked(TierId(MembershipConstants.BUILDER_ID))
 
             tierStateFlow.awaitItem().let { result ->
                 assertIs<MembershipTierState.Visible>(result)
                 validateTierView(
-                    tierView = result.tierView,
+                    tier = result.tier,
                     expectedFeatures = features,
                     expectedConditionInfo = TierConditionInfo.Visible.Valid(
                         dateEnds = dateEnds,
@@ -135,7 +135,7 @@ class TierActivePurchasedOniOSTests : MembershipTestsSetup() {
                     ),
                     expectedAnyName = TierAnyName.Hidden,
                     expectedButtonState = TierButton.Manage.External.Enabled(iosManageUrl),
-                    expectedId = TiersConstants.BUILDER_ID,
+                    expectedId = MembershipConstants.BUILDER_ID,
                     expectedActive = true,
                     expectedEmailState = TierEmail.Hidden
                 )
@@ -153,7 +153,7 @@ class TierActivePurchasedOniOSTests : MembershipTestsSetup() {
                 stubBilling(billingClientState = BillingClientState.Loading)
                 stubMembershipProvider(
                     MembershipStatus(
-                        activeTier = TierId(TiersConstants.BUILDER_ID),
+                        activeTier = TierId(MembershipConstants.BUILDER_ID),
                         status = Membership.Status.STATUS_ACTIVE,
                         dateEnds = dateEnds,
                         paymentMethod = MembershipPaymentMethod.METHOD_CRYPTO,
@@ -172,9 +172,9 @@ class TierActivePurchasedOniOSTests : MembershipTestsSetup() {
 
                 viewStateFlow.awaitItem().let { result ->
                     assertIs<MembershipMainState.Default>(result)
-                    val tier: TierPreviewView =
-                        result.tiers.find { it.id.value == TiersConstants.BUILDER_ID }!!
-                    TestCase.assertEquals(TiersConstants.BUILDER_ID, tier.id.value)
+                    val tier: TierPreview =
+                        result.tiersPreview.find { it.id.value == MembershipConstants.BUILDER_ID }!!
+                    TestCase.assertEquals(MembershipConstants.BUILDER_ID, tier.id.value)
                     TestCase.assertEquals(true, tier.isActive)
                     TestCase.assertEquals(
                         TierConditionInfo.Visible.Valid(
@@ -186,12 +186,12 @@ class TierActivePurchasedOniOSTests : MembershipTestsSetup() {
                     )
                 }
 
-                viewModel.onTierClicked(TierId(TiersConstants.BUILDER_ID))
+                viewModel.onTierClicked(TierId(MembershipConstants.BUILDER_ID))
 
                 tierStateFlow.awaitItem().let { result ->
                     assertIs<MembershipTierState.Visible>(result)
                     validateTierView(
-                        tierView = result.tierView,
+                        tier = result.tier,
                         expectedFeatures = features,
                         expectedConditionInfo = TierConditionInfo.Visible.Valid(
                             dateEnds = dateEnds,
@@ -200,7 +200,7 @@ class TierActivePurchasedOniOSTests : MembershipTestsSetup() {
                         ),
                         expectedAnyName = TierAnyName.Hidden,
                         expectedButtonState = TierButton.Hidden,
-                        expectedId = TiersConstants.BUILDER_ID,
+                        expectedId = MembershipConstants.BUILDER_ID,
                         expectedActive = true,
                         expectedEmailState = TierEmail.Hidden
                     )

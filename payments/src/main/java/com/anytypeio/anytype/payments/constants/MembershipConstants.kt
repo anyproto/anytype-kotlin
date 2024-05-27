@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.payments.constants
 
-object TiersConstants {
+object MembershipConstants {
 
     const val NONE_ID = 0
     const val EXPLORER_ID = 1

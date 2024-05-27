@@ -33,8 +33,8 @@ import com.anytypeio.anytype.payments.screens.PaymentWelcomeScreen
 import com.anytypeio.anytype.payments.screens.TierViewScreen
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.payments.viewmodel.PaymentsNavigation
-import com.anytypeio.anytype.payments.viewmodel.PaymentsViewModel
-import com.anytypeio.anytype.payments.viewmodel.PaymentsViewModelFactory
+import com.anytypeio.anytype.payments.viewmodel.MembershipViewModel
+import com.anytypeio.anytype.payments.viewmodel.MembershipViewModelFactory
 import com.google.accompanist.navigation.material.BottomSheetNavigator
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
@@ -43,11 +43,11 @@ import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import javax.inject.Inject
 import timber.log.Timber
 
-class PaymentsFragment : BaseBottomSheetComposeFragment() {
+class MembershipFragment : BaseBottomSheetComposeFragment() {
 
     @Inject
-    lateinit var factory: PaymentsViewModelFactory
-    private val vm by viewModels<PaymentsViewModel> { factory }
+    lateinit var factory: MembershipViewModelFactory
+    private val vm by viewModels<MembershipViewModel> { factory }
     private lateinit var navController: NavHostController
 
     @Inject
@@ -153,7 +153,7 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupBottomSheetBehavior(DEFAULT_PADDING_TOP)
-        subscribe(vm.command) { command ->
+        subscribe(vm.navigation) { command ->
             Timber.d("PaymentsFragment command: $command")
             when (command) {
                 PaymentsNavigation.Tier -> navController.navigate(PaymentsNavigation.Tier.route)
@@ -188,7 +188,6 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
                             "&body=$body"
                     proceedWithAction(SystemAction.MailTo(mailBody))
                 }
-                null -> {}
             }
         }
         subscribe(vm.launchBillingCommand) { event ->
@@ -199,11 +198,16 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
         }
     }
 
+    override fun onDestroy() {
+        lifecycle.removeObserver(billingClientLifecycle)
+        super.onDestroy()
+    }
+
     override fun injectDependencies() {
-        componentManager().paymentsComponent.get().inject(this)
+        componentManager().membershipComponent.get().inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().paymentsComponent.release()
+        componentManager().membershipComponent.release()
     }
 }

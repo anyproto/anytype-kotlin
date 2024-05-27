@@ -128,18 +128,16 @@ fun ProfileSettingsScreen(
         item {
             Divider(paddingStart = 60.dp)
         }
-        if (membershipStatus != null) {
-            item {
-                OptionMembership(
-                    image = R.drawable.ic_membership,
-                    text = stringResource(R.string.settings_membership),
-                    onClick = onMembershipClicked,
-                    membershipStatus = membershipStatus
-                )
-            }
-            item {
-                Divider(paddingStart = 60.dp)
-            }
+        item {
+            OptionMembership(
+                image = R.drawable.ic_membership,
+                text = stringResource(R.string.settings_membership),
+                onClick = onMembershipClicked,
+                membershipStatus = membershipStatus
+            )
+        }
+        item {
+            Divider(paddingStart = 60.dp)
         }
         item {
             Option(

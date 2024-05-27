@@ -94,7 +94,7 @@ fun IntroduceSpacesScreen(
                     Box(modifier = Modifier.fillMaxSize()) {
                         Image(
                             painter = painterResource(id = R.drawable.ic_sharing_step_2),
-                            contentDescription = "Screenshot 1",
+                            contentDescription = "Screenshot 2",
                             modifier = Modifier.align(Alignment.Center)
                         )
                     }
@@ -103,7 +103,7 @@ fun IntroduceSpacesScreen(
                     Box(modifier = Modifier.fillMaxSize()) {
                         Image(
                             painter = painterResource(id = R.drawable.ic_sharing_step_3),
-                            contentDescription = "Screenshot 1",
+                            contentDescription = "Screenshot 3",
                             modifier = Modifier.align(Alignment.Center)
                         )
                     }

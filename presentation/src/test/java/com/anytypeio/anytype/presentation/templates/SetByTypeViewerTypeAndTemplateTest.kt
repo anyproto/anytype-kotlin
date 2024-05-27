@@ -11,7 +11,6 @@ import com.anytypeio.anytype.core_models.StubDataViewViewRelation
 import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.StubRelationLink
 import com.anytypeio.anytype.core_models.StubRelationObject
-import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
@@ -26,10 +25,8 @@ import kotlinx.coroutines.test.runTest
 import net.bytebuddy.utility.RandomString
 import org.junit.After
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
-import org.mockito.junit.MockitoJUnit
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
@@ -92,7 +89,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `set by type, type default template is empty, views settings are empty`() = runTest {
         val spaceId = defaultSpace
-        val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
+        val subscriptionId = DefaultDataViewSubscription.getDataViewSubscriptionId(root)
         val relationObject1 = StubRelationObject()
         val dvViewerRelation1 =
             StubDataViewViewRelation(key = relationObject1.key, isVisible = true)
@@ -181,7 +178,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `set by type, type default template is blank, views settings are empty`() = runTest {
         val spaceId = defaultSpace
-        val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
+        val subscriptionId = DefaultDataViewSubscription.getDataViewSubscriptionId(root)
         val relationObject1 = StubRelationObject()
         val dvViewerRelation1 =
             StubDataViewViewRelation(key = relationObject1.key, isVisible = true)
@@ -270,7 +267,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `set by type, type default template is not blank, views settings are empty`() = runTest {
         val spaceId = defaultSpace
-        val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
+        val subscriptionId = DefaultDataViewSubscription.getDataViewSubscriptionId(root)
         val relationObject1 = StubRelationObject()
         val dvViewerRelation1 =
             StubDataViewViewRelation(key = relationObject1.key, isVisible = true)
@@ -362,7 +359,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
     fun `set by type, type default template is not blank, views settings has different type and template`() =
         runTest {
             val spaceId = defaultSpace
-            val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
+            val subscriptionId = DefaultDataViewSubscription.getDataViewSubscriptionId(root)
             val relationObject1 = StubRelationObject()
             val dvViewerRelation1 =
                 StubDataViewViewRelation(key = relationObject1.key, isVisible = true)
@@ -462,7 +459,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `set by type, type default template is not blank, view template is different`() = runTest {
         val spaceId = defaultSpace
-        val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
+        val subscriptionId = DefaultDataViewSubscription.getDataViewSubscriptionId(root)
         val relationObject1 = StubRelationObject()
         val dvViewerRelation1 =
             StubDataViewViewRelation(key = relationObject1.key, isVisible = true)
@@ -551,7 +548,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `set by type, type default template is not blank, view template is blank`() = runTest {
         val spaceId = defaultSpace
-        val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
+        val subscriptionId = DefaultDataViewSubscription.getDataViewSubscriptionId(root)
         val relationObject1 = StubRelationObject()
         val dvViewerRelation1 =
             StubDataViewViewRelation(key = relationObject1.key, isVisible = true)

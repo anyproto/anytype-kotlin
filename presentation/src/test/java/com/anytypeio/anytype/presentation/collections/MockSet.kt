@@ -40,7 +40,7 @@ class MockSet(
         fields = Block.Fields(mapOf(Relations.ICON_EMOJI to emoji))
     )
     val spaceId = space
-    val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(context)
+    val subscriptionId = DefaultDataViewSubscription.getDataViewSubscriptionId(context)
     val setOf get() = setOfValue
 
     // RELATION OBJECTS

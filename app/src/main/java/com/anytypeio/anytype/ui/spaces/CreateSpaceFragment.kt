@@ -50,7 +50,17 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
                 }
                 LaunchedEffect(Unit) {
                     vm.isSucceeded.collect { isSucceeded ->
-                        if (isSucceeded) findNavController().navigate(R.id.switchSpaceAction)
+                        if (isSucceeded) {
+                            findNavController().navigate(R.id.switchSpaceAction)
+                        }
+                    }
+                }
+                LaunchedEffect(Unit) {
+                    vm.exitWithMultiplayerTip.collect { isSucceeded ->
+                        if (isSucceeded) {
+                            findNavController().navigate(R.id.switchSpaceAction)
+                            findNavController().navigate(R.id.multiplayerFeatureDialog)
+                        }
                     }
                 }
             }

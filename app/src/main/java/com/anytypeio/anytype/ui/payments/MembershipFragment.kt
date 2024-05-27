@@ -43,7 +43,7 @@ import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import javax.inject.Inject
 import timber.log.Timber
 
-class PaymentsFragment : BaseBottomSheetComposeFragment() {
+class MembershipFragment : BaseBottomSheetComposeFragment() {
 
     @Inject
     lateinit var factory: PaymentsViewModelFactory
@@ -55,8 +55,10 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //todo возможно стоит отказаться от initBillingClient и запускать сразу billing
         lifecycleScope.subscribe(vm.initBillingClient) { init ->
             if (init) {
+                //todo проверить не добавляется ли множество observer
                 lifecycle.addObserver(billingClientLifecycle)
             }
         }
@@ -153,7 +155,7 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupBottomSheetBehavior(DEFAULT_PADDING_TOP)
-        subscribe(vm.command) { command ->
+        subscribe(vm.navigation) { command ->
             Timber.d("PaymentsFragment command: $command")
             when (command) {
                 PaymentsNavigation.Tier -> navController.navigate(PaymentsNavigation.Tier.route)
@@ -188,7 +190,6 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
                             "&body=$body"
                     proceedWithAction(SystemAction.MailTo(mailBody))
                 }
-                null -> {}
             }
         }
         subscribe(vm.launchBillingCommand) { event ->

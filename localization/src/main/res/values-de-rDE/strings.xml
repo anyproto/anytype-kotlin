@@ -729,7 +729,7 @@
     <string name="go_to_settings">Gehe zu Einstellung</string>
     <string name="do_not_forget_mnemonic_phrase">Vergiss nicht, deinen Schlüssel mitzunehmen und zu speichern</string>
     <string name="you_can_always_find_mnemonic_in_settings">Die Phrase findest du in den Einstellungen auf dem Dashboard-Bildschirm.</string>
-    <string name="if_you_lose_recovery_phrase_warning">If you lose the Key and get logged out you will not be able to ever access your data again. Save this Key outside of Anytype for data recovery.</string>
+    <string name="if_you_lose_recovery_phrase_warning">Wenn du den Wiederherstellungsschlüssel verlierst und ausgeloggt wirst, kannst du nie wieder auf deine Daten zugreifen. Bewahre diesen Schlüssel zur Wiederherstellung außerhalb von Anytype auf.</string>
     <string name="card_size">Kartengröße</string>
     <string name="clear_cache">Cache leeren</string>
     <string name="clear_cache_title">Sind Sie sicher?</string>
@@ -743,17 +743,17 @@
     <string name="unsplash">Unsplash</string>
     <string name="cancel_deletion">Löschung abbrechen</string>
     <string name="logout_and_clear_local_data">Abmelden und lokale Daten löschen</string>
-    <string name="planned_for_deletion_in_n_days">This vault is planned for deletion in %1$d days</string>
-    <string name="planned_for_deletion_tomorrow">This vault is planned for deletion tomorrow</string>
-    <string name="planned_for_deletion_today">This vault is planned for deletion today</string>
-    <string name="planned_for_deletion_unknown">This vault is planned for deletion in ? days</string>
-    <string name="are_you_sure_to_delete_account">Are you sure to delete your vault?</string>
+    <string name="planned_for_deletion_in_n_days">Dieser Tresor soll in %1$d Tagen gelöscht werden</string>
+    <string name="planned_for_deletion_tomorrow">Dieser Tresor soll morgen gelöscht werden</string>
+    <string name="planned_for_deletion_today">Dieser Tresor soll heute gelöscht werden</string>
+    <string name="planned_for_deletion_unknown">Dieser Tresor soll in ? Tagen gelöscht werden</string>
+    <string name="are_you_sure_to_delete_account">Bist du sicher, dass du deinen Tresor löschen möchtest?</string>
     <string name="deleted_account_warning_msg">Du wirst auf allen anderen Geräten ausgeloggt. Sie haben 30 Tage Zeit, zum Wiederherstellen. Danach werden deine Daten dauerhaft gelöscht.</string>
     <string name="use_template">Vorlage auswählen</string>
     <string name="swipe_to_choose">Wischen zum Auswählen</string>
     <string name="without_template">Ohne Vorlage</string>
     <string name="unsplash_generic_error">Fehler beim Suchen nach Bildern auf Unsplash. Bitte versuche es später erneut.</string>
-    <string name="do_not_forget_to_save_recovery_phrase_msg">Don\'t forget to take and save your Key from settings</string>
+    <string name="do_not_forget_to_save_recovery_phrase_msg">Vergiss nicht, deinen Schlüssel aus den Einstellungen zu entnehmen und zu speichern</string>
     <string name="unlock_your_object_to_add_new_relation">Entsperre dein Objekt, um neue Beziehung hinzuzufügen</string>
     <string name="unlock_your_object_to_edit_relations">Entsperre dein Objekt, um Beziehungen zu bearbeiten</string>
     <string name="fragment_relation_create_from_scratch_title">Relationstyp auswählen</string>
@@ -981,7 +981,7 @@
     <string name="onboarding_void_title">Das ist dein Void</string>
     <string name="onboarding_void_description">Es ist ein verschlüsselter Ort für alles, was du erstellst. Alles wird auf deinem Gerät gespeichert und im dezentralen Netzwerk gesichert.</string>
     <string name="onboarding_this_is_your_key_title">Dies ist dein Schlüssel</string>
-    <string name="onboarding_key_description">It gives you full ownership over your vault. It cannot be recovered.</string>
+    <string name="onboarding_key_description">Damit bist du vollständiger Eigentümer deines Tresors. Er kann nicht wiederhergestellt werden.</string>
     <string name="onboarding_show_my_key">Meinen Schlüssel anzeigen</string>
     <string name="onboarding_key_skip">Überspringen</string>
     <string name="onboarding_key_copy">In die Zwischenablage kopieren</string>
@@ -989,16 +989,16 @@
     <string name="onboarding_soul_creation_description">Nur von Leuten gesehen, mit denen du etwas teilst. Es gibt kein zentrales Register dieser Namen.</string>
     <string name="onboarding_soul_creation_placeholder">Anytype-Identität</string>
     <string name="onboarding_soul_creation">Identität wird erstellt...</string>
-    <string name="onboarding_type_your_key">Type your Key</string>
+    <string name="onboarding_type_your_key">Gib deinen Schlüssel ein</string>
     <string name="onboarding_login_or">ODER</string>
     <string name="onboarding_entering_void_title">Leere betreten</string>
-    <string name="onboarding_your_key_can_t_be_empty">Your Key can\'t be empty</string>
+    <string name="onboarding_your_key_can_t_be_empty">Dein Schlüssel darf nicht leer sein</string>
     <string name="onboarding_mnemonic_read_more">Mehr lesen</string>
     <string name="onboarding_key_additional_info">Du findest diesen Schlüssel später in den Anytype-Einstellungen</string>
     <string name="onboarding_what_is_the_key">Was ist der Schlüssel?</string>
     <string name="onboarding_recovery_phrase_description">Sie wird durch eine Wiederherstellungsphrase dargestellt - 12 zufällige Wörter, aus denen dein Tresor auf magische Weise auf diesem Gerät generiert wird.</string>
-    <string name="onboarding_recovery_phrase_description_2">Whomever knows the combination of these words owns your vault. </string>
-    <string name="onboarding_recovery_phrase_description_3">Right now, you are the only person in the world who knows it.</string>
+    <string name="onboarding_recovery_phrase_description_2">Wer die Kombination dieser Wörter kennt, dem gehört dein Tresor. </string>
+    <string name="onboarding_recovery_phrase_description_3">Im Moment bist du der einzige Mensch auf der Welt, der sie kennt.</string>
     <string name="onboarding_recovery_phrase_description_4">Alle Rechenressourcen der Welt reichen nicht aus, um ihn zu knacken. Wenn du ihn verlierst, kann er nicht wiederhergestellt werden. Bewahre ihn also an einem sicheren Ort auf!</string>
     <string name="onboarding_how_to_save_my_phrase">Wie speicher ich meinen Schlüssel?</string>
     <string name="onboarding_how_to_save_my_phrase_2">Am einfachsten speicherst du deinen Schlüssel in einem Password Manager</string>
@@ -1164,7 +1164,7 @@
     <string name="multiplayer_show_qr_code">QR-Code anzeigen</string>
     <string name="multiplayer_how_to_share_space">Wie teilt man einen Space?</string>
     <string name="multiplayer_how_to_share_space_step_1">Bitte gib den Link zu der Person an, mit der du zusammenarbeiten möchtest.</string>
-    <string name="multiplayer_how_to_share_space_qr_code">Show this QR code to the person you\'d like to collaborate with.</string>
+    <string name="multiplayer_how_to_share_space_qr_code">Bitte teile diesen QR-Code mit der Person, mit der Du zusammenarbeiten möchtest.</string>
     <string name="multiplayer_how_to_share_space_step_2">By clicking the link, a person requests to join the space.</string>
     <string name="multiplayer_how_to_share_space_step_3">Nach der Genehmigung der Anfrage kannst du die Zugriffsrechte für diese Person festlegen.</string>
     <string name="multiplayer_how_share_one">1.</string>
@@ -1195,7 +1195,7 @@
     <string name="multiplayer_notification_view_request">Ansicht</string>
     <string name="multiplayer_notification_go_to_space">Gehe zum Space</string>
     <string name="multiplayer_toast_permission_not_allowed">Ändern von Berechtigungen ist nicht erlaubt</string>
-    <string name="multiplayer_toast_share_limit_reached">Sharing limit reached</string>
+    <string name="multiplayer_toast_share_limit_reached">Freigabelimit erreicht</string>
     <string name="multiplayer_deeplink_to_your_object">Deeplink to your object</string>
     <string name="multiplayer_deeplink_to_your_object_error">This deeplink is not working. Object might be deleted or there might be issues with space access.</string>
     <plurals name="multiplayer_number_of_space_members">
@@ -1211,12 +1211,12 @@
     <string name="multiplayer_space_status_joining">Beitreten</string>
     <string name="multiplayer_space_status_active">Aktiv</string>
     <string name="multiplayer_space_status_removing">Entfernt</string>
-    <string name="multiplayer_cancel_join_request">Cancel join request</string>
-    <string name="multiplayer_cancel_join_request_msg">You will have to send join request again</string>
+    <string name="multiplayer_cancel_join_request">Beitrittsanfrage zurückziehen</string>
+    <string name="multiplayer_cancel_join_request_msg">Du wirst eine neue Beitrittsanfrage senden müssen</string>
     <string name="multiplayer_do_not_cancel_join_request">Nicht verwerfen</string>
     <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">Der Link scheint nicht zu funktionieren</string>
-    <string name="multiplayer_invite_link_space_deleted">This invite link is no longer valid because the space has been deleted.</string>
-    <string name="multiplayer_invite_link_space_not_found">This invite link is no longer valid because the space was not found.</string>
+    <string name="multiplayer_invite_link_space_deleted">Dieser Einladungslink ist nicht mehr gültig, da der Raum gelöscht wurde.</string>
+    <string name="multiplayer_invite_link_space_not_found">Dieser Einladungslink ist nicht mehr gültig, da der Raum gelöscht wurde.</string>
     <string name="multiplayer_invite_link_request_already_sent">Anfrage gesendet</string>
     <!--endregion-->
     <!--region PAYMENTS -->
@@ -1249,7 +1249,7 @@
     <!-- Tier details -->
     <string name="payments_tier_details_name_title">Wähle deinen einzigartigen Namen</string>
     <string name="payments_tier_details_name_subtitle">Dies ist dein eindeutiger Name im Anytype-Netzwerk, der deine Mitgliedschaft bestätigt. Er dient als deine persönliche Domain und kann nicht geändert werden.</string>
-    <string name="payments_tier_details_name_hint">Myself</string>
+    <string name="payments_tier_details_name_hint">Ich</string>
     <string name="payments_tier_details_name_domain">.any</string>
     <string name="payments_tier_details_name_min">Mindestens 7 Zeichen</string>
     <string name="payments_tier_details_name_error">Dieser Name ist bereits vergeben!</string>
@@ -1316,8 +1316,8 @@
     <string name="three_dots_text_placeholder">...</string>
     <string name="notifications_prompt_get_notified">Benachrichtigung erhalten</string>
     <string name="notifications_prompt_secondary_button_text">Nicht jetzt</string>
-    <string name="notifications_prompt_description">Please enable notifications to stay informed about any requests to join or leave spaces.</string>
+    <string name="notifications_prompt_description">Bitte aktiviere Benachrichtigungen, um über Anfragen zum Bei- oder Austritt für Räume informiert zu bleiben.</string>
     <string name="notifications_prompt_primary_button_text">Aktivieren</string>
     <string name="clipboard_panel_create_bookmark_from_clipboard">Lesezeichen aus der Zwischenablage erstellen</string>
-    <string name="error_unexpected_layout">Error: unexpected layout</string>
+    <string name="error_unexpected_layout">Fehler: Unerwartetes Layout</string>
 </resources>

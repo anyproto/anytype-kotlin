@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.SubscriptionEvent
 import com.anytypeio.anytype.domain.`object`.move
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.base.runCatchingL
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import kotlinx.coroutines.flow.Flow
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.scan
+import kotlinx.coroutines.withContext
 
 /**
  * Container for data view subscription responsible for:
@@ -171,6 +173,14 @@ class DataViewSubscriptionContainer(
      * Returns events for subscriptions and dependent subscriptions
      */
     private fun subscribe(subscriptions: List<Id>) = channel.subscribe(subscriptions)
+
+    suspend fun unsubscribe(subscriptions: List<Id>) {
+        withContext(dispatchers.io) {
+            runCatchingL {
+                repo.cancelObjectSearchSubscription(subscriptions)
+            }
+        }
+    }
 
     data class Params(
         val subscription: Id,

@@ -118,17 +118,19 @@ private fun MembershipTierData.toButtonView(
             } else {
                 when (membershipStatus.paymentMethod) {
                     MembershipPaymentMethod.METHOD_NONE,
-                    MembershipPaymentMethod.METHOD_CRYPTO -> TierButton.Manage.External.Disabled
+                    MembershipPaymentMethod.METHOD_CRYPTO -> {
+                        TierButton.Hidden
+                    }
                     MembershipPaymentMethod.METHOD_STRIPE -> {
-                        if(stripeManageUrl.isNullOrBlank()) {
-                            TierButton.Manage.External.Disabled
+                        if (stripeManageUrl.isNullOrBlank()) {
+                            TierButton.Hidden
                         } else {
                             TierButton.Manage.External.Enabled(stripeManageUrl)
                         }
                     }
                     MembershipPaymentMethod.METHOD_INAPP_APPLE -> {
                         if (iosManageUrl.isNullOrBlank()) {
-                            TierButton.Manage.External.Disabled
+                            TierButton.Hidden
                         } else {
                             TierButton.Manage.External.Enabled(iosManageUrl)
                         }

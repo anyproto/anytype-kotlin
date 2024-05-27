@@ -394,7 +394,12 @@ fun TierViewScreenPreview() {
                 id = TierId(value = EXPLORER_ID),
                 membershipAnyName = TierAnyName.Visible.Purchased("someanyname111"),
                 email = TierEmail.Visible.Enter,
-                color = "teal"
+                color = "teal",
+                stripeManageUrl = "",
+                iosManageUrl = "",
+                androidManageUrl = "",
+                androidProductId = "",
+                paymentMethod = MembershipPaymentMethod.METHOD_INAPP_GOOGLE
             )
         ),
         actionTier = {},

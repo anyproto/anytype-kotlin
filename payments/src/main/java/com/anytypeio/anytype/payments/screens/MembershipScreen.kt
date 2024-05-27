@@ -77,7 +77,7 @@ fun MainPaymentsScreen(
             .fillMaxWidth()
             .wrapContentHeight()
             .background(
-                color = colorResource(id = R.color.background_secondary),
+                color = colorResource(id = R.color.background_primary),
                 shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
             ),
     ) {
@@ -121,7 +121,7 @@ private fun MainContent(
                 InfoCards()
                 Spacer(modifier = Modifier.height(32.dp))
             }
-            TiersList(tiers = state.tiers, onClick = tierClicked)
+            TiersList(tiers = state.tiersPreview, onClick = tierClicked)
             Spacer(modifier = Modifier.height(32.dp))
             LinkButton(text = stringResource(id = R.string.payments_member_link), action = {
                 tierAction(TierAction.OpenUrl(state.membershipLevelDetails))

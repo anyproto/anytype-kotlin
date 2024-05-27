@@ -51,7 +51,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
 
             val result = viewStateFlow.awaitItem()
             assertIs<MembershipMainState.Default>(result)
-            val tier = result.tiers[0]
+            val tier = result.tiersPreview[0]
 
             //Asserts
             assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
@@ -95,7 +95,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
 
             val result = viewStateFlow.awaitItem()
             assertIs<MembershipMainState.Default>(result)
-            val tier = result.tiers[0]
+            val tier = result.tiersPreview[0]
 
             //Asserts
             assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
@@ -139,7 +139,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
 
             val result = viewStateFlow.awaitItem()
             assertIs<MembershipMainState.Default>(result)
-            val tier = result.tiers[0]
+            val tier = result.tiersPreview[0]
 
             //Asserts
             assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
@@ -183,7 +183,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
 
             val result = viewStateFlow.awaitItem()
             assertIs<MembershipMainState.Default>(result)
-            val tier = result.tiers[0]
+            val tier = result.tiersPreview[0]
 
             //Asserts
             assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
@@ -228,7 +228,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
 
             val result = viewStateFlow.awaitItem()
             assertIs<MembershipMainState.Default>(result)
-            val tier = result.tiers[0]
+            val tier = result.tiersPreview[0]
 
             //Asserts
             assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
@@ -273,7 +273,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
 
             val result = viewStateFlow.awaitItem()
             assertIs<MembershipMainState.Default>(result)
-            val tier = result.tiers[0]
+            val tier = result.tiersPreview[0]
 
             //Asserts
             assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
@@ -318,7 +318,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
 
             val result = viewStateFlow.awaitItem()
             assertIs<MembershipMainState.Default>(result)
-            val tier = result.tiers[0]
+            val tier = result.tiersPreview[0]
 
             //Asserts
             assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
@@ -364,7 +364,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
 
             val result = viewStateFlow.awaitItem()
             assertIs<MembershipMainState.Default>(result)
-            val tier = result.tiers[0]
+            val tier = result.tiersPreview[0]
 
             //Asserts
             assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
@@ -410,7 +410,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
 
             val result = viewStateFlow.awaitItem()
             assertIs<MembershipMainState.Default>(result)
-            val tier = result.tiers[0]
+            val tier = result.tiersPreview[0]
 
             //Asserts
             assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
@@ -456,7 +456,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
 
             val result = viewStateFlow.awaitItem()
             assertIs<MembershipMainState.Default>(result)
-            val tier = result.tiers[0]
+            val tier = result.tiersPreview[0]
 
             //Asserts
             assertEquals(MembershipConstants.BUILDER_ID, tier.id.value)
@@ -504,7 +504,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
 
             val result = viewStateFlow.awaitItem()
             assertIs<MembershipMainState.Default>(result)
-            val tier = result.tiers[0]
+            val tier = result.tiersPreview[0]
 
             //Asserts
             assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
@@ -550,7 +550,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
 
             val result = viewStateFlow.awaitItem()
             assertIs<MembershipMainState.Default>(result)
-            val tier = result.tiers[0]
+            val tier = result.tiersPreview[0]
 
             //Asserts
             assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
@@ -596,7 +596,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
 
             val result = viewStateFlow.awaitItem()
             assertIs<MembershipMainState.Default>(result)
-            val tier = result.tiers[0]
+            val tier = result.tiersPreview[0]
 
             //Asserts
             assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
@@ -643,7 +643,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
 
             val result = viewStateFlow.awaitItem()
             assertIs<MembershipMainState.Default>(result)
-            val tier = result.tiers[0]
+            val tier = result.tiersPreview[0]
 
             //Asserts
             assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
@@ -690,7 +690,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
 
             val result = viewStateFlow.awaitItem()
             assertIs<MembershipMainState.Default>(result)
-            val tier = result.tiers[0]
+            val tier = result.tiersPreview[0]
 
             //Asserts
             assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
@@ -739,7 +739,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
 
             val result = viewStateFlow.awaitItem()
             assertIs<MembershipMainState.Default>(result)
-            val tier = result.tiers[0]
+            val tier = result.tiersPreview[0]
 
             //Asserts
             assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
@@ -785,7 +785,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
 
             val result = viewStateFlow.awaitItem()
             assertIs<MembershipMainState.Default>(result)
-            val tier = result.tiers[0]
+            val tier = result.tiersPreview[0]
 
             //Asserts
             assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
@@ -833,7 +833,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
 
             val result = viewStateFlow.awaitItem()
             assertIs<MembershipMainState.Default>(result)
-            val tier = result.tiers[0]
+            val tier = result.tiersPreview[0]
 
             //Asserts
             assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)

@@ -240,4 +240,9 @@
     <color name="tier_gradient_purple_start">#FBEAFF</color>
     <color name="tier_gradient_purple_end">#E86DE3</color>
 
+    <color name="membership_info_gradient_green">#CFF6CF</color>
+    <color name="membership_info_gradient_yellow">#FEF2C6</color>
+    <color name="membership_info_gradient_pink">#FFEBEB</color>
+    <color name="membership_info_gradient_purple">#EBEDFE</color>
+
 </resources>

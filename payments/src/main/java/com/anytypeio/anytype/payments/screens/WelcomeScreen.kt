@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
@@ -143,7 +144,12 @@ fun PaymentWelcomeScreenPreview() {
                 membershipAnyName = TierAnyName.Visible.Enter,
                 buttonState = TierButton.Manage.Android.Enabled(""),
                 email = TierEmail.Visible.Enter,
-                color = "dolores"
+                color = "dolores",
+                stripeManageUrl = "",
+                iosManageUrl = "",
+                androidManageUrl = "",
+                androidProductId = "",
+                paymentMethod = MembershipPaymentMethod.METHOD_INAPP_GOOGLE
             )
         )
     ) { }

@@ -39,7 +39,7 @@ fun MembershipStatus.toMainView(
     return MembershipMainState.Default(
         title = R.string.payments_header,
         subtitle = subtitle,
-        tiers = tiers.map {
+        tiersPreview = tiers.map {
             it.toPreviewView(
                 membershipStatus = this,
                 billingClientState = billingClientState,
@@ -50,7 +50,14 @@ fun MembershipStatus.toMainView(
         privacyPolicy = PRIVACY_POLICY,
         termsOfService = TERMS_OF_SERVICE,
         contactEmail = MEMBERSHIP_CONTACT_EMAIL,
-        showBanner = showBanner
+        showBanner = showBanner,
+        tiers = tiers.map {
+            it.toView(
+                membershipStatus = this,
+                billingClientState = billingClientState,
+                billingPurchaseState = billingPurchaseState
+            )
+        }
     )
 }
 
@@ -104,7 +111,12 @@ fun MembershipTierData.toView(
         ),
         email = emailState,
         color = colorStr,
-        urlInfo = androidManageUrl
+        urlInfo = androidManageUrl,
+        stripeManageUrl = stripeManageUrl,
+        iosManageUrl = iosManageUrl,
+        androidManageUrl = androidManageUrl,
+        androidProductId = androidProductId,
+        paymentMethod = membershipStatus.paymentMethod
     )
 }
 

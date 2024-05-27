@@ -113,7 +113,7 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
 
             viewStateFlow.awaitItem().let { result ->
                 assertIs<MembershipMainState.Default>(result)
-                val tier: TierPreview = result.tiers.find { it.id.value == MembershipConstants.BUILDER_ID }!!
+                val tier: TierPreview = result.tiersPreview.find { it.id.value == MembershipConstants.BUILDER_ID }!!
                 assertEquals(MembershipConstants.BUILDER_ID, tier.id.value)
                 assertEquals(false, tier.isActive)
                 assertEquals(TierConditionInfo.Visible.LoadingBillingClient, tier.conditionInfo)
@@ -157,7 +157,7 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
 
             viewStateFlow.awaitItem().let { result ->
                 assertIs<MembershipMainState.Default>(result)
-                val tier: TierPreview = result.tiers.find { it.id.value == MembershipConstants.BUILDER_ID }!!
+                val tier: TierPreview = result.tiersPreview.find { it.id.value == MembershipConstants.BUILDER_ID }!!
                 assertEquals(MembershipConstants.BUILDER_ID, tier.id.value)
                 assertEquals(false, tier.isActive)
                 assertEquals(TierConditionInfo.Visible.Error(errorMessage), tier.conditionInfo)
@@ -214,7 +214,7 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
 
             viewStateFlow.awaitItem().let { result ->
                 assertIs<MembershipMainState.Default>(result)
-                val tier: TierPreview = result.tiers.find { it.id.value == MembershipConstants.BUILDER_ID }!!
+                val tier: TierPreview = result.tiersPreview.find { it.id.value == MembershipConstants.BUILDER_ID }!!
                 assertEquals(MembershipConstants.BUILDER_ID, tier.id.value)
                 assertEquals(false, tier.isActive)
                 assertEquals(expectedConditionInfo, tier.conditionInfo)
@@ -271,7 +271,7 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
 
             viewStateFlow.awaitItem().let { result ->
                 assertIs<MembershipMainState.Default>(result)
-                val tier: TierPreview = result.tiers.find { it.id.value == MembershipConstants.BUILDER_ID }!!
+                val tier: TierPreview = result.tiersPreview.find { it.id.value == MembershipConstants.BUILDER_ID }!!
                 assertEquals(MembershipConstants.BUILDER_ID, tier.id.value)
                 assertEquals(false, tier.isActive)
                 assertEquals(expectedConditionInfo, tier.conditionInfo)
@@ -334,7 +334,7 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
 
             viewStateFlow.awaitItem().let { result ->
                 assertIs<MembershipMainState.Default>(result)
-                val tier: TierPreview = result.tiers.find { it.id.value == MembershipConstants.BUILDER_ID }!!
+                val tier: TierPreview = result.tiersPreview.find { it.id.value == MembershipConstants.BUILDER_ID }!!
                 assertEquals(MembershipConstants.BUILDER_ID, tier.id.value)
                 assertEquals(false, tier.isActive)
                 assertEquals(expectedConditionInfo, tier.conditionInfo)
@@ -392,7 +392,7 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
 
             viewStateFlow.awaitItem().let { result ->
                 assertIs<MembershipMainState.Default>(result)
-                val tier: TierPreview = result.tiers.find { it.id.value == MembershipConstants.BUILDER_ID }!!
+                val tier: TierPreview = result.tiersPreview.find { it.id.value == MembershipConstants.BUILDER_ID }!!
                 assertEquals(MembershipConstants.BUILDER_ID, tier.id.value)
                 assertEquals(false, tier.isActive)
                 assertEquals(expectedConditionInfo, tier.conditionInfo)
@@ -450,7 +450,7 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
 
             viewStateFlow.awaitItem().let { result ->
                 assertIs<MembershipMainState.Default>(result)
-                val tier: TierPreview = result.tiers.find { it.id.value == MembershipConstants.BUILDER_ID }!!
+                val tier: TierPreview = result.tiersPreview.find { it.id.value == MembershipConstants.BUILDER_ID }!!
                 assertEquals(MembershipConstants.BUILDER_ID, tier.id.value)
                 assertEquals(false, tier.isActive)
                 assertEquals(expectedConditionInfo, tier.conditionInfo)
@@ -518,7 +518,7 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
 
             viewStateFlow.awaitItem().let { result ->
                 assertIs<MembershipMainState.Default>(result)
-                val tier: TierPreview = result.tiers.find { it.id.value == MembershipConstants.BUILDER_ID }!!
+                val tier: TierPreview = result.tiersPreview.find { it.id.value == MembershipConstants.BUILDER_ID }!!
                 assertEquals(MembershipConstants.BUILDER_ID, tier.id.value)
                 assertEquals(false, tier.isActive)
                 assertEquals(expectedConditionInfo, tier.conditionInfo)
@@ -581,7 +581,7 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
 
             viewStateFlow.awaitItem().let { result ->
                 assertIs<MembershipMainState.Default>(result)
-                val tier: TierPreview = result.tiers.find { it.id.value == MembershipConstants.BUILDER_ID }!!
+                val tier: TierPreview = result.tiersPreview.find { it.id.value == MembershipConstants.BUILDER_ID }!!
                 assertEquals(MembershipConstants.BUILDER_ID, tier.id.value)
                 assertEquals(false, tier.isActive)
                 assertEquals(expectedConditionInfo, tier.conditionInfo)

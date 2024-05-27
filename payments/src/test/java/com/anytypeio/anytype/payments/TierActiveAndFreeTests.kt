@@ -83,7 +83,7 @@ class TierActiveAndFreeTests : MembershipTestsSetup() {
             viewStateFlow.awaitItem().let { result ->
                 assertIs<MembershipMainState.Default>(result)
                 val tier: TierPreview =
-                    result.tiers.find { it.id.value == MembershipConstants.EXPLORER_ID }!!
+                    result.tiersPreview.find { it.id.value == MembershipConstants.EXPLORER_ID }!!
                 TestCase.assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
                 TestCase.assertEquals(true, tier.isActive)
                 TestCase.assertEquals(
@@ -138,7 +138,7 @@ class TierActiveAndFreeTests : MembershipTestsSetup() {
             viewStateFlow.awaitItem().let { result ->
                 assertIs<MembershipMainState.Default>(result)
                 val tier: TierPreview =
-                    result.tiers.find { it.id.value == MembershipConstants.EXPLORER_ID }!!
+                    result.tiersPreview.find { it.id.value == MembershipConstants.EXPLORER_ID }!!
                 TestCase.assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
                 TestCase.assertEquals(true, tier.isActive)
                 TestCase.assertEquals(

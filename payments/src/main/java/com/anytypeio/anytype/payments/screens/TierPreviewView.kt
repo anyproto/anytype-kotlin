@@ -63,7 +63,7 @@ fun TierPreviewView(
                 .width(192.dp)
                 .wrapContentHeight()
                 .background(
-                    color = colorResource(id = R.color.shape_tertiary),
+                    color = colorResource(id = R.color.shape_secondary),
                     shape = RoundedCornerShape(16.dp)
                 )
                 .noRippleThrottledClickable { onClick(tier.id) }

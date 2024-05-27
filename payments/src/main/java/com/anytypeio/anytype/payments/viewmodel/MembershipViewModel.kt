@@ -23,7 +23,6 @@ import com.anytypeio.anytype.domain.payments.VerifyMembershipEmailCode
 import com.anytypeio.anytype.payments.constants.MembershipConstants.EXPLORER_ID
 import com.anytypeio.anytype.payments.constants.MembershipConstants.MEMBERSHIP_NAME_MIN_LENGTH
 import com.anytypeio.anytype.payments.mapping.toMainView
-import com.anytypeio.anytype.payments.mapping.toView
 import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierEmail
@@ -71,23 +70,17 @@ class MembershipViewModel(
     /**
      * Local billing purchase data.
      */
-    //todo переименовать
-    private val purchases = billingClientLifecycle.subscriptionPurchases
+    private val billingPurchases = billingClientLifecycle.subscriptionPurchases
 
     /**
      * ProductDetails for all known Products.
      */
-
-    //todo переименовать
-    private val _billingClientState =
-        billingClientLifecycle.builderSubProductWithProductDetails
+    private val billingProducts = billingClientLifecycle.builderSubProductWithProductDetails
 
     private val _launchBillingCommand = MutableSharedFlow<BillingFlowParams>()
     val launchBillingCommand = _launchBillingCommand.asSharedFlow()
 
     val initBillingClient = MutableStateFlow(false)
-    private val membershipStatusState = MutableStateFlow<MembershipStatus?>(null)
-    private val showTierState = MutableStateFlow(0)
 
     @OptIn(ExperimentalFoundationApi::class)
     val anyNameState = TextFieldState(initialText = "")
@@ -96,57 +89,23 @@ class MembershipViewModel(
     val anyEmailState = TextFieldState(initialText = "")
 
     init {
-        Timber.d("PaymentsViewModel init")
         viewModelScope.launch {
             combine(
                 membershipProvider.status()
-                    .onEach { setupBillingClient(it) }
-                    .onEach { membershipStatusState.value = it },
-                _billingClientState,
-                purchases
-            ) { membershipStatus, billingClientState, purchases ->
-                MainResult(membershipStatus, billingClientState, purchases)
+                    .onEach { setupBillingClient(it) },
+                billingProducts,
+                billingPurchases
+            ) { membershipStatus, billingProducts, billingPurchases ->
+                Timber.d("TierResult: " +
+                        "\n----------------------------\nmembershipStatus:[$membershipStatus]," +
+                        "\n----------------------------\nbillingProducts:[$billingProducts]," +
+                        "\n----------------------------\nbillingPurchases:[$billingPurchases]")
+                MainResult(membershipStatus, billingProducts, billingPurchases)
             }.collect { (membershipStatus, billingClientState, purchases) ->
                 viewState.value = membershipStatus.toMainView(
                     billingClientState = billingClientState,
                     billingPurchaseState = purchases
                 )
-            }
-        }
-        viewModelScope.launch {
-            combine(
-                membershipStatusState,
-                _billingClientState,
-                showTierState,
-                purchases
-            ) { membershipStatus, billingClientState, showTier, purchases ->
-                TierResult(membershipStatus, billingClientState, showTier, purchases)
-            }.collect { (membershipStatus, billingClientState, showTier, billingPurchasesState) ->
-                Timber.d("TierResult: \n----------------------------\nmembershipStatus:[$membershipStatus],\n----------------------------\nbillingClientState:[$billingClientState],\n----------------------------\nbillingPurchasesState:[$billingPurchasesState]")
-                //todo подрефачить здесь, обернуть в seled class
-                if (showTier != 0) {
-                    val tier = membershipStatus?.tiers?.find { it.id == showTier }
-                    if (tier != null) {
-                        val newTierState = MembershipTierState.Visible(
-                            tier.toView(
-                                membershipStatus = membershipStatus,
-                                billingClientState = billingClientState,
-                                billingPurchaseState = billingPurchasesState
-                            )
-                        )
-                        Timber.d("Show tier: $newTierState")
-                        tierState.value = newTierState
-                        proceedWithNavigation(PaymentsNavigation.Tier)
-                    } else {
-                        Timber.e("Tier $showTier not found in tiers list")
-                        errorState.value =
-                            PaymentsErrorState.TierNotFound("Tier $showTier not found in tiers list")
-                        tierState.value = MembershipTierState.Hidden
-                    }
-                } else {
-                    tierState.value = MembershipTierState.Hidden
-                    anyNameState.clearText()
-                }
             }
         }
         viewModelScope.launch {
@@ -157,7 +116,7 @@ class MembershipViewModel(
                 }
         }
         viewModelScope.launch {
-            purchases.collectLatest { billingPurchaseState ->
+            billingPurchases.collectLatest { billingPurchaseState ->
                 checkPurchaseStatus(billingPurchaseState)
             }
         }
@@ -168,7 +127,7 @@ class MembershipViewModel(
             Timber.d("Billing purchase state: $billingPurchaseState")
             //Got new purchase, show success screen
             val tierView = (tierState.value as? MembershipTierState.Visible)?.tier ?: return
-            showTierState.value = 0
+            proceedWithHideTier()
             welcomeState.value = PaymentsWelcomeState.Initial(tierView)
             proceedWithNavigation(PaymentsNavigation.Welcome)
         }
@@ -188,7 +147,19 @@ class MembershipViewModel(
 
     fun onTierClicked(tierId: TierId) {
         Timber.d("onTierClicked: tierId:${tierId.value}")
-        showTierState.value = tierId.value
+        proceedWithShowingTier(tierId)
+    }
+
+    private fun proceedWithShowingTier(tierId: TierId) {
+        val visibleTier = getTierById(tierId) ?: return
+        tierState.value = MembershipTierState.Visible(visibleTier)
+        proceedWithNavigation(PaymentsNavigation.Tier)
+    }
+
+    private fun proceedWithHideTier() {
+        tierState.value = MembershipTierState.Hidden
+        anyEmailState.clearText()
+        anyNameState.clearText()
     }
 
     fun onTierAction(action: TierAction) {
@@ -341,26 +312,21 @@ class MembershipViewModel(
     }
 
     private fun onManageTierClicked(tierId: TierId) {
-        val membershipStatus = membershipStatusState.value ?: return
-        val tier = membershipStatus.tiers.find { it.id == tierId.value } ?: return
+        val tier = getTierById(tierId) ?: return
         Timber.d("Manage tier: $tier")
-        val navigationCommand = when (membershipStatus.paymentMethod) {
+        val navigationCommand = when (tier.paymentMethod) {
             MembershipPaymentMethod.METHOD_NONE -> {
                 PaymentsNavigation.OpenUrl(null)
             }
-
             MembershipPaymentMethod.METHOD_STRIPE -> {
                 PaymentsNavigation.OpenUrl(tier.stripeManageUrl)
             }
-
             MembershipPaymentMethod.METHOD_CRYPTO -> {
                 PaymentsNavigation.OpenUrl(null)
             }
-
             MembershipPaymentMethod.METHOD_INAPP_APPLE -> {
                 PaymentsNavigation.OpenUrl(tier.iosManageUrl)
             }
-
             MembershipPaymentMethod.METHOD_INAPP_GOOGLE -> {
                 val androidProductId = tier.androidProductId
                 val url = if (androidProductId != null) {
@@ -380,15 +346,14 @@ class MembershipViewModel(
     }
 
     private fun proceedWithPurchase(tierId: TierId, name: String) {
-        val tier = membershipStatusState.value?.tiers?.find { it.id == tierId.value } ?: return
-        Timber.d("Tier: $tier")
+        val tier = getTierById(tierId) ?: return
         val androidProductId = tier.androidProductId
         if (androidProductId == null) {
             Timber.e("Tier ${tier.id} has no androidProductId")
             return
         }
         val params = GetMembershipPaymentUrl.Params(
-            tierId = tier.id,
+            tierId = tier.id.value,
             name = name
         )
         viewModelScope.launch {
@@ -478,9 +443,8 @@ class MembershipViewModel(
 
     fun onDismissTier() {
         Timber.d("onDismissTier")
+        proceedWithHideTier()
         proceedWithNavigation(PaymentsNavigation.Dismiss)
-        tierState.value = MembershipTierState.Hidden
-        showTierState.value = 0
     }
 
     fun onDismissCode() {
@@ -501,7 +465,10 @@ class MembershipViewModel(
         }
     }
 
-    private fun hasBanner(activeTierId: Int) = activeTierId == EXPLORER_ID
+    private fun getTierById(tierId: TierId): Tier? {
+        val membershipStatus = (viewState.value as? MembershipMainState.Default) ?: return null
+        return membershipStatus.tiers.find { it.id == tierId }
+    }
 
     //region Google Play Billing
     /**
@@ -515,7 +482,7 @@ class MembershipViewModel(
         Timber.d("buyBasePlans: billingId:$billingId, product:$product")
         //todo check if the user has already purchased the product
         val isProductOnServer = false//serverHasSubscription(subscriptions.value, product)
-        val billingPurchaseState = purchases.value
+        val billingPurchaseState = billingPurchases.value
         val isProductOnDevice = if (billingPurchaseState is BillingPurchaseState.HasPurchases) {
             deviceHasGooglePlaySubscription(billingPurchaseState.purchases, product)
         } else {
@@ -559,7 +526,7 @@ class MembershipViewModel(
         }
 
         val builderSubProductDetails =
-            (_billingClientState.value as? BillingClientState.Connected)?.productDetails?.firstOrNull { it.productId == product }
+            (billingProducts.value as? BillingClientState.Connected)?.productDetails?.firstOrNull { it.productId == product }
                 ?: run {
                     Timber.e("Could not find Basic product details by product id: $product")
                     return
@@ -680,7 +647,7 @@ class MembershipViewModel(
         offerToken: String,
         productDetails: ProductDetails
     ) {
-        val billingPurchaseState = purchases.value
+        val billingPurchaseState = billingPurchases.value
         if (billingPurchaseState is BillingPurchaseState.HasPurchases && billingPurchaseState.purchases.size > EXPECTED_SUBSCRIPTION_PURCHASE_LIST_SIZE) {
             Timber.e("There are more than one subscription purchases on the device.")
             return
@@ -738,13 +705,6 @@ class MembershipViewModel(
         const val NAME_VALIDATION_DELAY = 300L
     }
 }
-
-data class TierResult(
-    val membershipStatus: MembershipStatus?,
-    val billingClientState: BillingClientState,
-    val showTier: Int,
-    val purchases: BillingPurchaseState
-)
 
 data class MainResult(
     val membershipStatus: MembershipStatus,

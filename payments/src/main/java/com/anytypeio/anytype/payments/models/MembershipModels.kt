@@ -26,7 +26,12 @@ data class Tier(
     val buttonState: TierButton,
     val email: TierEmail,
     val color: String = "red",
-    val urlInfo: String? = null
+    val urlInfo: String? = null,
+    val stripeManageUrl: String?,
+    val iosManageUrl: String?,
+    val androidManageUrl: String?,
+    val androidProductId: String?,
+    val paymentMethod: MembershipPaymentMethod
 )
 
 sealed class TierConditionInfo {

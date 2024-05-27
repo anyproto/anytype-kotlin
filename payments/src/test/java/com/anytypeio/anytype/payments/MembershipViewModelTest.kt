@@ -23,7 +23,7 @@ import org.junit.Test
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 
-class PaymentsViewModelTest : MembershipTestsSetup() {
+class MembershipViewModelTest : MembershipTestsSetup() {
 
     private val mTiers = listOf(
         StubMembershipTierData(

@@ -38,14 +38,14 @@ import com.anytypeio.anytype.core_ui.views.fontInterSemibold
 import com.anytypeio.anytype.payments.constants.TiersConstants.BUILDER_ID
 import com.anytypeio.anytype.payments.constants.TiersConstants.CO_CREATOR_ID
 import com.anytypeio.anytype.payments.constants.TiersConstants.EXPLORER_ID
-import com.anytypeio.anytype.payments.models.TierPreviewView
-import com.anytypeio.anytype.payments.models.TierView
+import com.anytypeio.anytype.payments.models.TierPreview
+import com.anytypeio.anytype.payments.models.Tier
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.membership.models.TierId
 
 @Composable
 fun TierPreviewView(
-    tier: TierPreviewView,
+    tier: TierPreview,
     onClick: (TierId) -> Unit
 ) {
     val resources = mapTierPreviewToResources(tier)
@@ -136,7 +136,7 @@ fun TierPreviewView(
 }
 
 @Composable
-fun mapTierToResources(tier: TierView): TierResources {
+fun mapTierToResources(tier: Tier): TierResources {
     return when (tier.id.value) {
         BUILDER_ID -> TierResources(
             mediumIcon = R.drawable.logo_builder_96,
@@ -167,7 +167,7 @@ fun mapTierToResources(tier: TierView): TierResources {
 }
 
 @Composable
-fun mapTierPreviewToResources(tier: TierPreviewView): TierResources {
+fun mapTierPreviewToResources(tier: TierPreview): TierResources {
     return when (tier.id.value) {
         BUILDER_ID -> TierResources(
             mediumIcon = R.drawable.logo_builder_96,

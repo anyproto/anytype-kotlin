@@ -5,7 +5,7 @@ import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.presentation.membership.models.TierId
 
 //This is a data class that represents a tier preview view in the main Membership screen
-data class TierPreviewView(
+data class TierPreview(
     val id: TierId,
     val isActive: Boolean,
     val title: String,
@@ -15,7 +15,7 @@ data class TierPreviewView(
 )
 
 //This is a data class that represents a tier view when tier is opened
-data class TierView(
+data class Tier(
     val id: TierId,
     val isActive: Boolean,
     val title: String,

@@ -11,7 +11,7 @@ import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierConditionInfo
 import com.anytypeio.anytype.payments.models.TierEmail
 import com.anytypeio.anytype.payments.models.TierPeriod
-import com.anytypeio.anytype.payments.models.TierPreviewView
+import com.anytypeio.anytype.payments.models.TierPreview
 import com.anytypeio.anytype.payments.playbilling.BillingClientState
 import com.anytypeio.anytype.payments.viewmodel.MembershipMainState
 import com.anytypeio.anytype.payments.viewmodel.MembershipTierState
@@ -109,7 +109,7 @@ class TierAndroidActivePurchasedOniOS : MembershipTestsSetup() {
 
             viewStateFlow.awaitItem().let { result ->
                 assertIs<MembershipMainState.Default>(result)
-                val tier: TierPreviewView =
+                val tier: TierPreview =
                     result.tiers.find { it.id.value == TiersConstants.BUILDER_ID }!!
                 TestCase.assertEquals(TiersConstants.BUILDER_ID, tier.id.value)
                 TestCase.assertEquals(true, tier.isActive)
@@ -128,7 +128,7 @@ class TierAndroidActivePurchasedOniOS : MembershipTestsSetup() {
             tierStateFlow.awaitItem().let { result ->
                 assertIs<MembershipTierState.Visible>(result)
                 validateTierView(
-                    tierView = result.tierView,
+                    tier = result.tier,
                     expectedFeatures = features,
                     expectedConditionInfo = TierConditionInfo.Visible.Valid(
                         dateEnds = dateEnds,
@@ -174,7 +174,7 @@ class TierAndroidActivePurchasedOniOS : MembershipTestsSetup() {
 
                 viewStateFlow.awaitItem().let { result ->
                     assertIs<MembershipMainState.Default>(result)
-                    val tier: TierPreviewView =
+                    val tier: TierPreview =
                         result.tiers.find { it.id.value == TiersConstants.BUILDER_ID }!!
                     TestCase.assertEquals(TiersConstants.BUILDER_ID, tier.id.value)
                     TestCase.assertEquals(true, tier.isActive)
@@ -193,7 +193,7 @@ class TierAndroidActivePurchasedOniOS : MembershipTestsSetup() {
                 tierStateFlow.awaitItem().let { result ->
                     assertIs<MembershipTierState.Visible>(result)
                     validateTierView(
-                        tierView = result.tierView,
+                        tier = result.tier,
                         expectedFeatures = features,
                         expectedConditionInfo = TierConditionInfo.Visible.Valid(
                             dateEnds = dateEnds,

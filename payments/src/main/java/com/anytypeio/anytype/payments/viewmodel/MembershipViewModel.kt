@@ -27,7 +27,7 @@ import com.anytypeio.anytype.payments.mapping.toView
 import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierEmail
-import com.anytypeio.anytype.payments.models.TierView
+import com.anytypeio.anytype.payments.models.Tier
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
 import com.anytypeio.anytype.payments.playbilling.BillingClientState
 import com.anytypeio.anytype.payments.playbilling.BillingPurchaseState
@@ -48,7 +48,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @OptIn(ExperimentalFoundationApi::class, FlowPreview::class)
-class PaymentsViewModel(
+class MembershipViewModel(
     private val analytics: Analytics,
     private val billingClientLifecycle: BillingClientLifecycle,
     private val getAccount: GetAccount,
@@ -167,7 +167,7 @@ class PaymentsViewModel(
         if (billingPurchaseState is BillingPurchaseState.HasPurchases && billingPurchaseState.isNewPurchase) {
             Timber.d("Billing purchase state: $billingPurchaseState")
             //Got new purchase, show success screen
-            val tierView = (tierState.value as? MembershipTierState.Visible)?.tierView ?: return
+            val tierView = (tierState.value as? MembershipTierState.Visible)?.tier ?: return
             showTierState.value = 0
             welcomeState.value = PaymentsWelcomeState.Initial(tierView)
             proceedWithNavigation(PaymentsNavigation.Welcome)
@@ -214,7 +214,7 @@ class PaymentsViewModel(
                 proceedWithValidatingEmailCode(action.code)
             }
             TierAction.ChangeEmail -> {
-                val tierView = (tierState.value as? MembershipTierState.Visible)?.tierView ?: return
+                val tierView = (tierState.value as? MembershipTierState.Visible)?.tier ?: return
                 val updatedTierState = tierView.copy(
                     email = TierEmail.Visible.Enter,
                     buttonState = TierButton.Submit.Enabled
@@ -234,7 +234,7 @@ class PaymentsViewModel(
     private var validateNameJob: Job? = null
 
     private fun proceedWithValidatingName(name: String) {
-        val tierView = (tierState.value as? MembershipTierState.Visible)?.tierView ?: return
+        val tierView = (tierState.value as? MembershipTierState.Visible)?.tier ?: return
         if (name.length < MEMBERSHIP_NAME_MIN_LENGTH) {
             when (tierView.membershipAnyName) {
                 is TierAnyName.Visible.Error -> setAnyNameStateToEnter(tierView)
@@ -265,37 +265,37 @@ class PaymentsViewModel(
         }
     }
 
-    private fun setAnyNameStateToEnter(tierView: TierView) {
-        val updatedTierState = tierView.copy(
+    private fun setAnyNameStateToEnter(tier: Tier) {
+        val updatedTierState = tier.copy(
             membershipAnyName = TierAnyName.Visible.Enter,
             buttonState = TierButton.Pay.Disabled
         )
         tierState.value = MembershipTierState.Visible(updatedTierState)
     }
 
-    private fun setValidatingAnyNameState(tierView: TierView) {
-        val updatedTierState = tierView.copy(
+    private fun setValidatingAnyNameState(tier: Tier) {
+        val updatedTierState = tier.copy(
             membershipAnyName = TierAnyName.Visible.Validating,
             buttonState = TierButton.Pay.Disabled
         )
         tierState.value = MembershipTierState.Visible(updatedTierState)
     }
 
-    private fun setErrorAnyNameState(tierView: TierView, error: Throwable) {
+    private fun setErrorAnyNameState(tier: Tier, error: Throwable) {
         val state = if (error is MembershipErrors) {
             TierAnyName.Visible.Error(error)
         } else {
             TierAnyName.Visible.ErrorOther(error.message)
         }
-        val updatedTierState = tierView.copy(
+        val updatedTierState = tier.copy(
             membershipAnyName = state,
             buttonState = TierButton.Pay.Disabled
         )
         tierState.value = MembershipTierState.Visible(updatedTierState)
     }
 
-    private fun setValidatedAnyNameState(tierView: TierView, validatedName: String) {
-        val updatedTierState = tierView.copy(
+    private fun setValidatedAnyNameState(tier: Tier, validatedName: String) {
+        val updatedTierState = tier.copy(
             membershipAnyName = TierAnyName.Visible.Validated(validatedName),
             buttonState = TierButton.Pay.Enabled
         )
@@ -312,7 +312,7 @@ class PaymentsViewModel(
     }
 
     private fun setErrorSettingEmailState(error: Throwable) {
-        val tierView = (tierState.value as? MembershipTierState.Visible)?.tierView ?: return
+        val tierView = (tierState.value as? MembershipTierState.Visible)?.tier ?: return
         val state = if (error is MembershipErrors.GetVerificationEmail) {
             TierEmail.Visible.Error(error)
         } else {
@@ -325,7 +325,7 @@ class PaymentsViewModel(
     }
 
     private fun setValidatingEmailState() {
-        val tierView = (tierState.value as? MembershipTierState.Visible)?.tierView ?: return
+        val tierView = (tierState.value as? MembershipTierState.Visible)?.tier ?: return
         val updatedTierState = tierView.copy(
             email = TierEmail.Visible.Validating
         )
@@ -333,7 +333,7 @@ class PaymentsViewModel(
     }
 
     private fun setValidatedEmailState() {
-        val tierView = (tierState.value as? MembershipTierState.Visible)?.tierView ?: return
+        val tierView = (tierState.value as? MembershipTierState.Visible)?.tier ?: return
         val updatedTierState = tierView.copy(
             email = TierEmail.Visible.Validated
         )
@@ -412,7 +412,7 @@ class PaymentsViewModel(
             getMembershipEmailStatus.async(Unit).fold(
                 onSuccess = { status ->
                     val tierView =
-                        (tierState.value as? MembershipTierState.Visible)?.tierView ?: return@fold
+                        (tierState.value as? MembershipTierState.Visible)?.tier ?: return@fold
                     when (status) {
                         EmailVerificationStatus.STATUS_VERIFIED -> {
                             if (tierView.id.value == EXPLORER_ID) {

@@ -14,8 +14,8 @@ import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierConditionInfo
 import com.anytypeio.anytype.payments.models.TierEmail
 import com.anytypeio.anytype.payments.models.TierPeriod
-import com.anytypeio.anytype.payments.models.TierPreviewView
-import com.anytypeio.anytype.payments.models.TierView
+import com.anytypeio.anytype.payments.models.TierPreview
+import com.anytypeio.anytype.payments.models.Tier
 import com.anytypeio.anytype.payments.playbilling.BillingClientState
 import com.anytypeio.anytype.payments.playbilling.BillingPurchaseState
 import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
@@ -40,13 +40,13 @@ fun MembershipTierData.toView(
     membershipStatus: MembershipStatus,
     billingClientState: BillingClientState,
     billingPurchaseState: BillingPurchaseState
-): TierView {
+): Tier {
     val tierId = TierId(id)
     val isActive = membershipStatus.isTierActive(id)
     val emailState = getTierEmail(isActive, membershipStatus.userEmail)
     val tierName = name
     val tierDescription = description
-    return TierView(
+    return Tier(
         id = tierId,
         title = tierName,
         subtitle = tierDescription,
@@ -79,12 +79,12 @@ fun MembershipTierData.toPreviewView(
     membershipStatus: MembershipStatus,
     billingClientState: BillingClientState,
     billingPurchaseState: BillingPurchaseState
-): TierPreviewView {
+): TierPreview {
     val tierId = TierId(id)
     val isActive = membershipStatus.isTierActive(id)
     val tierName = name
     val tierDescription = description
-    return TierPreviewView(
+    return TierPreview(
         id = tierId,
         title = tierName,
         subtitle = tierDescription,

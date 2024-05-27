@@ -2,8 +2,8 @@ package com.anytypeio.anytype.payments.viewmodel
 
 import androidx.annotation.StringRes
 import com.anytypeio.anytype.core_models.membership.MembershipErrors
-import com.anytypeio.anytype.payments.models.TierPreviewView
-import com.anytypeio.anytype.payments.models.TierView
+import com.anytypeio.anytype.payments.models.TierPreview
+import com.anytypeio.anytype.payments.models.Tier
 import com.anytypeio.anytype.presentation.membership.models.TierId
 
 
@@ -13,7 +13,7 @@ sealed class MembershipMainState {
         @StringRes val title: Int,
         @StringRes val subtitle: Int?,
         val showBanner: Boolean,
-        val tiers: List<TierPreviewView>,
+        val tiers: List<TierPreview>,
         val membershipLevelDetails: String,
         val privacyPolicy: String,
         val termsOfService: String,
@@ -25,7 +25,7 @@ sealed class MembershipMainState {
 
 sealed class MembershipTierState {
     data object Hidden : MembershipTierState()
-    data class Visible(val tierView: TierView) : MembershipTierState() {
+    data class Visible(val tier: Tier) : MembershipTierState() {
     }
 }
 
@@ -68,7 +68,7 @@ sealed class MembershipEmailCodeState {
 
 sealed class PaymentsWelcomeState {
     data object Hidden : PaymentsWelcomeState()
-    data class Initial(val tier: TierView) : PaymentsWelcomeState()
+    data class Initial(val tier: Tier) : PaymentsWelcomeState()
 }
 
 sealed class PaymentsNavigation(val route: String) {

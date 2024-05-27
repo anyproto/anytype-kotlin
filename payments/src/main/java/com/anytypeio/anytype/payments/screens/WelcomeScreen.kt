@@ -38,7 +38,7 @@ import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierConditionInfo
 import com.anytypeio.anytype.payments.models.TierEmail
 import com.anytypeio.anytype.payments.models.TierPeriod
-import com.anytypeio.anytype.payments.models.TierView
+import com.anytypeio.anytype.payments.models.Tier
 import com.anytypeio.anytype.payments.viewmodel.PaymentsWelcomeState
 import com.anytypeio.anytype.presentation.membership.models.TierId
 
@@ -72,7 +72,7 @@ fun PaymentWelcomeScreen(state: PaymentsWelcomeState, onDismiss: () -> Unit) {
 }
 
 @Composable
-private fun WelcomeContent(tierView: TierView, tierResources: TierResources, onDismiss: () -> Unit) {
+private fun WelcomeContent(tier: Tier, tierResources: TierResources, onDismiss: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -96,7 +96,7 @@ private fun WelcomeContent(tierView: TierView, tierResources: TierResources, onD
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp),
-            text = stringResource(id = R.string.payments_welcome_title, tierView.title),
+            text = stringResource(id = R.string.payments_welcome_title, tier.title),
             color = colorResource(id = R.color.text_primary),
             style = HeadlineHeading,
             textAlign = TextAlign.Center
@@ -130,7 +130,7 @@ private fun WelcomeContent(tierView: TierView, tierResources: TierResources, onD
 fun PaymentWelcomeScreenPreview() {
     PaymentWelcomeScreen(
         PaymentsWelcomeState.Initial(
-            tier = TierView(
+            tier = Tier(
                 id = TierId(value = 3506),
                 isActive = false,
                 title = "Tier Title",

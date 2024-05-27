@@ -13,7 +13,7 @@ import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import javax.inject.Inject
 
-class PaymentsViewModelFactory @Inject constructor(
+class MembershipViewModelFactory @Inject constructor(
     private val analytics: Analytics,
     private val billingClientLifecycle: BillingClientLifecycle,
     private val getAccount: GetAccount,
@@ -26,7 +26,7 @@ class PaymentsViewModelFactory @Inject constructor(
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return PaymentsViewModel(
+        return MembershipViewModel(
             analytics = analytics,
             billingClientLifecycle = billingClientLifecycle,
             getAccount = getAccount,

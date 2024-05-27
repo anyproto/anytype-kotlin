@@ -50,7 +50,7 @@ import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierConditionInfo
 import com.anytypeio.anytype.payments.models.TierEmail
 import com.anytypeio.anytype.payments.models.TierPeriod
-import com.anytypeio.anytype.payments.models.TierView
+import com.anytypeio.anytype.payments.models.Tier
 import com.anytypeio.anytype.payments.viewmodel.MembershipTierState
 import com.anytypeio.anytype.payments.viewmodel.TierAction
 import com.anytypeio.anytype.presentation.membership.models.TierId
@@ -113,7 +113,7 @@ private fun TierViewVisible(
                 .fillMaxWidth()
                 .wrapContentHeight()
         ) {
-            val tierResources: TierResources = mapTierToResources(state.tierView)
+            val tierResources: TierResources = mapTierToResources(state.tier)
             val brush = Brush.verticalGradient(
                 listOf(
                     tierResources.colors.gradientStart,
@@ -140,7 +140,7 @@ private fun TierViewVisible(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp),
-                text = state.tierView.title,
+                text = state.tier.title,
                 color = colorResource(id = R.color.text_primary),
                 style = HeadlineTitle,
                 textAlign = TextAlign.Start
@@ -149,7 +149,7 @@ private fun TierViewVisible(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 20.dp, end = 20.dp, top = 6.dp),
-                text = state.tierView.subtitle,
+                text = state.tier.subtitle,
                 color = colorResource(id = R.color.text_primary),
                 style = BodyCallout,
                 textAlign = TextAlign.Start
@@ -164,7 +164,7 @@ private fun TierViewVisible(
                 textAlign = TextAlign.Start
             )
             Spacer(modifier = Modifier.height(6.dp))
-            state.tierView.features.forEach { benefit ->
+            state.tier.features.forEach { benefit ->
                 Benefit(benefit = benefit)
                 Spacer(modifier = Modifier.height(6.dp))
             }
@@ -180,31 +180,31 @@ private fun TierViewVisible(
                 )
         ) {
             Spacer(modifier = Modifier.height(26.dp))
-            if (state.tierView.isActive) {
-                ConditionInfoView(state = state.tierView.conditionInfo)
+            if (state.tier.isActive) {
+                ConditionInfoView(state = state.tier.conditionInfo)
                 MembershipEmailScreen(
-                    state = state.tierView.email,
+                    state = state.tier.email,
                     anyEmailTextField = anyEmailTextField
                 )
                 Spacer(modifier = Modifier.height(20.dp))
                 SecondaryButton(
-                    buttonState = state.tierView.buttonState,
-                    tierId = state.tierView.id,
+                    buttonState = state.tier.buttonState,
+                    tierId = state.tier.id,
                     actionTier = actionTier
                 )
             } else {
                 AnyNameView(
-                    anyNameState = state.tierView.membershipAnyName,
+                    anyNameState = state.tier.membershipAnyName,
                     anyNameTextField = anyNameTextField
                 )
-                ConditionInfoView(state = state.tierView.conditionInfo)
+                ConditionInfoView(state = state.tier.conditionInfo)
                 Spacer(modifier = Modifier.height(14.dp))
                 MainButton(
-                    buttonState = state.tierView.buttonState,
-                    tierView = state.tierView,
+                    buttonState = state.tier.buttonState,
+                    tier = state.tier,
                     actionTier = actionTier
                 )
-                when (state.tierView.buttonState)  {
+                when (state.tier.buttonState)  {
                     TierButton.Pay.Enabled -> TermsAndPrivacyText(actionTier)
                     else -> {}
                 }
@@ -243,7 +243,7 @@ fun Benefit(benefit: String) {
 
 @Composable
 private fun MainButton(
-    tierView: TierView,
+    tier: Tier,
     buttonState: TierButton,
     actionTier: (TierAction) -> Unit
 ) {
@@ -254,8 +254,8 @@ private fun MainButton(
             text = stringResource(id = stringRes),
             onClick = {
                       when (buttonState) {
-                          is TierButton.Pay.Enabled -> actionTier(TierAction.PayClicked(tierView.id))
-                          is TierButton.Info.Enabled -> actionTier(TierAction.OpenUrl(tierView.urlInfo))
+                          is TierButton.Pay.Enabled -> actionTier(TierAction.PayClicked(tier.id))
+                          is TierButton.Info.Enabled -> actionTier(TierAction.OpenUrl(tier.urlInfo))
                           TierButton.Submit.Enabled -> actionTier(TierAction.SubmitClicked)
                           else -> {
                               Timber.d("MainButton: skipped action: $buttonState")
@@ -375,7 +375,7 @@ private fun getButtonText(buttonState: TierButton): Pair<Int, Boolean> {
 fun TierViewScreenPreview() {
     TierViewScreen(
         state = MembershipTierState.Visible(
-            tierView = TierView(
+            tier = Tier(
                 title = "Builder",
                 subtitle = "Subtitle",
                 features = listOf(

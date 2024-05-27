@@ -60,7 +60,6 @@ import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.getSpaceWithTechSpace
-import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -92,7 +91,7 @@ import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
-import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
+import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription.Companion.getDataViewSubscriptionId
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerDelegate
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerEvent
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerView
@@ -133,7 +132,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeout
 import timber.log.Timber
 
 class ObjectSetViewModel(
@@ -241,8 +239,6 @@ class ObjectSetViewModel(
         Timber.d("ObjectSetViewModel, init")
 
         proceedWIthObservingPermissions()
-
-        proceedWithObservingProfileIcon()
 
         viewModelScope.launch {
             stateReducer.state
@@ -455,6 +451,7 @@ class ObjectSetViewModel(
         subscribeToEvents(ctx = ctx)
         subscribeToThreadStatus(ctx = ctx)
         proceedWithOpeningCurrentObject(ctx = ctx)
+        proceedWithObservingProfileIcon()
     }
 
     private fun subscribeToEvents(ctx: Id) {
@@ -798,47 +795,37 @@ class ObjectSetViewModel(
     fun onStop() {
         Timber.d("onStop, ")
         hideTemplatesWidget()
-        unsubscribeFromTypesTemplates()
+        unsubscribeFromAllSubscriptions()
         jobs.cancel()
     }
 
     fun onSystemBackPressed() {
         Timber.d("onSystemBackPressed, ")
-        proceedWithExiting()
+        proceedWithClosingAndExit()
     }
 
-    private fun proceedWithExiting() {
+    private fun unsubscribeFromAllSubscriptions() {
         viewModelScope.launch {
-            val timeout = if (BuildConfig.DEBUG) 3000 else Long.MAX_VALUE
-            withTimeout(timeout) {
-                cancelSearchSubscription(
-                    CancelSearchSubscription.Params(
-                        subscriptions = buildList {
-                            add(DefaultDataViewSubscription.getSubscriptionId(context))
-                        }
-                    )
-                ).process(
-                    failure = {
-                        Timber.e(it, "Failed to cancel subscription")
-                        proceedWithClosingAndExit()
-                    },
-                    success = {
-                        proceedWithClosingAndExit()
-                    }
-                )
-            }
+            val ids = listOf(
+                getDataViewSubscriptionId(context),
+                HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
+                "$context$SUBSCRIPTION_TEMPLATES_ID"
+            )
+            dataViewSubscription.unsubscribe(ids)
         }
     }
 
-    private suspend fun proceedWithClosingAndExit() {
-        closeBlock.async(context).fold(
-            onSuccess = { dispatch(AppNavigation.Command.Exit) },
-            onFailure = {
-                Timber.e(it, "Error while closing object set: $context").also {
-                    dispatch(AppNavigation.Command.Exit)
+    private fun proceedWithClosingAndExit() {
+        viewModelScope.launch {
+            closeBlock.async(context).fold(
+                onSuccess = { dispatch(AppNavigation.Command.Exit) },
+                onFailure = {
+                    Timber.e(it, "Error while closing object set: $context").also {
+                        dispatch(AppNavigation.Command.Exit)
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 
     fun onTitleChanged(txt: String) {
@@ -1611,7 +1598,7 @@ class ObjectSetViewModel(
     }
 
     fun onBackButtonClicked() {
-        proceedWithExiting()
+        proceedWithClosingAndExit()
     }
 
     fun onAddNewDocumentClicked(objType: ObjectWrapper.Type? = null) {
@@ -1880,16 +1867,6 @@ class ObjectSetViewModel(
     }
 
     //region TYPES AND TEMPLATES WIDGET
-    private var viewerTemplatesJob = mutableListOf<Job>()
-    private var templatesSubId: Id? = null
-
-    private fun unsubscribeFromTypesTemplates() {
-        Timber.d("unsubscribeFromTypesTemplates, ")
-        viewModelScope.launch {
-            templatesContainer.unsubscribeFromTemplates("$context$SUBSCRIPTION_TEMPLATES_ID")
-        }
-    }
-
     fun onNewTypeForViewerClicked(objType: ObjectWrapper.Type) {
         Timber.d("onNewTypeForViewerClicked, objType:[$objType]")
         selectedTypeFlow.value = objType

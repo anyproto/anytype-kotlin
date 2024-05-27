@@ -46,7 +46,7 @@ fun IntroduceSpacesScreen(
         val (title, first, second, third, pager, dots, btn) = createRefs()
 
         Text(
-            text = "Collaborate on spaces",
+            text = stringResource(R.string.multiplayer_collaborate_on_spaces),
             style = HeadlineHeading,
             textAlign = TextAlign.Center,
             color = colorResource(id = R.color.text_primary),
@@ -124,7 +124,7 @@ fun IntroduceSpacesScreen(
         }
 
         Text(
-            text = "1.  Tap the Space widget to access settings",
+            text = stringResource(R.string.multiplayer_collaborate_step_1),
             style = BodyRegular,
             color = colorResource(id = R.color.text_primary),
             modifier = Modifier
@@ -135,7 +135,7 @@ fun IntroduceSpacesScreen(
         )
 
         Text(
-            text = "2.  Open Share section",
+            text = stringResource(R.string.multiplayer_collaborate_step_2),
             style = BodyRegular,
             color = colorResource(id = R.color.text_primary),
             modifier = Modifier
@@ -146,7 +146,7 @@ fun IntroduceSpacesScreen(
         )
 
         Text(
-            text = "3.  Generate an invite link and share it",
+            text = stringResource(R.string.multiplayer_collaborate_step_3),
             style = BodyRegular,
             color = colorResource(id = R.color.text_primary),
             modifier = Modifier

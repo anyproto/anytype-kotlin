@@ -18,8 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -41,16 +39,7 @@ fun IntroduceSpacesScreen(
     onDoneClicked: () -> Unit
 ) {
     ConstraintLayout(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color.White,
-                        Color(0xFFFEF2C6)
-                    )
-                )
-            )
+        modifier = Modifier.fillMaxSize()
     ) {
 
         val coroutineScope = rememberCoroutineScope()
@@ -86,7 +75,7 @@ fun IntroduceSpacesScreen(
                         Image(
                             painter = painterResource(id = R.drawable.ic_sharing_step_1),
                             contentDescription = "Screenshot 1",
-                            modifier = Modifier.align(Alignment.Center)
+                            modifier = Modifier.align(Alignment.BottomCenter)
                         )
                     }
                 }
@@ -95,7 +84,7 @@ fun IntroduceSpacesScreen(
                         Image(
                             painter = painterResource(id = R.drawable.ic_sharing_step_2),
                             contentDescription = "Screenshot 2",
-                            modifier = Modifier.align(Alignment.Center)
+                            modifier = Modifier.align(Alignment.BottomCenter)
                         )
                     }
                 }
@@ -104,7 +93,7 @@ fun IntroduceSpacesScreen(
                         Image(
                             painter = painterResource(id = R.drawable.ic_sharing_step_3),
                             contentDescription = "Screenshot 3",
-                            modifier = Modifier.align(Alignment.Center)
+                            modifier = Modifier.align(Alignment.BottomCenter)
                         )
                     }
                 }

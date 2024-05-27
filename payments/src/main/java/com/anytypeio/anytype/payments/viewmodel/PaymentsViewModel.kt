@@ -100,11 +100,15 @@ class PaymentsViewModel(
                 membershipProvider.status()
                     .onEach { setupBillingClient(it) }
                     .onEach { membershipStatusState.value = it },
-                _billingClientState
-            ) { membershipStatus, billingClientState ->
-                membershipStatus to billingClientState
-            }.collect { (membershipStatus, billingClientState) ->
-                viewState.value = membershipStatus.toMainView(billingClientState)
+                _billingClientState,
+                purchases
+            ) { membershipStatus, billingClientState, purchases ->
+                MainResult(membershipStatus, billingClientState, purchases)
+            }.collect { (membershipStatus, billingClientState, purchases) ->
+                viewState.value = membershipStatus.toMainView(
+                    billingClientState = billingClientState,
+                    billingPurchaseState = purchases
+                )
             }
         }
         viewModelScope.launch {
@@ -116,6 +120,7 @@ class PaymentsViewModel(
             ) { membershipStatus, billingClientState, showTier, purchases ->
                 TierResult(membershipStatus, billingClientState, showTier, purchases)
             }.collect { (membershipStatus, billingClientState, showTier, billingPurchasesState) ->
+                Timber.d("TierResult: \n----------------------------\nmembershipStatus:[$membershipStatus],\n----------------------------\nbillingClientState:[$billingClientState],\n----------------------------\nbillingPurchasesState:[$billingPurchasesState]")
                 if (showTier != 0) {
                     val tier = membershipStatus?.tiers?.find { it.id == showTier }
                     if (tier != null) {
@@ -366,7 +371,13 @@ class PaymentsViewModel(
             }
 
             MembershipPaymentMethod.METHOD_INAPP_GOOGLE -> {
-                PaymentsNavigation.OpenUrl(MANAGE_SUBSCRIPTION_URL)
+                val androidProductId = tier.androidProductId
+                val url = if (androidProductId != null) {
+                    "https://play.google.com/store/account/subscriptions?sku=$androidProductId&package=io.anytype.app"
+                } else {
+                    null
+                }
+                PaymentsNavigation.OpenUrl(url)
             }
         }
         onCommand(navigationCommand)
@@ -384,17 +395,16 @@ class PaymentsViewModel(
             Timber.e("Tier ${tier.id} has no androidProductId")
             return
         }
+        val params = GetMembershipPaymentUrl.Params(
+            tierId = tier.id,
+            name = name
+        )
         viewModelScope.launch {
-            getMembershipPaymentUrl.async(
-                GetMembershipPaymentUrl.Params(
-                    tierId = tier.id,
-                    name = name
-                )
-            ).fold(
-                onSuccess = { url ->
-                    Timber.d("Payment url: $url")
+            getMembershipPaymentUrl.async(params).fold(
+                onSuccess = { response ->
+                    Timber.d("Payment url: $response")
                     buyBasePlans(
-                        billingId = url.billingId,
+                        billingId = response.billingId,
                         product = androidProductId
                     )
                 },
@@ -734,8 +744,6 @@ class PaymentsViewModel(
     companion object {
         const val EXPECTED_SUBSCRIPTION_PURCHASE_LIST_SIZE = 1
         const val NAME_VALIDATION_DELAY = 300L
-        const val MANAGE_SUBSCRIPTION_URL =
-            "https://play.google.com/store/account/subscriptions?sku=id_android_sub_builder&package=com.anytypeio.anytype"
     }
 }
 
@@ -743,5 +751,11 @@ data class TierResult(
     val membershipStatus: MembershipStatus?,
     val billingClientState: BillingClientState,
     val showTier: Int,
+    val purchases: BillingPurchaseState
+)
+
+data class MainResult(
+    val membershipStatus: MembershipStatus,
+    val billingClientState: BillingClientState,
     val purchases: BillingPurchaseState
 )

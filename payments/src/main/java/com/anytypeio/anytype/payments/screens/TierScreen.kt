@@ -256,8 +256,6 @@ private fun MainButton(
                       when (buttonState) {
                           is TierButton.Pay.Enabled -> actionTier(TierAction.PayClicked(tierView.id))
                           is TierButton.Info.Enabled -> actionTier(TierAction.OpenUrl(tierView.urlInfo))
-                          is TierButton.Manage.Android.Enabled -> TODO()
-                          is TierButton.Manage.External.Enabled -> TODO()
                           TierButton.Submit.Enabled -> actionTier(TierAction.SubmitClicked)
                           else -> {
                               Timber.d("MainButton: skipped action: $buttonState")

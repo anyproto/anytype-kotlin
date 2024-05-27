@@ -1,6 +1,9 @@
 package com.anytypeio.anytype.payments.screens
 
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -28,6 +31,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -77,61 +81,83 @@ fun MainPaymentsScreen(
                 shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
             ),
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 20.dp)
-                .verticalScroll(rememberScrollState())
+        MainContent(state, tierClicked, tierAction)
+        AnimatedVisibility(
+            modifier = Modifier.align(Alignment.Center),
+            visible = state is MembershipMainState.Loading,
+            enter = fadeIn(),
+            exit = fadeOut()
         ) {
-            if (state is MembershipMainState.Default) {
-                Title()
-                Spacer(modifier = Modifier.height(7.dp))
-                if (state.subtitle != null) {
-                    Subtitle(state.subtitle)
-                }
-                Spacer(modifier = Modifier.height(32.dp))
-                if (state.showBanner) {
-                    InfoCards()
-                    Spacer(modifier = Modifier.height(32.dp))
-                }
-                TiersList(tiers = state.tiers, onClick = tierClicked)
-                Spacer(modifier = Modifier.height(32.dp))
-                LinkButton(text = stringResource(id = R.string.payments_member_link), action = {
-                    tierAction(TierAction.OpenUrl(state.membershipLevelDetails))
-                })
-                Divider()
-                LinkButton(text = stringResource(id = R.string.payments_privacy_link), action = {
-                    tierAction(TierAction.OpenUrl(state.privacyPolicy))
-                })
-                Divider()
-                LinkButton(text = stringResource(id = R.string.payments_terms_link), action = {
-                    tierAction(TierAction.OpenUrl(state.termsOfService))
-                })
-                Spacer(modifier = Modifier.height(32.dp))
-                BottomText(tierAction = tierAction)
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .size(24.dp),
+                color = colorResource(R.color.shape_secondary),
+                trackColor = colorResource(R.color.shape_primary)
+            )
+        }
+    }
+}
+
+@Composable
+private fun MainContent(
+    state: MembershipMainState,
+    tierClicked: (TierId) -> Unit,
+    tierAction: (TierAction) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 20.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
+        if (state is MembershipMainState.Default) {
+            Title()
+            Spacer(modifier = Modifier.height(7.dp))
+            if (state.subtitle != null) {
+                Subtitle(state.subtitle)
             }
-            if (state is MembershipMainState.ErrorState) {
-                Title()
-                Spacer(modifier = Modifier.height(39.dp))
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 40.dp),
-                    text = state.message,
-                    color = colorResource(id = R.color.palette_system_red),
-                    style = BodyRegular,
-                    textAlign = TextAlign.Center
-                )
+            Spacer(modifier = Modifier.height(32.dp))
+            if (state.showBanner) {
+                InfoCards()
                 Spacer(modifier = Modifier.height(32.dp))
-                ButtonSecondary(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp),
-                    onClick = { /*TODO*/ },
-                    size = ButtonSize.LargeSecondary,
-                    text = stringResource(id = R.string.contact_us)
-                )
             }
+            TiersList(tiers = state.tiers, onClick = tierClicked)
+            Spacer(modifier = Modifier.height(32.dp))
+            LinkButton(text = stringResource(id = R.string.payments_member_link), action = {
+                tierAction(TierAction.OpenUrl(state.membershipLevelDetails))
+            })
+            Divider()
+            LinkButton(text = stringResource(id = R.string.payments_privacy_link), action = {
+                tierAction(TierAction.OpenUrl(state.privacyPolicy))
+            })
+            Divider()
+            LinkButton(text = stringResource(id = R.string.payments_terms_link), action = {
+                tierAction(TierAction.OpenUrl(state.termsOfService))
+            })
+            Spacer(modifier = Modifier.height(32.dp))
+            BottomText(tierAction = tierAction)
+        }
+        if (state is MembershipMainState.ErrorState) {
+            Title()
+            Spacer(modifier = Modifier.height(39.dp))
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 40.dp),
+                text = state.message,
+                color = colorResource(id = R.color.palette_system_red),
+                style = BodyRegular,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(32.dp))
+            ButtonSecondary(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                onClick = { /*TODO*/ },
+                size = ButtonSize.LargeSecondary,
+                text = stringResource(id = R.string.contact_us)
+            )
         }
     }
 }

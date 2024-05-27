@@ -290,8 +290,7 @@ class BillingClientLifecycle(
     }
 
     /**
-     * Send purchase to StateFlow, which will trigger network call to verify the subscriptions
-     * on the sever.
+     * Send purchase to StateFlow
      */
     private fun processPurchases(purchasesList: List<Purchase>?, isNewPurchase: Boolean) {
         Timber.d("processPurchases: ${purchasesList?.size} purchase(s)")

@@ -53,14 +53,16 @@ fun MembershipTierData.toView(
         conditionInfo = getConditionInfo(
             isActive = isActive,
             billingClientState = billingClientState,
-            membershipStatus = membershipStatus
+            membershipStatus = membershipStatus,
+            billingPurchaseState = billingPurchaseState
         ),
         isActive = isActive,
         features = features,
         membershipAnyName = getAnyName(
             isActive = isActive,
             billingClientState = billingClientState,
-            membershipStatus = membershipStatus
+            membershipStatus = membershipStatus,
+            billingPurchaseState = billingPurchaseState
         ),
         buttonState = toButtonView(
             isActive = isActive,
@@ -76,6 +78,7 @@ fun MembershipTierData.toView(
 fun MembershipTierData.toPreviewView(
     membershipStatus: MembershipStatus,
     billingClientState: BillingClientState,
+    billingPurchaseState: BillingPurchaseState
 ): TierPreviewView {
     val tierId = TierId(id)
     val isActive = membershipStatus.isTierActive(id)
@@ -88,7 +91,8 @@ fun MembershipTierData.toPreviewView(
         conditionInfo = getConditionInfo(
             isActive = isActive,
             billingClientState = billingClientState,
-            membershipStatus = membershipStatus
+            membershipStatus = membershipStatus,
+            billingPurchaseState = billingPurchaseState
         ),
         isActive = isActive,
         color = colorStr
@@ -114,13 +118,23 @@ private fun MembershipTierData.toButtonView(
             } else {
                 when (membershipStatus.paymentMethod) {
                     MembershipPaymentMethod.METHOD_NONE,
-                    MembershipPaymentMethod.METHOD_CRYPTO -> TierButton.Manage.External.Disabled
-                    MembershipPaymentMethod.METHOD_STRIPE -> TierButton.Manage.External.Enabled(
-                        stripeManageUrl
-                    )
-                    MembershipPaymentMethod.METHOD_INAPP_APPLE -> TierButton.Manage.External.Enabled(
-                        iosManageUrl
-                    )
+                    MembershipPaymentMethod.METHOD_CRYPTO -> {
+                        TierButton.Hidden
+                    }
+                    MembershipPaymentMethod.METHOD_STRIPE -> {
+                        if (stripeManageUrl.isNullOrBlank()) {
+                            TierButton.Hidden
+                        } else {
+                            TierButton.Manage.External.Enabled(stripeManageUrl)
+                        }
+                    }
+                    MembershipPaymentMethod.METHOD_INAPP_APPLE -> {
+                        if (iosManageUrl.isNullOrBlank()) {
+                            TierButton.Hidden
+                        } else {
+                            TierButton.Manage.External.Enabled(iosManageUrl)
+                        }
+                    }
                     MembershipPaymentMethod.METHOD_INAPP_GOOGLE -> TierButton.Manage.External.Enabled(
                         androidInfoUrl
                     )
@@ -141,10 +155,21 @@ private fun MembershipTierData.toButtonView(
                 TierButton.Info.Enabled(androidInfoUrl)
             }
         } else {
-            if (membershipStatus.anyName.isBlank()) {
-                TierButton.Pay.Disabled
-            } else {
-                TierButton.Pay.Enabled
+            when (billingPurchaseState) {
+                is BillingPurchaseState.HasPurchases -> {
+                    //Tier has purchase, but it's not active yet, still waiting for a event from the mw
+                    TierButton.Hidden
+                }
+                BillingPurchaseState.Loading -> {
+                    TierButton.Hidden
+                }
+                BillingPurchaseState.NoPurchases -> {
+                    if (membershipStatus.anyName.isBlank()) {
+                        TierButton.Pay.Disabled
+                    } else {
+                        TierButton.Pay.Enabled
+                    }
+                }
             }
         }
     }
@@ -153,7 +178,8 @@ private fun MembershipTierData.toButtonView(
 private fun MembershipTierData.getAnyName(
     isActive: Boolean,
     billingClientState: BillingClientState,
-    membershipStatus: MembershipStatus
+    membershipStatus: MembershipStatus,
+    billingPurchaseState: BillingPurchaseState
 ): TierAnyName {
     if (isActive) {
         return TierAnyName.Hidden
@@ -164,6 +190,11 @@ private fun MembershipTierData.getAnyName(
             if (membershipStatus.status == Membership.Status.STATUS_PENDING ||
                 membershipStatus.status == Membership.Status.STATUS_PENDING_FINALIZATION
             ) {
+                return TierAnyName.Hidden
+            }
+
+            if (billingPurchaseState is BillingPurchaseState.Loading
+                || billingPurchaseState is BillingPurchaseState.HasPurchases) {
                 return TierAnyName.Hidden
             }
 
@@ -193,7 +224,8 @@ private fun MembershipTierData.getAnyName(
 private fun MembershipTierData.getConditionInfo(
     isActive: Boolean,
     billingClientState: BillingClientState,
-    membershipStatus: MembershipStatus
+    membershipStatus: MembershipStatus,
+    billingPurchaseState: BillingPurchaseState
 ): TierConditionInfo {
     return if (isActive) {
         createConditionInfoForCurrentTier(
@@ -204,7 +236,7 @@ private fun MembershipTierData.getConditionInfo(
         if (androidProductId == null) {
             createConditionInfoForNonBillingTier()
         } else {
-            createConditionInfoForBillingTier(billingClientState, membershipStatus)
+            createConditionInfoForBillingTier(billingClientState, membershipStatus, billingPurchaseState)
         }
     }
 }
@@ -244,11 +276,18 @@ private fun formatPriceInCents(priceInCents: Int): String {
 
 private fun MembershipTierData.createConditionInfoForBillingTier(
     billingClientState: BillingClientState,
-    membershipStatus: MembershipStatus
+    membershipStatus: MembershipStatus,
+    billingPurchaseState: BillingPurchaseState
 ): TierConditionInfo {
     if (
         membershipStatus.status == Membership.Status.STATUS_PENDING ||
         membershipStatus.status == Membership.Status.STATUS_PENDING_FINALIZATION
+    ) {
+        return TierConditionInfo.Visible.Pending
+    }
+    if (
+        billingPurchaseState is BillingPurchaseState.Loading
+        || billingPurchaseState is BillingPurchaseState.HasPurchases
     ) {
         return TierConditionInfo.Visible.Pending
     }

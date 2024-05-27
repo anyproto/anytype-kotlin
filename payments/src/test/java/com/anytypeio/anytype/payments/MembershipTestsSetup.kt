@@ -80,7 +80,8 @@ open class MembershipTestsSetup {
     @Mock
     lateinit var getMembershipEmailStatus: GetMembershipEmailStatus
 
-    private lateinit var getMembershipPaymentUrl: GetMembershipPaymentUrl
+    @Mock
+    lateinit var getMembershipPaymentUrl: GetMembershipPaymentUrl
     protected val androidProductId = "id_android_builder"
 
     fun membershipStatus(tiers: List<MembershipTierData>) = MembershipStatus(
@@ -96,7 +97,6 @@ open class MembershipTestsSetup {
     @Before
     open fun setUp() {
         MockitoAnnotations.openMocks(this)
-        getMembershipPaymentUrl = GetMembershipPaymentUrl(dispatchers, repo)
     }
 
     protected fun validateTierView(

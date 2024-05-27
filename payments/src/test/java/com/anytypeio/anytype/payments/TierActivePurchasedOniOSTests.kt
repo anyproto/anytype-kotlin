@@ -144,7 +144,7 @@ class TierActivePurchasedOniOSTests : MembershipTestsSetup() {
     }
 
     @Test
-    fun `when payed plan is active from crypto, show proper valid and disabled manage button`() =
+    fun `when payed plan is active from crypto, show proper valid and hide manage button`() =
         runTest {
             turbineScope {
                 val (features, tiers) = commonTestSetup()
@@ -199,7 +199,7 @@ class TierActivePurchasedOniOSTests : MembershipTestsSetup() {
                             period = TierPeriod.Year(1),
                         ),
                         expectedAnyName = TierAnyName.Hidden,
-                        expectedButtonState = TierButton.Manage.External.Disabled,
+                        expectedButtonState = TierButton.Hidden,
                         expectedId = TiersConstants.BUILDER_ID,
                         expectedActive = true,
                         expectedEmailState = TierEmail.Hidden

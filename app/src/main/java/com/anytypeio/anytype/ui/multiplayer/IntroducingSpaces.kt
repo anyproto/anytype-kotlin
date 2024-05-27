@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.ui.multiplayer
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,10 +16,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -77,11 +80,35 @@ fun IntroduceSpacesScreen(
                 }
                 .fillMaxSize()
         ) { page ->
-            Text(
-                text = page.inc().toString(),
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
-            )
+            when(page) {
+                0 -> {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_sharing_step_1),
+                            contentDescription = "Screenshot 1",
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
+                }
+                1 -> {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_sharing_step_2),
+                            contentDescription = "Screenshot 1",
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
+                }
+                2 -> {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_sharing_step_3),
+                            contentDescription = "Screenshot 1",
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
+                }
+            }
         }
 
         Row(

@@ -1132,8 +1132,8 @@ class ComponentManager(
             .build()
     }
 
-    val paymentsComponent = Component {
-        DaggerPaymentsComponent.factory().create(findComponentDependencies())
+    val membershipComponent = Component {
+        DaggerMembershipComponent.factory().create(findComponentDependencies())
     }
 
     val galleryInstallationsComponent =

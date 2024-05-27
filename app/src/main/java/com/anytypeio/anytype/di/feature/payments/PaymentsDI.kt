@@ -15,8 +15,8 @@ import com.anytypeio.anytype.domain.payments.IsMembershipNameValid
 import com.anytypeio.anytype.domain.payments.SetMembershipEmail
 import com.anytypeio.anytype.domain.payments.VerifyMembershipEmailCode
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
-import com.anytypeio.anytype.ui.payments.PaymentsFragment
-import com.anytypeio.anytype.payments.viewmodel.PaymentsViewModelFactory
+import com.anytypeio.anytype.ui.payments.MembershipFragment
+import com.anytypeio.anytype.payments.viewmodel.MembershipViewModelFactory
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import dagger.Binds
 import dagger.Component
@@ -38,7 +38,7 @@ interface PaymentsComponent {
         fun create(dependencies: PaymentsComponentDependencies): PaymentsComponent
     }
 
-    fun inject(fragment: PaymentsFragment)
+    fun inject(fragment: MembershipFragment)
 }
 
 @Module
@@ -98,7 +98,7 @@ object PaymentsModule {
         @PerScreen
         @Binds
         fun bindViewModelFactory(
-            factory: PaymentsViewModelFactory
+            factory: MembershipViewModelFactory
         ): ViewModelProvider.Factory
 
     }

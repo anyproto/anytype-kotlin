@@ -60,7 +60,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.fontRiccioneRegular
-import com.anytypeio.anytype.payments.models.TierPreviewView
+import com.anytypeio.anytype.payments.models.TierPreview
 import com.anytypeio.anytype.payments.viewmodel.MembershipMainState
 import com.anytypeio.anytype.payments.viewmodel.TierAction
 import com.anytypeio.anytype.presentation.membership.models.TierId
@@ -213,7 +213,7 @@ private fun Subtitle(@StringRes subtitle: Int) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TiersList(tiers: List<TierPreviewView>, onClick: (TierId) -> Unit) {
+fun TiersList(tiers: List<TierPreview>, onClick: (TierId) -> Unit) {
     val itemsScroll = rememberLazyListState()
     LazyRow(
         state = itemsScroll,

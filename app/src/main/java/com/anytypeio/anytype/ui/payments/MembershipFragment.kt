@@ -33,8 +33,8 @@ import com.anytypeio.anytype.payments.screens.PaymentWelcomeScreen
 import com.anytypeio.anytype.payments.screens.TierViewScreen
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.payments.viewmodel.PaymentsNavigation
-import com.anytypeio.anytype.payments.viewmodel.PaymentsViewModel
-import com.anytypeio.anytype.payments.viewmodel.PaymentsViewModelFactory
+import com.anytypeio.anytype.payments.viewmodel.MembershipViewModel
+import com.anytypeio.anytype.payments.viewmodel.MembershipViewModelFactory
 import com.google.accompanist.navigation.material.BottomSheetNavigator
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
@@ -46,8 +46,8 @@ import timber.log.Timber
 class MembershipFragment : BaseBottomSheetComposeFragment() {
 
     @Inject
-    lateinit var factory: PaymentsViewModelFactory
-    private val vm by viewModels<PaymentsViewModel> { factory }
+    lateinit var factory: MembershipViewModelFactory
+    private val vm by viewModels<MembershipViewModel> { factory }
     private lateinit var navController: NavHostController
 
     @Inject

@@ -20,8 +20,8 @@ import com.anytypeio.anytype.domain.payments.GetMembershipPaymentUrl
 import com.anytypeio.anytype.domain.payments.IsMembershipNameValid
 import com.anytypeio.anytype.domain.payments.SetMembershipEmail
 import com.anytypeio.anytype.domain.payments.VerifyMembershipEmailCode
-import com.anytypeio.anytype.payments.constants.TiersConstants.EXPLORER_ID
-import com.anytypeio.anytype.payments.constants.TiersConstants.MEMBERSHIP_NAME_MIN_LENGTH
+import com.anytypeio.anytype.payments.constants.MembershipConstants.EXPLORER_ID
+import com.anytypeio.anytype.payments.constants.MembershipConstants.MEMBERSHIP_NAME_MIN_LENGTH
 import com.anytypeio.anytype.payments.mapping.toMainView
 import com.anytypeio.anytype.payments.mapping.toView
 import com.anytypeio.anytype.payments.models.TierAnyName

@@ -6,12 +6,12 @@ import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.payments.constants.TiersConstants
-import com.anytypeio.anytype.payments.constants.TiersConstants.ACTIVE_TIERS_WITH_BANNERS
-import com.anytypeio.anytype.payments.constants.TiersConstants.MEMBERSHIP_CONTACT_EMAIL
-import com.anytypeio.anytype.payments.constants.TiersConstants.MEMBERSHIP_LEVEL_DETAILS
-import com.anytypeio.anytype.payments.constants.TiersConstants.PRIVACY_POLICY
-import com.anytypeio.anytype.payments.constants.TiersConstants.TERMS_OF_SERVICE
+import com.anytypeio.anytype.payments.constants.MembershipConstants
+import com.anytypeio.anytype.payments.constants.MembershipConstants.ACTIVE_TIERS_WITH_BANNERS
+import com.anytypeio.anytype.payments.constants.MembershipConstants.MEMBERSHIP_CONTACT_EMAIL
+import com.anytypeio.anytype.payments.constants.MembershipConstants.MEMBERSHIP_LEVEL_DETAILS
+import com.anytypeio.anytype.payments.constants.MembershipConstants.PRIVACY_POLICY
+import com.anytypeio.anytype.payments.constants.MembershipConstants.TERMS_OF_SERVICE
 import com.anytypeio.anytype.payments.models.BillingPriceInfo
 import com.anytypeio.anytype.payments.models.Tier
 import com.anytypeio.anytype.payments.models.TierAnyName
@@ -142,7 +142,7 @@ private fun MembershipTierData.toButtonView(
     return if (isActive) {
         val wasPurchasedOnAndroid = isActiveTierPurchasedOnAndroid(membershipStatus.paymentMethod)
         if (!wasPurchasedOnAndroid) {
-            if (id == TiersConstants.EXPLORER_ID) {
+            if (id == MembershipConstants.EXPLORER_ID) {
                 if (membershipStatus.userEmail.isBlank()) {
                     TierButton.Submit.Enabled
                 } else {
@@ -347,11 +347,11 @@ private fun MembershipTierData.createConditionInfoForBillingTier(
             val product =
                 billingClientState.productDetails.find { it.productId == androidProductId }
             if (product == null) {
-                TierConditionInfo.Visible.Error(TiersConstants.ERROR_PRODUCT_NOT_FOUND)
+                TierConditionInfo.Visible.Error(MembershipConstants.ERROR_PRODUCT_NOT_FOUND)
             } else {
                 val billingPriceInfo = product.billingPriceInfo()
                 if (billingPriceInfo == null) {
-                    TierConditionInfo.Visible.Error(TiersConstants.ERROR_PRODUCT_PRICE)
+                    TierConditionInfo.Visible.Error(MembershipConstants.ERROR_PRODUCT_PRICE)
                 } else {
                     TierConditionInfo.Visible.PriceBilling(
                         price = billingPriceInfo
@@ -388,7 +388,7 @@ private fun convertToTierViewPeriod(tier: MembershipTierData): TierPeriod {
 
 private fun MembershipTierData.getTierEmail(isActive: Boolean, membershipEmail: String): TierEmail {
     if (isActive) {
-        if (id == TiersConstants.EXPLORER_ID && membershipEmail.isBlank()) {
+        if (id == MembershipConstants.EXPLORER_ID && membershipEmail.isBlank()) {
             return TierEmail.Visible.Enter
         }
     }

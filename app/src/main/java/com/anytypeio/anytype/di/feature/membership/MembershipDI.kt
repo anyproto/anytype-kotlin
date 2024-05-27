@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.di.feature.payments
+package com.anytypeio.anytype.di.feature.membership
 
 import android.content.Context
 import androidx.lifecycle.ViewModelProvider
@@ -24,25 +24,25 @@ import dagger.Module
 import dagger.Provides
 
 @Component(
-    dependencies = [PaymentsComponentDependencies::class],
+    dependencies = [MembershipComponentDependencies::class],
     modules = [
-        PaymentsModule::class,
-        PaymentsModule.Declarations::class
+        MembershipModule::class,
+        MembershipModule.Declarations::class
     ]
 )
 @PerScreen
-interface PaymentsComponent {
+interface MembershipComponent {
 
     @Component.Factory
     interface Factory {
-        fun create(dependencies: PaymentsComponentDependencies): PaymentsComponent
+        fun create(dependencies: MembershipComponentDependencies): MembershipComponent
     }
 
     fun inject(fragment: MembershipFragment)
 }
 
 @Module
-object PaymentsModule {
+object MembershipModule {
 
     @JvmStatic
     @Provides
@@ -104,7 +104,7 @@ object PaymentsModule {
     }
 }
 
-interface PaymentsComponentDependencies : ComponentDependencies {
+interface MembershipComponentDependencies : ComponentDependencies {
     fun analytics(): Analytics
     fun context(): Context
     fun billingListener(): BillingClientLifecycle

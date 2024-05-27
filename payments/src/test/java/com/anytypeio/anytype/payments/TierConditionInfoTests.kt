@@ -4,7 +4,7 @@ import app.cash.turbine.turbineScope
 import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
-import com.anytypeio.anytype.payments.constants.TiersConstants
+import com.anytypeio.anytype.payments.constants.MembershipConstants
 import com.anytypeio.anytype.payments.models.TierConditionInfo
 import com.anytypeio.anytype.payments.models.TierPeriod
 import com.anytypeio.anytype.payments.playbilling.BillingPurchaseState
@@ -24,7 +24,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
         turbineScope {
             val tiers = listOf(
                 StubMembershipTierData(
-                    id = TiersConstants.EXPLORER_ID,
+                    id = MembershipConstants.EXPLORER_ID,
                     name = "Explorer",
                     periodType = MembershipPeriodType.PERIOD_TYPE_UNLIMITED,
                     priceStripeUsdCents = 0,
@@ -33,7 +33,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             )
             stubMembershipProvider(
                 MembershipStatus(
-                    activeTier = TierId(TiersConstants.CO_CREATOR_ID),
+                    activeTier = TierId(MembershipConstants.CO_CREATOR_ID),
                     status = Membership.Status.STATUS_ACTIVE,
                     dateEnds = 1714199910,
                     paymentMethod = MembershipPaymentMethod.METHOD_CRYPTO,
@@ -54,7 +54,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             val tier = result.tiers[0]
 
             //Asserts
-            assertEquals(TiersConstants.EXPLORER_ID, tier.id.value)
+            assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
             assertEquals(
                 TierConditionInfo.Visible.Free(
                     period = TierPeriod.Unlimited
@@ -68,7 +68,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
         turbineScope {
             val tiers = listOf(
                 StubMembershipTierData(
-                    id = TiersConstants.EXPLORER_ID,
+                    id = MembershipConstants.EXPLORER_ID,
                     name = "Explorer",
                     periodType = MembershipPeriodType.PERIOD_TYPE_UNKNOWN,
                     priceStripeUsdCents = 0,
@@ -77,7 +77,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             )
             stubMembershipProvider(
                 MembershipStatus(
-                    activeTier = TierId(TiersConstants.CO_CREATOR_ID),
+                    activeTier = TierId(MembershipConstants.CO_CREATOR_ID),
                     status = Membership.Status.STATUS_ACTIVE,
                     dateEnds = 1714199910,
                     paymentMethod = MembershipPaymentMethod.METHOD_CRYPTO,
@@ -98,7 +98,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             val tier = result.tiers[0]
 
             //Asserts
-            assertEquals(TiersConstants.EXPLORER_ID, tier.id.value)
+            assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
             assertEquals(
                 TierConditionInfo.Visible.Free(
                     period = TierPeriod.Unknown
@@ -112,7 +112,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
         turbineScope {
             val tiers = listOf(
                 StubMembershipTierData(
-                    id = TiersConstants.EXPLORER_ID,
+                    id = MembershipConstants.EXPLORER_ID,
                     name = "Explorer",
                     periodType = MembershipPeriodType.PERIOD_TYPE_YEARS,
                     priceStripeUsdCents = 0,
@@ -121,7 +121,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             )
             stubMembershipProvider(
                 MembershipStatus(
-                    activeTier = TierId(TiersConstants.CO_CREATOR_ID),
+                    activeTier = TierId(MembershipConstants.CO_CREATOR_ID),
                     status = Membership.Status.STATUS_ACTIVE,
                     dateEnds = 1714199910,
                     paymentMethod = MembershipPaymentMethod.METHOD_CRYPTO,
@@ -142,7 +142,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             val tier = result.tiers[0]
 
             //Asserts
-            assertEquals(TiersConstants.EXPLORER_ID, tier.id.value)
+            assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
             assertEquals(
                 TierConditionInfo.Visible.Free(
                     period = TierPeriod.Year(3)
@@ -156,7 +156,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
         turbineScope {
             val tiers = listOf(
                 StubMembershipTierData(
-                    id = TiersConstants.EXPLORER_ID,
+                    id = MembershipConstants.EXPLORER_ID,
                     name = "Explorer",
                     periodType = MembershipPeriodType.PERIOD_TYPE_UNLIMITED,
                     priceStripeUsdCents = 9999,
@@ -165,7 +165,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             )
             stubMembershipProvider(
                 MembershipStatus(
-                    activeTier = TierId(TiersConstants.CO_CREATOR_ID),
+                    activeTier = TierId(MembershipConstants.CO_CREATOR_ID),
                     status = Membership.Status.STATUS_ACTIVE,
                     dateEnds = 1714199910,
                     paymentMethod = MembershipPaymentMethod.METHOD_CRYPTO,
@@ -186,7 +186,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             val tier = result.tiers[0]
 
             //Asserts
-            assertEquals(TiersConstants.EXPLORER_ID, tier.id.value)
+            assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
             assertEquals(
                 TierConditionInfo.Visible.Price(
                     price = "$99.99",
@@ -201,7 +201,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
         turbineScope {
             val tiers = listOf(
                 StubMembershipTierData(
-                    id = TiersConstants.EXPLORER_ID,
+                    id = MembershipConstants.EXPLORER_ID,
                     name = "Explorer",
                     periodType = MembershipPeriodType.PERIOD_TYPE_UNKNOWN,
                     priceStripeUsdCents = 9999,
@@ -210,7 +210,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             )
             stubMembershipProvider(
                 MembershipStatus(
-                    activeTier = TierId(TiersConstants.CO_CREATOR_ID),
+                    activeTier = TierId(MembershipConstants.CO_CREATOR_ID),
                     status = Membership.Status.STATUS_ACTIVE,
                     dateEnds = 1714199910,
                     paymentMethod = MembershipPaymentMethod.METHOD_CRYPTO,
@@ -231,7 +231,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             val tier = result.tiers[0]
 
             //Asserts
-            assertEquals(TiersConstants.EXPLORER_ID, tier.id.value)
+            assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
             assertEquals(
                 TierConditionInfo.Visible.Price(
                     price = "$99.99",
@@ -246,7 +246,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
         turbineScope {
             val tiers = listOf(
                 StubMembershipTierData(
-                    id = TiersConstants.EXPLORER_ID,
+                    id = MembershipConstants.EXPLORER_ID,
                     name = "Explorer",
                     periodType = MembershipPeriodType.PERIOD_TYPE_YEARS,
                     priceStripeUsdCents = 9999,
@@ -255,7 +255,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             )
             stubMembershipProvider(
                 MembershipStatus(
-                    activeTier = TierId(TiersConstants.CO_CREATOR_ID),
+                    activeTier = TierId(MembershipConstants.CO_CREATOR_ID),
                     status = Membership.Status.STATUS_ACTIVE,
                     dateEnds = 1714199910,
                     paymentMethod = MembershipPaymentMethod.METHOD_CRYPTO,
@@ -276,7 +276,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             val tier = result.tiers[0]
 
             //Asserts
-            assertEquals(TiersConstants.EXPLORER_ID, tier.id.value)
+            assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
             assertEquals(
                 TierConditionInfo.Visible.Price(
                     price = "$99.99",
@@ -291,7 +291,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
         turbineScope {
             val tiers = listOf(
                 StubMembershipTierData(
-                    id = TiersConstants.EXPLORER_ID,
+                    id = MembershipConstants.EXPLORER_ID,
                     name = "Explorer",
                     periodType = MembershipPeriodType.PERIOD_TYPE_UNLIMITED,
                     priceStripeUsdCents = 0,
@@ -300,7 +300,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             )
             stubMembershipProvider(
                 MembershipStatus(
-                    activeTier = TierId(TiersConstants.EXPLORER_ID),
+                    activeTier = TierId(MembershipConstants.EXPLORER_ID),
                     status = Membership.Status.STATUS_ACTIVE,
                     dateEnds = 1714199910,
                     paymentMethod = MembershipPaymentMethod.METHOD_CRYPTO,
@@ -321,7 +321,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             val tier = result.tiers[0]
 
             //Asserts
-            assertEquals(TiersConstants.EXPLORER_ID, tier.id.value)
+            assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
             assertEquals(
                 TierConditionInfo.Visible.Valid(
                     period = TierPeriod.Unlimited,
@@ -337,7 +337,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
         turbineScope {
             val tiers = listOf(
                 StubMembershipTierData(
-                    id = TiersConstants.EXPLORER_ID,
+                    id = MembershipConstants.EXPLORER_ID,
                     name = "Explorer",
                     periodType = MembershipPeriodType.PERIOD_TYPE_UNKNOWN,
                     priceStripeUsdCents = 0,
@@ -346,7 +346,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             )
             stubMembershipProvider(
                 MembershipStatus(
-                    activeTier = TierId(TiersConstants.EXPLORER_ID),
+                    activeTier = TierId(MembershipConstants.EXPLORER_ID),
                     status = Membership.Status.STATUS_ACTIVE,
                     dateEnds = 1714199910,
                     paymentMethod = MembershipPaymentMethod.METHOD_CRYPTO,
@@ -367,7 +367,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             val tier = result.tiers[0]
 
             //Asserts
-            assertEquals(TiersConstants.EXPLORER_ID, tier.id.value)
+            assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
             assertEquals(
                 TierConditionInfo.Visible.Valid(
                     period = TierPeriod.Unknown,
@@ -383,7 +383,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
         turbineScope {
             val tiers = listOf(
                 StubMembershipTierData(
-                    id = TiersConstants.EXPLORER_ID,
+                    id = MembershipConstants.EXPLORER_ID,
                     name = "Explorer",
                     periodType = MembershipPeriodType.PERIOD_TYPE_YEARS,
                     priceStripeUsdCents = 0,
@@ -392,7 +392,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             )
             stubMembershipProvider(
                 MembershipStatus(
-                    activeTier = TierId(TiersConstants.EXPLORER_ID),
+                    activeTier = TierId(MembershipConstants.EXPLORER_ID),
                     status = Membership.Status.STATUS_ACTIVE,
                     dateEnds = 1714199910,
                     paymentMethod = MembershipPaymentMethod.METHOD_CRYPTO,
@@ -413,7 +413,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             val tier = result.tiers[0]
 
             //Asserts
-            assertEquals(TiersConstants.EXPLORER_ID, tier.id.value)
+            assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
             assertEquals(
                 TierConditionInfo.Visible.Valid(
                     period = TierPeriod.Year(2),
@@ -429,7 +429,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
         turbineScope {
             val tiers = listOf(
                 StubMembershipTierData(
-                    id = TiersConstants.BUILDER_ID,
+                    id = MembershipConstants.BUILDER_ID,
                     name = "Builder",
                     periodType = MembershipPeriodType.PERIOD_TYPE_YEARS,
                     priceStripeUsdCents = 999,
@@ -438,7 +438,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             )
             stubMembershipProvider(
                 MembershipStatus(
-                    activeTier = TierId(TiersConstants.BUILDER_ID),
+                    activeTier = TierId(MembershipConstants.BUILDER_ID),
                     status = Membership.Status.STATUS_ACTIVE,
                     dateEnds = 1714199910,
                     paymentMethod = MembershipPaymentMethod.METHOD_INAPP_GOOGLE,
@@ -459,7 +459,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             val tier = result.tiers[0]
 
             //Asserts
-            assertEquals(TiersConstants.BUILDER_ID, tier.id.value)
+            assertEquals(MembershipConstants.BUILDER_ID, tier.id.value)
             assertEquals(
                 TierConditionInfo.Visible.Valid(
                     dateEnds = 1714199910,
@@ -475,7 +475,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
         turbineScope {
             val tiers = listOf(
                 StubMembershipTierData(
-                    id = TiersConstants.EXPLORER_ID,
+                    id = MembershipConstants.EXPLORER_ID,
                     name = "Explorer",
                     colorStr = "#000000",
                     features = listOf("feature1", "feature2"),
@@ -486,7 +486,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             )
             stubMembershipProvider(
                 MembershipStatus(
-                    activeTier = TierId(TiersConstants.CO_CREATOR_ID),
+                    activeTier = TierId(MembershipConstants.CO_CREATOR_ID),
                     status = Membership.Status.STATUS_ACTIVE,
                     dateEnds = 1714199910,
                     paymentMethod = MembershipPaymentMethod.METHOD_CRYPTO,
@@ -507,7 +507,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             val tier = result.tiers[0]
 
             //Asserts
-            assertEquals(TiersConstants.EXPLORER_ID, tier.id.value)
+            assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
             assertEquals(
                 TierConditionInfo.Visible.Free(
                     period = TierPeriod.Year(4)
@@ -521,7 +521,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
         turbineScope {
             val tiers = listOf(
                 StubMembershipTierData(
-                    id = TiersConstants.EXPLORER_ID,
+                    id = MembershipConstants.EXPLORER_ID,
                     name = "Explorer",
                     colorStr = "#000000",
                     features = listOf("feature1", "feature2"),
@@ -532,7 +532,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             )
             stubMembershipProvider(
                 MembershipStatus(
-                    activeTier = TierId(TiersConstants.CO_CREATOR_ID),
+                    activeTier = TierId(MembershipConstants.CO_CREATOR_ID),
                     status = Membership.Status.STATUS_ACTIVE,
                     dateEnds = 1714199910,
                     paymentMethod = MembershipPaymentMethod.METHOD_CRYPTO,
@@ -553,7 +553,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             val tier = result.tiers[0]
 
             //Asserts
-            assertEquals(TiersConstants.EXPLORER_ID, tier.id.value)
+            assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
             assertEquals(
                 TierConditionInfo.Visible.Free(
                     period = TierPeriod.Month(3)
@@ -567,7 +567,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
         turbineScope {
             val tiers = listOf(
                 StubMembershipTierData(
-                    id = TiersConstants.EXPLORER_ID,
+                    id = MembershipConstants.EXPLORER_ID,
                     name = "Explorer",
                     colorStr = "#000000",
                     features = listOf("feature1", "feature2"),
@@ -578,7 +578,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             )
             stubMembershipProvider(
                 MembershipStatus(
-                    activeTier = TierId(TiersConstants.CO_CREATOR_ID),
+                    activeTier = TierId(MembershipConstants.CO_CREATOR_ID),
                     status = Membership.Status.STATUS_ACTIVE,
                     dateEnds = 1714199910,
                     paymentMethod = MembershipPaymentMethod.METHOD_CRYPTO,
@@ -599,7 +599,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             val tier = result.tiers[0]
 
             //Asserts
-            assertEquals(TiersConstants.EXPLORER_ID, tier.id.value)
+            assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
             assertEquals(false, tier.isActive)
             assertEquals(
                 TierConditionInfo.Visible.Free(
@@ -614,7 +614,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
         turbineScope {
             val tiers = listOf(
                 StubMembershipTierData(
-                    id = TiersConstants.EXPLORER_ID,
+                    id = MembershipConstants.EXPLORER_ID,
                     name = "Explorer",
                     colorStr = "#000000",
                     features = listOf("feature1", "feature2"),
@@ -625,7 +625,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             )
             stubMembershipProvider(
                 MembershipStatus(
-                    activeTier = TierId(TiersConstants.CO_CREATOR_ID),
+                    activeTier = TierId(MembershipConstants.CO_CREATOR_ID),
                     status = Membership.Status.STATUS_ACTIVE,
                     dateEnds = 1714199910,
                     paymentMethod = MembershipPaymentMethod.METHOD_CRYPTO,
@@ -646,7 +646,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             val tier = result.tiers[0]
 
             //Asserts
-            assertEquals(TiersConstants.EXPLORER_ID, tier.id.value)
+            assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
             assertEquals(false, tier.isActive)
             assertEquals(
                 TierConditionInfo.Visible.Free(
@@ -661,7 +661,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
         turbineScope {
             val tiers = listOf(
                 StubMembershipTierData(
-                    id = TiersConstants.EXPLORER_ID,
+                    id = MembershipConstants.EXPLORER_ID,
                     name = "Explorer",
                     colorStr = "#000000",
                     features = listOf("feature1", "feature2"),
@@ -672,7 +672,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             )
             stubMembershipProvider(
                 MembershipStatus(
-                    activeTier = TierId(TiersConstants.CO_CREATOR_ID),
+                    activeTier = TierId(MembershipConstants.CO_CREATOR_ID),
                     status = Membership.Status.STATUS_ACTIVE,
                     dateEnds = 1714199910,
                     paymentMethod = MembershipPaymentMethod.METHOD_CRYPTO,
@@ -693,7 +693,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             val tier = result.tiers[0]
 
             //Asserts
-            assertEquals(TiersConstants.EXPLORER_ID, tier.id.value)
+            assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
             assertEquals(false, tier.isActive)
             assertEquals(
                 TierConditionInfo.Visible.Free(period = TierPeriod.Unknown),
@@ -710,7 +710,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
         turbineScope {
             val tiers = listOf(
                 StubMembershipTierData(
-                    id = TiersConstants.EXPLORER_ID,
+                    id = MembershipConstants.EXPLORER_ID,
                     name = "Explorer",
                     colorStr = "#000000",
                     features = listOf("feature1", "feature2"),
@@ -721,7 +721,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             )
             stubMembershipProvider(
                 MembershipStatus(
-                    activeTier = TierId(TiersConstants.CO_CREATOR_ID),
+                    activeTier = TierId(MembershipConstants.CO_CREATOR_ID),
                     status = Membership.Status.STATUS_ACTIVE,
                     dateEnds = 1714199910,
                     paymentMethod = MembershipPaymentMethod.METHOD_CRYPTO,
@@ -742,7 +742,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             val tier = result.tiers[0]
 
             //Asserts
-            assertEquals(TiersConstants.EXPLORER_ID, tier.id.value)
+            assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
             assertEquals(false, tier.isActive)
             assertEquals(
                 TierConditionInfo.Visible.Free(period = TierPeriod.Unknown),
@@ -756,7 +756,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
         turbineScope {
             val tiers = listOf(
                 StubMembershipTierData(
-                    id = TiersConstants.EXPLORER_ID,
+                    id = MembershipConstants.EXPLORER_ID,
                     name = "Explorer",
                     colorStr = "#000000",
                     features = listOf("feature1", "feature2"),
@@ -767,7 +767,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             )
             stubMembershipProvider(
                 MembershipStatus(
-                    activeTier = TierId(TiersConstants.CO_CREATOR_ID),
+                    activeTier = TierId(MembershipConstants.CO_CREATOR_ID),
                     status = Membership.Status.STATUS_ACTIVE,
                     dateEnds = 1714199910,
                     paymentMethod = MembershipPaymentMethod.METHOD_CRYPTO,
@@ -788,7 +788,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             val tier = result.tiers[0]
 
             //Asserts
-            assertEquals(TiersConstants.EXPLORER_ID, tier.id.value)
+            assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
             assertEquals(false, tier.isActive)
             assertEquals(
                 TierConditionInfo.Visible.Price(
@@ -804,7 +804,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
         turbineScope {
             val tiers = listOf(
                 StubMembershipTierData(
-                    id = TiersConstants.EXPLORER_ID,
+                    id = MembershipConstants.EXPLORER_ID,
                     name = "Explorer",
                     colorStr = "#000000",
                     features = listOf("feature1", "feature2"),
@@ -815,7 +815,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             )
             stubMembershipProvider(
                 MembershipStatus(
-                    activeTier = TierId(TiersConstants.CO_CREATOR_ID),
+                    activeTier = TierId(MembershipConstants.CO_CREATOR_ID),
                     status = Membership.Status.STATUS_ACTIVE,
                     dateEnds = 1714199910,
                     paymentMethod = MembershipPaymentMethod.METHOD_CRYPTO,
@@ -836,7 +836,7 @@ class TierConditionInfoTests : MembershipTestsSetup() {
             val tier = result.tiers[0]
 
             //Asserts
-            assertEquals(TiersConstants.EXPLORER_ID, tier.id.value)
+            assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
             assertEquals(false, tier.isActive)
             assertEquals(
                 TierConditionInfo.Visible.Price(

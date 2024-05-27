@@ -5,7 +5,7 @@ import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
-import com.anytypeio.anytype.payments.constants.TiersConstants
+import com.anytypeio.anytype.payments.constants.MembershipConstants
 import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierConditionInfo
@@ -45,14 +45,14 @@ class TierAndroidActivePurchasedOniOS : MembershipTestsSetup() {
     private fun setupTierData(features: List<String>): List<MembershipTierData> {
         return listOf(
             StubMembershipTierData(
-                id = TiersConstants.EXPLORER_ID,
+                id = MembershipConstants.EXPLORER_ID,
                 androidProductId = null,
                 features = features,
                 periodType = MembershipPeriodType.PERIOD_TYPE_UNLIMITED,
                 priceStripeUsdCents = 0
             ),
             StubMembershipTierData(
-                id = TiersConstants.BUILDER_ID,
+                id = MembershipConstants.BUILDER_ID,
                 androidProductId = androidProductId,
                 features = features,
                 periodValue = 1,
@@ -61,7 +61,7 @@ class TierAndroidActivePurchasedOniOS : MembershipTestsSetup() {
                 iosManageUrl = iosManageUrl
             ),
             StubMembershipTierData(
-                id = TiersConstants.CO_CREATOR_ID,
+                id = MembershipConstants.CO_CREATOR_ID,
                 androidProductId = null,
                 features = features,
                 periodValue = 3,
@@ -81,7 +81,7 @@ class TierAndroidActivePurchasedOniOS : MembershipTestsSetup() {
 
     private fun setupMembershipStatus(tiers: List<MembershipTierData>): MembershipStatus {
         return MembershipStatus(
-            activeTier = TierId(TiersConstants.BUILDER_ID),
+            activeTier = TierId(MembershipConstants.BUILDER_ID),
             status = Membership.Status.STATUS_ACTIVE,
             dateEnds = dateEnds,
             paymentMethod = MembershipPaymentMethod.METHOD_INAPP_APPLE,
@@ -110,8 +110,8 @@ class TierAndroidActivePurchasedOniOS : MembershipTestsSetup() {
             viewStateFlow.awaitItem().let { result ->
                 assertIs<MembershipMainState.Default>(result)
                 val tier: TierPreview =
-                    result.tiers.find { it.id.value == TiersConstants.BUILDER_ID }!!
-                TestCase.assertEquals(TiersConstants.BUILDER_ID, tier.id.value)
+                    result.tiers.find { it.id.value == MembershipConstants.BUILDER_ID }!!
+                TestCase.assertEquals(MembershipConstants.BUILDER_ID, tier.id.value)
                 TestCase.assertEquals(true, tier.isActive)
                 TestCase.assertEquals(
                     TierConditionInfo.Visible.Valid(
@@ -123,7 +123,7 @@ class TierAndroidActivePurchasedOniOS : MembershipTestsSetup() {
                 )
             }
 
-            viewModel.onTierClicked(TierId(TiersConstants.BUILDER_ID))
+            viewModel.onTierClicked(TierId(MembershipConstants.BUILDER_ID))
 
             tierStateFlow.awaitItem().let { result ->
                 assertIs<MembershipTierState.Visible>(result)
@@ -137,7 +137,7 @@ class TierAndroidActivePurchasedOniOS : MembershipTestsSetup() {
                     ),
                     expectedAnyName = TierAnyName.Hidden,
                     expectedButtonState = TierButton.Manage.External.Enabled(iosManageUrl),
-                    expectedId = TiersConstants.BUILDER_ID,
+                    expectedId = MembershipConstants.BUILDER_ID,
                     expectedActive = true,
                     expectedEmailState = TierEmail.Hidden
                 )
@@ -155,7 +155,7 @@ class TierAndroidActivePurchasedOniOS : MembershipTestsSetup() {
                 stubBilling(billingClientState = BillingClientState.Loading)
                 stubMembershipProvider(
                     MembershipStatus(
-                        activeTier = TierId(TiersConstants.BUILDER_ID),
+                        activeTier = TierId(MembershipConstants.BUILDER_ID),
                         status = Membership.Status.STATUS_ACTIVE,
                         dateEnds = dateEnds,
                         paymentMethod = MembershipPaymentMethod.METHOD_CRYPTO,
@@ -175,8 +175,8 @@ class TierAndroidActivePurchasedOniOS : MembershipTestsSetup() {
                 viewStateFlow.awaitItem().let { result ->
                     assertIs<MembershipMainState.Default>(result)
                     val tier: TierPreview =
-                        result.tiers.find { it.id.value == TiersConstants.BUILDER_ID }!!
-                    TestCase.assertEquals(TiersConstants.BUILDER_ID, tier.id.value)
+                        result.tiers.find { it.id.value == MembershipConstants.BUILDER_ID }!!
+                    TestCase.assertEquals(MembershipConstants.BUILDER_ID, tier.id.value)
                     TestCase.assertEquals(true, tier.isActive)
                     TestCase.assertEquals(
                         TierConditionInfo.Visible.Valid(
@@ -188,7 +188,7 @@ class TierAndroidActivePurchasedOniOS : MembershipTestsSetup() {
                     )
                 }
 
-                viewModel.onTierClicked(TierId(TiersConstants.BUILDER_ID))
+                viewModel.onTierClicked(TierId(MembershipConstants.BUILDER_ID))
 
                 tierStateFlow.awaitItem().let { result ->
                     assertIs<MembershipTierState.Visible>(result)
@@ -202,7 +202,7 @@ class TierAndroidActivePurchasedOniOS : MembershipTestsSetup() {
                         ),
                         expectedAnyName = TierAnyName.Hidden,
                         expectedButtonState = TierButton.Hidden,
-                        expectedId = TiersConstants.BUILDER_ID,
+                        expectedId = MembershipConstants.BUILDER_ID,
                         expectedActive = true,
                         expectedEmailState = TierEmail.Hidden
                     )

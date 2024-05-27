@@ -13,7 +13,7 @@ import com.anytypeio.anytype.domain.payments.GetMembershipPaymentUrl
 import com.anytypeio.anytype.domain.payments.IsMembershipNameValid
 import com.anytypeio.anytype.domain.payments.SetMembershipEmail
 import com.anytypeio.anytype.domain.payments.VerifyMembershipEmailCode
-import com.anytypeio.anytype.payments.constants.TiersConstants
+import com.anytypeio.anytype.payments.constants.MembershipConstants
 import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierConditionInfo
@@ -85,7 +85,7 @@ open class MembershipTestsSetup {
     protected val androidProductId = "id_android_builder"
 
     fun membershipStatus(tiers: List<MembershipTierData>) = MembershipStatus(
-        activeTier = TierId(TiersConstants.EXPLORER_ID),
+        activeTier = TierId(MembershipConstants.EXPLORER_ID),
         status = Membership.Status.STATUS_ACTIVE,
         dateEnds = 1714199910,
         paymentMethod = MembershipPaymentMethod.METHOD_NONE,

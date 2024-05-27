@@ -42,9 +42,9 @@ import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.payments.R
-import com.anytypeio.anytype.payments.constants.TiersConstants.EXPLORER_ID
-import com.anytypeio.anytype.payments.constants.TiersConstants.PRIVACY_POLICY
-import com.anytypeio.anytype.payments.constants.TiersConstants.TERMS_OF_SERVICE
+import com.anytypeio.anytype.payments.constants.MembershipConstants.EXPLORER_ID
+import com.anytypeio.anytype.payments.constants.MembershipConstants.PRIVACY_POLICY
+import com.anytypeio.anytype.payments.constants.MembershipConstants.TERMS_OF_SERVICE
 import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierConditionInfo

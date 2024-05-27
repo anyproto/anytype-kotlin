@@ -1,7 +1,8 @@
 package com.anytypeio.anytype.payments.constants
 
-object TiersConstants {
+object MembershipConstants {
 
+    //todo перенести в Enum
     const val NONE_ID = 0
     const val EXPLORER_ID = 1
     const val BUILDER_ID = 4

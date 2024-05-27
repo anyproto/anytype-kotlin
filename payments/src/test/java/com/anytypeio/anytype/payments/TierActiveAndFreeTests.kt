@@ -5,7 +5,7 @@ import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
-import com.anytypeio.anytype.payments.constants.TiersConstants
+import com.anytypeio.anytype.payments.constants.MembershipConstants
 import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierConditionInfo
@@ -39,7 +39,7 @@ class TierActiveAndFreeTests : MembershipTestsSetup() {
     private fun setupTierData(features: List<String>): List<MembershipTierData> {
         return listOf(
             StubMembershipTierData(
-                id = TiersConstants.EXPLORER_ID,
+                id = MembershipConstants.EXPLORER_ID,
                 androidProductId = null,
                 features = features,
                 periodType = MembershipPeriodType.PERIOD_TYPE_UNLIMITED,
@@ -53,7 +53,7 @@ class TierActiveAndFreeTests : MembershipTestsSetup() {
         email: String
     ): MembershipStatus {
         return MembershipStatus(
-            activeTier = TierId(TiersConstants.EXPLORER_ID),
+            activeTier = TierId(MembershipConstants.EXPLORER_ID),
             status = Membership.Status.STATUS_ACTIVE,
             dateEnds = 0,
             paymentMethod = MembershipPaymentMethod.METHOD_NONE,
@@ -83,8 +83,8 @@ class TierActiveAndFreeTests : MembershipTestsSetup() {
             viewStateFlow.awaitItem().let { result ->
                 assertIs<MembershipMainState.Default>(result)
                 val tier: TierPreview =
-                    result.tiers.find { it.id.value == TiersConstants.EXPLORER_ID }!!
-                TestCase.assertEquals(TiersConstants.EXPLORER_ID, tier.id.value)
+                    result.tiers.find { it.id.value == MembershipConstants.EXPLORER_ID }!!
+                TestCase.assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
                 TestCase.assertEquals(true, tier.isActive)
                 TestCase.assertEquals(
                     TierConditionInfo.Visible.Valid(
@@ -96,7 +96,7 @@ class TierActiveAndFreeTests : MembershipTestsSetup() {
                 )
             }
 
-            viewModel.onTierClicked(TierId(TiersConstants.EXPLORER_ID))
+            viewModel.onTierClicked(TierId(MembershipConstants.EXPLORER_ID))
 
             //STATE : EXPLORER, CURRENT, WITHOUT EMAIL
             tierStateFlow.awaitItem().let { result ->
@@ -111,7 +111,7 @@ class TierActiveAndFreeTests : MembershipTestsSetup() {
                     ),
                     expectedAnyName = TierAnyName.Hidden,
                     expectedButtonState = TierButton.Submit.Enabled,
-                    expectedId = TiersConstants.EXPLORER_ID,
+                    expectedId = MembershipConstants.EXPLORER_ID,
                     expectedActive = true,
                     expectedEmailState = TierEmail.Visible.Enter
                 )
@@ -138,8 +138,8 @@ class TierActiveAndFreeTests : MembershipTestsSetup() {
             viewStateFlow.awaitItem().let { result ->
                 assertIs<MembershipMainState.Default>(result)
                 val tier: TierPreview =
-                    result.tiers.find { it.id.value == TiersConstants.EXPLORER_ID }!!
-                TestCase.assertEquals(TiersConstants.EXPLORER_ID, tier.id.value)
+                    result.tiers.find { it.id.value == MembershipConstants.EXPLORER_ID }!!
+                TestCase.assertEquals(MembershipConstants.EXPLORER_ID, tier.id.value)
                 TestCase.assertEquals(true, tier.isActive)
                 TestCase.assertEquals(
                     TierConditionInfo.Visible.Valid(
@@ -151,7 +151,7 @@ class TierActiveAndFreeTests : MembershipTestsSetup() {
                 )
             }
 
-            viewModel.onTierClicked(TierId(TiersConstants.EXPLORER_ID))
+            viewModel.onTierClicked(TierId(MembershipConstants.EXPLORER_ID))
 
             //STATE : EXPLORER, CURRENT, WITHOUT EMAIL
             tierStateFlow.awaitItem().let { result ->
@@ -166,7 +166,7 @@ class TierActiveAndFreeTests : MembershipTestsSetup() {
                     ),
                     expectedAnyName = TierAnyName.Hidden,
                     expectedButtonState = TierButton.ChangeEmail,
-                    expectedId = TiersConstants.EXPLORER_ID,
+                    expectedId = MembershipConstants.EXPLORER_ID,
                     expectedActive = true,
                     expectedEmailState = TierEmail.Hidden
                 )

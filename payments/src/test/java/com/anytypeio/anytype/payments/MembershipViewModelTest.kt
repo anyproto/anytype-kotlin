@@ -3,10 +3,10 @@ package com.anytypeio.anytype.payments
 import app.cash.turbine.turbineScope
 import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
-import com.anytypeio.anytype.payments.constants.TiersConstants.ACTIVE_TIERS_WITH_BANNERS
-import com.anytypeio.anytype.payments.constants.TiersConstants.BUILDER_ID
-import com.anytypeio.anytype.payments.constants.TiersConstants.CO_CREATOR_ID
-import com.anytypeio.anytype.payments.constants.TiersConstants.EXPLORER_ID
+import com.anytypeio.anytype.payments.constants.MembershipConstants.ACTIVE_TIERS_WITH_BANNERS
+import com.anytypeio.anytype.payments.constants.MembershipConstants.BUILDER_ID
+import com.anytypeio.anytype.payments.constants.MembershipConstants.CO_CREATOR_ID
+import com.anytypeio.anytype.payments.constants.MembershipConstants.EXPLORER_ID
 import com.anytypeio.anytype.payments.viewmodel.MembershipMainState
 import com.anytypeio.anytype.payments.viewmodel.MembershipTierState
 import com.anytypeio.anytype.payments.viewmodel.MembershipEmailCodeState

@@ -204,10 +204,10 @@ class MembershipFragment : BaseBottomSheetComposeFragment() {
     }
 
     override fun injectDependencies() {
-        componentManager().paymentsComponent.get().inject(this)
+        componentManager().membershipComponent.get().inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().paymentsComponent.release()
+        componentManager().membershipComponent.release()
     }
 }

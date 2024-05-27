@@ -55,10 +55,8 @@ class MembershipFragment : BaseBottomSheetComposeFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //todo возможно стоит отказаться от initBillingClient и запускать сразу billing
         lifecycleScope.subscribe(vm.initBillingClient) { init ->
             if (init) {
-                //todo проверить не добавляется ли множество observer
                 lifecycle.addObserver(billingClientLifecycle)
             }
         }
@@ -198,6 +196,11 @@ class MembershipFragment : BaseBottomSheetComposeFragment() {
                 params = event
             )
         }
+    }
+
+    override fun onDestroy() {
+        lifecycle.removeObserver(billingClientLifecycle)
+        super.onDestroy()
     }
 
     override fun injectDependencies() {

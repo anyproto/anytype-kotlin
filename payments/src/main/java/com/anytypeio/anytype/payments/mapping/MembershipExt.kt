@@ -5,21 +5,54 @@ import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
-import com.anytypeio.anytype.payments.constants.TiersConstants.ERROR_PRODUCT_NOT_FOUND
-import com.anytypeio.anytype.payments.constants.TiersConstants.ERROR_PRODUCT_PRICE
-import com.anytypeio.anytype.payments.constants.TiersConstants.EXPLORER_ID
+import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.payments.constants.TiersConstants
+import com.anytypeio.anytype.payments.constants.TiersConstants.ACTIVE_TIERS_WITH_BANNERS
+import com.anytypeio.anytype.payments.constants.TiersConstants.MEMBERSHIP_CONTACT_EMAIL
+import com.anytypeio.anytype.payments.constants.TiersConstants.MEMBERSHIP_LEVEL_DETAILS
+import com.anytypeio.anytype.payments.constants.TiersConstants.PRIVACY_POLICY
+import com.anytypeio.anytype.payments.constants.TiersConstants.TERMS_OF_SERVICE
 import com.anytypeio.anytype.payments.models.BillingPriceInfo
+import com.anytypeio.anytype.payments.models.Tier
 import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierConditionInfo
 import com.anytypeio.anytype.payments.models.TierEmail
 import com.anytypeio.anytype.payments.models.TierPeriod
 import com.anytypeio.anytype.payments.models.TierPreview
-import com.anytypeio.anytype.payments.models.Tier
 import com.anytypeio.anytype.payments.playbilling.BillingClientState
 import com.anytypeio.anytype.payments.playbilling.BillingPurchaseState
+import com.anytypeio.anytype.payments.viewmodel.MembershipMainState
 import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
 import com.anytypeio.anytype.presentation.membership.models.TierId
+
+
+fun MembershipStatus.toMainView(
+    billingClientState: BillingClientState,
+    billingPurchaseState: BillingPurchaseState
+): MembershipMainState {
+    val (showBanner, subtitle) = if (activeTier.value in ACTIVE_TIERS_WITH_BANNERS) {
+        true to R.string.payments_subheader
+    } else {
+        false to null
+    }
+    return MembershipMainState.Default(
+        title = R.string.payments_header,
+        subtitle = subtitle,
+        tiers = tiers.map {
+            it.toPreviewView(
+                membershipStatus = this,
+                billingClientState = billingClientState,
+                billingPurchaseState = billingPurchaseState
+            )
+        },
+        membershipLevelDetails = MEMBERSHIP_LEVEL_DETAILS,
+        privacyPolicy = PRIVACY_POLICY,
+        termsOfService = TERMS_OF_SERVICE,
+        contactEmail = MEMBERSHIP_CONTACT_EMAIL,
+        showBanner = showBanner
+    )
+}
 
 private fun MembershipStatus.isTierActive(tierId: Int): Boolean {
     return when (this.status) {
@@ -109,7 +142,7 @@ private fun MembershipTierData.toButtonView(
     return if (isActive) {
         val wasPurchasedOnAndroid = isActiveTierPurchasedOnAndroid(membershipStatus.paymentMethod)
         if (!wasPurchasedOnAndroid) {
-            if (id == EXPLORER_ID) {
+            if (id == TiersConstants.EXPLORER_ID) {
                 if (membershipStatus.userEmail.isBlank()) {
                     TierButton.Submit.Enabled
                 } else {
@@ -121,6 +154,7 @@ private fun MembershipTierData.toButtonView(
                     MembershipPaymentMethod.METHOD_CRYPTO -> {
                         TierButton.Hidden
                     }
+
                     MembershipPaymentMethod.METHOD_STRIPE -> {
                         if (stripeManageUrl.isNullOrBlank()) {
                             TierButton.Hidden
@@ -128,6 +162,7 @@ private fun MembershipTierData.toButtonView(
                             TierButton.Manage.External.Enabled(stripeManageUrl)
                         }
                     }
+
                     MembershipPaymentMethod.METHOD_INAPP_APPLE -> {
                         if (iosManageUrl.isNullOrBlank()) {
                             TierButton.Hidden
@@ -135,6 +170,7 @@ private fun MembershipTierData.toButtonView(
                             TierButton.Manage.External.Enabled(iosManageUrl)
                         }
                     }
+
                     MembershipPaymentMethod.METHOD_INAPP_GOOGLE -> TierButton.Manage.External.Enabled(
                         androidInfoUrl
                     )
@@ -160,9 +196,11 @@ private fun MembershipTierData.toButtonView(
                     //Tier has purchase, but it's not active yet, still waiting for a event from the mw
                     TierButton.Hidden
                 }
+
                 BillingPurchaseState.Loading -> {
                     TierButton.Hidden
                 }
+
                 BillingPurchaseState.NoPurchases -> {
                     if (membershipStatus.anyName.isBlank()) {
                         TierButton.Pay.Disabled
@@ -194,7 +232,8 @@ private fun MembershipTierData.getAnyName(
             }
 
             if (billingPurchaseState is BillingPurchaseState.Loading
-                || billingPurchaseState is BillingPurchaseState.HasPurchases) {
+                || billingPurchaseState is BillingPurchaseState.HasPurchases
+            ) {
                 return TierAnyName.Hidden
             }
 
@@ -236,7 +275,11 @@ private fun MembershipTierData.getConditionInfo(
         if (androidProductId == null) {
             createConditionInfoForNonBillingTier()
         } else {
-            createConditionInfoForBillingTier(billingClientState, membershipStatus, billingPurchaseState)
+            createConditionInfoForBillingTier(
+                billingClientState,
+                membershipStatus,
+                billingPurchaseState
+            )
         }
     }
 }
@@ -304,11 +347,11 @@ private fun MembershipTierData.createConditionInfoForBillingTier(
             val product =
                 billingClientState.productDetails.find { it.productId == androidProductId }
             if (product == null) {
-                TierConditionInfo.Visible.Error(ERROR_PRODUCT_NOT_FOUND)
+                TierConditionInfo.Visible.Error(TiersConstants.ERROR_PRODUCT_NOT_FOUND)
             } else {
                 val billingPriceInfo = product.billingPriceInfo()
                 if (billingPriceInfo == null) {
-                    TierConditionInfo.Visible.Error(ERROR_PRODUCT_PRICE)
+                    TierConditionInfo.Visible.Error(TiersConstants.ERROR_PRODUCT_PRICE)
                 } else {
                     TierConditionInfo.Visible.PriceBilling(
                         price = billingPriceInfo
@@ -345,7 +388,7 @@ private fun convertToTierViewPeriod(tier: MembershipTierData): TierPeriod {
 
 private fun MembershipTierData.getTierEmail(isActive: Boolean, membershipEmail: String): TierEmail {
     if (isActive) {
-        if (id == EXPLORER_ID && membershipEmail.isBlank()) {
+        if (id == TiersConstants.EXPLORER_ID && membershipEmail.isBlank()) {
             return TierEmail.Visible.Enter
         }
     }

@@ -53,7 +53,7 @@ object ProfileModule {
     ): ProfileSettingsViewModel.Factory = ProfileSettingsViewModel.Factory(
         deleteAccount = deleteAccount,
         analytics = analytics,
-        storelessSubscriptionContainer = storelessSubscriptionContainer,
+        container = storelessSubscriptionContainer,
         setObjectDetails = setObjectDetails,
         configStorage = configStorage,
         urlBuilder = urlBuilder,

@@ -36,7 +36,7 @@ import timber.log.Timber
 class ProfileSettingsViewModel(
     private val analytics: Analytics,
     private val deleteAccount: DeleteAccount,
-    private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
+    private val container: StorelessSubscriptionContainer,
     private val setObjectDetails: SetObjectDetails,
     private val configStorage: ConfigStorage,
     private val urlBuilder: UrlBuilder,
@@ -50,7 +50,7 @@ class ProfileSettingsViewModel(
 
     private val profileId = configStorage.get().profile
 
-    val profileData = storelessSubscriptionContainer.subscribe(
+    val profileData = container.subscribe(
         StoreSearchByIdsParams(
             subscription = PROFILE_SUBSCRIPTION_ID,
             keys = listOf(
@@ -122,13 +122,13 @@ class ProfileSettingsViewModel(
     }
 
     fun onStop() {
-        Timber.d("onStop, ")
+        Timber.d("onStop")
         jobs.apply {
             forEach { it.cancel() }
             clear()
         }
         viewModelScope.launch {
-            storelessSubscriptionContainer.unsubscribe(
+            container.unsubscribe(
                 listOf(PROFILE_SUBSCRIPTION_ID)
             )
         }
@@ -136,20 +136,25 @@ class ProfileSettingsViewModel(
 
     fun onPickedImageFromDevice(path: String, space: Id) {
         viewModelScope.launch {
-            setImageIcon(
-                SetImageIcon.Params(
-                    target = profileId,
-                    path = path,
-                    spaceId = SpaceId(space)
+            val config = configStorage.getOrNull()
+            if (config != null) {
+                setImageIcon(
+                    SetImageIcon.Params(
+                        target = config.profile,
+                        path = path,
+                        spaceId = SpaceId(config.space)
+                    )
+                ).process(
+                    failure = {
+                        Timber.e("Error while setting image icon")
+                    },
+                    success = {
+                        // do nothing
+                    }
                 )
-            ).process(
-                failure = {
-                    Timber.e("Error while setting image icon")
-                },
-                success = {
-                    // do nothing
-                }
-            )
+            } else {
+                Timber.e("Missing config while trying to set profile image")
+            }
         }
     }
 
@@ -160,8 +165,7 @@ class ProfileSettingsViewModel(
     }
 
     sealed class AccountProfile {
-        object Idle: AccountProfile()
-
+        data object Idle: AccountProfile()
         class Data(
             val name: String,
             val icon: ProfileIconView
@@ -171,7 +175,7 @@ class ProfileSettingsViewModel(
     class Factory(
         private val deleteAccount: DeleteAccount,
         private val analytics: Analytics,
-        private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
+        private val container: StorelessSubscriptionContainer,
         private val setObjectDetails: SetObjectDetails,
         private val configStorage: ConfigStorage,
         private val urlBuilder: UrlBuilder,
@@ -182,7 +186,7 @@ class ProfileSettingsViewModel(
             return ProfileSettingsViewModel(
                 deleteAccount = deleteAccount,
                 analytics = analytics,
-                storelessSubscriptionContainer = storelessSubscriptionContainer,
+                container = container,
                 setObjectDetails = setObjectDetails,
                 configStorage = configStorage,
                 urlBuilder = urlBuilder,

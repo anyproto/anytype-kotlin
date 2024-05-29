@@ -1524,6 +1524,27 @@
     <string name="payments_welcome_button">Continue</string>
 
     <!-- Membership Email -->
+    <string name="membership_support_email">support@anytype.io</string>
+    <string name="membership_support_subject">Membership Screen Error Report - %1$s</string>
+    <string name="membership_support_body">
+        Hi Anytype Support Team,\n\n
+
+        I encountered an error on the Membership Screen in the app. Below are the details:\n
+
+        - Error Message: %1$s\n
+        - Description:      \n
+        - Date and Time: %2$s\n
+        - Device Model: %3$s\n
+        - Operating System: %4$s\n
+        - App Version: %5$s\n
+
+        Additional Comments:\n\n
+
+        Thank you for your assistance in resolving this issue.\n\n
+
+        Best regards,       \n
+    </string>
+
     <string name="payments_email_to">membership-upgrade@anytype.io</string>
     <string name="payments_email_subject">Upgrade %1$s</string>
     <string name="payments_email_body">Hello Anytype team! I would like to extend my current membership for more (please choose an option):\n

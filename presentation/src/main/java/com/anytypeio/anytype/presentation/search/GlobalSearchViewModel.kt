@@ -12,9 +12,9 @@ class GlobalSearchViewModel(
     private val urlBuilder: UrlBuilder
 ) : BaseViewModel() {
 
-    // TODO
-
-
+    init {
+        // TODO
+    }
 
     class Factory @Inject constructor(
         private val searchWithMeta: SearchWithMeta,

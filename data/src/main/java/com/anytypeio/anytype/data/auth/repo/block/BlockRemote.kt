@@ -160,6 +160,10 @@ interface BlockRemote {
         keys: List<Id>
     ): List<Map<String, Any?>>
 
+    suspend fun searchObjectWithMeta(
+        command: Command.SearchWithMeta
+    ): List<Command.SearchWithMeta.Result>
+
     suspend fun searchObjectsWithSubscription(
         subscription: Id,
         sorts: List<DVSort>,

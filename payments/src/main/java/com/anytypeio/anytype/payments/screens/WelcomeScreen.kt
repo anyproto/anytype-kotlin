@@ -27,7 +27,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
@@ -42,14 +41,14 @@ import com.anytypeio.anytype.payments.models.TierConditionInfo
 import com.anytypeio.anytype.payments.models.TierEmail
 import com.anytypeio.anytype.payments.models.TierPeriod
 import com.anytypeio.anytype.payments.models.Tier
-import com.anytypeio.anytype.payments.viewmodel.PaymentsWelcomeState
+import com.anytypeio.anytype.payments.viewmodel.WelcomeState
 import com.anytypeio.anytype.presentation.membership.models.TierId
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PaymentWelcomeScreen(state: PaymentsWelcomeState, onDismiss: () -> Unit) {
+fun WelcomeScreen(state: WelcomeState, onDismiss: () -> Unit) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    if (state is PaymentsWelcomeState.Initial) {
+    if (state is WelcomeState.Initial) {
         ModalBottomSheet(
             modifier = Modifier
                 .padding(start = 16.dp, end = 16.dp)
@@ -140,8 +139,8 @@ private fun WelcomeContent(tier: Tier, tierResources: TierResources, onDismiss: 
 )
 @Composable
 fun PaymentWelcomeScreenPreview() {
-    PaymentWelcomeScreen(
-        PaymentsWelcomeState.Initial(
+    WelcomeScreen(
+        WelcomeState.Initial(
             tier = Tier(
                 id = TierId(value = 3506),
                 isActive = false,

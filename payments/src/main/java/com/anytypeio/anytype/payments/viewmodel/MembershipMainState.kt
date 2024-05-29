@@ -37,10 +37,10 @@ sealed class MembershipNameState {
     data class Error(val name: String, val message: String) : MembershipNameState()
 }
 
-sealed class PaymentsErrorState {
-    data object Hidden : PaymentsErrorState()
-    data class TierNotFound(val message: String) : PaymentsErrorState()
-    data object MembershipStatusEmpty : PaymentsErrorState()
+sealed class MembershipErrorState {
+    data object Hidden : MembershipErrorState()
+    data class TierNotFound(val message: String) : MembershipErrorState()
+    data object MembershipStatusEmpty : MembershipErrorState()
 }
 
 sealed class TierAction {
@@ -67,17 +67,17 @@ sealed class MembershipEmailCodeState {
     }
 }
 
-sealed class PaymentsWelcomeState {
-    data object Hidden : PaymentsWelcomeState()
-    data class Initial(val tier: Tier) : PaymentsWelcomeState()
+sealed class WelcomeState {
+    data object Hidden : WelcomeState()
+    data class Initial(val tier: Tier) : WelcomeState()
 }
 
-sealed class PaymentsNavigation(val route: String) {
-    data object Main : PaymentsNavigation("main")
-    data object Tier : PaymentsNavigation("tier")
-    data object Code : PaymentsNavigation("code")
-    data object Welcome : PaymentsNavigation("welcome")
-    data object Dismiss : PaymentsNavigation("")
-    data class OpenUrl(val url: String?) : PaymentsNavigation("")
-    data class OpenEmail(val accountId: String?) : PaymentsNavigation("")
+sealed class MembershipNavigation(val route: String) {
+    data object Main : MembershipNavigation("main")
+    data object Tier : MembershipNavigation("tier")
+    data object Code : MembershipNavigation("code")
+    data object Welcome : MembershipNavigation("welcome")
+    data object Dismiss : MembershipNavigation("")
+    data class OpenUrl(val url: String?) : MembershipNavigation("")
+    data class OpenEmail(val accountId: String?) : MembershipNavigation("")
 }

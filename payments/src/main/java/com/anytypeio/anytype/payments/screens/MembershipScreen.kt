@@ -66,7 +66,7 @@ import com.anytypeio.anytype.payments.viewmodel.TierAction
 import com.anytypeio.anytype.presentation.membership.models.TierId
 
 @Composable
-fun MainPaymentsScreen(
+fun MainMembershipScreen(
     state: MembershipMainState,
     tierClicked: (TierId) -> Unit,
     tierAction: (TierAction) -> Unit

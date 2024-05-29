@@ -28,11 +28,11 @@ import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
 import com.anytypeio.anytype.payments.screens.CodeScreen
-import com.anytypeio.anytype.payments.screens.MainPaymentsScreen
-import com.anytypeio.anytype.payments.screens.PaymentWelcomeScreen
+import com.anytypeio.anytype.payments.screens.MainMembershipScreen
+import com.anytypeio.anytype.payments.screens.WelcomeScreen
 import com.anytypeio.anytype.payments.screens.TierViewScreen
 import com.anytypeio.anytype.ui.settings.typography
-import com.anytypeio.anytype.payments.viewmodel.PaymentsNavigation
+import com.anytypeio.anytype.payments.viewmodel.MembershipNavigation
 import com.anytypeio.anytype.payments.viewmodel.MembershipViewModel
 import com.anytypeio.anytype.payments.viewmodel.MembershipViewModelFactory
 import com.google.accompanist.navigation.material.BottomSheetNavigator
@@ -94,27 +94,27 @@ class MembershipFragment : BaseBottomSheetComposeFragment() {
     @OptIn(ExperimentalMaterialNavigationApi::class)
     @Composable
     private fun NavigationGraph(navController: NavHostController) {
-        NavHost(navController = navController, startDestination = PaymentsNavigation.Main.route) {
-            composable(PaymentsNavigation.Main.route) {
-                InitMainPaymentsScreen()
+        NavHost(navController = navController, startDestination = MembershipNavigation.Main.route) {
+            composable(MembershipNavigation.Main.route) {
+                InitMainScreen()
             }
-            bottomSheet(PaymentsNavigation.Tier.route) {
+            bottomSheet(MembershipNavigation.Tier.route) {
                 InitTierScreen()
             }
-            bottomSheet(PaymentsNavigation.Code.route) {
+            bottomSheet(MembershipNavigation.Code.route) {
                 InitCodeScreen()
             }
-            bottomSheet(PaymentsNavigation.Welcome.route) {
+            bottomSheet(MembershipNavigation.Welcome.route) {
                 InitWelcomeScreen()
             }
         }
     }
 
     @Composable
-    private fun InitMainPaymentsScreen() {
+    private fun InitMainScreen() {
         skipCollapsed()
         expand()
-        MainPaymentsScreen(
+        MainMembershipScreen(
             state = vm.viewState.collectAsStateWithLifecycle().value,
             tierClicked = vm::onTierClicked,
             tierAction = vm::onTierAction
@@ -144,7 +144,7 @@ class MembershipFragment : BaseBottomSheetComposeFragment() {
 
     @Composable
     private fun InitWelcomeScreen() {
-        PaymentWelcomeScreen(
+        WelcomeScreen(
             state = vm.welcomeState.collectAsStateWithLifecycle().value,
             onDismiss = vm::onDismissWelcome
         )
@@ -154,16 +154,16 @@ class MembershipFragment : BaseBottomSheetComposeFragment() {
         super.onViewCreated(view, savedInstanceState)
         setupBottomSheetBehavior(DEFAULT_PADDING_TOP)
         subscribe(vm.navigation) { command ->
-            Timber.d("PaymentsFragment command: $command")
+            Timber.d("MembershipFragment command: $command")
             when (command) {
-                PaymentsNavigation.Tier -> navController.navigate(PaymentsNavigation.Tier.route)
-                PaymentsNavigation.Code -> navController.navigate(PaymentsNavigation.Code.route)
-                PaymentsNavigation.Welcome -> {
-                    navController.popBackStack(PaymentsNavigation.Main.route, false)
-                    navController.navigate(PaymentsNavigation.Welcome.route)
+                MembershipNavigation.Tier -> navController.navigate(MembershipNavigation.Tier.route)
+                MembershipNavigation.Code -> navController.navigate(MembershipNavigation.Code.route)
+                MembershipNavigation.Welcome -> {
+                    navController.popBackStack(MembershipNavigation.Main.route, false)
+                    navController.navigate(MembershipNavigation.Welcome.route)
                 }
-                PaymentsNavigation.Dismiss -> navController.popBackStack()
-                is PaymentsNavigation.OpenUrl -> {
+                MembershipNavigation.Dismiss -> navController.popBackStack()
+                is MembershipNavigation.OpenUrl -> {
                     try {
                         if (command.url == null) {
                             toast("Url is null")
@@ -178,8 +178,8 @@ class MembershipFragment : BaseBottomSheetComposeFragment() {
                         toast("Couldn't parse url: ${command.url}")
                     }
                 }
-                PaymentsNavigation.Main -> {}
-                is PaymentsNavigation.OpenEmail -> {
+                MembershipNavigation.Main -> {}
+                is MembershipNavigation.OpenEmail -> {
                     val mail = resources.getString(R.string.payments_email_to)
                     val subject = resources.getString(R.string.payments_email_subject, command.accountId)
                     val body = resources.getString(R.string.payments_email_body)

@@ -62,10 +62,10 @@ class MembershipViewModel(
     val viewState = MutableStateFlow<MembershipMainState>(MembershipMainState.Loading)
     val codeState = MutableStateFlow<MembershipEmailCodeState>(MembershipEmailCodeState.Hidden)
     val tierState = MutableStateFlow<MembershipTierState>(MembershipTierState.Hidden)
-    val welcomeState = MutableStateFlow<PaymentsWelcomeState>(PaymentsWelcomeState.Hidden)
-    val errorState = MutableStateFlow<PaymentsErrorState>(PaymentsErrorState.Hidden)
+    val welcomeState = MutableStateFlow<WelcomeState>(WelcomeState.Hidden)
+    val errorState = MutableStateFlow<MembershipErrorState>(MembershipErrorState.Hidden)
 
-    val navigation = MutableSharedFlow<PaymentsNavigation>(0)
+    val navigation = MutableSharedFlow<MembershipNavigation>(0)
 
     /**
      * Local billing purchase data.
@@ -128,8 +128,8 @@ class MembershipViewModel(
             //Got new purchase, show success screen
             val tierView = (tierState.value as? MembershipTierState.Visible)?.tier ?: return
             proceedWithHideTier()
-            welcomeState.value = PaymentsWelcomeState.Initial(tierView)
-            proceedWithNavigation(PaymentsNavigation.Welcome)
+            welcomeState.value = WelcomeState.Initial(tierView)
+            proceedWithNavigation(MembershipNavigation.Welcome)
         }
     }
 
@@ -153,7 +153,7 @@ class MembershipViewModel(
     private fun proceedWithShowingTier(tierId: TierId) {
         val visibleTier = getTierById(tierId) ?: return
         tierState.value = MembershipTierState.Visible(visibleTier)
-        proceedWithNavigation(PaymentsNavigation.Tier)
+        proceedWithNavigation(MembershipNavigation.Tier)
     }
 
     private fun proceedWithHideTier() {
@@ -168,7 +168,7 @@ class MembershipViewModel(
             is TierAction.PayClicked -> onPayButtonClicked(action.tierId)
             is TierAction.ManagePayment -> onManageTierClicked(action.tierId)
             is TierAction.OpenUrl -> {
-                proceedWithNavigation(PaymentsNavigation.OpenUrl(action.url))
+                proceedWithNavigation(MembershipNavigation.OpenUrl(action.url))
             }
             TierAction.OpenEmail -> proceedWithSupportEmail()
             is TierAction.SubmitClicked -> {
@@ -198,7 +198,7 @@ class MembershipViewModel(
     private fun proceedWithSupportEmail() {
         viewModelScope.launch {
             val anyId = getAccount.async(Unit).getOrNull()
-            proceedWithNavigation(PaymentsNavigation.OpenEmail(anyId?.id))
+            proceedWithNavigation(MembershipNavigation.OpenEmail(anyId?.id))
         }
     }
 
@@ -316,16 +316,16 @@ class MembershipViewModel(
         Timber.d("Manage tier: $tier")
         val navigationCommand = when (tier.paymentMethod) {
             MembershipPaymentMethod.METHOD_NONE -> {
-                PaymentsNavigation.OpenUrl(null)
+                MembershipNavigation.OpenUrl(null)
             }
             MembershipPaymentMethod.METHOD_STRIPE -> {
-                PaymentsNavigation.OpenUrl(tier.stripeManageUrl)
+                MembershipNavigation.OpenUrl(tier.stripeManageUrl)
             }
             MembershipPaymentMethod.METHOD_CRYPTO -> {
-                PaymentsNavigation.OpenUrl(null)
+                MembershipNavigation.OpenUrl(null)
             }
             MembershipPaymentMethod.METHOD_INAPP_APPLE -> {
-                PaymentsNavigation.OpenUrl(tier.iosManageUrl)
+                MembershipNavigation.OpenUrl(tier.iosManageUrl)
             }
             MembershipPaymentMethod.METHOD_INAPP_GOOGLE -> {
                 val androidProductId = tier.androidProductId
@@ -335,7 +335,7 @@ class MembershipViewModel(
                 } else {
                     null
                 }
-                PaymentsNavigation.OpenUrl(url)
+                MembershipNavigation.OpenUrl(url)
             }
         }
         proceedWithNavigation(navigationCommand)
@@ -389,7 +389,7 @@ class MembershipViewModel(
                                 tierState.value = MembershipTierState.Visible(updatedState)
                             } else {
                                 codeState.value = MembershipEmailCodeState.Visible.Initial
-                                proceedWithNavigation(PaymentsNavigation.Code)
+                                proceedWithNavigation(MembershipNavigation.Code)
                             }
                         }
                         else -> {}
@@ -412,7 +412,7 @@ class MembershipViewModel(
                     Timber.d("Email set")
                     setValidatedEmailState()
                     codeState.value = MembershipEmailCodeState.Visible.Initial
-                    proceedWithNavigation(PaymentsNavigation.Code)
+                    proceedWithNavigation(MembershipNavigation.Code)
                 },
                 onFailure = { error ->
                     Timber.e("Error setting email: $error")
@@ -430,7 +430,7 @@ class MembershipViewModel(
                     Timber.d("Email code verified")
                     codeState.value = MembershipEmailCodeState.Visible.Success
                     delay(500)
-                    proceedWithNavigation(PaymentsNavigation.Dismiss)
+                    proceedWithNavigation(MembershipNavigation.Dismiss)
                     proceedWithGettingEmailStatus()
                 },
                 onFailure = { error ->
@@ -444,22 +444,22 @@ class MembershipViewModel(
     fun onDismissTier() {
         Timber.d("onDismissTier")
         proceedWithHideTier()
-        proceedWithNavigation(PaymentsNavigation.Dismiss)
+        proceedWithNavigation(MembershipNavigation.Dismiss)
     }
 
     fun onDismissCode() {
         Timber.d("onDismissCode")
-        proceedWithNavigation(PaymentsNavigation.Dismiss)
+        proceedWithNavigation(MembershipNavigation.Dismiss)
         codeState.value = MembershipEmailCodeState.Hidden
     }
 
     fun onDismissWelcome() {
         Timber.d("onDismissWelcome")
-        proceedWithNavigation(PaymentsNavigation.Dismiss)
-        welcomeState.value = PaymentsWelcomeState.Hidden
+        proceedWithNavigation(MembershipNavigation.Dismiss)
+        welcomeState.value = WelcomeState.Hidden
     }
 
-    private fun proceedWithNavigation(navigationCommand: PaymentsNavigation) {
+    private fun proceedWithNavigation(navigationCommand: MembershipNavigation) {
         viewModelScope.launch {
             navigation.emit(navigationCommand)
         }

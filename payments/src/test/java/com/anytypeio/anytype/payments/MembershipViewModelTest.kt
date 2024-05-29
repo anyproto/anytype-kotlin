@@ -10,8 +10,8 @@ import com.anytypeio.anytype.payments.constants.MembershipConstants.EXPLORER_ID
 import com.anytypeio.anytype.payments.viewmodel.MembershipMainState
 import com.anytypeio.anytype.payments.viewmodel.MembershipTierState
 import com.anytypeio.anytype.payments.viewmodel.MembershipEmailCodeState
-import com.anytypeio.anytype.payments.viewmodel.PaymentsErrorState
-import com.anytypeio.anytype.payments.viewmodel.PaymentsWelcomeState
+import com.anytypeio.anytype.payments.viewmodel.MembershipErrorState
+import com.anytypeio.anytype.payments.viewmodel.WelcomeState
 import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
 import com.anytypeio.anytype.presentation.membership.models.TierId
 import kotlin.test.assertFalse
@@ -53,10 +53,10 @@ class MembershipViewModelTest : MembershipTestsSetup() {
             val welcomeStateFlow = viewModel.welcomeState.testIn(backgroundScope)
             val codeStateFlow = viewModel.codeState.testIn(backgroundScope)
 
-            assertIs<PaymentsErrorState.Hidden>(errorFlow.awaitItem())
+            assertIs<MembershipErrorState.Hidden>(errorFlow.awaitItem())
             assertIs<MembershipMainState.Loading>(viewStateFlow.awaitItem())
             assertIs<MembershipTierState.Hidden>(tierStateFlow.awaitItem())
-            assertIs<PaymentsWelcomeState.Hidden>(welcomeStateFlow.awaitItem())
+            assertIs<WelcomeState.Hidden>(welcomeStateFlow.awaitItem())
             assertIs<MembershipEmailCodeState.Hidden>(codeStateFlow.awaitItem())
             viewStateFlow.ensureAllEventsConsumed()
             errorFlow.ensureAllEventsConsumed()
@@ -141,9 +141,9 @@ class MembershipViewModelTest : MembershipTestsSetup() {
             val codeStateFlow = viewModel.codeState.testIn(backgroundScope)
 
             assertIs<MembershipMainState.Loading>(viewStateFlow.awaitItem())
-            assertIs<PaymentsErrorState.Hidden>(errorFlow.awaitItem())
+            assertIs<MembershipErrorState.Hidden>(errorFlow.awaitItem())
             assertIs<MembershipTierState.Hidden>(tierStateFlow.awaitItem())
-            assertIs<PaymentsWelcomeState.Hidden>(welcomeStateFlow.awaitItem())
+            assertIs<WelcomeState.Hidden>(welcomeStateFlow.awaitItem())
             assertIs<MembershipEmailCodeState.Hidden>(codeStateFlow.awaitItem())
 
             val result = viewStateFlow.awaitItem()
@@ -185,9 +185,9 @@ class MembershipViewModelTest : MembershipTestsSetup() {
             val codeStateFlow = viewModel.codeState.testIn(backgroundScope)
 
             assertIs<MembershipMainState.Loading>(viewStateFlow.awaitItem())
-            assertIs<PaymentsErrorState.Hidden>(errorFlow.awaitItem())
+            assertIs<MembershipErrorState.Hidden>(errorFlow.awaitItem())
             assertIs<MembershipTierState.Hidden>(tierStateFlow.awaitItem())
-            assertIs<PaymentsWelcomeState.Hidden>(welcomeStateFlow.awaitItem())
+            assertIs<WelcomeState.Hidden>(welcomeStateFlow.awaitItem())
             assertIs<MembershipEmailCodeState.Hidden>(codeStateFlow.awaitItem())
 
             val result = viewStateFlow.awaitItem()

@@ -994,7 +994,7 @@ class MiddlewareServiceImplementation @Inject constructor(
     }
 
     override fun objectSearch(request: Rpc.Object.Search.Request): Rpc.Object.Search.Response {
-        val encoded = Service.objectSaearch(Rpc.Object.Search.Request.ADAPTER.encode(request))
+        val encoded = Service.objectSearch(Rpc.Object.Search.Request.ADAPTER.encode(request))
         val response = Rpc.Object.Search.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Object.Search.Response.Error.Code.NULL) {

@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.payments.screens
 
+import android.content.res.Configuration.UI_MODE_NIGHT_NO
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -25,7 +27,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
@@ -40,14 +41,14 @@ import com.anytypeio.anytype.payments.models.TierConditionInfo
 import com.anytypeio.anytype.payments.models.TierEmail
 import com.anytypeio.anytype.payments.models.TierPeriod
 import com.anytypeio.anytype.payments.models.Tier
-import com.anytypeio.anytype.payments.viewmodel.PaymentsWelcomeState
+import com.anytypeio.anytype.payments.viewmodel.WelcomeState
 import com.anytypeio.anytype.presentation.membership.models.TierId
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PaymentWelcomeScreen(state: PaymentsWelcomeState, onDismiss: () -> Unit) {
+fun WelcomeScreen(state: WelcomeState, onDismiss: () -> Unit) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    if (state is PaymentsWelcomeState.Initial) {
+    if (state is WelcomeState.Initial) {
         ModalBottomSheet(
             modifier = Modifier
                 .padding(start = 16.dp, end = 16.dp)
@@ -88,9 +89,9 @@ private fun WelcomeContent(tier: Tier, tierResources: TierResources, onDismiss: 
         Spacer(modifier = Modifier.height(36.dp))
         Icon(
             modifier = Modifier.wrapContentSize(),
-            painter = painterResource(id = tierResources.mediumIcon!!),
+            painter = painterResource(id = tierResources.mediumIcon),
             contentDescription = "logo",
-            tint = tierResources.colors.gradientStart
+            tint = tierResources.colors.gradientEnd
         )
         Spacer(modifier = Modifier.height(14.dp))
         Text(
@@ -126,11 +127,20 @@ private fun WelcomeContent(tier: Tier, tierResources: TierResources, onDismiss: 
 }
 
 
-@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF, device = Devices.PIXEL_4_XL)
+@Preview(
+    name = "Dark Mode",
+    showBackground = true,
+    uiMode = UI_MODE_NIGHT_YES
+)
+@Preview(
+    name = "Light Mode",
+    showBackground = true,
+    uiMode = UI_MODE_NIGHT_NO
+)
 @Composable
 fun PaymentWelcomeScreenPreview() {
-    PaymentWelcomeScreen(
-        PaymentsWelcomeState.Initial(
+    WelcomeScreen(
+        WelcomeState.Initial(
             tier = Tier(
                 id = TierId(value = 3506),
                 isActive = false,
@@ -144,7 +154,7 @@ fun PaymentWelcomeScreenPreview() {
                 membershipAnyName = TierAnyName.Visible.Enter,
                 buttonState = TierButton.Manage.Android.Enabled(""),
                 email = TierEmail.Visible.Enter,
-                color = "dolores",
+                color = "red",
                 stripeManageUrl = "",
                 iosManageUrl = "",
                 androidManageUrl = "",

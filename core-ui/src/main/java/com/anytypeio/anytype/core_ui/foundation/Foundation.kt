@@ -142,9 +142,7 @@ fun OptionMembership(
         modifier = Modifier
             .fillMaxWidth()
             .height(52.dp)
-            .noRippleThrottledClickable {
-                if (membershipStatus?.status != null) onClick()
-            }
+            .noRippleThrottledClickable { onClick() }
 
     ) {
         Image(

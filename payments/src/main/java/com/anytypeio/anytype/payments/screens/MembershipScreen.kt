@@ -66,7 +66,7 @@ import com.anytypeio.anytype.payments.viewmodel.TierAction
 import com.anytypeio.anytype.presentation.membership.models.TierId
 
 @Composable
-fun MainPaymentsScreen(
+fun MainMembershipScreen(
     state: MembershipMainState,
     tierClicked: (TierId) -> Unit,
     tierAction: (TierAction) -> Unit
@@ -154,7 +154,7 @@ private fun MainContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp),
-                onClick = { /*TODO*/ },
+                onClick = { tierAction(TierAction.ContactUsError(state.message)) },
                 size = ButtonSize.LargeSecondary,
                 text = stringResource(id = R.string.contact_us)
             )

@@ -11,6 +11,7 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -23,7 +24,8 @@ class CreateSpaceViewModel(
     private val createSpace: CreateSpace,
     private val spaceGradientProvider: SpaceGradientProvider,
     private val spaceManager: SpaceManager,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val spaceViewContainer: SpaceViewSubscriptionContainer
 ) : BaseViewModel() {
 
     val isInProgress = MutableStateFlow(false)
@@ -47,6 +49,7 @@ class CreateSpaceViewModel(
 
     val isDismissed = MutableStateFlow(false)
     val isSucceeded = MutableStateFlow(false)
+    val exitWithMultiplayerTip = MutableStateFlow(false)
 
     fun onCreateSpace(name: String) {
         if (isDismissed.value || isSucceeded.value) {
@@ -56,6 +59,7 @@ class CreateSpaceViewModel(
             sendToast("Please wait...")
             return
         }
+        val isSingleSpace = spaceViewContainer.get().size == 1
         viewModelScope.launch {
             createSpace.stream(
                 CreateSpace.Params(
@@ -76,7 +80,11 @@ class CreateSpaceViewModel(
                         )
                         setNewSpaceAsCurrentSpace(space)
                         Timber.d("Successfully created space: $space").also {
-                            isSucceeded.value = true
+                            if (isSingleSpace) {
+                                exitWithMultiplayerTip.value = true
+                            } else {
+                                isSucceeded.value = true
+                            }
                             isInProgress.value = false
                         }
                     },
@@ -113,7 +121,8 @@ class CreateSpaceViewModel(
         private val createSpace: CreateSpace,
         private val spaceGradientProvider: SpaceGradientProvider,
         private val spaceManager: SpaceManager,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val spaceViewContainer: SpaceViewSubscriptionContainer
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -122,7 +131,8 @@ class CreateSpaceViewModel(
             createSpace = createSpace,
             spaceGradientProvider = spaceGradientProvider,
             spaceManager = spaceManager,
-            analytics = analytics
+            analytics = analytics,
+            spaceViewContainer = spaceViewContainer
         ) as T
     }
 }

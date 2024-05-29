@@ -402,9 +402,7 @@ class BlockDataRepository(
 
     override suspend fun searchObjectWithMeta(
         command: Command.SearchWithMeta
-    ): List<Command.SearchWithMeta.Result> {
-        return remote.searchObjectWithMeta(command)
-    }
+    ): List<Command.SearchWithMeta.Result> = remote.searchObjectWithMeta(command)
 
     override suspend fun searchObjectsWithSubscription(
         subscription: Id,

@@ -180,6 +180,7 @@ dependencies {
     implementation libs.design
     implementation libs.recyclerView
     implementation libs.constraintLayout
+    implementation libs.composeConstraintLayout
     implementation libs.glide
     implementation libs.coilCompose
     implementation libs.dagger

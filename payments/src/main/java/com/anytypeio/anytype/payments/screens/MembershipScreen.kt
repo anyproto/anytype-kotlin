@@ -154,7 +154,7 @@ private fun MainContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp),
-                onClick = { /*TODO*/ },
+                onClick = { tierAction(TierAction.ContactUsError(state.message)) },
                 size = ButtonSize.LargeSecondary,
                 text = stringResource(id = R.string.contact_us)
             )

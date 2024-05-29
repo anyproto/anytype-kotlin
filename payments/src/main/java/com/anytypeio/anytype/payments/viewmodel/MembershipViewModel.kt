@@ -192,6 +192,10 @@ class MembershipViewModel(
                 )
                 tierState.value = MembershipTierState.Visible(updatedTierState)
             }
+
+            is TierAction.ContactUsError -> {
+                proceedWithSupportErrorEmail(action.error)
+            }
         }
     }
 
@@ -199,6 +203,18 @@ class MembershipViewModel(
         viewModelScope.launch {
             val anyId = getAccount.async(Unit).getOrNull()
             proceedWithNavigation(MembershipNavigation.OpenEmail(anyId?.id))
+        }
+    }
+
+    private fun proceedWithSupportErrorEmail(error: String) {
+        viewModelScope.launch {
+            val anyId = getAccount.async(Unit).getOrNull()
+            proceedWithNavigation(
+                MembershipNavigation.OpenErrorEmail(
+                    accountId = anyId?.id,
+                    error = error
+                )
+            )
         }
     }
 

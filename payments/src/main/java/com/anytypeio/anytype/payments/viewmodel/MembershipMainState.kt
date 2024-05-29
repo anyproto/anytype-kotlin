@@ -52,6 +52,7 @@ sealed class TierAction {
     data object OnResendCodeClicked : TierAction()
     data class OnVerifyCodeClicked(val code: String) : TierAction()
     data object ChangeEmail : TierAction()
+    data class ContactUsError(val error: String): TierAction()
 }
 
 sealed class MembershipEmailCodeState {
@@ -80,4 +81,5 @@ sealed class MembershipNavigation(val route: String) {
     data object Dismiss : MembershipNavigation("")
     data class OpenUrl(val url: String?) : MembershipNavigation("")
     data class OpenEmail(val accountId: String?) : MembershipNavigation("")
+    data class OpenErrorEmail(val error: String, val accountId: String?) : MembershipNavigation("")
 }

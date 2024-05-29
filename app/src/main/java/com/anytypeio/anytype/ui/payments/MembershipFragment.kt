@@ -17,6 +17,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
@@ -40,6 +41,9 @@ import com.google.accompanist.navigation.material.ExperimentalMaterialNavigation
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.bottomSheet
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 import timber.log.Timber
 
@@ -183,6 +187,25 @@ class MembershipFragment : BaseBottomSheetComposeFragment() {
                     val mail = resources.getString(R.string.payments_email_to)
                     val subject = resources.getString(R.string.payments_email_subject, command.accountId)
                     val body = resources.getString(R.string.payments_email_body)
+                    val mailBody = mail +
+                            "?subject=$subject" +
+                            "&body=$body"
+                    proceedWithAction(SystemAction.MailTo(mailBody))
+                }
+
+                is MembershipNavigation.OpenErrorEmail -> {
+                    val deviceModel = android.os.Build.MODEL
+                    val osVersion = android.os.Build.VERSION.RELEASE
+                    val appVersion = BuildConfig.VERSION_NAME
+                    val currentDateTime: String
+                    val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+                    currentDateTime = sdf.format(Date())
+                    val mail = resources.getString(R.string.membership_support_email)
+                    val subject = resources.getString(R.string.membership_support_subject, command.accountId)
+                    val body = getString(
+                        R.string.membership_support_body,
+                        command.error, currentDateTime, deviceModel, osVersion, appVersion
+                    )
                     val mailBody = mail +
                             "?subject=$subject" +
                             "&body=$body"

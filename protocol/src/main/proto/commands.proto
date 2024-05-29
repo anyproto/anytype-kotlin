@@ -1736,6 +1736,8 @@ message Rpc {
             }
         }
 
+
+        // deprecated in favor of SearchWithMeta
         message Search {
             message Request {
                 repeated anytype.model.Block.Content.Dataview.Filter filters = 1;
@@ -1752,11 +1754,40 @@ message Rpc {
             message Response {
                 Error error = 1;
                 repeated google.protobuf.Struct records = 2;
-
                 message Error {
                     Code code = 1;
                     string description = 2;
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+        message SearchWithMeta {
+            message Request {
+                repeated anytype.model.Block.Content.Dataview.Filter filters = 1;
+                repeated anytype.model.Block.Content.Dataview.Sort sorts = 2;
+                string fullText = 3;
+                int32 offset = 4;
+                int32 limit = 5;
+                // additional filter by objectTypes
+                repeated string objectTypeFilter = 6; // DEPRECATED, GO-1926
+                // needed keys in details for return, when empty - will return all
+                repeated string keys = 7;
+                bool returnMeta = 8; // add ResultMeta to each result
+                bool returnMetaRelationDetails = 9; // add relation option details to meta
+                bool returnHTMLHighlightsInsteadOfRanges = 10;
+            }
 
+            message Response {
+                Error error = 1;
+                repeated model.Search.Result results = 2;
+                message Error {
+                    Code code = 1;
+                    string description = 2;
                     enum Code {
                         NULL = 0;
                         UNKNOWN_ERROR = 1;
@@ -3735,6 +3766,7 @@ message Rpc {
                 string blockId = 2;
                 string filePath = 3;
                 string url = 4;
+                bytes bytes = 5;
             }
 
             message Response {
@@ -6846,6 +6878,8 @@ message Rpc {
                         PAYMENT_NODE_ERROR = 4;
                         CACHE_ERROR = 5;
                         INVALID_RECEIPT = 6;
+                        PURCHASE_REGISTRATION_ERROR = 7;
+                        SUBSCRIPTION_RENEW_ERROR = 8;
                     }
                 }
             }

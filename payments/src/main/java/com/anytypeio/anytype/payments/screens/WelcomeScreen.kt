@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.payments.screens
 
+import android.content.res.Configuration.UI_MODE_NIGHT_NO
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -88,9 +90,9 @@ private fun WelcomeContent(tier: Tier, tierResources: TierResources, onDismiss: 
         Spacer(modifier = Modifier.height(36.dp))
         Icon(
             modifier = Modifier.wrapContentSize(),
-            painter = painterResource(id = tierResources.mediumIcon!!),
+            painter = painterResource(id = tierResources.mediumIcon),
             contentDescription = "logo",
-            tint = tierResources.colors.gradientStart
+            tint = tierResources.colors.gradientEnd
         )
         Spacer(modifier = Modifier.height(14.dp))
         Text(
@@ -126,7 +128,16 @@ private fun WelcomeContent(tier: Tier, tierResources: TierResources, onDismiss: 
 }
 
 
-@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF, device = Devices.PIXEL_4_XL)
+@Preview(
+    name = "Dark Mode",
+    showBackground = true,
+    uiMode = UI_MODE_NIGHT_YES
+)
+@Preview(
+    name = "Light Mode",
+    showBackground = true,
+    uiMode = UI_MODE_NIGHT_NO
+)
 @Composable
 fun PaymentWelcomeScreenPreview() {
     PaymentWelcomeScreen(
@@ -144,7 +155,7 @@ fun PaymentWelcomeScreenPreview() {
                 membershipAnyName = TierAnyName.Visible.Enter,
                 buttonState = TierButton.Manage.Android.Enabled(""),
                 email = TierEmail.Visible.Enter,
-                color = "dolores",
+                color = "red",
                 stripeManageUrl = "",
                 iosManageUrl = "",
                 androidManageUrl = "",

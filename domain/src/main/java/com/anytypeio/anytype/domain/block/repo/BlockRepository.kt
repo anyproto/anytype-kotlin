@@ -201,6 +201,10 @@ interface BlockRepository {
         keys: List<Id> = emptyList()
     ): List<Struct>
 
+    suspend fun searchObjectWithMeta(
+        command: Command.SearchWithMeta
+    ): List<Command.SearchWithMeta.Result>
+
     suspend fun searchObjectsWithSubscription(
         subscription: Id,
         sorts: List<DVSort>,

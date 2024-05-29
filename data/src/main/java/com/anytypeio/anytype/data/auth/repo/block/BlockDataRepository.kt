@@ -400,6 +400,12 @@ class BlockDataRepository(
         keys = keys
     )
 
+    override suspend fun searchObjectWithMeta(
+        command: Command.SearchWithMeta
+    ): List<Command.SearchWithMeta.Result> {
+        return remote.searchObjectWithMeta(command)
+    }
+
     override suspend fun searchObjectsWithSubscription(
         subscription: Id,
         sorts: List<DVSort>,

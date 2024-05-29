@@ -91,6 +91,9 @@ interface MiddlewareService {
     fun objectSearch(request: Rpc.Object.Search.Request): Rpc.Object.Search.Response
 
     @Throws(Exception::class)
+    fun objectSearchWithMeta(request: Rpc.Object.SearchWithMeta.Request): Rpc.Object.SearchWithMeta.Response
+
+    @Throws(Exception::class)
     fun objectSearchSubscribe(request: Rpc.Object.SearchSubscribe.Request): Rpc.Object.SearchSubscribe.Response
 
     @Throws(Exception::class)

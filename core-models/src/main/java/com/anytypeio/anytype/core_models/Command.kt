@@ -509,16 +509,20 @@ sealed class Command {
     ) {
         data class Result(
             val obj: Id,
-            val wrapper: ObjectWrapper,
+            val wrapper: ObjectWrapper.Basic,
             val metas: List<Meta>
         ) {
             data class Meta(
-                val relation: Key,
-                val block: Id,
-                val highlight: String,
+                val source: Source,
+                val highlight: String?,
                 val ranges: List<IntRange>,
-                val dependencies: List<ObjectWrapper>
-            )
+                val dependencies: List<ObjectWrapper.Basic>
+            ) {
+                sealed class Source {
+                    data class Relation(val key: Key): Source()
+                    data class Block(val id: Id): Source()
+                }
+            }
         }
     }
 }

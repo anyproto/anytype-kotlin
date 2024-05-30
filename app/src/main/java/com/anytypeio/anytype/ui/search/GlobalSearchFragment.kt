@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -37,8 +36,8 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
                 typography = typography
             ) {
                 GlobalSearchScreen(
-                    searchFieldState = TextFieldState(""),
-                    items = vm.views.collectAsStateWithLifecycle().value
+                    items = vm.views.collectAsStateWithLifecycle().value,
+                    onQueryChanged = vm::onQueryChanged
                 )
             }
         }

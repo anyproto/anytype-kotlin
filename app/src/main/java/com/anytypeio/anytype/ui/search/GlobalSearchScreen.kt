@@ -2,7 +2,6 @@ package com.anytypeio.anytype.ui.search
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,10 +12,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text2.BasicTextField2
-import androidx.compose.foundation.text2.input.TextFieldState
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,23 +41,30 @@ import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun GlobalSearchScreen(
-    searchFieldState: TextFieldState,
-    items: List<GlobalSearchItemView>
+    items: List<GlobalSearchItemView>,
+    onQueryChanged: (String) -> Unit
 ) {
+    var query by remember { mutableStateOf("") }
     Column(
         modifier = Modifier
             .fillMaxSize()
             .nestedScroll(rememberNestedScrollInteropConnection())
     ) {
-        BasicTextField2(
-            state = searchFieldState,
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
+        BasicTextField(
+            value = query,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
             textStyle = BodyRegular.copy(
-                color = Color.Red
-            )
+                color = colorResource(id = R.color.text_primary)
+            ),
+            onValueChange = {
+                query = it.also {
+                    onQueryChanged(it)
+                }
+            },
         )
         LazyColumn(
             modifier = Modifier.weight(1.0f)
@@ -424,7 +433,6 @@ private fun DefaultGlobalSearchItemViewStatusRelationPreview() {
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Preview(
     name = "Dark Mode",
     showBackground = true,
@@ -438,7 +446,7 @@ private fun DefaultGlobalSearchItemViewStatusRelationPreview() {
 @Composable
 private fun DefaultGlobalSearchItemViewStatusRelationScreenPreview() {
     GlobalSearchScreen(
-        searchFieldState = TextFieldState("Autechre"),
+        onQueryChanged = {},
         items = listOf(
             GlobalSearchItemView(
                 id = "ID1",

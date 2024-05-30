@@ -23,7 +23,6 @@ import com.anytypeio.anytype.core_models.Relation.Format.UNDEFINED
 import com.anytypeio.anytype.core_models.Relation.Format.URL
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
-import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -33,6 +32,13 @@ import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.objects.getProperName
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 
 class GlobalSearchViewModel(
@@ -43,36 +49,48 @@ class GlobalSearchViewModel(
     private val urlBuilder: UrlBuilder
 ) : BaseViewModel() {
 
+    private val userInput = MutableStateFlow("")
+    private val searchQuery = userInput
+        .take(1)
+        .onCompletion {
+            emitAll(userInput.drop(1).debounce(ObjectSearchViewModel.DEBOUNCE_DURATION).distinctUntilChanged())
+        }
+
     val views = MutableStateFlow<List<GlobalSearchItemView>>(emptyList())
 
     init {
-       viewModelScope.launch {
-           searchWithMeta
-               .async(
-                   Command.SearchWithMeta(
-                       query = "",
-                       limit = 50,
-                       offset = 0,
-                       keys = emptyList(),
-                       filters = ObjectSearchConstants.filterSearchObjects(
-                           // TODO add tech space?
-                           spaces = listOf(spaceManager.get())
-                       ),
-                       sorts = ObjectSearchConstants.sortsSearchObjects,
-                       withMetaRelationDetails = true,
-                       withMeta = true
-                   )
-               ).fold(
-                   onSuccess = { results ->
-                       views.value = results.map { result ->
-                           result.view(
-                               storeOfObjectTypes = storeOfObjectTypes,
-                               storeOfRelations = storeOfRelations
-                           )
-                       }
-                   }
-               )
-       }
+        viewModelScope.launch {
+            searchQuery
+                .flatMapLatest { query ->
+                    searchWithMeta
+                        .asFlow(
+                            Command.SearchWithMeta(
+                                query = query,
+                                limit = 50,
+                                offset = 0,
+                                keys = emptyList(),
+                                filters = ObjectSearchConstants.filterSearchObjects(
+                                    // TODO add tech space?
+                                    spaces = listOf(spaceManager.get())
+                                ),
+                                sorts = ObjectSearchConstants.sortsSearchObjects,
+                                withMetaRelationDetails = true,
+                                withMeta = true
+                            )
+                        )
+                }.collect { results ->
+                    views.value = results.map { result ->
+                        result.view(
+                            storeOfObjectTypes = storeOfObjectTypes,
+                            storeOfRelations = storeOfRelations
+                        )
+                    }
+                }
+        }
+    }
+
+    fun onQueryChanged(query: String) {
+        userInput.value = query
     }
 
     class Factory @Inject constructor(
@@ -178,7 +196,7 @@ suspend fun Command.SearchWithMeta.Result.view(
                                     color = ThemeColor.entries.find {
                                         it.code == value.color
                                     } ?: ThemeColor.DEFAULT,
-                                    value = relation.name.orEmpty()
+                                    value = value.name.orEmpty()
                                 )
                             }
                             TAG -> {
@@ -188,7 +206,7 @@ suspend fun Command.SearchWithMeta.Result.view(
                                     color = ThemeColor.entries.find {
                                         it.code == value.color
                                     } ?: ThemeColor.DEFAULT,
-                                    value = relation.name.orEmpty()
+                                    value = value.name.orEmpty()
                                 )
                             }
                             FILE -> GlobalSearchItemView.Meta.Default(

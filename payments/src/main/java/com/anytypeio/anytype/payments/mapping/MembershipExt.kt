@@ -86,7 +86,7 @@ fun MembershipTierData.toView(
     val emailState = getTierEmail(isActive, membershipStatus.userEmail)
     val tierName = name
     val tierDescription = description
-    return Tier(
+    val result = Tier(
         id = tierId,
         title = tierName,
         subtitle = tierDescription,
@@ -118,6 +118,7 @@ fun MembershipTierData.toView(
         androidProductId = androidProductId,
         paymentMethod = membershipStatus.paymentMethod
     )
+    return result
 }
 
 fun MembershipTierData.toPreviewView(

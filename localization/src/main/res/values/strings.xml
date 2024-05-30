@@ -1647,4 +1647,7 @@ Please provide specific details of your needs here.</string>
         <item quantity="other">%d days</item>
     </plurals>
 
+    <string name="membership_error_button_text_action">Contact us</string>
+    <string name="membership_error_button_text_dismiss">Ok</string>
+
 </resources>

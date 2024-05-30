@@ -39,8 +39,7 @@ sealed class MembershipNameState {
 
 sealed class MembershipErrorState {
     data object Hidden : MembershipErrorState()
-    data class TierNotFound(val message: String) : MembershipErrorState()
-    data object MembershipStatusEmpty : MembershipErrorState()
+    data class Show(val message: String) : MembershipErrorState()
 }
 
 sealed class TierAction {

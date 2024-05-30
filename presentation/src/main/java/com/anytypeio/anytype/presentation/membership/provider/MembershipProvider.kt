@@ -58,10 +58,12 @@ interface MembershipProvider {
                 }.filterNotNull()
                 .map { membership ->
                     val tiers = proceedWithGettingTiers().filter { SHOW_TEST_TIERS || !it.isTest }.sortedBy { it.id }
-                    toMembershipStatus(
+                    val newStatus = toMembershipStatus(
                         membership = membership,
                         tiers = tiers
                     )
+                    Timber.d("MembershipProvider, newState: $newStatus")
+                    newStatus
                 }
         }
 
@@ -100,7 +102,7 @@ interface MembershipProvider {
         }
 
         companion object {
-            const val SHOW_TEST_TIERS = true
+            const val SHOW_TEST_TIERS = false
             const val DATE_FORMAT = "d MMM yyyy"
         }
     }

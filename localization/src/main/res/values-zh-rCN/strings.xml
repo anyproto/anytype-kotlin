@@ -1237,7 +1237,12 @@
     <string name="payments_tier_custom">自定义</string>
     <string name="payments_tier_custom_description">适合您的具体需要和偏好的会员资格</string>
     <string name="payments_button_learn">了解详情</string>
+    <string name="payments_button_manage">管理付款</string>
     <string name="payments_button_contact">联络</string>
+    <string name="payments_button_info">更多信息</string>
+    <string name="payments_button_submit">提交</string>
+    <string name="payments_button_pay">Pay by card</string>
+    <string name="payments_button_change_email">更改电子邮件</string>
     <string name="payments_member_link">会员等级详情</string>
     <string name="payments_privacy_link">隐私政策</string>
     <string name="payments_terms_link">条款与条件</string>
@@ -1251,7 +1256,10 @@
     <string name="payments_tier_details_name_domain">.any</string>
     <string name="payments_tier_details_name_min">最少 7 个字符</string>
     <string name="payments_tier_details_name_error">此名称已被占用</string>
-    <string name="payments_tier_details_name_success">这个名称是可获得的!</string>
+    <string name="payments_tier_details_name_validated">This name [%1$s] is up for grabs!</string>
+    <string name="payments_tier_details_name_validating">Validating name</string>
+    <string name="payments_tier_details_free_forever">无限期</string>
+    <string name="payments_tier_details_valid_until">Valid until %1$s</string>
     <string name="payments_tier_details_info_explorer">潜入网络并享受一对一协作的提示</string>
     <string-array name="payments_benefits_explorer">
         <item>1 GB 网络空间</item>
@@ -1276,23 +1284,79 @@
     <string name="payments_detials_button_pay">使用信用卡</string>
     <string name="payments_detials_button_submit">提交</string>
     <string name="payments_details_whats_included">包含的内容</string>
-    <string name="payments_email_title">获得您的免费会员资格</string>
-    <string name="payments_email_subtitle">我们需要您的邮箱来隔绝垃圾信息以及使用时的乐趣！</string>
+    <string name="payments_email_title">获得升级并享受免费优惠！</string>
+    <string name="payments_email_subtitle">它没有以任何方式链接到您的帐户。</string>
     <string name="payments_email_checkbox_text">我想获得产品的更新并享受免费优惠！</string>
     <string name="payments_email_hint">电子邮件</string>
     <string name="payments_tier_current_title">您目前的状态：</string>
     <string name="payments_tier_current_valid">有效期至</string>
-    <string name="payments_tier_current_paid_by">银行卡支付</string>
+    <string name="payments_tier_current_paid_by">Paid by</string>
+    <string name="payments_tier_current_paid_by_card">卡片</string>
+    <string name="payments_tier_current_paid_by_crypto">加密货币</string>
+    <string name="payments_tier_current_paid_by_apple">Apple 订阅</string>
+    <string name="payments_tier_current_paid_by_google">Google 订阅</string>
     <string name="payments_tier_current_button">管理付款</string>
     <string name="payments_tier_current_change_email_button">更改电子邮件</string>
     <!-- Payments Code -->
     <string name="payments_code_title">输入发送到您邮箱的代码</string>
     <string name="payments_code_resend">重新发送</string>
-    <string name="payments_code_resend_in">在 %1$n 秒内重新发送</string>
-    <!-- Payments Welcome -->
+    <string name="payments_code_resend_in">Resend in %1$d sec</string>
+    <!-- Membership Welcome -->
     <string name="payments_welcome_title">欢迎来到网络，\n%1$s</string>
     <string name="payments_welcome_subtitle">为你的好奇心干一杯大的！</string>
     <string name="payments_welcome_button">继续</string>
+    <!-- Membership Email -->
+    <string name="membership_support_email">support@anytype.io</string>
+    <string name="membership_support_subject">Membership Screen Error Report - %1$s</string>
+    <string name="membership_support_body">        Hi Anytype Support Team,\n\n
+
+        I encountered an error on the Membership Screen in the app. Below are the details:\n
+
+        - Error Message: %1$s\n
+        - Description:      \n
+        - Date and Time: %2$s\n
+        - Device Model: %3$s\n
+        - Operating System: %4$s\n
+        - App Version: %5$s\n
+
+        Additional Comments:\n\n
+
+        Thank you for your assistance in resolving this issue.\n\n
+
+        Best regards,       \n
+    </string>
+    <string name="payments_email_to">membership-upgrade@anytype.io</string>
+    <string name="payments_email_subject">Upgrade %1$s</string>
+    <string name="payments_email_body">Hello Anytype team! I would like to extend my current membership for more (please choose an option):\n
+- Extra remote storage\n
+- More space editors\n
+- Additional shared spaces\n
+Specifically,
+Please provide specific details of your needs here.</string>
+    <!-- Membership name errors -->
+    <string name="membership_name_bad_input">输入出错，请重试</string>
+    <string name="membership_name_cache_error">我们这边出错了，请稍后再试</string>
+    <string name="membership_name_cant_connect">无法连接，请检查您的网络连接</string>
+    <string name="membership_name_invalid_chars">名称包含无效字符</string>
+    <string name="membership_name_not_logged">您还没有登录！:face_with_螺旋形眼睛：</string>
+    <string name="membership_name_payment_node_error">我们这边出错了，请稍后再试</string>
+    <string name="membership_name_tier_features_no_name">名字在此层不可用</string>
+    <string name="membership_name_tier_not_found">找不到层，请稍后再试</string>
+    <string name="membership_name_too_long">名称过长</string>
+    <string name="membership_name_too_short">名称太短</string>
+    <string name="membership_any_name_not_reserved">此名称不能被保留</string>
+    <string name="membership_any_name_null_error">Empty error</string>
+    <string name="membership_any_name_unknown">未知错误</string>
+    <string name="membership_email_wrong_format">Email has wrong format</string>
+    <string name="membership_email_already_verified">Email is already verified</string>
+    <string name="membership_email_already_sent">Email is already sent, try again after 1 minute</string>
+    <string name="membership_email_failed_to_send">Email failed to send</string>
+    <string name="membership_email_membership_already_exists">Membership already exists</string>
+    <string name="membership_email_code_expired">Code expired</string>
+    <string name="membership_email_code_wrong">Code is wrong</string>
+    <string name="membership_email_code_success">Code is correct</string>
+    <string name="membership_email_membership_not_found">Membership not found</string>
+    <string name="membership_email_membership_already_active">Membership already active</string>
     <!-- Notifications -->
     <string name="notifications_alert_error_unknown">发生了未知错误。请稍后再试。</string>
     <string name="notifications_alert_error_bad_input">检测到无效的输入。请检查您的数据，然后重试。</string>
@@ -1312,10 +1376,36 @@
     <string name="gallery_experience_alert_button_space">打开空间</string>
     <string name="gallery_experience_alert_button_error">关闭</string>
     <string name="three_dots_text_placeholder">...</string>
+    <string name="membership_btn_join">加入</string>
     <string name="notifications_prompt_get_notified">获取通知！</string>
     <string name="notifications_prompt_secondary_button_text">暂不</string>
     <string name="notifications_prompt_description">请启用通知以随时获知任何加入或离开空间的请求。</string>
     <string name="notifications_prompt_primary_button_text">启用</string>
     <string name="clipboard_panel_create_bookmark_from_clipboard">从剪贴板创建书签</string>
     <string name="error_unexpected_layout">错误: 异常布局</string>
+    <string name="membership_price_pending">待定…</string>
+    <string name="per_period">per %1$s</string>
+    <string name="free_for">Free for %1$s</string>
+    <string name="free_for_unknown">Free until...</string>
+    <string name="free_until">Free until</string>
+    <string name="membership_valid_forever">Valid forever</string>
+    <string name="membership_valid_for_unknown">Valid until...</string>
+    <string name="membership_agree_start">By continuing you agree to our</string>
+    <string name="membership_agree_terms">使用条款</string>
+    <string name="membership_agree_middle">and</string>
+    <string name="membership_agree_privacy">隐私策略</string>
+    <plurals name="period_years">
+        <item quantity="other">%d years</item>
+    </plurals>
+    <plurals name="period_months">
+        <item quantity="other">%d months</item>
+    </plurals>
+    <plurals name="period_weeks">
+        <item quantity="other">%d weeks</item>
+    </plurals>
+    <plurals name="period_days">
+        <item quantity="other">%d days</item>
+    </plurals>
+    <string name="membership_error_button_text_action">联系我们</string>
+    <string name="membership_error_button_text_dismiss">好的</string>
 </resources>

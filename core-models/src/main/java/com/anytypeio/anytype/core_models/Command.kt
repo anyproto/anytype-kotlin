@@ -504,4 +504,29 @@ sealed class Command {
         data class VerifyEmailCode(val code: String) : Membership()
         data class GetTiers(val noCache: Boolean, val locale: String) : Membership()
     }
+
+    data class SearchWithMeta(
+        val query: String,
+        val limit: Int,
+        val offset: Int,
+        val keys: List<Key>,
+        val sorts: List<DVSort>,
+        val filters: List<DVFilter>,
+        val withMeta: Boolean,
+        val withMetaRelationDetails: Boolean
+    ) {
+        data class Result(
+            val obj: Id,
+            val wrapper: ObjectWrapper,
+            val metas: List<Meta>
+        ) {
+            data class Meta(
+                val relation: Key,
+                val block: Id,
+                val highlight: String,
+                val ranges: List<IntRange>,
+                val dependencies: List<ObjectWrapper>
+            )
+        }
+    }
 }

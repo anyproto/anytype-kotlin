@@ -1,13 +1,16 @@
 package com.anytypeio.anytype.middleware.mappers
 
+import anytype.Rpc
 import anytype.model.InternalFlag
 import anytype.model.Range
 import anytype.model.RelationFormat
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.BlockSplitMode
+import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
@@ -529,4 +532,34 @@ fun MembershipPaymentMethod.toMw(): MMembershipPaymentMethod = when (this) {
     MembershipPaymentMethod.METHOD_CRYPTO -> MMembershipPaymentMethod.MethodCrypto
     MembershipPaymentMethod.METHOD_INAPP_APPLE -> MMembershipPaymentMethod.MethodInappApple
     MembershipPaymentMethod.METHOD_INAPP_GOOGLE -> MMembershipPaymentMethod.MethodInappGoogle
+}
+
+fun Rpc.Object.SearchWithMeta.Response.toCoreModelSearchResults(): List<Command.SearchWithMeta.Result> {
+    return results.map { result ->
+        Command.SearchWithMeta.Result(
+            obj = result.objectId,
+            wrapper = ObjectWrapper.Basic(result.details.orEmpty()),
+            metas = result.meta.map { meta ->
+                val dependentObjectDetails = meta.relationDetails.orEmpty()
+                Command.SearchWithMeta.Result.Meta(
+                    highlight = meta.highlight,
+                    block = meta.blockId,
+                    relation = meta.relationKey,
+                    dependencies = if (dependentObjectDetails.isNotEmpty()) {
+                        listOf(
+                            ObjectWrapper.Basic(dependentObjectDetails)
+                        )
+                    } else {
+                        emptyList()
+                    },
+                    ranges = meta.highlightRanges.map { range ->
+                        IntRange(
+                            start = range.from,
+                            endInclusive = range.to
+                        )
+                    }
+                )
+            }
+        )
+    }
 }

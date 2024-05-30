@@ -358,6 +358,10 @@ class BlockMiddleware(
         keys = keys
     )
 
+    override suspend fun searchObjectWithMeta(
+        command: Command.SearchWithMeta
+    ): List<Command.SearchWithMeta.Result> = middleware.objectSearchWithMeta(command)
+
     override suspend fun searchObjectsWithSubscription(
         subscription: Id,
         sorts: List<DVSort>,

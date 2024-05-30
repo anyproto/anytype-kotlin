@@ -1007,6 +1007,17 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun objectSearchWithMeta(request: Rpc.Object.SearchWithMeta.Request): Rpc.Object.SearchWithMeta.Response {
+        val encoded = Service.objectSearchWithMeta(Rpc.Object.SearchWithMeta.Request.ADAPTER.encode(request))
+        val response = Rpc.Object.SearchWithMeta.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Object.SearchWithMeta.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun objectSearchSubscribe(request: Rpc.Object.SearchSubscribe.Request): Rpc.Object.SearchSubscribe.Response {
         val encoded =
             Service.objectSearchSubscribe(Rpc.Object.SearchSubscribe.Request.ADAPTER.encode(request))

@@ -53,6 +53,7 @@ import com.anytypeio.anytype.middleware.mappers.mw
 import com.anytypeio.anytype.middleware.mappers.parse
 import com.anytypeio.anytype.middleware.mappers.toCore
 import com.anytypeio.anytype.middleware.mappers.toCoreModel
+import com.anytypeio.anytype.middleware.mappers.toCoreModelSearchResults
 import com.anytypeio.anytype.middleware.mappers.toCoreModels
 import com.anytypeio.anytype.middleware.mappers.toMiddlewareModel
 import com.anytypeio.anytype.middleware.mappers.toMw
@@ -1255,6 +1256,22 @@ class Middleware @Inject constructor(
         val response = service.objectSearch(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response.records.map { it?.toMap() ?: emptyMap() }
+    }
+
+    @Throws(Exception::class)
+    fun objectSearchWithMeta(command: Command.SearchWithMeta): List<Command.SearchWithMeta.Result>  {
+        val request = Rpc.Object.SearchWithMeta.Request(
+            sorts = command.sorts.map { it.toMiddlewareModel() },
+            filters = command.filters.map { it.toMiddlewareModel() },
+            fullText = command.query,
+            offset = command.offset,
+            limit = command.limit,
+            keys = command.keys
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectSearchWithMeta(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.toCoreModelSearchResults()
     }
 
     @Throws(Exception::class)

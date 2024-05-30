@@ -31,9 +31,11 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.search.SearchWithMeta
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.objects.getProperName
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -43,7 +45,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class GlobalSearchViewModel(
     private val searchWithMeta: SearchWithMeta,
@@ -61,6 +62,7 @@ class GlobalSearchViewModel(
         }
 
     val views = MutableStateFlow<List<GlobalSearchItemView>>(emptyList())
+    val navigation = MutableSharedFlow<OpenObjectNavigation>()
 
     init {
         viewModelScope.launch {
@@ -98,11 +100,14 @@ class GlobalSearchViewModel(
     }
 
     fun onObjectClicked(globalSearchItemView: GlobalSearchItemView) {
-        val navigation = globalSearchItemView.layout.navigation(
-            target = globalSearchItemView.id,
-            space = globalSearchItemView.space.id
-        )
-        Timber.d("Got navigation: ${navigation}")
+        viewModelScope.launch {
+            navigation.emit(
+                globalSearchItemView.layout.navigation(
+                    target = globalSearchItemView.id,
+                    space = globalSearchItemView.space.id
+                )
+            )
+        }
     }
 
     class Factory @Inject constructor(

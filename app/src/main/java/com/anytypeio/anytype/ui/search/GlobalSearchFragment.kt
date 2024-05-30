@@ -5,14 +5,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.fragment.findNavController
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
+import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 
@@ -38,6 +43,35 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
                     onQueryChanged = vm::onQueryChanged,
                     onObjectClicked = vm::onObjectClicked
                 )
+            }
+            LaunchedEffect(Unit) {
+                vm.navigation.collect { nav ->
+                    when(nav) {
+                        is OpenObjectNavigation.OpenEditor -> {
+                            dismiss()
+                            findNavController().navigate(
+                                R.id.objectNavigation,
+                                EditorFragment.args(
+                                    ctx = nav.target,
+                                    space = nav.space
+                                )
+                            )
+                        }
+                        is OpenObjectNavigation.OpenDataView -> {
+                            dismiss()
+                            findNavController().navigate(
+                                R.id.dataViewNavigation,
+                                EditorFragment.args(
+                                    ctx = nav.target,
+                                    space = nav.space
+                                )
+                            )
+                        }
+                        else -> {
+                            // Do nothing.
+                        }
+                    }
+                }
             }
         }
     }

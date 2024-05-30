@@ -168,17 +168,17 @@ sentryTimber = { module = "io.sentry:sentry-android-timber", version.ref = "sent
 navigationCompose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationComposeVersion" }
 appUpdater = { module = "com.github.PLPsiSoft:AndroidAppUpdater", version = "9913ce80da7871c84af24b9adc2bf2414ca294f0" }
 composeQrCode = { module = "com.lightspark:compose-qr-code", version.ref = "composeQrCodeVersion" }
-playBilling = { module = "com.android.billingclient:billing", version = "6.2.0" }
+playBilling = { module = "com.android.billingclient:billing", version = "7.0.0" }
 
 [bundles]
 
 [plugins]
-application = { id = "com.android.application", version = "8.4.0" }
-library = { id = "com.android.library", version = "8.4.0" }
+application = { id = "com.android.application", version = "8.4.1" }
+library = { id = "com.android.library", version = "8.4.1" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinVersion" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokkaVersion" }
 kserialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinVersion" }
 wire = { id = "com.squareup.wire", version = "4.9.8" }
-firebaseDistribution = { id = "com.google.firebase.appdistribution", version = "4.2.0" }
+firebaseDistribution = { id = "com.google.firebase.appdistribution", version = "5.0.0" }
 kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlinVersion" }
 gms = { id = "com.google.gms.google-services", version = "4.4.1" }

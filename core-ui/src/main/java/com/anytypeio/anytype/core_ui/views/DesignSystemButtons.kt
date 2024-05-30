@@ -305,6 +305,51 @@ fun ButtonSecondary(
 }
 
 @Composable
+fun ButtonSecondaryDarkTheme(
+    text: String = "",
+    onClick: () -> Unit,
+    enabled: Boolean = true,
+    modifier: Modifier = Modifier,
+    size: ButtonSize
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed = interactionSource.collectIsPressedAsState()
+    val backgroundColor =
+        if (isPressed.value) colorResource(id = R.color.shape_transparent) else Color.Transparent
+    val borderColor = if (enabled) colorResource(id = R.color.shape_primary) else colorResource(
+        id = R.color.shape_secondary
+    )
+
+    CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
+        Button(
+            onClick = onClick,
+            interactionSource = interactionSource,
+            enabled = enabled,
+            shape = RoundedCornerShape(size.cornerSize),
+            border = BorderStroke(width = 1.dp, color = borderColor),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = backgroundColor,
+                contentColor = colorResource(id = R.color.text_white),
+                disabledBackgroundColor = Color.Transparent,
+                disabledContentColor = colorResource(id = R.color.text_tertiary)
+            ),
+            modifier = modifier
+                .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
+            elevation = ButtonDefaults.elevation(
+                defaultElevation = 0.dp,
+                pressedElevation = 0.dp
+            ),
+            contentPadding = size.contentPadding
+        ) {
+            Text(
+                text = text,
+                style = size.textStyle
+            )
+        }
+    }
+}
+
+@Composable
 fun ButtonSecondaryLoading(
     text: String = "",
     onClick: () -> Unit,
@@ -532,6 +577,20 @@ fun MyPrimaryButton() {
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp)
+    )
+}
+
+@Composable
+@Preview
+fun MyPrimaryButtonDisabled() {
+    ButtonPrimary(
+        onClick = {},
+        size = ButtonSize.Large,
+        text = "Login",
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp),
+        enabled = false
     )
 }
 

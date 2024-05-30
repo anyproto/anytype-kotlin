@@ -83,7 +83,7 @@ fun infoCardsState() = listOf(
         subtitle = stringResource(id = R.string.payments_card_description_1),
         gradient = Brush.verticalGradient(
             colors = listOf(
-                Color(0xFFCFF6CF),
+                colorResource(id = R.color.membership_info_gradient_green),
                 Color.Transparent
             )
         )
@@ -94,7 +94,7 @@ fun infoCardsState() = listOf(
         subtitle = stringResource(id = R.string.payments_card_description_2),
         gradient = Brush.verticalGradient(
             colors = listOf(
-                Color(0xFFFEF2C6),
+                colorResource(id = R.color.membership_info_gradient_yellow),
                 Color.Transparent
             )
         )
@@ -105,7 +105,7 @@ fun infoCardsState() = listOf(
         subtitle = stringResource(id = R.string.payments_card_description_3),
         gradient = Brush.verticalGradient(
             colors = listOf(
-                Color(0xFFFFEBEB),
+                colorResource(id = R.color.membership_info_gradient_pink),
                 Color.Transparent
             )
         )
@@ -116,7 +116,7 @@ fun infoCardsState() = listOf(
         subtitle = stringResource(id = R.string.payments_card_description_4),
         gradient = Brush.verticalGradient(
             colors = listOf(
-                Color(0xFFEBEDFE),
+                colorResource(id = R.color.membership_info_gradient_purple),
                 Color.Transparent
             )
         )

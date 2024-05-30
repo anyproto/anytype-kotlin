@@ -1,8 +1,13 @@
 package com.anytypeio.anytype.payments.screens
 
+import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,6 +31,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -41,7 +47,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
@@ -50,61 +55,109 @@ import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.ButtonSecondary
+import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.fontRiccioneRegular
-import com.anytypeio.anytype.presentation.membership.models.Tier
-import com.anytypeio.anytype.payments.viewmodel.PaymentsMainState
+import com.anytypeio.anytype.payments.models.TierPreview
+import com.anytypeio.anytype.payments.viewmodel.MembershipMainState
+import com.anytypeio.anytype.payments.viewmodel.TierAction
 import com.anytypeio.anytype.presentation.membership.models.TierId
 
 @Composable
-fun MainPaymentsScreen(state: PaymentsMainState, tierClicked: (TierId) -> Unit) {
+fun MainMembershipScreen(
+    state: MembershipMainState,
+    tierClicked: (TierId) -> Unit,
+    tierAction: (TierAction) -> Unit
+) {
     Box(
         modifier = Modifier
             .nestedScroll(rememberNestedScrollInteropConnection())
             .fillMaxWidth()
             .wrapContentHeight()
             .background(
-                color = colorResource(id = R.color.background_secondary),
+                color = colorResource(id = R.color.background_primary),
                 shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
             ),
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 20.dp)
-                .verticalScroll(rememberScrollState())
+        MainContent(state, tierClicked, tierAction)
+        AnimatedVisibility(
+            modifier = Modifier.align(Alignment.Center),
+            visible = state is MembershipMainState.Loading,
+            enter = fadeIn(),
+            exit = fadeOut()
         ) {
-            if (state is PaymentsMainState.Default) {
-                Title()
-                Spacer(modifier = Modifier.height(7.dp))
-                Subtitle()
-                Spacer(modifier = Modifier.height(32.dp))
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .size(24.dp),
+                color = colorResource(R.color.shape_secondary),
+                trackColor = colorResource(R.color.shape_primary)
+            )
+        }
+    }
+}
+
+@Composable
+private fun MainContent(
+    state: MembershipMainState,
+    tierClicked: (TierId) -> Unit,
+    tierAction: (TierAction) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 20.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
+        if (state is MembershipMainState.Default) {
+            Title()
+            Spacer(modifier = Modifier.height(7.dp))
+            if (state.subtitle != null) {
+                Subtitle(state.subtitle)
+            }
+            Spacer(modifier = Modifier.height(32.dp))
+            if (state.showBanner) {
                 InfoCards()
                 Spacer(modifier = Modifier.height(32.dp))
-                TiersList(tiers = state.tiers, tierClicked = tierClicked)
-                Spacer(modifier = Modifier.height(32.dp))
-                LinkButton(text = stringResource(id = R.string.payments_member_link), action = {})
-                Divider()
-                LinkButton(text = stringResource(id = R.string.payments_privacy_link), action = {})
-                Divider()
-                LinkButton(text = stringResource(id = R.string.payments_terms_link), action = {})
-                Spacer(modifier = Modifier.height(32.dp))
-                BottomText()
             }
-            if (state is PaymentsMainState.PaymentSuccess) {
-                Title()
-                Spacer(modifier = Modifier.height(39.dp))
-                TiersList(tiers = state.tiers, tierClicked = tierClicked)
-                Spacer(modifier = Modifier.height(32.dp))
-                LinkButton(text = stringResource(id = R.string.payments_member_link), action = {})
-                Divider()
-                LinkButton(text = stringResource(id = R.string.payments_privacy_link), action = {})
-                Divider()
-                LinkButton(text = stringResource(id = R.string.payments_terms_link), action = {})
-                Spacer(modifier = Modifier.height(32.dp))
-                BottomText()
-            }
+            TiersList(tiers = state.tiersPreview, onClick = tierClicked)
+            Spacer(modifier = Modifier.height(32.dp))
+            LinkButton(text = stringResource(id = R.string.payments_member_link), action = {
+                tierAction(TierAction.OpenUrl(state.membershipLevelDetails))
+            })
+            Divider()
+            LinkButton(text = stringResource(id = R.string.payments_privacy_link), action = {
+                tierAction(TierAction.OpenUrl(state.privacyPolicy))
+            })
+            Divider()
+            LinkButton(text = stringResource(id = R.string.payments_terms_link), action = {
+                tierAction(TierAction.OpenUrl(state.termsOfService))
+            })
+            Spacer(modifier = Modifier.height(32.dp))
+            BottomText(tierAction = tierAction)
+        }
+        if (state is MembershipMainState.ErrorState) {
+            Title()
+            Spacer(modifier = Modifier.height(39.dp))
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 40.dp),
+                text = state.message,
+                color = colorResource(id = R.color.palette_system_red),
+                style = BodyRegular,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(32.dp))
+            ButtonSecondary(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                onClick = { tierAction(TierAction.ContactUsError(state.message)) },
+                size = ButtonSize.LargeSecondary,
+                text = stringResource(id = R.string.contact_us)
+            )
         }
     }
 }
@@ -140,7 +193,7 @@ private fun Title() {
 }
 
 @Composable
-private fun Subtitle() {
+private fun Subtitle(@StringRes subtitle: Int) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -150,7 +203,7 @@ private fun Subtitle() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 60.dp, end = 60.dp),
-            text = stringResource(id = R.string.payments_subheader),
+            text = stringResource(id = subtitle),
             color = colorResource(id = R.color.text_primary),
             style = Relations2,
             textAlign = TextAlign.Center
@@ -160,8 +213,8 @@ private fun Subtitle() {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TiersList(tiers: List<Tier>, tierClicked: (TierId) -> Unit) {
-    val itemsScroll = rememberLazyListState(initialFirstVisibleItemIndex = 1)
+fun TiersList(tiers: List<TierPreview>, onClick: (TierId) -> Unit) {
+    val itemsScroll = rememberLazyListState()
     LazyRow(
         state = itemsScroll,
         modifier = Modifier
@@ -171,19 +224,10 @@ fun TiersList(tiers: List<Tier>, tierClicked: (TierId) -> Unit) {
         flingBehavior = rememberSnapFlingBehavior(lazyListState = itemsScroll)
     ) {
         itemsIndexed(tiers) { _, tier ->
-            val resources = mapTierToResources(tier)
-            if (resources != null) {
-                TierView(
-                    title = resources.title,
-                    subTitle = resources.subtitle,
-                    colorGradient = resources.colorGradient,
-                    radialGradient = resources.radialGradient,
-                    icon = resources.smallIcon,
-                    buttonText = stringResource(id = R.string.payments_button_learn),
-                    onClick = { tierClicked.invoke(tier.id) },
-                    isCurrent = tier.isCurrent
-                )
-            }
+            TierPreviewView(
+                onClick = onClick,
+                tier = tier
+            )
         }
     }
 }
@@ -256,7 +300,9 @@ fun LinkButton(text: String, action: () -> Unit) {
 }
 
 @Composable
-fun BottomText() {
+fun BottomText(
+    tierAction: (TierAction) -> Unit
+) {
     val start = stringResource(id = R.string.payments_let_us_link_start)
     val end = stringResource(id = R.string.payments_let_us_link_end)
     val buildString = buildAnnotatedString {
@@ -277,23 +323,12 @@ fun BottomText() {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
-            .wrapContentHeight(),
+            .wrapContentHeight()
+            .clickable { tierAction(TierAction.OpenEmail) },
         text = buildString,
         style = Caption1Regular,
         color = colorResource(id = R.color.text_primary)
     )
-}
-
-@Preview
-@Composable
-fun MainPaymentsScreenPreview() {
-    val tiers = listOf(
-        Tier.Explorer(TierId("999"), isCurrent = true, validUntil = "2022-12-31"),
-        Tier.Builder(TierId("999"), isCurrent = true, validUntil = "2022-12-31"),
-        Tier.CoCreator(TierId("999"), isCurrent = false, validUntil = "2022-12-31"),
-        Tier.Custom(TierId("999"), isCurrent = false, validUntil = "2022-12-31")
-    )
-    MainPaymentsScreen(PaymentsMainState.PaymentSuccess(tiers), {})
 }
 
 val headerTextStyle = TextStyle(

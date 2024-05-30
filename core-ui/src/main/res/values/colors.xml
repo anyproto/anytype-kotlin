@@ -226,6 +226,23 @@
     <color name="widget_edit_view_stroke_color_active">@color/palette_system_amber_50</color>
     <color name="widget_edit_view_stroke_color_inactive">@color/shape_primary</color>
 
-    <color name="payments_tier_current_background">#F6F6F6</color>
+    <color name="payments_tier_current_background">#F2F2F2</color>
+
+    <color name="tier_gradient_red_start">#FBEAEA</color>
+    <color name="tier_gradient_red_end">#F05F5F</color>
+
+    <color name="tier_gradient_blue_start">#E4E7FF</color>
+    <color name="tier_gradient_blue_end">#A5AEFF</color>
+
+    <color name="tier_gradient_teal_start">#CFFAFF</color>
+    <color name="tier_gradient_teal_end">#24BFD4</color>
+
+    <color name="tier_gradient_purple_start">#FBEAFF</color>
+    <color name="tier_gradient_purple_end">#E86DE3</color>
+
+    <color name="membership_info_gradient_green">#CFF6CF</color>
+    <color name="membership_info_gradient_yellow">#FEF2C6</color>
+    <color name="membership_info_gradient_pink">#FFEBEB</color>
+    <color name="membership_info_gradient_purple">#EBEDFE</color>
 
 </resources>

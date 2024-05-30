@@ -16,16 +16,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.membership.Membership.Status
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.BodyRegular
@@ -36,6 +37,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonWarningLoading
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
 
 @Composable
 fun Toolbar(
@@ -133,15 +135,14 @@ fun OptionMembership(
     @DrawableRes image: Int,
     text: String,
     onClick: () -> Unit = {},
-    activeTierName: String?
+    membershipStatus: MembershipStatus?
 ) {
-    val tierName = remember { activeTierName }
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
             .height(52.dp)
-            .clickable(onClick = onClick)
+            .noRippleThrottledClickable { onClick() }
 
     ) {
         Image(
@@ -159,39 +160,59 @@ fun OptionMembership(
             ),
             style = BodyRegular
         )
-        if (tierName == null) {
-            Box(modifier = Modifier
-                .weight(1.0f, true),
-                contentAlignment = Alignment.CenterEnd
-            ) {
-                Text(
-                    modifier = Modifier
-                        .padding(
-                            horizontal = 20.dp
-                        )
-                        .background(
-                            color = colorResource(R.color.glyph_selected),
-                            shape = RoundedCornerShape(6.dp)
-                        )
-                        .padding(horizontal = 11.dp, vertical = 5.dp),
-                    text = "Join",
-                    color = colorResource(R.color.text_button_label),
-                    style = Caption1Regular
-                )
+        when (membershipStatus?.status) {
+            Status.STATUS_ACTIVE -> {
+                Box(
+                    modifier = Modifier.weight(1.0f, true),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .padding(horizontal = 38.dp),
+                        text = membershipStatus.tiers.firstOrNull { it.id == membershipStatus.activeTier?.value }?.name.orEmpty(),
+                        color = colorResource(R.color.text_secondary),
+                        style = BodyRegular
+                    )
+                    Arrow()
+                }
             }
-        } else {
-            Box(
-                modifier = Modifier.weight(1.0f, true),
-                contentAlignment = Alignment.CenterEnd
-            ) {
-                Text(
+
+            Status.STATUS_UNKNOWN -> {
+                Box(
                     modifier = Modifier
-                        .padding(horizontal = 38.dp),
-                    text = tierName,
-                    color = colorResource(R.color.text_secondary),
-                    style = BodyRegular
-                )
-                Arrow()
+                        .weight(1.0f, true),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .padding(
+                                horizontal = 20.dp
+                            )
+                            .background(
+                                color = colorResource(R.color.glyph_selected),
+                                shape = RoundedCornerShape(6.dp)
+                            )
+                            .padding(horizontal = 11.dp, vertical = 5.dp),
+                        text = stringResource(R.string.membership_btn_join),
+                        color = colorResource(R.color.text_button_label),
+                        style = Caption1Regular
+                    )
+                }
+            }
+
+            else -> {
+                Box(
+                    modifier = Modifier.weight(1.0f, true),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .padding(horizontal = 38.dp),
+                        text = stringResource(id = R.string.membership_price_pending),
+                        color = colorResource(R.color.text_secondary),
+                        style = BodyRegular
+                    )
+                }
             }
         }
     }
@@ -344,16 +365,6 @@ fun Announcement(
         }
         Spacer(modifier = Modifier.height(10.dp))
     }
-}
-
-@Preview
-@Composable
-fun MyOptionMembership() {
-    OptionMembership(
-        image = R.drawable.ic_membership,
-        text = "Membership",
-        activeTierName = "Builder"
-    )
 }
 
 @Preview

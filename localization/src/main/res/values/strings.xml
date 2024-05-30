@@ -1447,7 +1447,12 @@
     <string name="payments_tier_custom_description">Membership tailored to your specific needs and preferences</string>
 
     <string name="payments_button_learn">Learn more</string>
+    <string name="payments_button_manage">Manage payment</string>
     <string name="payments_button_contact">Contact</string>
+    <string name="payments_button_info">More info</string>
+    <string name="payments_button_submit">Submit</string>
+    <string name="payments_button_pay">Pay by card</string>
+    <string name="payments_button_change_email">Change e-mail</string>
 
     <string name="payments_member_link">Membership levels details</string>
     <string name="payments_privacy_link">Privacy policy</string>
@@ -1463,7 +1468,10 @@
     <string name="payments_tier_details_name_domain">.any</string>
     <string name="payments_tier_details_name_min">Min 7 characters</string>
     <string name="payments_tier_details_name_error">This name is already taken!</string>
-    <string name="payments_tier_details_name_success">This name is up for grabs!</string>
+    <string name="payments_tier_details_name_validated">This name [%1$s] is up for grabs!</string>
+    <string name="payments_tier_details_name_validating">Validating name</string>
+    <string name="payments_tier_details_free_forever">Forever</string>
+    <string name="payments_tier_details_valid_until">Valid until %1$s</string>
 
     <string name="payments_tier_details_info_explorer">Dive into the network and enjoy the thrill of one-on-one collaboration</string>
     <string-array name="payments_benefits_explorer">
@@ -1492,27 +1500,91 @@
     <string name="payments_detials_button_pay">Pay by Card</string>
     <string name="payments_detials_button_submit">Submit</string>
     <string name="payments_details_whats_included">What’s included</string>
-    <string name="payments_email_title">Get your free membership</string>
-    <string name="payments_email_subtitle">We need your email to keep spam at bay and the fun in play!</string>
+    <string name="payments_email_title">Get updates and enjoy free perks!</string>
+    <string name="payments_email_subtitle">It is not linked to your account in any way.</string>
     <string name="payments_email_checkbox_text">I\'d like to get updates on products and enjoy free perks!</string>
     <string name="payments_email_hint">E-mail</string>
 
     <string name="payments_tier_current_title">Your current status:</string>
     <string name="payments_tier_current_valid">Valid until</string>
-    <string name="payments_tier_current_paid_by">Paid by Card</string>
+    <string name="payments_tier_current_paid_by">Paid by</string>
+    <string name="payments_tier_current_paid_by_card">Card</string>
+    <string name="payments_tier_current_paid_by_crypto">Crypto</string>
+    <string name="payments_tier_current_paid_by_apple">Apple subscription</string>
+    <string name="payments_tier_current_paid_by_google">Google subscription</string>
+
     <string name="payments_tier_current_button">Manage payment</string>
     <string name="payments_tier_current_change_email_button">Change e-mail</string>
 
     <!-- Payments Code -->
     <string name="payments_code_title">Enter the code sent to your email</string>
     <string name="payments_code_resend">Resend</string>
-    <string name="payments_code_resend_in">Resend in %1$n sec</string>
+    <string name="payments_code_resend_in">Resend in %1$d sec</string>
 
 
-    <!-- Payments Welcome -->
+    <!-- Membership Welcome -->
     <string name="payments_welcome_title">Welcome to the network,\n%1$s</string>
     <string name="payments_welcome_subtitle">Big cheers for your curiosity!</string>
     <string name="payments_welcome_button">Continue</string>
+
+    <!-- Membership Email -->
+    <string name="membership_support_email">support@anytype.io</string>
+    <string name="membership_support_subject">Membership Screen Error Report - %1$s</string>
+    <string name="membership_support_body">
+        Hi Anytype Support Team,\n\n
+
+        I encountered an error on the Membership Screen in the app. Below are the details:\n
+
+        - Error Message: %1$s\n
+        - Description:      \n
+        - Date and Time: %2$s\n
+        - Device Model: %3$s\n
+        - Operating System: %4$s\n
+        - App Version: %5$s\n
+
+        Additional Comments:\n\n
+
+        Thank you for your assistance in resolving this issue.\n\n
+
+        Best regards,       \n
+    </string>
+
+    <string name="payments_email_to">membership-upgrade@anytype.io</string>
+    <string name="payments_email_subject">Upgrade %1$s</string>
+    <string name="payments_email_body">Hello Anytype team! I would like to extend my current membership for more (please choose an option):\n
+- Extra remote storage\n
+- More space editors\n
+- Additional shared spaces\n
+Specifically,
+Please provide specific details of your needs here.</string>
+
+    <!-- Membership name errors -->
+    <string name="membership_name_bad_input">Something wrong with input, try again</string>
+    <string name="membership_name_cache_error">Error on our side, try again later</string>
+    <string name="membership_name_cant_connect">Can not connect, check your internet connection</string>
+    <string name="membership_name_invalid_chars">Name has invalid characters</string>
+    <string name="membership_name_not_logged">You are not logged in! 😵‍💫</string>
+    <string name="membership_name_payment_node_error">Error on our side, try again later</string>
+    <string name="membership_name_tier_features_no_name">Name is not available for this tier</string>
+    <string name="membership_name_tier_not_found">Tier not found, try again later</string>
+    <string name="membership_name_too_long">Name is too long</string>
+    <string name="membership_name_too_short">Name is too short</string>
+    <string name="membership_any_name_not_reserved">This name cannot be reserved</string>
+    <string name="membership_any_name_null_error">Empty error</string>
+    <string name="membership_any_name_unknown">Unknown error</string>
+
+    <string name="membership_email_wrong_format">Email has wrong format</string>
+    <string name="membership_email_already_verified">Email is already verified</string>
+    <string name="membership_email_already_sent">Email is already sent, try again after 1 minute</string>
+    <string name="membership_email_failed_to_send">Email failed to send</string>
+    <string name="membership_email_membership_already_exists">Membership already exists</string>
+
+    <string name="membership_email_code_expired">Code expired</string>
+    <string name="membership_email_code_wrong">Code is wrong</string>
+    <string name="membership_email_code_success">Code is correct</string>
+    <string name="membership_email_membership_not_found">Membership not found</string>
+    <string name="membership_email_membership_already_active">Membership already active</string>
+
 
     <!-- Notifications -->
     <string name="notifications_alert_error_unknown">An unknown error has occurred. Please try again later.</string>
@@ -1536,6 +1608,7 @@
 
 
     <string name="three_dots_text_placeholder">...</string>
+    <string name="membership_btn_join">Join</string>
 
     <string name="notifications_prompt_get_notified">Get notified</string>
     <string name="notifications_prompt_secondary_button_text">Not now</string>
@@ -1544,5 +1617,37 @@
 
     <string name="clipboard_panel_create_bookmark_from_clipboard">Create bookmark from clipboard</string>
     <string name="error_unexpected_layout">Error: unexpected layout</string>
+
+    <string name="membership_price_pending">Pending...</string>"
+    <string name="per_period">per %1$s</string>
+    <string name="free_for">Free for %1$s</string>
+    <string name="free_for_unknown">Free until...</string>
+    <string name="free_until">Free until</string>
+    <string name="membership_valid_forever">Valid forever</string>
+    <string name="membership_valid_for_unknown">Valid until...</string>
+    <string name="membership_agree_start">By continuing you agree to our</string>
+    <string name="membership_agree_terms">Terms of Use</string>
+    <string name="membership_agree_middle">and</string>
+    <string name="membership_agree_privacy">Privacy Policy</string>
+
+    <plurals name="period_years">
+        <item quantity="one">year</item>
+        <item quantity="other">%d years</item>
+    </plurals>
+    <plurals name="period_months">
+        <item quantity="one">month</item>
+        <item quantity="other">%d months</item>
+    </plurals>
+    <plurals name="period_weeks">
+        <item quantity="one">week</item>
+        <item quantity="other">%d weeks</item>
+    </plurals>
+    <plurals name="period_days">
+        <item quantity="one">day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+
+    <string name="membership_error_button_text_action">Contact us</string>
+    <string name="membership_error_button_text_dismiss">Ok</string>
 
 </resources>

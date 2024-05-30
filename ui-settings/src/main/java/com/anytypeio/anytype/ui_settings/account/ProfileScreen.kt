@@ -58,6 +58,7 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.ui_settings.BuildConfig
 import com.anytypeio.anytype.ui_settings.R
@@ -79,7 +80,7 @@ fun ProfileSettingsScreen(
     onAboutClicked: () -> Unit,
     onSpacesClicked: () -> Unit,
     onMembershipClicked: () -> Unit,
-    activeTierName: String?
+    membershipStatus: MembershipStatus?
 ) {
     LazyColumn(
         modifier = Modifier
@@ -124,18 +125,16 @@ fun ProfileSettingsScreen(
                 onClick = onDataManagementClicked
             )
         }
-        if (BuildConfig.DEBUG) {
-            item {
-                Divider(paddingStart = 60.dp)
-            }
-            item {
-                OptionMembership(
-                    image = R.drawable.ic_membership,
-                    text = stringResource(R.string.settings_membership),
-                    onClick = onMembershipClicked,
-                    activeTierName = activeTierName
-                )
-            }
+        item {
+            Divider(paddingStart = 60.dp)
+        }
+        item {
+            OptionMembership(
+                image = R.drawable.ic_membership,
+                text = stringResource(R.string.settings_membership),
+                onClick = onMembershipClicked,
+                membershipStatus = membershipStatus
+            )
         }
         item {
             Divider(paddingStart = 60.dp)
@@ -500,7 +499,7 @@ private fun ProfileSettingPreview() {
         onAboutClicked = {},
         onSpacesClicked = {},
         onMembershipClicked = {},
-        activeTierName = "Pro"
+        membershipStatus = null
     )
 }
 

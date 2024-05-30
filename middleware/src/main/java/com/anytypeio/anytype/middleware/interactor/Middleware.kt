@@ -2613,7 +2613,8 @@ class Middleware @Inject constructor(
     fun membershipIsNameValid(command: Command.Membership.IsNameValid) {
         val request = Rpc.Membership.IsNameValid.Request(
             requestedTier = command.tier,
-            nsName = command.name
+            nsName = command.name,
+            nsNameType = command.nameType.toMw()
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.membershipIsNameValid(request)
@@ -2632,7 +2633,6 @@ class Middleware @Inject constructor(
         val response = service.membershipRegisterPaymentRequest(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return GetPaymentUrlResponse(
-            paymentUrl = response.paymentUrl,
             billingId = response.billingId
         )
     }

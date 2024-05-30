@@ -3,6 +3,7 @@ package com.anytypeio.anytype.ui.search
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,7 +33,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.foundation.Divider
@@ -44,7 +47,8 @@ import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 @Composable
 fun GlobalSearchScreen(
     items: List<GlobalSearchItemView>,
-    onQueryChanged: (String) -> Unit
+    onQueryChanged: (String) -> Unit,
+    onObjectClicked: (GlobalSearchItemView) -> Unit
 ) {
     var query by remember { mutableStateOf("") }
     Column(
@@ -71,7 +75,10 @@ fun GlobalSearchScreen(
         ) {
             items.forEachIndexed { idx, item ->
                 item(key = item.id) {
-                    GlobalSearchItem(globalSearchItemView = item)
+                    GlobalSearchItem(
+                        globalSearchItemView = item,
+                        onObjectClicked = onObjectClicked
+                    )
                     if (idx != items.lastIndex) {
                         Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
                     }
@@ -83,10 +90,13 @@ fun GlobalSearchScreen(
 
 @Composable
 private fun GlobalSearchItem(
-    globalSearchItemView: GlobalSearchItemView
+    globalSearchItemView: GlobalSearchItemView,
+    onObjectClicked: (GlobalSearchItemView) -> Unit
 ) {
     Box(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth().clickable {
+            onObjectClicked(globalSearchItemView)
+        }
     ) {
         Box(
             modifier = Modifier
@@ -292,10 +302,13 @@ private fun DefaultGlobalSearchItemViewPreview() {
     GlobalSearchItem(
         GlobalSearchItemView(
             id = "ID",
+            space = SpaceId(""),
             title = "Autechre",
             type = "Band",
-            meta = GlobalSearchItemView.Meta.None
-        )
+            meta = GlobalSearchItemView.Meta.None,
+            layout = ObjectType.Layout.BASIC
+        ),
+        onObjectClicked = {}
     )
 }
 
@@ -314,13 +327,16 @@ private fun DefaultGlobalSearchItemViewWithBlockMetaPreview() {
     GlobalSearchItem(
         GlobalSearchItemView(
             id = "ID",
+            space = SpaceId(""),
             title = "Autechre",
             type = "Band",
             meta = GlobalSearchItemView.Meta.Block(
                 snippet = "Autechre are an English electronic music duo consisting of Rob Brown and Sean Booth, both from Rochdale, Greater Manchester. ",
                 highlights = emptyList()
-            )
-        )
+            ),
+            layout = ObjectType.Layout.BASIC
+        ),
+        onObjectClicked = {}
     )
 }
 
@@ -339,6 +355,7 @@ private fun DefaultGlobalSearchItemViewBlockTwoHighlightsMetaPreview() {
     GlobalSearchItem(
         GlobalSearchItemView(
             id = "ID",
+            space = SpaceId(""),
             title = "Autechre",
             type = "Band",
             meta = GlobalSearchItemView.Meta.Block(
@@ -347,8 +364,10 @@ private fun DefaultGlobalSearchItemViewBlockTwoHighlightsMetaPreview() {
                     IntRange(0, 8),
                     IntRange(15, 23)
                 )
-            )
-        )
+            ),
+            layout = ObjectType.Layout.BASIC
+        ),
+        onObjectClicked = {}
     )
 }
 
@@ -367,6 +386,7 @@ private fun DefaultGlobalSearchItemViewRelationTwoHighlightsMetaPreview() {
     GlobalSearchItem(
         GlobalSearchItemView(
             id = "ID",
+            space = SpaceId(""),
             title = "Autechre",
             type = "Band",
             meta = GlobalSearchItemView.Meta.Default(
@@ -376,8 +396,10 @@ private fun DefaultGlobalSearchItemViewRelationTwoHighlightsMetaPreview() {
                     IntRange(0, 8),
                     IntRange(15, 23)
                 )
-            )
-        )
+            ),
+            layout = ObjectType.Layout.BASIC
+        ),
+        onObjectClicked = {}
     )
 }
 
@@ -396,14 +418,17 @@ private fun DefaultGlobalSearchItemViewTagRelationPreview() {
     GlobalSearchItem(
         GlobalSearchItemView(
             id = "ID",
+            space = SpaceId(""),
             title = "Autechre",
             type = "Band",
             meta = GlobalSearchItemView.Meta.Tag(
                 name = "Style",
                 value = "IDM",
                 color = ThemeColor.TEAL
-            )
-        )
+            ),
+            layout = ObjectType.Layout.BASIC
+        ),
+        onObjectClicked = {}
     )
 }
 
@@ -422,14 +447,17 @@ private fun DefaultGlobalSearchItemViewStatusRelationPreview() {
     GlobalSearchItem(
         GlobalSearchItemView(
             id = "ID",
+            space = SpaceId(""),
             title = "Autechre",
             type = "Band",
             meta = GlobalSearchItemView.Meta.Status(
                 name = "Style",
                 value = "IDM",
                 color = ThemeColor.TEAL
-            )
-        )
+            ),
+            layout = ObjectType.Layout.BASIC
+        ),
+        onObjectClicked = {}
     )
 }
 
@@ -445,37 +473,45 @@ private fun DefaultGlobalSearchItemViewStatusRelationPreview() {
 )
 @Composable
 private fun DefaultGlobalSearchItemViewStatusRelationScreenPreview() {
+
     GlobalSearchScreen(
         onQueryChanged = {},
         items = listOf(
             GlobalSearchItemView(
                 id = "ID1",
+                space = SpaceId(""),
                 title = "Autechre",
                 type = "Band",
-                meta = GlobalSearchItemView.Meta.None
+                meta = GlobalSearchItemView.Meta.None,
+                layout = ObjectType.Layout.BASIC
             ),
             GlobalSearchItemView(
                 id = "ID2",
+                space = SpaceId(""),
                 title = "Autechre",
                 type = "Band",
                 meta = GlobalSearchItemView.Meta.Status(
                     name = "Style",
                     value = "IDM",
                     color = ThemeColor.TEAL
-                )
+                ),
+                layout = ObjectType.Layout.BASIC
             ),
             GlobalSearchItemView(
                 id = "ID3",
+                space = SpaceId(""),
                 title = "Autechre",
                 type = "Band",
                 meta = GlobalSearchItemView.Meta.Tag(
                     name = "Style",
                     value = "IDM",
                     color = ThemeColor.TEAL
-                )
+                ),
+                layout = ObjectType.Layout.BASIC
             ),
             GlobalSearchItemView(
                 id = "ID4",
+                space = SpaceId(""),
                 title = "Autechre",
                 type = "Band",
                 meta = GlobalSearchItemView.Meta.Default(
@@ -485,17 +521,21 @@ private fun DefaultGlobalSearchItemViewStatusRelationScreenPreview() {
                         IntRange(0, 8),
                         IntRange(15, 23)
                     )
-                )
+                ),
+                layout = ObjectType.Layout.BASIC
             ),
             GlobalSearchItemView(
                 id = "ID5",
+                space = SpaceId(""),
                 title = "Autechre",
                 type = "Band",
                 meta = GlobalSearchItemView.Meta.Block(
                     snippet = "Autechre are an English electronic music duo consisting of Rob Brown and Sean Booth, both from Rochdale, Greater Manchester. ",
                     highlights = emptyList()
-                )
+                ),
+                layout = ObjectType.Layout.BASIC
             )
-        )
+        ),
+        onObjectClicked = {}
     )
 }

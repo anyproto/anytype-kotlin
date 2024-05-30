@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation.Format.CHECKBOX
 import com.anytypeio.anytype.core_models.Relation.Format.DATE
@@ -23,12 +24,14 @@ import com.anytypeio.anytype.core_models.Relation.Format.UNDEFINED
 import com.anytypeio.anytype.core_models.Relation.Format.URL
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.search.SearchWithMeta
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.objects.getProperName
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,6 +43,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class GlobalSearchViewModel(
     private val searchWithMeta: SearchWithMeta,
@@ -79,7 +83,7 @@ class GlobalSearchViewModel(
                             )
                         )
                 }.collect { results ->
-                    views.value = results.map { result ->
+                    views.value = results.mapNotNull { result ->
                         result.view(
                             storeOfObjectTypes = storeOfObjectTypes,
                             storeOfRelations = storeOfRelations
@@ -91,6 +95,14 @@ class GlobalSearchViewModel(
 
     fun onQueryChanged(query: String) {
         userInput.value = query
+    }
+
+    fun onObjectClicked(globalSearchItemView: GlobalSearchItemView) {
+        val navigation = globalSearchItemView.layout.navigation(
+            target = globalSearchItemView.id,
+            space = globalSearchItemView.space.id
+        )
+        Timber.d("Got navigation: ${navigation}")
     }
 
     class Factory @Inject constructor(
@@ -117,8 +129,10 @@ class GlobalSearchViewModel(
  * @property [title] object title
  * @property [type] type screen name
  */
-data class GlobalSearchItemView(
+data class  GlobalSearchItemView(
     val id: Id,
+    val space: SpaceId,
+    val layout: ObjectType.Layout,
     val title: String,
     val type: String,
     val meta: Meta
@@ -150,11 +164,15 @@ data class GlobalSearchItemView(
 suspend fun Command.SearchWithMeta.Result.view(
     storeOfObjectTypes: StoreOfObjectTypes,
     storeOfRelations: StoreOfRelations
-) : GlobalSearchItemView {
+) : GlobalSearchItemView? {
+    if (wrapper.spaceId == null) return null
+    if (wrapper.layout == null) return null
     val type = wrapper.type.firstOrNull()
     val meta = metas.firstOrNull()
     return GlobalSearchItemView(
         id = obj,
+        space = SpaceId(requireNotNull(wrapper.spaceId)),
+        layout = requireNotNull(wrapper.layout),
         title = wrapper.getProperName(),
         type =  if (type != null) {
             storeOfObjectTypes.get(type)?.name.orEmpty()

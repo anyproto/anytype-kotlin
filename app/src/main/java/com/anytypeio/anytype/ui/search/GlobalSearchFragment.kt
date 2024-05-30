@@ -37,7 +37,8 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
             ) {
                 GlobalSearchScreen(
                     items = vm.views.collectAsStateWithLifecycle().value,
-                    onQueryChanged = vm::onQueryChanged
+                    onQueryChanged = vm::onQueryChanged,
+                    onObjectClicked = vm::onObjectClicked
                 )
             }
         }

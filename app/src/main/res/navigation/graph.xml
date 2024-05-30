@@ -274,7 +274,7 @@
 
     <dialog
         android:id="@+id/paymentsScreen"
-        android:name="com.anytypeio.anytype.ui.payments.PaymentsFragment" />
+        android:name="com.anytypeio.anytype.ui.payments.MembershipFragment" />
 
     <dialog
         android:id="@+id/galleryInstallationScreen"

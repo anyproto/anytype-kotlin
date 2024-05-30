@@ -9,11 +9,11 @@
     <string name="personalization">Personalización</string>
     <string name="appearance">Apariencia</string>
     <string name="file_storage">Almacenamiento de archivos</string>
-    <string name="key">Key</string>
+    <string name="key">Llave</string>
     <string name="clear_file_cache">Limpiar caché de archivos</string>
     <string name="debug_sync_report">Depurar el informe de sincronización</string>
     <string name="debug">Depurar</string>
-    <string name="account">Vault</string>
+    <string name="account">Arca</string>
     <string name="reset_account">Reset vault</string>
     <string name="delete_account">Delete vault</string>
     <string name="space_debug">Depurar espacio</string>
@@ -29,7 +29,7 @@
     <string name="system">Sistema</string>
     <string name="settings">Ajustes</string>
     <string name="have_you_back_up_your_recovery_phrase">Have you backed up your Key?</string>
-    <string name="you_will_need_to_sign_in">You will need it to enter your vault. Keep it in a safe place. If you lose it, you can no longer enter your vault.</string>
+    <string name="you_will_need_to_sign_in">La necesitarás para iniciar sesión. Mantenla en un lugar seguro. Si la pierdes, ya no podrás acceder a tu cuenta.</string>
     <string name="about_help_and_community">Ayuda y Comunidad</string>
     <string name="about_what_is_new">Novedades</string>
     <string name="about_anytype_community">Comunidad Anytype</string>
@@ -634,7 +634,7 @@
     <string name="link">Enlace</string>
     <string name="move_into_this_page">Mover a esta página</string>
     <string name="move_into">Mover a</string>
-    <string name="fetching_your_account">Fetching your vault…</string>
+    <string name="fetching_your_account">Accediendo a tu arca...</string>
     <string name="search_on_page">Buscar en la página</string>
     <string name="object_view_type">Tipo de vista de objeto</string>
     <string name="object_type_name">Nombre del tipo de objeto</string>
@@ -727,7 +727,7 @@
     <string name="shortcut_create_new_object_of_type">Nuevo %1$s</string>
     <string name="close">Cerrar</string>
     <string name="go_to_settings">Ir a Ajustes</string>
-    <string name="do_not_forget_mnemonic_phrase">Don\'t forget to take and save your Key</string>
+    <string name="do_not_forget_mnemonic_phrase">No te olvides de anotar y guardar la llave</string>
     <string name="you_can_always_find_mnemonic_in_settings">Siempre puede encontrar la frase de recuperación en tu perfil, en ajustes.</string>
     <string name="if_you_lose_recovery_phrase_warning">If you lose the Key and get logged out you will not be able to ever access your data again. Save this Key outside of Anytype for data recovery.</string>
     <string name="card_size">Tamaño de tarjeta</string>
@@ -974,19 +974,19 @@
     <string name="onboarding_terms_and_policy_privacy">Política\u00A0de Privacidad</string>
     <string name="onboarding_new_vault_button_text">New vault</string>
     <string name="onboarding_enter_my_vault">Get my Key</string>
-    <string name="onboarding_have_key_button_text">I have a Key</string>
-    <string name="onboarding_get_my_key_button_text">Get my Key</string>
+    <string name="onboarding_have_key_button_text">Tengo una Llave</string>
+    <string name="onboarding_get_my_key_button_text">Obtener mi llave</string>
     <string name="onboarding_invite_code_title">Escriba su código de invitación</string>
     <string name="onboarding_invite_code_description">Si no tienes uno, simplemente ve a anytype.io\ny regístrate en la lista de espera.</string>
     <string name="onboarding_void_title">Este es tu Vacío</string>
     <string name="onboarding_void_description">Es una ubicación encriptada para todo lo que creas. Todo se almacena en tu dispositivo y se realiza una copia de seguridad en la red distribuida.</string>
-    <string name="onboarding_this_is_your_key_title">This is your Key</string>
+    <string name="onboarding_this_is_your_key_title">Esta es tu llave</string>
     <string name="onboarding_key_description">It gives you full ownership over your vault. It cannot be recovered.</string>
-    <string name="onboarding_show_my_key">Show my Key</string>
+    <string name="onboarding_show_my_key">Mostrar mi llave</string>
     <string name="onboarding_key_skip">Saltar</string>
     <string name="onboarding_key_copy">Copiar al portapapeles</string>
-    <string name="onboarding_set_your_name_title">Set your name</string>
-    <string name="onboarding_soul_creation_description">Only seen by people you share something with. There is no central registry of these names.</string>
+    <string name="onboarding_set_your_name_title">Escribe tu nombre</string>
+    <string name="onboarding_soul_creation_description">Solo lo verán las personas con las que compartas algo.No existe un registro central de nombres.</string>
     <string name="onboarding_soul_creation_placeholder">Identidad Anytype</string>
     <string name="onboarding_soul_creation">Creación de su identidad</string>
     <string name="onboarding_type_your_key">Type your Key</string>
@@ -994,12 +994,12 @@
     <string name="onboarding_entering_void_title">Entrando al Vacío </string>
     <string name="onboarding_your_key_can_t_be_empty">Your Key can\'t be empty</string>
     <string name="onboarding_mnemonic_read_more">Leer más</string>
-    <string name="onboarding_key_additional_info">You can find this key later in Anytype settings</string>
-    <string name="onboarding_what_is_the_key">What is the Key?</string>
-    <string name="onboarding_recovery_phrase_description">It is represented by a recovery phrase – 12 random words from which your vault is magically generated on this device.</string>
+    <string name="onboarding_key_additional_info">Puedes encontrar la llave más tarde en los ajustes de Anytype.</string>
+    <string name="onboarding_what_is_the_key">¿Qué es la llave?</string>
+    <string name="onboarding_recovery_phrase_description">Consiste en una frase de recuperación de 12 palabras con las que se genera mágicamente tu arca en este dispositivo.</string>
     <string name="onboarding_recovery_phrase_description_2">Whomever knows the combination of these words owns your vault. </string>
     <string name="onboarding_recovery_phrase_description_3">Right now, you are the only person in the world who knows it.</string>
-    <string name="onboarding_recovery_phrase_description_4">All computational resources on Earth are not enough to break in. If you lose it, it cannot be recovered. So, store it somewhere safe!</string>
+    <string name="onboarding_recovery_phrase_description_4">No hay recursos computacionales en la Tierra suficientes para descifrarla. Si la pierdes, es imposible recuperarla. ¡Guárdala en un lugar seguro!</string>
     <string name="onboarding_how_to_save_my_phrase">How to save my Key?</string>
     <string name="onboarding_how_to_save_my_phrase_2">The easiest way to store your Key is to save it in your password manager.</string>
     <string name="onboarding_how_to_save_my_phrase_3">La forma más segura de almacenarla es escribirla en papel y mantenerla fuera de línea, en un lugar seguro.</string>
@@ -1106,7 +1106,7 @@
     <string name="create_object">Crear objeto</string>
     <string name="msg_query_cannot_be_changed">Esta consulta sólo puede cambiarse en el escritorio</string>
     <!--region ONBOARDING ERRORS -->
-    <string name="error_invalid_recovery_phrase">Invalid Key</string>
+    <string name="error_invalid_recovery_phrase">Clave no válida</string>
     <string name="network">Red</string>
     <string name="network_with_colon">Red:</string>
     <string name="network_settings_anytype_network">Red de Anytype</string>
@@ -1243,7 +1243,12 @@
     <string name="payments_tier_custom">Personalizado</string>
     <string name="payments_tier_custom_description">Membresía adaptada a sus necesidades y preferencias específicas</string>
     <string name="payments_button_learn">Saber más </string>
+    <string name="payments_button_manage">Gestionar pagos</string>
     <string name="payments_button_contact">Contacto</string>
+    <string name="payments_button_info">More info</string>
+    <string name="payments_button_submit">Enviar</string>
+    <string name="payments_button_pay">Pay by card</string>
+    <string name="payments_button_change_email">Cambiar correo electrónico</string>
     <string name="payments_member_link">Ver niveles de miembro</string>
     <string name="payments_privacy_link">Política de privacidad</string>
     <string name="payments_terms_link">Términos y condiciones</string>
@@ -1257,7 +1262,10 @@
     <string name="payments_tier_details_name_domain">.any</string>
     <string name="payments_tier_details_name_min">Mínimo 7 caracteres</string>
     <string name="payments_tier_details_name_error">¡Este nombre ya está en uso!</string>
-    <string name="payments_tier_details_name_success">¡Este nombre está disponible!</string>
+    <string name="payments_tier_details_name_validated">This name [%1$s] is up for grabs!</string>
+    <string name="payments_tier_details_name_validating">Validating name</string>
+    <string name="payments_tier_details_free_forever">Por siempre</string>
+    <string name="payments_tier_details_valid_until">Valid until %1$s</string>
     <string name="payments_tier_details_info_explorer">Entra en la red y disfruta del placer de la colaboración persona a persona.</string>
     <string-array name="payments_benefits_explorer">
         <item>1 GB de espacio en red</item>
@@ -1282,23 +1290,79 @@
     <string name="payments_detials_button_pay">Paga con tarjeta</string>
     <string name="payments_detials_button_submit">Enviar</string>
     <string name="payments_details_whats_included">¿Qué se incluye?</string>
-    <string name="payments_email_title">Obtén tu membresía gratis</string>
-    <string name="payments_email_subtitle">Necesitamos tu email para mantener el spam en el cajón y el email en tu buzón!</string>
+    <string name="payments_email_title">Get updates and enjoy free perks!</string>
+    <string name="payments_email_subtitle">It is not linked to your account in any way.</string>
     <string name="payments_email_checkbox_text">Me gustaría recibir actualizaciones de productos y disfrutar de cosas chulas ¡gratis!</string>
     <string name="payments_email_hint">Email</string>
     <string name="payments_tier_current_title">Tu estado actual</string>
     <string name="payments_tier_current_valid">Válido hasta</string>
-    <string name="payments_tier_current_paid_by">Pagado con tarjeta</string>
+    <string name="payments_tier_current_paid_by">Paid by</string>
+    <string name="payments_tier_current_paid_by_card">Tarjeta</string>
+    <string name="payments_tier_current_paid_by_crypto">Cripto</string>
+    <string name="payments_tier_current_paid_by_apple">Suscripción de Apple</string>
+    <string name="payments_tier_current_paid_by_google">Suscripción de Google</string>
     <string name="payments_tier_current_button">Gestionar pagos</string>
     <string name="payments_tier_current_change_email_button">Cambiar correo electrónico</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Escribe el código que se te ha enviado al email.</string>
     <string name="payments_code_resend">Reenviar</string>
-    <string name="payments_code_resend_in">Reenviar en %1$n seg</string>
-    <!-- Payments Welcome -->
+    <string name="payments_code_resend_in">Resend in %1$d sec</string>
+    <!-- Membership Welcome -->
     <string name="payments_welcome_title">Te damos la bienvenida a la red, %1$s</string>
     <string name="payments_welcome_subtitle">¡Enhorabuena por tu curiosidad!</string>
     <string name="payments_welcome_button">Siguiente</string>
+    <!-- Membership Email -->
+    <string name="membership_support_email">support@anytype.io</string>
+    <string name="membership_support_subject">Membership Screen Error Report - %1$s</string>
+    <string name="membership_support_body">        Hi Anytype Support Team,\n\n
+
+        I encountered an error on the Membership Screen in the app. Below are the details:\n
+
+        - Error Message: %1$s\n
+        - Description:      \n
+        - Date and Time: %2$s\n
+        - Device Model: %3$s\n
+        - Operating System: %4$s\n
+        - App Version: %5$s\n
+
+        Additional Comments:\n\n
+
+        Thank you for your assistance in resolving this issue.\n\n
+
+        Best regards,       \n
+    </string>
+    <string name="payments_email_to">membership-upgrade@anytype.io</string>
+    <string name="payments_email_subject">Upgrade %1$s</string>
+    <string name="payments_email_body">Hello Anytype team! I would like to extend my current membership for more (please choose an option):\n
+- Extra remote storage\n
+- More space editors\n
+- Additional shared spaces\n
+Specifically,
+Please provide specific details of your needs here.</string>
+    <!-- Membership name errors -->
+    <string name="membership_name_bad_input">Something wrong with input, try again</string>
+    <string name="membership_name_cache_error">Error on our side, try again later</string>
+    <string name="membership_name_cant_connect">Can not connect, check your internet connection</string>
+    <string name="membership_name_invalid_chars">El nombre contiene carácteres no válidos</string>
+    <string name="membership_name_not_logged">You are not logged in! 😵‍💫</string>
+    <string name="membership_name_payment_node_error">Error on our side, try again later</string>
+    <string name="membership_name_tier_features_no_name">Name is not available for this tier</string>
+    <string name="membership_name_tier_not_found">Tier not found, try again later</string>
+    <string name="membership_name_too_long">Nombre demasiado largo</string>
+    <string name="membership_name_too_short">El nombre es demasiado corto</string>
+    <string name="membership_any_name_not_reserved">This name cannot be reserved</string>
+    <string name="membership_any_name_null_error">Empty error</string>
+    <string name="membership_any_name_unknown">Error desconocido</string>
+    <string name="membership_email_wrong_format">Email has wrong format</string>
+    <string name="membership_email_already_verified">Email is already verified</string>
+    <string name="membership_email_already_sent">Email is already sent, try again after 1 minute</string>
+    <string name="membership_email_failed_to_send">Email failed to send</string>
+    <string name="membership_email_membership_already_exists">Membership already exists</string>
+    <string name="membership_email_code_expired">Code expired</string>
+    <string name="membership_email_code_wrong">Code is wrong</string>
+    <string name="membership_email_code_success">Code is correct</string>
+    <string name="membership_email_membership_not_found">Membership not found</string>
+    <string name="membership_email_membership_already_active">Membership already active</string>
     <!-- Notifications -->
     <string name="notifications_alert_error_unknown">Ha ocurrido un error desconocido. Por favor, inténtalo más tarde.</string>
     <string name="notifications_alert_error_bad_input">Se ha detectado una entrada no válida. Por favor, comprueba tus datos e inténtalo de nuevo.</string>
@@ -1318,10 +1382,40 @@
     <string name="gallery_experience_alert_button_space">Abrir espacio</string>
     <string name="gallery_experience_alert_button_error">Cerrar</string>
     <string name="three_dots_text_placeholder">...</string>
+    <string name="membership_btn_join">Unirse</string>
     <string name="notifications_prompt_get_notified">Get notified</string>
     <string name="notifications_prompt_secondary_button_text">Not now</string>
     <string name="notifications_prompt_description">Please enable notifications to stay informed about any requests to join or leave spaces.</string>
     <string name="notifications_prompt_primary_button_text">Enable</string>
     <string name="clipboard_panel_create_bookmark_from_clipboard">Create bookmark from clipboard</string>
     <string name="error_unexpected_layout">Error: unexpected layout</string>
+    <string name="membership_price_pending">Procesando...</string>
+    <string name="per_period">per %1$s</string>
+    <string name="free_for">Free for %1$s</string>
+    <string name="free_for_unknown">Free until...</string>
+    <string name="free_until">Free until</string>
+    <string name="membership_valid_forever">Valid forever</string>
+    <string name="membership_valid_for_unknown">Valid until...</string>
+    <string name="membership_agree_start">By continuing you agree to our</string>
+    <string name="membership_agree_terms">Términos de Uso</string>
+    <string name="membership_agree_middle">and</string>
+    <string name="membership_agree_privacy">Política de Privacidad</string>
+    <plurals name="period_years">
+        <item quantity="one">year</item>
+        <item quantity="other">%d years</item>
+    </plurals>
+    <plurals name="period_months">
+        <item quantity="one">month</item>
+        <item quantity="other">%d months</item>
+    </plurals>
+    <plurals name="period_weeks">
+        <item quantity="one">week</item>
+        <item quantity="other">%d weeks</item>
+    </plurals>
+    <plurals name="period_days">
+        <item quantity="one">day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+    <string name="membership_error_button_text_action">Contacto</string>
+    <string name="membership_error_button_text_dismiss">Aceptar</string>
 </resources>

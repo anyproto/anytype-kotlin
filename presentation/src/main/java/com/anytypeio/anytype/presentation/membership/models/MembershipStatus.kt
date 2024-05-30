@@ -1,21 +1,19 @@
 package com.anytypeio.anytype.presentation.membership.models
 
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
-import com.anytypeio.anytype.core_models.membership.MembershipStatusModel
+import com.anytypeio.anytype.core_models.membership.Membership.Status
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
 
-sealed class MembershipStatus {
-    object Unknown : MembershipStatus()
-    object Pending : MembershipStatus()
-    object Finalization : MembershipStatus()
-    data class Active(
-        val tier: MembershipTierData?,
-        val status: MembershipStatusModel,
-        val dateEnds: Long,
-        val paymentMethod: MembershipPaymentMethod,
-        val anyName: String
-    ) : MembershipStatus()
-}
+data class MembershipStatus(
+    val activeTier: TierId,
+    val status: Status,
+    val paymentMethod: MembershipPaymentMethod,
+    val anyName: String,
+    val tiers: List<MembershipTierData>,
+    val dateEnds: Long,
+    val formattedDateEnds: String,
+    val userEmail: String = ""
+)
 
 @JvmInline
-value class TierId(val value: String)
+value class TierId(val value: Int)

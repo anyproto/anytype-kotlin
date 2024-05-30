@@ -32,7 +32,7 @@ import com.anytypeio.anytype.di.feature.onboarding.OnboardingStartDependencies
 import com.anytypeio.anytype.di.feature.onboarding.login.OnboardingMnemonicLoginDependencies
 import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingMnemonicDependencies
 import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingSoulCreationDependencies
-import com.anytypeio.anytype.di.feature.payments.PaymentsComponentDependencies
+import com.anytypeio.anytype.di.feature.membership.MembershipComponentDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromLibraryDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationEditDependencies
 import com.anytypeio.anytype.di.feature.search.GlobalSearchDependencies
@@ -119,7 +119,7 @@ interface MainComponent :
     ShareSpaceDependencies,
     SpaceJoinRequestDependencies,
     RequestJoinSpaceDependencies,
-    PaymentsComponentDependencies,
+    MembershipComponentDependencies,
     GalleryInstallationComponentDependencies,
     NotificationDependencies,
     GlobalSearchDependencies
@@ -316,8 +316,8 @@ abstract class ComponentDependenciesModule {
 
     @Binds
     @IntoMap
-    @ComponentDependenciesKey(PaymentsComponentDependencies::class)
-    abstract fun providePaymentsComponentDependencies(component: MainComponent): ComponentDependencies
+    @ComponentDependenciesKey(MembershipComponentDependencies::class)
+    abstract fun provideMembershipComponentDependencies(component: MainComponent): ComponentDependencies
 
     @Binds
     @IntoMap

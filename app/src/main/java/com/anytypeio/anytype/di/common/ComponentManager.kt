@@ -63,6 +63,7 @@ import com.anytypeio.anytype.di.feature.cover.UnsplashModule
 import com.anytypeio.anytype.di.feature.gallery.DaggerGalleryInstallationComponent
 import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
 import com.anytypeio.anytype.di.feature.library.DaggerLibraryComponent
+import com.anytypeio.anytype.di.feature.membership.DaggerMembershipComponent
 import com.anytypeio.anytype.di.feature.multiplayer.DaggerRequestJoinSpaceComponent
 import com.anytypeio.anytype.di.feature.multiplayer.DaggerShareSpaceComponent
 import com.anytypeio.anytype.di.feature.multiplayer.DaggerSpaceJoinRequestComponent
@@ -73,7 +74,6 @@ import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingStartComponen
 import com.anytypeio.anytype.di.feature.onboarding.login.DaggerOnboardingMnemonicLoginComponent
 import com.anytypeio.anytype.di.feature.onboarding.signup.DaggerOnboardingMnemonicComponent
 import com.anytypeio.anytype.di.feature.onboarding.signup.DaggerOnboardingSoulCreationComponent
-import com.anytypeio.anytype.di.feature.payments.DaggerPaymentsComponent
 import com.anytypeio.anytype.di.feature.relations.DaggerRelationCreateFromLibraryComponent
 import com.anytypeio.anytype.di.feature.relations.DaggerRelationEditComponent
 import com.anytypeio.anytype.di.feature.relations.LimitObjectTypeModule
@@ -1139,8 +1139,8 @@ class ComponentManager(
             .build()
     }
 
-    val paymentsComponent = Component {
-        DaggerPaymentsComponent.factory().create(findComponentDependencies())
+    val membershipComponent = Component {
+        DaggerMembershipComponent.factory().create(findComponentDependencies())
     }
 
     val galleryInstallationsComponent =

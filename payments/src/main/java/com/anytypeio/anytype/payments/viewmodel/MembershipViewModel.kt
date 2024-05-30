@@ -102,10 +102,12 @@ class MembershipViewModel(
                         "\n----------------------------\nbillingPurchases:[$billingPurchases]")
                 MainResult(membershipStatus, billingProducts, billingPurchases)
             }.collect { (membershipStatus, billingClientState, purchases) ->
-                viewState.value = membershipStatus.toMainView(
+                val newState = membershipStatus.toMainView(
                     billingClientState = billingClientState,
                     billingPurchaseState = purchases
                 )
+                proceedWithUpdatingVisibleTier(newState)
+                viewState.value = newState
             }
         }
         viewModelScope.launch {
@@ -119,6 +121,14 @@ class MembershipViewModel(
             billingPurchases.collectLatest { billingPurchaseState ->
                 checkPurchaseStatus(billingPurchaseState)
             }
+        }
+    }
+
+    private fun proceedWithUpdatingVisibleTier(mainState: MembershipMainState) {
+        val actualTier = tierState.value
+        if (actualTier is MembershipTierState.Visible && mainState is MembershipMainState.Default) {
+            val tierView = mainState.tiers.find { it.id == actualTier.tier.id } ?: return
+            tierState.value = MembershipTierState.Visible(tierView)
         }
     }
 

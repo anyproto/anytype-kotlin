@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -24,7 +23,6 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
 
     private val vm by viewModels<GlobalSearchViewModel> { factory }
 
-    @OptIn(ExperimentalFoundationApi::class)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

@@ -82,6 +82,7 @@ import com.anytypeio.anytype.di.feature.relations.RelationAddToObjectModule
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForDataViewModule
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectBlockModule
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectModule
+import com.anytypeio.anytype.di.feature.search.DaggerGlobalSearchComponent
 import com.anytypeio.anytype.di.feature.sets.CreateFilterModule
 import com.anytypeio.anytype.di.feature.sets.ModifyFilterModule
 import com.anytypeio.anytype.di.feature.sets.PickConditionModule
@@ -327,6 +328,12 @@ class ComponentManager(
         main.objectSearchComponentBuilder()
             .module(ObjectSearchModule)
             .build()
+    }
+
+    val globalSearchComponent = Component {
+        DaggerGlobalSearchComponent
+            .factory()
+            .create(findComponentDependencies())
     }
 
     val objectSetComponent = ComponentMapWithParam { param: DefaultComponentParam ->

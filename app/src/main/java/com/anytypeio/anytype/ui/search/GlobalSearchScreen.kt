@@ -2,6 +2,7 @@ package com.anytypeio.anytype.ui.search
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text2.BasicTextField2
+import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,22 +31,28 @@ import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.foundation.Divider
+import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun GlobalSearchScreen(
+    searchFieldState: TextFieldState,
     items: List<GlobalSearchItemView>
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
-//        TextField(
-//            value = "Do",
-//            onValueChange = {
-//
-//            }
-//        )
-        LazyColumn {
+    Column(modifier = Modifier.fillMaxSize()) {
+        BasicTextField2(
+            state = searchFieldState,
+            modifier = Modifier.padding(16.dp),
+            textStyle = BodyRegular.copy(
+                color = Color.Red
+            )
+        )
+        LazyColumn(
+            modifier = Modifier.weight(1.0f)
+        ) {
             items.forEachIndexed { idx, item ->
                 item(key = item.id) {
                     GlobalSearchItem(globalSearchItemView = item)
@@ -406,6 +415,7 @@ private fun DefaultGlobalSearchItemViewStatusRelationPreview() {
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Preview(
     name = "Dark Mode",
     showBackground = true,
@@ -419,15 +429,16 @@ private fun DefaultGlobalSearchItemViewStatusRelationPreview() {
 @Composable
 private fun DefaultGlobalSearchItemViewStatusRelationScreenPreview() {
     GlobalSearchScreen(
+        searchFieldState = TextFieldState("Autechre"),
         items = listOf(
             GlobalSearchItemView(
-                id = "ID",
+                id = "ID1",
                 title = "Autechre",
                 type = "Band",
                 meta = GlobalSearchItemView.Meta.None
             ),
             GlobalSearchItemView(
-                id = "ID",
+                id = "ID2",
                 title = "Autechre",
                 type = "Band",
                 meta = GlobalSearchItemView.Meta.Status(
@@ -437,7 +448,7 @@ private fun DefaultGlobalSearchItemViewStatusRelationScreenPreview() {
                 )
             ),
             GlobalSearchItemView(
-                id = "ID",
+                id = "ID3",
                 title = "Autechre",
                 type = "Band",
                 meta = GlobalSearchItemView.Meta.Tag(
@@ -447,7 +458,7 @@ private fun DefaultGlobalSearchItemViewStatusRelationScreenPreview() {
                 )
             ),
             GlobalSearchItemView(
-                id = "ID",
+                id = "ID4",
                 title = "Autechre",
                 type = "Band",
                 meta = GlobalSearchItemView.Meta.Default(
@@ -460,7 +471,7 @@ private fun DefaultGlobalSearchItemViewStatusRelationScreenPreview() {
                 )
             ),
             GlobalSearchItemView(
-                id = "ID",
+                id = "ID5",
                 title = "Autechre",
                 type = "Band",
                 meta = GlobalSearchItemView.Meta.Block(

@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
+import com.anytypeio.anytype.ui.search.GlobalSearchFragment
 import dagger.Binds
 import dagger.Component
 import dagger.Module
@@ -21,9 +22,10 @@ import dagger.Module
 @PerScreen
 interface GlobalSearchComponent {
     @Component.Factory
-    interface Builder {
+    interface Factory {
         fun create(dependencies: GlobalSearchDependencies): GlobalSearchComponent
     }
+    fun inject(fragment: GlobalSearchFragment)
 }
 
 @Module

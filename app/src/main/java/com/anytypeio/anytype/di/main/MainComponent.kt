@@ -35,6 +35,7 @@ import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingSoulCreation
 import com.anytypeio.anytype.di.feature.payments.PaymentsComponentDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromLibraryDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationEditDependencies
+import com.anytypeio.anytype.di.feature.search.GlobalSearchDependencies
 import com.anytypeio.anytype.di.feature.settings.AboutAppDependencies
 import com.anytypeio.anytype.di.feature.settings.AppearanceDependencies
 import com.anytypeio.anytype.di.feature.settings.FilesStorageDependencies
@@ -120,7 +121,8 @@ interface MainComponent :
     RequestJoinSpaceDependencies,
     PaymentsComponentDependencies,
     GalleryInstallationComponentDependencies,
-    NotificationDependencies
+    NotificationDependencies,
+    GlobalSearchDependencies
 {
 
     fun inject(app: AndroidApplication)
@@ -331,4 +333,9 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(NotificationDependencies::class)
     abstract fun provideNotificationDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(GlobalSearchDependencies::class)
+    abstract fun provideGlobalSearchDependencies(component: MainComponent): ComponentDependencies
 }

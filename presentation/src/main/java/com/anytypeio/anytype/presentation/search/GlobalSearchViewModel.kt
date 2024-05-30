@@ -175,7 +175,6 @@ suspend fun Command.SearchWithMeta.Result.view(
                     if (relation != null && relation.map.isNotEmpty() && dep != null && dep.map.isNotEmpty()) {
                         when(relation.format) {
                             SHORT_TEXT, LONG_TEXT, URL, EMAIL, PHONE -> {
-                                val value  = ObjectWrapper.Relation(dep.map)
                                 GlobalSearchItemView.Meta.Default(
                                     name = relation.name.orEmpty(),
                                     value = meta.highlight.orEmpty(),

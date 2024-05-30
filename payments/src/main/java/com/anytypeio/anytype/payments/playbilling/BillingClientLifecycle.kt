@@ -2,6 +2,8 @@ package com.anytypeio.anytype.payments.playbilling
 
 import android.app.Activity
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.android.billingclient.api.BillingClient
@@ -16,6 +18,7 @@ import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import kotlin.math.min
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -58,6 +61,9 @@ class BillingClientLifecycle(
     private lateinit var billingClient: BillingClient
 
     private val subscriptionIds = mutableListOf<String>()
+
+    // how long before the data source tries to reconnect to Google play
+    private var reconnectMilliseconds = RECONNECT_TIMER_START_MILLISECONDS
 
     fun setupSubIds(ids: List<String>) {
         subscriptionIds.clear()
@@ -107,8 +113,22 @@ class BillingClientLifecycle(
 
     override fun onBillingServiceDisconnected() {
         Timber.d("onBillingServiceDisconnected")
-        // TODO: Try connecting again with exponential backoff.
-        // billingClient.startConnection(this)
+        retryBillingServiceConnectionWithExponentialBackoff()
+    }
+
+    /**
+     *  From the official example:
+     *  https://github.com/android/play-billing-samples/blob/main/TrivialDriveKotlin/app/src/main/java/com/sample/android/trivialdrivesample/billing/BillingDataSource.kt
+     */
+    private fun retryBillingServiceConnectionWithExponentialBackoff() {
+        handler.postDelayed(
+            { billingClient.startConnection(this) },
+            reconnectMilliseconds
+        )
+        reconnectMilliseconds = min(
+            reconnectMilliseconds * 2,
+            RECONNECT_TIMER_MAX_TIME_MILLISECONDS
+        )
     }
 
     /**
@@ -346,6 +366,14 @@ class BillingClientLifecycle(
         val debugMessage = billingResult.debugMessage
         Timber.d("launchBillingFlow: BillingResponse $responseCode $debugMessage")
         return responseCode
+    }
+
+    companion object {
+
+        private val handler = Handler(Looper.getMainLooper())
+
+        private const val RECONNECT_TIMER_MAX_TIME_MILLISECONDS = 1000L * 60L * 15L // 15 minutes
+        private const val RECONNECT_TIMER_START_MILLISECONDS = 1L * 1000L // 1 second
     }
 }
 

@@ -143,7 +143,7 @@ class Navigator : AppNavigation {
     }
 
     override fun openPageSearch() {
-        navController?.navigate(R.id.pageSearchFragment)
+        navController?.navigate(R.id.globalSearchScreen)
     }
 
     override fun openObjectSet(

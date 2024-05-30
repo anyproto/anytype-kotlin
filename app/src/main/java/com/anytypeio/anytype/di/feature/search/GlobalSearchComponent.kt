@@ -6,6 +6,9 @@ import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.ui.search.GlobalSearchFragment
 import dagger.Binds
@@ -42,4 +45,7 @@ interface GlobalSearchDependencies : ComponentDependencies {
     fun urlBuilder(): UrlBuilder
     fun repo(): BlockRepository
     fun dispatchers(): AppCoroutineDispatchers
+    fun storeOfObjectTypes(): StoreOfObjectTypes
+    fun storeOfRelations(): StoreOfRelations
+    fun spaceManager(): SpaceManager
 }

@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -22,31 +23,72 @@ import com.anytypeio.anytype.core_models.Relation.Format.UNDEFINED
 import com.anytypeio.anytype.core_models.Relation.Format.URL
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.search.SearchWithMeta
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.objects.getProperName
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 
 class GlobalSearchViewModel(
     private val searchWithMeta: SearchWithMeta,
+    private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val storeOfRelations: StoreOfRelations,
+    private val spaceManager: SpaceManager,
     private val urlBuilder: UrlBuilder
 ) : BaseViewModel() {
 
+    val views = MutableStateFlow<List<GlobalSearchItemView>>(emptyList())
+
     init {
-        // TODO
+       viewModelScope.launch {
+           searchWithMeta
+               .async(
+                   Command.SearchWithMeta(
+                       query = "",
+                       limit = 50,
+                       offset = 0,
+                       keys = emptyList(),
+                       filters = ObjectSearchConstants.filterSearchObjects(
+                           // TODO add tech space?
+                           spaces = listOf(spaceManager.get())
+                       ),
+                       sorts = ObjectSearchConstants.sortsSearchObjects,
+                       withMetaRelationDetails = true,
+                       withMeta = true
+                   )
+               ).fold(
+                   onSuccess = { results ->
+                       views.value = results.map { result ->
+                           result.view(
+                               storeOfObjectTypes = storeOfObjectTypes,
+                               storeOfRelations = storeOfRelations
+                           )
+                       }
+                   }
+               )
+       }
     }
 
     class Factory @Inject constructor(
         private val searchWithMeta: SearchWithMeta,
+        private val storeOfObjectTypes: StoreOfObjectTypes,
+        private val storeOfRelations: StoreOfRelations,
+        private val spaceManager: SpaceManager,
         private val urlBuilder: UrlBuilder
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return GlobalSearchViewModel(
                 searchWithMeta = searchWithMeta,
+                storeOfObjectTypes = storeOfObjectTypes,
+                storeOfRelations = storeOfRelations,
+                spaceManager = spaceManager,
                 urlBuilder = urlBuilder
             ) as T
         }

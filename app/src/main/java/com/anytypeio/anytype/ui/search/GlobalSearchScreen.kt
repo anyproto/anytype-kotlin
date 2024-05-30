@@ -20,10 +20,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
@@ -42,10 +45,14 @@ fun GlobalSearchScreen(
     searchFieldState: TextFieldState,
     items: List<GlobalSearchItemView>
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .nestedScroll(rememberNestedScrollInteropConnection())
+    ) {
         BasicTextField2(
             state = searchFieldState,
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
             textStyle = BodyRegular.copy(
                 color = Color.Red
             )
@@ -66,7 +73,7 @@ fun GlobalSearchScreen(
 }
 
 @Composable
-fun GlobalSearchItem(
+private fun GlobalSearchItem(
     globalSearchItemView: GlobalSearchItemView
 ) {
     Box(
@@ -95,7 +102,9 @@ fun GlobalSearchItem(
             Text(
                 text = globalSearchItemView.title,
                 style = PreviewTitle2Medium,
-                color = colorResource(id = R.color.text_primary)
+                color = colorResource(id = R.color.text_primary),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
             when(val meta = globalSearchItemView.meta) {
                 is GlobalSearchItemView.Meta.Block -> {

@@ -373,7 +373,7 @@
         android:name="com.anytypeio.anytype.ui.search.ObjectSearchFragment"
         android:label="PageSearchFragment"
         tools:layout="@layout/fragment_object_search" />
-    <fragment
+    <dialog
         android:id="@+id/globalSearchScreen"
         android:name="com.anytypeio.anytype.ui.search.GlobalSearchFragment"
         android:label="GlobalSearchScreen" />

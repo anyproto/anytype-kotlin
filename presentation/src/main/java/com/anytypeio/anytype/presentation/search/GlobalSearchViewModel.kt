@@ -68,7 +68,7 @@ data class GlobalSearchItemView(
         data class Default(
             val name: String,
             val value: String,
-            val highlights: List<IntRange>
+            val highlights: List<IntRange> = emptyList()
         ): Meta()
         data class Status(
             val name: String,
@@ -80,13 +80,9 @@ data class GlobalSearchItemView(
             val value: String,
             val color: ThemeColor
         ): Meta()
-        data class Date(
-            val name: String,
-            val timestamp: Long
-        ): Meta()
         data class Block(
             val snippet: String,
-            val highlights: List<IntRange>
+            val highlights: List<IntRange> = emptyList()
         ): Meta()
     }
 }

@@ -6,9 +6,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -25,13 +27,33 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
+import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 
 @Composable
-fun GlobalSearchScreen() {
-
+fun GlobalSearchScreen(
+    items: List<GlobalSearchItemView>
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
+//        TextField(
+//            value = "Do",
+//            onValueChange = {
+//
+//            }
+//        )
+        LazyColumn {
+            items.forEachIndexed { idx, item ->
+                item(key = item.id) {
+                    GlobalSearchItem(globalSearchItemView = item)
+                    if (idx != items.lastIndex) {
+                        Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -56,7 +78,8 @@ fun GlobalSearchItem(
                 .padding(
                     start = 76.dp,
                     bottom = 12.dp,
-                    top = 12.dp
+                    top = 12.dp,
+                    end = 16.dp
                 )
                 .align(Alignment.CenterStart)
         ) {
@@ -378,6 +401,72 @@ private fun DefaultGlobalSearchItemViewStatusRelationPreview() {
                 name = "Style",
                 value = "IDM",
                 color = ThemeColor.TEAL
+            )
+        )
+    )
+}
+
+@Preview(
+    name = "Dark Mode",
+    showBackground = true,
+    uiMode = UI_MODE_NIGHT_YES
+)
+@Preview(
+    name = "Light Mode",
+    showBackground = true,
+    uiMode = UI_MODE_NIGHT_NO
+)
+@Composable
+private fun DefaultGlobalSearchItemViewStatusRelationScreenPreview() {
+    GlobalSearchScreen(
+        items = listOf(
+            GlobalSearchItemView(
+                id = "ID",
+                title = "Autechre",
+                type = "Band",
+                meta = GlobalSearchItemView.Meta.None
+            ),
+            GlobalSearchItemView(
+                id = "ID",
+                title = "Autechre",
+                type = "Band",
+                meta = GlobalSearchItemView.Meta.Status(
+                    name = "Style",
+                    value = "IDM",
+                    color = ThemeColor.TEAL
+                )
+            ),
+            GlobalSearchItemView(
+                id = "ID",
+                title = "Autechre",
+                type = "Band",
+                meta = GlobalSearchItemView.Meta.Tag(
+                    name = "Style",
+                    value = "IDM",
+                    color = ThemeColor.TEAL
+                )
+            ),
+            GlobalSearchItemView(
+                id = "ID",
+                title = "Autechre",
+                type = "Band",
+                meta = GlobalSearchItemView.Meta.Default(
+                    name = "Description",
+                    value = "Autechre are an English electronic music duo consisting of Rob Brown and Sean Booth, both from Rochdale, Greater Manchester. ",
+                    highlights = listOf(
+                        IntRange(0, 8),
+                        IntRange(15, 23)
+                    )
+                )
+            ),
+            GlobalSearchItemView(
+                id = "ID",
+                title = "Autechre",
+                type = "Band",
+                meta = GlobalSearchItemView.Meta.Block(
+                    snippet = "Autechre are an English electronic music duo consisting of Rob Brown and Sean Booth, both from Rochdale, Greater Manchester. ",
+                    highlights = emptyList()
+                )
             )
         )
     )

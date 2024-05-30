@@ -8,8 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -20,6 +22,7 @@ import androidx.navigation.compose.rememberNavController
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
+import com.anytypeio.anytype.core_ui.views.BaseTwoButtonsDarkThemeAlertDialog
 import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -32,10 +35,12 @@ import com.anytypeio.anytype.payments.screens.CodeScreen
 import com.anytypeio.anytype.payments.screens.MainMembershipScreen
 import com.anytypeio.anytype.payments.screens.WelcomeScreen
 import com.anytypeio.anytype.payments.screens.TierViewScreen
+import com.anytypeio.anytype.payments.viewmodel.MembershipErrorState
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.payments.viewmodel.MembershipNavigation
 import com.anytypeio.anytype.payments.viewmodel.MembershipViewModel
 import com.anytypeio.anytype.payments.viewmodel.MembershipViewModelFactory
+import com.anytypeio.anytype.payments.viewmodel.TierAction
 import com.google.accompanist.navigation.material.BottomSheetNavigator
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
@@ -79,7 +84,29 @@ class MembershipFragment : BaseBottomSheetComposeFragment() {
                     val bottomSheetNavigator = rememberBottomSheetNavigator()
                     navController = rememberNavController(bottomSheetNavigator)
                     SetupNavigation(bottomSheetNavigator, navController)
+                    ErrorScreen()
                 }
+            }
+        }
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    private fun ErrorScreen() {
+        val errorStateScreen = vm.errorState.collectAsStateWithLifecycle()
+        when (val state = errorStateScreen.value) {
+            MembershipErrorState.Hidden -> {
+                //do nothing
+            }
+            is MembershipErrorState.Show -> {
+                BaseTwoButtonsDarkThemeAlertDialog(
+                    dialogText = state.message,
+                    dismissButtonText = stringResource(id = R.string.membership_error_button_text_dismiss),
+                    actionButtonText = stringResource(id = R.string.membership_error_button_text_action),
+                    onActionButtonClick = { vm.onTierAction(TierAction.ContactUsError(state.message)) },
+                    onDismissButtonClick = { vm.hideError() },
+                    onDismissRequest = { vm.hideError() }
+                )
             }
         }
     }

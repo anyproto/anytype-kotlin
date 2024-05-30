@@ -496,6 +496,14 @@ class MembershipViewModel(
         return membershipStatus.tiers.find { it.id == tierId }
     }
 
+    private fun showError(message: String) {
+        errorState.value = MembershipErrorState.Show(message)
+    }
+
+    fun hideError() {
+        errorState.value = MembershipErrorState.Hidden
+    }
+
     //region Google Play Billing
     /**
      * Use the Google Play Billing Library to make a purchase.
@@ -555,17 +563,16 @@ class MembershipViewModel(
             (billingProducts.value as? BillingClientState.Connected)?.productDetails?.firstOrNull { it.productId == product }
                 ?: run {
                     Timber.e("Could not find Basic product details by product id: $product")
+                    errorState.value = MembershipErrorState.Show("Could not find Basic product details by product id: $product")
                     return
                 }
 
-        val builderOffers =
-            builderSubProductDetails.subscriptionOfferDetails?.let { offerDetailsList ->
-                retrieveEligibleOffers(
-                    offerDetails = offerDetailsList
-                )
-            }
-
-        val offerToken: String = builderOffers?.let { leastPricedOfferToken(it) }.toString()
+        val offerToken: String? = builderSubProductDetails.subscriptionOfferDetails?.let { leastPricedOfferToken(it) }
+        if (offerToken.isNullOrEmpty()) {
+            Timber.e("Offer token for subscription is null or empty")
+            errorState.value = MembershipErrorState.Show("Offer token for subscription is null or empty, couldn't proceed")
+            return
+        }
         launchFlow(
             billingId = billingId,
             offerToken = offerToken,
@@ -587,7 +594,7 @@ class MembershipViewModel(
     private fun leastPricedOfferToken(
         offerDetails: List<ProductDetails.SubscriptionOfferDetails>
     ): String {
-        var offerToken = String()
+        var offerToken = ""
         var leastPricedOffer: ProductDetails.SubscriptionOfferDetails
         var lowestPrice = Int.MAX_VALUE
 
@@ -603,30 +610,6 @@ class MembershipViewModel(
             }
         }
         return offerToken
-
-        TODO("Replace this with least average priced offer implementation")
-    }
-
-    /**
-     * Retrieves all eligible base plans and offers using tags from ProductDetails.
-     *
-     * @param offerDetails offerDetails from a ProductDetails returned by the library.
-     * @param tag string representing tags associated with offers and base plans.
-     *
-     * @return the eligible offers and base plans in a list.
-     *
-     */
-    private fun retrieveEligibleOffers(
-        offerDetails: MutableList<ProductDetails.SubscriptionOfferDetails>, tag: String = ""
-    ):
-            List<ProductDetails.SubscriptionOfferDetails> {
-        val eligibleOffers = emptyList<ProductDetails.SubscriptionOfferDetails>().toMutableList()
-        offerDetails.forEach { offerDetail ->
-            if (offerDetail.offerTags.contains(tag)) {
-                eligibleOffers.add(offerDetail)
-            }
-        }
-        return eligibleOffers
     }
 
     /**
@@ -642,20 +625,24 @@ class MembershipViewModel(
         billingId: String,
         productDetails: ProductDetails,
         offerToken: String
-    ):
-            BillingFlowParams {
-        val anyId = getAccount.async(Unit).getOrNull()
-        return BillingFlowParams.newBuilder()
-            .setObfuscatedAccountId(anyId?.id.orEmpty())
-            .setObfuscatedProfileId(billingId)
-            .setProductDetailsParamsList(
-                listOf(
-                    BillingFlowParams.ProductDetailsParams.newBuilder()
-                        .setProductDetails(productDetails)
-                        .setOfferToken(offerToken)
-                        .build()
-                )
-            ).build()
+    ) : BillingFlowParams? {
+        try {
+            val anyId = getAccount.async(Unit).getOrNull()
+            return BillingFlowParams.newBuilder()
+                .setObfuscatedAccountId(anyId?.id.orEmpty())
+                .setObfuscatedProfileId(billingId)
+                .setProductDetailsParamsList(
+                    listOf(
+                        BillingFlowParams.ProductDetailsParams.newBuilder()
+                            .setProductDetails(productDetails)
+                            .setOfferToken(offerToken)
+                            .build()
+                    )
+                ).build()
+        } catch (e: Exception) {
+            showError(e.message ?: "Unknown error")
+            return null
+        }
     }
 
     /**
@@ -675,6 +662,7 @@ class MembershipViewModel(
     ) {
         val billingPurchaseState = billingPurchases.value
         if (billingPurchaseState is BillingPurchaseState.HasPurchases && billingPurchaseState.purchases.size > EXPECTED_SUBSCRIPTION_PURCHASE_LIST_SIZE) {
+            errorState.value = MembershipErrorState.Show("There are more than one subscription purchases on the device.")
             Timber.e("There are more than one subscription purchases on the device.")
             return
 
@@ -685,12 +673,17 @@ class MembershipViewModel(
         }
 
         viewModelScope.launch {
-            val billingParams: BillingFlowParams = billingFlowParamsBuilder(
+            val billingParams: BillingFlowParams? = billingFlowParamsBuilder(
                 productDetails = productDetails,
                 offerToken = offerToken,
                 billingId = billingId
             )
-            _launchBillingCommand.emit(billingParams)
+            if (billingParams == null) {
+                Timber.e("Billing params is null")
+                errorState.value = MembershipErrorState.Show("Billing params is empty, couldn't proceed")
+            } else {
+                _launchBillingCommand.emit(billingParams)
+            }
         }
     }
 

@@ -220,28 +220,6 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun blockDataViewActiveSet(
-        contextId: String,
-        blockId: String,
-        viewId: String,
-        offset: Int,
-        limit: Int
-    ): Payload {
-        val request = Rpc.BlockDataview.View.SetActive.Request(
-            contextId = contextId,
-            blockId = blockId,
-            viewId = viewId,
-            offset = offset,
-            limit = limit
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewActiveSet(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-
-        return response.event.toPayload()
-    }
-
-    @Throws(Exception::class)
     fun blockDataViewViewSetPosition(
         ctx: Id,
         dv: Id,

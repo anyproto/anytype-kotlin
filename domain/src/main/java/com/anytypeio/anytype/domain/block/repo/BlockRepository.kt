@@ -155,15 +155,6 @@ interface BlockRepository {
         objectType: String? = null
     ): CreateObjectSet.Response
 
-    @Deprecated("To be deleted")
-    suspend fun setActiveDataViewViewer(
-        context: Id,
-        block: Id,
-        view: Id,
-        offset: Int,
-        limit: Int
-    ): Payload
-
     suspend fun addRelationToDataView(ctx: Id, dv: Id, relation: Key): Payload
     suspend fun deleteRelationFromDataView(ctx: Id, dv: Id, relation: Key): Payload
 

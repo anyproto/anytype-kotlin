@@ -6,7 +6,6 @@ import com.anytypeio.anytype.core_models.exceptions.LoginException
 import com.anytypeio.anytype.core_models.exceptions.MigrationNeededException
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.core_models.exceptions.SpaceLimitReachedException
-import com.anytypeio.anytype.core_models.membership.MembershipErrors
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteError
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.data.auth.exception.AnytypeNeedsUpgradeException
@@ -15,7 +14,6 @@ import com.anytypeio.anytype.data.auth.exception.UndoRedoExhaustedException
 import com.anytypeio.anytype.middleware.mappers.toCore
 import javax.inject.Inject
 import service.Service
-import timber.log.Timber
 
 class MiddlewareServiceImplementation @Inject constructor(
     featureToggles: FeatureToggles
@@ -178,19 +176,6 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.BlockWidget.SetViewId.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.BlockWidget.SetViewId.Response.Error.Code.NULL) {
-            throw Exception(error.description)
-        } else {
-            return response
-        }
-    }
-
-    override fun blockDataViewActiveSet(request: Rpc.BlockDataview.View.SetActive.Request): Rpc.BlockDataview.View.SetActive.Response {
-        val encoded = Service.blockDataviewViewSetActive(
-            Rpc.BlockDataview.View.SetActive.Request.ADAPTER.encode(request)
-        )
-        val response = Rpc.BlockDataview.View.SetActive.Response.ADAPTER.decode(encoded)
-        val error = response.error
-        if (error != null && error.code != Rpc.BlockDataview.View.SetActive.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response
@@ -968,20 +953,6 @@ class MiddlewareServiceImplementation @Inject constructor(
             return response
         }
     }
-
-    //todo relations refactoring
-//    override fun objectRelationOptionAdd(request: Rpc.ObjectRelationOption.Add.Request): Rpc.ObjectRelationOption.Add.Response {
-//        val encoded = Service.objectRelationOptionAdd(
-//            Rpc.ObjectRelationOption.Add.Request.ADAPTER.encode(request)
-//        )
-//        val response = Rpc.ObjectRelationOption.Add.Response.ADAPTER.decode(encoded)
-//        val error = response.error
-//        if (error != null && error.code != Rpc.ObjectRelationOption.Add.Response.Error.Code.NULL) {
-//            throw Exception(error.description)
-//        } else {
-//            return response
-//        }
-//    }
 
     override fun objectRelationRemoveFeatured(request: Rpc.ObjectRelation.RemoveFeatured.Request): Rpc.ObjectRelation.RemoveFeatured.Response {
         val encoded = Service.objectRelationRemoveFeatured(

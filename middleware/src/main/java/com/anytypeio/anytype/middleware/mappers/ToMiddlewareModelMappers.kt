@@ -541,10 +541,14 @@ fun Rpc.Object.SearchWithMeta.Response.toCoreModelSearchResults(): List<Command.
             wrapper = ObjectWrapper.Basic(result.details.orEmpty()),
             metas = result.meta.map { meta ->
                 val dependentObjectDetails = meta.relationDetails.orEmpty()
+                val source = if (meta.blockId.isNotEmpty()) {
+                    Command.SearchWithMeta.Result.Meta.Source.Block(meta.blockId)
+                } else {
+                    Command.SearchWithMeta.Result.Meta.Source.Relation(meta.relationKey)
+                }
                 Command.SearchWithMeta.Result.Meta(
                     highlight = meta.highlight,
-                    block = meta.blockId,
-                    relation = meta.relationKey,
+                    source = source,
                     dependencies = if (dependentObjectDetails.isNotEmpty()) {
                         listOf(
                             ObjectWrapper.Basic(dependentObjectDetails)

@@ -1207,8 +1207,8 @@
         <item quantity="other">%1$d Mitglieder</item>
     </plurals>
     <plurals name="multiplayer_number_of_join_requests">
-        <item quantity="one">%1$d request</item>
-        <item quantity="other">%1$d requests</item>
+        <item quantity="one">%1$d Anfrage</item>
+        <item quantity="other">%1$d Anfragen</item>
     </plurals>
     <string name="multiplayer_you_as_member">du</string>
     <string name="multiplayer_spaces">Spaces</string>
@@ -1356,8 +1356,8 @@ Please provide specific details of your needs here.</string>
     <string name="membership_email_wrong_format">Email has wrong format</string>
     <string name="membership_email_already_verified">Email is already verified</string>
     <string name="membership_email_already_sent">Email is already sent, try again after 1 minute</string>
-    <string name="membership_email_failed_to_send">Email failed to send</string>
-    <string name="membership_email_membership_already_exists">Membership already exists</string>
+    <string name="membership_email_failed_to_send">E-Mail konnte nicht gesendet werden</string>
+    <string name="membership_email_membership_already_exists">Mitgliedschaft besteht bereits</string>
     <string name="membership_email_code_expired">Code abgelaufen</string>
     <string name="membership_email_code_wrong">Code ist falsch</string>
     <string name="membership_email_code_success">Code ist korrekt</string>
@@ -1393,28 +1393,28 @@ Please provide specific details of your needs here.</string>
     <string name="per_period">per %1$s</string>
     <string name="free_for">Kostenlos für %1$s</string>
     <string name="free_for_unknown">Kostenlos bis...</string>
-    <string name="free_until">Free until</string>
-    <string name="membership_valid_forever">Valid forever</string>
-    <string name="membership_valid_for_unknown">Valid until...</string>
+    <string name="free_until">Kostenlos bis</string>
+    <string name="membership_valid_forever">Für immer gültig</string>
+    <string name="membership_valid_for_unknown">Gültig bis...</string>
     <string name="membership_agree_start">By continuing you agree to our</string>
     <string name="membership_agree_terms">Nutzungsbedingungen</string>
-    <string name="membership_agree_middle">and</string>
+    <string name="membership_agree_middle">und</string>
     <string name="membership_agree_privacy">Datenschutzerklärung</string>
     <plurals name="period_years">
-        <item quantity="one">year</item>
-        <item quantity="other">%d years</item>
+        <item quantity="one">Jahr</item>
+        <item quantity="other">%d Jahre</item>
     </plurals>
     <plurals name="period_months">
-        <item quantity="one">month</item>
-        <item quantity="other">%d months</item>
+        <item quantity="one">Monat</item>
+        <item quantity="other">%d Monate</item>
     </plurals>
     <plurals name="period_weeks">
-        <item quantity="one">week</item>
-        <item quantity="other">%d weeks</item>
+        <item quantity="one">Woche</item>
+        <item quantity="other">%d Wochen</item>
     </plurals>
     <plurals name="period_days">
-        <item quantity="one">day</item>
-        <item quantity="other">%d days</item>
+        <item quantity="one">Tag</item>
+        <item quantity="other">%d Tage</item>
     </plurals>
     <string name="membership_error_button_text_action">Kontaktiere uns</string>
     <string name="membership_error_button_text_dismiss">OK</string>

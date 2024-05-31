@@ -1207,8 +1207,8 @@
         <item quantity="other">%1$d Mitglieder</item>
     </plurals>
     <plurals name="multiplayer_number_of_join_requests">
-        <item quantity="one">%1$d request</item>
-        <item quantity="other">%1$d requests</item>
+        <item quantity="one">%1$d Anfrage</item>
+        <item quantity="other">%1$d Anfragen</item>
     </plurals>
     <string name="multiplayer_you_as_member">du</string>
     <string name="multiplayer_spaces">Spaces</string>
@@ -1247,7 +1247,7 @@
     <string name="payments_button_contact">Kontakt</string>
     <string name="payments_button_info">Mehr Informationen</string>
     <string name="payments_button_submit">Absenden</string>
-    <string name="payments_button_pay">Pay by card</string>
+    <string name="payments_button_pay">Mit Karte bezahlen</string>
     <string name="payments_button_change_email">E-Mail-Adresse ändern</string>
     <string name="payments_member_link">Details zu den Mitgliedschaftsstufen</string>
     <string name="payments_privacy_link">Datenschutzrichtlinie</string>
@@ -1262,10 +1262,10 @@
     <string name="payments_tier_details_name_domain">.any</string>
     <string name="payments_tier_details_name_min">Mindestens 7 Zeichen</string>
     <string name="payments_tier_details_name_error">Dieser Name ist bereits vergeben!</string>
-    <string name="payments_tier_details_name_validated">This name [%1$s] is up for grabs!</string>
+    <string name="payments_tier_details_name_validated">Dieser Name [%1$s] ist noch zu vergeben!</string>
     <string name="payments_tier_details_name_validating">Validating name</string>
     <string name="payments_tier_details_free_forever">Für immer</string>
-    <string name="payments_tier_details_valid_until">Valid until %1$s</string>
+    <string name="payments_tier_details_valid_until">Gültig bis %1$s</string>
     <string name="payments_tier_details_info_explorer">Tauche in das Netzwerk ein und genieße den Nervenkitzel der persönlichen Zusammenarbeit</string>
     <string-array name="payments_benefits_explorer">
         <item>1 GB Netzwerkspeicher</item>
@@ -1296,7 +1296,7 @@
     <string name="payments_email_hint">E-Mail</string>
     <string name="payments_tier_current_title">Dein aktueller Status:</string>
     <string name="payments_tier_current_valid">Gültig bis</string>
-    <string name="payments_tier_current_paid_by">Paid by</string>
+    <string name="payments_tier_current_paid_by">Bezahlt von</string>
     <string name="payments_tier_current_paid_by_card">Karte</string>
     <string name="payments_tier_current_paid_by_crypto">Kryptowährung</string>
     <string name="payments_tier_current_paid_by_apple">Apple-Abonnement</string>
@@ -1306,7 +1306,7 @@
     <!-- Payments Code -->
     <string name="payments_code_title">Gib den an deine E-Mail-Adresse gesendeten Code ein</string>
     <string name="payments_code_resend">Erneut senden</string>
-    <string name="payments_code_resend_in">Resend in %1$d sec</string>
+    <string name="payments_code_resend_in">Erneut senden in %1$d Sek.</string>
     <!-- Membership Welcome -->
     <string name="payments_welcome_title">Willkommen im Netzwerk,\n%1$s</string>
     <string name="payments_welcome_subtitle">Ein Hoch auf deine Neugierde!</string>
@@ -1356,13 +1356,13 @@ Please provide specific details of your needs here.</string>
     <string name="membership_email_wrong_format">Email has wrong format</string>
     <string name="membership_email_already_verified">Email is already verified</string>
     <string name="membership_email_already_sent">Email is already sent, try again after 1 minute</string>
-    <string name="membership_email_failed_to_send">Email failed to send</string>
-    <string name="membership_email_membership_already_exists">Membership already exists</string>
-    <string name="membership_email_code_expired">Code expired</string>
-    <string name="membership_email_code_wrong">Code is wrong</string>
-    <string name="membership_email_code_success">Code is correct</string>
-    <string name="membership_email_membership_not_found">Membership not found</string>
-    <string name="membership_email_membership_already_active">Membership already active</string>
+    <string name="membership_email_failed_to_send">E-Mail konnte nicht gesendet werden</string>
+    <string name="membership_email_membership_already_exists">Mitgliedschaft besteht bereits</string>
+    <string name="membership_email_code_expired">Code abgelaufen</string>
+    <string name="membership_email_code_wrong">Code ist falsch</string>
+    <string name="membership_email_code_success">Code ist korrekt</string>
+    <string name="membership_email_membership_not_found">Mitgliedschaft nicht gefunden</string>
+    <string name="membership_email_membership_already_active">Mitgliedschaft bereits aktiv</string>
     <!-- Notifications -->
     <string name="notifications_alert_error_unknown">Es ist ein unbekannter Fehler aufgetreten. Bitte versuche es später noch einmal.</string>
     <string name="notifications_alert_error_bad_input">Ungültige Eingabe erkannt. Bitte überprüfe deine Daten und versuche es erneut.</string>
@@ -1391,30 +1391,30 @@ Please provide specific details of your needs here.</string>
     <string name="error_unexpected_layout">Fehler: Unerwartetes Layout</string>
     <string name="membership_price_pending">Ausstehend...</string>
     <string name="per_period">per %1$s</string>
-    <string name="free_for">Free for %1$s</string>
-    <string name="free_for_unknown">Free until...</string>
-    <string name="free_until">Free until</string>
-    <string name="membership_valid_forever">Valid forever</string>
-    <string name="membership_valid_for_unknown">Valid until...</string>
+    <string name="free_for">Kostenlos für %1$s</string>
+    <string name="free_for_unknown">Kostenlos bis...</string>
+    <string name="free_until">Kostenlos bis</string>
+    <string name="membership_valid_forever">Für immer gültig</string>
+    <string name="membership_valid_for_unknown">Gültig bis...</string>
     <string name="membership_agree_start">By continuing you agree to our</string>
     <string name="membership_agree_terms">Nutzungsbedingungen</string>
-    <string name="membership_agree_middle">and</string>
+    <string name="membership_agree_middle">und</string>
     <string name="membership_agree_privacy">Datenschutzerklärung</string>
     <plurals name="period_years">
-        <item quantity="one">year</item>
-        <item quantity="other">%d years</item>
+        <item quantity="one">Jahr</item>
+        <item quantity="other">%d Jahre</item>
     </plurals>
     <plurals name="period_months">
-        <item quantity="one">month</item>
-        <item quantity="other">%d months</item>
+        <item quantity="one">Monat</item>
+        <item quantity="other">%d Monate</item>
     </plurals>
     <plurals name="period_weeks">
-        <item quantity="one">week</item>
-        <item quantity="other">%d weeks</item>
+        <item quantity="one">Woche</item>
+        <item quantity="other">%d Wochen</item>
     </plurals>
     <plurals name="period_days">
-        <item quantity="one">day</item>
-        <item quantity="other">%d days</item>
+        <item quantity="one">Tag</item>
+        <item quantity="other">%d Tage</item>
     </plurals>
     <string name="membership_error_button_text_action">Kontaktiere uns</string>
     <string name="membership_error_button_text_dismiss">OK</string>

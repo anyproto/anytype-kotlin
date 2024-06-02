@@ -1387,24 +1387,24 @@ Please provide specific details of your needs here.</string>
     <string name="per_period">per %1$s</string>
     <string name="free_for">Gratis hingga %1$s</string>
     <string name="free_for_unknown">Gratis hinga …</string>
-    <string name="free_until">Free until</string>
-    <string name="membership_valid_forever">Valid forever</string>
-    <string name="membership_valid_for_unknown">Valid until...</string>
-    <string name="membership_agree_start">By continuing you agree to our</string>
+    <string name="free_until">Gratis hingga</string>
+    <string name="membership_valid_forever">Berlaku selamanya</string>
+    <string name="membership_valid_for_unknown">Berlaku hingga…</string>
+    <string name="membership_agree_start">Dengan melanjutkan, kamu menyetujui</string>
     <string name="membership_agree_terms">Ketentuan Penggunaan</string>
-    <string name="membership_agree_middle">and</string>
+    <string name="membership_agree_middle">dan</string>
     <string name="membership_agree_privacy">Kebijakan Privasi</string>
     <plurals name="period_years">
-        <item quantity="other">%d years</item>
+        <item quantity="other">%d tahun</item>
     </plurals>
     <plurals name="period_months">
-        <item quantity="other">%d months</item>
+        <item quantity="other">%d bulan</item>
     </plurals>
     <plurals name="period_weeks">
-        <item quantity="other">%d weeks</item>
+        <item quantity="other">%d pekan</item>
     </plurals>
     <plurals name="period_days">
-        <item quantity="other">%d days</item>
+        <item quantity="other">%d hari</item>
     </plurals>
     <string name="membership_error_button_text_action">Hubungi kami</string>
     <string name="membership_error_button_text_dismiss">Oke</string>

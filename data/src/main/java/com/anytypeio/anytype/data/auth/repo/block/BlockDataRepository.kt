@@ -308,20 +308,6 @@ class BlockDataRepository(
         )
     }
 
-    override suspend fun setActiveDataViewViewer(
-        context: Id,
-        block: Id,
-        view: Id,
-        offset: Int,
-        limit: Int
-    ): Payload = remote.setActiveDataViewViewer(
-        context = context,
-        block = block,
-        view = view,
-        offset = offset,
-        limit = limit
-    )
-
     override suspend fun addRelationToDataView(
         ctx: Id,
         dv: Id,

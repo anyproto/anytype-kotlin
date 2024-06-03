@@ -1237,7 +1237,12 @@
     <string name="payments_tier_custom">Custom</string>
     <string name="payments_tier_custom_description">Membership tailored to your specific needs and preferences</string>
     <string name="payments_button_learn">Pelajari lebih lanjut</string>
+    <string name="payments_button_manage">Manage payment</string>
     <string name="payments_button_contact">Kontak</string>
+    <string name="payments_button_info">Lebih lanjut</string>
+    <string name="payments_button_submit">Kirim</string>
+    <string name="payments_button_pay">Bayar dengan kartu</string>
+    <string name="payments_button_change_email">Ganti surel</string>
     <string name="payments_member_link">Detail level langganan</string>
     <string name="payments_privacy_link">Kebijakan privasi</string>
     <string name="payments_terms_link">Syarat dan ketentuan</string>
@@ -1251,7 +1256,10 @@
     <string name="payments_tier_details_name_domain">.any</string>
     <string name="payments_tier_details_name_min">Minimal 7 karakter</string>
     <string name="payments_tier_details_name_error">Nama ini sudah dipakai!</string>
-    <string name="payments_tier_details_name_success">Nama ini masih bisa dipakai!</string>
+    <string name="payments_tier_details_name_validated">This name [%1$s] is up for grabs!</string>
+    <string name="payments_tier_details_name_validating">Memvalidasi nama</string>
+    <string name="payments_tier_details_free_forever">Selamanya</string>
+    <string name="payments_tier_details_valid_until">Berlaku hingga %1$s</string>
     <string name="payments_tier_details_info_explorer">Masuki dalam jaringan dan nikmati keseruan kolaborasi one-on-one</string>
     <string-array name="payments_benefits_explorer">
         <item>Ruang jaringan 1 GB</item>
@@ -1276,23 +1284,79 @@
     <string name="payments_detials_button_pay">Bayar via kartu</string>
     <string name="payments_detials_button_submit">Kirim</string>
     <string name="payments_details_whats_included">Apa saja yang termasuk</string>
-    <string name="payments_email_title">Dapatkan keanggotaan gratis Anda</string>
-    <string name="payments_email_subtitle">Kami memerlukan surel Anda untuk mencegah spam dan membuat keseruan!</string>
+    <string name="payments_email_title">Get updates and enjoy free perks!</string>
+    <string name="payments_email_subtitle">It is not linked to your account in any way.</string>
     <string name="payments_email_checkbox_text">Saya ingin mendapatkan pembaruan pada produk-produk dan menikmati manfaat gratis!</string>
     <string name="payments_email_hint">Surel</string>
     <string name="payments_tier_current_title">Statusmu saat ini:</string>
     <string name="payments_tier_current_valid">Berlaku hingga</string>
-    <string name="payments_tier_current_paid_by">Paid by Card</string>
+    <string name="payments_tier_current_paid_by">Dibayar oleh</string>
+    <string name="payments_tier_current_paid_by_card">Kartu</string>
+    <string name="payments_tier_current_paid_by_crypto">Kripto</string>
+    <string name="payments_tier_current_paid_by_apple">Langganan Apple</string>
+    <string name="payments_tier_current_paid_by_google">Langganan Google</string>
     <string name="payments_tier_current_button">Manage payment</string>
     <string name="payments_tier_current_change_email_button">Ganti surel</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Masukkan kode yang dikirim ke surelmu</string>
     <string name="payments_code_resend">Kirim ulang</string>
-    <string name="payments_code_resend_in">Kirim ulang dalam %1$n detik</string>
-    <!-- Payments Welcome -->
+    <string name="payments_code_resend_in">Kirim ulang dalam %1$d detik</string>
+    <!-- Membership Welcome -->
     <string name="payments_welcome_title">Welcome to the network,\n%1$s</string>
     <string name="payments_welcome_subtitle">Big cheers for your curiosity!</string>
     <string name="payments_welcome_button">Continue</string>
+    <!-- Membership Email -->
+    <string name="membership_support_email">support@anytype.io</string>
+    <string name="membership_support_subject">Membership Screen Error Report - %1$s</string>
+    <string name="membership_support_body">        Hi Anytype Support Team,\n\n
+
+        I encountered an error on the Membership Screen in the app. Below are the details:\n
+
+        - Error Message: %1$s\n
+        - Description:      \n
+        - Date and Time: %2$s\n
+        - Device Model: %3$s\n
+        - Operating System: %4$s\n
+        - App Version: %5$s\n
+
+        Additional Comments:\n\n
+
+        Thank you for your assistance in resolving this issue.\n\n
+
+        Best regards,       \n
+    </string>
+    <string name="payments_email_to">membership-upgrade@anytype.io</string>
+    <string name="payments_email_subject">Upgrade %1$s</string>
+    <string name="payments_email_body">Hello Anytype team! I would like to extend my current membership for more (please choose an option):\n
+- Extra remote storage\n
+- More space editors\n
+- Additional shared spaces\n
+Specifically,
+Please provide specific details of your needs here.</string>
+    <!-- Membership name errors -->
+    <string name="membership_name_bad_input">Something wrong with input, try again</string>
+    <string name="membership_name_cache_error">Error on our side, try again later</string>
+    <string name="membership_name_cant_connect">Can not connect, check your internet connection</string>
+    <string name="membership_name_invalid_chars">Nama mengandung karakter tidak valid</string>
+    <string name="membership_name_not_logged">You are not logged in! 😵‍💫</string>
+    <string name="membership_name_payment_node_error">Error on our side, try again later</string>
+    <string name="membership_name_tier_features_no_name">Name is not available for this tier</string>
+    <string name="membership_name_tier_not_found">Tier not found, try again later</string>
+    <string name="membership_name_too_long">Nama terlalu panjang</string>
+    <string name="membership_name_too_short">Nama terlalu pendek</string>
+    <string name="membership_any_name_not_reserved">This name cannot be reserved</string>
+    <string name="membership_any_name_null_error">Empty error</string>
+    <string name="membership_any_name_unknown">Kesalahan tak dikenal</string>
+    <string name="membership_email_wrong_format">Email has wrong format</string>
+    <string name="membership_email_already_verified">Email is already verified</string>
+    <string name="membership_email_already_sent">Email is already sent, try again after 1 minute</string>
+    <string name="membership_email_failed_to_send">Email failed to send</string>
+    <string name="membership_email_membership_already_exists">Membership already exists</string>
+    <string name="membership_email_code_expired">Kode kedaluwarsa</string>
+    <string name="membership_email_code_wrong">Kode salah</string>
+    <string name="membership_email_code_success">Kode benar</string>
+    <string name="membership_email_membership_not_found">Membership not found</string>
+    <string name="membership_email_membership_already_active">Membership already active</string>
     <!-- Notifications -->
     <string name="notifications_alert_error_unknown">Terjadi galat yang tidak diketahui. Silakan coba lagi nanti.</string>
     <string name="notifications_alert_error_bad_input">Terdeteksi input yang tidak valid. Silakan cek datamu dan coba lagi.</string>
@@ -1312,10 +1376,37 @@
     <string name="gallery_experience_alert_button_space">Buka ruang</string>
     <string name="gallery_experience_alert_button_error">Tutup</string>
     <string name="three_dots_text_placeholder">...</string>
+    <string name="membership_btn_join">Gabung</string>
     <string name="notifications_prompt_get_notified">Dapatkan pemberitahuan</string>
     <string name="notifications_prompt_secondary_button_text">Tidak dulu</string>
     <string name="notifications_prompt_description">Nyalakan pemberitahuan permintaan bergabung atau keluar dari ruangan.</string>
     <string name="notifications_prompt_primary_button_text">Nyalakan</string>
     <string name="clipboard_panel_create_bookmark_from_clipboard">Buat markah dari papan kerani</string>
     <string name="error_unexpected_layout">Galat: tata letak tak terduga</string>
+    <string name="membership_price_pending">Pending...</string>
+    <string name="per_period">per %1$s</string>
+    <string name="free_for">Gratis hingga %1$s</string>
+    <string name="free_for_unknown">Gratis hinga …</string>
+    <string name="free_until">Gratis hingga</string>
+    <string name="membership_valid_forever">Berlaku selamanya</string>
+    <string name="membership_valid_for_unknown">Berlaku hingga…</string>
+    <string name="membership_agree_start">Dengan melanjutkan, kamu menyetujui</string>
+    <string name="membership_agree_terms">Ketentuan Penggunaan</string>
+    <string name="membership_agree_middle">dan</string>
+    <string name="membership_agree_privacy">Kebijakan Privasi</string>
+    <plurals name="period_years">
+        <item quantity="other">%d tahun</item>
+    </plurals>
+    <plurals name="period_months">
+        <item quantity="other">%d bulan</item>
+    </plurals>
+    <plurals name="period_weeks">
+        <item quantity="other">%d pekan</item>
+    </plurals>
+    <plurals name="period_days">
+        <item quantity="other">%d hari</item>
+    </plurals>
+    <string name="membership_error_button_text_action">Hubungi kami</string>
+    <string name="membership_error_button_text_dismiss">Oke</string>
+    <string name="error_login_network_id_mismatch">Network ID mismatch detected. Please verify your network configuration.</string>
 </resources>

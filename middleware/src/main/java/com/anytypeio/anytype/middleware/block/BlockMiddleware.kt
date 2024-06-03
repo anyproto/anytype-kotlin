@@ -254,20 +254,6 @@ class BlockMiddleware(
         objectType = objectType
     )
 
-    override suspend fun setActiveDataViewViewer(
-        context: String,
-        block: String,
-        view: String,
-        offset: Int,
-        limit: Int
-    ): Payload = middleware.blockDataViewActiveSet(
-        contextId = context,
-        blockId = block,
-        viewId = view,
-        offset = offset,
-        limit = limit
-    )
-
     override suspend fun setDataViewViewerPosition(
         ctx: Id,
         dv: Id,

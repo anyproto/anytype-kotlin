@@ -1244,7 +1244,12 @@
     <string name="payments_tier_custom">Personalizzato</string>
     <string name="payments_tier_custom_description">Iscrizione su misura in base alle tue specifiche esigenze e preferenze</string>
     <string name="payments_button_learn">Per saperne di più</string>
+    <string name="payments_button_manage">Gestisci pagamento</string>
     <string name="payments_button_contact">Contatto</string>
+    <string name="payments_button_info">Ulteriori informazioni</string>
+    <string name="payments_button_submit">Invia</string>
+    <string name="payments_button_pay">Paga con carta</string>
+    <string name="payments_button_change_email">Cambia email</string>
     <string name="payments_member_link">Dettagli dei livelli di membership</string>
     <string name="payments_privacy_link">Informativa sulla privacy</string>
     <string name="payments_terms_link">Termini e condizioni</string>
@@ -1258,7 +1263,10 @@
     <string name="payments_tier_details_name_domain">.any</string>
     <string name="payments_tier_details_name_min">Min. 7 caratteri</string>
     <string name="payments_tier_details_name_error">Questo nome è già stato preso!</string>
-    <string name="payments_tier_details_name_success">Questo nome è disponibile!</string>
+    <string name="payments_tier_details_name_validated">Il nome [%1$s] è disponibile!</string>
+    <string name="payments_tier_details_name_validating">Validating name</string>
+    <string name="payments_tier_details_free_forever">Per sempre</string>
+    <string name="payments_tier_details_valid_until">Valido fino al %1$s</string>
     <string name="payments_tier_details_info_explorer">Immergiti nella rete e goditi l\'emozione della collaborazione uno-a-uno</string>
     <string-array name="payments_benefits_explorer">
         <item>1 GB di spazio nella rete</item>
@@ -1283,23 +1291,79 @@
     <string name="payments_detials_button_pay">Paga con carta</string>
     <string name="payments_detials_button_submit">Invia</string>
     <string name="payments_details_whats_included">Cosa è incluso</string>
-    <string name="payments_email_title">Ottieni il tuo abbonamento gratuito</string>
-    <string name="payments_email_subtitle">Abbiamo bisogno della tua email per tenere lontano lo spam e mantenere vivo il divertimento!</string>
+    <string name="payments_email_title">Ricevi aggiornamenti e goditi vantaggi gratuiti!</string>
+    <string name="payments_email_subtitle">Non è collegato in alcun modo al tuo account</string>
     <string name="payments_email_checkbox_text">Vorrei ottenere aggiornamenti sui prodotti e godere di vantaggi gratuiti!</string>
     <string name="payments_email_hint">E-mail</string>
     <string name="payments_tier_current_title">Il tuo stato attuale:</string>
     <string name="payments_tier_current_valid">Valido fino al</string>
-    <string name="payments_tier_current_paid_by">Pagato con carta</string>
+    <string name="payments_tier_current_paid_by">Pagato da</string>
+    <string name="payments_tier_current_paid_by_card">Scheda</string>
+    <string name="payments_tier_current_paid_by_crypto">Cripto</string>
+    <string name="payments_tier_current_paid_by_apple">Abbonamento Apple</string>
+    <string name="payments_tier_current_paid_by_google">Abbonamento Google</string>
     <string name="payments_tier_current_button">Gestisci pagamento</string>
     <string name="payments_tier_current_change_email_button">Cambia email</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Inserisci il codice inviato alla tua email</string>
     <string name="payments_code_resend">Invia di nuovo</string>
-    <string name="payments_code_resend_in">Invia nuovamente tra %1$n secondi</string>
-    <!-- Payments Welcome -->
+    <string name="payments_code_resend_in">Invia nuovamente tra %1$d secondi</string>
+    <!-- Membership Welcome -->
     <string name="payments_welcome_title">Benvenuto/a nella rete, %1$s</string>
     <string name="payments_welcome_subtitle">Un grande applauso per la tua curiosità!</string>
     <string name="payments_welcome_button">Continua</string>
+    <!-- Membership Email -->
+    <string name="membership_support_email">support@anytype.io</string>
+    <string name="membership_support_subject">Membership Screen Error Report - %1$s</string>
+    <string name="membership_support_body">        Hi Anytype Support Team,\n\n
+
+        I encountered an error on the Membership Screen in the app. Below are the details:\n
+
+        - Error Message: %1$s\n
+        - Description:      \n
+        - Date and Time: %2$s\n
+        - Device Model: %3$s\n
+        - Operating System: %4$s\n
+        - App Version: %5$s\n
+
+        Additional Comments:\n\n
+
+        Thank you for your assistance in resolving this issue.\n\n
+
+        Best regards,       \n
+    </string>
+    <string name="payments_email_to">membership-upgrade@anytype.io</string>
+    <string name="payments_email_subject">Upgrade %1$s</string>
+    <string name="payments_email_body">Hello Anytype team! I would like to extend my current membership for more (please choose an option):\n
+- Extra remote storage\n
+- More space editors\n
+- Additional shared spaces\n
+Specifically,
+Please provide specific details of your needs here.</string>
+    <!-- Membership name errors -->
+    <string name="membership_name_bad_input">Qualcosa non va nell\'input, prova di nuovo</string>
+    <string name="membership_name_cache_error">Errore da parte nostra, riprova più tardi</string>
+    <string name="membership_name_cant_connect">Impossibile connettersi, controlla la tua connessione internet</string>
+    <string name="membership_name_invalid_chars">Il nome contiene caratteri non validi</string>
+    <string name="membership_name_not_logged">Non sei connesso! 😵‍💫</string>
+    <string name="membership_name_payment_node_error">Errore da parte nostra, riprova più tardi</string>
+    <string name="membership_name_tier_features_no_name">Il nome non è disponibile per questo livello</string>
+    <string name="membership_name_tier_not_found">Livello non trovato, riprova più tardi</string>
+    <string name="membership_name_too_long">Il nome è troppo lungo</string>
+    <string name="membership_name_too_short">Il nome è troppo corto</string>
+    <string name="membership_any_name_not_reserved">Questo nome non può essere riservato</string>
+    <string name="membership_any_name_null_error">Errore vuoto</string>
+    <string name="membership_any_name_unknown">Errore sconosciuto</string>
+    <string name="membership_email_wrong_format">L\'email ha un formato errato</string>
+    <string name="membership_email_already_verified">Indirizzo email già verificato</string>
+    <string name="membership_email_already_sent">Email già inviata, riprova dopo 1 minuto</string>
+    <string name="membership_email_failed_to_send">Email failed to send</string>
+    <string name="membership_email_membership_already_exists">Membership already exists</string>
+    <string name="membership_email_code_expired">Code expired</string>
+    <string name="membership_email_code_wrong">Code is wrong</string>
+    <string name="membership_email_code_success">Code is correct</string>
+    <string name="membership_email_membership_not_found">Membership non trovata</string>
+    <string name="membership_email_membership_already_active">Membership già attiva</string>
     <!-- Notifications -->
     <string name="notifications_alert_error_unknown">Si è verificato un errore sconosciuto. Ti preghiamo di riprovare più tardi.</string>
     <string name="notifications_alert_error_bad_input">Rilevato un inserimento non valido. Per favore controlla i tuoi dati e riprova.</string>
@@ -1319,10 +1383,41 @@
     <string name="gallery_experience_alert_button_space">Apri spazio</string>
     <string name="gallery_experience_alert_button_error">Chiudi</string>
     <string name="three_dots_text_placeholder">...</string>
+    <string name="membership_btn_join">Unisciti</string>
     <string name="notifications_prompt_get_notified">Ricevi notifiche</string>
     <string name="notifications_prompt_secondary_button_text">Non ora</string>
     <string name="notifications_prompt_description">Per favore, attiva le notifiche per rimanere informato su qualsiasi richiesta di unirsi o lasciare spazi.</string>
     <string name="notifications_prompt_primary_button_text">Abilita</string>
     <string name="clipboard_panel_create_bookmark_from_clipboard">Crea segnalibro dagli appunti</string>
     <string name="error_unexpected_layout">Errore: layout inaspettato</string>
+    <string name="membership_price_pending">In attesa...</string>
+    <string name="per_period">per %1$s</string>
+    <string name="free_for">Gratuito per %1$s</string>
+    <string name="free_for_unknown">Gratuito fino a...</string>
+    <string name="free_until">Gratuito fino a</string>
+    <string name="membership_valid_forever">Valido per sempre</string>
+    <string name="membership_valid_for_unknown">Valido fino al...</string>
+    <string name="membership_agree_start">Continuando accetti i nostri </string>
+    <string name="membership_agree_terms">Termini d\'Uso</string>
+    <string name="membership_agree_middle">e</string>
+    <string name="membership_agree_privacy">Informativa sulla Privacy</string>
+    <plurals name="period_years">
+        <item quantity="one">anno</item>
+        <item quantity="other">%d anni</item>
+    </plurals>
+    <plurals name="period_months">
+        <item quantity="one">mese</item>
+        <item quantity="other">%d mesi</item>
+    </plurals>
+    <plurals name="period_weeks">
+        <item quantity="one">settimana</item>
+        <item quantity="other">%d settimane</item>
+    </plurals>
+    <plurals name="period_days">
+        <item quantity="one">giorno</item>
+        <item quantity="other">%d giorni</item>
+    </plurals>
+    <string name="membership_error_button_text_action">Contattaci</string>
+    <string name="membership_error_button_text_dismiss">Ok</string>
+    <string name="error_login_network_id_mismatch">Network ID mismatch detected. Please verify your network configuration.</string>
 </resources>

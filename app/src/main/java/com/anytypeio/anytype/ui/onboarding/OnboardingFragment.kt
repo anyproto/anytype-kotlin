@@ -348,6 +348,10 @@ class OnboardingFragment : Fragment() {
                         errorText.value = getString(R.string.error_invalid_recovery_phrase)
                         isErrorDialogVisible.value = true
                     }
+                    is OnboardingMnemonicLoginViewModel.SideEffect.Error.NetworkIdMismatch -> {
+                        errorText.value = getString(R.string.error_login_network_id_mismatch)
+                        isErrorDialogVisible.value = true
+                    }
                 }
             }
         }

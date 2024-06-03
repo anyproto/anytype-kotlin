@@ -171,7 +171,7 @@ fun RecoveryScreen(
                         onClick = {
                             onScanQrClicked.invoke()
                         },
-                        enabled = true,
+                        enabled = !isLoading,
                         size = ButtonSize.Large,
                         modifier = Modifier
                             .fillMaxWidth()

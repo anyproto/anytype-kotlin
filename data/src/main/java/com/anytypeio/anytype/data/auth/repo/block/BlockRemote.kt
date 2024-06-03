@@ -102,14 +102,6 @@ interface BlockRemote {
         objectType: String?
     ): Response.Set.Create
 
-    suspend fun setActiveDataViewViewer(
-        context: Id,
-        block: Id,
-        view: Id,
-        offset: Int,
-        limit: Int
-    ): Payload
-
     suspend fun setDataViewViewerPosition(
         ctx: Id,
         dv: Id,

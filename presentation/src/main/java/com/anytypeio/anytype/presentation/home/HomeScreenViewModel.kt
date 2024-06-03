@@ -1778,5 +1778,45 @@ fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
     }
 }
 
+fun ObjectType.Layout.navigation(
+    target: Id,
+    space: Id
+) : OpenObjectNavigation {
+    return when (this) {
+        ObjectType.Layout.BASIC,
+        ObjectType.Layout.NOTE,
+        ObjectType.Layout.TODO,
+        ObjectType.Layout.BOOKMARK,
+        ObjectType.Layout.PARTICIPANT -> {
+            OpenObjectNavigation.OpenEditor(
+                target = target,
+                space = space
+            )
+        }
+        in SupportedLayouts.fileLayouts -> {
+            OpenObjectNavigation.OpenEditor(
+                target = target,
+                space = space
+            )
+        }
+        ObjectType.Layout.PROFILE -> {
+            OpenObjectNavigation.OpenEditor(
+                target = target,
+                space = space
+            )
+        }
+        ObjectType.Layout.SET,
+        ObjectType.Layout.COLLECTION -> {
+            OpenObjectNavigation.OpenDataView(
+                target = target,
+                space = space
+            )
+        }
+        else -> {
+            OpenObjectNavigation.UnexpectedLayoutError(this)
+        }
+    }
+}
+
 const val MAX_TYPE_COUNT_FOR_APP_ACTIONS = 4
 const val MAX_PINNED_TYPE_COUNT_FOR_APP_ACTIONS = 3

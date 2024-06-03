@@ -11,7 +11,7 @@ import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.ui.settings.typography
 
-class IntroduceSpaceFragment : BaseBottomSheetComposeFragment() {
+class IntroduceSpaceSharingFragment : BaseBottomSheetComposeFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -22,7 +22,7 @@ class IntroduceSpaceFragment : BaseBottomSheetComposeFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MaterialTheme(typography = typography) {
-                    IntroduceSpacesScreen(
+                    IntroduceSpaceSharingScreen(
                         onDoneClicked = {
                             dismiss()
                         }

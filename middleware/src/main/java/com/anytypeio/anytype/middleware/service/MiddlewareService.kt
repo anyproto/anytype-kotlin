@@ -297,9 +297,6 @@ interface MiddlewareService {
     //region DATA VIEW commands
 
     @Throws(Exception::class)
-    fun blockDataViewActiveSet(request: Rpc.BlockDataview.View.SetActive.Request): Rpc.BlockDataview.View.SetActive.Response
-
-    @Throws(Exception::class)
     fun blockDataViewViewCreate(request: Rpc.BlockDataview.View.Create.Request): Rpc.BlockDataview.View.Create.Response
 
     @Throws(Exception::class)

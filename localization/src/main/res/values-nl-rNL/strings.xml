@@ -1243,7 +1243,12 @@
     <string name="payments_tier_custom">Aangepast</string>
     <string name="payments_tier_custom_description">Lidmaatschap afgestemd op jouw specifieke behoeften en voorkeuren</string>
     <string name="payments_button_learn">Ontdek meer</string>
+    <string name="payments_button_manage">Beheer betaling</string>
     <string name="payments_button_contact">Contacteer</string>
+    <string name="payments_button_info">Meer informatie</string>
+    <string name="payments_button_submit">Verstuur</string>
+    <string name="payments_button_pay">Pay by card</string>
+    <string name="payments_button_change_email">Wijzig e-mailadres</string>
     <string name="payments_member_link">Lidmaatschap niveaus details</string>
     <string name="payments_privacy_link">Privacybeleid</string>
     <string name="payments_terms_link">Algemene voorwaarden</string>
@@ -1257,7 +1262,10 @@
     <string name="payments_tier_details_name_domain">.any</string>
     <string name="payments_tier_details_name_min">Minimaal 7 tekens</string>
     <string name="payments_tier_details_name_error">Deze naam is al in gebruik!</string>
-    <string name="payments_tier_details_name_success">Deze naam is beschikbaar!</string>
+    <string name="payments_tier_details_name_validated">This name [%1$s] is up for grabs!</string>
+    <string name="payments_tier_details_name_validating">Validating name</string>
+    <string name="payments_tier_details_free_forever">Voor altijd</string>
+    <string name="payments_tier_details_valid_until">Valid until %1$s</string>
     <string name="payments_tier_details_info_explorer">Duik in het netwerk en geniet van de spanning van één-op-één samenwerking</string>
     <string-array name="payments_benefits_explorer">
         <item>1 GB aan netwerkruimte</item>
@@ -1282,23 +1290,79 @@
     <string name="payments_detials_button_pay">Betaal met kaart</string>
     <string name="payments_detials_button_submit">Verstuur</string>
     <string name="payments_details_whats_included">Wat is inbegrepen</string>
-    <string name="payments_email_title">Verkrijg jouw gratis lidmaatschap</string>
-    <string name="payments_email_subtitle">We hebben je e-mail nodig om spam op afstand te houden en het plezier te behouden!</string>
+    <string name="payments_email_title">Get updates and enjoy free perks!</string>
+    <string name="payments_email_subtitle">It is not linked to your account in any way.</string>
     <string name="payments_email_checkbox_text">Ik zou graag updates over producten willen ontvangen en genieten van gratis voordelen!</string>
     <string name="payments_email_hint">E-mailadres</string>
     <string name="payments_tier_current_title">Je huidige status:</string>
     <string name="payments_tier_current_valid">Geldig tot</string>
-    <string name="payments_tier_current_paid_by">Betaald met kaart</string>
+    <string name="payments_tier_current_paid_by">Paid by</string>
+    <string name="payments_tier_current_paid_by_card">Kaart</string>
+    <string name="payments_tier_current_paid_by_crypto">Crypto</string>
+    <string name="payments_tier_current_paid_by_apple">Apple abonnement</string>
+    <string name="payments_tier_current_paid_by_google">Google abonnement</string>
     <string name="payments_tier_current_button">Beheer betaling</string>
     <string name="payments_tier_current_change_email_button">Wijzig e-mailadres</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Voer de code in die naar jouw e-mailadres is verstuurd</string>
     <string name="payments_code_resend">Verstuur opnieuw</string>
-    <string name="payments_code_resend_in">Verstuur opnieuw over %1$n seconden</string>
-    <!-- Payments Welcome -->
+    <string name="payments_code_resend_in">Resend in %1$d sec</string>
+    <!-- Membership Welcome -->
     <string name="payments_welcome_title">Welkom bij het netwerk, \n%1$s</string>
     <string name="payments_welcome_subtitle">Hulde voor jouw nieuwsgierigheid!</string>
     <string name="payments_welcome_button">Ga verder</string>
+    <!-- Membership Email -->
+    <string name="membership_support_email">support@anytype.io</string>
+    <string name="membership_support_subject">Membership Screen Error Report - %1$s</string>
+    <string name="membership_support_body">        Hi Anytype Support Team,\n\n
+
+        I encountered an error on the Membership Screen in the app. Below are the details:\n
+
+        - Error Message: %1$s\n
+        - Description:      \n
+        - Date and Time: %2$s\n
+        - Device Model: %3$s\n
+        - Operating System: %4$s\n
+        - App Version: %5$s\n
+
+        Additional Comments:\n\n
+
+        Thank you for your assistance in resolving this issue.\n\n
+
+        Best regards,       \n
+    </string>
+    <string name="payments_email_to">membership-upgrade@anytype.io</string>
+    <string name="payments_email_subject">Upgrade %1$s</string>
+    <string name="payments_email_body">Hello Anytype team! I would like to extend my current membership for more (please choose an option):\n
+- Extra remote storage\n
+- More space editors\n
+- Additional shared spaces\n
+Specifically,
+Please provide specific details of your needs here.</string>
+    <!-- Membership name errors -->
+    <string name="membership_name_bad_input">Er ging iets mis met invoeren, probeer het opnieuw</string>
+    <string name="membership_name_cache_error">Fout aan onze kant, probeer het later opnieuw</string>
+    <string name="membership_name_cant_connect">Kan niet verbinden, controleer jouw internetverbinding</string>
+    <string name="membership_name_invalid_chars">Naam bevat ongeldige tekens</string>
+    <string name="membership_name_not_logged">Je bent niet ingelogd! 😵‍💫</string>
+    <string name="membership_name_payment_node_error">Fout aan onze kant, probeer het later opnieuw</string>
+    <string name="membership_name_tier_features_no_name">Naam is niet beschikbaar voor dit abonnement</string>
+    <string name="membership_name_tier_not_found">Abonnement niet gevonden, probeer het later opnieuw</string>
+    <string name="membership_name_too_long">Naam is te lang</string>
+    <string name="membership_name_too_short">Naam is te kort</string>
+    <string name="membership_any_name_not_reserved">This name cannot be reserved</string>
+    <string name="membership_any_name_null_error">Empty error</string>
+    <string name="membership_any_name_unknown">Onbekende foutmelding</string>
+    <string name="membership_email_wrong_format">Email has wrong format</string>
+    <string name="membership_email_already_verified">Email is already verified</string>
+    <string name="membership_email_already_sent">Email is already sent, try again after 1 minute</string>
+    <string name="membership_email_failed_to_send">Email failed to send</string>
+    <string name="membership_email_membership_already_exists">Membership already exists</string>
+    <string name="membership_email_code_expired">Code expired</string>
+    <string name="membership_email_code_wrong">Code is wrong</string>
+    <string name="membership_email_code_success">Code is correct</string>
+    <string name="membership_email_membership_not_found">Membership not found</string>
+    <string name="membership_email_membership_already_active">Membership already active</string>
     <!-- Notifications -->
     <string name="notifications_alert_error_unknown">Er heeft zich een onbekende fout voorgedaan. Probeer het later opnieuw.</string>
     <string name="notifications_alert_error_bad_input">Ongeldige invoer gedetecteerd. Controleer jouw gegevens en probeer het opnieuw.</string>
@@ -1318,10 +1382,41 @@
     <string name="gallery_experience_alert_button_space">Open ruimte</string>
     <string name="gallery_experience_alert_button_error">Sluit</string>
     <string name="three_dots_text_placeholder">...</string>
+    <string name="membership_btn_join">Neem deel</string>
     <string name="notifications_prompt_get_notified">Ontvang een melding</string>
     <string name="notifications_prompt_secondary_button_text">Niet nu</string>
     <string name="notifications_prompt_description">Schakel alsjeblieft meldingen in om op de hoogte te blijven van verzoeken om aan ruimte deel te nemen of deze te verlaten.</string>
     <string name="notifications_prompt_primary_button_text">Activeer</string>
     <string name="clipboard_panel_create_bookmark_from_clipboard">Maak bladwijzer aan vanaf klembord</string>
     <string name="error_unexpected_layout">Fout: onverwachte lay-out</string>
+    <string name="membership_price_pending">In behandeling...</string>
+    <string name="per_period">per %1$s</string>
+    <string name="free_for">Free for %1$s</string>
+    <string name="free_for_unknown">Free until...</string>
+    <string name="free_until">Free until</string>
+    <string name="membership_valid_forever">Valid forever</string>
+    <string name="membership_valid_for_unknown">Valid until...</string>
+    <string name="membership_agree_start">By continuing you agree to our</string>
+    <string name="membership_agree_terms">Gebruikersvoorwaarden</string>
+    <string name="membership_agree_middle">and</string>
+    <string name="membership_agree_privacy">Privacybeleid</string>
+    <plurals name="period_years">
+        <item quantity="one">year</item>
+        <item quantity="other">%d years</item>
+    </plurals>
+    <plurals name="period_months">
+        <item quantity="one">month</item>
+        <item quantity="other">%d months</item>
+    </plurals>
+    <plurals name="period_weeks">
+        <item quantity="one">week</item>
+        <item quantity="other">%d weeks</item>
+    </plurals>
+    <plurals name="period_days">
+        <item quantity="one">day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+    <string name="membership_error_button_text_action">Neem contact met ons op</string>
+    <string name="membership_error_button_text_dismiss">Ok</string>
+    <string name="error_login_network_id_mismatch">Network ID mismatch detected. Please verify your network configuration.</string>
 </resources>

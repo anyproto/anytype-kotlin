@@ -332,7 +332,6 @@ class OnboardingFragment : Fragment() {
         )
         LaunchedEffect(Unit) {
             vm.sideEffects.collect { effect ->
-                Timber.e("Got side effect: ${effect}")
                 when (effect) {
                     is OnboardingMnemonicLoginViewModel.SideEffect.Exit -> {
                         val lastDestination = navController.currentBackStackEntry

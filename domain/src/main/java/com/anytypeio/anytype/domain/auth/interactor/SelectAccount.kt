@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.platform.MetricsProvider
 import javax.inject.Inject
+import kotlinx.coroutines.delay
 
 /**
  * Use case for selecting user account.
@@ -21,6 +22,7 @@ class SelectAccount @Inject constructor(
 ) : BaseUseCase<StartAccountResult, SelectAccount.Params>() {
 
     override suspend fun run(params: Params) = safe {
+        delay(3000)
         repository.setMetrics(
             version = metricsProvider.getVersion(),
             platform = metricsProvider.getPlatform()

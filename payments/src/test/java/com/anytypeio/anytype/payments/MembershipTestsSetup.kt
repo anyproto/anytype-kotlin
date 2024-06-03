@@ -102,16 +102,7 @@ open class MembershipTestsSetup {
     @Before
     open fun setUp() {
         MockitoAnnotations.openMocks(this)
-        getAccount.stub {
-            onBlocking { async(Unit) } doReturn Resultat.success(
-                Account(
-                    id = accountId,
-                    name = MockDataFactory.randomString(),
-                    avatar = null,
-                    color = null
-                )
-            )
-        }
+        stubAccount()
     }
 
     protected fun validateTierView(
@@ -181,4 +172,17 @@ open class MembershipTestsSetup {
         verifyMembershipEmailCode = verifyMembershipEmailCode,
         getMembershipEmailStatus = getMembershipEmailStatus
     )
+
+    protected fun stubAccount() {
+        getAccount.stub {
+            onBlocking { async(Unit) } doReturn Resultat.success(
+                Account(
+                    id = accountId,
+                    name = MockDataFactory.randomString(),
+                    avatar = null,
+                    color = null
+                )
+            )
+        }
+    }
 }

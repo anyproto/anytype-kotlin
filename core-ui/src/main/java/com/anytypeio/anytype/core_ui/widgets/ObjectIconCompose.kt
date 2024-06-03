@@ -57,7 +57,7 @@ fun ListWidgetObjectIcon(
 }
 
 @Composable
-private fun DefaultTaskObjectIcon(
+fun DefaultTaskObjectIcon(
     modifier: Modifier,
     iconSize: Dp,
     icon: ObjectIcon.Task,
@@ -82,7 +82,7 @@ private fun DefaultTaskObjectIcon(
 }
 
 @Composable
-private fun DefaultObjectImageIcon(
+fun DefaultObjectImageIcon(
     url: Url,
     modifier: Modifier,
     iconSize: Dp
@@ -98,7 +98,7 @@ private fun DefaultObjectImageIcon(
 }
 
 @Composable
-private fun DefaultObjectBookmarkIcon(
+fun DefaultObjectBookmarkIcon(
     url: Url,
     modifier: Modifier,
     iconSize: Dp
@@ -115,7 +115,7 @@ private fun DefaultObjectBookmarkIcon(
 }
 
 @Composable
-private fun DefaultProfileAvatarIcon(
+fun DefaultProfileAvatarIcon(
     modifier: Modifier,
     iconSize: Dp,
     icon: ObjectIcon.Profile.Avatar
@@ -145,7 +145,37 @@ private fun DefaultProfileAvatarIcon(
 }
 
 @Composable
-private fun defaultProfileIconImage(
+fun DefaultBasicAvatarIcon(
+    modifier: Modifier,
+    iconSize: Dp,
+    icon: ObjectIcon.Basic.Avatar
+) {
+    Box(
+        modifier = modifier
+            .size(iconSize)
+            .background(
+                shape = RoundedCornerShape(12.dp),
+                color = colorResource(id = R.color.text_tertiary)
+            )
+    ) {
+        Text(
+            text = icon
+                .name
+                .ifEmpty { stringResource(id = R.string.u) }
+                .take(1)
+                .uppercase(),
+            modifier = Modifier.align(Alignment.Center),
+            style = TextStyle(
+                fontSize = 28.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = colorResource(id = R.color.text_white)
+            )
+        )
+    }
+}
+
+@Composable
+fun defaultProfileIconImage(
     icon: ObjectIcon.Profile.Image,
     modifier: Modifier,
     iconSize: Dp
@@ -160,7 +190,7 @@ private fun defaultProfileIconImage(
 }
 
 @Composable
-private fun DefaultEmojiObjectIcon(
+fun DefaultEmojiObjectIcon(
     modifier: Modifier,
     iconSize: Dp,
     icon: ObjectIcon.Basic.Emoji
@@ -184,7 +214,7 @@ private fun DefaultEmojiObjectIcon(
 }
 
 @Composable
-private fun DefaultFileObjectImageIcon(
+fun DefaultFileObjectImageIcon(
     fileName: String,
     mime: String,
     modifier: Modifier,

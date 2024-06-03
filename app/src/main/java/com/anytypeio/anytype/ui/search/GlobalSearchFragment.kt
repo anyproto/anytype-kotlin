@@ -18,6 +18,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
+import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 
@@ -61,7 +62,7 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
                             dismiss()
                             findNavController().navigate(
                                 R.id.dataViewNavigation,
-                                EditorFragment.args(
+                                ObjectSetFragment.args(
                                     ctx = nav.target,
                                     space = nav.space
                                 )
@@ -78,7 +79,7 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupBottomSheetBehavior(0)
+        setupBottomSheetBehavior(DEFAULT_PADDING_TOP)
     }
 
     override fun injectDependencies() {

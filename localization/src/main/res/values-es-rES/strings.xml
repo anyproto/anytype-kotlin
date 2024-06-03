@@ -1418,4 +1418,5 @@ En concreto,
     </plurals>
     <string name="membership_error_button_text_action">Contacto</string>
     <string name="membership_error_button_text_dismiss">Ok</string>
+    <string name="error_login_network_id_mismatch">Network ID mismatch detected. Please verify your network configuration.</string>
 </resources>

@@ -4,6 +4,7 @@ import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,7 +14,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,11 +25,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -35,6 +41,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_ui.common.keyboardAsState
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.foundation.Divider
@@ -52,6 +59,7 @@ import com.anytypeio.anytype.core_ui.widgets.defaultProfileIconImage
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun GlobalSearchScreen(
     items: List<GlobalSearchItemView>,
@@ -59,11 +67,15 @@ fun GlobalSearchScreen(
     onObjectClicked: (GlobalSearchItemView) -> Unit
 ) {
     var query by remember { mutableStateOf("") }
+    val isKeyboardOpen by keyboardAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
             .nestedScroll(rememberNestedScrollInteropConnection())
     ) {
+        val interactionSource = remember { MutableInteractionSource() }
+        val focus = LocalFocusManager.current
+
         BasicTextField(
             value = query,
             modifier = Modifier
@@ -77,6 +89,40 @@ fun GlobalSearchScreen(
                     onQueryChanged(it)
                 }
             },
+            singleLine = true,
+            maxLines = 1,
+            decorationBox = @Composable { innerTextField ->
+                TextFieldDefaults.OutlinedTextFieldDecorationBox(
+                    value = query,
+                    innerTextField = innerTextField,
+                    enabled = true,
+                    singleLine = true,
+                    visualTransformation = VisualTransformation.None,
+                    interactionSource = interactionSource,
+                    placeholder =  {
+                        Text(
+                            text = stringResource(id = R.string.search),
+                            style = BodyRegular.copy(
+                                color = colorResource(id = R.color.text_tertiary)
+                            )
+                        )
+                    },
+                    colors = TextFieldDefaults.textFieldColors(
+                        backgroundColor = colorResource(id = R.color.shape_transparent)
+                    ),
+                    border = {
+                        TextFieldDefaults.BorderBox(
+                            true,
+                            false,
+                            interactionSource,
+                            TextFieldDefaults.textFieldColors(
+                                backgroundColor = colorResource(id = R.color.shape_transparent)
+                            ),
+                            RoundedCornerShape(10.dp)
+                        )
+                    }
+                )
+            }
         )
         LazyColumn(
             modifier = Modifier.weight(1.0f)
@@ -85,7 +131,13 @@ fun GlobalSearchScreen(
                 item(key = item.id) {
                     GlobalSearchItem(
                         globalSearchItemView = item,
-                        onObjectClicked = onObjectClicked
+                        onObjectClicked = {
+                            if (isKeyboardOpen) {
+                                focus.clearFocus(true)
+                            }
+                            focus.clearFocus(true)
+                            onObjectClicked(it)
+                        }
                     )
                     if (idx != items.lastIndex) {
                         Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
@@ -102,9 +154,11 @@ private fun GlobalSearchItem(
     onObjectClicked: (GlobalSearchItemView) -> Unit
 ) {
     Box(
-        modifier = Modifier.fillMaxWidth().clickable {
-            onObjectClicked(globalSearchItemView)
-        }
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                onObjectClicked(globalSearchItemView)
+            }
     ) {
         GlobalSearchObjectIcon(
             icon = globalSearchItemView.icon,

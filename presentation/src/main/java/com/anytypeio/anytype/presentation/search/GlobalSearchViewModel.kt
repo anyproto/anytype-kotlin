@@ -33,6 +33,7 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -88,7 +89,8 @@ class GlobalSearchViewModel(
                     views.value = results.mapNotNull { result ->
                         result.view(
                             storeOfObjectTypes = storeOfObjectTypes,
-                            storeOfRelations = storeOfRelations
+                            storeOfRelations = storeOfRelations,
+                            urlBuilder = urlBuilder
                         )
                     }
                 }
@@ -136,6 +138,7 @@ class GlobalSearchViewModel(
  */
 data class  GlobalSearchItemView(
     val id: Id,
+    val icon: ObjectIcon,
     val space: SpaceId,
     val layout: ObjectType.Layout,
     val title: String,
@@ -168,7 +171,8 @@ data class  GlobalSearchItemView(
 
 suspend fun Command.SearchWithMeta.Result.view(
     storeOfObjectTypes: StoreOfObjectTypes,
-    storeOfRelations: StoreOfRelations
+    storeOfRelations: StoreOfRelations,
+    urlBuilder: UrlBuilder
 ) : GlobalSearchItemView? {
     if (wrapper.spaceId == null) return null
     if (wrapper.layout == null) return null
@@ -176,6 +180,11 @@ suspend fun Command.SearchWithMeta.Result.view(
     val meta = metas.firstOrNull()
     return GlobalSearchItemView(
         id = obj,
+        icon = ObjectIcon.from(
+            obj = wrapper,
+            layout = wrapper.layout,
+            builder = urlBuilder
+        ),
         space = SpaceId(requireNotNull(wrapper.spaceId)),
         layout = requireNotNull(wrapper.layout),
         title = wrapper.getProperName(),

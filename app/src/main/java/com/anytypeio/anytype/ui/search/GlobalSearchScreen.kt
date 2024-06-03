@@ -2,14 +2,18 @@ package com.anytypeio.anytype.ui.search
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,6 +32,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -45,6 +50,7 @@ import com.anytypeio.anytype.core_ui.common.keyboardAsState
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.foundation.Divider
+import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations2
@@ -76,59 +82,85 @@ fun GlobalSearchScreen(
         val interactionSource = remember { MutableInteractionSource() }
         val focus = LocalFocusManager.current
 
-        BasicTextField(
-            value = query,
+        Dragger(
+            modifier = Modifier.padding(vertical = 6.dp).align(Alignment.CenterHorizontally)
+        )
+
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            textStyle = BodyRegular.copy(
-                color = colorResource(id = R.color.text_primary)
-            ),
-            onValueChange = {
-                query = it.also {
-                    onQueryChanged(it)
-                }
-            },
-            singleLine = true,
-            maxLines = 1,
-            decorationBox = @Composable { innerTextField ->
-                TextFieldDefaults.OutlinedTextFieldDecorationBox(
-                    value = query,
-                    innerTextField = innerTextField,
-                    enabled = true,
-                    singleLine = true,
-                    visualTransformation = VisualTransformation.None,
-                    interactionSource = interactionSource,
-                    placeholder =  {
-                        Text(
-                            text = stringResource(id = R.string.search),
-                            style = BodyRegular.copy(
-                                color = colorResource(id = R.color.text_tertiary)
-                            )
-                        )
-                    },
-                    colors = TextFieldDefaults.textFieldColors(
-                        backgroundColor = colorResource(id = R.color.shape_transparent)
-                    ),
-                    border = {
-                        TextFieldDefaults.BorderBox(
-                            true,
-                            false,
-                            interactionSource,
-                            TextFieldDefaults.textFieldColors(
-                                backgroundColor = colorResource(id = R.color.shape_transparent)
-                            ),
-                            RoundedCornerShape(10.dp)
-                        )
-                    }
+                .padding(
+                    top = 10.dp,
+                    start = 16.dp,
+                    end = 16.dp
                 )
-            }
-        )
+                .background(
+                    color = colorResource(id = R.color.shape_transparent),
+                    shape = RoundedCornerShape(10.dp)
+                )
+                .height(40.dp)
+
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_search_18),
+                contentDescription = "Search icon",
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .padding(
+                        start = 11.dp
+                    )
+            )
+            BasicTextField(
+                value = query,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 6.dp)
+                    .align(Alignment.CenterVertically)
+                ,
+                textStyle = BodyRegular.copy(
+                    color = colorResource(id = R.color.text_primary)
+                ),
+                onValueChange = {
+                    query = it.also {
+                        onQueryChanged(it)
+                    }
+                },
+                singleLine = true,
+                maxLines = 1,
+                decorationBox = @Composable { innerTextField ->
+                    TextFieldDefaults.OutlinedTextFieldDecorationBox(
+                        value = query,
+                        innerTextField = innerTextField,
+                        enabled = true,
+                        singleLine = true,
+                        visualTransformation = VisualTransformation.None,
+                        interactionSource = interactionSource,
+                        placeholder =  {
+                            Text(
+                                text = stringResource(id = R.string.search),
+                                style = BodyRegular.copy(
+                                    color = colorResource(id = R.color.text_tertiary)
+                                )
+                            )
+                        },
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = colorResource(id = R.color.shape_transparent)
+                        ),
+                        border = {},
+                        contentPadding = PaddingValues()
+                    )
+                }
+            )
+        }
+
         LazyColumn(
             modifier = Modifier.weight(1.0f)
         ) {
             items.forEachIndexed { idx, item ->
                 item(key = item.id) {
+                    if (idx == 0) {
+                        Spacer(modifier = Modifier.height(10.dp))
+                    }
                     GlobalSearchItem(
                         globalSearchItemView = item,
                         onObjectClicked = {
@@ -141,6 +173,8 @@ fun GlobalSearchScreen(
                     )
                     if (idx != items.lastIndex) {
                         Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
+                    } else {
+                        Spacer(modifier = Modifier.height(48.dp))
                     }
                 }
             }

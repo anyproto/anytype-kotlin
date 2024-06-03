@@ -1,6 +1,9 @@
 package com.anytypeio.anytype.payments.mapping
 
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import com.android.billingclient.api.ProductDetails
+import com.android.billingclient.api.Purchase
 import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
@@ -26,10 +29,10 @@ import com.anytypeio.anytype.payments.viewmodel.MembershipMainState
 import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
 import com.anytypeio.anytype.presentation.membership.models.TierId
 
-
 fun MembershipStatus.toMainView(
     billingClientState: BillingClientState,
-    billingPurchaseState: BillingPurchaseState
+    billingPurchaseState: BillingPurchaseState,
+    accountId: String
 ): MembershipMainState {
     val (showBanner, subtitle) = if (activeTier.value in ACTIVE_TIERS_WITH_BANNERS) {
         true to R.string.payments_subheader
@@ -45,7 +48,7 @@ fun MembershipStatus.toMainView(
                 billingClientState = billingClientState,
                 billingPurchaseState = billingPurchaseState
             )
-        },
+        }.sortedByDescending { it.isActive },
         membershipLevelDetails = MEMBERSHIP_LEVEL_DETAILS,
         privacyPolicy = PRIVACY_POLICY,
         termsOfService = TERMS_OF_SERVICE,
@@ -55,7 +58,8 @@ fun MembershipStatus.toMainView(
             it.toView(
                 membershipStatus = this,
                 billingClientState = billingClientState,
-                billingPurchaseState = billingPurchaseState
+                billingPurchaseState = billingPurchaseState,
+                accountId = accountId,
             )
         }
     )
@@ -79,7 +83,8 @@ private fun MembershipTierData.isActiveTierPurchasedOnAndroid(activePaymentMetho
 fun MembershipTierData.toView(
     membershipStatus: MembershipStatus,
     billingClientState: BillingClientState,
-    billingPurchaseState: BillingPurchaseState
+    billingPurchaseState: BillingPurchaseState,
+    accountId: String
 ): Tier {
     val tierId = TierId(id)
     val isActive = membershipStatus.isTierActive(id)
@@ -107,7 +112,8 @@ fun MembershipTierData.toView(
         buttonState = toButtonView(
             isActive = isActive,
             billingPurchaseState = billingPurchaseState,
-            membershipStatus = membershipStatus
+            membershipStatus = membershipStatus,
+            accountId = accountId
         ),
         email = emailState,
         color = colorStr,
@@ -148,7 +154,8 @@ fun MembershipTierData.toPreviewView(
 private fun MembershipTierData.toButtonView(
     isActive: Boolean,
     billingPurchaseState: BillingPurchaseState,
-    membershipStatus: MembershipStatus
+    membershipStatus: MembershipStatus,
+    accountId: String
 ): TierButton {
     val androidProductId = this.androidProductId
     val androidInfoUrl = this.androidManageUrl
@@ -206,14 +213,15 @@ private fun MembershipTierData.toButtonView(
         } else {
             when (billingPurchaseState) {
                 is BillingPurchaseState.HasPurchases -> {
-                    //Tier has purchase, but it's not active yet, still waiting for a event from the mw
-                    TierButton.Hidden
+                    getButtonStateAccordingToPurchaseState(
+                        androidProductId = androidProductId,
+                        accountId = accountId,
+                        purchases = billingPurchaseState.purchases
+                    )
                 }
-
                 BillingPurchaseState.Loading -> {
                     TierButton.Hidden
                 }
-
                 BillingPurchaseState.NoPurchases -> {
                     if (membershipStatus.anyName.isBlank()) {
                         TierButton.Pay.Disabled
@@ -222,6 +230,32 @@ private fun MembershipTierData.toButtonView(
                     }
                 }
             }
+        }
+    }
+}
+
+private fun getButtonStateAccordingToPurchaseState(
+    androidProductId: String?,
+    accountId: String,
+    purchases: List<Purchase>
+): TierButton {
+    when (purchases.size) {
+        0 -> {
+            return TierButton.Hidden
+        }
+        1 -> {
+            val purchase = purchases[0]
+            val purchaseModel = Json.decodeFromString<PurchaseModel>(purchase.originalJson)
+            if (purchaseModel.obfuscatedAccountId != accountId) {
+                return TierButton.HiddenWithText.DifferentPurchaseAccountId
+            }
+            if (purchaseModel.productId != androidProductId) {
+                return TierButton.HiddenWithText.DifferentPurchaseProductId
+            }
+            return TierButton.Hidden
+        }
+        else -> {
+            return TierButton.HiddenWithText.MoreThenOnePurchase
         }
     }
 }
@@ -289,9 +323,9 @@ private fun MembershipTierData.getConditionInfo(
             createConditionInfoForNonBillingTier()
         } else {
             createConditionInfoForBillingTier(
-                billingClientState,
-                membershipStatus,
-                billingPurchaseState
+                billingClientState = billingClientState,
+                membershipStatus = membershipStatus,
+                billingPurchaseState = billingPurchaseState
             )
         }
     }
@@ -341,10 +375,7 @@ private fun MembershipTierData.createConditionInfoForBillingTier(
     ) {
         return TierConditionInfo.Visible.Pending
     }
-    if (
-        billingPurchaseState is BillingPurchaseState.Loading
-        || billingPurchaseState is BillingPurchaseState.HasPurchases
-    ) {
+    if (billingPurchaseState is BillingPurchaseState.Loading) {
         return TierConditionInfo.Visible.Pending
     }
     return when (billingClientState) {
@@ -407,3 +438,9 @@ private fun MembershipTierData.getTierEmail(isActive: Boolean, membershipEmail: 
     }
     return TierEmail.Hidden
 }
+
+@Serializable
+data class PurchaseModel(
+    val obfuscatedAccountId: String,
+    val productId: String
+)

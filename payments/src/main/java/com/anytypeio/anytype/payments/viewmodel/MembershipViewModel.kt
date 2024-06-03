@@ -90,6 +90,8 @@ class MembershipViewModel(
 
     init {
         viewModelScope.launch {
+            val account = getAccount.async(Unit)
+            val accountId = account.getOrNull()?.id.orEmpty()
             combine(
                 membershipProvider.status()
                     .onEach { setupBillingClient(it) },
@@ -104,7 +106,8 @@ class MembershipViewModel(
             }.collect { (membershipStatus, billingClientState, purchases) ->
                 val newState = membershipStatus.toMainView(
                     billingClientState = billingClientState,
-                    billingPurchaseState = purchases
+                    billingPurchaseState = purchases,
+                    accountId = accountId
                 )
                 proceedWithUpdatingVisibleTier(newState)
                 viewState.value = newState

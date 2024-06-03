@@ -41,6 +41,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
+import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.payments.R
 import com.anytypeio.anytype.payments.constants.MembershipConstants.EXPLORER_ID
 import com.anytypeio.anytype.payments.constants.MembershipConstants.PRIVACY_POLICY
@@ -247,27 +248,42 @@ private fun MainButton(
     buttonState: TierButton,
     actionTier: (TierAction) -> Unit
 ) {
-    if (buttonState !is TierButton.Hidden) {
-        val (stringRes, enabled) = getButtonText(buttonState)
-        ButtonPrimary(
-            enabled = enabled,
-            text = stringResource(id = stringRes),
-            onClick = {
-                      when (buttonState) {
-                          is TierButton.Pay.Enabled -> actionTier(TierAction.PayClicked(tier.id))
-                          is TierButton.Info.Enabled -> actionTier(TierAction.OpenUrl(tier.urlInfo))
-                          TierButton.Submit.Enabled -> actionTier(TierAction.SubmitClicked)
-                          else -> {
-                              Timber.d("MainButton: skipped action: $buttonState")
-                          }
-                      }
+    when (buttonState) {
+        TierButton.Hidden -> {}
+        TierButton.HiddenWithText.DifferentPurchaseAccountId -> {
+            val text = stringResource(id = R.string.membership_support_already_acquired)
+            SupportText(text = text)
+        }
+        TierButton.HiddenWithText.DifferentPurchaseProductId -> {
+            val text = stringResource(id = R.string.membership_support_different_subscription)
+            SupportText(text = text)
+        }
+        TierButton.HiddenWithText.MoreThenOnePurchase -> {
+            val text = stringResource(id = R.string.membership_support_more_then_one_subscription)
+            SupportText(text = text)
+        }
+        else -> {
+            val (stringRes, enabled) = getButtonText(buttonState)
+            ButtonPrimary(
+                enabled = enabled,
+                text = stringResource(id = stringRes),
+                onClick = {
+                    when (buttonState) {
+                        is TierButton.Pay.Enabled -> actionTier(TierAction.PayClicked(tier.id))
+                        is TierButton.Info.Enabled -> actionTier(TierAction.OpenUrl(tier.urlInfo))
+                        TierButton.Submit.Enabled -> actionTier(TierAction.SubmitClicked)
+                        else -> {
+                            Timber.d("MainButton: skipped action: $buttonState")
+                        }
+                    }
 
-            },
-            size = ButtonSize.Large,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp)
-        )
+                },
+                size = ButtonSize.Large,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+            )
+        }
     }
 }
 
@@ -366,7 +382,23 @@ private fun getButtonText(buttonState: TierButton): Pair<Int, Boolean> {
         TierButton.Pay.Disabled -> Pair(R.string.payments_button_pay, false)
         TierButton.Pay.Enabled -> Pair(R.string.payments_button_pay, true)
         TierButton.ChangeEmail -> Pair(R.string.payments_button_change_email, true)
+        TierButton.HiddenWithText.DifferentPurchaseAccountId -> Pair(0, false)
+        TierButton.HiddenWithText.DifferentPurchaseProductId -> Pair(0, false)
+        TierButton.HiddenWithText.MoreThenOnePurchase -> Pair(0, false)
     }
+}
+
+@Composable
+private fun SupportText(text: String) {
+    Text(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 20.dp, end = 20.dp, top = 2.dp, bottom = 10.dp),
+        text = text,
+        textAlign = TextAlign.Center,
+        style = Relations2,
+        color = colorResource(id = R.color.text_secondary)
+    )
 }
 
 @OptIn(ExperimentalFoundationApi::class)

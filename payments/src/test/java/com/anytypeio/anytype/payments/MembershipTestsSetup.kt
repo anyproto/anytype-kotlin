@@ -2,11 +2,13 @@ package com.anytypeio.anytype.payments
 
 import com.android.billingclient.api.ProductDetails
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.payments.GetMembershipEmailStatus
 import com.anytypeio.anytype.domain.payments.GetMembershipPaymentUrl
@@ -26,6 +28,7 @@ import com.anytypeio.anytype.payments.viewmodel.MembershipViewModel
 import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
 import com.anytypeio.anytype.presentation.membership.models.TierId
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -41,6 +44,7 @@ import org.mockito.kotlin.stub
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.doReturn
 
 open class MembershipTestsSetup {
 
@@ -83,6 +87,7 @@ open class MembershipTestsSetup {
     @Mock
     lateinit var getMembershipPaymentUrl: GetMembershipPaymentUrl
     protected val androidProductId = "id_android_builder"
+    protected val accountId = "accountId-${RandomString.make()}"
 
     fun membershipStatus(tiers: List<MembershipTierData>) = MembershipStatus(
         activeTier = TierId(MembershipConstants.EXPLORER_ID),
@@ -97,6 +102,7 @@ open class MembershipTestsSetup {
     @Before
     open fun setUp() {
         MockitoAnnotations.openMocks(this)
+        stubAccount()
     }
 
     protected fun validateTierView(
@@ -164,6 +170,19 @@ open class MembershipTestsSetup {
         isMembershipNameValid = isMembershipNameValid,
         setMembershipEmail = setMembershipEmail,
         verifyMembershipEmailCode = verifyMembershipEmailCode,
-        getMembershipEmailStatus = getMembershipEmailStatus,
+        getMembershipEmailStatus = getMembershipEmailStatus
     )
+
+    protected fun stubAccount() {
+        getAccount.stub {
+            onBlocking { async(Unit) } doReturn Resultat.success(
+                Account(
+                    id = accountId,
+                    name = MockDataFactory.randomString(),
+                    avatar = null,
+                    color = null
+                )
+            )
+        }
+    }
 }

@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -22,9 +24,11 @@ import com.anytypeio.anytype.core_models.Relation.Format.STATUS
 import com.anytypeio.anytype.core_models.Relation.Format.TAG
 import com.anytypeio.anytype.core_models.Relation.Format.UNDEFINED
 import com.anytypeio.anytype.core_models.Relation.Format.URL
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -38,14 +42,15 @@ import com.anytypeio.anytype.presentation.objects.getProperName
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class GlobalSearchViewModel(
     private val searchWithMeta: SearchWithMeta,
@@ -62,38 +67,80 @@ class GlobalSearchViewModel(
             emitAll(userInput.drop(1).debounce(ObjectSearchViewModel.DEBOUNCE_DURATION).distinctUntilChanged())
         }
 
+    private val interactionMode = MutableStateFlow<InteractionMode>(InteractionMode.Default)
+
     val views = MutableStateFlow<List<GlobalSearchItemView>>(emptyList())
     val navigation = MutableSharedFlow<OpenObjectNavigation>()
 
     init {
         viewModelScope.launch {
-            searchQuery
-                .flatMapLatest { query ->
-                    searchWithMeta
-                        .asFlow(
-                            Command.SearchWithMeta(
-                                query = query,
-                                limit = 50,
-                                offset = 0,
-                                keys = emptyList(),
-                                filters = ObjectSearchConstants.filterSearchObjects(
-                                    // TODO add tech space?
-                                    spaces = listOf(spaceManager.get())
-                                ),
-                                sorts = ObjectSearchConstants.sortsSearchObjects,
-                                withMetaRelationDetails = true,
-                                withMeta = true
+            combine(
+                interactionMode,
+                searchQuery
+            ) { mode, query ->
+                when(mode) {
+                    is InteractionMode.Default -> {
+                        searchWithMeta
+                            .async(
+                                Command.SearchWithMeta(
+                                    query = query,
+                                    limit = 50,
+                                    offset = 0,
+                                    keys = emptyList(),
+                                    filters = ObjectSearchConstants.filterSearchObjects(
+                                        // TODO add tech space?
+                                        spaces = listOf(spaceManager.get())
+                                    ),
+                                    sorts = ObjectSearchConstants.sortsSearchObjects,
+                                    withMetaRelationDetails = true,
+                                    withMeta = true
+                                )
                             )
-                        )
-                }.collect { results ->
-                    views.value = results.mapNotNull { result ->
-                        result.view(
-                            storeOfObjectTypes = storeOfObjectTypes,
-                            storeOfRelations = storeOfRelations,
-                            urlBuilder = urlBuilder
-                        )
+                    }
+                    is InteractionMode.Related -> {
+                        searchWithMeta
+                            .async(
+                                Command.SearchWithMeta(
+                                    query = query,
+                                    limit = 50,
+                                    offset = 0,
+                                    keys = emptyList(),
+                                    filters = buildList {
+                                        add(
+                                            DVFilter(
+                                                relation = Relations.ID,
+                                                value = buildSet {
+                                                    addAll(mode.view.links)
+                                                    addAll(mode.view.backlinks)
+                                                }.toList(),
+                                                condition = DVFilterCondition.IN
+                                            )
+                                        )
+                                    },
+                                    sorts = ObjectSearchConstants.sortsSearchObjects,
+                                    withMetaRelationDetails = false,
+                                    withMeta = false
+                                )
+                            )
+
                     }
                 }
+            }.collect { result ->
+                result.fold(
+                    onSuccess = { results ->
+                        views.value = results.mapNotNull { result ->
+                            result.view(
+                                storeOfObjectTypes = storeOfObjectTypes,
+                                storeOfRelations = storeOfRelations,
+                                urlBuilder = urlBuilder
+                            )
+                        }
+                    },
+                    onFailure = {
+                        Timber.e(it, "Error while searching")
+                    }
+                )
+            }
         }
     }
 
@@ -109,6 +156,12 @@ class GlobalSearchViewModel(
                     space = globalSearchItemView.space.id
                 )
             )
+        }
+    }
+
+    fun onShowRelatedClicked(globalSearchItemView: GlobalSearchItemView) {
+        viewModelScope.launch {
+            interactionMode.value = InteractionMode.Related(globalSearchItemView)
         }
     }
 
@@ -130,6 +183,11 @@ class GlobalSearchViewModel(
             ) as T
         }
     }
+
+    private sealed class InteractionMode {
+        data object Default : InteractionMode()
+        data class Related(val view: GlobalSearchItemView) : InteractionMode()
+    }
 }
 
 /**
@@ -143,7 +201,10 @@ data class  GlobalSearchItemView(
     val layout: ObjectType.Layout,
     val title: String,
     val type: String,
-    val meta: Meta
+    val meta: Meta,
+    val links: List<Id> = emptyList(),
+    val backlinks: List<Id> = emptyList(),
+    val pinned: Boolean = false
 ) {
     sealed class Meta {
         data object None : Meta()
@@ -185,6 +246,8 @@ suspend fun Command.SearchWithMeta.Result.view(
             layout = wrapper.layout,
             builder = urlBuilder
         ),
+        links = wrapper.links,
+        backlinks = wrapper.backlinks,
         space = SpaceId(requireNotNull(wrapper.spaceId)),
         layout = requireNotNull(wrapper.layout),
         title = wrapper.getProperName(),

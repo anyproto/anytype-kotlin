@@ -2,9 +2,10 @@ package com.anytypeio.anytype.ui.search
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
@@ -70,7 +73,8 @@ import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 fun GlobalSearchScreen(
     items: List<GlobalSearchItemView>,
     onQueryChanged: (String) -> Unit,
-    onObjectClicked: (GlobalSearchItemView) -> Unit
+    onObjectClicked: (GlobalSearchItemView) -> Unit,
+    onShowRelatedClicked: (GlobalSearchItemView) -> Unit
 ) {
     var query by remember { mutableStateOf("") }
     val isKeyboardOpen by keyboardAsState()
@@ -83,7 +87,9 @@ fun GlobalSearchScreen(
         val focus = LocalFocusManager.current
 
         Dragger(
-            modifier = Modifier.padding(vertical = 6.dp).align(Alignment.CenterHorizontally)
+            modifier = Modifier
+                .padding(vertical = 6.dp)
+                .align(Alignment.CenterHorizontally)
         )
 
         Row(
@@ -152,9 +158,8 @@ fun GlobalSearchScreen(
                 }
             )
         }
-
         LazyColumn(
-            modifier = Modifier.weight(1.0f)
+            modifier = Modifier.weight(1.0f).fillMaxSize()
         ) {
             items.forEachIndexed { idx, item ->
                 item(key = item.id) {
@@ -167,8 +172,10 @@ fun GlobalSearchScreen(
                             if (isKeyboardOpen) {
                                 focus.clearFocus(true)
                             }
-                            focus.clearFocus(true)
                             onObjectClicked(it)
+                        },
+                        onShowRelatedClicked = {
+                            onShowRelatedClicked(it)
                         }
                     )
                     if (idx != items.lastIndex) {
@@ -178,21 +185,52 @@ fun GlobalSearchScreen(
                     }
                 }
             }
+            if (items.isEmpty()) {
+                item {
+                    Box(
+                        modifier = Modifier.fillParentMaxSize()
+                    ) {
+                        Text(
+                            text = "Nothing found",
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                        )
+                    }
+                }
+            }
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun GlobalSearchItem(
     globalSearchItemView: GlobalSearchItemView,
-    onObjectClicked: (GlobalSearchItemView) -> Unit
+    onObjectClicked: (GlobalSearchItemView) -> Unit,
+    onShowRelatedClicked: (GlobalSearchItemView) -> Unit
 ) {
+    var isMenuExpanded by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable {
-                onObjectClicked(globalSearchItemView)
-            }
+            .combinedClickable(
+                onClick = {
+                    onObjectClicked(globalSearchItemView)
+                },
+                onLongClick = {
+                    isMenuExpanded = true
+                },
+                enabled = true
+            )
+            .then(
+                if (isMenuExpanded)
+                    Modifier.background(
+                        color = colorResource(id = R.color.shape_tertiary),
+                        shape = RoundedCornerShape(10.dp)
+                    )
+                else
+                    Modifier
+            )
     ) {
         GlobalSearchObjectIcon(
             icon = globalSearchItemView.icon,
@@ -277,6 +315,54 @@ private fun GlobalSearchItem(
                 style = Relations2,
                 color = colorResource(id = R.color.text_secondary)
             )
+        }
+        Box(modifier = Modifier
+            .align(Alignment.BottomStart)
+        ) {
+            if (isMenuExpanded) {
+                DropdownMenu(
+                    expanded = isMenuExpanded,
+                    onDismissRequest = {
+                        isMenuExpanded = false
+                    },
+//                    offset = DpOffset(
+//                        x = 8.dp,
+//                        y = 8.dp
+//                    )
+                ) {
+                    DropdownMenuItem(
+                        onClick = { 
+                            onShowRelatedClicked(globalSearchItemView)
+                        }
+                    ) {
+                        Text(text = "Show related objects")
+                    }
+                }
+//                Dialog(
+//                    onDismissRequest = {
+//                        isMenuExpanded = false
+//                    }
+//                ) {
+//                    Surface(
+//                        shape = RoundedCornerShape(12.dp)
+//                    ) {
+//                        Column(
+//                            modifier = Modifier
+//                                .background(color = colorResource(id = R.color.shape_secondary))
+//                                .fillMaxWidth()
+//                        ) {
+//                            Text(
+//                                text = "Open",
+//                                modifier = Modifier.padding(16.dp)
+//                            )
+//                            Text(
+//                                text = "Show related objects",
+//                                modifier = Modifier.padding(16.dp)
+//                            )
+//                        }
+//                    }
+//                }
+            }
         }
     }
 }
@@ -437,7 +523,8 @@ private fun DefaultGlobalSearchItemViewPreview() {
             layout = ObjectType.Layout.BASIC,
             icon = ObjectIcon.Basic.Avatar("A")
         ),
-        onObjectClicked = {}
+        onObjectClicked = {},
+        onShowRelatedClicked = {}
     )
 }
 
@@ -466,7 +553,8 @@ private fun DefaultGlobalSearchItemViewWithBlockMetaPreview() {
             layout = ObjectType.Layout.BASIC,
             icon = ObjectIcon.Basic.Avatar("A")
         ),
-        onObjectClicked = {}
+        onObjectClicked = {},
+        onShowRelatedClicked = {}
     )
 }
 
@@ -498,7 +586,8 @@ private fun DefaultGlobalSearchItemViewBlockTwoHighlightsMetaPreview() {
             layout = ObjectType.Layout.BASIC,
             icon = ObjectIcon.Basic.Avatar("A")
         ),
-        onObjectClicked = {}
+        onObjectClicked = {},
+        onShowRelatedClicked = {}
     )
 }
 
@@ -531,7 +620,8 @@ private fun DefaultGlobalSearchItemViewRelationTwoHighlightsMetaPreview() {
             layout = ObjectType.Layout.BASIC,
             icon = ObjectIcon.Basic.Avatar("A")
         ),
-        onObjectClicked = {}
+        onObjectClicked = {},
+        onShowRelatedClicked = {}
     )
 }
 
@@ -561,7 +651,8 @@ private fun DefaultGlobalSearchItemViewTagRelationPreview() {
             layout = ObjectType.Layout.BASIC,
             icon = ObjectIcon.Basic.Avatar("A")
         ),
-        onObjectClicked = {}
+        onObjectClicked = {},
+        onShowRelatedClicked = {}
     )
 }
 
@@ -591,7 +682,8 @@ private fun DefaultGlobalSearchItemViewStatusRelationPreview() {
             layout = ObjectType.Layout.BASIC,
             icon = ObjectIcon.Basic.Avatar("A")
         ),
-        onObjectClicked = {}
+        onObjectClicked = {},
+        onShowRelatedClicked = {}
     )
 }
 
@@ -675,6 +767,7 @@ private fun DefaultGlobalSearchItemViewStatusRelationScreenPreview() {
                 icon = ObjectIcon.Basic.Avatar("A")
             )
         ),
-        onObjectClicked = {}
+        onObjectClicked = {},
+        onShowRelatedClicked = {}
     )
 }

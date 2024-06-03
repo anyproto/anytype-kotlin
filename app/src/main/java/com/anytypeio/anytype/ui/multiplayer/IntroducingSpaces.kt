@@ -35,7 +35,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun IntroduceSpacesScreen(
+fun IntroduceSpaceSharingScreen(
     onDoneClicked: () -> Unit
 ) {
     ConstraintLayout(
@@ -73,7 +73,7 @@ fun IntroduceSpacesScreen(
                 0 -> {
                     Box(modifier = Modifier.fillMaxSize()) {
                         Image(
-                            painter = painterResource(id = R.drawable.ic_sharing_step_1),
+                            painter = painterResource(id = R.drawable.ic_sharing_step_first),
                             contentDescription = "Screenshot 1",
                             modifier = Modifier.align(Alignment.BottomCenter)
                         )
@@ -82,7 +82,7 @@ fun IntroduceSpacesScreen(
                 1 -> {
                     Box(modifier = Modifier.fillMaxSize()) {
                         Image(
-                            painter = painterResource(id = R.drawable.ic_sharing_step_2),
+                            painter = painterResource(id = R.drawable.ic_sharing_step_second),
                             contentDescription = "Screenshot 2",
                             modifier = Modifier.align(Alignment.BottomCenter)
                         )
@@ -91,7 +91,7 @@ fun IntroduceSpacesScreen(
                 2 -> {
                     Box(modifier = Modifier.fillMaxSize()) {
                         Image(
-                            painter = painterResource(id = R.drawable.ic_sharing_step_3),
+                            painter = painterResource(id = R.drawable.ic_sharing_step_third),
                             contentDescription = "Screenshot 3",
                             modifier = Modifier.align(Alignment.BottomCenter)
                         )
@@ -189,7 +189,7 @@ fun IntroduceSpacesScreen(
 @Preview
 @Composable
 private fun ScreenPreview() {
-    IntroduceSpacesScreen(
+    IntroduceSpaceSharingScreen(
         onDoneClicked = {}
     )
 }

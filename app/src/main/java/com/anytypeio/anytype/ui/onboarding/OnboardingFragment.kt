@@ -332,6 +332,7 @@ class OnboardingFragment : Fragment() {
         )
         LaunchedEffect(Unit) {
             vm.sideEffects.collect { effect ->
+                Timber.e("Got side effect: ${effect}")
                 when (effect) {
                     is OnboardingMnemonicLoginViewModel.SideEffect.Exit -> {
                         val lastDestination = navController.currentBackStackEntry
@@ -346,6 +347,10 @@ class OnboardingFragment : Fragment() {
                     }
                     is OnboardingMnemonicLoginViewModel.SideEffect.Error.InvalidMnemonic -> {
                         errorText.value = getString(R.string.error_invalid_recovery_phrase)
+                        isErrorDialogVisible.value = true
+                    }
+                    is OnboardingMnemonicLoginViewModel.SideEffect.Error.NetworkIdMismatch -> {
+                        errorText.value = getString(R.string.error_login_network_id_mismatch)
                         isErrorDialogVisible.value = true
                     }
                 }

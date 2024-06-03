@@ -58,6 +58,11 @@ sealed class TierPeriod {
 
 sealed class TierButton {
     data object Hidden : TierButton()
+    sealed class HiddenWithText : TierButton() {
+        data object DifferentPurchaseAccountId : HiddenWithText()
+        data object DifferentPurchaseProductId : HiddenWithText()
+        data object MoreThenOnePurchase : HiddenWithText()
+    }
     sealed class Submit : TierButton() {
         data object Enabled : Submit()
         data object Disabled : Submit()

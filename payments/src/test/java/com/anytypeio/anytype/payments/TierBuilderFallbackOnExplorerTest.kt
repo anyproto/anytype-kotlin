@@ -9,6 +9,9 @@ import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.payments.constants.MembershipConstants.BUILDER_ID
 import com.anytypeio.anytype.payments.constants.MembershipConstants.EXPLORER_ID
+import com.anytypeio.anytype.payments.models.BillingPriceInfo
+import com.anytypeio.anytype.payments.models.PeriodDescription
+import com.anytypeio.anytype.payments.models.PeriodUnit
 import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierConditionInfo
@@ -84,6 +87,9 @@ class TierBuilderFallbackOnExplorerTest : MembershipTestsSetup() {
             val purchase = Mockito.mock(Purchase::class.java)
             Mockito.`when`(purchase.products).thenReturn(listOf(androidProductId))
             Mockito.`when`(purchase.isAcknowledged).thenReturn(true)
+            val purchaseJson =
+                "{\"obfuscatedAccountId\":\"$accountId\", \"productId\":\"$androidProductId\"}"
+            Mockito.`when`(purchase.originalJson).thenReturn(purchaseJson)
             stubPurchaseState(BillingPurchaseState.HasPurchases(listOf(purchase), false))
             val flow = flow {
                 emit(
@@ -167,7 +173,15 @@ class TierBuilderFallbackOnExplorerTest : MembershipTestsSetup() {
                 )
             }
 
-            val expectedConditionInfo = TierConditionInfo.Visible.Pending
+            val expectedConditionInfo = TierConditionInfo.Visible.PriceBilling(
+                BillingPriceInfo(
+                    formattedPrice = formattedPrice,
+                    period = PeriodDescription(
+                        amount = 1,
+                        unit = PeriodUnit.YEARS
+                    )
+                )
+            )
 
             val thirdTierItem = tierStateFlow.awaitItem()
             thirdTierItem.let {

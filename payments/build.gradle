@@ -47,6 +47,8 @@ dependencies {
 
     implementation libs.timber
 
+    implementation libs.gson
+
     testImplementation libs.junit
     testImplementation libs.kotlinTest
     testImplementation libs.mockitoKotlin

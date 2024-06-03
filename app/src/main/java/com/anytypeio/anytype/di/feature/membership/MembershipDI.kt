@@ -14,10 +14,12 @@ import com.anytypeio.anytype.domain.payments.GetMembershipPaymentUrl
 import com.anytypeio.anytype.domain.payments.IsMembershipNameValid
 import com.anytypeio.anytype.domain.payments.SetMembershipEmail
 import com.anytypeio.anytype.domain.payments.VerifyMembershipEmailCode
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
 import com.anytypeio.anytype.ui.payments.MembershipFragment
 import com.anytypeio.anytype.payments.viewmodel.MembershipViewModelFactory
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
+import com.google.gson.Gson
 import dagger.Binds
 import dagger.Component
 import dagger.Module
@@ -91,6 +93,12 @@ object MembershipModule {
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
     ): VerifyMembershipEmailCode = VerifyMembershipEmailCode(repo = repo, dispatchers = dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideGson(
+    ): Gson = Gson()
 
     @Module
     interface Declarations {

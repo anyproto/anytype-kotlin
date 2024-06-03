@@ -33,6 +33,7 @@ import com.anytypeio.anytype.payments.playbilling.BillingPurchaseState
 import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
 import com.anytypeio.anytype.presentation.membership.models.TierId
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
+import com.google.gson.Gson
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -56,7 +57,8 @@ class MembershipViewModel(
     private val isMembershipNameValid: IsMembershipNameValid,
     private val setMembershipEmail: SetMembershipEmail,
     private val verifyMembershipEmailCode: VerifyMembershipEmailCode,
-    private val getMembershipEmailStatus: GetMembershipEmailStatus
+    private val getMembershipEmailStatus: GetMembershipEmailStatus,
+    private val gson: Gson
 ) : ViewModel() {
 
     val viewState = MutableStateFlow<MembershipMainState>(MembershipMainState.Loading)
@@ -90,6 +92,8 @@ class MembershipViewModel(
 
     init {
         viewModelScope.launch {
+            val account = getAccount.async(Unit)
+            val accountId = account.getOrNull()?.id.orEmpty()
             combine(
                 membershipProvider.status()
                     .onEach { setupBillingClient(it) },
@@ -104,7 +108,9 @@ class MembershipViewModel(
             }.collect { (membershipStatus, billingClientState, purchases) ->
                 val newState = membershipStatus.toMainView(
                     billingClientState = billingClientState,
-                    billingPurchaseState = purchases
+                    billingPurchaseState = purchases,
+                    accountId = accountId,
+                    gson = gson
                 )
                 proceedWithUpdatingVisibleTier(newState)
                 viewState.value = newState

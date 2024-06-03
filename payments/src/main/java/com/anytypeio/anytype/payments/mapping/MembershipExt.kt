@@ -162,7 +162,8 @@ private fun MembershipTierData.mapButtonAndNameStates(
         mapActiveTierButtonAndNameStates(
             billingPurchaseState = billingPurchaseState,
             paymentMethod = membershipStatus.paymentMethod,
-            userEmail = membershipStatus.userEmail
+            userEmail = membershipStatus.userEmail,
+            accountId = accountId
         )
     } else {
         mapInactiveTierButtonAndNameStates(
@@ -181,7 +182,8 @@ private fun MembershipStatus.isPending(): Boolean {
 private fun MembershipTierData.mapActiveTierButtonAndNameStates(
     billingPurchaseState: BillingPurchaseState,
     paymentMethod: MembershipPaymentMethod,
-    userEmail: String
+    userEmail: String,
+    accountId: String
 ): Pair<TierButton, TierAnyName> {
     val wasPurchasedOnAndroid = isActiveTierPurchasedOnAndroid(paymentMethod)
     if (!wasPurchasedOnAndroid) {
@@ -211,8 +213,20 @@ private fun MembershipTierData.mapActiveTierButtonAndNameStates(
     }
 
     return if (billingPurchaseState is BillingPurchaseState.HasPurchases) {
-        //todo check that subscription has proper productId and accountId
-        TierButton.Manage.Android.Enabled(androidProductId) to TierAnyName.Hidden
+        val purchases = billingPurchaseState.purchases
+        return when (purchases.size) {
+            0 -> TierButton.Manage.Android.Disabled to TierAnyName.Hidden
+            1 -> {
+                val purchase = purchases[0]
+                val purchaseModel = Json.decodeFromString<PurchaseModel>(purchase.originalJson)
+                if (purchaseModel.obfuscatedAccountId == accountId && purchaseModel.productId == androidProductId) {
+                    TierButton.Manage.Android.Enabled(androidProductId) to TierAnyName.Hidden
+                } else {
+                    TierButton.Manage.Android.Disabled to TierAnyName.Hidden
+                }
+            }
+            else -> TierButton.Manage.Android.Disabled to TierAnyName.Hidden
+        }
     } else {
         TierButton.Manage.Android.Disabled to TierAnyName.Hidden
     }

@@ -1408,4 +1408,5 @@ Please provide specific details of your needs here.</string>
     </plurals>
     <string name="membership_error_button_text_action">联系我们</string>
     <string name="membership_error_button_text_dismiss">好的</string>
+    <string name="error_login_network_id_mismatch">Network ID mismatch detected. Please verify your network configuration.</string>
 </resources>

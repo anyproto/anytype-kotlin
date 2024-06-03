@@ -1438,4 +1438,5 @@ Please provide specific details of your needs here.</string>
     </plurals>
     <string name="membership_error_button_text_action">Связаться с нами</string>
     <string name="membership_error_button_text_dismiss">Ок</string>
+    <string name="error_login_network_id_mismatch">Network ID mismatch detected. Please verify your network configuration.</string>
 </resources>

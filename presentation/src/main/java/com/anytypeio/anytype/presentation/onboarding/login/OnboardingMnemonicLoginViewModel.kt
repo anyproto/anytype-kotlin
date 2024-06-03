@@ -98,8 +98,9 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
             ).proceed(
                 failure = { exception ->
                     val error = when(exception) {
-                        LoginException.InvalidMnemonic -> SideEffect.Error.InvalidMnemonic
-                        else -> SideEffect.Error.Unknown("Error while login: ${exception.message}")
+                        is LoginException.InvalidMnemonic -> SideEffect.Error.InvalidMnemonic
+                        is LoginException.NetworkIdMismatch -> SideEffect.Error.NetworkIdMismatch
+                        else -> SideEffect.Error.Unknown("Error while wallet convert: ${exception.message}")
                     }
                     sideEffects.emit(error).also {
                         Timber.e(exception, "Error while convert wallet")
@@ -123,13 +124,15 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                     proceedWithSavingMnemonic(chain)
                 },
                 fnL = { exception ->
+                    Timber.d("Got exception: $exception")
                     viewModelScope.launch {
                         val error = when(exception) {
-                            LoginException.InvalidMnemonic -> SideEffect.Error.InvalidMnemonic
+                            is LoginException.InvalidMnemonic -> SideEffect.Error.InvalidMnemonic
+                            is LoginException.NetworkIdMismatch -> SideEffect.Error.NetworkIdMismatch
                             else -> SideEffect.Error.Unknown("Error while login: ${exception.message}")
                         }
                         sideEffects.emit(error).also {
-                            Timber.e(exception, "Error while convert wallet")
+                            Timber.e(exception, "Error while selecting account")
                         }
                     }
                 }
@@ -202,7 +205,8 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
             selectAccount(
                 SelectAccount.Params(
                     id = id,
-                    path = pathProvider.providePath()
+                    path = pathProvider.providePath(),
+
                 )
             ).process(
                 failure = { e ->
@@ -217,6 +221,9 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                         }
                         is NeedToUpdateApplicationException -> {
                             error.value = SplashViewModel.ERROR_NEED_UPDATE
+                        }
+                        is LoginException.NetworkIdMismatch -> {
+                            sideEffects.emit(SideEffect.Error.NetworkIdMismatch)
                         }
                         else -> {
                             val msg = e.message ?: "Unknown error"
@@ -265,10 +272,11 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
 
     sealed class SideEffect {
         sealed class Error : SideEffect() {
-            object InvalidMnemonic : Error()
+            data object InvalidMnemonic : Error()
+            data object NetworkIdMismatch: Error()
             data class Unknown(val msg: String): SideEffect()
         }
-        object Exit: SideEffect()
+        data object Exit: SideEffect()
     }
 
     sealed class SetupState {

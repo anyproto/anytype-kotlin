@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.payments.mapping
 
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.anytypeio.anytype.core_models.membership.Membership
@@ -26,14 +28,10 @@ import com.anytypeio.anytype.payments.playbilling.BillingPurchaseState
 import com.anytypeio.anytype.payments.viewmodel.MembershipMainState
 import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
 import com.anytypeio.anytype.presentation.membership.models.TierId
-import com.google.gson.Gson
-import com.google.gson.annotations.SerializedName
-
 
 fun MembershipStatus.toMainView(
     billingClientState: BillingClientState,
     billingPurchaseState: BillingPurchaseState,
-    gson: Gson,
     accountId: String
 ): MembershipMainState {
     val (showBanner, subtitle) = if (activeTier.value in ACTIVE_TIERS_WITH_BANNERS) {
@@ -62,7 +60,6 @@ fun MembershipStatus.toMainView(
                 billingClientState = billingClientState,
                 billingPurchaseState = billingPurchaseState,
                 accountId = accountId,
-                gson = gson
             )
         }
     )
@@ -87,8 +84,7 @@ fun MembershipTierData.toView(
     membershipStatus: MembershipStatus,
     billingClientState: BillingClientState,
     billingPurchaseState: BillingPurchaseState,
-    accountId: String,
-    gson: Gson
+    accountId: String
 ): Tier {
     val tierId = TierId(id)
     val isActive = membershipStatus.isTierActive(id)
@@ -117,7 +113,6 @@ fun MembershipTierData.toView(
             isActive = isActive,
             billingPurchaseState = billingPurchaseState,
             membershipStatus = membershipStatus,
-            gson = gson,
             accountId = accountId
         ),
         email = emailState,
@@ -160,8 +155,7 @@ private fun MembershipTierData.toButtonView(
     isActive: Boolean,
     billingPurchaseState: BillingPurchaseState,
     membershipStatus: MembershipStatus,
-    accountId: String,
-    gson: Gson
+    accountId: String
 ): TierButton {
     val androidProductId = this.androidProductId
     val androidInfoUrl = this.androidManageUrl
@@ -222,8 +216,7 @@ private fun MembershipTierData.toButtonView(
                     getButtonStateAccordingToPurchaseState(
                         androidProductId = androidProductId,
                         accountId = accountId,
-                        purchases = billingPurchaseState.purchases,
-                        gson = gson
+                        purchases = billingPurchaseState.purchases
                     )
                 }
                 BillingPurchaseState.Loading -> {
@@ -244,8 +237,7 @@ private fun MembershipTierData.toButtonView(
 private fun getButtonStateAccordingToPurchaseState(
     androidProductId: String?,
     accountId: String,
-    purchases: List<Purchase>,
-    gson: Gson
+    purchases: List<Purchase>
 ): TierButton {
     when (purchases.size) {
         0 -> {
@@ -253,8 +245,8 @@ private fun getButtonStateAccordingToPurchaseState(
         }
         1 -> {
             val purchase = purchases[0]
-            val purchaseModel = gson.fromJson(purchase.originalJson, PurchaseModel::class.java)
-            if (purchaseModel.accountId != accountId) {
+            val purchaseModel = Json.decodeFromString<PurchaseModel>(purchase.originalJson)
+            if (purchaseModel.obfuscatedAccountId != accountId) {
                 return TierButton.HiddenWithText.DifferentPurchaseAccountId
             }
             if (purchaseModel.productId != androidProductId) {
@@ -447,9 +439,8 @@ private fun MembershipTierData.getTierEmail(isActive: Boolean, membershipEmail: 
     return TierEmail.Hidden
 }
 
+@Serializable
 data class PurchaseModel(
-    @SerializedName("obfuscatedAccountId")
-    val accountId: String,
-    @SerializedName("productId")
+    val obfuscatedAccountId: String,
     val productId: String
 )

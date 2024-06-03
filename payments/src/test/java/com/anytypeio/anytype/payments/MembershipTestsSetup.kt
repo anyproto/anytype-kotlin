@@ -29,7 +29,6 @@ import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
 import com.anytypeio.anytype.presentation.membership.models.TierId
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.test_utils.MockDataFactory
-import com.google.gson.Gson
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -84,8 +83,6 @@ open class MembershipTestsSetup {
 
     @Mock
     lateinit var getMembershipEmailStatus: GetMembershipEmailStatus
-
-    var gson: Gson = Gson()
 
     @Mock
     lateinit var getMembershipPaymentUrl: GetMembershipPaymentUrl
@@ -182,7 +179,6 @@ open class MembershipTestsSetup {
         isMembershipNameValid = isMembershipNameValid,
         setMembershipEmail = setMembershipEmail,
         verifyMembershipEmailCode = verifyMembershipEmailCode,
-        getMembershipEmailStatus = getMembershipEmailStatus,
-        gson = gson
+        getMembershipEmailStatus = getMembershipEmailStatus
     )
 }

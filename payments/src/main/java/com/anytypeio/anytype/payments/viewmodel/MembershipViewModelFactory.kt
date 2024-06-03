@@ -11,7 +11,6 @@ import com.anytypeio.anytype.domain.payments.SetMembershipEmail
 import com.anytypeio.anytype.domain.payments.VerifyMembershipEmailCode
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
-import com.google.gson.Gson
 import javax.inject.Inject
 
 class MembershipViewModelFactory @Inject constructor(
@@ -23,8 +22,7 @@ class MembershipViewModelFactory @Inject constructor(
     private val isMembershipNameValid: IsMembershipNameValid,
     private val setMembershipEmail: SetMembershipEmail,
     private val verifyMembershipEmailCode: VerifyMembershipEmailCode,
-    private val getMembershipEmailStatus: GetMembershipEmailStatus,
-    private val gson: Gson
+    private val getMembershipEmailStatus: GetMembershipEmailStatus
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -37,8 +35,7 @@ class MembershipViewModelFactory @Inject constructor(
             isMembershipNameValid = isMembershipNameValid,
             setMembershipEmail = setMembershipEmail,
             verifyMembershipEmailCode = verifyMembershipEmailCode,
-            getMembershipEmailStatus = getMembershipEmailStatus,
-            gson = gson
+            getMembershipEmailStatus = getMembershipEmailStatus
         ) as T
     }
 }

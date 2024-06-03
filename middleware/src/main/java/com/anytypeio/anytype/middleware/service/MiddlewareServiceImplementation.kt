@@ -90,6 +90,9 @@ class MiddlewareServiceImplementation @Inject constructor(
                 Rpc.Account.Select.Response.Error.Code.FAILED_TO_FETCH_REMOTE_NODE_HAS_INCOMPATIBLE_PROTO_VERSION -> {
                     throw NeedToUpdateApplicationException()
                 }
+                Rpc.Account.Select.Response.Error.Code.CONFIG_FILE_NETWORK_ID_MISMATCH -> {
+                    throw LoginException.NetworkIdMismatch()
+                }
                 else -> throw Exception(error.description)
             }
         } else {
@@ -1187,7 +1190,7 @@ class MiddlewareServiceImplementation @Inject constructor(
         if (error != null && error.code != Rpc.Wallet.Convert.Response.Error.Code.NULL) {
             when (error.code) {
                 Rpc.Wallet.Convert.Response.Error.Code.BAD_INPUT -> {
-                    throw LoginException.InvalidMnemonic
+                    throw LoginException.InvalidMnemonic()
                 }
                 else -> throw Exception(error.description)
             }
@@ -1214,7 +1217,7 @@ class MiddlewareServiceImplementation @Inject constructor(
         if (error != null && error.code != Rpc.Wallet.Recover.Response.Error.Code.NULL) {
             when (error.code) {
                 Rpc.Wallet.Recover.Response.Error.Code.BAD_INPUT -> {
-                    throw LoginException.InvalidMnemonic
+                    throw LoginException.InvalidMnemonic()
                 }
                 else -> throw Exception(error.description)
             }

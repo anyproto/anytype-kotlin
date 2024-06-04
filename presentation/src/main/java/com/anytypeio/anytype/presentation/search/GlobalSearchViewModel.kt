@@ -28,7 +28,6 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -71,22 +70,22 @@ class GlobalSearchViewModel(
             emitAll(userInput.drop(1).debounce(DEFAULT_DEBOUNCE_DURATION).distinctUntilChanged())
         }
 
-    private val interactionMode = MutableStateFlow<InteractionMode>(InteractionMode.Default)
+    private val mode = MutableStateFlow<Mode>(Mode.Default)
 
     val views = MutableStateFlow<List<GlobalSearchItemView>>(emptyList())
     val navigation = MutableSharedFlow<OpenObjectNavigation>()
 
     val state = combine(
-        interactionMode,
+        mode,
         searchQuery
     ) { mode, query ->
         mode to query
     }.flatMapLatest { (mode, query) ->
         when(mode) {
-            is InteractionMode.Default -> {
+            is Mode.Default -> {
                 buildDefaultSearchFlow(query)
             }
-            is InteractionMode.Related -> {
+            is Mode.Related -> {
                 buildRelatedSearchFlow(query, mode)
             }
         }
@@ -98,7 +97,7 @@ class GlobalSearchViewModel(
 
     private fun buildRelatedSearchFlow(
         query: String,
-        mode: InteractionMode.Related
+        mode: Mode.Related
     ) = searchWithMeta
         .stream(
             Command.SearchWithMeta(
@@ -220,14 +219,14 @@ class GlobalSearchViewModel(
     fun onClearRelatedObjectClicked() {
         viewModelScope.launch {
             userInput.value = EMPTY_STRING_VALUE
-            interactionMode.value = InteractionMode.Default
+            mode.value = Mode.Default
         }
     }
 
     fun onShowRelatedClicked(globalSearchItemView: GlobalSearchItemView) {
         viewModelScope.launch {
             userInput.value = EMPTY_STRING_VALUE
-            interactionMode.value = InteractionMode.Related(globalSearchItemView)
+            mode.value = Mode.Related(globalSearchItemView)
         }
     }
 
@@ -250,9 +249,9 @@ class GlobalSearchViewModel(
         }
     }
 
-    private sealed class InteractionMode {
-        data object Default : InteractionMode()
-        data class Related(val view: GlobalSearchItemView) : InteractionMode()
+    private sealed class Mode {
+        data object Default : Mode()
+        data class Related(val view: GlobalSearchItemView) : Mode()
     }
 
     sealed class ViewState {

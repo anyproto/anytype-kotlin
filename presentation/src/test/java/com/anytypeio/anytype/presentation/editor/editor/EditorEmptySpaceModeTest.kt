@@ -26,7 +26,7 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyNoInteractions
 
-class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
+class EditorEmptySpaceModeTest : EditorPresentationTestSetup() {
 
     val title = Block(
         id = MockDataFactory.randomUuid(),

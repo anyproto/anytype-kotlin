@@ -6,11 +6,17 @@ import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
+import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod.METHOD_CRYPTO
+import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod.METHOD_INAPP_APPLE
+import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod.METHOD_INAPP_GOOGLE
+import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod.METHOD_NONE
+import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod.METHOD_STRIPE
 import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.payments.constants.MembershipConstants
 import com.anytypeio.anytype.payments.constants.MembershipConstants.ACTIVE_TIERS_WITH_BANNERS
+import com.anytypeio.anytype.payments.constants.MembershipConstants.CO_CREATOR_ID
 import com.anytypeio.anytype.payments.constants.MembershipConstants.MEMBERSHIP_CONTACT_EMAIL
 import com.anytypeio.anytype.payments.constants.MembershipConstants.MEMBERSHIP_LEVEL_DETAILS
 import com.anytypeio.anytype.payments.constants.MembershipConstants.PRIVACY_POLICY
@@ -34,11 +40,7 @@ fun MembershipStatus.toMainView(
     billingPurchaseState: BillingPurchaseState,
     accountId: String
 ): MembershipMainState {
-    val (showBanner, subtitle) = if (activeTier.value in ACTIVE_TIERS_WITH_BANNERS) {
-        true to R.string.payments_subheader
-    } else {
-        false to null
-    }
+    val (showBanner, subtitle) = determineBannerAndSubtitle()
     return MembershipMainState.Default(
         title = R.string.payments_header,
         subtitle = subtitle,
@@ -65,19 +67,21 @@ fun MembershipStatus.toMainView(
     )
 }
 
-private fun MembershipStatus.isTierActive(tierId: Int): Boolean {
-    return when (this.status) {
-        Membership.Status.STATUS_ACTIVE -> activeTier.value == tierId
-        else -> false
+private fun MembershipStatus.determineBannerAndSubtitle(): Pair<Boolean, Int?> {
+    return if (activeTier.value in ACTIVE_TIERS_WITH_BANNERS) {
+        true to R.string.payments_subheader
+    } else {
+        false to null
     }
+}
+
+private fun MembershipStatus.isTierActive(tierId: Int): Boolean {
+    return status == Membership.Status.STATUS_ACTIVE && activeTier.value == tierId
 }
 
 private fun MembershipTierData.isActiveTierPurchasedOnAndroid(activePaymentMethod: MembershipPaymentMethod): Boolean {
     val androidProductId = this.androidProductId
-    return when (activePaymentMethod) {
-        MembershipPaymentMethod.METHOD_INAPP_GOOGLE -> return !androidProductId.isNullOrBlank()
-        else -> false
-    }
+    return activePaymentMethod == METHOD_INAPP_GOOGLE && !androidProductId.isNullOrBlank()
 }
 
 fun MembershipTierData.toView(
@@ -86,15 +90,19 @@ fun MembershipTierData.toView(
     billingPurchaseState: BillingPurchaseState,
     accountId: String
 ): Tier {
-    val tierId = TierId(id)
     val isActive = membershipStatus.isTierActive(id)
-    val emailState = getTierEmail(isActive, membershipStatus.userEmail)
-    val tierName = name
-    val tierDescription = description
-    val result = Tier(
-        id = tierId,
-        title = tierName,
-        subtitle = tierDescription,
+    val (buttonState, anyNameState) = mapButtonAndNameStates(
+        isActive = isActive,
+        billingPurchaseState = billingPurchaseState,
+        membershipStatus = membershipStatus,
+        accountId = accountId,
+        billingClientState = billingClientState
+    )
+
+    return Tier(
+        id = TierId(id),
+        title = name,
+        subtitle = description,
         conditionInfo = getConditionInfo(
             isActive = isActive,
             billingClientState = billingClientState,
@@ -103,19 +111,9 @@ fun MembershipTierData.toView(
         ),
         isActive = isActive,
         features = features,
-        membershipAnyName = getAnyName(
-            isActive = isActive,
-            billingClientState = billingClientState,
-            membershipStatus = membershipStatus,
-            billingPurchaseState = billingPurchaseState
-        ),
-        buttonState = toButtonView(
-            isActive = isActive,
-            billingPurchaseState = billingPurchaseState,
-            membershipStatus = membershipStatus,
-            accountId = accountId
-        ),
-        email = emailState,
+        membershipAnyName = anyNameState,
+        buttonState = buttonState,
+        email = getTierEmail(isActive, membershipStatus.userEmail),
         color = colorStr,
         urlInfo = androidManageUrl,
         stripeManageUrl = stripeManageUrl,
@@ -124,7 +122,6 @@ fun MembershipTierData.toView(
         androidProductId = androidProductId,
         paymentMethod = membershipStatus.paymentMethod
     )
-    return result
 }
 
 fun MembershipTierData.toPreviewView(
@@ -151,87 +148,147 @@ fun MembershipTierData.toPreviewView(
     )
 }
 
-private fun MembershipTierData.toButtonView(
+private fun MembershipTierData.mapButtonAndNameStates(
     isActive: Boolean,
+    billingClientState: BillingClientState,
     billingPurchaseState: BillingPurchaseState,
     membershipStatus: MembershipStatus,
     accountId: String
-): TierButton {
-    val androidProductId = this.androidProductId
-    val androidInfoUrl = this.androidManageUrl
+): Pair<TierButton, TierAnyName> {
+    if (membershipStatus.isPending()) {
+        return TierButton.Hidden to TierAnyName.Hidden
+    }
     return if (isActive) {
-        val wasPurchasedOnAndroid = isActiveTierPurchasedOnAndroid(membershipStatus.paymentMethod)
-        if (!wasPurchasedOnAndroid) {
-            if (id == MembershipConstants.EXPLORER_ID) {
-                if (membershipStatus.userEmail.isBlank()) {
-                    TierButton.Submit.Enabled
-                } else {
-                    TierButton.ChangeEmail
-                }
-            } else {
-                when (membershipStatus.paymentMethod) {
-                    MembershipPaymentMethod.METHOD_NONE,
-                    MembershipPaymentMethod.METHOD_CRYPTO -> {
-                        TierButton.Hidden
-                    }
-
-                    MembershipPaymentMethod.METHOD_STRIPE -> {
-                        if (stripeManageUrl.isNullOrBlank()) {
-                            TierButton.Hidden
-                        } else {
-                            TierButton.Manage.External.Enabled(stripeManageUrl)
-                        }
-                    }
-
-                    MembershipPaymentMethod.METHOD_INAPP_APPLE -> {
-                        if (iosManageUrl.isNullOrBlank()) {
-                            TierButton.Hidden
-                        } else {
-                            TierButton.Manage.External.Enabled(iosManageUrl)
-                        }
-                    }
-
-                    MembershipPaymentMethod.METHOD_INAPP_GOOGLE -> TierButton.Manage.External.Enabled(
-                        androidInfoUrl
-                    )
-                }
-            }
-        } else {
-            if (billingPurchaseState is BillingPurchaseState.HasPurchases) {
-                TierButton.Manage.Android.Enabled(androidProductId)
-            } else {
-                TierButton.Manage.Android.Disabled
-            }
-        }
+        mapActiveTierButtonAndNameStates(
+            billingPurchaseState = billingPurchaseState,
+            paymentMethod = membershipStatus.paymentMethod,
+            userEmail = membershipStatus.userEmail,
+            accountId = accountId
+        )
     } else {
-        if (androidProductId == null) {
-            if (androidInfoUrl == null) {
-                TierButton.Info.Disabled
-            } else {
-                TierButton.Info.Enabled(androidInfoUrl)
+        mapInactiveTierButtonAndNameStates(
+            billingClientState = billingClientState,
+            billingPurchaseState = billingPurchaseState,
+            membershipStatus = membershipStatus,
+            accountId = accountId
+        )
+    }
+}
+
+private fun MembershipStatus.isPending(): Boolean {
+    return status == Membership.Status.STATUS_PENDING || status == Membership.Status.STATUS_PENDING_FINALIZATION
+}
+
+private fun MembershipTierData.mapActiveTierButtonAndNameStates(
+    billingPurchaseState: BillingPurchaseState,
+    paymentMethod: MembershipPaymentMethod,
+    userEmail: String,
+    accountId: String
+): Pair<TierButton, TierAnyName> {
+    val wasPurchasedOnAndroid = isActiveTierPurchasedOnAndroid(paymentMethod)
+    if (!wasPurchasedOnAndroid) {
+        return when {
+            id == MembershipConstants.EXPLORER_ID && userEmail.isBlank() -> {
+                TierButton.Submit.Enabled to TierAnyName.Hidden
             }
-        } else {
-            when (billingPurchaseState) {
-                is BillingPurchaseState.HasPurchases -> {
-                    getButtonStateAccordingToPurchaseState(
-                        androidProductId = androidProductId,
-                        accountId = accountId,
-                        purchases = billingPurchaseState.purchases
-                    )
-                }
-                BillingPurchaseState.Loading -> {
-                    TierButton.Hidden
-                }
-                BillingPurchaseState.NoPurchases -> {
-                    if (membershipStatus.anyName.isBlank()) {
-                        TierButton.Pay.Disabled
-                    } else {
-                        TierButton.Pay.Enabled
-                    }
-                }
+            id == MembershipConstants.EXPLORER_ID -> {
+                TierButton.ChangeEmail to TierAnyName.Hidden
+            }
+            paymentMethod == METHOD_NONE || paymentMethod == METHOD_CRYPTO -> {
+                TierButton.Hidden to TierAnyName.Hidden
+            }
+            paymentMethod == METHOD_STRIPE && !stripeManageUrl.isNullOrBlank() -> {
+                TierButton.Manage.External.Enabled(stripeManageUrl) to TierAnyName.Hidden
+            }
+            paymentMethod == METHOD_INAPP_APPLE && !iosManageUrl.isNullOrBlank() -> {
+                TierButton.Manage.External.Enabled(iosManageUrl) to TierAnyName.Hidden
+            }
+            paymentMethod == METHOD_INAPP_GOOGLE -> {
+                TierButton.Manage.External.Enabled(androidManageUrl) to TierAnyName.Hidden
+            }
+            else -> {
+                TierButton.Hidden to TierAnyName.Hidden
             }
         }
     }
+
+    return if (billingPurchaseState is BillingPurchaseState.HasPurchases) {
+        val purchases = billingPurchaseState.purchases
+        return when (purchases.size) {
+            0 -> TierButton.Manage.Android.Disabled to TierAnyName.Hidden
+            1 -> {
+                val purchase = purchases[0]
+                val purchaseModel = Json.decodeFromString<PurchaseModel>(purchase.originalJson)
+                if (purchaseModel.obfuscatedAccountId == accountId && purchaseModel.productId == androidProductId) {
+                    TierButton.Manage.Android.Enabled(androidProductId) to TierAnyName.Hidden
+                } else {
+                    TierButton.Manage.Android.Disabled to TierAnyName.Hidden
+                }
+            }
+            else -> TierButton.Manage.Android.Disabled to TierAnyName.Hidden
+        }
+    } else {
+        TierButton.Manage.Android.Disabled to TierAnyName.Hidden
+    }
+}
+
+private fun MembershipTierData.mapInactiveTierButtonAndNameStates(
+    billingClientState: BillingClientState,
+    billingPurchaseState: BillingPurchaseState,
+    membershipStatus: MembershipStatus,
+    accountId: String
+): Pair<TierButton, TierAnyName> {
+    val androidProductId = this.androidProductId
+    val androidInfoUrl = this.androidManageUrl
+    if (androidProductId == null) {
+        return if (androidInfoUrl == null) {
+            TierButton.Info.Disabled to TierAnyName.Hidden
+        } else {
+            TierButton.Info.Enabled(androidInfoUrl) to TierAnyName.Hidden
+        }
+    }
+
+    if (membershipStatus.activeTier.value == CO_CREATOR_ID) {
+        return TierButton.Hidden to TierAnyName.Hidden
+    }
+
+    return when (billingPurchaseState) {
+        is BillingPurchaseState.HasPurchases -> {
+            getButtonStateAccordingToPurchaseState(
+                androidProductId = androidProductId,
+                accountId = accountId,
+                purchases = billingPurchaseState.purchases
+            ) to TierAnyName.Hidden
+        }
+        BillingPurchaseState.Loading -> {
+            TierButton.Hidden to TierAnyName.Hidden
+        }
+        BillingPurchaseState.NoPurchases -> {
+            handleNoPurchasesState(
+                billingClientState = billingClientState,
+                membershipStatus = membershipStatus,
+                androidProductId = androidProductId
+            )
+        }
+    }
+}
+
+private fun handleNoPurchasesState(
+    billingClientState: BillingClientState,
+    membershipStatus: MembershipStatus,
+    androidProductId: String
+): Pair<TierButton, TierAnyName> {
+    if (billingClientState is BillingClientState.Connected) {
+        val product = billingClientState.productDetails.find { it.productId == androidProductId }
+        return when {
+            product == null -> TierButton.Pay.Disabled to TierAnyName.Visible.Disabled
+            product.billingPriceInfo() == null -> TierButton.Pay.Disabled to TierAnyName.Visible.Disabled
+            membershipStatus.anyName.isBlank() -> TierButton.Pay.Disabled to TierAnyName.Visible.Enter
+            else -> TierButton.Pay.Enabled to TierAnyName.Visible.Purchased(membershipStatus.anyName)
+        }
+    }
+
+    return TierButton.Pay.Disabled to TierAnyName.Visible.Disabled
 }
 
 private fun getButtonStateAccordingToPurchaseState(
@@ -239,71 +296,20 @@ private fun getButtonStateAccordingToPurchaseState(
     accountId: String,
     purchases: List<Purchase>
 ): TierButton {
-    when (purchases.size) {
-        0 -> {
-            return TierButton.Hidden
-        }
+    return when (purchases.size) {
+        0 -> TierButton.Hidden
         1 -> {
             val purchase = purchases[0]
             val purchaseModel = Json.decodeFromString<PurchaseModel>(purchase.originalJson)
-            if (purchaseModel.obfuscatedAccountId != accountId) {
-                return TierButton.HiddenWithText.DifferentPurchaseAccountId
-            }
-            if (purchaseModel.productId != androidProductId) {
-                return TierButton.HiddenWithText.DifferentPurchaseProductId
-            }
-            return TierButton.Hidden
-        }
-        else -> {
-            return TierButton.HiddenWithText.MoreThenOnePurchase
-        }
-    }
-}
-
-private fun MembershipTierData.getAnyName(
-    isActive: Boolean,
-    billingClientState: BillingClientState,
-    membershipStatus: MembershipStatus,
-    billingPurchaseState: BillingPurchaseState
-): TierAnyName {
-    if (isActive) {
-        return TierAnyName.Hidden
-    } else {
-        if (androidProductId == null) {
-            return TierAnyName.Hidden
-        } else {
-            if (membershipStatus.status == Membership.Status.STATUS_PENDING ||
-                membershipStatus.status == Membership.Status.STATUS_PENDING_FINALIZATION
-            ) {
-                return TierAnyName.Hidden
-            }
-
-            if (billingPurchaseState is BillingPurchaseState.Loading
-                || billingPurchaseState is BillingPurchaseState.HasPurchases
-            ) {
-                return TierAnyName.Hidden
-            }
-
-            if (billingClientState is BillingClientState.Connected) {
-                val product =
-                    billingClientState.productDetails.find { it.productId == androidProductId }
-                if (product == null) {
-                    return TierAnyName.Visible.Disabled
-                } else {
-                    if (product.billingPriceInfo() == null) {
-                        return TierAnyName.Visible.Disabled
-                    } else {
-                        if (membershipStatus.anyName.isBlank()) {
-                            return TierAnyName.Visible.Enter
-                        } else {
-                            return TierAnyName.Visible.Purchased(membershipStatus.anyName)
-                        }
-                    }
-                }
-            } else {
-                return TierAnyName.Visible.Disabled
+            when {
+                purchaseModel.obfuscatedAccountId != accountId ->
+                    TierButton.HiddenWithText.DifferentPurchaseAccountId
+                purchaseModel.productId != androidProductId ->
+                    TierButton.HiddenWithText.DifferentPurchaseProductId
+                else -> TierButton.Hidden
             }
         }
+        else -> TierButton.HiddenWithText.MoreThenOnePurchase
     }
 }
 
@@ -382,11 +388,9 @@ private fun MembershipTierData.createConditionInfoForBillingTier(
         BillingClientState.Loading -> {
             TierConditionInfo.Visible.LoadingBillingClient
         }
-
         is BillingClientState.Error -> {
             TierConditionInfo.Visible.Error(billingClientState.message)
         }
-
         is BillingClientState.Connected -> {
             val product =
                 billingClientState.productDetails.find { it.productId == androidProductId }

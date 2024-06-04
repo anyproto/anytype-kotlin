@@ -95,7 +95,7 @@ class GlobalSearchViewModel(
         initialValue = ViewState.Init
     )
 
-    private fun buildRelatedSearchFlow(
+    private suspend fun buildRelatedSearchFlow(
         query: String,
         mode: Mode.Related
     ) = searchWithMeta
@@ -106,6 +106,11 @@ class GlobalSearchViewModel(
                 offset = 0,
                 keys = emptyList(),
                 filters = buildList {
+                    addAll(
+                        ObjectSearchConstants.filterSearchObjects(
+                            spaces = listOf(spaceManager.get())
+                        )
+                    )
                     add(
                         DVFilter(
                             relation = Relations.ID,

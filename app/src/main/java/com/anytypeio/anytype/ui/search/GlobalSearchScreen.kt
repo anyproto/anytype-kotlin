@@ -2,6 +2,9 @@ package com.anytypeio.anytype.ui.search
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,18 +20,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -72,6 +80,7 @@ import com.anytypeio.anytype.core_ui.widgets.defaultProfileIconImage
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
@@ -82,6 +91,19 @@ fun GlobalSearchScreen(
     onShowRelatedClicked: (GlobalSearchItemView) -> Unit,
     onClearRelatedClicked: () -> Unit
 ) {
+
+    var showLoading by rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(state.isLoading) {
+        if (state.isLoading && !showLoading) {
+            delay(AVOID_FLICKERING_DELAY)
+            showLoading = true
+        } else if (!state.isLoading && showLoading) {
+            delay(100)
+            showLoading = false
+        }
+    }
+
     var query by remember { mutableStateOf("") }
     val isKeyboardOpen by keyboardAsState()
     Column(
@@ -110,7 +132,8 @@ fun GlobalSearchScreen(
                     color = colorResource(id = R.color.shape_transparent),
                     shape = RoundedCornerShape(10.dp)
                 )
-                .height(40.dp)
+                .height(40.dp),
+            verticalAlignment = Alignment.CenterVertically
 
         ) {
             Image(
@@ -125,7 +148,7 @@ fun GlobalSearchScreen(
             BasicTextField(
                 value = query,
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .weight(1.0f)
                     .padding(start = 6.dp)
                     .align(Alignment.CenterVertically)
                 ,
@@ -163,6 +186,29 @@ fun GlobalSearchScreen(
                     )
                 }
             )
+            Box(
+                modifier = Modifier.size(16.dp)
+            ) {
+                if (showLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.fillMaxSize(),
+                        color = colorResource(id = R.color.glyph_active),
+                        strokeWidth = 2.dp
+                    )
+                }
+            }
+            Spacer(Modifier.width(9.dp))
+            AnimatedVisibility(
+                visible = query.isNotEmpty(),
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_clear_18),
+                    contentDescription = "Clear icon",
+                    modifier = Modifier.padding(end = 9.dp)
+                )
+            }
         }
         LazyColumn(
             modifier = Modifier
@@ -965,3 +1011,5 @@ private fun DefaultGlobalSearchItemViewWithRelatedScreenPreview() {
         onClearRelatedClicked = {}
     )
 }
+
+const val AVOID_FLICKERING_DELAY = 100L

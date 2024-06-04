@@ -102,7 +102,7 @@ class GlobalSearchViewModel(
         .stream(
             Command.SearchWithMeta(
                 query = query,
-                limit = 50,
+                limit = DEFAULT_SEARCH_LIMIT,
                 offset = 0,
                 keys = emptyList(),
                 filters = buildList {
@@ -110,8 +110,8 @@ class GlobalSearchViewModel(
                         DVFilter(
                             relation = Relations.ID,
                             value = buildSet {
-                                addAll(mode.view.links)
-                                addAll(mode.view.backlinks)
+                                addAll(mode.target.links)
+                                addAll(mode.target.backlinks)
                             }.toList(),
                             condition = DVFilterCondition.IN
                         )
@@ -125,7 +125,7 @@ class GlobalSearchViewModel(
             when (result) {
                 is Resultat.Failure -> {
                     ViewState.Related(
-                        target = mode.view,
+                        target = mode.target,
                         views = emptyList(),
                         isLoading = false
                     )
@@ -133,7 +133,7 @@ class GlobalSearchViewModel(
 
                 is Resultat.Loading -> {
                     ViewState.Related(
-                        target = mode.view,
+                        target = mode.target,
                         views = emptyList(),
                         isLoading = true
                     )
@@ -141,7 +141,7 @@ class GlobalSearchViewModel(
 
                 is Resultat.Success -> {
                     ViewState.Related(
-                        target = mode.view,
+                        target = mode.target,
                         views = result.value.mapNotNull {
                             it.view(
                                 storeOfRelations = storeOfRelations,
@@ -159,7 +159,7 @@ class GlobalSearchViewModel(
         .stream(
             Command.SearchWithMeta(
                 query = query,
-                limit = 50,
+                limit = DEFAULT_SEARCH_LIMIT,
                 offset = 0,
                 keys = emptyList(),
                 filters = ObjectSearchConstants.filterSearchObjects(
@@ -249,9 +249,18 @@ class GlobalSearchViewModel(
         }
     }
 
+    /**
+     * Search interaction mode.
+     */
     private sealed class Mode {
+        /**
+         * Default search mode. Searching for objects in a given space.
+         */
         data object Default : Mode()
-        data class Related(val view: GlobalSearchItemView) : Mode()
+        /**
+         * Searching for objects related to the given object, i.e. searching for (back)links.
+         */
+        data class Related(val target: GlobalSearchItemView) : Mode()
     }
 
     sealed class ViewState {
@@ -278,6 +287,7 @@ class GlobalSearchViewModel(
 
     companion object {
         const val DEFAULT_DEBOUNCE_DURATION = 300L
+        const val DEFAULT_SEARCH_LIMIT = 50
     }
 }
 

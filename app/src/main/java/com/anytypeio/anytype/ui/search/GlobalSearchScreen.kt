@@ -171,10 +171,11 @@ fun GlobalSearchScreen(
         ) {
             if (state is GlobalSearchViewModel.ViewState.Related) {
                 stickyHeader {
-                    Box(
+                    Row(
                         modifier = Modifier
                             .height(48.dp)
-                            .fillMaxWidth()
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.Bottom
                     ) {
                         Text(
                             text = buildAnnotatedString {
@@ -190,23 +191,21 @@ fun GlobalSearchScreen(
                             style = Caption1Regular,
                             color = colorResource(id = R.color.text_secondary),
                             modifier = Modifier
-                                .align(
-                                    Alignment.BottomStart
-                                )
+                                .weight(1.0f)
                                 .padding(
                                     start = 20.dp,
                                     bottom = 8.dp
-                                )
+                                ),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                         Text(
                             text = stringResource(id = R.string.clear),
                             style = Caption1Regular,
                             color = colorResource(id = R.color.text_secondary),
                             modifier = Modifier
-                                .align(
-                                    Alignment.BottomEnd
-                                )
                                 .padding(
+                                    start = 20.dp,
                                     end = 20.dp,
                                     bottom = 8.dp
                                 )
@@ -216,12 +215,11 @@ fun GlobalSearchScreen(
                                     }
                                 }
                         )
-                        Divider(
-                            paddingStart = 20.dp,
-                            paddingEnd = 20.dp,
-                            modifier = Modifier.align(Alignment.BottomCenter)
-                        )
                     }
+                    Divider(
+                        paddingStart = 20.dp,
+                        paddingEnd = 20.dp
+                    )
                 }
             }
             state.views.forEachIndexed { idx, item ->
@@ -799,6 +797,103 @@ private fun DefaultGlobalSearchItemViewStatusRelationScreenPreview() {
         onQueryChanged = {},
         state = GlobalSearchViewModel.ViewState.Default(
             isLoading = false,
+            views = listOf(
+                GlobalSearchItemView(
+                    id = "ID1",
+                    space = SpaceId(""),
+                    title = "Autechre",
+                    type = "Band",
+                    meta = GlobalSearchItemView.Meta.None,
+                    layout = ObjectType.Layout.BASIC,
+                    icon = ObjectIcon.Basic.Avatar("A")
+                ),
+                GlobalSearchItemView(
+                    id = "ID2",
+                    space = SpaceId(""),
+                    title = "Autechre",
+                    type = "Band",
+                    meta = GlobalSearchItemView.Meta.Status(
+                        name = "Style",
+                        value = "IDM",
+                        color = ThemeColor.TEAL
+                    ),
+                    layout = ObjectType.Layout.BASIC,
+                    icon = ObjectIcon.Basic.Avatar("A")
+                ),
+                GlobalSearchItemView(
+                    id = "ID3",
+                    space = SpaceId(""),
+                    title = "Autechre",
+                    type = "Band",
+                    meta = GlobalSearchItemView.Meta.Tag(
+                        name = "Style",
+                        value = "IDM",
+                        color = ThemeColor.TEAL
+                    ),
+                    layout = ObjectType.Layout.BASIC,
+                    icon = ObjectIcon.Basic.Avatar("A")
+                ),
+                GlobalSearchItemView(
+                    id = "ID4",
+                    space = SpaceId(""),
+                    title = "Autechre",
+                    type = "Band",
+                    meta = GlobalSearchItemView.Meta.Default(
+                        name = "Description",
+                        value = "Autechre are an English electronic music duo consisting of Rob Brown and Sean Booth, both from Rochdale, Greater Manchester. ",
+                        highlights = listOf(
+                            IntRange(0, 8),
+                            IntRange(15, 23)
+                        )
+                    ),
+                    layout = ObjectType.Layout.BASIC,
+                    icon = ObjectIcon.Basic.Avatar("A")
+                ),
+                GlobalSearchItemView(
+                    id = "ID5",
+                    space = SpaceId(""),
+                    title = "Autechre",
+                    type = "Band",
+                    meta = GlobalSearchItemView.Meta.Block(
+                        snippet = "Autechre are an English electronic music duo consisting of Rob Brown and Sean Booth, both from Rochdale, Greater Manchester. ",
+                        highlights = emptyList()
+                    ),
+                    layout = ObjectType.Layout.BASIC,
+                    icon = ObjectIcon.Basic.Avatar("A")
+                )
+            )
+        ),
+        onObjectClicked = {},
+        onShowRelatedClicked = {},
+        onClearRelatedClicked = {}
+    )
+}
+
+@Preview(
+    name = "Dark Mode",
+    showBackground = true,
+    uiMode = UI_MODE_NIGHT_YES
+)
+@Preview(
+    name = "Light Mode",
+    showBackground = true,
+    uiMode = UI_MODE_NIGHT_NO
+)
+@Composable
+private fun DefaultGlobalSearchItemViewWithRelatedScreenPreview() {
+    GlobalSearchScreen(
+        onQueryChanged = {},
+        state = GlobalSearchViewModel.ViewState.Related(
+            isLoading = false,
+            target = GlobalSearchItemView(
+                id = "ID1",
+                space = SpaceId(""),
+                title = "Autechre Autechre Autechre Autechre Autechre Autechre Autechre Autechre",
+                type = "Band",
+                meta = GlobalSearchItemView.Meta.None,
+                layout = ObjectType.Layout.BASIC,
+                icon = ObjectIcon.Basic.Avatar("A")
+            ),
             views = listOf(
                 GlobalSearchItemView(
                     id = "ID1",

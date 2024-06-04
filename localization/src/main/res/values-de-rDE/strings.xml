@@ -1400,6 +1400,9 @@ Please provide specific details of your needs here.</string>
     <string name="membership_agree_terms">Nutzungsbedingungen</string>
     <string name="membership_agree_middle">und</string>
     <string name="membership_agree_privacy">Datenschutzerklärung</string>
+    <string name="membership_support_already_acquired">You’ve already acquired a Membership plan using another Anytype account.</string>
+    <string name="membership_support_different_subscription">Found a subscription with a different id</string>
+    <string name="membership_support_more_then_one_subscription">Found more than one subscription</string>
     <plurals name="period_years">
         <item quantity="one">Jahr</item>
         <item quantity="other">%d Jahre</item>

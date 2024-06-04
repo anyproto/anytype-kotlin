@@ -288,6 +288,10 @@ class GlobalSearchViewModel(
             override val views: List<GlobalSearchItemView>,
             override val isLoading: Boolean
         ): ViewState()
+
+        fun isEmptyState() : Boolean {
+            return this !is Init && !this.isLoading && views.isEmpty()
+        }
     }
 
     companion object {

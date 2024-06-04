@@ -3,6 +3,7 @@ package com.anytypeio.anytype.ui.search
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -40,6 +41,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
@@ -63,8 +65,14 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.keyboardAsState
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
+import com.anytypeio.anytype.core_ui.foundation.AlertConfig
+import com.anytypeio.anytype.core_ui.foundation.AlertIcon
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
+import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_RED
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
+import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
@@ -150,8 +158,7 @@ fun GlobalSearchScreen(
                 modifier = Modifier
                     .weight(1.0f)
                     .padding(start = 6.dp)
-                    .align(Alignment.CenterVertically)
-                ,
+                    .align(Alignment.CenterVertically),
                 textStyle = BodyRegular.copy(
                     color = colorResource(id = R.color.text_primary)
                 ),
@@ -170,7 +177,7 @@ fun GlobalSearchScreen(
                         singleLine = true,
                         visualTransformation = VisualTransformation.None,
                         interactionSource = interactionSource,
-                        placeholder =  {
+                        placeholder = {
                             Text(
                                 text = stringResource(id = R.string.search),
                                 style = BodyRegular.copy(
@@ -184,7 +191,8 @@ fun GlobalSearchScreen(
                         border = {},
                         contentPadding = PaddingValues()
                     )
-                }
+                },
+                cursorBrush = SolidColor(colorResource(id = R.color.palette_system_blue))
             )
             Box(
                 modifier = Modifier.size(16.dp)
@@ -200,13 +208,19 @@ fun GlobalSearchScreen(
             Spacer(Modifier.width(9.dp))
             AnimatedVisibility(
                 visible = query.isNotEmpty(),
-                enter = fadeIn(),
-                exit = fadeOut()
+                enter = fadeIn(tween(100)),
+                exit = fadeOut(tween(100))
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_clear_18),
                     contentDescription = "Clear icon",
-                    modifier = Modifier.padding(end = 9.dp)
+                    modifier = Modifier
+                        .padding(end = 9.dp)
+                        .noRippleClickable {
+                            query = "".also {
+                                onQueryChanged("")
+                            }
+                        }
                 )
             }
         }
@@ -294,17 +308,37 @@ fun GlobalSearchScreen(
                     }
                 }
             }
-            if (state !is GlobalSearchViewModel.ViewState.Init && !state.isLoading && state.views.isEmpty()) {
-                item {
+            item {
+                AnimatedVisibility(
+                    modifier = Modifier.fillParentMaxSize(),
+                    visible = state.isEmptyState(),
+                    enter = fadeIn(animationSpec = tween(1000, 0)),
+                    exit = fadeOut(animationSpec = tween(150, 0))
+                ) {
                     Box(
-                        modifier = Modifier.fillParentMaxSize()
+                        modifier = Modifier.fillMaxSize()
                     ) {
-                        Text(
-                            // TODO draw proper empty state
-                            text = "Nothing found",
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                        )
+                        Column(
+                            modifier = Modifier.align(Alignment.Center),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            AlertIcon(
+                                AlertConfig.Icon(
+                                    icon = R.drawable.ic_alert_error,
+                                    gradient = GRADIENT_TYPE_RED
+                                )
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text(
+                                text = stringResource(id = R.string.nothing_found),
+                                style = BodyCalloutMedium
+                            )
+                            Text(
+                                text = stringResource(id = R.string.try_to_create_new_one_or_search_for_something_else),
+                                style = BodyCalloutRegular,
+                                modifier = Modifier.padding(horizontal = 12.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -1005,6 +1039,30 @@ private fun DefaultGlobalSearchItemViewWithRelatedScreenPreview() {
                     icon = ObjectIcon.Basic.Avatar("A")
                 )
             )
+        ),
+        onObjectClicked = {},
+        onShowRelatedClicked = {},
+        onClearRelatedClicked = {}
+    )
+}
+
+@Preview(
+    name = "Dark Mode",
+    showBackground = true,
+    uiMode = UI_MODE_NIGHT_YES
+)
+@Preview(
+    name = "Light Mode",
+    showBackground = true,
+    uiMode = UI_MODE_NIGHT_NO
+)
+@Composable
+private fun DefaultGlobalSearchEmptyStatePreview() {
+    GlobalSearchScreen(
+        onQueryChanged = {},
+        state = GlobalSearchViewModel.ViewState.Default(
+            isLoading = false,
+            views = emptyList()
         ),
         onObjectClicked = {},
         onShowRelatedClicked = {},

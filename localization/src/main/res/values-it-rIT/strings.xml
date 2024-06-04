@@ -1401,6 +1401,9 @@ Please provide specific details of your needs here.</string>
     <string name="membership_agree_terms">Termini d\'Uso</string>
     <string name="membership_agree_middle">e</string>
     <string name="membership_agree_privacy">Informativa sulla Privacy</string>
+    <string name="membership_support_already_acquired">You’ve already acquired a Membership plan using another Anytype account.</string>
+    <string name="membership_support_different_subscription">Found a subscription with a different id</string>
+    <string name="membership_support_more_then_one_subscription">Found more than one subscription</string>
     <plurals name="period_years">
         <item quantity="one">anno</item>
         <item quantity="other">%d anni</item>

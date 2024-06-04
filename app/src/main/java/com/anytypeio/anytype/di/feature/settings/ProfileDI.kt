@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.debugging.DebugSpace
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
@@ -51,7 +52,8 @@ object ProfileModule {
         configStorage: ConfigStorage,
         urlBuilder: UrlBuilder,
         setDocumentImageIcon: SetDocumentImageIcon,
-        membershipProvider: MembershipProvider
+        membershipProvider: MembershipProvider,
+        getNetworkMode: GetNetworkMode
     ): ProfileSettingsViewModel.Factory = ProfileSettingsViewModel.Factory(
         deleteAccount = deleteAccount,
         analytics = analytics,
@@ -60,7 +62,8 @@ object ProfileModule {
         configStorage = configStorage,
         urlBuilder = urlBuilder,
         setDocumentImageIcon = setDocumentImageIcon,
-        membershipProvider = membershipProvider
+        membershipProvider = membershipProvider,
+        getNetworkMode = getNetworkMode
     )
 
     @Provides

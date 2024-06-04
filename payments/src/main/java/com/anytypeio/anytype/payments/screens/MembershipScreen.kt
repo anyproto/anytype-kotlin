@@ -324,7 +324,7 @@ fun BottomText(
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
             .wrapContentHeight()
-            .clickable { tierAction(TierAction.OpenEmail) },
+            .noRippleThrottledClickable { tierAction(TierAction.OpenEmail) },
         text = buildString,
         style = Caption1Regular,
         color = colorResource(id = R.color.text_primary)

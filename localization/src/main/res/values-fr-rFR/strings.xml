@@ -1247,7 +1247,7 @@
     <string name="payments_button_contact">Contact</string>
     <string name="payments_button_info">Plus d\'infos</string>
     <string name="payments_button_submit">Soumettre</string>
-    <string name="payments_button_pay">Pay by card</string>
+    <string name="payments_button_pay">Payer par carte</string>
     <string name="payments_button_change_email">Modifier l\'adresse e-mail</string>
     <string name="payments_member_link">Détails des niveaux d\'adhésion</string>
     <string name="payments_privacy_link">Politique de confidentialité</string>
@@ -1262,10 +1262,10 @@
     <string name="payments_tier_details_name_domain">.any</string>
     <string name="payments_tier_details_name_min">Minimum 7 caractères</string>
     <string name="payments_tier_details_name_error">Ce nom est déjà utilisé</string>
-    <string name="payments_tier_details_name_validated">This name [%1$s] is up for grabs!</string>
-    <string name="payments_tier_details_name_validating">Validating name</string>
+    <string name="payments_tier_details_name_validated">Ce nom [%1$s] est disponible !</string>
+    <string name="payments_tier_details_name_validating">Validation du nom</string>
     <string name="payments_tier_details_free_forever">Toujours</string>
-    <string name="payments_tier_details_valid_until">Valid until %1$s</string>
+    <string name="payments_tier_details_valid_until">Valable jusqu’au %1$s</string>
     <string name="payments_tier_details_info_explorer">Plongez dans le réseau et profitez du frisson de la collaboration entre personnes</string>
     <string-array name="payments_benefits_explorer">
         <item>1 Go d\'espace réseau</item>
@@ -1296,7 +1296,7 @@
     <string name="payments_email_hint">E-mail</string>
     <string name="payments_tier_current_title">Votre statut actuel :</string>
     <string name="payments_tier_current_valid">Valide jusqu\'à</string>
-    <string name="payments_tier_current_paid_by">Paid by</string>
+    <string name="payments_tier_current_paid_by">Payé par</string>
     <string name="payments_tier_current_paid_by_card">Carte</string>
     <string name="payments_tier_current_paid_by_crypto">Crypto</string>
     <string name="payments_tier_current_paid_by_apple">Abonnement Apple</string>
@@ -1306,39 +1306,36 @@
     <!-- Payments Code -->
     <string name="payments_code_title">Entrez le code envoyé à votre adresse e-mail</string>
     <string name="payments_code_resend">Renvoyer</string>
-    <string name="payments_code_resend_in">Resend in %1$d sec</string>
+    <string name="payments_code_resend_in">Renvoyer dans %1$d s</string>
     <!-- Membership Welcome -->
     <string name="payments_welcome_title">Bienvenue sur le réseau,\n%1$s</string>
     <string name="payments_welcome_subtitle">Merci beaucoup pour votre curiosité !</string>
     <string name="payments_welcome_button">Continuer</string>
     <!-- Membership Email -->
     <string name="membership_support_email">support@anytype.io</string>
-    <string name="membership_support_subject">Membership Screen Error Report - %1$s</string>
-    <string name="membership_support_body">        Hi Anytype Support Team,\n\n
+    <string name="membership_support_subject">Rapport d’erreur de l’écran d’abonnement - %1$s</string>
+    <string name="membership_support_body">        Bonjour à l’équipe de support d’Anytype,\n\n
 
-        I encountered an error on the Membership Screen in the app. Below are the details:\n
+        J’ai rencontré une erreur sur l’écran d’abonnement de l\'application. Voici les détails :\n
 
-        - Error Message: %1$s\n
-        - Description:      \n
-        - Date and Time: %2$s\n
-        - Device Model: %3$s\n
-        - Operating System: %4$s\n
-        - App Version: %5$s\n
+        - Message d’erreur : %1$s\n
+        - Description :      \n
+        - Date et heure : %2$s\n
+        - Modèle d’appareil : %3$s\n
+        - Système d’exploitation : %4$s\n
+        - Version de l’application : %5$s\n
 
-        Additional Comments:\n\n
+        Commentaires supplémentaires :\n\n
 
-        Thank you for your assistance in resolving this issue.\n\n
+        Merci pour votre aide dans la résolution de ce problème.\n\n
 
-        Best regards,       \n
+        Cordialement,       \n
     </string>
     <string name="payments_email_to">membership-upgrade@anytype.io</string>
-    <string name="payments_email_subject">Upgrade %1$s</string>
-    <string name="payments_email_body">Hello Anytype team! I would like to extend my current membership for more (please choose an option):\n
-- Extra remote storage\n
-- More space editors\n
-- Additional shared spaces\n
-Specifically,
-Please provide specific details of your needs here.</string>
+    <string name="payments_email_subject">Mettre à niveau %1$s</string>
+    <string name="payments_email_body">Bonjour à l’équipe d’Anytype ! Je voudrais étendre mon abonnement actuel pour disposer de (choisissez une option) :\n- plus de stockage distant\n- plus d’éditeurs d’espaces\n- plus d’espaces partagés
+Plus précisément,
+Merci de décrire ici vos besoins spécifiques.</string>
     <!-- Membership name errors -->
     <string name="membership_name_bad_input">Quelque chose ne va pas avec l\'entrée, réessayez</string>
     <string name="membership_name_cache_error">Erreur de notre côté, réessayez plus tard</string>
@@ -1351,18 +1348,18 @@ Please provide specific details of your needs here.</string>
     <string name="membership_name_too_long">Le nom est trop long</string>
     <string name="membership_name_too_short">Le nom est trop court</string>
     <string name="membership_any_name_not_reserved">Ce nom ne peut pas être réservé</string>
-    <string name="membership_any_name_null_error">Empty error</string>
+    <string name="membership_any_name_null_error">Erreur vide</string>
     <string name="membership_any_name_unknown">Erreur inconnue</string>
-    <string name="membership_email_wrong_format">Email has wrong format</string>
-    <string name="membership_email_already_verified">Email is already verified</string>
-    <string name="membership_email_already_sent">Email is already sent, try again after 1 minute</string>
-    <string name="membership_email_failed_to_send">Email failed to send</string>
-    <string name="membership_email_membership_already_exists">Membership already exists</string>
-    <string name="membership_email_code_expired">Code expired</string>
-    <string name="membership_email_code_wrong">Code is wrong</string>
-    <string name="membership_email_code_success">Code is correct</string>
-    <string name="membership_email_membership_not_found">Membership not found</string>
-    <string name="membership_email_membership_already_active">Membership already active</string>
+    <string name="membership_email_wrong_format">Le format de l’e-mail est incorrect</string>
+    <string name="membership_email_already_verified">L’adresse e-mail est déjà vérifiée</string>
+    <string name="membership_email_already_sent">L’e-mail est déjà envoyé, réessayez dans 1 minute</string>
+    <string name="membership_email_failed_to_send">Échec de l’envoi de l’e-mail</string>
+    <string name="membership_email_membership_already_exists">L’abonnement existe déjà</string>
+    <string name="membership_email_code_expired">Code expiré</string>
+    <string name="membership_email_code_wrong">Code erroné</string>
+    <string name="membership_email_code_success">Le code est correct</string>
+    <string name="membership_email_membership_not_found">Abonnement introuvable</string>
+    <string name="membership_email_membership_already_active">Abonnement déjà actif</string>
     <!-- Notifications -->
     <string name="notifications_alert_error_unknown">Une erreur inconnue est survenue. Veuillez réessayer plus tard.</string>
     <string name="notifications_alert_error_bad_input">Entrée non valide détectée. Veuillez vérifier vos données et réessayer.</string>
@@ -1390,33 +1387,36 @@ Please provide specific details of your needs here.</string>
     <string name="clipboard_panel_create_bookmark_from_clipboard">Créer un favori depuis le presse-papiers</string>
     <string name="error_unexpected_layout">Erreur: mise en page inattendue</string>
     <string name="membership_price_pending">En attente…</string>
-    <string name="per_period">per %1$s</string>
-    <string name="free_for">Free for %1$s</string>
-    <string name="free_for_unknown">Free until...</string>
-    <string name="free_until">Free until</string>
-    <string name="membership_valid_forever">Valid forever</string>
-    <string name="membership_valid_for_unknown">Valid until...</string>
-    <string name="membership_agree_start">By continuing you agree to our</string>
+    <string name="per_period">par %1$s</string>
+    <string name="free_for">Gratuit pour %1$s</string>
+    <string name="free_for_unknown">Gratuit jusqu’au…</string>
+    <string name="free_until">Gratuit jusqu’au</string>
+    <string name="membership_valid_forever">Valable à vie</string>
+    <string name="membership_valid_for_unknown">Valable jusqu’au…</string>
+    <string name="membership_agree_start">En continuant, vous acceptez nos</string>
     <string name="membership_agree_terms">Conditions d\'utilisation</string>
-    <string name="membership_agree_middle">and</string>
+    <string name="membership_agree_middle">et</string>
     <string name="membership_agree_privacy">Politique de confidentialité</string>
+    <string name="membership_support_already_acquired">Vous avez déjà acquis un abonnement en utilisant un autre compte Anytype.</string>
+    <string name="membership_support_different_subscription">Un abonnement avec un identifiant différent a été trouvé</string>
+    <string name="membership_support_more_then_one_subscription">Plusieurs abonnements ont été trouvés</string>
     <plurals name="period_years">
-        <item quantity="one">year</item>
-        <item quantity="other">%d years</item>
+        <item quantity="one">année</item>
+        <item quantity="other">%d années</item>
     </plurals>
     <plurals name="period_months">
-        <item quantity="one">month</item>
-        <item quantity="other">%d months</item>
+        <item quantity="one">mois</item>
+        <item quantity="other">%d mois</item>
     </plurals>
     <plurals name="period_weeks">
-        <item quantity="one">week</item>
-        <item quantity="other">%d weeks</item>
+        <item quantity="one">semaine</item>
+        <item quantity="other">%d semaines</item>
     </plurals>
     <plurals name="period_days">
-        <item quantity="one">day</item>
-        <item quantity="other">%d days</item>
+        <item quantity="one">jour</item>
+        <item quantity="other">%d jours</item>
     </plurals>
     <string name="membership_error_button_text_action">Contactez-nous</string>
     <string name="membership_error_button_text_dismiss">Ok</string>
-    <string name="error_login_network_id_mismatch">Network ID mismatch detected. Please verify your network configuration.</string>
+    <string name="error_login_network_id_mismatch">L\'identifiant réseau ne correspond pas. Veuillez vérifier votre configuration réseau.</string>
 </resources>

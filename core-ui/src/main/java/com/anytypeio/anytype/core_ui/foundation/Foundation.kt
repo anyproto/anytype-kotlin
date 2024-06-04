@@ -176,30 +176,6 @@ fun OptionMembership(
                     Arrow()
                 }
             }
-
-            Status.STATUS_UNKNOWN -> {
-                Box(
-                    modifier = Modifier
-                        .weight(1.0f, true),
-                    contentAlignment = Alignment.CenterEnd
-                ) {
-                    Text(
-                        modifier = Modifier
-                            .padding(
-                                horizontal = 20.dp
-                            )
-                            .background(
-                                color = colorResource(R.color.glyph_selected),
-                                shape = RoundedCornerShape(6.dp)
-                            )
-                            .padding(horizontal = 11.dp, vertical = 5.dp),
-                        text = stringResource(R.string.membership_btn_join),
-                        color = colorResource(R.color.text_button_label),
-                        style = Caption1Regular
-                    )
-                }
-            }
-
             else -> {
                 Box(
                     modifier = Modifier.weight(1.0f, true),

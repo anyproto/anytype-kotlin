@@ -318,26 +318,35 @@ fun GlobalSearchScreen(
                     Box(
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        Column(
-                            modifier = Modifier.align(Alignment.Center),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            AlertIcon(
-                                AlertConfig.Icon(
-                                    icon = R.drawable.ic_alert_error,
-                                    gradient = GRADIENT_TYPE_RED
+                        if (state is GlobalSearchViewModel.ViewState.Related) {
+                            Text(
+                                text = stringResource(R.string.global_search_no_related_objects_found),
+                                modifier = Modifier.align(Alignment.Center),
+                                color = colorResource(id = R.color.text_primary),
+                                style = BodyCalloutRegular
+                            )
+                        } else {
+                            Column(
+                                modifier = Modifier.align(Alignment.Center),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                AlertIcon(
+                                    AlertConfig.Icon(
+                                        icon = R.drawable.ic_alert_error,
+                                        gradient = GRADIENT_TYPE_RED
+                                    )
                                 )
-                            )
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Text(
-                                text = stringResource(id = R.string.nothing_found),
-                                style = BodyCalloutMedium
-                            )
-                            Text(
-                                text = stringResource(id = R.string.try_to_create_new_one_or_search_for_something_else),
-                                style = BodyCalloutRegular,
-                                modifier = Modifier.padding(horizontal = 12.dp)
-                            )
+                                Spacer(modifier = Modifier.height(12.dp))
+                                Text(
+                                    text = stringResource(id = R.string.nothing_found),
+                                    style = BodyCalloutMedium
+                                )
+                                Text(
+                                    text = stringResource(id = R.string.try_to_create_new_one_or_search_for_something_else),
+                                    style = BodyCalloutRegular,
+                                    modifier = Modifier.padding(horizontal = 12.dp)
+                                )
+                            }
                         }
                     }
                 }

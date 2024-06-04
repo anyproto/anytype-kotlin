@@ -386,7 +386,7 @@ suspend fun Command.SearchWithMeta.Result.view(
                             }
                             TAG -> {
                                 val value  = ObjectWrapper.Option(dep.map)
-                                GlobalSearchItemView.Meta.Status(
+                                GlobalSearchItemView.Meta.Tag(
                                     name = relation.name.orEmpty(),
                                     color = ThemeColor.entries.find {
                                         it.code == value.color

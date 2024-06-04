@@ -115,6 +115,7 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
                             }
                         ),
                         membershipStatus = vm.membershipStatusState.collectAsStateWithLifecycle().value,
+                        showMembership = vm.showMembershipState.collectAsStateWithLifecycle().value,
                         onSpacesClicked = throttledClick(
                             onClick = {
                                 runCatching {

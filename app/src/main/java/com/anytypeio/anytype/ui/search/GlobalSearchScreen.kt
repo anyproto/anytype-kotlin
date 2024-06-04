@@ -256,6 +256,7 @@ fun GlobalSearchScreen(
                         modifier = Modifier.fillParentMaxSize()
                     ) {
                         Text(
+                            // TODO draw proper empty state
                             text = "Nothing found",
                             modifier = Modifier
                                 .align(Alignment.Center)

@@ -199,7 +199,7 @@ fun GlobalSearchScreen(
                                 )
                         )
                         Text(
-                            text = "Clear",
+                            text = stringResource(id = R.string.clear),
                             style = Caption1Regular,
                             color = colorResource(id = R.color.text_secondary),
                             modifier = Modifier
@@ -586,6 +586,33 @@ private fun DefaultGlobalSearchItemViewPreview() {
             id = "ID",
             space = SpaceId(""),
             title = "Autechre",
+            type = "Band",
+            meta = GlobalSearchItemView.Meta.None,
+            layout = ObjectType.Layout.BASIC,
+            icon = ObjectIcon.Basic.Avatar("A")
+        ),
+        onObjectClicked = {},
+        onShowRelatedClicked = {}
+    )
+}
+
+@Preview(
+    name = "Dark Mode",
+    showBackground = true,
+    uiMode = UI_MODE_NIGHT_YES
+)
+@Preview(
+    name = "Light Mode",
+    showBackground = true,
+    uiMode = UI_MODE_NIGHT_NO
+)
+@Composable
+private fun DefaultGlobalSearchItemViewWithLongTitlePreview() {
+    GlobalSearchItem(
+        GlobalSearchItemView(
+            id = "ID",
+            space = SpaceId(""),
+            title = "AutechreAutechreAutechreAutechreAutechreAutechreAutechre",
             type = "Band",
             meta = GlobalSearchItemView.Meta.None,
             layout = ObjectType.Layout.BASIC,

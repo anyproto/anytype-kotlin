@@ -597,7 +597,7 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
                     expectedFeatures = features,
                     expectedConditionInfo = expectedConditionInfo,
                     expectedAnyName = TierAnyName.Hidden,
-                    expectedButtonState = TierButton.Pay.Disabled,
+                    expectedButtonState = TierButton.Hidden,
                     expectedId = MembershipConstants.BUILDER_ID,
                     expectedActive = false,
                     expectedEmailState = TierEmail.Hidden

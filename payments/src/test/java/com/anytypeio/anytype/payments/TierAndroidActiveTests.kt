@@ -211,6 +211,9 @@ class TierAndroidActiveTests : MembershipTestsSetup() {
             val purchase = Mockito.mock(Purchase::class.java)
             Mockito.`when`(purchase.products).thenReturn(listOf(androidProductId))
             Mockito.`when`(purchase.isAcknowledged).thenReturn(true)
+            val purchaseJson =
+                "{\"obfuscatedAccountId\":\"$accountId\", \"productId\":\"$androidProductId\"}"
+            Mockito.`when`(purchase.originalJson).thenReturn(purchaseJson)
             stubPurchaseState(BillingPurchaseState.HasPurchases(listOf(purchase), false))
             stubMembershipProvider(setupMembershipStatus(tiers))
 

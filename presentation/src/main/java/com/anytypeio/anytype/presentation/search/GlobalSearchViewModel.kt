@@ -64,11 +64,11 @@ class GlobalSearchViewModel(
     private val urlBuilder: UrlBuilder
 ) : BaseViewModel() {
 
-    private val userInput = MutableStateFlow("")
+    private val userInput = MutableStateFlow(EMPTY_STRING_VALUE)
     private val searchQuery = userInput
         .take(1)
         .onCompletion {
-            emitAll(userInput.drop(1).debounce(ObjectSearchViewModel.DEBOUNCE_DURATION).distinctUntilChanged())
+            emitAll(userInput.drop(1).debounce(DEFAULT_DEBOUNCE_DURATION).distinctUntilChanged())
         }
 
     private val interactionMode = MutableStateFlow<InteractionMode>(InteractionMode.Default)
@@ -219,12 +219,14 @@ class GlobalSearchViewModel(
 
     fun onClearRelatedObjectClicked() {
         viewModelScope.launch {
+            userInput.value = EMPTY_STRING_VALUE
             interactionMode.value = InteractionMode.Default
         }
     }
 
     fun onShowRelatedClicked(globalSearchItemView: GlobalSearchItemView) {
         viewModelScope.launch {
+            userInput.value = EMPTY_STRING_VALUE
             interactionMode.value = InteractionMode.Related(globalSearchItemView)
         }
     }
@@ -254,22 +256,29 @@ class GlobalSearchViewModel(
     }
 
     sealed class ViewState {
+
         abstract val views: List<GlobalSearchItemView>
+        abstract val isLoading: Boolean
 
         data object Init: ViewState() {
             override val views: List<GlobalSearchItemView> = emptyList()
+            override val isLoading: Boolean = false
         }
 
         data class Default (
             override val views: List<GlobalSearchItemView>,
-            val isLoading: Boolean
+            override val isLoading: Boolean
         ): ViewState()
 
         data class Related (
             val target: GlobalSearchItemView,
             override val views: List<GlobalSearchItemView>,
-            val isLoading: Boolean
+            override val isLoading: Boolean
         ): ViewState()
+    }
+
+    companion object {
+        const val DEFAULT_DEBOUNCE_DURATION = 300L
     }
 }
 

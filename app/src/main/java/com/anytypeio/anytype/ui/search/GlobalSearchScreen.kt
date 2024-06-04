@@ -132,9 +132,9 @@ fun GlobalSearchScreen(
                 textStyle = BodyRegular.copy(
                     color = colorResource(id = R.color.text_primary)
                 ),
-                onValueChange = {
-                    query = it.also {
-                        onQueryChanged(it)
+                onValueChange = { input ->
+                    query = input.also {
+                        onQueryChanged(input)
                     }
                 },
                 singleLine = true,
@@ -178,7 +178,7 @@ fun GlobalSearchScreen(
                     ) {
                         Text(
                             text = buildAnnotatedString {
-                                append("Related to: ")
+                                append(stringResource(R.string.global_search_related_to))
                                 withStyle(
                                     style = SpanStyle(
                                         fontWeight = FontWeight.Bold
@@ -198,7 +198,6 @@ fun GlobalSearchScreen(
                                     bottom = 8.dp
                                 )
                         )
-
                         Text(
                             text = "Clear",
                             style = Caption1Regular,
@@ -212,10 +211,15 @@ fun GlobalSearchScreen(
                                     bottom = 8.dp
                                 )
                                 .clickable {
-                                    query = ""
-//                                    onQueryChanged("")
-                                    onClearRelatedClicked()
+                                    onClearRelatedClicked().also {
+                                        query = ""
+                                    }
                                 }
+                        )
+                        Divider(
+                            paddingStart = 20.dp,
+                            paddingEnd = 20.dp,
+                            modifier = Modifier.align(Alignment.BottomCenter)
                         )
                     }
                 }
@@ -234,7 +238,9 @@ fun GlobalSearchScreen(
                             onObjectClicked(it)
                         },
                         onShowRelatedClicked = {
-                            onShowRelatedClicked(it)
+                            onShowRelatedClicked(it).also {
+                                query = ""
+                            }
                         }
                     )
                     if (idx != state.views.lastIndex) {
@@ -244,7 +250,7 @@ fun GlobalSearchScreen(
                     }
                 }
             }
-            if (state.views.isEmpty()) {
+            if (state !is GlobalSearchViewModel.ViewState.Init && !state.isLoading && state.views.isEmpty()) {
                 item {
                     Box(
                         modifier = Modifier.fillParentMaxSize()

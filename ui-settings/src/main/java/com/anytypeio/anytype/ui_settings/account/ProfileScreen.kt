@@ -49,6 +49,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_ui.foundation.Arrow
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
@@ -60,7 +61,6 @@ import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
-import com.anytypeio.anytype.ui_settings.BuildConfig
 import com.anytypeio.anytype.ui_settings.R
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
@@ -80,7 +80,8 @@ fun ProfileSettingsScreen(
     onAboutClicked: () -> Unit,
     onSpacesClicked: () -> Unit,
     onMembershipClicked: () -> Unit,
-    membershipStatus: MembershipStatus?
+    membershipStatus: MembershipStatus?,
+    showMembership: ShowMembership?
 ) {
     LazyColumn(
         modifier = Modifier
@@ -125,16 +126,18 @@ fun ProfileSettingsScreen(
                 onClick = onDataManagementClicked
             )
         }
-        item {
-            Divider(paddingStart = 60.dp)
-        }
-        item {
-            OptionMembership(
-                image = R.drawable.ic_membership,
-                text = stringResource(R.string.settings_membership),
-                onClick = onMembershipClicked,
-                membershipStatus = membershipStatus
-            )
+        if (showMembership?.isShowing == true) {
+            item {
+                Divider(paddingStart = 60.dp)
+            }
+            item {
+                OptionMembership(
+                    image = R.drawable.ic_membership,
+                    text = stringResource(R.string.settings_membership),
+                    onClick = onMembershipClicked,
+                    membershipStatus = membershipStatus
+                )
+            }
         }
         item {
             Divider(paddingStart = 60.dp)
@@ -499,7 +502,8 @@ private fun ProfileSettingPreview() {
         onAboutClicked = {},
         onSpacesClicked = {},
         onMembershipClicked = {},
-        membershipStatus = null
+        membershipStatus = null,
+        showMembership = ShowMembership(true)
     )
 }
 

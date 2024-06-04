@@ -5,6 +5,7 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -40,8 +41,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -55,6 +58,7 @@ import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.widgets.DefaultBasicAvatarIcon
@@ -67,14 +71,16 @@ import com.anytypeio.anytype.core_ui.widgets.DefaultTaskObjectIcon
 import com.anytypeio.anytype.core_ui.widgets.defaultProfileIconImage
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
+import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun GlobalSearchScreen(
-    items: List<GlobalSearchItemView>,
+    state: GlobalSearchViewModel.ViewState,
     onQueryChanged: (String) -> Unit,
     onObjectClicked: (GlobalSearchItemView) -> Unit,
-    onShowRelatedClicked: (GlobalSearchItemView) -> Unit
+    onShowRelatedClicked: (GlobalSearchItemView) -> Unit,
+    onClearRelatedClicked: () -> Unit
 ) {
     var query by remember { mutableStateOf("") }
     val isKeyboardOpen by keyboardAsState()
@@ -159,9 +165,62 @@ fun GlobalSearchScreen(
             )
         }
         LazyColumn(
-            modifier = Modifier.weight(1.0f).fillMaxSize()
+            modifier = Modifier
+                .weight(1.0f)
+                .fillMaxSize()
         ) {
-            items.forEachIndexed { idx, item ->
+            if (state is GlobalSearchViewModel.ViewState.Related) {
+                stickyHeader {
+                    Box(
+                        modifier = Modifier
+                            .height(48.dp)
+                            .fillMaxWidth()
+                    ) {
+                        Text(
+                            text = buildAnnotatedString {
+                                append("Related to: ")
+                                withStyle(
+                                    style = SpanStyle(
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                ) {
+                                    append(state.target.title)
+                                }
+                            },
+                            style = Caption1Regular,
+                            color = colorResource(id = R.color.text_secondary),
+                            modifier = Modifier
+                                .align(
+                                    Alignment.BottomStart
+                                )
+                                .padding(
+                                    start = 20.dp,
+                                    bottom = 8.dp
+                                )
+                        )
+
+                        Text(
+                            text = "Clear",
+                            style = Caption1Regular,
+                            color = colorResource(id = R.color.text_secondary),
+                            modifier = Modifier
+                                .align(
+                                    Alignment.BottomEnd
+                                )
+                                .padding(
+                                    end = 20.dp,
+                                    bottom = 8.dp
+                                )
+                                .clickable {
+                                    query = ""
+//                                    onQueryChanged("")
+                                    onClearRelatedClicked()
+                                }
+                        )
+                    }
+                }
+            }
+            state.views.forEachIndexed { idx, item ->
                 item(key = item.id) {
                     if (idx == 0) {
                         Spacer(modifier = Modifier.height(10.dp))
@@ -178,14 +237,14 @@ fun GlobalSearchScreen(
                             onShowRelatedClicked(it)
                         }
                     )
-                    if (idx != items.lastIndex) {
+                    if (idx != state.views.lastIndex) {
                         Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
                     } else {
                         Spacer(modifier = Modifier.height(48.dp))
                     }
                 }
             }
-            if (items.isEmpty()) {
+            if (state.views.isEmpty()) {
                 item {
                     Box(
                         modifier = Modifier.fillParentMaxSize()
@@ -702,72 +761,76 @@ private fun DefaultGlobalSearchItemViewStatusRelationScreenPreview() {
 
     GlobalSearchScreen(
         onQueryChanged = {},
-        items = listOf(
-            GlobalSearchItemView(
-                id = "ID1",
-                space = SpaceId(""),
-                title = "Autechre",
-                type = "Band",
-                meta = GlobalSearchItemView.Meta.None,
-                layout = ObjectType.Layout.BASIC,
-                icon = ObjectIcon.Basic.Avatar("A")
-            ),
-            GlobalSearchItemView(
-                id = "ID2",
-                space = SpaceId(""),
-                title = "Autechre",
-                type = "Band",
-                meta = GlobalSearchItemView.Meta.Status(
-                    name = "Style",
-                    value = "IDM",
-                    color = ThemeColor.TEAL
+        state = GlobalSearchViewModel.ViewState.Default(
+            isLoading = false,
+            views = listOf(
+                GlobalSearchItemView(
+                    id = "ID1",
+                    space = SpaceId(""),
+                    title = "Autechre",
+                    type = "Band",
+                    meta = GlobalSearchItemView.Meta.None,
+                    layout = ObjectType.Layout.BASIC,
+                    icon = ObjectIcon.Basic.Avatar("A")
                 ),
-                layout = ObjectType.Layout.BASIC,
-                icon = ObjectIcon.Basic.Avatar("A")
-            ),
-            GlobalSearchItemView(
-                id = "ID3",
-                space = SpaceId(""),
-                title = "Autechre",
-                type = "Band",
-                meta = GlobalSearchItemView.Meta.Tag(
-                    name = "Style",
-                    value = "IDM",
-                    color = ThemeColor.TEAL
+                GlobalSearchItemView(
+                    id = "ID2",
+                    space = SpaceId(""),
+                    title = "Autechre",
+                    type = "Band",
+                    meta = GlobalSearchItemView.Meta.Status(
+                        name = "Style",
+                        value = "IDM",
+                        color = ThemeColor.TEAL
+                    ),
+                    layout = ObjectType.Layout.BASIC,
+                    icon = ObjectIcon.Basic.Avatar("A")
                 ),
-                layout = ObjectType.Layout.BASIC,
-                icon = ObjectIcon.Basic.Avatar("A")
-            ),
-            GlobalSearchItemView(
-                id = "ID4",
-                space = SpaceId(""),
-                title = "Autechre",
-                type = "Band",
-                meta = GlobalSearchItemView.Meta.Default(
-                    name = "Description",
-                    value = "Autechre are an English electronic music duo consisting of Rob Brown and Sean Booth, both from Rochdale, Greater Manchester. ",
-                    highlights = listOf(
-                        IntRange(0, 8),
-                        IntRange(15, 23)
-                    )
+                GlobalSearchItemView(
+                    id = "ID3",
+                    space = SpaceId(""),
+                    title = "Autechre",
+                    type = "Band",
+                    meta = GlobalSearchItemView.Meta.Tag(
+                        name = "Style",
+                        value = "IDM",
+                        color = ThemeColor.TEAL
+                    ),
+                    layout = ObjectType.Layout.BASIC,
+                    icon = ObjectIcon.Basic.Avatar("A")
                 ),
-                layout = ObjectType.Layout.BASIC,
-                icon = ObjectIcon.Basic.Avatar("A")
-            ),
-            GlobalSearchItemView(
-                id = "ID5",
-                space = SpaceId(""),
-                title = "Autechre",
-                type = "Band",
-                meta = GlobalSearchItemView.Meta.Block(
-                    snippet = "Autechre are an English electronic music duo consisting of Rob Brown and Sean Booth, both from Rochdale, Greater Manchester. ",
-                    highlights = emptyList()
+                GlobalSearchItemView(
+                    id = "ID4",
+                    space = SpaceId(""),
+                    title = "Autechre",
+                    type = "Band",
+                    meta = GlobalSearchItemView.Meta.Default(
+                        name = "Description",
+                        value = "Autechre are an English electronic music duo consisting of Rob Brown and Sean Booth, both from Rochdale, Greater Manchester. ",
+                        highlights = listOf(
+                            IntRange(0, 8),
+                            IntRange(15, 23)
+                        )
+                    ),
+                    layout = ObjectType.Layout.BASIC,
+                    icon = ObjectIcon.Basic.Avatar("A")
                 ),
-                layout = ObjectType.Layout.BASIC,
-                icon = ObjectIcon.Basic.Avatar("A")
+                GlobalSearchItemView(
+                    id = "ID5",
+                    space = SpaceId(""),
+                    title = "Autechre",
+                    type = "Band",
+                    meta = GlobalSearchItemView.Meta.Block(
+                        snippet = "Autechre are an English electronic music duo consisting of Rob Brown and Sean Booth, both from Rochdale, Greater Manchester. ",
+                        highlights = emptyList()
+                    ),
+                    layout = ObjectType.Layout.BASIC,
+                    icon = ObjectIcon.Basic.Avatar("A")
+                )
             )
         ),
         onObjectClicked = {},
-        onShowRelatedClicked = {}
+        onShowRelatedClicked = {},
+        onClearRelatedClicked = {}
     )
 }

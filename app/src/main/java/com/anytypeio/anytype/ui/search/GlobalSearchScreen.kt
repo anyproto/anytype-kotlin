@@ -321,7 +321,9 @@ private fun GlobalSearchItem(
                 .align(Alignment.CenterStart)
         ) {
             Text(
-                text = globalSearchItemView.title,
+                text = globalSearchItemView.title.ifEmpty {
+                    stringResource(id = R.string.untitled)
+                },
                 style = PreviewTitle2Medium,
                 color = colorResource(id = R.color.text_primary),
                 maxLines = 1,

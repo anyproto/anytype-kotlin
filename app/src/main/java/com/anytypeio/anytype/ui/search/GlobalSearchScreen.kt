@@ -31,6 +31,7 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -38,13 +39,19 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -59,6 +66,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.ObjectType
@@ -89,7 +97,9 @@ import com.anytypeio.anytype.core_ui.widgets.defaultProfileIconImage
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
+import com.anytypeio.anytype.ui.settings.typography
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
@@ -123,12 +133,14 @@ fun GlobalSearchScreen(
 
         val interactionSource = remember { MutableInteractionSource() }
         val focus = LocalFocusManager.current
+        val focusRequester = FocusRequester()
 
         Dragger(
             modifier = Modifier
                 .padding(vertical = 6.dp)
                 .align(Alignment.CenterHorizontally)
         )
+
 
         Row(
             modifier = Modifier
@@ -160,7 +172,9 @@ fun GlobalSearchScreen(
                 modifier = Modifier
                     .weight(1.0f)
                     .padding(start = 6.dp)
-                    .align(Alignment.CenterVertically),
+                    .align(Alignment.CenterVertically)
+                    .focusRequester(focusRequester)
+                ,
                 textStyle = BodyRegular.copy(
                     color = colorResource(id = R.color.text_primary)
                 ),
@@ -304,7 +318,8 @@ fun GlobalSearchScreen(
                             onShowRelatedClicked(it).also {
                                 query = TextFieldValue()
                             }
-                        }
+                        },
+                        focusManager = focus
                     )
                     if (idx != state.views.lastIndex) {
                         Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
@@ -357,6 +372,9 @@ fun GlobalSearchScreen(
                 }
             }
         }
+        LaunchedEffect(Unit) {
+            focusRequester.requestFocus()
+        }
     }
 }
 
@@ -365,9 +383,12 @@ fun GlobalSearchScreen(
 private fun GlobalSearchItem(
     globalSearchItemView: GlobalSearchItemView,
     onObjectClicked: (GlobalSearchItemView) -> Unit,
-    onShowRelatedClicked: (GlobalSearchItemView) -> Unit
+    onShowRelatedClicked: (GlobalSearchItemView) -> Unit,
+    focusManager: FocusManager
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+    val haptic = LocalHapticFeedback.current
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -376,7 +397,12 @@ private fun GlobalSearchItem(
                     onObjectClicked(globalSearchItemView)
                 },
                 onLongClick = {
-                    isMenuExpanded = true
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    focusManager.clearFocus(true)
+                    scope.launch {
+                        delay(AVOID_DROPDOWN_FLICKERING_DELAY)
+                        isMenuExpanded = true
+                    }
                 },
                 enabled = true
             )
@@ -476,52 +502,27 @@ private fun GlobalSearchItem(
                 color = colorResource(id = R.color.text_secondary)
             )
         }
-        Box(modifier = Modifier
-            .align(Alignment.BottomStart)
+        MaterialTheme(
+            typography = typography,
+            shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp)),
         ) {
-            if (isMenuExpanded) {
-                DropdownMenu(
-                    expanded = isMenuExpanded,
-                    onDismissRequest = {
-                        isMenuExpanded = false
-                    },
-//                    offset = DpOffset(
-//                        x = 8.dp,
-//                        y = 8.dp
-//                    )
-                ) {
-                    DropdownMenuItem(
-                        onClick = { 
-                            onShowRelatedClicked(globalSearchItemView)
-                        }
-                    ) {
-                        Text(text = "Show related objects")
+            DropdownMenu(
+                expanded = isMenuExpanded,
+                onDismissRequest = {
+                    isMenuExpanded = false
+                },
+                offset = DpOffset(
+                    x = 8.dp,
+                    y = 8.dp
+                )
+            ) {
+                DropdownMenuItem(
+                    onClick = {
+                        onShowRelatedClicked(globalSearchItemView)
                     }
+                ) {
+                    Text(text = "Show related objects")
                 }
-//                Dialog(
-//                    onDismissRequest = {
-//                        isMenuExpanded = false
-//                    }
-//                ) {
-//                    Surface(
-//                        shape = RoundedCornerShape(12.dp)
-//                    ) {
-//                        Column(
-//                            modifier = Modifier
-//                                .background(color = colorResource(id = R.color.shape_secondary))
-//                                .fillMaxWidth()
-//                        ) {
-//                            Text(
-//                                text = "Open",
-//                                modifier = Modifier.padding(16.dp)
-//                            )
-//                            Text(
-//                                text = "Show related objects",
-//                                modifier = Modifier.padding(16.dp)
-//                            )
-//                        }
-//                    }
-//                }
             }
         }
     }
@@ -684,7 +685,8 @@ private fun DefaultGlobalSearchItemViewPreview() {
             icon = ObjectIcon.Basic.Avatar("A")
         ),
         onObjectClicked = {},
-        onShowRelatedClicked = {}
+        onShowRelatedClicked = {},
+        focusManager = LocalFocusManager.current
     )
 }
 
@@ -711,7 +713,8 @@ private fun DefaultGlobalSearchItemViewWithLongTitlePreview() {
             icon = ObjectIcon.Basic.Avatar("A")
         ),
         onObjectClicked = {},
-        onShowRelatedClicked = {}
+        onShowRelatedClicked = {},
+        focusManager = LocalFocusManager.current
     )
 }
 
@@ -741,7 +744,8 @@ private fun DefaultGlobalSearchItemViewWithBlockMetaPreview() {
             icon = ObjectIcon.Basic.Avatar("A")
         ),
         onObjectClicked = {},
-        onShowRelatedClicked = {}
+        onShowRelatedClicked = {},
+        focusManager = LocalFocusManager.current
     )
 }
 
@@ -774,7 +778,8 @@ private fun DefaultGlobalSearchItemViewBlockTwoHighlightsMetaPreview() {
             icon = ObjectIcon.Basic.Avatar("A")
         ),
         onObjectClicked = {},
-        onShowRelatedClicked = {}
+        onShowRelatedClicked = {},
+        focusManager = LocalFocusManager.current
     )
 }
 
@@ -808,7 +813,8 @@ private fun DefaultGlobalSearchItemViewRelationTwoHighlightsMetaPreview() {
             icon = ObjectIcon.Basic.Avatar("A")
         ),
         onObjectClicked = {},
-        onShowRelatedClicked = {}
+        onShowRelatedClicked = {},
+        focusManager = LocalFocusManager.current
     )
 }
 
@@ -839,7 +845,8 @@ private fun DefaultGlobalSearchItemViewTagRelationPreview() {
             icon = ObjectIcon.Basic.Avatar("A")
         ),
         onObjectClicked = {},
-        onShowRelatedClicked = {}
+        onShowRelatedClicked = {},
+        focusManager = LocalFocusManager.current
     )
 }
 
@@ -870,7 +877,8 @@ private fun DefaultGlobalSearchItemViewStatusRelationPreview() {
             icon = ObjectIcon.Basic.Avatar("A")
         ),
         onObjectClicked = {},
-        onShowRelatedClicked = {}
+        onShowRelatedClicked = {},
+        focusManager = LocalFocusManager.current
     )
 }
 
@@ -1085,3 +1093,4 @@ private fun DefaultGlobalSearchEmptyStatePreview() {
 }
 
 const val AVOID_FLICKERING_DELAY = 100L
+const val AVOID_DROPDOWN_FLICKERING_DELAY = 50L

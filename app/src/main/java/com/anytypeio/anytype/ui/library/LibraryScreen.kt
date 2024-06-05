@@ -19,6 +19,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
@@ -33,6 +36,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.IntSize
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
 import com.anytypeio.anytype.presentation.library.LibraryEvent
@@ -61,20 +65,35 @@ fun LibraryScreen(
     val effects by viewModel.effects.collectAsStateWithLifecycle()
 
     val pagerState = rememberPagerState(INITIAL_TAB)
-    val modifier = Modifier.background(color = colorResource(id = R.color.background_primary))
+    val modifier = Modifier
+        .background(color = colorResource(id = R.color.background_primary))
 
     val screenState = remember { mutableStateOf(ScreenState.CONTENT) }
 
-    Scaffold(bottomBar = {
-        Menu(
-            viewModel,
-            modifier = modifier,
-            screenState = screenState,
-            onCreateObjectLongClicked = onCreateObjectLongClicked
-        )
-    }) {
+    Scaffold(
+        bottomBar = {
+            Menu(
+                viewModel,
+                modifier = modifier.then(
+                    if (BuildConfig.USE_EDGE_TO_EDGE)
+                        Modifier.windowInsetsPadding(WindowInsets.navigationBars)
+                    else
+                        Modifier
+                ),
+                screenState = screenState,
+                onCreateObjectLongClicked = onCreateObjectLongClicked
+            )
+        }
+    ) {
         println(it)
-        Column(modifier = modifier) {
+        Column(
+            modifier = modifier.then(
+                if (BuildConfig.USE_EDGE_TO_EDGE)
+                    Modifier.windowInsetsPadding(WindowInsets.systemBars)
+                else
+                    Modifier
+            ),
+        ) {
             LibraryTabs(
                 modifier = modifier,
                 pagerState = pagerState,

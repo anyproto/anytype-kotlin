@@ -1,11 +1,13 @@
 package com.anytypeio.anytype.di.main
 
 import android.content.Context
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.data.auth.event.MembershipDateChannel
 import com.anytypeio.anytype.data.auth.event.MembershipRemoteChannel
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.workspace.MembershipChannel
 import com.anytypeio.anytype.middleware.EventProxy
@@ -61,12 +63,16 @@ object MembershipModule {
         awaitAccountStartManager: AwaitAccountStartManager,
         membershipChannel: MembershipChannel,
         localeProvider: LocaleProvider,
-        repo: BlockRepository
+        repo: BlockRepository,
+        analytics: Analytics,
+        dateProvider: DateProvider
     ): MembershipProvider = MembershipProvider.Default(
         dispatchers = dispatchers,
         membershipChannel = membershipChannel,
         awaitAccountStartManager = awaitAccountStartManager,
         localeProvider = localeProvider,
-        repo = repo
+        repo = repo,
+        analytics = analytics,
+        dateProvider = dateProvider
     )
 }

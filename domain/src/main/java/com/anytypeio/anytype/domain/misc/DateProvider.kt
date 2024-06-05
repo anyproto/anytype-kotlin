@@ -2,6 +2,9 @@ package com.anytypeio.anytype.domain.misc
 
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.TimeInSeconds
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 /**
@@ -18,6 +21,7 @@ interface DateProvider {
     fun getTimestampForWeekAgoAtStartOfDay(): TimeInSeconds
     fun adjustToStartOfDayInUserTimeZone(timestamp: TimeInSeconds): TimeInMillis
     fun adjustFromStartOfDayInUserTimeZoneToUTC(timestamp: TimeInMillis): TimeInSeconds
+    fun formatToDateString(timestamp: Long, pattern: String, locale: Locale): String
 }
 
 interface DateTypeNameProvider {

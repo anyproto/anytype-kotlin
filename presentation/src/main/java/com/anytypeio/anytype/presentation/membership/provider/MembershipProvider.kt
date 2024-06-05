@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.membership.provider
 
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
@@ -7,6 +8,7 @@ import com.anytypeio.anytype.core_utils.ext.formatToDateString
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.workspace.MembershipChannel
 import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
@@ -19,6 +21,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
 import timber.log.Timber
 
@@ -31,7 +34,9 @@ interface MembershipProvider {
         private val membershipChannel: MembershipChannel,
         private val awaitAccountStartManager: AwaitAccountStartManager,
         private val localeProvider: LocaleProvider,
-        private val repo: BlockRepository
+        private val repo: BlockRepository,
+        private val analytics: Analytics,
+        private val dateProvider: DateProvider
     ) : MembershipProvider {
 
         @OptIn(ExperimentalCoroutinesApi::class)
@@ -56,6 +61,9 @@ interface MembershipProvider {
                 .scan(initial) { _, events ->
                     events.lastOrNull()?.membership
                 }.filterNotNull()
+                .onEach {
+                    membership -> Timber.d("MembershipProvider, newEvent: ${membership.tier}")
+                }
                 .map { membership ->
                     val tiers = proceedWithGettingTiers().filter { SHOW_TEST_TIERS || !it.isTest }.sortedBy { it.id }
                     val newStatus = toMembershipStatus(
@@ -86,6 +94,11 @@ interface MembershipProvider {
             membership: Membership,
             tiers: List<MembershipTierData>
         ): MembershipStatus {
+            val formattedDateEnds = dateProvider.formatToDateString(
+                timestamp = membership.dateEnds,
+                pattern = DATE_FORMAT,
+                locale = localeProvider.locale()
+            )
             return MembershipStatus(
                 activeTier = TierId(membership.tier),
                 status = membership.membershipStatusModel,
@@ -93,10 +106,7 @@ interface MembershipProvider {
                 paymentMethod = membership.paymentMethod,
                 anyName = membership.nameServiceName,
                 tiers = tiers,
-                formattedDateEnds = membership.dateEnds.formatToDateString(
-                    pattern = DATE_FORMAT,
-                    locale = localeProvider.locale()
-                ),
+                formattedDateEnds = formattedDateEnds,
                 userEmail = membership.userEmail
             )
         }

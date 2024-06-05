@@ -3,15 +3,20 @@ package com.anytypeio.anytype.presentation.widgets.collection
 import android.text.format.DateUtils
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.TimeInSeconds
+import com.anytypeio.anytype.core_utils.ext.formatToDateString
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DateType
+import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import java.util.TimeZone
 import javax.inject.Inject
+import timber.log.Timber
 
 class DateProviderImpl @Inject constructor() : DateProvider {
 
@@ -111,6 +116,16 @@ class DateProviderImpl @Inject constructor() : DateProvider {
 
         // Convert the local start of the day back to seconds
         return calendarLocal.timeInMillis / 1000
+    }
+
+    override fun formatToDateString(timestamp: Long, pattern: String, locale: Locale): String {
+        try {
+            val formatter = SimpleDateFormat(pattern, locale)
+            return formatter.format(Date(timestamp))
+        } catch (e: Exception) {
+            Timber.e(e,"Error formatting timestamp to date string")
+            return ""
+        }
     }
 }
 

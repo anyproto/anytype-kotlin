@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -78,7 +79,8 @@ class GetTemplates(
                     sorts = listOf(
                         DVSort(
                             relationKey = Relations.CREATED_DATE,
-                            type = Block.Content.DataView.Sort.Type.DESC
+                            type = Block.Content.DataView.Sort.Type.DESC,
+                            relationFormat = RelationFormat.DATE
                         )
                     ),
                     fulltext = "",

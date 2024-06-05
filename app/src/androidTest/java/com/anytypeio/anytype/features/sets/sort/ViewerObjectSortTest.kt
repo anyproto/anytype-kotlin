@@ -94,7 +94,8 @@ class ViewerObjectSortTest {
             sorts = listOf(
                 DVSort(
                     relationKey = relationId,
-                    type = Block.Content.DataView.Sort.Type.DESC
+                    type = Block.Content.DataView.Sort.Type.DESC,
+                    relationFormat = Relation.Format.LONG_TEXT
                 )
             ),
             viewerRelations = listOf(

@@ -74,7 +74,8 @@ fun StubSort(
 ): DVSort = DVSort(
     id = id,
     relationKey = relationKey,
-    type = type
+    type = type,
+    relationFormat = RelationFormat.LONG_TEXT
 )
 
 fun StubFilter(

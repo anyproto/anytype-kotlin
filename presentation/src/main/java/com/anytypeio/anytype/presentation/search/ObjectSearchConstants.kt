@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_SPACE_ID
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.library.StoreSearchParams
@@ -58,7 +59,8 @@ object ObjectSearchConstants {
         DVSort(
             relationKey = Relations.LAST_OPENED_DATE,
             type = DVSortType.DESC,
-            includeTime = true
+            includeTime = true,
+            relationFormat = RelationFormat.DATE
         )
     )
 
@@ -109,7 +111,8 @@ object ObjectSearchConstants {
         DVSort(
             relationKey = Relations.LAST_MODIFIED_DATE,
             type = DVSortType.DESC,
-            includeTime = true
+            includeTime = true,
+            relationFormat = RelationFormat.DATE
         )
     )
     //endregion
@@ -162,7 +165,8 @@ object ObjectSearchConstants {
         DVSort(
             relationKey = Relations.LAST_MODIFIED_DATE,
             type = DVSortType.DESC,
-            includeTime = true
+            includeTime = true,
+            relationFormat = RelationFormat.DATE
         )
     )
     //endregion
@@ -220,7 +224,8 @@ object ObjectSearchConstants {
     val sortAddObjectToRelation = listOf(
         DVSort(
             relationKey = Relations.NAME,
-            type = DVSortType.ASC
+            type = DVSortType.ASC,
+            relationFormat = RelationFormat.LONG_TEXT
         )
     )
     //endregion
@@ -288,7 +293,8 @@ object ObjectSearchConstants {
     val sortAddObjectToFilter = listOf(
         DVSort(
             relationKey = Relations.NAME,
-            type = DVSortType.ASC
+            type = DVSortType.ASC,
+            relationFormat = RelationFormat.LONG_TEXT
         )
     )
     //endregion
@@ -406,7 +412,8 @@ object ObjectSearchConstants {
         DVSort(
             relationKey = Relations.LAST_MODIFIED_DATE,
             type = DVSortType.DESC,
-            includeTime = true
+            includeTime = true,
+            relationFormat = RelationFormat.DATE
         )
     )
 
@@ -454,7 +461,8 @@ object ObjectSearchConstants {
         DVSort(
             relationKey = Relations.LAST_OPENED_DATE,
             type = DVSortType.DESC,
-            includeTime = true
+            includeTime = true,
+            relationFormat = RelationFormat.DATE
         )
     )
 
@@ -495,7 +503,8 @@ object ObjectSearchConstants {
         DVSort(
             relationKey = Relations.LAST_MODIFIED_DATE,
             type = DVSortType.DESC,
-            includeTime = true
+            includeTime = true,
+            relationFormat = RelationFormat.DATE
         )
     )
     //endregion
@@ -527,7 +536,8 @@ object ObjectSearchConstants {
     val sortTabArchive = listOf(
         DVSort(
             relationKey = Relations.NAME,
-            type = DVSortType.ASC
+            type = DVSortType.ASC,
+            relationFormat = RelationFormat.LONG_TEXT
         )
     )
     //endregion
@@ -575,7 +585,8 @@ object ObjectSearchConstants {
         DVSort(
             relationKey = Relations.LAST_MODIFIED_DATE,
             type = DVSortType.DESC,
-            includeTime = true
+            includeTime = true,
+            relationFormat = RelationFormat.DATE
         )
     )
     //endregion
@@ -860,7 +871,8 @@ object ObjectSearchConstants {
     fun defaultObjectSearchSorts() : List<DVSort> = listOf(
         DVSort(
             relationKey = Relations.NAME,
-            type = DVSortType.ASC
+            type = DVSortType.ASC,
+            relationFormat = RelationFormat.LONG_TEXT
         )
     )
 
@@ -869,13 +881,15 @@ object ObjectSearchConstants {
             DVSort(
                 relationKey = Relations.LAST_USED_DATE,
                 type = DVSortType.DESC,
-                includeTime = true
+                includeTime = true,
+                relationFormat = RelationFormat.DATE
             )
         )
         add(
             DVSort(
                 relationKey = Relations.NAME,
-                type = DVSortType.ASC
+                type = DVSortType.ASC,
+                relationFormat = RelationFormat.LONG_TEXT
             )
         )
     }
@@ -963,7 +977,8 @@ object ObjectSearchConstants {
         DVSort(
             relationKey = Relations.LAST_MODIFIED_DATE,
             type = DVSortType.DESC,
-            includeTime = true
+            includeTime = true,
+            relationFormat = RelationFormat.DATE
         )
     )
 
@@ -1102,7 +1117,8 @@ object ObjectSearchConstants {
 
     fun sortByName() : DVSort = DVSort(
         relationKey = Relations.NAME,
-        type = DVSortType.ASC
+        type = DVSortType.ASC,
+        relationFormat = RelationFormat.LONG_TEXT
     )
 
     val keysRelationOptions = listOf(

@@ -45,6 +45,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -131,12 +133,14 @@ fun GlobalSearchScreen(
 
         val interactionSource = remember { MutableInteractionSource() }
         val focus = LocalFocusManager.current
+        val focusRequester = FocusRequester()
 
         Dragger(
             modifier = Modifier
                 .padding(vertical = 6.dp)
                 .align(Alignment.CenterHorizontally)
         )
+
 
         Row(
             modifier = Modifier
@@ -168,7 +172,9 @@ fun GlobalSearchScreen(
                 modifier = Modifier
                     .weight(1.0f)
                     .padding(start = 6.dp)
-                    .align(Alignment.CenterVertically),
+                    .align(Alignment.CenterVertically)
+                    .focusRequester(focusRequester)
+                ,
                 textStyle = BodyRegular.copy(
                     color = colorResource(id = R.color.text_primary)
                 ),
@@ -365,6 +371,9 @@ fun GlobalSearchScreen(
                     }
                 }
             }
+        }
+        LaunchedEffect(Unit) {
+            focusRequester.requestFocus()
         }
     }
 }

@@ -2,9 +2,15 @@ package com.anytypeio.anytype.ui.search
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,19 +21,27 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
@@ -37,8 +51,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -49,9 +65,16 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.keyboardAsState
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
+import com.anytypeio.anytype.core_ui.foundation.AlertConfig
+import com.anytypeio.anytype.core_ui.foundation.AlertIcon
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
+import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_RED
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
+import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.widgets.DefaultBasicAvatarIcon
@@ -64,14 +87,31 @@ import com.anytypeio.anytype.core_ui.widgets.DefaultTaskObjectIcon
 import com.anytypeio.anytype.core_ui.widgets.defaultProfileIconImage
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
+import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
+import kotlinx.coroutines.delay
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun GlobalSearchScreen(
-    items: List<GlobalSearchItemView>,
+    state: GlobalSearchViewModel.ViewState,
     onQueryChanged: (String) -> Unit,
-    onObjectClicked: (GlobalSearchItemView) -> Unit
+    onObjectClicked: (GlobalSearchItemView) -> Unit,
+    onShowRelatedClicked: (GlobalSearchItemView) -> Unit,
+    onClearRelatedClicked: () -> Unit
 ) {
+
+    var showLoading by rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(state.isLoading) {
+        if (state.isLoading && !showLoading) {
+            delay(AVOID_FLICKERING_DELAY)
+            showLoading = true
+        } else if (!state.isLoading && showLoading) {
+            delay(100)
+            showLoading = false
+        }
+    }
+
     var query by remember { mutableStateOf("") }
     val isKeyboardOpen by keyboardAsState()
     Column(
@@ -83,7 +123,9 @@ fun GlobalSearchScreen(
         val focus = LocalFocusManager.current
 
         Dragger(
-            modifier = Modifier.padding(vertical = 6.dp).align(Alignment.CenterHorizontally)
+            modifier = Modifier
+                .padding(vertical = 6.dp)
+                .align(Alignment.CenterHorizontally)
         )
 
         Row(
@@ -98,7 +140,8 @@ fun GlobalSearchScreen(
                     color = colorResource(id = R.color.shape_transparent),
                     shape = RoundedCornerShape(10.dp)
                 )
-                .height(40.dp)
+                .height(40.dp),
+            verticalAlignment = Alignment.CenterVertically
 
         ) {
             Image(
@@ -113,16 +156,15 @@ fun GlobalSearchScreen(
             BasicTextField(
                 value = query,
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .weight(1.0f)
                     .padding(start = 6.dp)
-                    .align(Alignment.CenterVertically)
-                ,
+                    .align(Alignment.CenterVertically),
                 textStyle = BodyRegular.copy(
                     color = colorResource(id = R.color.text_primary)
                 ),
-                onValueChange = {
-                    query = it.also {
-                        onQueryChanged(it)
+                onValueChange = { input ->
+                    query = input.also {
+                        onQueryChanged(input)
                     }
                 },
                 singleLine = true,
@@ -135,7 +177,7 @@ fun GlobalSearchScreen(
                         singleLine = true,
                         visualTransformation = VisualTransformation.None,
                         interactionSource = interactionSource,
-                        placeholder =  {
+                        placeholder = {
                             Text(
                                 text = stringResource(id = R.string.search),
                                 style = BodyRegular.copy(
@@ -149,14 +191,98 @@ fun GlobalSearchScreen(
                         border = {},
                         contentPadding = PaddingValues()
                     )
-                }
+                },
+                cursorBrush = SolidColor(colorResource(id = R.color.palette_system_blue))
             )
+            Box(
+                modifier = Modifier.size(16.dp)
+            ) {
+                if (showLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.fillMaxSize(),
+                        color = colorResource(id = R.color.glyph_active),
+                        strokeWidth = 2.dp
+                    )
+                }
+            }
+            Spacer(Modifier.width(9.dp))
+            AnimatedVisibility(
+                visible = query.isNotEmpty(),
+                enter = fadeIn(tween(100)),
+                exit = fadeOut(tween(100))
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_clear_18),
+                    contentDescription = "Clear icon",
+                    modifier = Modifier
+                        .padding(end = 9.dp)
+                        .noRippleClickable {
+                            query = "".also {
+                                onQueryChanged("")
+                            }
+                        }
+                )
+            }
         }
-
         LazyColumn(
-            modifier = Modifier.weight(1.0f)
+            modifier = Modifier
+                .weight(1.0f)
+                .fillMaxSize()
         ) {
-            items.forEachIndexed { idx, item ->
+            if (state is GlobalSearchViewModel.ViewState.Related) {
+                stickyHeader {
+                    Row(
+                        modifier = Modifier
+                            .height(48.dp)
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.Bottom
+                    ) {
+                        Text(
+                            text = buildAnnotatedString {
+                                append(stringResource(R.string.global_search_related_to))
+                                withStyle(
+                                    style = SpanStyle(
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                ) {
+                                    append(state.target.title)
+                                }
+                            },
+                            style = Caption1Regular,
+                            color = colorResource(id = R.color.text_secondary),
+                            modifier = Modifier
+                                .weight(1.0f)
+                                .padding(
+                                    start = 20.dp,
+                                    bottom = 8.dp
+                                ),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            text = stringResource(id = R.string.clear),
+                            style = Caption1Regular,
+                            color = colorResource(id = R.color.text_secondary),
+                            modifier = Modifier
+                                .padding(
+                                    start = 20.dp,
+                                    end = 20.dp,
+                                    bottom = 8.dp
+                                )
+                                .clickable {
+                                    onClearRelatedClicked().also {
+                                        query = ""
+                                    }
+                                }
+                        )
+                    }
+                    Divider(
+                        paddingStart = 20.dp,
+                        paddingEnd = 20.dp
+                    )
+                }
+            }
+            state.views.forEachIndexed { idx, item ->
                 item(key = item.id) {
                     if (idx == 0) {
                         Spacer(modifier = Modifier.height(10.dp))
@@ -167,14 +293,61 @@ fun GlobalSearchScreen(
                             if (isKeyboardOpen) {
                                 focus.clearFocus(true)
                             }
-                            focus.clearFocus(true)
                             onObjectClicked(it)
+                        },
+                        onShowRelatedClicked = {
+                            onShowRelatedClicked(it).also {
+                                query = ""
+                            }
                         }
                     )
-                    if (idx != items.lastIndex) {
+                    if (idx != state.views.lastIndex) {
                         Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
                     } else {
                         Spacer(modifier = Modifier.height(48.dp))
+                    }
+                }
+            }
+            item {
+                AnimatedVisibility(
+                    modifier = Modifier.fillParentMaxSize(),
+                    visible = state.isEmptyState(),
+                    enter = fadeIn(animationSpec = tween(1000, 0)),
+                    exit = fadeOut(animationSpec = tween(150, 0))
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        if (state is GlobalSearchViewModel.ViewState.Related) {
+                            Text(
+                                text = stringResource(R.string.global_search_no_related_objects_found),
+                                modifier = Modifier.align(Alignment.Center),
+                                color = colorResource(id = R.color.text_primary),
+                                style = BodyCalloutRegular
+                            )
+                        } else {
+                            Column(
+                                modifier = Modifier.align(Alignment.Center),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                AlertIcon(
+                                    AlertConfig.Icon(
+                                        icon = R.drawable.ic_alert_error,
+                                        gradient = GRADIENT_TYPE_RED
+                                    )
+                                )
+                                Spacer(modifier = Modifier.height(12.dp))
+                                Text(
+                                    text = stringResource(id = R.string.nothing_found),
+                                    style = BodyCalloutMedium
+                                )
+                                Text(
+                                    text = stringResource(id = R.string.try_to_create_new_one_or_search_for_something_else),
+                                    style = BodyCalloutRegular,
+                                    modifier = Modifier.padding(horizontal = 12.dp)
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -182,17 +355,35 @@ fun GlobalSearchScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun GlobalSearchItem(
     globalSearchItemView: GlobalSearchItemView,
-    onObjectClicked: (GlobalSearchItemView) -> Unit
+    onObjectClicked: (GlobalSearchItemView) -> Unit,
+    onShowRelatedClicked: (GlobalSearchItemView) -> Unit
 ) {
+    var isMenuExpanded by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable {
-                onObjectClicked(globalSearchItemView)
-            }
+            .combinedClickable(
+                onClick = {
+                    onObjectClicked(globalSearchItemView)
+                },
+                onLongClick = {
+                    isMenuExpanded = true
+                },
+                enabled = true
+            )
+            .then(
+                if (isMenuExpanded)
+                    Modifier.background(
+                        color = colorResource(id = R.color.shape_tertiary),
+                        shape = RoundedCornerShape(10.dp)
+                    )
+                else
+                    Modifier
+            )
     ) {
         GlobalSearchObjectIcon(
             icon = globalSearchItemView.icon,
@@ -218,7 +409,9 @@ private fun GlobalSearchItem(
                 .align(Alignment.CenterStart)
         ) {
             Text(
-                text = globalSearchItemView.title,
+                text = globalSearchItemView.title.ifEmpty {
+                    stringResource(id = R.string.untitled)
+                },
                 style = PreviewTitle2Medium,
                 color = colorResource(id = R.color.text_primary),
                 maxLines = 1,
@@ -277,6 +470,54 @@ private fun GlobalSearchItem(
                 style = Relations2,
                 color = colorResource(id = R.color.text_secondary)
             )
+        }
+        Box(modifier = Modifier
+            .align(Alignment.BottomStart)
+        ) {
+            if (isMenuExpanded) {
+                DropdownMenu(
+                    expanded = isMenuExpanded,
+                    onDismissRequest = {
+                        isMenuExpanded = false
+                    },
+//                    offset = DpOffset(
+//                        x = 8.dp,
+//                        y = 8.dp
+//                    )
+                ) {
+                    DropdownMenuItem(
+                        onClick = { 
+                            onShowRelatedClicked(globalSearchItemView)
+                        }
+                    ) {
+                        Text(text = "Show related objects")
+                    }
+                }
+//                Dialog(
+//                    onDismissRequest = {
+//                        isMenuExpanded = false
+//                    }
+//                ) {
+//                    Surface(
+//                        shape = RoundedCornerShape(12.dp)
+//                    ) {
+//                        Column(
+//                            modifier = Modifier
+//                                .background(color = colorResource(id = R.color.shape_secondary))
+//                                .fillMaxWidth()
+//                        ) {
+//                            Text(
+//                                text = "Open",
+//                                modifier = Modifier.padding(16.dp)
+//                            )
+//                            Text(
+//                                text = "Show related objects",
+//                                modifier = Modifier.padding(16.dp)
+//                            )
+//                        }
+//                    }
+//                }
+            }
         }
     }
 }
@@ -437,7 +678,35 @@ private fun DefaultGlobalSearchItemViewPreview() {
             layout = ObjectType.Layout.BASIC,
             icon = ObjectIcon.Basic.Avatar("A")
         ),
-        onObjectClicked = {}
+        onObjectClicked = {},
+        onShowRelatedClicked = {}
+    )
+}
+
+@Preview(
+    name = "Dark Mode",
+    showBackground = true,
+    uiMode = UI_MODE_NIGHT_YES
+)
+@Preview(
+    name = "Light Mode",
+    showBackground = true,
+    uiMode = UI_MODE_NIGHT_NO
+)
+@Composable
+private fun DefaultGlobalSearchItemViewWithLongTitlePreview() {
+    GlobalSearchItem(
+        GlobalSearchItemView(
+            id = "ID",
+            space = SpaceId(""),
+            title = "AutechreAutechreAutechreAutechreAutechreAutechreAutechre",
+            type = "Band",
+            meta = GlobalSearchItemView.Meta.None,
+            layout = ObjectType.Layout.BASIC,
+            icon = ObjectIcon.Basic.Avatar("A")
+        ),
+        onObjectClicked = {},
+        onShowRelatedClicked = {}
     )
 }
 
@@ -466,7 +735,8 @@ private fun DefaultGlobalSearchItemViewWithBlockMetaPreview() {
             layout = ObjectType.Layout.BASIC,
             icon = ObjectIcon.Basic.Avatar("A")
         ),
-        onObjectClicked = {}
+        onObjectClicked = {},
+        onShowRelatedClicked = {}
     )
 }
 
@@ -498,7 +768,8 @@ private fun DefaultGlobalSearchItemViewBlockTwoHighlightsMetaPreview() {
             layout = ObjectType.Layout.BASIC,
             icon = ObjectIcon.Basic.Avatar("A")
         ),
-        onObjectClicked = {}
+        onObjectClicked = {},
+        onShowRelatedClicked = {}
     )
 }
 
@@ -531,7 +802,8 @@ private fun DefaultGlobalSearchItemViewRelationTwoHighlightsMetaPreview() {
             layout = ObjectType.Layout.BASIC,
             icon = ObjectIcon.Basic.Avatar("A")
         ),
-        onObjectClicked = {}
+        onObjectClicked = {},
+        onShowRelatedClicked = {}
     )
 }
 
@@ -561,7 +833,8 @@ private fun DefaultGlobalSearchItemViewTagRelationPreview() {
             layout = ObjectType.Layout.BASIC,
             icon = ObjectIcon.Basic.Avatar("A")
         ),
-        onObjectClicked = {}
+        onObjectClicked = {},
+        onShowRelatedClicked = {}
     )
 }
 
@@ -591,7 +864,8 @@ private fun DefaultGlobalSearchItemViewStatusRelationPreview() {
             layout = ObjectType.Layout.BASIC,
             icon = ObjectIcon.Basic.Avatar("A")
         ),
-        onObjectClicked = {}
+        onObjectClicked = {},
+        onShowRelatedClicked = {}
     )
 }
 
@@ -610,71 +884,199 @@ private fun DefaultGlobalSearchItemViewStatusRelationScreenPreview() {
 
     GlobalSearchScreen(
         onQueryChanged = {},
-        items = listOf(
-            GlobalSearchItemView(
+        state = GlobalSearchViewModel.ViewState.Default(
+            isLoading = false,
+            views = listOf(
+                GlobalSearchItemView(
+                    id = "ID1",
+                    space = SpaceId(""),
+                    title = "Autechre",
+                    type = "Band",
+                    meta = GlobalSearchItemView.Meta.None,
+                    layout = ObjectType.Layout.BASIC,
+                    icon = ObjectIcon.Basic.Avatar("A")
+                ),
+                GlobalSearchItemView(
+                    id = "ID2",
+                    space = SpaceId(""),
+                    title = "Autechre",
+                    type = "Band",
+                    meta = GlobalSearchItemView.Meta.Status(
+                        name = "Style",
+                        value = "IDM",
+                        color = ThemeColor.TEAL
+                    ),
+                    layout = ObjectType.Layout.BASIC,
+                    icon = ObjectIcon.Basic.Avatar("A")
+                ),
+                GlobalSearchItemView(
+                    id = "ID3",
+                    space = SpaceId(""),
+                    title = "Autechre",
+                    type = "Band",
+                    meta = GlobalSearchItemView.Meta.Tag(
+                        name = "Style",
+                        value = "IDM",
+                        color = ThemeColor.TEAL
+                    ),
+                    layout = ObjectType.Layout.BASIC,
+                    icon = ObjectIcon.Basic.Avatar("A")
+                ),
+                GlobalSearchItemView(
+                    id = "ID4",
+                    space = SpaceId(""),
+                    title = "Autechre",
+                    type = "Band",
+                    meta = GlobalSearchItemView.Meta.Default(
+                        name = "Description",
+                        value = "Autechre are an English electronic music duo consisting of Rob Brown and Sean Booth, both from Rochdale, Greater Manchester. ",
+                        highlights = listOf(
+                            IntRange(0, 8),
+                            IntRange(15, 23)
+                        )
+                    ),
+                    layout = ObjectType.Layout.BASIC,
+                    icon = ObjectIcon.Basic.Avatar("A")
+                ),
+                GlobalSearchItemView(
+                    id = "ID5",
+                    space = SpaceId(""),
+                    title = "Autechre",
+                    type = "Band",
+                    meta = GlobalSearchItemView.Meta.Block(
+                        snippet = "Autechre are an English electronic music duo consisting of Rob Brown and Sean Booth, both from Rochdale, Greater Manchester. ",
+                        highlights = emptyList()
+                    ),
+                    layout = ObjectType.Layout.BASIC,
+                    icon = ObjectIcon.Basic.Avatar("A")
+                )
+            )
+        ),
+        onObjectClicked = {},
+        onShowRelatedClicked = {},
+        onClearRelatedClicked = {}
+    )
+}
+
+@Preview(
+    name = "Dark Mode",
+    showBackground = true,
+    uiMode = UI_MODE_NIGHT_YES
+)
+@Preview(
+    name = "Light Mode",
+    showBackground = true,
+    uiMode = UI_MODE_NIGHT_NO
+)
+@Composable
+private fun DefaultGlobalSearchItemViewWithRelatedScreenPreview() {
+    GlobalSearchScreen(
+        onQueryChanged = {},
+        state = GlobalSearchViewModel.ViewState.Related(
+            isLoading = false,
+            target = GlobalSearchItemView(
                 id = "ID1",
                 space = SpaceId(""),
-                title = "Autechre",
+                title = "Autechre Autechre Autechre Autechre Autechre Autechre Autechre Autechre",
                 type = "Band",
                 meta = GlobalSearchItemView.Meta.None,
                 layout = ObjectType.Layout.BASIC,
                 icon = ObjectIcon.Basic.Avatar("A")
             ),
-            GlobalSearchItemView(
-                id = "ID2",
-                space = SpaceId(""),
-                title = "Autechre",
-                type = "Band",
-                meta = GlobalSearchItemView.Meta.Status(
-                    name = "Style",
-                    value = "IDM",
-                    color = ThemeColor.TEAL
+            views = listOf(
+                GlobalSearchItemView(
+                    id = "ID1",
+                    space = SpaceId(""),
+                    title = "Autechre",
+                    type = "Band",
+                    meta = GlobalSearchItemView.Meta.None,
+                    layout = ObjectType.Layout.BASIC,
+                    icon = ObjectIcon.Basic.Avatar("A")
                 ),
-                layout = ObjectType.Layout.BASIC,
-                icon = ObjectIcon.Basic.Avatar("A")
-            ),
-            GlobalSearchItemView(
-                id = "ID3",
-                space = SpaceId(""),
-                title = "Autechre",
-                type = "Band",
-                meta = GlobalSearchItemView.Meta.Tag(
-                    name = "Style",
-                    value = "IDM",
-                    color = ThemeColor.TEAL
+                GlobalSearchItemView(
+                    id = "ID2",
+                    space = SpaceId(""),
+                    title = "Autechre",
+                    type = "Band",
+                    meta = GlobalSearchItemView.Meta.Status(
+                        name = "Style",
+                        value = "IDM",
+                        color = ThemeColor.TEAL
+                    ),
+                    layout = ObjectType.Layout.BASIC,
+                    icon = ObjectIcon.Basic.Avatar("A")
                 ),
-                layout = ObjectType.Layout.BASIC,
-                icon = ObjectIcon.Basic.Avatar("A")
-            ),
-            GlobalSearchItemView(
-                id = "ID4",
-                space = SpaceId(""),
-                title = "Autechre",
-                type = "Band",
-                meta = GlobalSearchItemView.Meta.Default(
-                    name = "Description",
-                    value = "Autechre are an English electronic music duo consisting of Rob Brown and Sean Booth, both from Rochdale, Greater Manchester. ",
-                    highlights = listOf(
-                        IntRange(0, 8),
-                        IntRange(15, 23)
-                    )
+                GlobalSearchItemView(
+                    id = "ID3",
+                    space = SpaceId(""),
+                    title = "Autechre",
+                    type = "Band",
+                    meta = GlobalSearchItemView.Meta.Tag(
+                        name = "Style",
+                        value = "IDM",
+                        color = ThemeColor.TEAL
+                    ),
+                    layout = ObjectType.Layout.BASIC,
+                    icon = ObjectIcon.Basic.Avatar("A")
                 ),
-                layout = ObjectType.Layout.BASIC,
-                icon = ObjectIcon.Basic.Avatar("A")
-            ),
-            GlobalSearchItemView(
-                id = "ID5",
-                space = SpaceId(""),
-                title = "Autechre",
-                type = "Band",
-                meta = GlobalSearchItemView.Meta.Block(
-                    snippet = "Autechre are an English electronic music duo consisting of Rob Brown and Sean Booth, both from Rochdale, Greater Manchester. ",
-                    highlights = emptyList()
+                GlobalSearchItemView(
+                    id = "ID4",
+                    space = SpaceId(""),
+                    title = "Autechre",
+                    type = "Band",
+                    meta = GlobalSearchItemView.Meta.Default(
+                        name = "Description",
+                        value = "Autechre are an English electronic music duo consisting of Rob Brown and Sean Booth, both from Rochdale, Greater Manchester. ",
+                        highlights = listOf(
+                            IntRange(0, 8),
+                            IntRange(15, 23)
+                        )
+                    ),
+                    layout = ObjectType.Layout.BASIC,
+                    icon = ObjectIcon.Basic.Avatar("A")
                 ),
-                layout = ObjectType.Layout.BASIC,
-                icon = ObjectIcon.Basic.Avatar("A")
+                GlobalSearchItemView(
+                    id = "ID5",
+                    space = SpaceId(""),
+                    title = "Autechre",
+                    type = "Band",
+                    meta = GlobalSearchItemView.Meta.Block(
+                        snippet = "Autechre are an English electronic music duo consisting of Rob Brown and Sean Booth, both from Rochdale, Greater Manchester. ",
+                        highlights = emptyList()
+                    ),
+                    layout = ObjectType.Layout.BASIC,
+                    icon = ObjectIcon.Basic.Avatar("A")
+                )
             )
         ),
-        onObjectClicked = {}
+        onObjectClicked = {},
+        onShowRelatedClicked = {},
+        onClearRelatedClicked = {}
     )
 }
+
+@Preview(
+    name = "Dark Mode",
+    showBackground = true,
+    uiMode = UI_MODE_NIGHT_YES
+)
+@Preview(
+    name = "Light Mode",
+    showBackground = true,
+    uiMode = UI_MODE_NIGHT_NO
+)
+@Composable
+private fun DefaultGlobalSearchEmptyStatePreview() {
+    GlobalSearchScreen(
+        onQueryChanged = {},
+        state = GlobalSearchViewModel.ViewState.Default(
+            isLoading = false,
+            views = emptyList()
+        ),
+        onObjectClicked = {},
+        onShowRelatedClicked = {},
+        onClearRelatedClicked = {}
+    )
+}
+
+const val AVOID_FLICKERING_DELAY = 100L

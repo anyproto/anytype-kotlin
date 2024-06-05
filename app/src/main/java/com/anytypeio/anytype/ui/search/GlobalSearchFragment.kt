@@ -40,9 +40,11 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
                 typography = typography
             ) {
                 GlobalSearchScreen(
-                    items = vm.views.collectAsStateWithLifecycle().value,
+                    state = vm.state.collectAsStateWithLifecycle().value,
                     onQueryChanged = vm::onQueryChanged,
-                    onObjectClicked = vm::onObjectClicked
+                    onObjectClicked = vm::onObjectClicked,
+                    onShowRelatedClicked = vm::onShowRelatedClicked,
+                    onClearRelatedClicked = vm::onClearRelatedObjectClicked
                 )
             }
             LaunchedEffect(Unit) {

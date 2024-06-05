@@ -10,6 +10,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -143,6 +144,14 @@ class CollectionFragment : BaseComposeFragment() {
 
     override fun releaseDependencies() {
         componentManager().collectionComponent.release()
+    }
+
+    override fun onApplyWindowRootInsets(view: View) {
+        if (BuildConfig.USE_EDGE_TO_EDGE) {
+            // Do nothing.
+        } else {
+            super.onApplyWindowRootInsets(view)
+        }
     }
 
     companion object {

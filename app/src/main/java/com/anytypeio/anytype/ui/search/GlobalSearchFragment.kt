@@ -4,14 +4,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.extensions.isKeyboardVisible
 import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -21,7 +24,10 @@ import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalLayoutApi::class)
 class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
 
     @Inject
@@ -39,10 +45,20 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
             MaterialTheme(
                 typography = typography
             ) {
+                val scope = rememberCoroutineScope()
                 GlobalSearchScreen(
                     state = vm.state.collectAsStateWithLifecycle().value,
                     onQueryChanged = vm::onQueryChanged,
-                    onObjectClicked = vm::onObjectClicked,
+                    onObjectClicked = {
+                        if (isKeyboardVisible()) {
+                            scope.launch {
+                                delay(KEYBOARD_HIDE_DELAY)
+                                vm.onObjectClicked(it)
+                            }
+                        } else {
+                            vm.onObjectClicked(it)
+                        }
+                    },
                     onShowRelatedClicked = vm::onShowRelatedClicked,
                     onClearRelatedClicked = vm::onClearRelatedObjectClicked
                 )
@@ -89,5 +105,9 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
     }
     override fun releaseDependencies() {
         componentManager().globalSearchComponent.release()
+    }
+
+    companion object {
+        const val KEYBOARD_HIDE_DELAY = 300L
     }
 }

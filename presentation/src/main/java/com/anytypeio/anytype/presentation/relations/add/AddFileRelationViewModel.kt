@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.typeOf
@@ -133,7 +134,8 @@ class AddFileRelationViewModel(
         val sorts = arrayListOf(
             DVSort(
                 relationKey = Relations.NAME,
-                type = Block.Content.DataView.Sort.Type.ASC
+                type = Block.Content.DataView.Sort.Type.ASC,
+                relationFormat = RelationFormat.LONG_TEXT
             )
         )
         viewModelScope.launch {

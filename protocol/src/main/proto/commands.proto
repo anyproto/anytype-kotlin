@@ -3073,6 +3073,33 @@ message Rpc {
                 }
             }
         }
+
+        message DiffVersions {
+            message Request {
+                string objectId = 1;
+                string spaceId = 2;
+                string currentVersion = 3;
+                string previousVersion = 4;
+            }
+
+            message Response {
+                Error error = 1;
+                repeated Event.Message historyEvents = 2;
+                anytype.model.ObjectView objectView = 3;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
     }
 
     message File {

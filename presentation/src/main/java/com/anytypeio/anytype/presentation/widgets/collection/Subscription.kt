@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.Subscriptions
@@ -69,7 +70,8 @@ sealed class Subscription(
         sorts = listOf(
             DVSort(
                 relationKey = Relations.SIZE_IN_BYTES,
-                type = DVSortType.DESC
+                type = DVSortType.DESC,
+                relationFormat = RelationFormat.NUMBER
             )
         ),
         limit = 0,

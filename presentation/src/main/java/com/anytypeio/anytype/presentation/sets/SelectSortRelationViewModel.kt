@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
 import com.anytypeio.anytype.presentation.extension.logEvent
+import com.anytypeio.anytype.presentation.mapper.toRelationFormat
 import com.anytypeio.anytype.presentation.relations.simpleRelations
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -43,7 +44,8 @@ class SelectSortRelationViewModel(
                 view = viewer.id,
                 sort = DVSort(
                     relationKey = relation.key,
-                    type = DVSortType.ASC
+                    type = DVSortType.ASC,
+                    relationFormat = relation.format.toRelationFormat()
                 )
             )
             updateDataViewViewer.async(params).fold(

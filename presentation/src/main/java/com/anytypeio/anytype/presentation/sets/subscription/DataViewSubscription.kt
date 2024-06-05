@@ -1,6 +1,8 @@
 package com.anytypeio.anytype.presentation.sets.subscription
 
+import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.domain.search.DataViewState
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
@@ -72,7 +74,7 @@ class DefaultDataViewSubscription(
         val params = DataViewSubscriptionContainer.Params(
             collection = collection,
             subscription = getDataViewSubscriptionId(context),
-            sorts = activeViewer.sorts,
+            sorts = activeViewer.sorts.updateWithRelationFormat(relationLinks = dataViewRelationLinks),
             filters = filters,
             sources = listOf(),
             keys = keys,
@@ -124,7 +126,7 @@ class DefaultDataViewSubscription(
 
         val params = DataViewSubscriptionContainer.Params(
             subscription = getDataViewSubscriptionId(context),
-            sorts = activeViewer.sorts,
+            sorts = activeViewer.sorts.updateWithRelationFormat(relationLinks = dataViewRelationLinks),
             filters = filters,
             sources = query,
             keys = keys,
@@ -142,5 +144,12 @@ class DefaultDataViewSubscription(
         const val DATA_VIEW_SUBSCRIPTION_POSTFIX = "-dataview"
 
         fun getDataViewSubscriptionId(context: Id) = "$context$DATA_VIEW_SUBSCRIPTION_POSTFIX"
+    }
+}
+
+private fun List<DVSort>.updateWithRelationFormat(relationLinks: List<RelationLink>): List<DVSort> {
+    return map { sort ->
+        val relationLink = relationLinks.find { it.key == sort.relationKey }
+        sort.copy(relationFormat = relationLink?.format ?: RelationFormat.LONG_TEXT)
     }
 }

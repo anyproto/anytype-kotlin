@@ -630,7 +630,8 @@ fun MDVSort.toCoreModels(): Block.Content.DataView.Sort = DVSort(
     includeTime = includeTime,
     customOrder = customOrder.mapNotNull { value ->
         if (value is Id) value else null
-    }
+    },
+    relationFormat = format.format()
 )
 
 fun MDVSortType.toCoreModels(): DVSortType = when (this) {

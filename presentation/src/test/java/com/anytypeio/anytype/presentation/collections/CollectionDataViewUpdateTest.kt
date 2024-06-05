@@ -90,7 +90,8 @@ class CollectionDataViewUpdateTest : ObjectSetViewModelTestSetup() {
                         sort = DVSort(
                             id = objectCollection.sort1.id,
                             relationKey = objectCollection.sort1.relationKey,
-                            type = DVSortType.DESC
+                            type = DVSortType.DESC,
+                            relationFormat = objectCollection.sort1.relationFormat
                         )
                     )
                 )

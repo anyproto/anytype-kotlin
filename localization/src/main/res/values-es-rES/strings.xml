@@ -1393,9 +1393,9 @@ En concreto,
     <string name="membership_agree_terms">Términos de uso</string>
     <string name="membership_agree_middle">y</string>
     <string name="membership_agree_privacy">Política de privacidad</string>
-    <string name="membership_support_already_acquired">You’ve already acquired a Membership plan using another Anytype account.</string>
-    <string name="membership_support_different_subscription">Found a subscription with a different id</string>
-    <string name="membership_support_more_then_one_subscription">Found more than one subscription</string>
+    <string name="membership_support_already_acquired">Ya has adquirido un plan de suscripción con otra cuenta de Anytype.</string>
+    <string name="membership_support_different_subscription">Se ha encontrado una suscripción con un ID distinto.</string>
+    <string name="membership_support_more_then_one_subscription">Se ha encontrado más de una suscripción.</string>
     <plurals name="period_years">
         <item quantity="one">año</item>
         <item quantity="other">%d años</item>
@@ -1414,7 +1414,7 @@ En concreto,
     </plurals>
     <string name="membership_error_button_text_action">Contacto</string>
     <string name="membership_error_button_text_dismiss">Ok</string>
-    <string name="error_login_network_id_mismatch">Network ID mismatch detected. Please verify your network configuration.</string>
-    <string name="global_search_related_to">"Related to: "</string>
+    <string name="error_login_network_id_mismatch">Se ha detectado un ID de red que no coincide. Comprueba tu configuración de red.</string>
+    <string name="global_search_related_to">"Relacionado con: "</string>
     <string name="global_search_no_related_objects_found">No se ha encontrado ningún objeto relacionado.</string>
 </resources>

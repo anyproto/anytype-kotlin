@@ -38,11 +38,6 @@
     <string name="about_terms_of_use">Умови використання</string>
     <string name="about_privacy_policy">Політика конфіденційності</string>
     <string name="about_acknowledgements">Acknowledgments</string>
-    <string name="about_what_is_new_link">https://anytype.io/release-notes/android</string>
-    <string name="about_anytype_community_link">https://community.anytype.io</string>
-    <string name="about_help_and_tutorials_link">https://doc.anytype.io</string>
-    <string name="about_terms_and_conditions_link">https://anytype.io/terms_of_use/</string>
-    <string name="about_privacy_policy_link">https://anytype.io/privacy_policy.html</string>
     <string name="about_meta_info">App version: %1$s\nBuild number: %2$d\nLibrary version: %3$s\nAccount\u00A0ID:\u00A0%4$s\nDevice\u00A0ID:\u00A0%5$s\nAnalytics\u00A0ID:\u00A0%6$s</string>
     <string name="about_meta_info_for_copy">Device: %1$s\nAndroid version: %2$d\nApp version: %3$s\nBuild number: %4$d\nLibrary version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDevice\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s</string>
     <string name="space">Простір</string>
@@ -67,7 +62,6 @@
     <string name="danger_zone">Danger zone</string>
     <string name="snackbar_template_add">Новий шаблон додано до типу</string>
     <string name="settings_membership">Membership</string>
-    <string name="default_url_placeholder">https://humanparts.medium.com/how-i-overcame-cult-trauma-with-psychedelics-4342c03a074c</string>
     <string name="multi_select_turn_into">Turn into</string>
     <string name="multi_select_move_to">Перемістити до</string>
     <string name="option_toolbar_header_turn_into">Turn into</string>
@@ -824,7 +818,6 @@
     <string name="created_by_id_copied_toast_msg">Created-by ID copied</string>
     <string name="anytype_update_alert_description">Some of your data was managed in a newer version of Anytype. Please update the app to work with all your docs and the latest features.</string>
     <string name="anytype_update_alert_title">It\'s time to update</string>
-    <string name="download_anytype_url">https://download.anytype.io</string>
     <string name="space_type_default">Entry</string>
     <string name="space_type_default_space">Entry space</string>
     <string name="space_type_private">Private</string>

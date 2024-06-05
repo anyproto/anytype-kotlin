@@ -38,11 +38,6 @@
     <string name="about_terms_of_use">使用条款</string>
     <string name="about_privacy_policy">隐私策略</string>
     <string name="about_acknowledgements">致谢</string>
-    <string name="about_what_is_new_link">https://anytype.io/release-notes/android</string>
-    <string name="about_anytype_community_link">https://community.anytype.io</string>
-    <string name="about_help_and_tutorials_link">https://doc.anytype.io</string>
-    <string name="about_terms_and_conditions_link">https://anytype.io/terms_of_use/</string>
-    <string name="about_privacy_policy_link">https://anytype.io/privacy_policy.html</string>
     <string name="about_meta_info">应用版本号： %1$s\n构建号： %2$d\n库版本： %3$s\n账户\u00A0 ID：\u00A0%4$s\n设备\u00A0 ID：\u00A0%5$s\n分析\u00A0 ID：\u00A0%6$s</string>
     <string name="about_meta_info_for_copy">设备：%1$s\nAndroid 版本：%2$d\n应用版本：%3$s\n构建号：%4$d\n库版本：%5$s\n账户\u00A0 ID：\u00A0%6$s\n设备\u00A0 ID：\u00A0%7$s\n分析\u00A0 ID：\u00A0%8$s</string>
     <string name="space">空间</string>
@@ -67,7 +62,6 @@
     <string name="danger_zone">危险操作区域</string>
     <string name="snackbar_template_add">新模板已添加到类型</string>
     <string name="settings_membership">会员</string>
-    <string name="default_url_placeholder">https://humanparts.medium.com/how-i-overcame-cult-trauma-with-psychedelics-4342c03a074c</string>
     <string name="multi_select_turn_into">转换为</string>
     <string name="multi_select_move_to">移至</string>
     <string name="option_toolbar_header_turn_into">转换为</string>
@@ -818,7 +812,6 @@
     <string name="created_by_id_copied_toast_msg">创建者ID 已复制</string>
     <string name="anytype_update_alert_description">您的某些数据是在 Anytype 的较新版本中管理的。请更新应用程序，以便使用您的所有文档和最新功能。</string>
     <string name="anytype_update_alert_title">是时候更新了</string>
-    <string name="download_anytype_url">https://download.anytype.io</string>
     <string name="space_type_default">默认</string>
     <string name="space_type_default_space">默认空间</string>
     <string name="space_type_private">私人</string>

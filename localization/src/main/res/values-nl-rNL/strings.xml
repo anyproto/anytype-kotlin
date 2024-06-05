@@ -38,11 +38,6 @@
     <string name="about_terms_of_use">Gebruikersvoorwaarden</string>
     <string name="about_privacy_policy">Privacybeleid</string>
     <string name="about_acknowledgements">Erkenningen</string>
-    <string name="about_what_is_new_link">https://anytype.io/release-notes/android</string>
-    <string name="about_anytype_community_link">https://community.anytype.io</string>
-    <string name="about_help_and_tutorials_link">https://doc.anytype.io</string>
-    <string name="about_terms_and_conditions_link">https://anytype.io/terms_of_use/</string>
-    <string name="about_privacy_policy_link">https://anytype.io/privacy_policy.html</string>
     <string name="about_meta_info">App versie: %1$s\nBuild nummer: %2$d\Bibliotheek versie: %3$s\nAccount\u00A0ID:\u00A0%4$s\Apparaat\u00A0ID:\u00A0%5$s\nAnalytics\u00A0ID:\u00A0%6$s</string>
     <string name="about_meta_info_for_copy">Apparaat: %1$s\nAndroid versie: %2$d\nApp versie: %3$s\nBuild nummer: %4$d\nbibliotheek versie: %5$s\nAccount:\u00A0ID:\u00A0%6$s\nApparaat\u00A0ID:\u00A0%7$s\nAnalyse\u00A0ID:\u00A0%8$s</string>
     <string name="space">Ruimte</string>
@@ -67,7 +62,6 @@
     <string name="danger_zone">Gevarenzone</string>
     <string name="snackbar_template_add">Nieuw sjabloon is toegevoegd aan het type</string>
     <string name="settings_membership">Lidmaatschap</string>
-    <string name="default_url_placeholder">https://humanparts.medium.com/how-i-overcame-cult-trauma-with-psychedelics-4342c03a074c</string>
     <string name="multi_select_turn_into">Verander in</string>
     <string name="multi_select_move_to">Verplaats naar</string>
     <string name="option_toolbar_header_turn_into">Verander in</string>
@@ -820,7 +814,6 @@
     <string name="created_by_id_copied_toast_msg">Aangemaakt-door ID gekopieerd</string>
     <string name="anytype_update_alert_description">Een deel van je gegevens werd beheerd door een nieuwere versie van Anytype. Update de app alsjeblieft om met al je documenten en de nieuwe functies te werken.</string>
     <string name="anytype_update_alert_title">Het is tijd om te updaten</string>
-    <string name="download_anytype_url">https://download.anytype.io</string>
     <string name="space_type_default">Invoer</string>
     <string name="space_type_default_space">Standaard ruimte</string>
     <string name="space_type_private">Persoonlijk</string>

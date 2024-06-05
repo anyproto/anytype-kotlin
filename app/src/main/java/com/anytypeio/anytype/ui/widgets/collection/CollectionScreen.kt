@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,7 +33,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -73,6 +76,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.keyboardAsState
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
@@ -119,7 +123,12 @@ fun ScreenContent(
         Modifier.background(color = colorResource(R.color.background_primary))
     )
     {
-        Box {
+        Box(
+            modifier = if (BuildConfig.USE_EDGE_TO_EDGE)
+                Modifier.windowInsetsPadding(WindowInsets.systemBars)
+            else
+                Modifier
+        ) {
             Column(
                 Modifier
                     .fillMaxSize()

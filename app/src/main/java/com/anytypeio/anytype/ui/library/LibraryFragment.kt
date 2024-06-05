@@ -14,6 +14,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -227,6 +228,14 @@ class LibraryFragment : BaseComposeFragment() {
 
     override fun releaseDependencies() {
         componentManager().libraryComponent.release()
+    }
+
+    override fun onApplyWindowRootInsets(view: View) {
+        if (BuildConfig.USE_EDGE_TO_EDGE) {
+            // Do nothing.
+        } else {
+            super.onApplyWindowRootInsets(view)
+        }
     }
 
     companion object {

@@ -119,7 +119,6 @@ fun GlobalSearchScreen(
         }
     }
 
-//    var query by remember { mutableStateOf("") }
     var query by remember { mutableStateOf(TextFieldValue()) }
 
     Column(

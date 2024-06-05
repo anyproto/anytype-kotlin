@@ -38,11 +38,6 @@
     <string name="about_terms_of_use">Términos de uso</string>
     <string name="about_privacy_policy">Política de privacidad</string>
     <string name="about_acknowledgements">Agradecimientos</string>
-    <string name="about_what_is_new_link">https://anytype.io/release-notes/android</string>
-    <string name="about_anytype_community_link">https://community.anytype.io</string>
-    <string name="about_help_and_tutorials_link">https://doc.anytype.io</string>
-    <string name="about_terms_and_conditions_link">https://anytype.io/terms_of_use/</string>
-    <string name="about_privacy_policy_link">https://anytype.io/privacy_policy.html</string>
     <string name="about_meta_info">Versión de la aplicación: %1$s\nNúmero de compilación: %2$d\nVersión de la biblioteca: %3$s\nID\u00A0cuenta:\u00A0%4$s\nID\u00A0dispositivo:\u00A0%5$s\nID\u00A0análisis:\u00A0%6$s</string>
     <string name="about_meta_info_for_copy">Dispositivo: %1$s\nVersiòn de Android: %2$d\nVersión de la aplicación: %3$s\nNúmero de compilación: %4$d\nVersión de la biblioteca: %5$s\nID\u00A0cuenta:\u00A0%6$s\nID\u00A0dispositivo:\u00A0%7$s\nID\u00A0análisis:\u00A0%8$s</string>
     <string name="space">Espacio</string>
@@ -67,7 +62,6 @@
     <string name="danger_zone">¡Zona peligrosa!</string>
     <string name="snackbar_template_add">Se ha añadido una nueva plantilla al tipo</string>
     <string name="settings_membership">Suscripción</string>
-    <string name="default_url_placeholder">https://humanparts.medium.com/how-i-overcame-cult-trauma-with-psychedelics-4342c03a074c</string>
     <string name="multi_select_turn_into">Convertir en</string>
     <string name="multi_select_move_to">Mover a</string>
     <string name="option_toolbar_header_turn_into">Convertir en</string>
@@ -820,7 +814,6 @@
     <string name="created_by_id_copied_toast_msg">ID de creación copiado</string>
     <string name="anytype_update_alert_description">Parte de tu contenido se ha manejado con una versión más reciente de Anytype. Actualiza la aplicación para trabajar con todos tus documentos y las funciones más recientes.</string>
     <string name="anytype_update_alert_title">Es necesario actualizar</string>
-    <string name="download_anytype_url">https://download.anytype.io</string>
     <string name="space_type_default">Inicial</string>
     <string name="space_type_default_space">Espacio inicial</string>
     <string name="space_type_private">Privado</string>

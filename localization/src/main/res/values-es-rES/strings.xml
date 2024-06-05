@@ -1423,4 +1423,5 @@ En concreto,
     <string name="membership_error_button_text_dismiss">Ok</string>
     <string name="error_login_network_id_mismatch">Network ID mismatch detected. Please verify your network configuration.</string>
     <string name="global_search_related_to">"Related to: "</string>
+    <string name="global_search_no_related_objects_found">No se ha encontrado ningún objeto relacionado.</string>
 </resources>

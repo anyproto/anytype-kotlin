@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType.SHARED
@@ -123,7 +124,8 @@ interface SpaceViewSubscriptionContainer {
                             DVSort(
                                 relationKey = Relations.LAST_OPENED_DATE,
                                 type = DVSortType.DESC,
-                                includeTime = true
+                                includeTime = true,
+                                relationFormat = RelationFormat.DATE
                             )
                         )
                     )

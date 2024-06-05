@@ -569,6 +569,6 @@
 
     <dialog
         android:id="@+id/multiplayerFeatureDialog"
-        android:name="com.anytypeio.anytype.ui.multiplayer.IntroduceSpaceFragment"/>
+        android:name="com.anytypeio.anytype.ui.multiplayer.IntroduceSpaceSharingFragment"/>
 
 </navigation>

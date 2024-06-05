@@ -4,7 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Event
-import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubDataView
 import com.anytypeio.anytype.core_models.StubDataViewView
@@ -95,7 +95,8 @@ class ObjectSetReducerTest {
             sorts = listOf(
                 Block.Content.DataView.Sort(
                     relationKey = viewerRelations[1].key,
-                    type = Block.Content.DataView.Sort.Type.DESC
+                    type = Block.Content.DataView.Sort.Type.DESC,
+                    relationFormat = RelationFormat.LONG_TEXT
                 )
             ),
             filters = listOf()
@@ -133,11 +134,13 @@ class ObjectSetReducerTest {
                 sorts = listOf(
                     Block.Content.DataView.Sort(
                         relationKey = viewerRelations[1].key,
-                        type = Block.Content.DataView.Sort.Type.ASC
+                        type = Block.Content.DataView.Sort.Type.ASC,
+                        relationFormat = RelationFormat.LONG_TEXT
                     ),
                     Block.Content.DataView.Sort(
                         relationKey = viewerRelations[2].key,
-                        type = Block.Content.DataView.Sort.Type.DESC
+                        type = Block.Content.DataView.Sort.Type.DESC,
+                        relationFormat = RelationFormat.LONG_TEXT
                     )
                 ),
                 filters = listOf(),
@@ -165,11 +168,13 @@ class ObjectSetReducerTest {
                         sorts = listOf(
                             Block.Content.DataView.Sort(
                                 relationKey = viewerRelations[1].key,
-                                type = Block.Content.DataView.Sort.Type.ASC
+                                type = Block.Content.DataView.Sort.Type.ASC,
+                                relationFormat = RelationFormat.LONG_TEXT
                             ),
                             Block.Content.DataView.Sort(
                                 relationKey = viewerRelations[2].key,
-                                type = Block.Content.DataView.Sort.Type.DESC
+                                type = Block.Content.DataView.Sort.Type.DESC,
+                                relationFormat = RelationFormat.LONG_TEXT
                             )
                         ),
                         filters = listOf()
@@ -223,7 +228,8 @@ class ObjectSetReducerTest {
             sorts = listOf(
                 Block.Content.DataView.Sort(
                     relationKey = viewerRelations[0].key,
-                    type = Block.Content.DataView.Sort.Type.ASC
+                    type = Block.Content.DataView.Sort.Type.ASC,
+                    relationFormat = RelationFormat.LONG_TEXT
                 )
             ),
             filters = listOf()
@@ -269,7 +275,8 @@ class ObjectSetReducerTest {
                 sorts = listOf(
                     Block.Content.DataView.Sort(
                         relationKey = viewerRelations[1].key,
-                        type = Block.Content.DataView.Sort.Type.DESC
+                        type = Block.Content.DataView.Sort.Type.DESC,
+                        relationFormat = RelationFormat.LONG_TEXT
                     )
                 ),
                 filters = listOf(),
@@ -305,7 +312,8 @@ class ObjectSetReducerTest {
                         sorts = listOf(
                             Block.Content.DataView.Sort(
                                 relationKey = viewerRelations[1].key,
-                                type = Block.Content.DataView.Sort.Type.DESC
+                                type = Block.Content.DataView.Sort.Type.DESC,
+                                relationFormat = RelationFormat.LONG_TEXT
                             )
                         ),
                         filters = listOf()
@@ -378,7 +386,7 @@ class ObjectSetReducerTest {
                 ),
                 Event.Command.DataView.UpdateView.DVSortUpdate.Update(
                     id = sortId2,
-                    sort = DVSort(sort2.id, relationKey2, Block.Content.DataView.Sort.Type.DESC)
+                    sort = DVSort(sort2.id, relationKey2, Block.Content.DataView.Sort.Type.DESC, relationFormat = RelationFormat.LONG_TEXT)
                 ),
                 Event.Command.DataView.UpdateView.DVSortUpdate.Remove(
                     ids = listOf(sortId1)
@@ -405,22 +413,26 @@ class ObjectSetReducerTest {
             DVSort(
                 id = sortId3,
                 relationKey = relationKey3,
-                type = Block.Content.DataView.Sort.Type.ASC
+                type = Block.Content.DataView.Sort.Type.ASC,
+                relationFormat = RelationFormat.LONG_TEXT
             ),
             DVSort(
                 id = sortId5,
                 relationKey = relationKey5,
-                type = Block.Content.DataView.Sort.Type.ASC
+                type = Block.Content.DataView.Sort.Type.ASC,
+                relationFormat = RelationFormat.LONG_TEXT
             ),
             DVSort(
                 id = sortId2,
                 relationKey = relationKey2,
-                type = Block.Content.DataView.Sort.Type.DESC
+                type = Block.Content.DataView.Sort.Type.DESC,
+                relationFormat = RelationFormat.LONG_TEXT
             ),
             DVSort(
                 id = sortId4,
                 relationKey = relationKey4,
-                type = Block.Content.DataView.Sort.Type.ASC
+                type = Block.Content.DataView.Sort.Type.ASC,
+                relationFormat = RelationFormat.LONG_TEXT
             )
         )
         val expectedDataView = Block(

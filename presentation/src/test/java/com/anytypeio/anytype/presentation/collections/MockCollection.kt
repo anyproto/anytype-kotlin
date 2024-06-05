@@ -78,12 +78,12 @@ class MockCollection(
         StubDataViewViewRelation(key = relationObject6.key, isVisible = true)
 
     // RELATION LINKS
-    val relationLink1 = StubRelationLink(relationObject1.key)
-    val relationLink2 = StubRelationLink(relationObject2.key)
-    val relationLink3 = StubRelationLink(relationObject3.key)
-    val relationLink4 = StubRelationLink(relationObject4.key)
-    val relationLink5 = StubRelationLink(relationObject5.key)
-    val relationLink6 = StubRelationLink(relationObject6.key)
+    val relationLink1 = StubRelationLink(relationObject1.key, format = Relation.Format.entries.toTypedArray().random())
+    val relationLink2 = StubRelationLink(relationObject2.key, format = Relation.Format.entries.toTypedArray().random())
+    val relationLink3 = StubRelationLink(relationObject3.key, format = Relation.Format.entries.toTypedArray().random())
+    val relationLink4 = StubRelationLink(relationObject4.key, format = Relation.Format.entries.toTypedArray().random())
+    val relationLink5 = StubRelationLink(relationObject5.key, format = Relation.Format.entries.toTypedArray().random())
+    val relationLink6 = StubRelationLink(relationObject6.key, format = Relation.Format.entries.toTypedArray().random())
 
     val relationLinks = listOf(relationLink1, relationLink2, relationLink3, relationLink4, relationLink5, relationLink6)
 
@@ -101,17 +101,20 @@ class MockCollection(
     val sort1 = DVSort(
         id = "sortId-${RandomString.make()}",
         relationKey = relationObject1.key,
-        type = DVSortType.ASC
+        type = DVSortType.ASC,
+        relationFormat = relationLink1.format
     )
     val sortGrid = DVSort(
         id = "sortId-${RandomString.make()}",
         relationKey = relationObject5.key,
-        type = DVSortType.DESC
+        type = DVSortType.DESC,
+        relationFormat = relationLink5.format
     )
     val sortGallery = DVSort(
         id = "sortId-${RandomString.make()}",
         relationKey = relationObject6.key,
-        type = DVSortType.DESC
+        type = DVSortType.DESC,
+        relationFormat = relationLink6.format
     )
     val sorts = listOf(sort1)
 

@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
@@ -206,7 +207,8 @@ class ListWidgetContainer(
                                 DVSort(
                                     relationKey = Relations.ID,
                                     type = DVSortType.CUSTOM,
-                                    customOrder = customFavoritesOrder
+                                    customOrder = customFavoritesOrder,
+                                    relationFormat = RelationFormat.OBJECT
                                 )
                             )
                         }

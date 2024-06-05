@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -52,6 +53,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
@@ -62,7 +64,6 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_ui.common.keyboardAsState
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
@@ -112,13 +113,14 @@ fun GlobalSearchScreen(
         }
     }
 
-    var query by remember { mutableStateOf("") }
-    val isKeyboardOpen by keyboardAsState()
+    var query by remember { mutableStateOf(TextFieldValue()) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .nestedScroll(rememberNestedScrollInteropConnection())
     ) {
+
         val interactionSource = remember { MutableInteractionSource() }
         val focus = LocalFocusManager.current
 
@@ -164,14 +166,19 @@ fun GlobalSearchScreen(
                 ),
                 onValueChange = { input ->
                     query = input.also {
-                        onQueryChanged(input)
+                        onQueryChanged(input.text)
                     }
                 },
                 singleLine = true,
                 maxLines = 1,
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        focus.clearFocus(true)
+                    }
+                ),
                 decorationBox = @Composable { innerTextField ->
                     TextFieldDefaults.OutlinedTextFieldDecorationBox(
-                        value = query,
+                        value = query.text,
                         innerTextField = innerTextField,
                         enabled = true,
                         singleLine = true,
@@ -192,7 +199,7 @@ fun GlobalSearchScreen(
                         contentPadding = PaddingValues()
                     )
                 },
-                cursorBrush = SolidColor(colorResource(id = R.color.palette_system_blue))
+                cursorBrush = SolidColor(colorResource(id = R.color.palette_system_blue)),
             )
             Box(
                 modifier = Modifier.size(16.dp)
@@ -207,7 +214,7 @@ fun GlobalSearchScreen(
             }
             Spacer(Modifier.width(9.dp))
             AnimatedVisibility(
-                visible = query.isNotEmpty(),
+                visible = query.text.isNotEmpty(),
                 enter = fadeIn(tween(100)),
                 exit = fadeOut(tween(100))
             ) {
@@ -217,7 +224,7 @@ fun GlobalSearchScreen(
                     modifier = Modifier
                         .padding(end = 9.dp)
                         .noRippleClickable {
-                            query = "".also {
+                            query = TextFieldValue().also {
                                 onQueryChanged("")
                             }
                         }
@@ -271,7 +278,7 @@ fun GlobalSearchScreen(
                                 )
                                 .clickable {
                                     onClearRelatedClicked().also {
-                                        query = ""
+                                        query = TextFieldValue()
                                     }
                                 }
                         )
@@ -290,14 +297,12 @@ fun GlobalSearchScreen(
                     GlobalSearchItem(
                         globalSearchItemView = item,
                         onObjectClicked = {
-                            if (isKeyboardOpen) {
-                                focus.clearFocus(true)
-                            }
+                            focus.clearFocus(true)
                             onObjectClicked(it)
                         },
                         onShowRelatedClicked = {
                             onShowRelatedClicked(it).also {
-                                query = ""
+                                query = TextFieldValue()
                             }
                         }
                     )

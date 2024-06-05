@@ -67,7 +67,6 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
                 vm.navigation.collect { nav ->
                     when(nav) {
                         is OpenObjectNavigation.OpenEditor -> {
-                            dismiss()
                             findNavController().navigate(
                                 R.id.objectNavigation,
                                 EditorFragment.args(
@@ -77,7 +76,6 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
                             )
                         }
                         is OpenObjectNavigation.OpenDataView -> {
-                            dismiss()
                             findNavController().navigate(
                                 R.id.dataViewNavigation,
                                 ObjectSetFragment.args(

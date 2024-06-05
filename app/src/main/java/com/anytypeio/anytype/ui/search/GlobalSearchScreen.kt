@@ -20,11 +20,9 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -95,7 +93,6 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import kotlinx.coroutines.delay
-import timber.log.Timber
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
@@ -374,13 +371,11 @@ private fun GlobalSearchItem(
     onShowRelatedClicked: (GlobalSearchItemView) -> Unit
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
-    val isImeVisible = WindowInsets.isImeVisible
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .combinedClickable(
                 onClick = {
-                    Timber.d("IsImeVisible: $isImeVisible")
                     onObjectClicked(globalSearchItemView)
                 },
                 onLongClick = {

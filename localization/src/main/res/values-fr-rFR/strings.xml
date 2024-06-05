@@ -38,11 +38,6 @@
     <string name="about_terms_of_use">Conditions d\'utilisation</string>
     <string name="about_privacy_policy">Politique de confidentialité</string>
     <string name="about_acknowledgements">Remerciements</string>
-    <string name="about_what_is_new_link">https://anytype.io/release-notes/android</string>
-    <string name="about_anytype_community_link">https://community.anytype.io</string>
-    <string name="about_help_and_tutorials_link">https://doc.anytype.io</string>
-    <string name="about_terms_and_conditions_link">https://anytype.io/terms_of_use/</string>
-    <string name="about_privacy_policy_link">https://anytype.io/privacy_policy.html</string>
     <string name="about_meta_info">Version de l\'application: %1$s\nNuméro de build : %2$d\nVersion de la bibliothèque : %3$s\nCompte\u00A0ID :\u00A0%4$s\nAppareil\u00A0ID :\u00A0%5$s\nAnalytiques\u00A0ID :\u00A0%6$s</string>
     <string name="about_meta_info_for_copy">Device: %1$s\nAndroid version: %2$d\nApp version: %3$s\nBuild number: %4$d\nLibrary version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDevice\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s</string>
     <string name="space">Espace</string>
@@ -67,7 +62,6 @@
     <string name="danger_zone">Zone de danger</string>
     <string name="snackbar_template_add">Le nouveau modèle a été ajouté au type</string>
     <string name="settings_membership">Adhésion</string>
-    <string name="default_url_placeholder">https://humanparts.medium.com/how-i-overcame-cult-trauma-with-psychedelics-4342c03a074c</string>
     <string name="multi_select_turn_into">Transformer en</string>
     <string name="multi_select_move_to">Déplacer vers</string>
     <string name="option_toolbar_header_turn_into">Transformer en</string>
@@ -820,7 +814,6 @@
     <string name="created_by_id_copied_toast_msg">Identifiant du créateur copié</string>
     <string name="anytype_update_alert_description">Some of your data was managed in a newer version of Anytype. Please update the app to work with all your docs and the latest features.</string>
     <string name="anytype_update_alert_title">Il est temps de mettre à jour</string>
-    <string name="download_anytype_url">https://download.anytype.io</string>
     <string name="space_type_default">Entrée</string>
     <string name="space_type_default_space">Espace d\'entrée</string>
     <string name="space_type_private">Privé</string>

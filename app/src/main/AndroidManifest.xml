@@ -32,6 +32,7 @@
             android:exported="true"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize">
+            <!-- DO NOT FORGET TO ADD android:screenOrientation="portrait" FOR RELEASE BUILDS! -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

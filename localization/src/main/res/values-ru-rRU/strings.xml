@@ -38,11 +38,6 @@
     <string name="about_terms_of_use">Условия использования</string>
     <string name="about_privacy_policy">Политика конфиденциальности</string>
     <string name="about_acknowledgements">Благодарности</string>
-    <string name="about_what_is_new_link">https://anytype.io/release-notes/android</string>
-    <string name="about_anytype_community_link">https://community.anytype.io</string>
-    <string name="about_help_and_tutorials_link">https://doc.anytype.io</string>
-    <string name="about_terms_and_conditions_link">https://anytype.io/terms_of_use/</string>
-    <string name="about_privacy_policy_link">https://anytype.io/privacy_policy.html</string>
     <string name="about_meta_info">Версия приложения: %1$s\nНомер сборки: %2$d\nВерсия библиотеки: %3$s\nАккаунт\u00A0ID:\u00A0%4$s\nУстройство\u00A0ID:\u00A0%5$s\nAnalytics\u00A0ID:\u00A0%6$s</string>
     <string name="about_meta_info_for_copy">Устройство: %1$s\nAndroid версия: %2$d\nВерсия приложения: %3$s\nНомер сборки: %4$d\nВерсия библиотеки: %5$s\nАккаунт\u00A0ID:\u00A0%6$s\nУстройство\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s</string>
     <string name="space">Пространство</string>
@@ -67,7 +62,6 @@
     <string name="danger_zone">Осторожно!</string>
     <string name="snackbar_template_add">Новый шаблон добавлен к типу</string>
     <string name="settings_membership">Членство</string>
-    <string name="default_url_placeholder">https://humanparts.medium.com/how-i-overcame-cult-trauma-with-psychedelics-4342c03a074c</string>
     <string name="multi_select_turn_into">Превратить в</string>
     <string name="multi_select_move_to">Переместить в</string>
     <string name="option_toolbar_header_turn_into">Превратить в</string>
@@ -824,7 +818,6 @@
     <string name="created_by_id_copied_toast_msg">ID создателя скопирован</string>
     <string name="anytype_update_alert_description">Некоторые из ваших данных были изменены в более новой версии Anytype. Пожалуйста, обновите текущее приложение для работы со всеми вашими документами и последними функциями.</string>
     <string name="anytype_update_alert_title">Пришло время обновить приложение</string>
-    <string name="download_anytype_url">https://download.anytype.io</string>
     <string name="space_type_default">Entry</string>
     <string name="space_type_default_space">Entry space</string>
     <string name="space_type_private">Приватный</string>

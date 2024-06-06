@@ -1415,6 +1415,6 @@ Please provide specific details of your needs here.</string>
     <string name="membership_error_button_text_action">Kontaktiere uns</string>
     <string name="membership_error_button_text_dismiss">OK</string>
     <string name="error_login_network_id_mismatch">Network ID mismatch detected. Please verify your network configuration.</string>
-    <string name="global_search_related_to">"Related to: "</string>
+    <string name="global_search_related_to">"Zugehörig zu: "</string>
     <string name="global_search_no_related_objects_found">Keine zugehörigen Objekte gefunden</string>
 </resources>

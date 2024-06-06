@@ -78,6 +78,7 @@ class ShareSpaceViewModel(
     val commands = MutableSharedFlow<Command>()
     val isCurrentUserOwner = MutableStateFlow(false)
     val spaceAccessType = MutableStateFlow<SpaceAccessType?>(null)
+    val showIncentive = MutableStateFlow(true)
 
     private var canChangeWriterToReader = false
     private var canChangeReaderToWriter = false

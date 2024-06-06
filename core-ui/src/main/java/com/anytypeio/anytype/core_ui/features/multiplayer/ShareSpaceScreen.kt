@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_ui.features.multiplayer
 
+import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -74,6 +75,7 @@ fun ShareSpaceScreen(
     isCurrentUserOwner: Boolean,
     members: List<ShareSpaceMemberView>,
     shareLinkViewState: ShareLinkViewState,
+    showIncentive: Boolean,
     onGenerateInviteLinkClicked: () -> Unit,
     onShareInviteLinkClicked: () -> Unit,
     onViewRequestClicked: (ShareSpaceMemberView) -> Unit,
@@ -580,7 +582,8 @@ fun SpaceLeaveRequestPreview() {
 }
 
 @Composable
-@Preview
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
 fun ShareSpaceScreenPreview() {
     ShareSpaceScreen(
         shareLinkViewState = ShareSpaceViewModel.ShareLinkViewState.Shared(
@@ -655,7 +658,8 @@ fun ShareSpaceScreenPreview() {
         onMoreInfoClicked = {},
         onShareQrCodeClicked = {},
         onDeleteLinkClicked = {},
-        spaceAccessType = null
+        spaceAccessType = null,
+        showIncentive = true
     )
 }
 

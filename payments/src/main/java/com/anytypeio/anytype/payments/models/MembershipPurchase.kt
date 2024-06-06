@@ -1,9 +1,10 @@
 package com.anytypeio.anytype.payments.models
 
 import com.android.billingclient.api.Purchase
+import timber.log.Timber
 
 data class MembershipPurchase(
-    val accountId: String?,
+    val accountId: String,
     val products: List<String>,
     val state: PurchaseState
 ) {
@@ -15,9 +16,14 @@ data class MembershipPurchase(
     }
 }
 
-fun Purchase.toMembershipPurchase(): MembershipPurchase {
+fun Purchase.toMembershipPurchase(): MembershipPurchase? {
+    val obfuscatedAccountId = accountIdentifiers?.obfuscatedAccountId
+    if (obfuscatedAccountId == null) {
+        Timber.e("Billing purchase does not have obfuscatedAccountId")
+        return null
+    }
     return MembershipPurchase(
-        accountId = accountIdentifiers?.obfuscatedAccountId,
+        accountId = obfuscatedAccountId,
         products = products,
         state = when (purchaseState) {
             Purchase.PurchaseState.PURCHASED -> MembershipPurchase.PurchaseState.PURCHASED

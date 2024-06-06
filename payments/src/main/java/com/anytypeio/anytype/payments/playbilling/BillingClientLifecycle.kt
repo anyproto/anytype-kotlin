@@ -332,12 +332,17 @@ class BillingClientLifecycle(
                     _subscriptionPurchases.emit(BillingPurchaseState.NoPurchases)
                 } else {
                     Timber.d("processPurchases: Subscription purchases found ${subscriptionPurchaseList[0]}")
-                    _subscriptionPurchases.emit(
-                        BillingPurchaseState.HasPurchases(
-                            purchases = subscriptionPurchaseList.map { it.toMembershipPurchase() },
-                            isNewPurchase = isNewPurchase
+                    val membershipPurchases = subscriptionPurchaseList.mapNotNull { it.toMembershipPurchase() }
+                    if (membershipPurchases.isNotEmpty()) {
+                        _subscriptionPurchases.emit(
+                            BillingPurchaseState.HasPurchases(
+                                purchases = membershipPurchases,
+                                isNewPurchase = isNewPurchase
+                            )
                         )
-                    )
+                    } else {
+                        _subscriptionPurchases.emit(BillingPurchaseState.NoPurchases)
+                    }
                 }
             }
         }

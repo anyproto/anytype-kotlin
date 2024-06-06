@@ -125,11 +125,15 @@ class OnboardingFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (USE_EDGE_TO_EDGE) {
-            WindowCompat
-                .getInsetsController(
-                    requireActivity().window,
-                    requireActivity().window.decorView
-                ).isAppearanceLightStatusBars = false
+            runCatching {
+                WindowCompat
+                    .getInsetsController(
+                        requireActivity().window,
+                        requireActivity().window.decorView
+                    ).isAppearanceLightStatusBars = false
+            }.onFailure {
+                Timber.e(it, "Error while changing status bars in onCreate")
+            }
         }
         injectDependencies()
     }
@@ -137,11 +141,15 @@ class OnboardingFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         if (USE_EDGE_TO_EDGE) {
-            WindowCompat
-                .getInsetsController(
-                    requireActivity().window,
-                    requireActivity().window.decorView
-                ).isAppearanceLightStatusBars = true
+            runCatching {
+                WindowCompat
+                    .getInsetsController(
+                        requireActivity().window,
+                        requireActivity().window.decorView
+                    ).isAppearanceLightStatusBars = true
+            }.onFailure {
+                Timber.e(it, "Error while changing status bars in onDestroy")
+            }
         }
         releaseDependencies()
     }

@@ -1,9 +1,6 @@
 package com.anytypeio.anytype.payments.mapping
 
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 import com.android.billingclient.api.ProductDetails
-import com.android.billingclient.api.Purchase
 import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod.METHOD_CRYPTO
@@ -22,6 +19,7 @@ import com.anytypeio.anytype.payments.constants.MembershipConstants.MEMBERSHIP_L
 import com.anytypeio.anytype.payments.constants.MembershipConstants.PRIVACY_POLICY
 import com.anytypeio.anytype.payments.constants.MembershipConstants.TERMS_OF_SERVICE
 import com.anytypeio.anytype.payments.models.BillingPriceInfo
+import com.anytypeio.anytype.payments.models.MembershipPurchase
 import com.anytypeio.anytype.payments.models.Tier
 import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
@@ -218,8 +216,12 @@ private fun MembershipTierData.mapActiveTierButtonAndNameStates(
             0 -> TierButton.Manage.Android.Disabled to TierAnyName.Hidden
             1 -> {
                 val purchase = purchases[0]
-                val purchaseModel = Json.decodeFromString<PurchaseModel>(purchase.originalJson)
-                if (purchaseModel.obfuscatedAccountId == accountId && purchaseModel.productId == androidProductId) {
+                val purchaseObfuscatedAccountId = purchase.accountId
+                val containsProduct = purchase.products.any { it == androidProductId }
+                if (purchaseObfuscatedAccountId == accountId
+                    && containsProduct
+                    && purchase.state == MembershipPurchase.PurchaseState.PURCHASED
+                ) {
                     TierButton.Manage.Android.Enabled(androidProductId) to TierAnyName.Hidden
                 } else {
                     TierButton.Manage.Android.Disabled to TierAnyName.Hidden
@@ -294,17 +296,18 @@ private fun handleNoPurchasesState(
 private fun getButtonStateAccordingToPurchaseState(
     androidProductId: String?,
     accountId: String,
-    purchases: List<Purchase>
+    purchases: List<MembershipPurchase>
 ): TierButton {
     return when (purchases.size) {
         0 -> TierButton.Hidden
         1 -> {
             val purchase = purchases[0]
-            val purchaseModel = Json.decodeFromString<PurchaseModel>(purchase.originalJson)
+            val purchaseAccountId = purchase.accountId
+            val containsProduct = purchase.products.any { it == androidProductId }
             when {
-                purchaseModel.obfuscatedAccountId != accountId ->
+                purchaseAccountId != accountId ->
                     TierButton.HiddenWithText.DifferentPurchaseAccountId
-                purchaseModel.productId != androidProductId ->
+                !containsProduct ->
                     TierButton.HiddenWithText.DifferentPurchaseProductId
                 else -> TierButton.Hidden
             }
@@ -443,8 +446,3 @@ private fun MembershipTierData.getTierEmail(isActive: Boolean, membershipEmail: 
     return TierEmail.Hidden
 }
 
-@Serializable
-data class PurchaseModel(
-    val obfuscatedAccountId: String,
-    val productId: String
-)

@@ -18,6 +18,8 @@ import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.payments.models.MembershipPurchase
+import com.anytypeio.anytype.payments.models.toMembershipPurchase
 import kotlin.math.min
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -332,7 +334,7 @@ class BillingClientLifecycle(
                     Timber.d("processPurchases: Subscription purchases found ${subscriptionPurchaseList[0]}")
                     _subscriptionPurchases.emit(
                         BillingPurchaseState.HasPurchases(
-                            purchases = subscriptionPurchaseList,
+                            purchases = subscriptionPurchaseList.map { it.toMembershipPurchase() },
                             isNewPurchase = isNewPurchase
                         )
                     )
@@ -386,6 +388,9 @@ sealed class BillingClientState {
 
 sealed class BillingPurchaseState {
     data object Loading : BillingPurchaseState()
-    data class HasPurchases(val purchases: List<Purchase>, val isNewPurchase: Boolean) : BillingPurchaseState()
+    data class HasPurchases(
+        val purchases: List<MembershipPurchase>,
+        val isNewPurchase: Boolean
+    ) : BillingPurchaseState()
     data object NoPurchases : BillingPurchaseState()
 }

@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.ProductDetails
-import com.android.billingclient.api.Purchase
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.membership.EmailVerificationStatus
 import com.anytypeio.anytype.core_models.membership.MembershipErrors
@@ -23,6 +22,7 @@ import com.anytypeio.anytype.domain.payments.VerifyMembershipEmailCode
 import com.anytypeio.anytype.payments.constants.MembershipConstants.EXPLORER_ID
 import com.anytypeio.anytype.payments.constants.MembershipConstants.MEMBERSHIP_NAME_MIN_LENGTH
 import com.anytypeio.anytype.payments.mapping.toMainView
+import com.anytypeio.anytype.payments.models.MembershipPurchase
 import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierEmail
@@ -704,13 +704,13 @@ class MembershipViewModel(
      * even if the Google account on this device has purchased the subscription.
      * In this example, the method will return true.
      */
-    private fun deviceHasGooglePlaySubscription(purchases: List<Purchase>?, product: String) =
+    private fun deviceHasGooglePlaySubscription(purchases: List<MembershipPurchase>?, product: String) =
         purchaseForProduct(purchases, product) != null
 
     /**
      * Return purchase for the provided Product, if it exists.
      */
-    private fun purchaseForProduct(purchases: List<Purchase>?, product: String): Purchase? {
+    private fun purchaseForProduct(purchases: List<MembershipPurchase>?, product: String): MembershipPurchase? {
         purchases?.let {
             for (purchase in it) {
                 if (purchase.products[0] == product) {

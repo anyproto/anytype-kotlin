@@ -18,6 +18,8 @@ import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.payments.models.MembershipPurchase
+import com.anytypeio.anytype.payments.models.toMembershipPurchase
 import kotlin.math.min
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -330,12 +332,17 @@ class BillingClientLifecycle(
                     _subscriptionPurchases.emit(BillingPurchaseState.NoPurchases)
                 } else {
                     Timber.d("processPurchases: Subscription purchases found ${subscriptionPurchaseList[0]}")
-                    _subscriptionPurchases.emit(
-                        BillingPurchaseState.HasPurchases(
-                            purchases = subscriptionPurchaseList,
-                            isNewPurchase = isNewPurchase
+                    val membershipPurchases = subscriptionPurchaseList.mapNotNull { it.toMembershipPurchase() }
+                    if (membershipPurchases.isNotEmpty()) {
+                        _subscriptionPurchases.emit(
+                            BillingPurchaseState.HasPurchases(
+                                purchases = membershipPurchases,
+                                isNewPurchase = isNewPurchase
+                            )
                         )
-                    )
+                    } else {
+                        _subscriptionPurchases.emit(BillingPurchaseState.NoPurchases)
+                    }
                 }
             }
         }
@@ -386,6 +393,9 @@ sealed class BillingClientState {
 
 sealed class BillingPurchaseState {
     data object Loading : BillingPurchaseState()
-    data class HasPurchases(val purchases: List<Purchase>, val isNewPurchase: Boolean) : BillingPurchaseState()
+    data class HasPurchases(
+        val purchases: List<MembershipPurchase>,
+        val isNewPurchase: Boolean
+    ) : BillingPurchaseState()
     data object NoPurchases : BillingPurchaseState()
 }

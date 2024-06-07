@@ -731,10 +731,14 @@ private fun TemplateItemCoverGradient(item: TemplateView.Template) {
             CoverGradient.SKY -> R.drawable.wallpaper_gradient_4
             else -> {
                 Timber.e("Unknown cover gradient: $it")
-                0
+                null
             }
         }
-        val drawable = LocalContext.current.getDrawable(resourceId)
+        val drawable = if (resourceId != null) {
+            LocalContext.current.getDrawable(resourceId)
+        } else {
+            null
+        }
         Box(
             modifier = Modifier
                 .height(74.dp)

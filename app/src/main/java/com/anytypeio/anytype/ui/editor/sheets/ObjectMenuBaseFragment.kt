@@ -50,7 +50,7 @@ abstract class ObjectMenuBaseFragment :
     private val isFavorite get() = arg<Boolean>(IS_FAVORITE_KEY)
     private val isLocked get() = arg<Boolean>(IS_LOCKED_KEY)
     private val isTemplate get() = argOrNull<Boolean>(IS_TEMPLATE_KEY)
-    private val fromName get() = arg<String?>(FROM_NAME)
+    private val fromName get() = argOrNull<String?>(FROM_NAME)
 
     abstract val vm: ObjectMenuViewModelBase
 

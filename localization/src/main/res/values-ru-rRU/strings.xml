@@ -970,7 +970,7 @@
     <string name="onboarding_terms_and_policy_infix">" и "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
     <string name="onboarding_new_vault_button_text">New vault</string>
-    <string name="onboarding_enter_my_vault">Get my Key</string>
+    <string name="onboarding_enter_my_vault">Enter my Vault</string>
     <string name="onboarding_have_key_button_text">У меня есть Ключ</string>
     <string name="onboarding_get_my_key_button_text">Получить мой Ключ</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>

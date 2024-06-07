@@ -172,6 +172,7 @@ fun RecoveryScreen(
                             onScanQrClicked.invoke()
                         },
                         enabled = !isLoading,
+                        disabledBackgroundColor = Color.Transparent,
                         size = ButtonSize.Large,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -241,5 +242,17 @@ fun RecoveryScreenPreview() {
         onActionDoneClicked = {},
         onScanQrClicked = {},
         isLoading = false
+    )
+}
+
+@Preview
+@Composable
+fun RecoveryScreenLoadingPreview() {
+    RecoveryScreen(
+        onBackClicked = {},
+        onNextClicked = {},
+        onActionDoneClicked = {},
+        onScanQrClicked = {},
+        isLoading = true
     )
 }

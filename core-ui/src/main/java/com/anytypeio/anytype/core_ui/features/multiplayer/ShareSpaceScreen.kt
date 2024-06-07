@@ -61,6 +61,8 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
+import com.anytypeio.anytype.core_ui.views.ButtonUpgrade
+import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.core_ui.views.Relations3
@@ -86,7 +88,8 @@ fun ShareSpaceScreen(
     onStopSharingClicked: () -> Unit,
     onMoreInfoClicked: () -> Unit,
     onShareQrCodeClicked: () -> Unit,
-    onDeleteLinkClicked: () -> Unit
+    onDeleteLinkClicked: () -> Unit,
+    onIncentiveClicked: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -170,6 +173,21 @@ fun ShareSpaceScreen(
                 item {
                     Section(
                         title = stringResource(R.string.multiplayer_members_and_requests)
+                    )
+                }
+            }
+            if (showIncentive) {
+                item {
+                    Text(
+                        modifier = Modifier.padding(horizontal = 20.dp),
+                        style = Caption1Regular,
+                        color = colorResource(id = R.color.text_primary),
+                        text = stringResource(id = R.string.multiplayer_cant_add_members)
+                    )
+                    ButtonUpgrade(
+                        modifier = Modifier.padding(top = 12.dp, bottom = 24.dp),
+                        onClick = onIncentiveClicked,
+                        text = stringResource(id = R.string.multiplayer_upgrade_button)
                     )
                 }
             }
@@ -582,8 +600,8 @@ fun SpaceLeaveRequestPreview() {
 }
 
 @Composable
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
+@Preview(backgroundColor = 0xFFFFFFFF, showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Mode")
+@Preview(backgroundColor = 0x000000, showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 fun ShareSpaceScreenPreview() {
     ShareSpaceScreen(
         shareLinkViewState = ShareSpaceViewModel.ShareLinkViewState.Shared(
@@ -652,14 +670,15 @@ fun ShareSpaceScreenPreview() {
         onRemoveMemberClicked = {},
         onCanViewClicked = {},
         onCanEditClicked = {},
-        isCurrentUserOwner = false,
+        isCurrentUserOwner = true,
         onStopSharingClicked = {},
         onGenerateInviteLinkClicked = {},
         onMoreInfoClicked = {},
         onShareQrCodeClicked = {},
         onDeleteLinkClicked = {},
         spaceAccessType = null,
-        showIncentive = true
+        showIncentive = true,
+        onIncentiveClicked = {}
     )
 }
 

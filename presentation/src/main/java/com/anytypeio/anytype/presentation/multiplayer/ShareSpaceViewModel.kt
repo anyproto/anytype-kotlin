@@ -442,6 +442,12 @@ class ShareSpaceViewModel(
         }
     }
 
+    fun onIncentiveClicked() {
+        viewModelScope.launch {
+            commands.emit(Command.ShowMembershipScreen)
+        }
+    }
+
     fun onDeleteLinkAccepted() {
         Timber.d("onDeleteLinkAccepted")
         viewModelScope.launch {
@@ -550,6 +556,7 @@ class ShareSpaceViewModel(
         data object ShowDeleteLinkWarning: Command()
         data object ToastPermission : Command()
         data object Dismiss : Command()
+        data object ShowMembershipScreen : Command()
     }
 
     companion object {

@@ -65,7 +65,9 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                         onGenerateInviteLinkClicked = vm::onGenerateSpaceInviteLink,
                         onMoreInfoClicked = vm::onMoreInfoClicked,
                         onShareQrCodeClicked = vm::onShareQrCodeClicked,
-                        onDeleteLinkClicked = vm::onDeleteLinkClicked
+                        onDeleteLinkClicked = vm::onDeleteLinkClicked,
+                        showIncentive = vm.showIncentive.collectAsStateWithLifecycle().value,
+                        onIncentiveClicked = vm::onIncentiveClicked
                     )
                 }
                 LaunchedEffect(Unit) {
@@ -180,6 +182,9 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
             is Command.ToastPermission -> {
                 val msg = getString(R.string.multiplayer_toast_permission_not_allowed)
                 toast(msg)
+            }
+            Command.ShowMembershipScreen -> {
+                findNavController().navigate(R.id.paymentsScreen)
             }
         }
     }

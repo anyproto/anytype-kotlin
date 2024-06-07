@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.core_ui.views.animations
+package com.anytypeio.anytype.core_ui.views
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
@@ -22,8 +22,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
-import com.anytypeio.anytype.core_ui.views.NoRippleTheme
 
 @Composable
 fun ButtonUpgrade(
@@ -64,11 +62,11 @@ fun ButtonUpgrade(
 }
 
 @Composable
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Mode")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
-fun MyButtonUpgrade() {
+@Preview(backgroundColor = 0xFFFFFFFF, showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Mode")
+@Preview(backgroundColor = 0x000000, showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")fun MyButtonUpgrade() {
     ButtonUpgrade(
         onClick = {},
-        text = "✦ Upgrade"
+        text = "✦ Upgrade",
+        modifier = Modifier.padding(32.dp)
     )
 }

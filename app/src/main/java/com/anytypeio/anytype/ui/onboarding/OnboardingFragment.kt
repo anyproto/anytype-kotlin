@@ -27,6 +27,8 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
@@ -50,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -60,9 +63,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
+import com.anytypeio.anytype.BuildConfig.USE_EDGE_TO_EDGE
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.NO_VALUE
-import com.anytypeio.anytype.core_ui.BuildConfig
+import com.anytypeio.anytype.core_ui.BuildConfig.LIBRARY_PACKAGE_NAME
 import com.anytypeio.anytype.core_ui.MNEMONIC_WORD_COUNT
 import com.anytypeio.anytype.core_ui.MnemonicPhrasePaletteColors
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
@@ -120,11 +124,33 @@ class OnboardingFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (USE_EDGE_TO_EDGE) {
+            runCatching {
+                WindowCompat
+                    .getInsetsController(
+                        requireActivity().window,
+                        requireActivity().window.decorView
+                    ).isAppearanceLightStatusBars = false
+            }.onFailure {
+                Timber.e(it, "Error while changing status bars in onCreate")
+            }
+        }
         injectDependencies()
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        if (USE_EDGE_TO_EDGE) {
+            runCatching {
+                WindowCompat
+                    .getInsetsController(
+                        requireActivity().window,
+                        requireActivity().window.decorView
+                    ).isAppearanceLightStatusBars = true
+            }.onFailure {
+                Timber.e(it, "Error while changing status bars in onDestroy")
+            }
+        }
         releaseDependencies()
     }
 
@@ -154,20 +180,31 @@ class OnboardingFragment : Fragment() {
                     .fillMaxSize()
                     .background(Color.Black)
             ) {
-                val currentPage = remember { mutableStateOf(OnboardingPage.AUTH) }
-                BackgroundCircle()
-                Onboarding(
-                    currentPage = currentPage,
-                    navController = navController,
-                    backButtonCallback = signUpBackButtonCallback
-                )
-                PagerIndicator(
-                    pageCount = OnboardingPage.values().filter { it.visible }.size,
-                    page = currentPage,
-                    onBackClick = {
-                        signUpBackButtonCallback.value?.invoke()
-                    }
-                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .then(
+                            if (USE_EDGE_TO_EDGE)
+                                Modifier.windowInsetsPadding(insets = WindowInsets.systemBars)
+                            else
+                                Modifier
+                        )
+                ) {
+                    val currentPage = remember { mutableStateOf(OnboardingPage.AUTH) }
+                    BackgroundCircle()
+                    Onboarding(
+                        currentPage = currentPage,
+                        navController = navController,
+                        backButtonCallback = signUpBackButtonCallback
+                    )
+                    PagerIndicator(
+                        pageCount = OnboardingPage.values().filter { it.visible }.size,
+                        page = currentPage,
+                        onBackClick = {
+                            signUpBackButtonCallback.value?.invoke()
+                        }
+                    )
+                }
             }
             LaunchedEffect(Unit) {
                 onBoardingViewModel.toasts.collect {
@@ -198,6 +235,9 @@ class OnboardingFragment : Fragment() {
     }
 
     private fun onApplyWindowRootInsets(view: View) {
+        if ( USE_EDGE_TO_EDGE) {
+            return
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             val deferringInsetsListener = RootViewDeferringInsetsCallback(
                 persistentInsetTypes = WindowInsetsCompat.Type.systemBars(),
@@ -614,7 +654,7 @@ class OnboardingFragment : Fragment() {
         val source = DefaultDataSource.Factory(
             context,
             DefaultHttpDataSource.Factory().setUserAgent(
-                Util.getUserAgent(context, BuildConfig.LIBRARY_PACKAGE_NAME)
+                Util.getUserAgent(context, LIBRARY_PACKAGE_NAME)
             )
         )
         val mediaSource = ProgressiveMediaSource

@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.payments.constants.MembershipConstants
+import com.anytypeio.anytype.payments.models.MembershipPurchase
 import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierConditionInfo
@@ -208,12 +209,7 @@ class TierAndroidActiveTests : MembershipTestsSetup() {
             val (features, tiers) = commonTestSetup()
 
             stubBilling()
-            val purchase = Mockito.mock(Purchase::class.java)
-            Mockito.`when`(purchase.products).thenReturn(listOf(androidProductId))
-            Mockito.`when`(purchase.isAcknowledged).thenReturn(true)
-            val purchaseJson =
-                "{\"obfuscatedAccountId\":\"$accountId\", \"productId\":\"$androidProductId\"}"
-            Mockito.`when`(purchase.originalJson).thenReturn(purchaseJson)
+            val purchase = MembershipPurchase(accountId, listOf(androidProductId), MembershipPurchase.PurchaseState.PURCHASED)
             stubPurchaseState(BillingPurchaseState.HasPurchases(listOf(purchase), false))
             stubMembershipProvider(setupMembershipStatus(tiers))
 

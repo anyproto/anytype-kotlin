@@ -5483,14 +5483,12 @@ message Rpc {
                     }
                 }
             }
-            // set the current active view (persisted only within a session)
+            // set the current active view locally
             message SetActive {
                 message Request {
                     string contextId = 1;
                     string blockId = 2; // id of dataview block
                     string viewId = 3; // id of active view
-                    uint32 offset = 4;
-                    uint32 limit = 5;
                 }
                 message Response {
                     Error error = 1;
@@ -5504,7 +5502,6 @@ message Rpc {
                             NULL = 0;
                             UNKNOWN_ERROR = 1;
                             BAD_INPUT = 2;
-                            // ...
                         }
                     }
                 }

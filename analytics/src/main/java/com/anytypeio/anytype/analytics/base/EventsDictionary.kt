@@ -230,6 +230,20 @@ object EventsDictionary {
     const val galleryParamNew = "New"
     const val galleryParamExisting = "Existing"
 
+    //Membership
+    const val screenMembership = "ScreenMembership"
+    const val clickMembership = "ClickMembership"
+    const val changePlan = "ChangePlan"
+
+    enum class MembershipTierButton(val value: String) {
+        INFO("LearnMore"),
+        MANAGE("ManagePayment"),
+        PAY("Pay"),
+        SUBMIT("Submit"),
+        CHANGE_EMAIL("ChangeEmail"),
+        CONTACT_US("ContactUs")
+    }
+
     enum class ScreenOnboardingStep(val value: String) {
         VOID("Void"),
         PHRASE("Phrase")

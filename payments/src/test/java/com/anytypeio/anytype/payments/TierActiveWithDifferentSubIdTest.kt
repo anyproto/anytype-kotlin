@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.payments
 
 import app.cash.turbine.turbineScope
+import com.android.billingclient.api.AccountIdentifiers
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.anytypeio.anytype.core_models.membership.Membership
@@ -9,6 +10,7 @@ import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.payments.constants.MembershipConstants
 import com.anytypeio.anytype.payments.models.BillingPriceInfo
+import com.anytypeio.anytype.payments.models.MembershipPurchase
 import com.anytypeio.anytype.payments.models.PeriodDescription
 import com.anytypeio.anytype.payments.models.PeriodUnit
 import com.anytypeio.anytype.payments.models.TierAnyName
@@ -22,6 +24,7 @@ import com.anytypeio.anytype.payments.viewmodel.MembershipMainState
 import com.anytypeio.anytype.payments.viewmodel.MembershipTierState
 import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
 import com.anytypeio.anytype.presentation.membership.models.TierId
+import java.lang.reflect.Member
 import kotlin.test.assertIs
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
@@ -32,6 +35,7 @@ import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
+import org.mockito.kotlin.whenever
 
 class TierActiveWithDifferentSubIdTest : MembershipTestsSetup() {
 
@@ -98,12 +102,7 @@ class TierActiveWithDifferentSubIdTest : MembershipTestsSetup() {
             stubBilling(billingClientState = BillingClientState.Connected(listOf(product1)))
 
             // Mocking purchase
-            val purchase = Mockito.mock(Purchase::class.java)
-            Mockito.`when`(purchase.products).thenReturn(listOf(androidProductId))
-            Mockito.`when`(purchase.isAcknowledged).thenReturn(true)
-            val purchaseJson =
-                "{\"obfuscatedAccountId\":\"$accountIdDifferent\", \"productId\":\"$androidProductId\"}"
-            Mockito.`when`(purchase.originalJson).thenReturn(purchaseJson)
+            val purchase = MembershipPurchase(accountIdDifferent, listOf(androidProductId), MembershipPurchase.PurchaseState.PURCHASED)
             stubPurchaseState(BillingPurchaseState.HasPurchases(listOf(purchase), false))
 
             // Mocking the flow of membership status
@@ -224,12 +223,7 @@ class TierActiveWithDifferentSubIdTest : MembershipTestsSetup() {
                     )
                 )
 
-                val purchase = Mockito.mock(Purchase::class.java)
-                Mockito.`when`(purchase.products).thenReturn(listOf(invalidProductId))
-                Mockito.`when`(purchase.isAcknowledged).thenReturn(true)
-                val purchaseJson =
-                    "{\"obfuscatedAccountId\":\"$accountId\", \"productId\":\"$invalidProductId\"}"
-                Mockito.`when`(purchase.originalJson).thenReturn(purchaseJson)
+                val purchase = MembershipPurchase(accountId, listOf(invalidProductId), MembershipPurchase.PurchaseState.PURCHASED)
                 stubPurchaseState(BillingPurchaseState.HasPurchases(listOf(purchase), false))
 
                 val flow = flow {
@@ -431,20 +425,8 @@ class TierActiveWithDifferentSubIdTest : MembershipTestsSetup() {
                 )
             )
 
-            val purchase1 = Mockito.mock(Purchase::class.java)
-            Mockito.`when`(purchase1.products).thenReturn(listOf(invalidProductId))
-            Mockito.`when`(purchase1.isAcknowledged).thenReturn(true)
-            val purchaseJson1 =
-                "{\"obfuscatedAccountId\":\"$accountId\", \"productId\":\"$invalidProductId\"}"
-            Mockito.`when`(purchase1.originalJson).thenReturn(purchaseJson1)
-
-            val purchase2 = Mockito.mock(Purchase::class.java)
-            Mockito.`when`(purchase2.products).thenReturn(listOf(invalidProductId))
-            Mockito.`when`(purchase2.isAcknowledged).thenReturn(true)
-            val purchaseJson2 =
-                "{\"obfuscatedAccountId\":\"$accountId\", \"productId\":\"$androidProductId\"}"
-            Mockito.`when`(purchase2.originalJson).thenReturn(purchaseJson2)
-
+            val purchase1 = MembershipPurchase(accountId, listOf(invalidProductId), MembershipPurchase.PurchaseState.PURCHASED)
+            val purchase2 = MembershipPurchase(accountId, listOf(androidProductId), MembershipPurchase.PurchaseState.PURCHASED)
             stubPurchaseState(BillingPurchaseState.HasPurchases(listOf(purchase1, purchase2), false))
 
             val flow = flow {

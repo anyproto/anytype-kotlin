@@ -18,6 +18,8 @@ import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.payments.models.MembershipPurchase
+import com.anytypeio.anytype.payments.models.toMembershipPurchase
 import kotlin.math.min
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -99,15 +101,22 @@ class BillingClientLifecycle(
         val responseCode = billingResult.responseCode
         val debugMessage = billingResult.debugMessage
         Timber.d("onBillingSetupFinished: $responseCode $debugMessage")
-        if (responseCode == BillingClient.BillingResponseCode.OK) {
-            // The billing client is ready.
-            // You can query product details and purchases here.
-            querySubscriptionProductDetails()
-            querySubscriptionPurchases()
-        } else {
-            Timber.e("onBillingSetupFinished: BillingResponse $responseCode")
-            _builderSubProductWithProductDetails.value =
-                BillingClientState.Error("BillingResponse $responseCode")
+        when (responseCode) {
+            BillingClient.BillingResponseCode.OK -> {
+                // The billing client is ready.
+                // You can query product details and purchases here.
+                querySubscriptionProductDetails()
+                querySubscriptionPurchases()
+            }
+            BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> {
+                Timber.e("onBillingSetupFinished: BILLING_UNAVAILABLE")
+                _builderSubProductWithProductDetails.value = BillingClientState.NotAvailable
+            }
+            else -> {
+                Timber.e("onBillingSetupFinished: BillingResponse $responseCode")
+                _builderSubProductWithProductDetails.value =
+                    BillingClientState.Error("BillingResponse $responseCode")
+            }
         }
     }
 
@@ -330,12 +339,17 @@ class BillingClientLifecycle(
                     _subscriptionPurchases.emit(BillingPurchaseState.NoPurchases)
                 } else {
                     Timber.d("processPurchases: Subscription purchases found ${subscriptionPurchaseList[0]}")
-                    _subscriptionPurchases.emit(
-                        BillingPurchaseState.HasPurchases(
-                            purchases = subscriptionPurchaseList,
-                            isNewPurchase = isNewPurchase
+                    val membershipPurchases = subscriptionPurchaseList.mapNotNull { it.toMembershipPurchase() }
+                    if (membershipPurchases.isNotEmpty()) {
+                        _subscriptionPurchases.emit(
+                            BillingPurchaseState.HasPurchases(
+                                purchases = membershipPurchases,
+                                isNewPurchase = isNewPurchase
+                            )
                         )
-                    )
+                    } else {
+                        _subscriptionPurchases.emit(BillingPurchaseState.NoPurchases)
+                    }
                 }
             }
         }
@@ -382,10 +396,14 @@ sealed class BillingClientState {
     data class Error(val message: String) : BillingClientState()
     //Connected state is suppose that we have non empty list of product details
     data class Connected(val productDetails: List<ProductDetails>) : BillingClientState()
+    data object NotAvailable : BillingClientState()
 }
 
 sealed class BillingPurchaseState {
     data object Loading : BillingPurchaseState()
-    data class HasPurchases(val purchases: List<Purchase>, val isNewPurchase: Boolean) : BillingPurchaseState()
+    data class HasPurchases(
+        val purchases: List<MembershipPurchase>,
+        val isNewPurchase: Boolean
+    ) : BillingPurchaseState()
     data object NoPurchases : BillingPurchaseState()
 }

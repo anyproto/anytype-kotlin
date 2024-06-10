@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.payments.constants.MembershipConstants.BUILDER_ID
 import com.anytypeio.anytype.payments.constants.MembershipConstants.EXPLORER_ID
 import com.anytypeio.anytype.payments.models.BillingPriceInfo
+import com.anytypeio.anytype.payments.models.MembershipPurchase
 import com.anytypeio.anytype.payments.models.PeriodDescription
 import com.anytypeio.anytype.payments.models.PeriodUnit
 import com.anytypeio.anytype.payments.models.TierAnyName
@@ -84,12 +85,8 @@ class TierBuilderFallbackOnExplorerTest : MembershipTestsSetup() {
             Mockito.`when`(pricingPhaseList[0]?.billingPeriod).thenReturn("P1Y")
             stubBilling(billingClientState = BillingClientState.Connected(listOf(product)))
 
-            val purchase = Mockito.mock(Purchase::class.java)
-            Mockito.`when`(purchase.products).thenReturn(listOf(androidProductId))
-            Mockito.`when`(purchase.isAcknowledged).thenReturn(true)
-            val purchaseJson =
-                "{\"obfuscatedAccountId\":\"$accountId\", \"productId\":\"$androidProductId\"}"
-            Mockito.`when`(purchase.originalJson).thenReturn(purchaseJson)
+
+            val purchase = MembershipPurchase(accountId, listOf(androidProductId), MembershipPurchase.PurchaseState.PURCHASED)
             stubPurchaseState(BillingPurchaseState.HasPurchases(listOf(purchase), false))
             val flow = flow {
                 emit(

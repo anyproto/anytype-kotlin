@@ -101,7 +101,8 @@ fun OnBoardingButtonSecondary(
     enabled: Boolean = true,
     modifier: Modifier = Modifier,
     size: ButtonSize,
-    textColor: Color = ColorButtonSecondaryText
+    textColor: Color = ColorButtonSecondaryText,
+    disabledBackgroundColor: Color? = null
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed = interactionSource.collectIsPressedAsState()
@@ -123,9 +124,16 @@ fun OnBoardingButtonSecondary(
             enabled = enabled,
             shape = RoundedCornerShape(size.cornerSize),
             border = BorderStroke(width = 1.dp, color = borderColor),
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = backgroundColor
-            ),
+            colors = if (disabledBackgroundColor != null) {
+                ButtonDefaults.buttonColors(
+                    backgroundColor = backgroundColor,
+                    disabledBackgroundColor = disabledBackgroundColor
+                )
+            } else {
+                ButtonDefaults.buttonColors(
+                    backgroundColor = backgroundColor
+                )
+                                                         },
             modifier = modifier
                 .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
             elevation = ButtonDefaults.elevation(

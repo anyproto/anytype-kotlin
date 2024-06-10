@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.presentation.membership.provider
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import app.cash.turbine.test
 import app.cash.turbine.turbineScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Command
@@ -12,21 +11,16 @@ import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_models.membership.NameServiceNameType
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
-import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
-import com.anytypeio.anytype.domain.payments.GetMembershipTiers
 import com.anytypeio.anytype.domain.workspace.MembershipChannel
-import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider.Default.Companion.DATE_FORMAT
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
-import kotlin.test.assertIs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.*
 
 import org.junit.Before
 import org.junit.Rule
@@ -86,7 +80,6 @@ class MembershipProviderTest {
             awaitAccountStartManager = awaitAccountStartManager,
             localeProvider = localeProvider,
             repo = repo,
-            analytics = analytics,
             dateProvider = dateProvider
         )
     }

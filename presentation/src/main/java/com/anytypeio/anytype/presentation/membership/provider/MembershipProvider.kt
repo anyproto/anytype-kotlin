@@ -1,10 +1,8 @@
 package com.anytypeio.anytype.presentation.membership.provider
 
-import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
-import com.anytypeio.anytype.core_utils.ext.formatToDateString
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -35,7 +33,6 @@ interface MembershipProvider {
         private val awaitAccountStartManager: AwaitAccountStartManager,
         private val localeProvider: LocaleProvider,
         private val repo: BlockRepository,
-        private val analytics: Analytics,
         private val dateProvider: DateProvider
     ) : MembershipProvider {
 

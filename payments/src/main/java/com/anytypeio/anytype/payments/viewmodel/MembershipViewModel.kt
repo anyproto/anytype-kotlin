@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.ProductDetails
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.membership.EmailVerificationStatus
 import com.anytypeio.anytype.core_models.membership.MembershipErrors
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
@@ -30,6 +31,9 @@ import com.anytypeio.anytype.payments.models.Tier
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
 import com.anytypeio.anytype.payments.playbilling.BillingClientState
 import com.anytypeio.anytype.payments.playbilling.BillingPurchaseState
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsMembershipClickEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsMembershipPurchaseEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsMembershipScreenEvent
 import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
 import com.anytypeio.anytype.presentation.membership.models.TierId
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
@@ -142,6 +146,12 @@ class MembershipViewModel(
             val tierView = (tierState.value as? MembershipTierState.Visible)?.tier ?: return
             proceedWithHideTier()
             welcomeState.value = WelcomeState.Initial(tierView)
+            viewModelScope.launch {
+                sendAnalyticsMembershipPurchaseEvent(
+                    analytics = analytics,
+                    tier = tierView.title
+                )
+            }
             proceedWithNavigation(MembershipNavigation.Welcome)
         }
     }
@@ -166,6 +176,12 @@ class MembershipViewModel(
     private fun proceedWithShowingTier(tierId: TierId) {
         val visibleTier = getTierById(tierId) ?: return
         tierState.value = MembershipTierState.Visible(visibleTier)
+        viewModelScope.launch {
+            sendAnalyticsMembershipScreenEvent(
+                analytics = analytics,
+                tier = visibleTier.title
+            )
+        }
         proceedWithNavigation(MembershipNavigation.Tier)
     }
 
@@ -178,13 +194,21 @@ class MembershipViewModel(
     fun onTierAction(action: TierAction) {
         Timber.d("onTierAction: action:$action")
         when (action) {
-            is TierAction.PayClicked -> onPayButtonClicked(action.tierId)
-            is TierAction.ManagePayment -> onManageTierClicked(action.tierId)
+            is TierAction.PayClicked -> {
+                sendAnalyticsClickEvent(EventsDictionary.MembershipTierButton.PAY)
+                onPayButtonClicked(action.tierId)
+            }
+            is TierAction.ManagePayment -> {
+                sendAnalyticsClickEvent(EventsDictionary.MembershipTierButton.MANAGE)
+                onManageTierClicked(action.tierId)
+            }
             is TierAction.OpenUrl -> {
+                sendAnalyticsClickEvent(EventsDictionary.MembershipTierButton.INFO)
                 proceedWithNavigation(MembershipNavigation.OpenUrl(action.url))
             }
             TierAction.OpenEmail -> proceedWithSupportEmail()
             is TierAction.SubmitClicked -> {
+                sendAnalyticsClickEvent(EventsDictionary.MembershipTierButton.SUBMIT)
                 proceedWithSettingEmail(
                     email = anyEmailState.text.toString(),
                 )
@@ -198,6 +222,7 @@ class MembershipViewModel(
                 proceedWithValidatingEmailCode(action.code)
             }
             TierAction.ChangeEmail -> {
+                sendAnalyticsClickEvent(EventsDictionary.MembershipTierButton.CHANGE_EMAIL)
                 val tierView = (tierState.value as? MembershipTierState.Visible)?.tier ?: return
                 val updatedTierState = tierView.copy(
                     email = TierEmail.Visible.Enter,
@@ -207,6 +232,7 @@ class MembershipViewModel(
             }
 
             is TierAction.ContactUsError -> {
+                sendAnalyticsClickEvent(EventsDictionary.MembershipTierButton.CONTACT_US)
                 proceedWithSupportErrorEmail(action.error)
             }
         }
@@ -505,6 +531,15 @@ class MembershipViewModel(
 
     fun hideError() {
         errorState.value = MembershipErrorState.Hidden
+    }
+
+    private fun sendAnalyticsClickEvent(buttonType: EventsDictionary.MembershipTierButton) {
+        viewModelScope.launch {
+            sendAnalyticsMembershipClickEvent(
+                analytics = analytics,
+                buttonType = buttonType
+            )
+        }
     }
 
     //region Google Play Billing

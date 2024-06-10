@@ -101,15 +101,22 @@ class BillingClientLifecycle(
         val responseCode = billingResult.responseCode
         val debugMessage = billingResult.debugMessage
         Timber.d("onBillingSetupFinished: $responseCode $debugMessage")
-        if (responseCode == BillingClient.BillingResponseCode.OK) {
-            // The billing client is ready.
-            // You can query product details and purchases here.
-            querySubscriptionProductDetails()
-            querySubscriptionPurchases()
-        } else {
-            Timber.e("onBillingSetupFinished: BillingResponse $responseCode")
-            _builderSubProductWithProductDetails.value =
-                BillingClientState.Error("BillingResponse $responseCode")
+        when (responseCode) {
+            BillingClient.BillingResponseCode.OK -> {
+                // The billing client is ready.
+                // You can query product details and purchases here.
+                querySubscriptionProductDetails()
+                querySubscriptionPurchases()
+            }
+            BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> {
+                Timber.e("onBillingSetupFinished: BILLING_UNAVAILABLE")
+                _builderSubProductWithProductDetails.value = BillingClientState.NotAvailable
+            }
+            else -> {
+                Timber.e("onBillingSetupFinished: BillingResponse $responseCode")
+                _builderSubProductWithProductDetails.value =
+                    BillingClientState.Error("BillingResponse $responseCode")
+            }
         }
     }
 
@@ -389,6 +396,7 @@ sealed class BillingClientState {
     data class Error(val message: String) : BillingClientState()
     //Connected state is suppose that we have non empty list of product details
     data class Connected(val productDetails: List<ProductDetails>) : BillingClientState()
+    data object NotAvailable : BillingClientState()
 }
 
 sealed class BillingPurchaseState {

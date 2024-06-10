@@ -36,6 +36,8 @@ interface MembershipProvider {
         private val dateProvider: DateProvider
     ) : MembershipProvider {
 
+        private val _tiers = mutableListOf<MembershipTierData>()
+
         @OptIn(ExperimentalCoroutinesApi::class)
         override fun status(): Flow<MembershipStatus> {
             return awaitAccountStartManager.isStarted().flatMapLatest { isStarted ->
@@ -58,15 +60,22 @@ interface MembershipProvider {
                 .scan(initial) { _, events ->
                     events.lastOrNull()?.membership
                 }.filterNotNull()
-                .onEach {
-                    membership -> Timber.d("MembershipProvider, newEvent: ${membership.tier}")
+                .onEach { membership ->
+                    Timber.d("MembershipProvider, newEvent: ${membership.tier}")
                 }
                 .map { membership ->
-                    val tiers = proceedWithGettingTiers().filter { SHOW_TEST_TIERS || !it.isTest }.sortedBy { it.id }
-                    val newStatus = toMembershipStatus(
-                        membership = membership,
-                        tiers = tiers
-                    )
+                    val newStatus = if (_tiers.isEmpty()) {
+                        _tiers.addAll(proceedWithGettingTiers())
+                        toMembershipStatus(
+                            membership = membership,
+                            tiers = _tiers
+                        )
+                    } else {
+                        toMembershipStatus(
+                            membership = membership,
+                            tiers = _tiers
+                        )
+                    }
                     Timber.d("MembershipProvider, newState: $newStatus")
                     newStatus
                 }
@@ -85,6 +94,8 @@ interface MembershipProvider {
                 locale = localeProvider.language()
             )
             return repo.membershipGetTiers(tiersParams)
+                .filter { SHOW_TEST_TIERS || !it.isTest }
+                .sortedBy { it.id }
         }
 
         private fun toMembershipStatus(

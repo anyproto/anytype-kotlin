@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.di.main
 
 import android.content.Context
-import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.data.auth.event.MembershipDateChannel
 import com.anytypeio.anytype.data.auth.event.MembershipRemoteChannel
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
@@ -64,7 +63,6 @@ object MembershipModule {
         membershipChannel: MembershipChannel,
         localeProvider: LocaleProvider,
         repo: BlockRepository,
-        analytics: Analytics,
         dateProvider: DateProvider
     ): MembershipProvider = MembershipProvider.Default(
         dispatchers = dispatchers,
@@ -72,7 +70,6 @@ object MembershipModule {
         awaitAccountStartManager = awaitAccountStartManager,
         localeProvider = localeProvider,
         repo = repo,
-        analytics = analytics,
         dateProvider = dateProvider
     )
 }

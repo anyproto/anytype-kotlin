@@ -66,7 +66,7 @@ class AmplitudeTracker(
                     }
                     is UserProperty.Tier -> {
                         tracker.setUserProperties(
-                            JSONObject(mapOf(UserProperty.TIER_KEY to prop.tierId))
+                            JSONObject(mapOf(UserProperty.TIER_KEY to prop.tier))
                         )
                     }
                 }

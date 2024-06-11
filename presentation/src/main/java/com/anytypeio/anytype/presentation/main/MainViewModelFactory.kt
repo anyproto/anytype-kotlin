@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
+import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationActionDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
@@ -40,7 +41,8 @@ class MainViewModelFactory @Inject constructor(
     private val notificator: SystemNotificationService,
     private val notificationActionDelegate: NotificationActionDelegate,
     private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
-    private val awaitAccountStartManager: AwaitAccountStartManager
+    private val awaitAccountStartManager: AwaitAccountStartManager,
+    private val membershipProvider: MembershipProvider
     ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -63,6 +65,7 @@ class MainViewModelFactory @Inject constructor(
         notificator = notificator,
         notificationActionDelegate = notificationActionDelegate,
         deepLinkToObjectDelegate = deepLinkToObjectDelegate,
-        awaitAccountStartManager = awaitAccountStartManager
+        awaitAccountStartManager = awaitAccountStartManager,
+        membershipProvider = membershipProvider
     ) as T
 }

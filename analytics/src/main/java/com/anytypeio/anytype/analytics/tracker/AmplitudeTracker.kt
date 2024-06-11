@@ -63,6 +63,11 @@ class AmplitudeTracker(
                             JSONObject(mapOf(UserProperty.INTERFACE_LANG_KEY to prop.lang))
                         )
                     }
+                    is UserProperty.Tier -> {
+                        tracker.setUserProperties(
+                            JSONObject(mapOf(UserProperty.TIER_KEY to prop.tier))
+                        )
+                    }
                 }
             }
         }

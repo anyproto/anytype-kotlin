@@ -53,7 +53,7 @@ fun InfoCard(
                 contentDescription = "Main payments image"
             )
         }
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(27.dp))
         Text(
             modifier = Modifier
                 .fillMaxWidth()
@@ -65,7 +65,7 @@ fun InfoCard(
         )
         Text(
             modifier = Modifier
-                .padding(start = 32.dp, end = 32.dp, top = 6.dp)
+                .padding(start = 32.dp, end = 32.dp, top = 9.dp)
                 .verticalScroll(rememberScrollState()),
             text = subtitle,
             color = colorResource(id = R.color.text_primary),

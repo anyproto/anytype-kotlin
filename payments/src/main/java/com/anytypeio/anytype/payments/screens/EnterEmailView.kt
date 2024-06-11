@@ -73,7 +73,7 @@ fun MembershipEmailScreen(
                 )
                 .padding(horizontal = 20.dp)
         ) {
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(41.dp))
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(id = R.string.payments_email_title),
@@ -81,7 +81,7 @@ fun MembershipEmailScreen(
                 style = BodyRegular,
                 textAlign = TextAlign.Start
             )
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(9.dp))
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(id = R.string.payments_email_subtitle),
@@ -89,7 +89,7 @@ fun MembershipEmailScreen(
                 style = BodyCallout,
                 textAlign = TextAlign.Start
             )
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(26.dp))
             Box(modifier = Modifier) {
                 BasicTextField2(
                     modifier = Modifier
@@ -128,7 +128,7 @@ fun MembershipEmailScreen(
                 is TierEmail.Visible.ErrorOther -> colorResource(id = R.color.palette_system_red) to (state.message ?: stringResource(id = R.string.membership_any_name_unknown))
                 else -> Color.Transparent to ""
             }
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(6.dp))
             Text(
                 modifier = Modifier
                     .fillMaxWidth()

@@ -1325,7 +1325,7 @@
         Best regards,       \n
     </string>
     <string name="payments_email_to">membership-upgrade@anytype.io</string>
-    <string name="payments_email_subject">Upgrade %1$s</string>
+    <string name="payments_email_subject">%1$s hochstufen</string>
     <string name="payments_email_body">Hello Anytype team! I would like to extend my current membership for more (please choose an option):\n
 - Extra remote storage\n
 - More space editors\n
@@ -1394,8 +1394,8 @@ Please provide specific details of your needs here.</string>
     <string name="membership_agree_middle">und</string>
     <string name="membership_agree_privacy">Datenschutzerklärung</string>
     <string name="membership_support_already_acquired">You’ve already acquired a Membership plan using another Anytype account.</string>
-    <string name="membership_support_different_subscription">Found a subscription with a different id</string>
-    <string name="membership_support_more_then_one_subscription">Found more than one subscription</string>
+    <string name="membership_support_different_subscription">Ein Abonnement mit einer anderen ID gefunden</string>
+    <string name="membership_support_more_then_one_subscription">Mehr als ein Abonnement gefunden</string>
     <plurals name="period_years">
         <item quantity="one">Jahr</item>
         <item quantity="other">%d Jahre</item>
@@ -1414,7 +1414,7 @@ Please provide specific details of your needs here.</string>
     </plurals>
     <string name="membership_error_button_text_action">Kontaktiere uns</string>
     <string name="membership_error_button_text_dismiss">OK</string>
-    <string name="error_login_network_id_mismatch">Network ID mismatch detected. Please verify your network configuration.</string>
+    <string name="error_login_network_id_mismatch">Netzwerk-ID stimmt nicht überein. Bitte überprüfe deine Netzwerkkonfiguration.</string>
     <string name="global_search_related_to">"Zugehörig zu: "</string>
     <string name="global_search_no_related_objects_found">Keine zugehörigen Objekte gefunden</string>
 </resources>

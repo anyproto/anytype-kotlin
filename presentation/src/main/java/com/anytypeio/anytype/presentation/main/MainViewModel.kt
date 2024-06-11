@@ -117,10 +117,10 @@ class MainViewModel(
             }
         }
         viewModelScope.launch {
-            membershipProvider.status().collect { status ->
+            membershipProvider.activeTier().collect { result ->
                 updateUserProperties(
                     analytics = analytics,
-                    userProperty = UserProperty.Tier(status.activeTier.value)
+                    userProperty = UserProperty.Tier(result.value)
                 )
             }
         }

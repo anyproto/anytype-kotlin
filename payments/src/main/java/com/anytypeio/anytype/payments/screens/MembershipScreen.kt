@@ -112,7 +112,7 @@ private fun MainContent(
     ) {
         if (state is MembershipMainState.Default) {
             Title()
-            Spacer(modifier = Modifier.height(7.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             if (state.subtitle != null) {
                 Subtitle(state.subtitle)
             }
@@ -183,7 +183,7 @@ private fun Title() {
         Text(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp, top = 37.dp),
+                .padding(start = 20.dp, end = 20.dp, top = 29.dp),
             text = stringResource(id = R.string.payments_header),
             color = colorResource(id = R.color.text_primary),
             style = headerTextStyle,

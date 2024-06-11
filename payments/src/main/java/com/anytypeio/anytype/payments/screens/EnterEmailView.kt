@@ -73,7 +73,7 @@ fun MembershipEmailScreen(
                 )
                 .padding(horizontal = 20.dp)
         ) {
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(41.dp))
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(id = R.string.payments_email_title),
@@ -89,7 +89,7 @@ fun MembershipEmailScreen(
                 style = BodyCallout,
                 textAlign = TextAlign.Start
             )
-            Spacer(modifier = Modifier.height(25.dp))
+            Spacer(modifier = Modifier.height(26.dp))
             Box(modifier = Modifier) {
                 BasicTextField2(
                     modifier = Modifier

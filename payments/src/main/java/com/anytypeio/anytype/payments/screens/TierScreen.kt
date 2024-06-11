@@ -36,6 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.membership.MembershipErrors
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
@@ -137,7 +138,7 @@ private fun TierViewVisible(
                     tint = tierResources.colors.gradientEnd
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -170,7 +171,7 @@ private fun TierViewVisible(
                 Benefit(benefit = benefit)
                 Spacer(modifier = Modifier.height(9.dp))
             }
-            Spacer(modifier = Modifier.height(26.dp))
+            Spacer(modifier = Modifier.height(23.dp))
         }
         Column(
             modifier = Modifier
@@ -181,7 +182,7 @@ private fun TierViewVisible(
                     color = colorResource(id = R.color.background_primary)
                 )
         ) {
-            Spacer(modifier = Modifier.height(29.dp))
+            Spacer(modifier = Modifier.height(27.dp))
             if (state.tier.isActive) {
                 ConditionInfoView(state = state.tier.conditionInfo)
                 MembershipEmailScreen(
@@ -195,11 +196,11 @@ private fun TierViewVisible(
                     actionTier = actionTier
                 )
             } else {
+                ConditionInfoView(state = state.tier.conditionInfo)
                 AnyNameView(
                     anyNameState = state.tier.membershipAnyName,
                     anyNameTextField = anyNameTextField
                 )
-                ConditionInfoView(state = state.tier.conditionInfo)
                 Spacer(modifier = Modifier.height(14.dp))
                 MainButton(
                     buttonState = state.tier.buttonState,
@@ -227,7 +228,7 @@ fun Benefit(benefit: String) {
         Image(
             modifier = Modifier
                 .wrapContentSize()
-                .align(Alignment.CenterStart),
+                .align(Alignment.TopStart),
             painter = painterResource(id = R.drawable.ic_check_16),
             contentDescription = "text check icon"
         )

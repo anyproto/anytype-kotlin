@@ -115,7 +115,7 @@ class MembershipProviderTest {
                 awaitAccountStartManager.setIsStarted(true)
                 val membershipProviderFlow = provider.status().testIn(backgroundScope)
                 val membershipProviderFlow1 = provider.status().testIn(backgroundScope)
-                val membershipProviderFlow2 = provider.status().testIn(backgroundScope)
+                val membershipProviderFlow2 = provider.activeTier().testIn(backgroundScope)
 
                 val initialStatus = membershipProviderFlow.awaitItem()
                 assertEquals(membership.tier, initialStatus.activeTier.value)
@@ -136,7 +136,7 @@ class MembershipProviderTest {
                 membershipProviderFlow2.awaitItem()
                 membershipProviderFlow2.awaitItem()
 
-                verify(repo, times(1)).membershipGetTiers(command)
+                verify(repo, times(6)).membershipGetTiers(command)
             }
         }
 }

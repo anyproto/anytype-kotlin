@@ -138,7 +138,7 @@ fun ConditionInfoViewValid(
             style = BodyBold,
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(14.dp))
+        Spacer(modifier = Modifier.height(15.dp))
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -151,7 +151,7 @@ fun ConditionInfoViewValid(
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 34.dp),
+                    .padding(top = 36.dp),
                 text = stringResource(id = R.string.payments_tier_current_valid),
                 color = colorResource(id = R.color.text_primary),
                 style = Relations2,
@@ -160,7 +160,7 @@ fun ConditionInfoViewValid(
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 4.dp),
+                    .padding(top = 6.dp),
                 text = textValidUntil,
                 color = colorResource(id = R.color.text_primary),
                 style = HeadlineTitle,

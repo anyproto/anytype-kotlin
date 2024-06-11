@@ -26,6 +26,7 @@ import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
 import com.anytypeio.anytype.domain.wallpaper.WallpaperStore
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.main.MainViewModelFactory
+import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationActionDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
@@ -74,7 +75,8 @@ object MainEntryModule {
         notificator: SystemNotificationService,
         notificationActionDelegate: NotificationActionDelegate,
         deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
-        awaitAccountStartManager: AwaitAccountStartManager
+        awaitAccountStartManager: AwaitAccountStartManager,
+        membershipProvider: MembershipProvider
     ): MainViewModelFactory = MainViewModelFactory(
         resumeAccount = resumeAccount,
         analytics = analytics,
@@ -93,7 +95,8 @@ object MainEntryModule {
         notificator = notificator,
         notificationActionDelegate = notificationActionDelegate,
         deepLinkToObjectDelegate = deepLinkToObjectDelegate,
-        awaitAccountStartManager = awaitAccountStartManager
+        awaitAccountStartManager = awaitAccountStartManager,
+        membershipProvider = membershipProvider
     )
 
     @JvmStatic

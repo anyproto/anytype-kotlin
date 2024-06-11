@@ -32,6 +32,7 @@ import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
+import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationAction
 import com.anytypeio.anytype.presentation.notifications.NotificationActionDelegate
@@ -66,7 +67,8 @@ class MainViewModel(
     private val notificator: SystemNotificationService,
     private val notificationActionDelegate: NotificationActionDelegate,
     private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
-    private val awaitAccountStartManager: AwaitAccountStartManager
+    private val awaitAccountStartManager: AwaitAccountStartManager,
+    private val membershipProvider: MembershipProvider
 ) : ViewModel(),
     NotificationActionDelegate by notificationActionDelegate,
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
@@ -112,6 +114,14 @@ class MainViewModel(
                 notifications.forEach { event ->
                     handleNotification(event)
                 }
+            }
+        }
+        viewModelScope.launch {
+            membershipProvider.activeTier().collect { result ->
+                updateUserProperties(
+                    analytics = analytics,
+                    userProperty = UserProperty.Tier(result.value)
+                )
             }
         }
     }

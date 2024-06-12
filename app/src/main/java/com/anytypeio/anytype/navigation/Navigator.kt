@@ -144,9 +144,9 @@ class Navigator : AppNavigation {
 
     override fun openPageSearch() {
         // Old search
-//        navController?.navigate(R.id.pageSearchFragment)
+        navController?.navigate(R.id.pageSearchFragment)
         // Uncomment to use new search
-        navController?.navigate(R.id.globalSearchScreen)
+//        navController?.navigate(R.id.globalSearchScreen)
     }
 
     override fun openObjectSet(

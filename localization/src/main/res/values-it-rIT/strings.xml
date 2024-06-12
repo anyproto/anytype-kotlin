@@ -1394,9 +1394,9 @@ Please provide specific details of your needs here.</string>
     <string name="membership_agree_terms">Termini d\'Uso</string>
     <string name="membership_agree_middle">e</string>
     <string name="membership_agree_privacy">Informativa sulla Privacy</string>
-    <string name="membership_support_already_acquired">You’ve already acquired a Membership plan using another Anytype account.</string>
-    <string name="membership_support_different_subscription">Found a subscription with a different id</string>
-    <string name="membership_support_more_then_one_subscription">Found more than one subscription</string>
+    <string name="membership_support_already_acquired">Hai già acquisito un piano Membership utilizzando un altro account Anytype.</string>
+    <string name="membership_support_different_subscription">Trovato un abbonamento con un id diverso</string>
+    <string name="membership_support_more_then_one_subscription">Trovato più di un abbonamento</string>
     <plurals name="period_years">
         <item quantity="one">anno</item>
         <item quantity="other">%d anni</item>
@@ -1415,7 +1415,7 @@ Please provide specific details of your needs here.</string>
     </plurals>
     <string name="membership_error_button_text_action">Contattaci</string>
     <string name="membership_error_button_text_dismiss">Ok</string>
-    <string name="error_login_network_id_mismatch">Network ID mismatch detected. Please verify your network configuration.</string>
-    <string name="global_search_related_to">"Related to: "</string>
+    <string name="error_login_network_id_mismatch">Rilevata una mancata corrispondenza con l\'ID di rete. Verifica la configurazione della rete.</string>
+    <string name="global_search_related_to">"Correlato a: "</string>
     <string name="global_search_no_related_objects_found">Nessun oggetto correlato trovato</string>
 </resources>

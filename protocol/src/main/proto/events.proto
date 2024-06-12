@@ -29,6 +29,7 @@ message Event {
             Object.Relations.Remove objectRelationsRemove = 53;
 
             Object.Remove objectRemove = 54;
+            Object.Close objectClose = 65;
 
             Object.Restrictions.Set objectRestrictionsSet = 55;
 
@@ -235,6 +236,10 @@ message Event {
                 string id = 1;
                 anytype.model.Restrictions restrictions = 2;
             }
+        }
+
+        message Close {
+            string id = 1;
         }
     }
     message Block {

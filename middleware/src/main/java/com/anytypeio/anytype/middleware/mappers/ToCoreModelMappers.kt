@@ -427,6 +427,7 @@ fun MBlock.toCoreWidget(): Block.Content.Widget {
             MWidgetLayout.Tree -> Block.Content.Widget.Layout.TREE
             MWidgetLayout.List -> Block.Content.Widget.Layout.LIST
             MWidgetLayout.CompactList -> Block.Content.Widget.Layout.COMPACT_LIST
+            MWidgetLayout.View -> Block.Content.Widget.Layout.VIEW
         },
         limit = content.limit,
         activeView = content.viewId.ifEmpty { null }

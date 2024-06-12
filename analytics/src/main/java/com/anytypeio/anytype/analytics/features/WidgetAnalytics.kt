@@ -22,6 +22,7 @@ object WidgetAnalytics {
     const val WIDGET_LAYOUT_LIST = "List"
     const val WIDGET_LAYOUT_COMPACT_LIST = "CompactList"
     const val WIDGET_LAYOUT_LINK = "Link"
+    const val WIDGET_LAYOUT_VIEW = "View"
 
     const val WIDGET_SOURCE_FAVORITES = "Favorites"
     const val WIDGET_SOURCE_RECENT = "Recent"

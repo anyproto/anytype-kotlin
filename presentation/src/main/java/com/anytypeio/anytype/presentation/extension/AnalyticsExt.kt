@@ -1488,6 +1488,9 @@ fun CoroutineScope.sendChangeWidgetLayoutEvent(
                     Block.Content.Widget.Layout.COMPACT_LIST -> {
                         put(WidgetAnalytics.LAYOUT, WidgetAnalytics.WIDGET_LAYOUT_COMPACT_LIST)
                     }
+                    Block.Content.Widget.Layout.VIEW -> {
+                        put(WidgetAnalytics.LAYOUT, WidgetAnalytics.WIDGET_LAYOUT_VIEW)
+                    }
                 }
                 if (isInEditMode)
                     put(WidgetAnalytics.CONTEXT, WidgetAnalytics.CONTEXT_EDITOR)

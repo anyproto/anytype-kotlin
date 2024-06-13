@@ -216,9 +216,9 @@ fun RelationFormat.simpleIcon(): Int? = when (this) {
 fun DVSortType.text(format: RelationFormat): Int = when (format) {
     RelationFormat.TAG, RelationFormat.STATUS -> {
         if (this == DVSortType.ASC)
-            R.string.sort_from_first_to_last
+            R.string.sort_ascending
         else
-            R.string.sort_from_last_to_first
+            R.string.sort_descending
     }
     RelationFormat.NUMBER, RelationFormat.DATE -> {
         if (this == DVSortType.ASC)

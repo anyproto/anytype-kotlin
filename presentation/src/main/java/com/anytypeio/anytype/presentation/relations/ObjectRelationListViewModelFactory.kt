@@ -45,7 +45,7 @@ class ObjectRelationListViewModelFactory(
             analytics = analytics,
             storeOfRelations = storeOfRelations,
             addRelationToObject = addRelationToObject,
-            restrictions = restrictions
+            objectRestrictionProvider = restrictions
         ) as T
     }
 }

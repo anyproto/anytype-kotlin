@@ -101,8 +101,7 @@ class EditorMenuTest : EditorPresentationTestSetup() {
                 isLocked = false,
                 isTemplate = false,
                 space = defaultSpace,
-                ctx = root,
-                restrictions = emptyList()
+                ctx = root
             )
         }
     }
@@ -159,8 +158,7 @@ class EditorMenuTest : EditorPresentationTestSetup() {
                 isLocked = false,
                 isTemplate = false,
                 space = space,
-                ctx = root,
-                restrictions = emptyList()
+                ctx = root
             )
         }
     }
@@ -241,8 +239,7 @@ class EditorMenuTest : EditorPresentationTestSetup() {
                 isArchived = false,
                 isTemplate = false,
                 space = space,
-                ctx = root,
-                restrictions = emptyList()
+                ctx = root
             )
         }
     }

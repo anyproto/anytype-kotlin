@@ -27,6 +27,7 @@ import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationDeleteEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
+import com.anytypeio.anytype.presentation.objects.ObjectRestrictionProvider
 import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.relations.model.RelationOperationError
 import com.anytypeio.anytype.presentation.relations.providers.RelationListProvider
@@ -41,6 +42,7 @@ import timber.log.Timber
 
 class RelationListViewModel(
     private val relationListProvider: RelationListProvider,
+    private val restrictions: ObjectRestrictionProvider,
     private val lockedStateProvider: LockedStateProvider,
     private val urlBuilder: UrlBuilder,
     private val dispatcher: Dispatcher<Payload>,

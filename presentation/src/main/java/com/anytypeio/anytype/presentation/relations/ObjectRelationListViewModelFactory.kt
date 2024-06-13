@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
+import com.anytypeio.anytype.presentation.objects.ObjectRestrictionProvider
 import com.anytypeio.anytype.presentation.relations.providers.RelationListProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 
@@ -26,7 +27,8 @@ class ObjectRelationListViewModelFactory(
     private val deleteRelationFromObject: DeleteRelationFromObject,
     private val analytics: Analytics,
     private val storeOfRelations: StoreOfRelations,
-    private val addRelationToObject: AddRelationToObject
+    private val addRelationToObject: AddRelationToObject,
+    private val restrictions: ObjectRestrictionProvider
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -42,7 +44,8 @@ class ObjectRelationListViewModelFactory(
             deleteRelationFromObject = deleteRelationFromObject,
             analytics = analytics,
             storeOfRelations = storeOfRelations,
-            addRelationToObject = addRelationToObject
+            addRelationToObject = addRelationToObject,
+            restrictions = restrictions
         ) as T
     }
 }

@@ -70,8 +70,10 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
+import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
+import com.anytypeio.anytype.presentation.objects.ObjectRestrictionProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
@@ -405,6 +407,11 @@ object ObjectSetModule {
     @Provides
     @PerScreen
     fun provideObjectStateReducer(): ObjectStateReducer = DefaultObjectStateReducer()
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideRestriction(reducer: ObjectStateReducer): ObjectRestrictionProvider = reducer
 
     @JvmStatic
     @Provides

@@ -64,8 +64,7 @@ sealed class Command {
         val isArchived: Boolean,
         val isFavorite: Boolean,
         val isLocked: Boolean,
-        val isTemplate: Boolean,
-        val restrictions: List<ObjectRestriction>
+        val isTemplate: Boolean
     ) : Command()
 
     data class OpenCoverGallery(val ctx: Id) : Command()

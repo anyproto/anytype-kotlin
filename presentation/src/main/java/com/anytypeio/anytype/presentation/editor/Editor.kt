@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.editor
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Document
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.editor.Editor.Focus
 import com.anytypeio.anytype.presentation.editor.editor.Proxy
@@ -10,6 +11,7 @@ import com.anytypeio.anytype.presentation.editor.editor.Store
 import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
+import com.anytypeio.anytype.presentation.objects.ObjectRestrictionProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -95,7 +97,7 @@ interface Editor {
         ) : Mode()
     }
 
-    class Storage {
+    class Storage : ObjectRestrictionProvider {
         val document: DocumentProvider = DocumentProvider.Default()
         val views: Store<List<BlockView>> = Store.Screen()
         val focus: Store<Focus> = Store.Focus()
@@ -106,6 +108,10 @@ interface Editor {
         val textSelection: Store<Editor.TextSelection> = Store.TextSelection()
         val objectRestrictions: Store.ObjectRestrictions = Store.ObjectRestrictions()
         val relationLinks: Store.RelationLinks = Store.RelationLinks()
+
+        override fun provide(): List<ObjectRestriction> {
+            return objectRestrictions.current()
+        }
     }
 
     class Proxer(

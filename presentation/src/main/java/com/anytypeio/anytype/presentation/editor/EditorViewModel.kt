@@ -1562,8 +1562,7 @@ class EditorViewModel(
                         isArchived = false,
                         isFavorite = false,
                         isLocked = false,
-                        isTemplate = true,
-                        restrictions = wrapper.restrictions
+                        isTemplate = true
                     )
                 )
             }
@@ -1575,8 +1574,7 @@ class EditorViewModel(
                         isArchived = details[context]?.isArchived ?: false,
                         isFavorite = details[context]?.isFavorite ?: false,
                         isLocked = mode == EditorMode.Locked,
-                        isTemplate = isObjectTemplate(),
-                        restrictions = wrapper.restrictions
+                        isTemplate = isObjectTemplate()
                     )
                 )
             }

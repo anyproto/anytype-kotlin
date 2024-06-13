@@ -2024,36 +2024,12 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         vm.onMovedToBin()
     }
 
-    override fun onSearchOnPageClicked() {
-        vm.onEnterSearchModeClicked()
-    }
-
     override fun onSetTextBlockValue() {
         vm.onSetTextBlockValue()
     }
 
     override fun onMentionClicked(target: Id) {
         vm.onMentionClicked(target = target)
-    }
-
-    override fun onUndoRedoClicked() {
-        vm.onUndoRedoActionClicked()
-    }
-
-    override fun onDocRelationsClicked() {
-        vm.onDocRelationsClicked()
-    }
-
-    override fun onAddCoverClicked() {
-        vm.onAddCoverClicked()
-    }
-
-    override fun onSetIconClicked() {
-        vm.onSetObjectIconClicked()
-    }
-
-    override fun onLayoutClicked() {
-        vm.onLayoutClicked()
     }
 
     override fun onTextValueChanged(ctx: Id, text: String, objectId: Id, relationKey: Key) {

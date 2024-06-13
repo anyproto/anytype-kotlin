@@ -164,7 +164,7 @@ fun List<Block>.parseWidgets(
                             }
 
                             Block.Content.Widget.Layout.VIEW -> {
-
+                                // Do nothing.
                             }
                         }
                     }

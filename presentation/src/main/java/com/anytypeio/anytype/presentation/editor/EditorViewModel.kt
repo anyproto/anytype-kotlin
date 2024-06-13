@@ -2190,17 +2190,6 @@ class EditorViewModel(
         viewModelScope.launch { refresh() }
     }
 
-    fun onDocRelationsClicked() {
-        Timber.d("onDocRelationsClicked, ")
-        dispatch(
-            Command.OpenObjectRelationScreen.RelationList(
-                ctx = context,
-                target = null,
-                isLocked = mode == EditorMode.Locked
-            )
-        )
-    }
-
     fun onSearchToolbarEvent(event: SearchInDocEvent) {
         Timber.d("onSearchToolbarEvent, event:[$event]")
         if (mode !is EditorMode.Search) return
@@ -3328,25 +3317,6 @@ class EditorViewModel(
         } else {
             sendToast("Cannot change cover: your object is locked.")
         }
-    }
-
-    fun onSetObjectIconClicked() {
-        viewModelScope.launch {
-            val obj = orchestrator.stores.details.getAsObject(context)
-            val space = obj?.spaceId
-            if (space != null) {
-                dispatch(Command.SetObjectIcon(ctx = context, space = space))
-            } else {
-                Timber.e("Space not found").also {
-                    sendToast("Space not found")
-                }
-            }
-        }
-    }
-
-    fun onLayoutClicked() {
-        Timber.d("onLayoutClicked, ")
-        dispatch(Command.OpenObjectLayout(context))
     }
 
     fun onLayoutDialogDismissed() {

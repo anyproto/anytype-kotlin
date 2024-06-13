@@ -342,12 +342,6 @@ abstract class ObjectMenuBaseFragment :
 
     interface DocumentMenuActionReceiver {
         fun onMoveToBinSuccess()
-        fun onSearchOnPageClicked()
-        fun onDocRelationsClicked()
-        fun onAddCoverClicked()
-        fun onSetIconClicked()
-        fun onLayoutClicked()
-        fun onUndoRedoClicked()
     }
 }
 

@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.editor.editor
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
@@ -64,6 +65,7 @@ sealed class Command {
         val isFavorite: Boolean,
         val isLocked: Boolean,
         val isTemplate: Boolean,
+        val restrictions: List<ObjectRestriction>
     ) : Command()
 
     data class OpenCoverGallery(val ctx: Id) : Command()

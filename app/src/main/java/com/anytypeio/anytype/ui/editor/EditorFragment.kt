@@ -1023,20 +1023,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         )
                         .showChildFragment()
                 }
-                is Command.OpenObjectRelationScreen.RelationList -> {
-                    hideKeyboard()
-                    findNavController().safeNavigate(
-                        R.id.pageScreen,
-                        R.id.objectRelationListScreen,
-                        bundleOf(
-                            ObjectRelationListFragment.ARG_CTX to command.ctx,
-                            ObjectRelationListFragment.ARG_SPACE to space,
-                            ObjectRelationListFragment.ARG_TARGET to command.target,
-                            ObjectRelationListFragment.ARG_LOCKED to command.isLocked,
-                            ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST,
-                        )
-                    )
-                }
                 is Command.OpenObjectRelationScreen.Value.Default -> {
                     hideKeyboard()
                     val fr = RelationValueFragment.new(

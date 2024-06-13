@@ -63,7 +63,7 @@ sealed class Command {
         val isArchived: Boolean,
         val isFavorite: Boolean,
         val isLocked: Boolean,
-        val isTemplate: Boolean
+        val isTemplate: Boolean,
     ) : Command()
 
     data class OpenCoverGallery(val ctx: Id) : Command()
@@ -82,12 +82,6 @@ sealed class Command {
     }
 
     sealed class OpenObjectRelationScreen : Command() {
-        data class RelationList(
-            val ctx: String,
-            val target: String?,
-            val isLocked: Boolean
-        ) : OpenObjectRelationScreen()
-
         data class RelationAdd(val ctx: String, val target: String) : OpenObjectRelationScreen()
         sealed class Value : OpenObjectRelationScreen() {
             abstract val isReadOnlyValue: Boolean

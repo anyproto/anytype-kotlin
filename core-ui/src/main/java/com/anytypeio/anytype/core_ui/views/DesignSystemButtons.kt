@@ -517,12 +517,12 @@ enum class ButtonSize(
 ) {
     XSmall(
         cornerSize = 6.dp,
-        contentPadding = PaddingValues(9.5.dp, 4.8.dp, 9.5.dp, 4.8.dp),
+        contentPadding = PaddingValues(9.5.dp, 6.038.dp, 9.5.dp, 6.038.dp),
         textStyle = Caption1Medium
     ),
     XSmallSecondary(
         cornerSize = 6.dp,
-        contentPadding = PaddingValues(9.5.dp, 4.8.dp, 9.5.dp, 4.8.dp),
+        contentPadding = PaddingValues(9.5.dp, 6.038.dp, 9.5.dp, 6.038.dp),
         textStyle = Caption1Regular
     ),
     Small(
@@ -547,12 +547,12 @@ enum class ButtonSize(
     ),
     Large(
         cornerSize = 12.dp,
-        contentPadding = PaddingValues(0.dp, 12.dp, 0.dp, 12.dp),
+        contentPadding = PaddingValues(0.dp, 13.52.dp, 0.dp, 12.dp),
         textStyle = ButtonMedium
     ),
     LargeSecondary(
         cornerSize = 12.dp,
-        contentPadding = PaddingValues(0.dp, 12.dp, 0.dp, 12.dp),
+        contentPadding = PaddingValues(0.dp, 13.52.dp, 0.dp, 12.dp),
         textStyle = ButtonRegular
     )
 

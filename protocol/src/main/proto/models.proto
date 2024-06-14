@@ -333,9 +333,9 @@ message Block {
         message Dataview {
             repeated string source = 1;
             repeated View views = 2;
+            string activeView = 3; // do not generate changes for this field
             // deprecated
             repeated model.Relation relations = 4;
-            string activeView = 3; // saved within a session
             repeated GroupOrder groupOrders = 12;
             repeated ObjectOrder objectOrders = 13;
             repeated anytype.model.RelationLink relationLinks = 5;
@@ -568,6 +568,7 @@ message Block {
                 Tree = 1;
                 List = 2;
                 CompactList = 3;
+                View = 4;
             }
         }
     }

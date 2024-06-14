@@ -508,6 +508,7 @@ fun Block.Content.Widget.Layout.mw() : MWidgetLayout = when(this) {
     Block.Content.Widget.Layout.LINK -> MWidgetLayout.Link
     Block.Content.Widget.Layout.LIST -> MWidgetLayout.List
     Block.Content.Widget.Layout.COMPACT_LIST -> MWidgetLayout.CompactList
+    Block.Content.Widget.Layout.VIEW -> MWidgetLayout.View
 }
 
 fun NetworkMode.toMiddlewareModel(): MNetworkMode = when (this) {

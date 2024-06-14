@@ -379,7 +379,7 @@ data class Block(
             val activeView: Id? = null
         ) : Content() {
             enum class Layout {
-                TREE, LINK, LIST, COMPACT_LIST
+                TREE, LINK, LIST, COMPACT_LIST, VIEW
             }
         }
     }

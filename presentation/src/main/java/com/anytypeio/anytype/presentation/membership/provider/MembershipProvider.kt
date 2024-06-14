@@ -3,10 +3,10 @@ package com.anytypeio.anytype.presentation.membership.provider
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
-import com.anytypeio.anytype.core_utils.ext.formatToDateString
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.workspace.MembershipChannel
 import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
@@ -25,13 +25,15 @@ import timber.log.Timber
 interface MembershipProvider {
 
     fun status(): Flow<MembershipStatus>
+    fun activeTier(): Flow<TierId>
 
     class Default(
         private val dispatchers: AppCoroutineDispatchers,
         private val membershipChannel: MembershipChannel,
         private val awaitAccountStartManager: AwaitAccountStartManager,
         private val localeProvider: LocaleProvider,
-        private val repo: BlockRepository
+        private val repo: BlockRepository,
+        private val dateProvider: DateProvider
     ) : MembershipProvider {
 
         @OptIn(ExperimentalCoroutinesApi::class)
@@ -46,6 +48,33 @@ interface MembershipProvider {
                 }
             }.catch { e -> Timber.e(e) }
                 .flowOn(dispatchers.io)
+        }
+
+        @OptIn(ExperimentalCoroutinesApi::class)
+        override fun activeTier(): Flow<TierId> {
+            return awaitAccountStartManager.isStarted().flatMapLatest { isStarted ->
+                if (isStarted) {
+                    buildActiveTierFlow(
+                        initial = proceedWithGettingMembership()
+                    )
+                } else {
+                    emptyFlow()
+                }
+            }.catch { e -> Timber.e(e) }
+                .flowOn(dispatchers.io)
+        }
+
+        private fun buildActiveTierFlow(
+            initial: Membership?
+        ): Flow<TierId> {
+            return membershipChannel
+                .observe()
+                .scan(initial) { _, events ->
+                    events.lastOrNull()?.membership
+                }.filterNotNull()
+                .map { membership ->
+                    TierId(membership.tier)
+                }
         }
 
         private fun buildStatusFlow(
@@ -86,6 +115,11 @@ interface MembershipProvider {
             membership: Membership,
             tiers: List<MembershipTierData>
         ): MembershipStatus {
+            val formattedDateEnds = dateProvider.formatToDateString(
+                timestamp = membership.dateEnds,
+                pattern = DATE_FORMAT,
+                locale = localeProvider.locale()
+            )
             return MembershipStatus(
                 activeTier = TierId(membership.tier),
                 status = membership.membershipStatusModel,
@@ -93,10 +127,7 @@ interface MembershipProvider {
                 paymentMethod = membership.paymentMethod,
                 anyName = membership.nameServiceName,
                 tiers = tiers,
-                formattedDateEnds = membership.dateEnds.formatToDateString(
-                    pattern = DATE_FORMAT,
-                    locale = localeProvider.locale()
-                ),
+                formattedDateEnds = formattedDateEnds,
                 userEmail = membership.userEmail
             )
         }

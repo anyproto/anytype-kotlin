@@ -21,6 +21,7 @@ import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubsc
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertIs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import net.lachlanmckee.timberjunit.TimberTestRule
@@ -185,7 +186,7 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
                 templateId = newObjectTemplate
             )
 
-            advanceUntilIdle()
+            advanceTimeBy(300)
             val spaceId = SpaceId(mockObjectCollection.spaceId)
             val command = Command.CreateObject(
                 prefilled = mapOf(filters[0].relation to filters[0].value, filters[1].relation to filters[1].value),

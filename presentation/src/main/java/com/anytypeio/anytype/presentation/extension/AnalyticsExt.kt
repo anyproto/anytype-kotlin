@@ -1488,6 +1488,9 @@ fun CoroutineScope.sendChangeWidgetLayoutEvent(
                     Block.Content.Widget.Layout.COMPACT_LIST -> {
                         put(WidgetAnalytics.LAYOUT, WidgetAnalytics.WIDGET_LAYOUT_COMPACT_LIST)
                     }
+                    Block.Content.Widget.Layout.VIEW -> {
+                        put(WidgetAnalytics.LAYOUT, WidgetAnalytics.WIDGET_LAYOUT_VIEW)
+                    }
                 }
                 if (isInEditMode)
                     put(WidgetAnalytics.CONTEXT, WidgetAnalytics.CONTEXT_EDITOR)
@@ -2016,4 +2019,39 @@ fun CoroutineScope.sendAnalyticsUploadConfigFileEvent(
     )
 }
 
+//endregion
+
+//region Membership
+fun CoroutineScope.sendAnalyticsMembershipScreenEvent(
+    analytics: Analytics,
+    tier: String
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.screenMembership,
+        props = Props(mapOf(EventsPropertiesKey.name to tier))
+    )
+}
+
+fun CoroutineScope.sendAnalyticsMembershipClickEvent(
+    analytics: Analytics,
+    buttonType: EventsDictionary.MembershipTierButton
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.clickMembership,
+        props = Props(mapOf(EventsPropertiesKey.type to buttonType.value))
+    )
+}
+
+fun CoroutineScope.sendAnalyticsMembershipPurchaseEvent(
+    analytics: Analytics,
+    tier: String
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.changePlan,
+        props = Props(mapOf(EventsPropertiesKey.name to tier))
+    )
+}
 //endregion

@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.payments.screens
 
+import android.widget.Space
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -81,7 +83,7 @@ fun ConditionInfoView(
         }
 
         is TierConditionInfo.Visible.Error -> {
-            ConditionInfoViewPriceAndText(price = "", period = state.message)
+            ConditionInfoError(msg = state.message)
         }
 
         TierConditionInfo.Visible.Pending -> ConditionInfoViewPriceAndText(
@@ -89,6 +91,20 @@ fun ConditionInfoView(
             price = ""
         )
     }
+}
+
+@Composable
+private fun ConditionInfoError(msg: String) {
+    Text(
+        modifier = Modifier
+            .padding(horizontal = 20.dp)
+            .wrapContentWidth(),
+        text = msg,
+        color = colorResource(id = R.color.palette_system_red),
+        style = Relations2,
+        textAlign = TextAlign.Center
+    )
+    Spacer(modifier = Modifier.height(16.dp))
 }
 
 @Composable
@@ -138,7 +154,7 @@ fun ConditionInfoViewValid(
             style = BodyBold,
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(14.dp))
+        Spacer(modifier = Modifier.height(15.dp))
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -151,7 +167,7 @@ fun ConditionInfoViewValid(
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 34.dp),
+                    .padding(top = 36.dp),
                 text = stringResource(id = R.string.payments_tier_current_valid),
                 color = colorResource(id = R.color.text_primary),
                 style = Relations2,
@@ -160,7 +176,7 @@ fun ConditionInfoViewValid(
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 4.dp),
+                    .padding(top = 6.dp),
                 text = textValidUntil,
                 color = colorResource(id = R.color.text_primary),
                 style = HeadlineTitle,

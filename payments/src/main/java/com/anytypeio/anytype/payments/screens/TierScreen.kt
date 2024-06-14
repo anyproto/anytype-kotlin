@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.payments.screens
 
+import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -35,6 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.membership.MembershipErrors
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
@@ -130,13 +132,13 @@ private fun TierViewVisible(
             ) {
                 Icon(
                     modifier = Modifier
-                        .padding(start = 16.dp),
+                        .padding(start = 20.dp),
                     painter = painterResource(id = tierResources.mediumIcon),
                     contentDescription = "logo",
                     tint = tierResources.colors.gradientEnd
                 )
             }
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -158,18 +160,18 @@ private fun TierViewVisible(
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 20.dp, end = 20.dp, top = 22.dp),
+                    .padding(start = 20.dp, end = 20.dp, top = 25.dp),
                 text = stringResource(id = R.string.payments_details_whats_included),
                 color = colorResource(id = R.color.text_secondary),
                 style = BodyCallout,
                 textAlign = TextAlign.Start
             )
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(9.dp))
             state.tier.features.forEach { benefit ->
                 Benefit(benefit = benefit)
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(9.dp))
             }
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(23.dp))
         }
         Column(
             modifier = Modifier
@@ -180,7 +182,7 @@ private fun TierViewVisible(
                     color = colorResource(id = R.color.background_primary)
                 )
         ) {
-            Spacer(modifier = Modifier.height(26.dp))
+            Spacer(modifier = Modifier.height(27.dp))
             if (state.tier.isActive) {
                 ConditionInfoView(state = state.tier.conditionInfo)
                 MembershipEmailScreen(
@@ -194,11 +196,11 @@ private fun TierViewVisible(
                     actionTier = actionTier
                 )
             } else {
+                ConditionInfoView(state = state.tier.conditionInfo)
                 AnyNameView(
                     anyNameState = state.tier.membershipAnyName,
                     anyNameTextField = anyNameTextField
                 )
-                ConditionInfoView(state = state.tier.conditionInfo)
                 Spacer(modifier = Modifier.height(14.dp))
                 MainButton(
                     buttonState = state.tier.buttonState,
@@ -226,7 +228,7 @@ fun Benefit(benefit: String) {
         Image(
             modifier = Modifier
                 .wrapContentSize()
-                .align(Alignment.CenterStart),
+                .align(Alignment.TopStart),
             painter = painterResource(id = R.drawable.ic_check_16),
             contentDescription = "text check icon"
         )
@@ -402,10 +404,12 @@ private fun SupportText(text: String) {
 }
 
 @OptIn(ExperimentalFoundationApi::class)
-@Preview
+@ExperimentalMaterial3Api
 @Composable
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
 fun TierViewScreenPreview() {
-    TierViewScreen(
+    TierViewVisible(
         state = MembershipTierState.Visible(
             tier = Tier(
                 title = "Builder",
@@ -416,7 +420,7 @@ fun TierViewScreenPreview() {
                     "Feature 3",
                     "Feature 1"
                 ),
-                isActive = false,
+                isActive = true,
                 conditionInfo = TierConditionInfo.Visible.Valid(
                     dateEnds = 1714199910,
                     period = TierPeriod.Year(1),
@@ -435,7 +439,6 @@ fun TierViewScreenPreview() {
             )
         ),
         actionTier = {},
-        onDismiss = {},
         anyNameTextField = TextFieldState(),
         anyEmailTextField = TextFieldState()
     )

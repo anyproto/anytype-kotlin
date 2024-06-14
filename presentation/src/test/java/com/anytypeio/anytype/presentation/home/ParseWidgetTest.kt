@@ -92,7 +92,12 @@ class ParseWidgetTest {
         )
 
         val widgetContent = Block.Content.Widget(
-            layout = Block.Content.Widget.Layout.values().random()
+            layout = listOf(
+                Block.Content.Widget.Layout.TREE,
+                Block.Content.Widget.Layout.LIST,
+                Block.Content.Widget.Layout.LINK,
+                Block.Content.Widget.Layout.COMPACT_LIST
+            ).random()
         )
 
         val firstWidgetLink = StubLinkToObjectBlock(

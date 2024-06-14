@@ -293,6 +293,8 @@
     <string name="add_filter">添加筛选</string>
     <string name="relation_format_tag">Multiselect</string>
     <string name="unknown_number_of_objects">未知数量的对象</string>
+    <string name="sort_ascending">升序</string>
+    <string name="sort_descending">降序</string>
     <string name="sort_from_first_to_last">第一个→ 最后一个</string>
     <string name="sort_from_last_to_first">最后一个 → 第一个</string>
     <string name="sort_from_one_to_nine">1 → 9</string>

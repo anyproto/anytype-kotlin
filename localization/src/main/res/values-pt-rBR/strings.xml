@@ -294,6 +294,8 @@
     <string name="add_filter">Adicionar um filtro</string>
     <string name="relation_format_tag">Selecionar vários</string>
     <string name="unknown_number_of_objects">Número desconhecido de objetos</string>
+    <string name="sort_ascending">Crescente</string>
+    <string name="sort_descending">Decrescente</string>
     <string name="sort_from_first_to_last">Primeiro → Último</string>
     <string name="sort_from_last_to_first">Último → Primeiro</string>
     <string name="sort_from_one_to_nine">1 → 9</string>

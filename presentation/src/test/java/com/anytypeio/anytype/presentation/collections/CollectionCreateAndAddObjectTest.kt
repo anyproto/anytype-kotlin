@@ -176,6 +176,8 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
             val first = awaitItem()
             assertIs<DataViewViewState.Init>(first)
 
+            advanceTimeBy(300)
+
             val second = awaitItem()
             assertIs<DataViewViewState.Collection.Default>(second)
 

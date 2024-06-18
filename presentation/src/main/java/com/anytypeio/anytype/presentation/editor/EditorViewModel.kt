@@ -198,6 +198,7 @@ import com.anytypeio.anytype.presentation.editor.selection.updateTableBlockSelec
 import com.anytypeio.anytype.presentation.editor.selection.updateTableBlockTab
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateViewState
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
+import com.anytypeio.anytype.presentation.extension.getUrlBasedOnFileLayout
 import com.anytypeio.anytype.presentation.extension.getUrlForFileBlock
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockActionEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockAlignEvent
@@ -236,6 +237,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.getObjectTypeViewsForSBPage
+import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.objects.toViews
@@ -440,6 +442,9 @@ class EditorViewModel(
                         target = action.target,
                         space = SpaceId(action.space)
                     )
+                    is Action.DownloadCurrentObjectAsFile -> {
+                        proceedWithDownloadCurrentObjectAsFile()
+                    }
                 }
             }
         }
@@ -4231,7 +4236,7 @@ class EditorViewModel(
         }
     }
 
-    fun startDownloadingFile(blockId: Id) {
+    fun startDownloadingFileFromBlock(blockId: Id) {
 
         Timber.d("startDownloadingFile, for block:[$blockId]")
 
@@ -4257,9 +4262,49 @@ class EditorViewModel(
         }
     }
 
+    private fun proceedWithDownloadCurrentObjectAsFile() {
+
+        val details = orchestrator.stores.details.current()
+        val objectDetails = details.details[context]?.map ?: return
+        if (objectDetails.isEmpty()) return
+        val obj = ObjectWrapper.Basic(objectDetails)
+
+        Timber.d("startDownloadingFileAsObject, for object:[$obj]")
+
+        val layout = obj.layout
+
+        if (layout == null || layout !in SupportedLayouts.fileLayouts) {
+            Timber.e("Object with layout:$layout is not Media, can't proceed with download")
+            sendToast("Something went wrong. Couldn't download non file object.")
+            return
+        }
+
+        sendToast("Downloading file in background...")
+
+        val url = urlBuilder.getUrlBasedOnFileLayout(
+            obj = obj.id,
+            layout = layout
+        )
+
+        if (url != null) {
+            viewModelScope.launch {
+                orchestrator.proxies.intents.send(
+                    Media.DownloadFile(
+                        url = url,
+                        name = obj.getProperName(),
+                        type = null
+                    )
+                )
+            }
+        } else {
+            Timber.e("Object with layout:$layout is not Media, can't proceed with download")
+            sendToast("Something went wrong. Couldn't download file.")
+        }
+    }
+
     private fun startDownloadingFiles(ids: List<String>) {
         Timber.d("startDownloadingFiles, ids:[$ids]")
-        ids.forEach { id -> startDownloadingFile(id) }
+        ids.forEach { id -> startDownloadingFileFromBlock(id) }
     }
 
     fun onPageSearchClicked() {

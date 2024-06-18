@@ -2638,7 +2638,7 @@ open class EditorViewModelTest {
 
         // TESTING
 
-        vm.startDownloadingFile(blockId = file.id)
+        vm.startDownloadingFileFromBlock(blockId = file.id)
 
         runBlockingTest {
             verify(downloadFile, times(1)).invoke(

@@ -294,6 +294,8 @@
     <string name="add_filter">Legg til et filter</string>
     <string name="relation_format_tag">Multiselect</string>
     <string name="unknown_number_of_objects">Ukjent antall objekter</string>
+    <string name="sort_ascending">Stigende rekkefølge</string>
+    <string name="sort_descending">Synkende rekkefølge</string>
     <string name="sort_from_first_to_last">Første → Siste</string>
     <string name="sort_from_last_to_first">Siste → Første</string>
     <string name="sort_from_one_to_nine">1 → 9</string>

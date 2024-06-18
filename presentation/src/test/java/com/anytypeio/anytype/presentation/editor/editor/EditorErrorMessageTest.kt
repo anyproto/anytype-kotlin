@@ -77,7 +77,7 @@ class EditorErrorMessageTest : EditorPresentationTestSetup() {
 
         // Launching operation that triggers a toast
 
-        vm.startDownloadingFile(blockId = file.id)
+        vm.startDownloadingFileFromBlock(blockId = file.id)
 
         advanceUntilIdle()
 

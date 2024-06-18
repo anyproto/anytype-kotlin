@@ -294,6 +294,8 @@
     <string name="add_filter">Voeg een filter toe</string>
     <string name="relation_format_tag">Meervoudige selectie</string>
     <string name="unknown_number_of_objects">Onbekend aantal objecten</string>
+    <string name="sort_ascending">Oplopend</string>
+    <string name="sort_descending">Aflopend</string>
     <string name="sort_from_first_to_last">Eerste → Laatste</string>
     <string name="sort_from_last_to_first">Laatste → Eerste</string>
     <string name="sort_from_one_to_nine">1 → 9</string>

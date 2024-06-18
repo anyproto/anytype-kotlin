@@ -24,4 +24,5 @@ sealed class Action {
     data class OpenObject(val target: Id, val space: Id) : Action()
     data class OpenCollection(val target: Id, val space: Id) : Action()
     data class Duplicate(val target: Id, val space: Id) : Action()
+    data object DownloadCurrentObjectAsFile : Action()
 }

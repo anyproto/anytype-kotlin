@@ -1,6 +1,8 @@
 package com.anytypeio.anytype.presentation.extension
 
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 
@@ -47,5 +49,20 @@ private fun UrlBuilder.getUrlBasedOnType(
         Block.Content.File.Type.AUDIO -> file(targetObjectId)
 
         Block.Content.File.Type.NONE, null -> null
+    }
+}
+
+fun UrlBuilder.getUrlBasedOnFileLayout(
+    obj: Id,
+    layout: ObjectType.Layout
+): Url? {
+    return when (layout) {
+        ObjectType.Layout.IMAGE -> original(obj)
+        ObjectType.Layout.VIDEO -> video(obj)
+        ObjectType.Layout.FILE,
+        ObjectType.Layout.PDF,
+        ObjectType.Layout.AUDIO -> file(obj)
+
+        else -> null
     }
 }

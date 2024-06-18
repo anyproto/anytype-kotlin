@@ -92,6 +92,10 @@ class ObjectActionAdapter(
                     ivActionIcon.setImageResource(R.drawable.ic_object_action_to_widgets_24)
                     tvActionTitle.setText(R.string.object_action_to_widgets)
                 }
+                ObjectAction.DOWNLOAD_FILE -> {
+                    ivActionIcon.setImageResource(R.drawable.ic_object_action_download)
+                    tvActionTitle.setText(R.string.object_action_download)
+                }
                 else -> {}
             }
         }

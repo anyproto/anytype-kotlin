@@ -296,6 +296,8 @@
     <string name="add_filter">Добавить фильтр</string>
     <string name="relation_format_tag">Multiselect</string>
     <string name="unknown_number_of_objects">Неизвестное число объектов</string>
+    <string name="sort_ascending">По возрастанию</string>
+    <string name="sort_descending">По убыванию</string>
     <string name="sort_from_first_to_last">Первый → Последний</string>
     <string name="sort_from_last_to_first">Последний → Первый</string>
     <string name="sort_from_one_to_nine">1 → 9</string>

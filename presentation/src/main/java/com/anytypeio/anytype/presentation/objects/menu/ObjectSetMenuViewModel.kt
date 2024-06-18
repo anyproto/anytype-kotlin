@@ -224,6 +224,9 @@ class ObjectSetMenuViewModel(
             ObjectAction.USE_AS_TEMPLATE,
             ObjectAction.SET_AS_DEFAULT,
             ObjectAction.DELETE_FILES -> throw IllegalStateException("$action is unsupported")
+            ObjectAction.DOWNLOAD_FILE -> {
+                //do nothing
+            }
         }
     }
 }

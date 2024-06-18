@@ -98,6 +98,10 @@ class ObjectMenuViewModel(
         val wrapper = ObjectWrapper.Basic(storage.details.current().details[ctx]?.map.orEmpty())
         val layout = wrapper.layout
 
+        if (layout in fileLayouts) {
+            add(ObjectAction.DOWNLOAD_FILE)
+        }
+
         if (!isTemplate) {
             if (isFavorite) {
                 add(ObjectAction.REMOVE_FROM_FAVOURITE)
@@ -307,6 +311,13 @@ class ObjectMenuViewModel(
             ObjectAction.MOVE_TO_BIN,
             ObjectAction.DELETE_FILES -> {
                 throw IllegalStateException("$action is unsupported")
+            }
+
+            ObjectAction.DOWNLOAD_FILE -> {
+                viewModelScope.launch {
+                    delegator.delegate(action = Action.DownloadCurrentObjectAsFile)
+                }
+                isDismissed.value = true
             }
         }
     }

@@ -1312,7 +1312,7 @@
     <!--region MULTIPLAYER -->
 
     <string name="multiplayer_share_invite_link">Share invite link</string>
-    <string name="multiplayer_share_invite_link_description">Send this link to invite others. Assign access rights upon their request approval</string>
+    <string name="multiplayer_share_invite_link_description">Share this invite link so that others can join your Space. Once they click your link and request access, you can set their access rights.</string>
     <string name="multiplayer_invite_link">Invite link</string>
     <string name="multiplayer_join_a_space">Join a space</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Private comment for a space owner</string>

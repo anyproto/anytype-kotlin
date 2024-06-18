@@ -1321,7 +1321,7 @@
         Best regards,       \n
     </string>
     <string name="payments_email_to">membership-upgrade@anytype.io</string>
-    <string name="payments_email_subject">Upgrade %1$s</string>
+    <string name="payments_email_subject">升级 %1$s</string>
     <string name="payments_email_body">Hello Anytype team! I would like to extend my current membership for more (please choose an option):\n
 - Extra remote storage\n
 - More space editors\n
@@ -1381,28 +1381,28 @@ Please provide specific details of your needs here.</string>
     <string name="membership_price_pending">待定…</string>
     <string name="per_period">per %1$s</string>
     <string name="free_for">Free for %1$s</string>
-    <string name="free_for_unknown">Free until...</string>
-    <string name="free_until">Free until</string>
-    <string name="membership_valid_forever">Valid forever</string>
-    <string name="membership_valid_for_unknown">Valid until...</string>
-    <string name="membership_agree_start">By continuing you agree to our</string>
+    <string name="free_for_unknown">免费，直到...</string>
+    <string name="free_until">免费，直到</string>
+    <string name="membership_valid_forever">永远有效</string>
+    <string name="membership_valid_for_unknown">有效期至...</string>
+    <string name="membership_agree_start">继续代表您同意我们的</string>
     <string name="membership_agree_terms">使用条款</string>
-    <string name="membership_agree_middle">and</string>
+    <string name="membership_agree_middle">和</string>
     <string name="membership_agree_privacy">隐私策略</string>
     <string name="membership_support_already_acquired">You’ve already acquired a Membership plan using another Anytype account.</string>
     <string name="membership_support_different_subscription">Found a subscription with a different id</string>
     <string name="membership_support_more_then_one_subscription">Found more than one subscription</string>
     <plurals name="period_years">
-        <item quantity="other">%d years</item>
+        <item quantity="other">%d 年</item>
     </plurals>
     <plurals name="period_months">
-        <item quantity="other">%d months</item>
+        <item quantity="other">%d 个月</item>
     </plurals>
     <plurals name="period_weeks">
-        <item quantity="other">%d weeks</item>
+        <item quantity="other">%d 周</item>
     </plurals>
     <plurals name="period_days">
-        <item quantity="other">%d days</item>
+        <item quantity="other">%d 天</item>
     </plurals>
     <string name="membership_error_button_text_action">联系我们</string>
     <string name="membership_error_button_text_dismiss">好的</string>

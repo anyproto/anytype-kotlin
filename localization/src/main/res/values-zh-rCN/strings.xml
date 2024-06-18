@@ -1000,6 +1000,7 @@
     <!--region OBJECT ACTIONS -->
     <string name="object_action_duplicate">生成副本</string>
     <string name="object_action_to_widgets">至小部件</string>
+    <string name="object_action_download">下载</string>
     <!--endregion-->
     <!--region SEARCH -->
     <string name="nothing_found">未找到任何内容</string>

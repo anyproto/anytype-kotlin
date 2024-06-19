@@ -42,6 +42,8 @@ import com.anytypeio.anytype.domain.multiplayer.RemoveSpaceMembers
 import com.anytypeio.anytype.domain.multiplayer.RevokeSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.StopSharingSpace
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.`object`.canAddReaders
+import com.anytypeio.anytype.domain.`object`.canAddWriters
 import com.anytypeio.anytype.domain.`object`.canChangeReaderToWriter
 import com.anytypeio.anytype.domain.`object`.canChangeWriterToReader
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -78,7 +80,7 @@ class ShareSpaceViewModel(
     val commands = MutableSharedFlow<Command>()
     val isCurrentUserOwner = MutableStateFlow(false)
     val spaceAccessType = MutableStateFlow<SpaceAccessType?>(null)
-    val showIncentive = MutableStateFlow(true)
+    val showIncentive = MutableStateFlow<ShareSpaceIncentiveState>(ShareSpaceIncentiveState.Hidden)
 
     private var canChangeWriterToReader = false
     private var canChangeReaderToWriter = false
@@ -136,6 +138,20 @@ class ShareSpaceViewModel(
                         includeRequests = isCurrentUserOwner,
                         account = account
                     )
+                }
+
+                Timber.d("SpaceView: $spaceView, SpaceMembers: $spaceMembers, isCurrentUserOwner: $isCurrentUserOwner")
+
+                val haveJoiningParticipants = spaceMembers.any { it.status == ParticipantStatus.JOINING }
+                val isSharedSpace = spaceView?.spaceAccessType == SpaceAccessType.SHARED
+                val canAddReaders = spaceView?.canAddReaders(spaceMembers) ?: false
+                val canAddWriters = spaceView?.canAddWriters(spaceMembers) ?: false
+                showIncentive.value = when {
+                    isCurrentUserOwner && isSharedSpace
+                            && haveJoiningParticipants && !canAddReaders -> ShareSpaceIncentiveState.VisibleSpaceReaders
+                    isCurrentUserOwner && isSharedSpace
+                            && haveJoiningParticipants && !canAddWriters -> ShareSpaceIncentiveState.VisibleSpaceEditors
+                    else -> ShareSpaceIncentiveState.Hidden
                 }
 
                 Triple(spaceView, spaceViewMembers, isCurrentUserOwner)
@@ -557,6 +573,12 @@ class ShareSpaceViewModel(
         data object ToastPermission : Command()
         data object Dismiss : Command()
         data object ShowMembershipScreen : Command()
+    }
+
+    sealed class ShareSpaceIncentiveState {
+        data object Hidden : ShareSpaceIncentiveState()
+        data object VisibleSpaceReaders : ShareSpaceIncentiveState()
+        data object VisibleSpaceEditors : ShareSpaceIncentiveState()
     }
 
     companion object {

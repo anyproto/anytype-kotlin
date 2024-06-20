@@ -337,7 +337,8 @@ private fun Incentive(
             )
             ButtonUpgrade(
                 modifier = Modifier
-                    .padding(top = 12.dp, bottom = 24.dp)
+                    .padding(top = 12.dp, bottom = 24.dp, start = 16.dp, end = 16.dp)
+                    .height(36.dp)
                     .verticalScroll(rememberScrollState()),
                 onClick = onIncentiveClicked,
                 text = stringResource(id = R.string.multiplayer_upgrade_button)
@@ -355,7 +356,8 @@ private fun Incentive(
             )
             ButtonUpgrade(
                 modifier = Modifier
-                    .padding(top = 12.dp, bottom = 24.dp)
+                    .padding(top = 12.dp, bottom = 24.dp, start = 16.dp, end = 16.dp)
+                    .height(36.dp)
                     .verticalScroll(rememberScrollState()),
                 onClick = onIncentiveClicked,
                 text = stringResource(id = R.string.multiplayer_upgrade_button)

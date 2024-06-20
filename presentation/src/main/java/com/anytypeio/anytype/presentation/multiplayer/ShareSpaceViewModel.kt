@@ -9,7 +9,6 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.SharingSpacesTypes.
 import com.anytypeio.anytype.analytics.base.EventsDictionary.SharingSpacesTypes.shareTypeQR
 import com.anytypeio.anytype.analytics.base.EventsDictionary.SharingSpacesTypes.shareTypeRevoke
 import com.anytypeio.anytype.analytics.base.EventsDictionary.SharingSpacesTypes.shareTypeShareLink
-import com.anytypeio.anytype.analytics.base.EventsDictionary.SharingSpacesTypes.shareTypeShareQr
 import com.anytypeio.anytype.analytics.base.EventsDictionary.clickSettingsSpaceShare
 import com.anytypeio.anytype.analytics.base.EventsDictionary.removeSpaceMember
 import com.anytypeio.anytype.analytics.base.EventsDictionary.screenRevokeShareLink
@@ -42,8 +41,6 @@ import com.anytypeio.anytype.domain.multiplayer.RemoveSpaceMembers
 import com.anytypeio.anytype.domain.multiplayer.RevokeSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.StopSharingSpace
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
-import com.anytypeio.anytype.domain.`object`.canAddReaders
-import com.anytypeio.anytype.domain.`object`.canAddWriters
 import com.anytypeio.anytype.domain.`object`.canChangeReaderToWriter
 import com.anytypeio.anytype.domain.`object`.canChangeWriterToReader
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -142,17 +139,10 @@ class ShareSpaceViewModel(
 
                 Timber.d("SpaceView: $spaceView, SpaceMembers: $spaceMembers, isCurrentUserOwner: $isCurrentUserOwner")
 
-                val haveJoiningParticipants = spaceMembers.any { it.status == ParticipantStatus.JOINING }
-                val isSharedSpace = spaceView?.spaceAccessType == SpaceAccessType.SHARED
-                val canAddReaders = spaceView?.canAddReaders(spaceMembers) ?: false
-                val canAddWriters = spaceView?.canAddWriters(spaceMembers) ?: false
-                showIncentive.value = when {
-                    isCurrentUserOwner && isSharedSpace
-                            && haveJoiningParticipants && !canAddReaders -> ShareSpaceIncentiveState.VisibleSpaceReaders
-                    isCurrentUserOwner && isSharedSpace
-                            && haveJoiningParticipants && !canAddWriters -> ShareSpaceIncentiveState.VisibleSpaceEditors
-                    else -> ShareSpaceIncentiveState.Hidden
-                }
+                showIncentive.value = spaceView?.getIncentiveState(
+                    spaceMembers = spaceMembers,
+                    isCurrentUserOwner = isCurrentUserOwner
+                ) ?: ShareSpaceIncentiveState.Hidden
 
                 Triple(spaceView, spaceViewMembers, isCurrentUserOwner)
             }.catch {

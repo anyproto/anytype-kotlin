@@ -2,19 +2,33 @@ package com.anytypeio.anytype.domain.`object`
 
 import com.anytypeio.anytype.core_models.ObjectWrapper.SpaceView
 import com.anytypeio.anytype.core_models.ObjectWrapper.SpaceMember
+import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
+import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 
-fun SpaceView.canAddWriters(participants: List<SpaceMember>): Boolean {
-    if (!canAddReaders(participants)) return false
-    this.writersLimit?.let {
-        return it > activeWriters(participants)
-    } ?: return true
+fun SpaceView.canAddWriters(
+    isCurrentUserOwner: Boolean,
+    participants: List<SpaceMember>
+): Boolean {
+    if (!canAddReaders(isCurrentUserOwner, participants)) return false
+    if (!isCurrentUserOwner) return false
+    if (spaceAccessType != SpaceAccessType.SHARED) return false
+    if (participants.none { it.status == ParticipantStatus.JOINING }) return false
+    val isWritersLimitReached =
+        isSubscriberLimitReached(activeWriters(participants), writersLimit?.toInt())
+    return !isWritersLimitReached
 }
 
-fun SpaceView.canAddReaders(participants: List<SpaceMember>): Boolean {
-    this.readersLimit?.let {
-        return it > activeReaders(participants)
-    } ?: return true
+fun SpaceView.canAddReaders(
+    isCurrentUserOwner: Boolean,
+    participants: List<SpaceMember>
+): Boolean {
+    if (!isCurrentUserOwner) return false
+    if (spaceAccessType != SpaceAccessType.SHARED) return false
+    if (participants.none { it.status == ParticipantStatus.JOINING }) return false
+    val isReadersLimitReached =
+        isSubscriberLimitReached(activeReaders(participants), readersLimit?.toInt())
+    return !isReadersLimitReached
 }
 
 fun SpaceView.canChangeWriterToReader(participants: List<SpaceMember>): Boolean {
@@ -22,9 +36,7 @@ fun SpaceView.canChangeWriterToReader(participants: List<SpaceMember>): Boolean 
 }
 
 fun SpaceView.canChangeReaderToWriter(participants: List<SpaceMember>): Boolean {
-    writersLimit?.let {
-        return it.toInt() > activeWriters(participants)
-    } ?: return true
+    return !isSubscriberLimitReached(activeWriters(participants), writersLimit?.toInt())
 }
 
 private fun activeReaders(participants: List<SpaceMember>): Int =
@@ -43,3 +55,7 @@ private fun activeWriters(participants: List<SpaceMember>): Int =
             SpaceMemberPermissions.OWNER
         )
     }
+
+private fun isSubscriberLimitReached(currentSubscribers: Int, subscriberLimit: Int?): Boolean {
+    return subscriberLimit?.let { currentSubscribers >= it } ?: false
+}

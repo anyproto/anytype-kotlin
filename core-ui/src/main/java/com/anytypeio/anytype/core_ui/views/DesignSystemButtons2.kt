@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
@@ -27,7 +28,8 @@ import com.anytypeio.anytype.core_ui.R
 fun ButtonUpgrade(
     text: String = "",
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    style: TextStyle = BodyCalloutRegular
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed = interactionSource.collectIsPressedAsState()
@@ -39,9 +41,7 @@ fun ButtonUpgrade(
     CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
         Box(
             modifier = modifier
-                .height(32.dp)
                 .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp)
                 .background(color = backgroundColor, shape = RoundedCornerShape(18.dp))
                 .clickable(
                     interactionSource = interactionSource,
@@ -54,7 +54,7 @@ fun ButtonUpgrade(
             Text(
                 modifier = Modifier.wrapContentSize(),
                 text = text,
-                style = BodyCalloutRegular,
+                style = style,
                 color = colorResource(id = R.color.button_text)
             )
         }
@@ -67,6 +67,8 @@ fun ButtonUpgrade(
     ButtonUpgrade(
         onClick = {},
         text = "✦ Upgrade",
-        modifier = Modifier.padding(32.dp)
+        modifier = Modifier
+            .padding(start = 16.dp, end = 16.dp)
+            .height(36.dp)
     )
 }

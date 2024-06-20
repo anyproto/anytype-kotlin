@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.feature.onboarding.login
 
+import android.content.Context
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
@@ -7,7 +8,10 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.debugging.DebugGoroutines
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -16,9 +20,12 @@ import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel
+import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
+import com.anytypeio.anytype.providers.DefaultUriFileProvider
 import dagger.Binds
 import dagger.Component
 import dagger.Module
+import dagger.Provides
 
 @Component(
     dependencies = [OnboardingMnemonicLoginDependencies::class],
@@ -41,8 +48,29 @@ interface OnboardingMnemonicLoginComponent {
 
 @Module
 object OnboardingMnemonicLoginModule {
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun bindDebugGoroutines(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers,
+        context: Context
+    ): DebugGoroutines = DebugGoroutines(
+        repo = repo,
+        dispatchers = dispatchers,
+        cacheDir = context.cacheDir.path
+    )
+
     @Module
     interface Declarations {
+
+        @Binds
+        @PerScreen
+        fun bindUriFileProvider(
+            defaultProvider: DefaultUriFileProvider
+        ): UriFileProvider
+
         @Binds
         @PerScreen
         fun bindViewModelFactory(
@@ -64,4 +92,7 @@ interface OnboardingMnemonicLoginDependencies : ComponentDependencies {
     fun localeProvider(): LocaleProvider
     fun awaitAccountStartManager(): AwaitAccountStartManager
     fun userPermissionProvider() : UserPermissionProvider
+    fun provideAppCoroutineDispatchers(): AppCoroutineDispatchers
+    fun provideBlockRepository(): BlockRepository
+    fun provideContext(): Context
 }

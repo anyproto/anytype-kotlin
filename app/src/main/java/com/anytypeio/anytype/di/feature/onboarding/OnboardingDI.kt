@@ -1,10 +1,13 @@
 package com.anytypeio.anytype.di.feature.onboarding
 
+import android.content.Context
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.presentation.onboarding.OnboardingViewModel
+import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
+import com.anytypeio.anytype.providers.DefaultUriFileProvider
 import com.anytypeio.anytype.ui.onboarding.OnboardingFragment
 import dagger.Binds
 import dagger.Component
@@ -34,9 +37,16 @@ object OnboardingModule {
         @Binds
         @AuthScreenScope
         fun bindViewModelFactory(factory: OnboardingViewModel.Factory): ViewModelProvider.Factory
+
+        @Binds
+        @PerScreen
+        fun bindUriFileProvider(
+            defaultProvider: DefaultUriFileProvider
+        ): UriFileProvider
     }
 }
 
 interface OnboardingDependencies : ComponentDependencies {
     fun analytics(): Analytics
+    fun context(): Context
 }

@@ -1,12 +1,11 @@
 package com.anytypeio.anytype.payments
 
 import app.cash.turbine.turbineScope
-import com.android.billingclient.api.Purchase
 import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
-import com.anytypeio.anytype.payments.constants.MembershipConstants
+import com.anytypeio.anytype.core_models.membership.MembershipConstants
 import com.anytypeio.anytype.payments.models.MembershipPurchase
 import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
@@ -24,7 +23,6 @@ import kotlin.test.assertIs
 import kotlinx.coroutines.test.runTest
 import net.bytebuddy.utility.RandomString
 import org.junit.Test
-import org.mockito.Mockito
 
 /**
  * Tier - active and non free | with androidId | purchased through Android

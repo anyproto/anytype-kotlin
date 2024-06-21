@@ -1,14 +1,12 @@
 package com.anytypeio.anytype.payments
 
 import app.cash.turbine.turbineScope
-import com.android.billingclient.api.AccountIdentifiers
 import com.android.billingclient.api.ProductDetails
-import com.android.billingclient.api.Purchase
 import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
-import com.anytypeio.anytype.payments.constants.MembershipConstants
+import com.anytypeio.anytype.core_models.membership.MembershipConstants
 import com.anytypeio.anytype.payments.models.BillingPriceInfo
 import com.anytypeio.anytype.payments.models.MembershipPurchase
 import com.anytypeio.anytype.payments.models.PeriodDescription
@@ -24,7 +22,6 @@ import com.anytypeio.anytype.payments.viewmodel.MembershipMainState
 import com.anytypeio.anytype.payments.viewmodel.MembershipTierState
 import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
 import com.anytypeio.anytype.presentation.membership.models.TierId
-import java.lang.reflect.Member
 import kotlin.test.assertIs
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
@@ -35,7 +32,6 @@ import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
-import org.mockito.kotlin.whenever
 
 class TierActiveWithDifferentSubIdTest : MembershipTestsSetup() {
 

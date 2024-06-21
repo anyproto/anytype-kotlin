@@ -5,7 +5,7 @@ import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
-import com.anytypeio.anytype.payments.constants.MembershipConstants
+import com.anytypeio.anytype.core_models.membership.MembershipConstants
 import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierConditionInfo

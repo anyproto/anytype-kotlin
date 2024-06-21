@@ -36,7 +36,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.core_models.membership.MembershipErrors
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
@@ -45,9 +44,9 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.payments.R
-import com.anytypeio.anytype.payments.constants.MembershipConstants.EXPLORER_ID
-import com.anytypeio.anytype.payments.constants.MembershipConstants.PRIVACY_POLICY
-import com.anytypeio.anytype.payments.constants.MembershipConstants.TERMS_OF_SERVICE
+import com.anytypeio.anytype.core_models.membership.MembershipConstants.EXPLORER_ID
+import com.anytypeio.anytype.core_models.membership.MembershipConstants.PRIVACY_POLICY
+import com.anytypeio.anytype.core_models.membership.MembershipConstants.TERMS_OF_SERVICE
 import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierConditionInfo

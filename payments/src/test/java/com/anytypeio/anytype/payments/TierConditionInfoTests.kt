@@ -4,7 +4,7 @@ import app.cash.turbine.turbineScope
 import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
-import com.anytypeio.anytype.payments.constants.MembershipConstants
+import com.anytypeio.anytype.core_models.membership.MembershipConstants
 import com.anytypeio.anytype.payments.models.TierConditionInfo
 import com.anytypeio.anytype.payments.models.TierPeriod
 import com.anytypeio.anytype.payments.playbilling.BillingPurchaseState

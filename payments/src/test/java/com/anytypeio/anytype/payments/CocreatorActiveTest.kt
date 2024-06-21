@@ -6,7 +6,7 @@ import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
-import com.anytypeio.anytype.payments.constants.MembershipConstants
+import com.anytypeio.anytype.core_models.membership.MembershipConstants
 import com.anytypeio.anytype.payments.models.BillingPriceInfo
 import com.anytypeio.anytype.payments.models.PeriodDescription
 import com.anytypeio.anytype.payments.models.PeriodUnit

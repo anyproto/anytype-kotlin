@@ -38,9 +38,9 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.fontInterSemibold
-import com.anytypeio.anytype.payments.constants.MembershipConstants.BUILDER_ID
-import com.anytypeio.anytype.payments.constants.MembershipConstants.CO_CREATOR_ID
-import com.anytypeio.anytype.payments.constants.MembershipConstants.EXPLORER_ID
+import com.anytypeio.anytype.core_models.membership.MembershipConstants.BUILDER_ID
+import com.anytypeio.anytype.core_models.membership.MembershipConstants.CO_CREATOR_ID
+import com.anytypeio.anytype.core_models.membership.MembershipConstants.EXPLORER_ID
 import com.anytypeio.anytype.payments.models.TierPreview
 import com.anytypeio.anytype.payments.models.Tier
 import com.anytypeio.anytype.payments.models.TierConditionInfo

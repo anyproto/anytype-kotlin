@@ -15,7 +15,7 @@ import com.anytypeio.anytype.domain.payments.GetMembershipPaymentUrl
 import com.anytypeio.anytype.domain.payments.IsMembershipNameValid
 import com.anytypeio.anytype.domain.payments.SetMembershipEmail
 import com.anytypeio.anytype.domain.payments.VerifyMembershipEmailCode
-import com.anytypeio.anytype.payments.constants.MembershipConstants
+import com.anytypeio.anytype.core_models.membership.MembershipConstants
 import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierConditionInfo

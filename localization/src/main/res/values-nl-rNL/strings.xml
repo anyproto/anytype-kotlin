@@ -1120,7 +1120,7 @@
     <!--endregion-->
     <!--region MULTIPLAYER -->
     <string name="multiplayer_share_invite_link">Deel uitnodigingslink</string>
-    <string name="multiplayer_share_invite_link_description">Stuur deze link om anderen uit te nodigen. Wijs toegangsrechten toe na hun goedkeuring.</string>
+    <string name="multiplayer_share_invite_link_description">Deel deze uitnodigingslink zodat anderen zich bij jouw ruimte kunnen aansluiten. Zodra ze op jouw link klikken en toegang vragen, kun je hun toegangsrechten instellen.</string>
     <string name="multiplayer_invite_link">Uitnodigingslink</string>
     <string name="multiplayer_join_a_space">Sluit je aan bij een ruimte</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Persoonlijk bericht voor een eigenaar van de ruimte</string>
@@ -1130,6 +1130,8 @@
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tik om je reactie te schrijven</string>
     <string name="multiplayer_share_space">Deel ruimte</string>
     <string name="multiplayer_members_and_requests">Leden en verzoeken</string>
+    <string name="multiplayer_cant_add_members">You can’t add more members</string>
+    <string name="multiplayer_upgrade_button">✦ Upgrade</string>
     <string name="multiplayer_members">Leden</string>
     <string name="multiplayer_leave_request">Afmeldverzoek</string>
     <string name="multiplayer_join_request">Deelnameverzoek</string>

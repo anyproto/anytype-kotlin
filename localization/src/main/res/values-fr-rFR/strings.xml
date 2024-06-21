@@ -552,7 +552,7 @@
     <string name="sign_up">Inscription</string>
     <string name="type_your_recovery_phrase">ou saisissez votre Clé</string>
     <string name="login_with_recovery_phrase">Connexion avec votre Clé</string>
-    <string name="or_scan_qr_code">Scanner un QR code</string>
+    <string name="or_scan_qr_code">Scan Qr code</string>
     <string name="choose_pin_code">Choisir un code PIN</string>
     <string name="congratulations">Félicitations !</string>
     <string name="time_to_update_title">Il est temps de mettre à jour</string>
@@ -984,7 +984,7 @@
     <string name="onboarding_soul_creation_description">Seulement vu par les personnes avec qui vous partagez quelque chose. Il n\'y a pas de registre central des utilisateurs.</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
-    <string name="onboarding_type_your_key">Saisissez votre Clé</string>
+    <string name="onboarding_type_your_key">Type your recovery phrase</string>
     <string name="onboarding_login_or">OU</string>
     <string name="onboarding_entering_void_title">Entrer dans le Vide</string>
     <string name="onboarding_your_key_can_t_be_empty">Votre Clé ne peut pas être vide</string>

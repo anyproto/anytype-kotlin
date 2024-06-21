@@ -71,6 +71,7 @@ import com.anytypeio.anytype.core_ui.MNEMONIC_WORD_COUNT
 import com.anytypeio.anytype.core_ui.MnemonicPhrasePaletteColors
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argOrNull
+import com.anytypeio.anytype.core_utils.ext.shareFirstFileFromPath
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.insets.RootViewDeferringInsetsCallback
 import com.anytypeio.anytype.di.common.componentManager
@@ -80,6 +81,7 @@ import com.anytypeio.anytype.presentation.onboarding.OnboardingStartViewModel.Si
 import com.anytypeio.anytype.presentation.onboarding.OnboardingViewModel
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel
+import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.onboarding.screens.AuthScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signin.RecoveryScreenWrapper
@@ -396,12 +398,13 @@ class OnboardingFragment : Fragment() {
             }
         }
         LaunchedEffect(Unit) {
-            vm.navigation.collect { navigation ->
-                when (navigation) {
-                    OnboardingMnemonicLoginViewModel.Navigation.Exit -> {
+            vm.command.collect { command ->
+                Timber.d("Command: $command")
+                when (command) {
+                    OnboardingMnemonicLoginViewModel.Command.Exit -> {
                         navController.popBackStack()
                     }
-                    OnboardingMnemonicLoginViewModel.Navigation.NavigateToHomeScreen -> {
+                    OnboardingMnemonicLoginViewModel.Command.NavigateToHomeScreen -> {
                         runCatching {
                             findNavController().navigate(
                                 R.id.action_openHome,
@@ -411,7 +414,7 @@ class OnboardingFragment : Fragment() {
                             Timber.e(it, "Error while trying to open home screen from onboarding")
                         }
                     }
-                    OnboardingMnemonicLoginViewModel.Navigation.NavigateToMigrationErrorScreen -> {
+                    OnboardingMnemonicLoginViewModel.Command.NavigateToMigrationErrorScreen -> {
                         runCatching {
                             findNavController().navigate(
                                 R.id.migrationNeededScreen,
@@ -425,6 +428,18 @@ class OnboardingFragment : Fragment() {
                         }.onFailure {
                             Timber.e(it, "Error while trying to open migration screen from onboarding")
                         }
+                    }
+                    is OnboardingMnemonicLoginViewModel.Command.ShareDebugGoroutines -> {
+                        try {
+                            this@OnboardingFragment.shareFirstFileFromPath(command.path, command.uriFileProvider)
+                        } catch (e: Exception) {
+                            Timber.e(e, "Error while stack goroutines debug").also {
+                                toast("Error while stack goroutines debug. Please try again later.")
+                            }
+                        }
+                    }
+                    is OnboardingMnemonicLoginViewModel.Command.ShowToast -> {
+                        toast(command.message)
                     }
                 }
             }

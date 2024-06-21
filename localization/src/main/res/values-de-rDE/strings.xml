@@ -552,7 +552,7 @@
     <string name="sign_up">Registrieren</string>
     <string name="type_your_recovery_phrase">oder gib deinen Schlüssel ein</string>
     <string name="login_with_recovery_phrase">Melde dich mit deinem Schlüssel an</string>
-    <string name="or_scan_qr_code">Scan Qr code</string>
+    <string name="or_scan_qr_code">QR-Code scannen</string>
     <string name="choose_pin_code">PIN-Code wählen</string>
     <string name="congratulations">Glückwunsch!</string>
     <string name="time_to_update_title">Es ist Zeit für ein Update</string>
@@ -984,7 +984,7 @@
     <string name="onboarding_soul_creation_description">Nur von Leuten gesehen, mit denen du etwas teilst. Es gibt kein zentrales Register dieser Namen.</string>
     <string name="onboarding_soul_creation_placeholder">Anytype-Identität</string>
     <string name="onboarding_soul_creation">Identität wird erstellt...</string>
-    <string name="onboarding_type_your_key">Type your recovery phrase</string>
+    <string name="onboarding_type_your_key">Gib deine Wiederherstellungsphrase ein</string>
     <string name="onboarding_login_or">ODER</string>
     <string name="onboarding_entering_void_title">Leere betreten</string>
     <string name="onboarding_your_key_can_t_be_empty">Dein Schlüssel darf nicht leer sein</string>

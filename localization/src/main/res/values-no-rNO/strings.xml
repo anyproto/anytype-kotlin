@@ -552,7 +552,7 @@
     <string name="sign_up">Registrer deg</string>
     <string name="type_your_recovery_phrase">or type your Key</string>
     <string name="login_with_recovery_phrase">Login with your Key</string>
-    <string name="or_scan_qr_code">Skann QR-kode</string>
+    <string name="or_scan_qr_code">Scan Qr code</string>
     <string name="choose_pin_code">Velg pin-kode</string>
     <string name="congratulations">Gratulerer!</string>
     <string name="time_to_update_title">Det er på tide å oppdatere</string>
@@ -984,7 +984,7 @@
     <string name="onboarding_soul_creation_description">Only seen by people you share something with. There is no central registry of these names.</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
-    <string name="onboarding_type_your_key">Type your Key</string>
+    <string name="onboarding_type_your_key">Type your recovery phrase</string>
     <string name="onboarding_login_or">ELLER</string>
     <string name="onboarding_entering_void_title">Går inn i Void</string>
     <string name="onboarding_your_key_can_t_be_empty">Your Key can\'t be empty</string>

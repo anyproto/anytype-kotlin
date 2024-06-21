@@ -187,27 +187,21 @@ private fun MembershipTierData.mapActiveTierButtonAndNameStates(
             id == MembershipConstants.EXPLORER_ID && userEmail.isBlank() -> {
                 TierButton.Submit.Enabled to TierAnyName.Hidden
             }
-
             id == MembershipConstants.EXPLORER_ID -> {
                 TierButton.ChangeEmail to TierAnyName.Hidden
             }
-
             paymentMethod == METHOD_NONE || paymentMethod == METHOD_CRYPTO -> {
                 TierButton.Hidden to TierAnyName.Hidden
             }
-
             paymentMethod == METHOD_STRIPE && !stripeManageUrl.isNullOrBlank() -> {
                 TierButton.Manage.External.Enabled(stripeManageUrl) to TierAnyName.Hidden
             }
-
             paymentMethod == METHOD_INAPP_APPLE && !iosManageUrl.isNullOrBlank() -> {
                 TierButton.Manage.External.Enabled(iosManageUrl) to TierAnyName.Hidden
             }
-
             paymentMethod == METHOD_INAPP_GOOGLE -> {
                 TierButton.Manage.External.Enabled(androidManageUrl) to TierAnyName.Hidden
             }
-
             else -> {
                 TierButton.Hidden to TierAnyName.Hidden
             }
@@ -231,7 +225,6 @@ private fun MembershipTierData.mapActiveTierButtonAndNameStates(
                     TierButton.Manage.Android.Disabled to TierAnyName.Hidden
                 }
             }
-
             else -> TierButton.Manage.Android.Disabled to TierAnyName.Hidden
         }
     } else {
@@ -274,11 +267,9 @@ private fun MembershipTierData.mapInactiveTierButtonAndNameStates(
                 purchases = billingPurchaseState.purchases
             ) to TierAnyName.Hidden
         }
-
         BillingPurchaseState.Loading -> {
             TierButton.Hidden to TierAnyName.Hidden
         }
-
         BillingPurchaseState.NoPurchases -> {
             handleNoPurchasesState(
                 billingClientState = billingClientState,
@@ -329,14 +320,11 @@ private fun getButtonStateAccordingToPurchaseState(
             when {
                 purchaseAccountId != accountId ->
                     TierButton.HiddenWithText.DifferentPurchaseAccountId
-
                 !containsProduct ->
                     TierButton.HiddenWithText.DifferentPurchaseProductId
-
                 else -> TierButton.Hidden
             }
         }
-
         else -> TierButton.HiddenWithText.MoreThenOnePurchase
     }
 }
@@ -410,11 +398,9 @@ private fun MembershipTierData.createConditionInfoForBillingTier(
         BillingClientState.Loading -> {
             TierConditionInfo.Visible.LoadingBillingClient
         }
-
         is BillingClientState.Error -> {
             TierConditionInfo.Visible.Error(billingClientState.message)
         }
-
         is BillingClientState.Connected -> {
             val product =
                 billingClientState.productDetails.find { it.productId == androidProductId }
@@ -470,41 +456,5 @@ private fun MembershipTierData.getTierEmail(isActive: Boolean, membershipEmail: 
         }
     }
     return TierEmail.Hidden
-}
-
-enum class MembershipUpgradeReason {
-    StorageSpace, NumberOfSpaceMembers, NumberOfSharedSpaces
-}
-
-fun MembershipUpgradeReason.isPossibleToUpgrade(tierId: TierId): Boolean {
-    return when (this) {
-        MembershipUpgradeReason.StorageSpace -> {
-            tierId.isPossibleToUpgradeStorageSpace()
-        }
-
-        MembershipUpgradeReason.NumberOfSpaceMembers -> {
-            tierId.isPossibleToUpgradeNumberOfSpaceMembers()
-        }
-
-        MembershipUpgradeReason.NumberOfSharedSpaces -> {
-            false
-        }
-    }
-}
-
-private fun TierId.isPossibleToUpgradeStorageSpace(): Boolean {
-    return when (this.value) {
-        MembershipConstants.BUILDER_ID,
-        MembershipConstants.EXPLORER_ID -> true
-
-        else -> false
-    }
-}
-
-private fun TierId.isPossibleToUpgradeNumberOfSpaceMembers(): Boolean {
-    return when (this.value) {
-        MembershipConstants.EXPLORER_ID -> true
-        else -> false
-    }
 }
 

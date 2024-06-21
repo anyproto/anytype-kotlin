@@ -1006,6 +1006,7 @@
     <!--region OBJECT ACTIONS -->
     <string name="object_action_duplicate">Дублировать</string>
     <string name="object_action_to_widgets">В виджеты</string>
+    <string name="object_action_download">Скачать</string>
     <!--endregion-->
     <!--region SEARCH -->
     <string name="nothing_found">Ничего не найдено</string>

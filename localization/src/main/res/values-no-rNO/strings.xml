@@ -1002,6 +1002,7 @@
     <!--region OBJECT ACTIONS -->
     <string name="object_action_duplicate">Dupliser</string>
     <string name="object_action_to_widgets">Til widgets</string>
+    <string name="object_action_download">Last ned</string>
     <!--endregion-->
     <!--region SEARCH -->
     <string name="nothing_found">Ingenting funnet</string>

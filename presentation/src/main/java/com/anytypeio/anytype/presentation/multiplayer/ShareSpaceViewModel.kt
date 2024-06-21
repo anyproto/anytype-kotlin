@@ -9,7 +9,6 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.SharingSpacesTypes.
 import com.anytypeio.anytype.analytics.base.EventsDictionary.SharingSpacesTypes.shareTypeQR
 import com.anytypeio.anytype.analytics.base.EventsDictionary.SharingSpacesTypes.shareTypeRevoke
 import com.anytypeio.anytype.analytics.base.EventsDictionary.SharingSpacesTypes.shareTypeShareLink
-import com.anytypeio.anytype.analytics.base.EventsDictionary.SharingSpacesTypes.shareTypeShareQr
 import com.anytypeio.anytype.analytics.base.EventsDictionary.clickSettingsSpaceShare
 import com.anytypeio.anytype.analytics.base.EventsDictionary.removeSpaceMember
 import com.anytypeio.anytype.analytics.base.EventsDictionary.screenRevokeShareLink
@@ -45,7 +44,10 @@ import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.canChangeReaderToWriter
 import com.anytypeio.anytype.domain.`object`.canChangeWriterToReader
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
+import com.anytypeio.anytype.presentation.objects.toSpaceMembers
+import com.anytypeio.anytype.presentation.objects.toSpaceView
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.getSpaceMembersSearchParams
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.getSpaceViewSearchParams
 import javax.inject.Inject
@@ -78,9 +80,7 @@ class ShareSpaceViewModel(
     val commands = MutableSharedFlow<Command>()
     val isCurrentUserOwner = MutableStateFlow(false)
     val spaceAccessType = MutableStateFlow<SpaceAccessType?>(null)
-
-    private var canChangeWriterToReader = false
-    private var canChangeReaderToWriter = false
+    val showIncentive = MutableStateFlow<ShareSpaceIncentiveState>(ShareSpaceIncentiveState.Hidden)
 
     init {
         Timber.d("Share-space init with params: $params")
@@ -119,34 +119,27 @@ class ShareSpaceViewModel(
                 container.subscribe(spaceMembersSearchParams),
                 isCurrentUserOwner
             ) { spaceResponse, membersResponse, isCurrentUserOwner ->
-
-                val spaceView = spaceResponse.firstOrNull()?.let { ObjectWrapper.SpaceView(it.map) }
-                val spaceMembers = membersResponse.map { ObjectWrapper.SpaceMember(it.map) }
-
-                canChangeReaderToWriter = spaceView?.canChangeReaderToWriter(spaceMembers) ?: false
-                canChangeWriterToReader = spaceView?.canChangeWriterToReader(spaceMembers) ?: false
-
-                val spaceViewMembers = spaceMembers.mapNotNull { m ->
-                    ShareSpaceMemberView.fromObject(
-                        obj = m,
-                        urlBuilder = urlBuilder,
-                        canChangeWriterToReader = canChangeWriterToReader,
-                        canChangeReaderToWriter = canChangeReaderToWriter,
-                        includeRequests = isCurrentUserOwner,
-                        account = account
-                    )
-                }
-
-                Triple(spaceView, spaceViewMembers, isCurrentUserOwner)
+                Triple(spaceResponse, membersResponse, isCurrentUserOwner)
             }.catch {
                 Timber.e(
                     it, "Error while $SHARE_SPACE_MEMBER_SUBSCRIPTION " +
                             "and $SHARE_SPACE_SPACE_SUBSCRIPTION subscription"
                 )
-            }.collect { (spaceView, spaceViewMembers, isCurrentUserOwner) ->
+            }.collect { (spaceResponse, membersResponse, isCurrentUserOwner) ->
+                val spaceView = spaceResponse.toSpaceView()
+                val spaceMembers = membersResponse.toSpaceMembers()
                 spaceAccessType.value = spaceView?.spaceAccessType
                 setShareLinkViewState(spaceView, isCurrentUserOwner)
-                members.value = spaceViewMembers
+                members.value = spaceMembers.toView(
+                    spaceView = spaceView,
+                    urlBuilder = urlBuilder,
+                    isCurrentUserOwner = isCurrentUserOwner,
+                    account = account
+                )
+                showIncentive.value = spaceView?.getIncentiveState(
+                    spaceMembers = spaceMembers,
+                    isCurrentUserOwner = isCurrentUserOwner
+                ) ?: ShareSpaceIncentiveState.Hidden
             }
         }
     }
@@ -441,6 +434,12 @@ class ShareSpaceViewModel(
         }
     }
 
+    fun onIncentiveClicked() {
+        viewModelScope.launch {
+            commands.emit(Command.ShowMembershipScreen)
+        }
+    }
+
     fun onDeleteLinkAccepted() {
         Timber.d("onDeleteLinkAccepted")
         viewModelScope.launch {
@@ -549,6 +548,13 @@ class ShareSpaceViewModel(
         data object ShowDeleteLinkWarning: Command()
         data object ToastPermission : Command()
         data object Dismiss : Command()
+        data object ShowMembershipScreen : Command()
+    }
+
+    sealed class ShareSpaceIncentiveState {
+        data object Hidden : ShareSpaceIncentiveState()
+        data object VisibleSpaceReaders : ShareSpaceIncentiveState()
+        data object VisibleSpaceEditors : ShareSpaceIncentiveState()
     }
 
     companion object {

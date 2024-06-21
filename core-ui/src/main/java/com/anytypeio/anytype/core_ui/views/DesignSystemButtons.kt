@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui.views
 
 import android.content.Context
+import android.content.res.Configuration
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.ImageView
@@ -129,9 +130,8 @@ fun ButtonPrimary(
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed = interactionSource.collectIsPressedAsState()
     val backgroundColor =
-        if (isPressed.value) colorResource(id = R.color.button_pressed) else colorResource(
-            id = R.color.glyph_selected
-        )
+        if (isPressed.value) colorResource(id = R.color.glyph_button).copy(alpha = 0.15f)
+        else colorResource(id = R.color.glyph_button)
 
     CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
         Button(
@@ -142,8 +142,8 @@ fun ButtonPrimary(
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = backgroundColor,
                 contentColor = colorResource(id = R.color.button_text),
-                disabledBackgroundColor = colorResource(id = R.color.shape_tertiary),
-                disabledContentColor = colorResource(id = R.color.text_tertiary)
+                disabledBackgroundColor = colorResource(id = R.color.shape_secondary),
+                disabledContentColor = colorResource(id = R.color.text_label_inversion)
             ),
             modifier = modifier
                 .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
@@ -217,9 +217,8 @@ fun ButtonPrimaryLoading(
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed = interactionSource.collectIsPressedAsState()
     val backgroundColor =
-        if (isPressed.value) colorResource(id = R.color.button_pressed) else colorResource(
-            id = R.color.glyph_selected
-        )
+        if (isPressed.value) colorResource(id = R.color.glyph_button).copy(alpha = 0.15f)
+        else colorResource(id = R.color.glyph_button)
 
     CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
         Box(modifier = modifierBox, contentAlignment = Alignment.Center) {
@@ -231,8 +230,8 @@ fun ButtonPrimaryLoading(
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = backgroundColor,
                     contentColor = colorResource(id = R.color.button_text),
-                    disabledBackgroundColor = colorResource(id = R.color.shape_tertiary),
-                    disabledContentColor = colorResource(id = R.color.text_tertiary)
+                    disabledBackgroundColor = colorResource(id = R.color.shape_secondary),
+                    disabledContentColor = colorResource(id = R.color.text_label_inversion)
                 ),
                 modifier = modifierButton
                     .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
@@ -568,7 +567,8 @@ object NoRippleTheme : RippleTheme {
 }
 
 @Composable
-@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Mode")
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 fun MyPrimaryButton() {
     ButtonPrimary(
         onClick = {},
@@ -581,7 +581,8 @@ fun MyPrimaryButton() {
 }
 
 @Composable
-@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Mode")
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 fun MyPrimaryButtonDisabled() {
     ButtonPrimary(
         onClick = {},
@@ -595,7 +596,8 @@ fun MyPrimaryButtonDisabled() {
 }
 
 @Composable
-@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Mode")
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 fun MyPrimaryButtonDark() {
     ButtonPrimaryDarkTheme(
         onClick = {},
@@ -608,7 +610,8 @@ fun MyPrimaryButtonDark() {
 }
 
 @Composable
-@Preview
+@Preview(backgroundColor = 0xFFFFFFFF, showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Mode")
+@Preview(backgroundColor = 0x000000, showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 fun MySecondaryButton() {
     ButtonSecondary(
         onClick = {},
@@ -621,7 +624,8 @@ fun MySecondaryButton() {
 }
 
 @Composable
-@Preview
+@Preview(backgroundColor = 0xFFFFFFFF, showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Mode")
+@Preview(backgroundColor = 0x000000, showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 fun MyWarningButton() {
     ButtonWarning(
         onClick = {},

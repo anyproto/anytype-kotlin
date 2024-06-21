@@ -6,6 +6,7 @@ object MembershipConstants {
     const val EXPLORER_ID = 1
     const val BUILDER_ID = 4
     const val CO_CREATOR_ID = 5
+    const val ANY_TEAM_ID = 7
 
     const val MEMBERSHIP_LEVEL_DETAILS = "https://anytype.io/pricing"
     const val PRIVACY_POLICY = "https://anytype.io/app_privacy"

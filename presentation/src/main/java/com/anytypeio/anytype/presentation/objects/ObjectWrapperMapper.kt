@@ -16,7 +16,6 @@ import com.anytypeio.anytype.presentation.extension.getProperObjectName
 import com.anytypeio.anytype.presentation.library.LibraryView
 import com.anytypeio.anytype.presentation.linking.LinkToItemView
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
-import com.anytypeio.anytype.presentation.objects.SupportedLayouts.fileLayouts
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView
@@ -312,3 +311,24 @@ private fun ObjectWrapper.Basic.getFileObjectIcon(): ObjectIcon {
         else -> ObjectIcon.None
     }
 }
+
+fun List<ObjectWrapper.Basic>.toSpaceMembers(): List<ObjectWrapper.SpaceMember> =
+    mapNotNull { basic ->
+        if (basic.map.isEmpty()) {
+            null
+        } else {
+            ObjectWrapper.SpaceMember(basic.map)
+        }
+    }
+
+fun List<ObjectWrapper.Basic>.toSpaceView() =
+    if (isNotEmpty()) {
+        val spaceMap = first().map
+        if (spaceMap.isEmpty()) {
+            null
+        } else {
+            ObjectWrapper.SpaceView(spaceMap)
+        }
+    } else {
+        null
+    }

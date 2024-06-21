@@ -552,7 +552,7 @@
     <string name="sign_up">Aanmelden</string>
     <string name="type_your_recovery_phrase">or type your Key</string>
     <string name="login_with_recovery_phrase">Login with your Key</string>
-    <string name="or_scan_qr_code">Scan QR code</string>
+    <string name="or_scan_qr_code">Scan Qr code</string>
     <string name="choose_pin_code">Kies pincode</string>
     <string name="congratulations">Gefeliciteerd!</string>
     <string name="time_to_update_title">Het is tijd om te updaten</string>
@@ -984,7 +984,7 @@
     <string name="onboarding_soul_creation_description">Alleen zichtbaar voor mensen met wie je iets deelt. Er is geen centraal register van deze namen.</string>
     <string name="onboarding_soul_creation_placeholder">Anytype identiteit</string>
     <string name="onboarding_soul_creation">Jouw identiteit aan het aanmaken…</string>
-    <string name="onboarding_type_your_key">Type your Key</string>
+    <string name="onboarding_type_your_key">Type your recovery phrase</string>
     <string name="onboarding_login_or">OF</string>
     <string name="onboarding_entering_void_title">De Void binnengaan</string>
     <string name="onboarding_your_key_can_t_be_empty">Your Key can\'t be empty</string>

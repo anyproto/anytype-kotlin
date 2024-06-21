@@ -1120,7 +1120,7 @@
     <!--endregion-->
     <!--region MULTIPLAYER -->
     <string name="multiplayer_share_invite_link">Compartir enlace de invitación</string>
-    <string name="multiplayer_share_invite_link_description">Envía este enlace para invitar a otros a tu espacio. Cuando soliciten unirse, podrás definir sus derechos de acceso.</string>
+    <string name="multiplayer_share_invite_link_description">Comparte este enlace con quien quieras que acceda a tu espacio. Cuando haga clic en el enlace y envíe su solicitud, podrás definir sus derechos de acceso.</string>
     <string name="multiplayer_invite_link">Enlace de invitación</string>
     <string name="multiplayer_join_a_space">Acceder a un espacio</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Comentario privado para el propietario del espacio</string>
@@ -1130,6 +1130,8 @@
     <string name="multiplayer_tap_to_write_request_to_join_comment">Escribe tu comentario</string>
     <string name="multiplayer_share_space">Compartir espacio</string>
     <string name="multiplayer_members_and_requests">Miembros y solicitudes</string>
+    <string name="multiplayer_cant_add_members">No puedes añadir más miembros</string>
+    <string name="multiplayer_upgrade_button">✦ Upgrade</string>
     <string name="multiplayer_members">Miembros</string>
     <string name="multiplayer_leave_request">Retirar solicitud</string>
     <string name="multiplayer_join_request">Solicitud de acceso</string>

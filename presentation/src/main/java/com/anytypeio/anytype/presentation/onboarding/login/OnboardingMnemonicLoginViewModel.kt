@@ -18,7 +18,9 @@ import com.anytypeio.anytype.domain.auth.interactor.RecoverWallet
 import com.anytypeio.anytype.domain.auth.interactor.SaveMnemonic
 import com.anytypeio.anytype.domain.auth.interactor.SelectAccount
 import com.anytypeio.anytype.domain.auth.interactor.StartLoadingAccounts
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.debugging.DebugGoroutines
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -28,6 +30,7 @@ import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.presentation.extension.proceedWithAccountEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingLoginEvent
 import com.anytypeio.anytype.presentation.splash.SplashViewModel
+import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import javax.inject.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -51,23 +54,34 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     private val crashReporter: CrashReporter,
     private val configStorage: ConfigStorage,
     private val localeProvider: LocaleProvider,
-    private val userPermissionProvider: UserPermissionProvider
+    private val userPermissionProvider: UserPermissionProvider,
+    private val debugGoroutines: DebugGoroutines,
+    private val uriFileProvider: UriFileProvider
 ) : ViewModel() {
 
     private val jobs = mutableListOf<Job>()
+    private var goroutinesJob : Job? = null
 
     val sideEffects = MutableSharedFlow<SideEffect>()
     val state = MutableStateFlow<SetupState>(SetupState.Idle)
 
-    val navigation = MutableSharedFlow<Navigation>()
+    val command = MutableSharedFlow<Command>(replay = 0)
 
     val error by lazy { MutableStateFlow(NO_ERROR) }
+
+    private var debugClickCount = 0
+    private val _fiveClicks = MutableStateFlow(false)
 
     init {
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = EventsDictionary.loginScreenShow
         )
+        viewModelScope.launch {
+            _fiveClicks.collect {
+                if (it) proceedWithGoroutinesDebug()
+            }
+        }
     }
 
     fun onLoginClicked(chain: String) {
@@ -177,7 +191,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                     }
                     Timber.e(e, "Error while account loading")
                     // TODO refact
-                    viewModelScope.launch { navigation.emit(Navigation.Exit) }
+                    viewModelScope.launch { command.emit(Command.Exit) }
                 },
                 fnR = {
                     Timber.d("Account loading successfully finished")
@@ -248,7 +262,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
 
     private fun navigateToMigrationErrorScreen() {
         viewModelScope.launch {
-            navigation.emit(Navigation.NavigateToMigrationErrorScreen)
+            command.emit(Command.NavigateToMigrationErrorScreen)
         }
     }
 
@@ -261,13 +275,48 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
 
     private fun navigateToDashboard() {
         viewModelScope.launch {
-            navigation.emit(Navigation.NavigateToHomeScreen)
+            command.emit(Command.NavigateToHomeScreen)
         }
     }
 
     fun onRetryClicked(id: Id) {
         // TODO
         proceedWithSelectingAccount(id)
+    }
+
+    fun onEnterMyVaultClicked() {
+        Timber.d("onEnterMyVaultClicked")
+        viewModelScope.launch {
+            debugClickCount++
+            if (debugClickCount == 5) {
+                _fiveClicks.emit(true)
+                debugClickCount = 0
+            } else {
+                _fiveClicks.emit(false)
+            }
+        }
+    }
+
+    private fun proceedWithGoroutinesDebug() {
+        if (goroutinesJob?.isActive == true) {
+            return
+        }
+        Timber.d("proceedWithGoroutinesDebug")
+        goroutinesJob = viewModelScope.launch {
+            debugGoroutines.async(DebugGoroutines.Params()).fold(
+                onSuccess = { path ->
+                    command.emit(Command.ShareDebugGoroutines(path, uriFileProvider))
+                },
+                onFailure = {
+                    Timber.e(it, "Error while collecting goroutines diagnostics")
+                }
+            )
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        goroutinesJob?.cancel()
     }
 
     sealed class SideEffect {
@@ -285,10 +334,12 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         object Failed: SetupState()
     }
 
-    sealed class Navigation {
-        object Exit : Navigation()
-        object NavigateToMigrationErrorScreen : Navigation()
-        object NavigateToHomeScreen: Navigation()
+    sealed class Command {
+        data object Exit : Command()
+        data object NavigateToMigrationErrorScreen : Command()
+        data object NavigateToHomeScreen: Command()
+        data class ShowToast(val message: String) : Command()
+        data class ShareDebugGoroutines(val path: String, val uriFileProvider: UriFileProvider) : Command()
     }
 
     class Factory @Inject constructor(
@@ -306,7 +357,9 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         private val crashReporter: CrashReporter,
         private val configStorage: ConfigStorage,
         private val localeProvider: LocaleProvider,
-        private val userPermissionProvider: UserPermissionProvider
+        private val userPermissionProvider: UserPermissionProvider,
+        private val debugGoroutines: DebugGoroutines,
+        private val uriFileProvider: UriFileProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -325,7 +378,9 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                 spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
                 selectAccount = selectAccount,
                 localeProvider = localeProvider,
-                userPermissionProvider = userPermissionProvider
+                userPermissionProvider = userPermissionProvider,
+                debugGoroutines = debugGoroutines,
+                uriFileProvider = uriFileProvider
             ) as T
         }
     }

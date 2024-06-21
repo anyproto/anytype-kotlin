@@ -1,8 +1,11 @@
 package com.anytypeio.anytype.ui.onboarding.screens.signin
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -39,6 +43,7 @@ import com.anytypeio.anytype.core_ui.ColorButtonRegular
 import com.anytypeio.anytype.core_ui.MnemonicPhrasePaletteColors
 import com.anytypeio.anytype.core_ui.OnBoardingTextPrimaryColor
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.ConditionLogin
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
@@ -48,6 +53,7 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel.SetupState
 import com.anytypeio.anytype.ui.onboarding.OnboardingMnemonicInput
+import timber.log.Timber
 
 @Composable
 fun RecoveryScreenWrapper(
@@ -60,7 +66,8 @@ fun RecoveryScreenWrapper(
         onNextClicked = vm::onLoginClicked,
         onActionDoneClicked = vm::onActionDone,
         onScanQrClicked = onScanQrClick,
-        isLoading = vm.state.collectAsState().value is SetupState.InProgress
+        isLoading = vm.state.collectAsState().value is SetupState.InProgress,
+        onEnterMyVaultClicked = vm::onEnterMyVaultClicked
     )
 }
 
@@ -70,32 +77,42 @@ fun RecoveryScreen(
     onNextClicked: (Mnemonic) -> Unit,
     onActionDoneClicked: (Mnemonic) -> Unit,
     onScanQrClicked: () -> Unit,
-    isLoading: Boolean
+    isLoading: Boolean,
+    onEnterMyVaultClicked: () -> Unit
 ) {
+    val focus = LocalFocusManager.current
+    val context = LocalContext.current
+    val text = remember { mutableStateOf("") }
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
+        Image(
+            modifier = Modifier
+                .padding(top = 12.dp, start = 9.dp)
+                .noRippleClickable {
+                    focus.clearFocus()
+                    onBackClicked()
+                },
+            painter = painterResource(id = R.drawable.ic_back_onboarding_32),
+            contentDescription = "Back button"
+        )
         Text(
             modifier = Modifier
+                .noRippleClickable{ onEnterMyVaultClicked() }
                 .align(Alignment.TopCenter)
-                .padding(top = 21.dp)
+                .padding(top = 17.dp, start = 18.dp, end = 18.dp)
             ,
             text = stringResource(id = R.string.onboarding_enter_my_vault),
             style = TitleLogin.copy(
-                color = OnBoardingTextPrimaryColor
+                color = colorResource(id = R.color.text_white)
             )
         )
-
-        val text = remember {
-            mutableStateOf("")
-        }
-
-        val focus = LocalFocusManager.current
-        val context = LocalContext.current
 
         val emptyRecoveryPhraseError = stringResource(R.string.onboarding_your_key_can_t_be_empty)
 
         LazyColumn(
+            modifier = Modifier.padding(top = 71.dp),
             content = {
                 item {
                     OnboardingMnemonicInput(
@@ -103,7 +120,6 @@ fun RecoveryScreen(
                             .padding(
                                 start = 18.dp,
                                 end = 18.dp,
-                                top = 71.dp,
                                 bottom = 18.dp
                             )
                             .height(165.dp)
@@ -182,17 +198,6 @@ fun RecoveryScreen(
                 }
             }
         )
-        Image(
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(top = 16.dp, start = 9.dp)
-                .noRippleClickable {
-                    focus.clearFocus()
-                    onBackClicked()
-                },
-            painter = painterResource(id = R.drawable.ic_back_onboarding_32),
-            contentDescription = "Back button"
-        )
     }
 }
 
@@ -233,7 +238,8 @@ object MnemonicPhraseFormatter : VisualTransformation {
     }
 }
 
-@Preview
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
 @Composable
 fun RecoveryScreenPreview() {
     RecoveryScreen(
@@ -241,11 +247,13 @@ fun RecoveryScreenPreview() {
         onNextClicked = {},
         onActionDoneClicked = {},
         onScanQrClicked = {},
-        isLoading = false
+        isLoading = false,
+        onEnterMyVaultClicked = {}
     )
 }
 
-@Preview
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
 @Composable
 fun RecoveryScreenLoadingPreview() {
     RecoveryScreen(
@@ -253,6 +261,7 @@ fun RecoveryScreenLoadingPreview() {
         onNextClicked = {},
         onActionDoneClicked = {},
         onScanQrClicked = {},
-        isLoading = true
+        isLoading = true,
+        onEnterMyVaultClicked = {}
     )
 }

@@ -242,7 +242,7 @@
     <string name="move">Mover</string>
     <string name="move_to">Mover a</string>
     <string name="preview">Vista previa</string>
-    <string name="link_to">Vincular a</string>
+    <string name="link_to">Conectar a</string>
     <string name="make_template">Hacer plantilla</string>
     <string name="linked_to">Enlazado a</string>
     <string name="remove_link">Quitar enlace</string>
@@ -1002,6 +1002,7 @@
     <!--region OBJECT ACTIONS -->
     <string name="object_action_duplicate">Duplicar</string>
     <string name="object_action_to_widgets">A widgets</string>
+    <string name="object_action_download">Descargar</string>
     <!--endregion-->
     <!--region SEARCH -->
     <string name="nothing_found">No se ha encontrado nada</string>

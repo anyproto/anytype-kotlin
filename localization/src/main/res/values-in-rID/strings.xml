@@ -1000,6 +1000,7 @@
     <!--region OBJECT ACTIONS -->
     <string name="object_action_duplicate">Gandakan</string>
     <string name="object_action_to_widgets">Ke widget</string>
+    <string name="object_action_download">Unduh</string>
     <!--endregion-->
     <!--region SEARCH -->
     <string name="nothing_found">Nothing found</string>

@@ -1002,6 +1002,7 @@
     <!--region OBJECT ACTIONS -->
     <string name="object_action_duplicate">Duplica</string>
     <string name="object_action_to_widgets">Ai widget</string>
+    <string name="object_action_download">Scarica</string>
     <!--endregion-->
     <!--region SEARCH -->
     <string name="nothing_found">Nessun risultato trovato</string>

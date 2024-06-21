@@ -46,8 +46,10 @@ import com.anytypeio.anytype.core_utils.const.FileConstants.REQUEST_MEDIA_CODE
 import com.anytypeio.anytype.core_utils.const.MimeTypes.MIME_EXTRA_IMAGE_VIDEO
 import com.anytypeio.anytype.core_utils.const.MimeTypes.MIME_EXTRA_YAML
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
+import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import timber.log.Timber
@@ -367,6 +369,27 @@ fun NavController.safeNavigate(
         }.onFailure {
             Timber.e(it, "Error while navigation")
         }
+    }
+}
+
+fun Fragment.shareFirstFileFromPath(path: String, uriFileProvider: UriFileProvider) {
+    try {
+        val dirPath = File(path)
+        if (dirPath.exists() && dirPath.isDirectory) {
+            val files = dirPath.listFiles()
+            val firstFile = files?.firstOrNull { it != null && it.exists() && it.isFile }
+            if (firstFile != null) {
+                val uri = uriFileProvider.getUriForFile(firstFile)
+                shareFile(uri)
+            } else {
+                toast("No valid files to share in the directory.")
+            }
+        } else {
+            toast("Directory does not exist or is not a directory.")
+        }
+    } catch (e: Exception) {
+        Timber.e(e, "Error while sharing file")
+        toast("Could not share file: ${e.message}")
     }
 }
 

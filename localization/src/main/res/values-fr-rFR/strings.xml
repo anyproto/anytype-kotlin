@@ -1002,6 +1002,7 @@
     <!--region OBJECT ACTIONS -->
     <string name="object_action_duplicate">Dupliquer</string>
     <string name="object_action_to_widgets">Vers les widgets</string>
+    <string name="object_action_download">Télécharger</string>
     <!--endregion-->
     <!--region SEARCH -->
     <string name="nothing_found">Aucun résultat</string>

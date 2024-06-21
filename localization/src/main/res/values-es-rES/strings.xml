@@ -552,7 +552,7 @@
     <string name="sign_up">Suscribirse</string>
     <string name="type_your_recovery_phrase">o escribe tu clave</string>
     <string name="login_with_recovery_phrase">Iniciar sesión con clave</string>
-    <string name="or_scan_qr_code">Escanear código QR</string>
+    <string name="or_scan_qr_code">Scan Qr code</string>
     <string name="choose_pin_code">Elegir código PIN</string>
     <string name="congratulations">¡Enhorabuena!</string>
     <string name="time_to_update_title">Es necesario actualizar</string>
@@ -984,7 +984,7 @@
     <string name="onboarding_soul_creation_description">Solo lo verán las personas con las que compartas algo. No existe un registro central de nombres.</string>
     <string name="onboarding_soul_creation_placeholder">Identidad de Anytype</string>
     <string name="onboarding_soul_creation">Creando tu identidad…</string>
-    <string name="onboarding_type_your_key">Escribe tu clave</string>
+    <string name="onboarding_type_your_key">Type your recovery phrase</string>
     <string name="onboarding_login_or">O</string>
     <string name="onboarding_entering_void_title">Entrando a tu arca</string>
     <string name="onboarding_your_key_can_t_be_empty">La clave no puede estar vacía.</string>

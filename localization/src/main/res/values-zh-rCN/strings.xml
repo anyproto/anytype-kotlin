@@ -551,7 +551,7 @@
     <string name="sign_up">注册</string>
     <string name="type_your_recovery_phrase">或输入您的密钥</string>
     <string name="login_with_recovery_phrase">使用你的密钥登录</string>
-    <string name="or_scan_qr_code">Scan Qr code</string>
+    <string name="or_scan_qr_code">扫描二维码</string>
     <string name="choose_pin_code">选择 PIN 码</string>
     <string name="congratulations">恭喜您！</string>
     <string name="time_to_update_title">是时候更新了</string>
@@ -982,7 +982,7 @@
     <string name="onboarding_soul_creation_description">只有被您分享的用户可以查看。这里没有中心化的管理员。</string>
     <string name="onboarding_soul_creation_placeholder">Anytype 身份标识</string>
     <string name="onboarding_soul_creation">创建您的身份…</string>
-    <string name="onboarding_type_your_key">Type your recovery phrase</string>
+    <string name="onboarding_type_your_key">输入恢复短语</string>
     <string name="onboarding_login_or">或者</string>
     <string name="onboarding_entering_void_title">输入无效</string>
     <string name="onboarding_your_key_can_t_be_empty">密钥不能为空</string>
@@ -1116,7 +1116,7 @@
     <!--endregion-->
     <!--region MULTIPLAYER -->
     <string name="multiplayer_share_invite_link">分享邀请链接</string>
-    <string name="multiplayer_share_invite_link_description">发送此链接来邀请他人。在他们的请求批准时分配访问权限。</string>
+    <string name="multiplayer_share_invite_link_description">分享此邀请链接以便其他人可以加入您的空间。一旦他们点击您的链接并请求访问，您可以设置他们的访问权限。</string>
     <string name="multiplayer_invite_link">邀请链接</string>
     <string name="multiplayer_join_a_space">加入空间</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Private comment for a space owner</string>
@@ -1126,6 +1126,8 @@
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tap to write your comment</string>
     <string name="multiplayer_share_space">共享空间</string>
     <string name="multiplayer_members_and_requests">成员和请求</string>
+    <string name="multiplayer_cant_add_members">您无法添加更多成员</string>
+    <string name="multiplayer_upgrade_button">✦ Upgrade</string>
     <string name="multiplayer_members">参与的人</string>
     <string name="multiplayer_leave_request">退出请求</string>
     <string name="multiplayer_join_request">加入请求</string>

@@ -1324,6 +1324,7 @@
     <string name="multiplayer_members_and_requests">Members and requests</string>
     <string name="multiplayer_cant_add_members">You can’t add more members</string>
     <string name="multiplayer_upgrade_button">✦ Upgrade</string>
+    <string name="multiplayer_upgrade_button_request">✦ Upgrade to add more members</string>
     <string name="multiplayer_members">Members</string>
     <string name="multiplayer_leave_request">Leave request</string>
     <string name="multiplayer_join_request">Join request</string>

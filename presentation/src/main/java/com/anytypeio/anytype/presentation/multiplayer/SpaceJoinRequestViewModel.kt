@@ -24,8 +24,6 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ApproveJoinSpaceRequest
 import com.anytypeio.anytype.domain.multiplayer.DeclineSpaceJoinRequest
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
-import com.anytypeio.anytype.domain.`object`.canAddReaders
-import com.anytypeio.anytype.domain.`object`.canAddWriters
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -58,7 +56,6 @@ class SpaceJoinRequestViewModel(
 
     init {
         proceedWithUserPermissions()
-
         viewModelScope.launch {
             val config = spaceManager.getConfig()
             if (config != null && config.space == params.space.id) {
@@ -125,22 +122,40 @@ class SpaceJoinRequestViewModel(
         }
 
         viewModelScope.launch {
-            state.combine(_isCurrentUserOwner) { state, isCurrentUserOwner ->
-                state to isCurrentUserOwner
+            state.combine(_isCurrentUserOwner) { curr, isOwner ->
+                curr to isOwner
             }.collect { (curr, isCurrentUserOwner) ->
                 viewState.value = when (curr) {
                     is State.Error -> ViewState.Error
                     is State.Init -> ViewState.Init
-                    is State.Success -> ViewState.Success(
-                        memberName = curr.member.name.orEmpty(),
-                        spaceName = curr.spaceView.name.orEmpty(),
-                        icon = SpaceMemberIconView.icon(
-                            obj = curr.member,
-                            urlBuilder = urlBuilder
-                        ),
-                        canAddAsReader = curr.spaceView.canAddReaders(isCurrentUserOwner, curr.participants),
-                        canAddAsEditor = curr.spaceView.canAddWriters(isCurrentUserOwner, curr.participants)
-                    )
+                    is State.Success -> {
+                        val incentiveState = curr.spaceView.getIncentiveState(
+                            spaceMembers = curr.participants,
+                            isCurrentUserOwner = isCurrentUserOwner
+                        )
+                        when (incentiveState) {
+                            ShareSpaceViewModel.ShareSpaceIncentiveState.Hidden -> {
+                                ViewState.Success(
+                                    memberName = curr.member.name.orEmpty(),
+                                    spaceName = curr.spaceView.name.orEmpty(),
+                                    icon = SpaceMemberIconView.icon(
+                                        obj = curr.member,
+                                        urlBuilder = urlBuilder
+                                    )
+                                )
+                            }
+                            else -> {
+                                ViewState.Upgrade(
+                                    memberName = curr.member.name.orEmpty(),
+                                    spaceName = curr.spaceView.name.orEmpty(),
+                                    icon = SpaceMemberIconView.icon(
+                                        obj = curr.member,
+                                        urlBuilder = urlBuilder
+                                    )
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -300,6 +315,10 @@ class SpaceJoinRequestViewModel(
         }
     }
 
+    fun onUpgradeClicked() {
+
+    }
+
     class Factory @Inject constructor(
         private val params: Params,
         private val approveJoinSpaceRequest: ApproveJoinSpaceRequest,
@@ -326,24 +345,27 @@ class SpaceJoinRequestViewModel(
     data class Params(val space: SpaceId, val member: Id, val route: String)
 
     sealed class State {
-        object Init : State()
+        data object Init : State()
         data class Success(
             val member: ObjectWrapper.SpaceMember,
             val spaceView: ObjectWrapper.SpaceView,
             val participants: List<ObjectWrapper.SpaceMember>
         ) : State()
-        object Error : State()
+        data object Error : State()
     }
 
     sealed class ViewState {
-        object Init: ViewState()
+        data object Init: ViewState()
         data class Success(
             val memberName: String,
             val spaceName: String,
-            val icon: SpaceMemberIconView,
-            val canAddAsReader: Boolean,
-            val canAddAsEditor: Boolean
+            val icon: SpaceMemberIconView
         ): ViewState()
-        object Error: ViewState()
+        data class Upgrade(
+            val memberName: String,
+            val spaceName: String,
+            val icon: SpaceMemberIconView
+        ) : ViewState()
+        data object Error: ViewState()
     }
 }

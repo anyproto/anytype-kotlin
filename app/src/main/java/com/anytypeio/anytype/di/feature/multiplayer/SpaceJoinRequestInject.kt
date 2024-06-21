@@ -58,5 +58,5 @@ interface SpaceJoinRequestDependencies : ComponentDependencies {
     fun spaceManager(): SpaceManager
     fun analytics(): Analytics
     fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
-    fun userPermissions(): UserPermissionProvider
+    fun permissions(): UserPermissionProvider
 }

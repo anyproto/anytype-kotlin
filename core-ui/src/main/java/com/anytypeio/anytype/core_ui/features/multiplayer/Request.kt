@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_ui.features.multiplayer
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,14 +27,27 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
+import com.anytypeio.anytype.core_ui.views.ButtonMedium
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
+import com.anytypeio.anytype.core_ui.views.ButtonUpgrade
 import com.anytypeio.anytype.core_ui.views.ButtonWarning
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.presentation.multiplayer.SpaceJoinRequestViewModel.ViewState
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 
-@Preview
+@Preview(
+    backgroundColor = 0x0AAEED,
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    name = "Light Mode"
+)
+@Preview(
+    backgroundColor = 0x000000,
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    name = "Dark Mode"
+)
 @Composable
 fun SpaceJoinRequestScreenPreview() {
     SpaceJoinRequestScreen(
@@ -41,10 +57,34 @@ fun SpaceJoinRequestScreenPreview() {
         state = ViewState.Success(
             memberName = "Merk",
             spaceName = "Investors",
-            icon = SpaceMemberIconView.Placeholder("Merk"),
-            canAddAsReader = false,
-            canAddAsEditor = true
+            icon = SpaceMemberIconView.Placeholder("Merk")
         )
+    )
+}
+
+
+@Preview(
+    backgroundColor = 0x0AAEED,
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    name = "Light Mode"
+)
+@Preview(
+    backgroundColor = 0x000000,
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    name = "Dark Mode"
+)
+@Composable
+fun SpaceJoinUpgradeScreenPreview() {
+    SpaceUpgradeScreen(
+        onRejectClicked = {},
+        state = ViewState.Upgrade(
+            memberName = "Merk",
+            spaceName = "Investors",
+            icon = SpaceMemberIconView.Placeholder("Merk")
+        ),
+        onUpgradeClicked = {}
     )
 }
 
@@ -56,7 +96,9 @@ fun SpaceJoinRequestScreen(
     onRejectClicked: () -> Unit,
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(colorResource(id = R.color.background_primary))
     ) {
         Dragger(
             modifier = Modifier
@@ -97,8 +139,7 @@ fun SpaceJoinRequestScreen(
             size = ButtonSize.Large,
             modifier = Modifier
                 .padding(horizontal = 20.dp)
-                .fillMaxWidth(),
-            enabled = state.canAddAsReader
+                .fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(10.dp))
         ButtonSecondary(
@@ -109,20 +150,81 @@ fun SpaceJoinRequestScreen(
             size = ButtonSize.Large,
             modifier = Modifier
                 .padding(horizontal = 20.dp)
-                .fillMaxWidth(),
-            enabled = state.canAddAsEditor
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        ButtonWarning(
-            text = stringResource(R.string.multiplayer_space_request_reject),
-            onClick = throttledClick(
-                onClick = { onRejectClicked() }
-            ),
-            size = ButtonSize.Large,
-            modifier = Modifier
-                .padding(horizontal = 20.dp)
                 .fillMaxWidth()
         )
+        Spacer(modifier = Modifier.height(10.dp))
+        ButtonReject(onRejectClicked)
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+}
+
+@Composable
+private fun ButtonReject(onRejectClicked: () -> Unit) {
+    ButtonWarning(
+        text = stringResource(R.string.multiplayer_space_request_reject),
+        onClick = throttledClick(
+            onClick = { onRejectClicked() }
+        ),
+        size = ButtonSize.Large,
+        modifier = Modifier
+            .padding(horizontal = 20.dp)
+            .fillMaxWidth()
+    )
+}
+
+@Composable
+fun SpaceUpgradeScreen(
+    state: ViewState.Upgrade,
+    onUpgradeClicked: () -> Unit,
+    onRejectClicked: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(colorResource(id = R.color.background_primary))
+    ) {
+        Dragger(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(vertical = 6.dp)
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            SpaceMemberIcon(
+                icon = state.icon,
+                modifier = Modifier.align(Alignment.Center),
+                iconSize = 72.dp
+            )
+        }
+        Spacer(modifier = Modifier.height(20.dp))
+        Text(
+            text = stringResource(
+                R.string.multiplayer_space_join_request_header,
+                state.memberName.ifEmpty { stringResource(id = R.string.untitled) },
+                state.spaceName.ifEmpty { stringResource(id = R.string.untitled) }
+            ),
+            style = HeadlineHeading,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(
+                horizontal = 48.dp
+            ),
+            color = colorResource(id = R.color.text_primary)
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+        ButtonUpgrade(
+            modifier = Modifier
+                .padding(start = 20.dp, end = 20.dp)
+                .height(48.dp)
+                .verticalScroll(rememberScrollState()),
+            onClick = { onUpgradeClicked() },
+            text = stringResource(id = R.string.multiplayer_upgrade_button_request),
+            style = ButtonMedium
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        ButtonReject(onRejectClicked)
         Spacer(modifier = Modifier.height(16.dp))
     }
 }

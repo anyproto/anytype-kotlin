@@ -14,6 +14,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.multiplayer.SpaceJoinRequestScreen
+import com.anytypeio.anytype.core_ui.features.multiplayer.SpaceUpgradeScreen
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
@@ -55,6 +56,13 @@ class SpaceJoinRequestFragment : BaseBottomSheetComposeFragment() {
                                 onAddViewerClicked = vm::onJoinAsReaderClicked,
                                 onAddEditorClicked = vm::onJoinAsEditorClicked,
                                 onRejectClicked = vm::onRejectRequestClicked
+                            )
+                        }
+                        is SpaceJoinRequestViewModel.ViewState.Upgrade -> {
+                            SpaceUpgradeScreen(
+                                state = state,
+                                onRejectClicked = vm::onRejectRequestClicked,
+                                onUpgradeClicked = vm::onUpgradeClicked
                             )
                         }
                     }

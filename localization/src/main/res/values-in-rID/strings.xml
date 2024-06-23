@@ -551,7 +551,7 @@
     <string name="sign_up">Daftar</string>
     <string name="type_your_recovery_phrase">or type your Key</string>
     <string name="login_with_recovery_phrase">Login with your Key</string>
-    <string name="or_scan_qr_code">Scan Qr code</string>
+    <string name="or_scan_qr_code">Pindai kode QR</string>
     <string name="choose_pin_code">Pilih kode pin</string>
     <string name="congratulations">Selamat!</string>
     <string name="time_to_update_title">Waktunya memperbarui</string>
@@ -982,7 +982,7 @@
     <string name="onboarding_soul_creation_description">Only seen by people you share something with. There is no central registry of these names.</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
-    <string name="onboarding_type_your_key">Type your recovery phrase</string>
+    <string name="onboarding_type_your_key">Masukkan frasa pemulihanmu</string>
     <string name="onboarding_login_or">ATAU</string>
     <string name="onboarding_entering_void_title">Memasuki Void</string>
     <string name="onboarding_your_key_can_t_be_empty">Your Key can\'t be empty</string>
@@ -1127,7 +1127,7 @@
     <string name="multiplayer_share_space">Bagikan ruang</string>
     <string name="multiplayer_members_and_requests">Members and requests</string>
     <string name="multiplayer_cant_add_members">You can’t add more members</string>
-    <string name="multiplayer_upgrade_button">✦ Upgrade</string>
+    <string name="multiplayer_upgrade_button">✦ Tingkatkan</string>
     <string name="multiplayer_members">Anggota</string>
     <string name="multiplayer_leave_request">Permintaan keluar</string>
     <string name="multiplayer_join_request">Permintaan bergabung</string>

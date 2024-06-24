@@ -75,7 +75,13 @@ class SpaceJoinRequestViewModel(
             ) { tierId, spaceView, isCurrentUserOwner, spaceMembers, newMember ->
                 Resultat(tierId, spaceView, isCurrentUserOwner, spaceMembers, newMember)
             }.collect { (tierId, spaceView, isCurrentUserOwner, spaceMembers, newMember) ->
-                proceedWithState(tierId, spaceView, spaceMembers, newMember, isCurrentUserOwner)
+                proceedWithState(
+                    tierId = tierId,
+                    spaceView = spaceView,
+                    spaceMembers = spaceMembers,
+                    newMember = newMember,
+                    isCurrentUserOwner = isCurrentUserOwner
+                )
             }
         }
         sendAnalyticsInviteScreen()

@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.payments.screens
 
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,54 +33,61 @@ fun MembershipUpgradeScreen(
     onButtonClicked: () -> Unit,
     onDismiss: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(20.dp)
-            .background(
-                shape = RoundedCornerShape(16.dp),
-                color = colorResource(id = R.color.background_primary)
-            ),
-        horizontalAlignment = Alignment.CenterHorizontally
+    Log.d("MembershipUpgradeScreen", "onButtonClicked: $onButtonClicked, onDismiss: $onDismiss")
+    ElevatedCard(
+        modifier = Modifier.padding(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = colorResource(id = R.color.background_primary)
+        ),
+        elevation = CardDefaults.elevatedCardElevation(
+            defaultElevation = 16.dp
+        ),
+        shape = RoundedCornerShape(16.dp)
     ) {
-        Box(
+        Column(
             modifier = Modifier
-                .padding(vertical = 6.dp)
                 .fillMaxWidth(),
-            contentAlignment = Alignment.Center
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Dragger()
+            Box(
+                modifier = Modifier
+                    .padding(vertical = 6.dp)
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Dragger()
+            }
+            Spacer(modifier = Modifier.height(19.dp))
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                text = stringResource(id = R.string.membership_upgrade_title),
+                color = colorResource(id = R.color.text_primary),
+                style = HeadlineHeading,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(14.dp))
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                text = stringResource(id = R.string.membership_upgrade_description),
+                color = colorResource(id = R.color.text_primary),
+                style = BodyRegular,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(30.dp))
+            ButtonPrimary(
+                text = stringResource(id = R.string.membership_upgrade_button),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                onClick = { onButtonClicked() },
+                size = ButtonSize.LargeSecondary
+            )
+            Spacer(modifier = Modifier.height(16.dp))
         }
-        Spacer(modifier = Modifier.height(19.dp))
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp),
-            text = stringResource(id = R.string.membership_upgrade_title),
-            color = colorResource(id = R.color.text_primary),
-            style = HeadlineHeading,
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(14.dp))
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp),
-            text = stringResource(id = R.string.membership_upgrade_description),
-            color = colorResource(id = R.color.text_primary),
-            style = BodyRegular,
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(30.dp))
-        ButtonPrimary(
-            text = stringResource(id = R.string.membership_upgrade_button),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp),
-            onClick = { onButtonClicked() },
-            size = ButtonSize.LargeSecondary
-        )
-        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 

@@ -6,7 +6,6 @@ import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
-import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.presentation.membership.MembershipUpgradeViewModel
 import com.anytypeio.anytype.ui.payments.MembershipUpgradeFragment
 import dagger.Binds
@@ -49,13 +48,13 @@ object MembershipUpdateModule {
         @PerScreen
         @Binds
         fun bindViewModelFactory(
-            factory: MembershipUpgradeViewModel.MembershipUpgradeViewModelFactory
+            factory: MembershipUpgradeViewModel.Factory
         ): ViewModelProvider.Factory
 
     }
 }
 
 interface MembershipUpdateComponentDependencies : ComponentDependencies {
-    fun blockRepository(): BlockRepository
+    fun authRepository(): AuthRepository
     fun appCoroutineDispatchers(): AppCoroutineDispatchers
 }

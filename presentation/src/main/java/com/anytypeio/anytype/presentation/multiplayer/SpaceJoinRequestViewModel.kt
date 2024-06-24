@@ -12,6 +12,7 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.ext.isPossibleToUpgradeNumberOfSpaceMembers
+import com.anytypeio.anytype.core_models.membership.MembershipConstants
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.BUILDER_ID
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.EXPLORER_ID
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
@@ -109,7 +110,7 @@ class SpaceJoinRequestViewModel(
                     _viewState.value = ViewState.Error.ActiveTierError(e.msg())
                 }
                 .collect { tierId ->
-                    _activeTier.value = ActiveTierState.Success(tierId)
+                    _activeTier.value = ActiveTierState.Success(TierId(MembershipConstants.BUILDER_ID))
                 }
         }
     }
@@ -392,7 +393,7 @@ class SpaceJoinRequestViewModel(
             if (isPossibleToUpgrade) {
                 _commands.emit(Command.NavigateToMembership)
             } else {
-                //todo navigate to membership email screen
+                _commands.emit(Command.NavigateToMembershipUpdate)
             }
         }
     }
@@ -476,6 +477,7 @@ class SpaceJoinRequestViewModel(
 
     sealed class Command {
         data object NavigateToMembership : Command()
+        data object NavigateToMembershipUpdate : Command()
     }
 }
 

@@ -25,8 +25,8 @@ import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
 import com.anytypeio.anytype.payments.playbilling.BillingClientState
 import com.anytypeio.anytype.payments.playbilling.BillingPurchaseState
 import com.anytypeio.anytype.payments.viewmodel.MembershipViewModel
-import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
-import com.anytypeio.anytype.presentation.membership.models.TierId
+import com.anytypeio.anytype.core_models.membership.MembershipStatus
+import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import junit.framework.TestCase.assertEquals

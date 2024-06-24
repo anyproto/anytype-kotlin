@@ -55,7 +55,7 @@ import com.anytypeio.anytype.payments.models.TierPeriod
 import com.anytypeio.anytype.payments.models.Tier
 import com.anytypeio.anytype.payments.viewmodel.MembershipTierState
 import com.anytypeio.anytype.payments.viewmodel.TierAction
-import com.anytypeio.anytype.presentation.membership.models.TierId
+import com.anytypeio.anytype.core_models.membership.TierId
 import timber.log.Timber
 
 

@@ -12,8 +12,8 @@ import com.anytypeio.anytype.payments.viewmodel.MembershipTierState
 import com.anytypeio.anytype.payments.viewmodel.MembershipEmailCodeState
 import com.anytypeio.anytype.payments.viewmodel.MembershipErrorState
 import com.anytypeio.anytype.payments.viewmodel.WelcomeState
-import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
-import com.anytypeio.anytype.presentation.membership.models.TierId
+import com.anytypeio.anytype.core_models.membership.MembershipStatus
+import com.anytypeio.anytype.core_models.membership.TierId
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertTrue

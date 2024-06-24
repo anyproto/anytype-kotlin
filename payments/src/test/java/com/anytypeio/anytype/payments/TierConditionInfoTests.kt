@@ -9,8 +9,8 @@ import com.anytypeio.anytype.payments.models.TierConditionInfo
 import com.anytypeio.anytype.payments.models.TierPeriod
 import com.anytypeio.anytype.payments.playbilling.BillingPurchaseState
 import com.anytypeio.anytype.payments.viewmodel.MembershipMainState
-import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
-import com.anytypeio.anytype.presentation.membership.models.TierId
+import com.anytypeio.anytype.core_models.membership.MembershipStatus
+import com.anytypeio.anytype.core_models.membership.TierId
 import kotlin.test.assertIs
 import kotlinx.coroutines.test.runTest
 import net.bytebuddy.utility.RandomString

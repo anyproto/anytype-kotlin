@@ -20,8 +20,8 @@ import com.anytypeio.anytype.payments.playbilling.BillingClientState
 import com.anytypeio.anytype.payments.playbilling.BillingPurchaseState
 import com.anytypeio.anytype.payments.viewmodel.MembershipMainState
 import com.anytypeio.anytype.payments.viewmodel.MembershipTierState
-import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
-import com.anytypeio.anytype.presentation.membership.models.TierId
+import com.anytypeio.anytype.core_models.membership.MembershipStatus
+import com.anytypeio.anytype.core_models.membership.TierId
 import kotlin.test.assertIs
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow

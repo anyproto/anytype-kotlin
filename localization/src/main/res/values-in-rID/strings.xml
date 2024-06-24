@@ -1125,9 +1125,10 @@
     <string name="multiplayer_space_request_to_join_msg">Kamu diundang bergabung ke ruang %1$s buatan %2$s. Kirimkan permintaan supaya pemilik ruang dapat mengizinkanmu bergabung.</string>
     <string name="multiplayer_tap_to_write_request_to_join_comment">Ketuk untuk menulis komentar</string>
     <string name="multiplayer_share_space">Bagikan ruang</string>
-    <string name="multiplayer_members_and_requests">Members and requests</string>
+    <string name="multiplayer_members_and_requests">Anggota</string>
     <string name="multiplayer_cant_add_members">You can’t add more members</string>
     <string name="multiplayer_upgrade_button">✦ Tingkatkan</string>
+    <string name="multiplayer_upgrade_button_request">✦ Upgrade to add more members</string>
     <string name="multiplayer_members">Anggota</string>
     <string name="multiplayer_leave_request">Permintaan keluar</string>
     <string name="multiplayer_join_request">Permintaan bergabung</string>
@@ -1137,7 +1138,9 @@
     <string name="multiplayer_can_edit">Can edit</string>
     <string name="multiplayer_can_view">Dapat melihat</string>
     <string name="multiplayer_space_add_viewer">Tambah pembaca</string>
+    <string name="multiplayer_space_add_more_viewer">✦ Add more viewers</string>
     <string name="multiplayer_space_add_editor">Tambah penyunting</string>
+    <string name="multiplayer_space_add_more_editor">✦ Add more editors</string>
     <string name="multiplayer_space_request_reject">Tolak</string>
     <string name="multiplayer_space_join_request_header">%1$s meminta bergabung ke ruang %2$s</string>
     <string name="multiplayer_remove_member">Hapus anggota</string>
@@ -1395,6 +1398,10 @@ Please provide specific details of your needs here.</string>
     <string name="membership_support_already_acquired">You’ve already acquired a Membership plan using another Anytype account.</string>
     <string name="membership_support_different_subscription">Found a subscription with a different id</string>
     <string name="membership_support_more_then_one_subscription">Found more than one subscription</string>
+    <string name="multiplayer_space_join_request_participants_error">Space participant\'s error</string>
+    <string name="multiplayer_space_join_request_new_member_error">Request\'s member error</string>
+    <string name="multiplayer_space_join_request_current_user_error">Current user status error</string>
+    <string name="multiplayer_space_join_request_membership_status_error">Current membership status error</string>
     <plurals name="period_years">
         <item quantity="other">%d tahun</item>
     </plurals>

@@ -11,10 +11,11 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.fragment.findNavController
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.multiplayer.SpaceJoinRequestScreen
-import com.anytypeio.anytype.core_ui.features.multiplayer.SpaceUpgradeScreen
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
@@ -44,7 +45,7 @@ class SpaceJoinRequestFragment : BaseBottomSheetComposeFragment() {
             setContent {
                 MaterialTheme(typography = typography) {
                     when(val state = vm.viewState.collectAsStateWithLifecycle().value) {
-                        SpaceJoinRequestViewModel.ViewState.Error -> {
+                        SpaceJoinRequestViewModel.ViewState.Error.EmptyMember -> {
                             // TODO Send toast.
                         }
                         SpaceJoinRequestViewModel.ViewState.Init -> {
@@ -55,14 +56,10 @@ class SpaceJoinRequestFragment : BaseBottomSheetComposeFragment() {
                                 state = state,
                                 onAddViewerClicked = vm::onJoinAsReaderClicked,
                                 onAddEditorClicked = vm::onJoinAsEditorClicked,
-                                onRejectClicked = vm::onRejectRequestClicked
-                            )
-                        }
-                        is SpaceJoinRequestViewModel.ViewState.Upgrade -> {
-                            SpaceUpgradeScreen(
-                                state = state,
                                 onRejectClicked = vm::onRejectRequestClicked,
-                                onUpgradeClicked = vm::onUpgradeClicked
+                                onUpgradeClicked = vm::onUpgradeClicked,
+                                onAddMoreViewerClicked = vm::onAddMoreViewerClicked,
+                                onAddMoreEditorClicked = vm::onAddMoreEditorClicked
                             )
                         }
                     }
@@ -74,7 +71,23 @@ class SpaceJoinRequestFragment : BaseBottomSheetComposeFragment() {
                             if (isDismissed) dismiss()
                         }
                     }
+                    LaunchedEffect(Unit) {
+                        vm.commands.collect { command ->
+                            proceedWithCommand(command)
+                        }
+                    }
                 }
+            }
+        }
+    }
+
+    private fun proceedWithCommand(command: SpaceJoinRequestViewModel.Command?) {
+        when(command) {
+            SpaceJoinRequestViewModel.Command.NavigateToMembership -> {
+                findNavController().navigate(R.id.paymentsScreen)
+            }
+            null -> {
+                // Do nothing.
             }
         }
     }

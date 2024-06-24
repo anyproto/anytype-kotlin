@@ -11,6 +11,7 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.ext.isPossibleToUpgradeNumberOfSpaceMembers
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.BUILDER_ID
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.EXPLORER_ID
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
@@ -27,7 +28,7 @@ import com.anytypeio.anytype.domain.`object`.canAddWriters
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsApproveInvite
-import com.anytypeio.anytype.presentation.membership.models.TierId
+import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 import com.anytypeio.anytype.presentation.objects.toSpaceMembers
@@ -37,6 +38,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -59,6 +61,7 @@ class SpaceJoinRequestViewModel(
     )
     private val _newMember = MutableStateFlow<ObjectWrapper.SpaceMember?>(null)
     private val _viewState = MutableStateFlow<ViewState>(ViewState.Init)
+    private val _activeTier = MutableStateFlow<TierId?>(null)
     val viewState: StateFlow<ViewState> = _viewState
 
     private val _commands = MutableStateFlow<Command?>(null)
@@ -67,7 +70,7 @@ class SpaceJoinRequestViewModel(
     init {
         viewModelScope.launch {
             combine(
-                membershipProvider.activeTier(),
+                _activeTier.filterNotNull(),
                 spaceViewSubscriptionContainer.observe(params.space),
                 _isCurrentUserOwner,
                 _spaceMembers,
@@ -88,6 +91,15 @@ class SpaceJoinRequestViewModel(
         proceedWithUserPermissions(space = params.space)
         proceedWithSpaceMembers(space = params.space)
         proceedGettingNewMember()
+        proceedWithGettingActiveTier()
+    }
+
+    private fun proceedWithGettingActiveTier() {
+        viewModelScope.launch {
+            membershipProvider.activeTier().collect { tierId ->
+                _activeTier.value = tierId
+            }
+        }
     }
 
     private fun sendAnalyticsInviteScreen() {
@@ -384,21 +396,15 @@ class SpaceJoinRequestViewModel(
         onJoinClicked(newMember, SpaceMemberPermissions.WRITER)
     }
 
-    fun onAddMoreViewerClicked() {
-        viewModelScope.launch {
-            _commands.value = Command.NavigateToMembership
-        }
-    }
-
-    fun onAddMoreEditorClicked() {
-        viewModelScope.launch {
-            _commands.value = Command.NavigateToMembership
-        }
-    }
-
     fun onUpgradeClicked() {
+        val activeTier = _activeTier.value
+        val isPossibleToUpgrade = activeTier?.isPossibleToUpgradeNumberOfSpaceMembers()
         viewModelScope.launch {
-            _commands.value = Command.NavigateToMembership
+            if (isPossibleToUpgrade == true) {
+                _commands.value = Command.NavigateToMembership
+            } else {
+                //todo navigate to membership email screen
+            }
         }
     }
 

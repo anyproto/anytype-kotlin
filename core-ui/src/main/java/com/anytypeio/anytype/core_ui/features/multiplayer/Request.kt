@@ -2,15 +2,20 @@ package com.anytypeio.anytype.core_ui.features.multiplayer
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
-import androidx.compose.foundation.background
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,6 +29,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.Dragger
+import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonMedium
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
@@ -54,8 +60,6 @@ fun SpaceJoinRequestScreenPreview() {
         onAddViewerClicked = {},
         onRejectClicked = {},
         onUpgradeClicked = {},
-        onAddMoreViewerClicked = {},
-        onAddMoreEditorClicked = {},
         state = ViewState.Success(
             newMember = "1",
             newMemberName = "Merk",
@@ -77,18 +81,14 @@ fun SpaceJoinRequestScreenPreview() {
 
 @Composable
 fun SpaceJoinRequestScreen(
-    state: ViewState.Success,
+    state: ViewState,
     onAddViewerClicked: (Id) -> Unit,
     onAddEditorClicked: (Id) -> Unit,
     onRejectClicked: (Id) -> Unit,
-    onUpgradeClicked: () -> Unit,
-    onAddMoreViewerClicked: () -> Unit,
-    onAddMoreEditorClicked: () -> Unit
+    onUpgradeClicked: () -> Unit
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(colorResource(id = R.color.background_primary))
+        modifier = Modifier.fillMaxWidth().wrapContentHeight()
     ) {
         Dragger(
             modifier = Modifier
@@ -96,42 +96,77 @@ fun SpaceJoinRequestScreen(
                 .padding(vertical = 6.dp)
         )
         Spacer(modifier = Modifier.height(20.dp))
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            SpaceMemberIcon(
-                icon = state.icon,
-                modifier = Modifier.align(Alignment.Center),
-                iconSize = 72.dp
-            )
+        when (state) {
+            ViewState.Error.EmptyMember -> {
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(346.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Some Error1983",
+                        style = BodyRegular,
+                        color = colorResource(R.color.text_primary)
+                    )
+                }
+            }
+            ViewState.Init -> {
+                AnimatedVisibility(
+                    visible = state is ViewState.Init,
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ) {
+                    Box(modifier = Modifier
+                        .fillMaxWidth()
+                        .height(346.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .size(24.dp),
+                            color = colorResource(R.color.shape_secondary),
+                            trackColor = colorResource(R.color.shape_primary)
+                        )
+                    }
+                }
+            }
+            is ViewState.Success -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    SpaceMemberIcon(
+                        icon = state.icon,
+                        modifier = Modifier.align(Alignment.Center),
+                        iconSize = 72.dp
+                    )
+                }
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(
+                    text = stringResource(
+                        R.string.multiplayer_space_join_request_header,
+                        state.newMemberName.ifEmpty { stringResource(id = R.string.untitled) },
+                        state.spaceName.ifEmpty { stringResource(id = R.string.untitled) }
+                    ),
+                    style = HeadlineHeading,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(
+                        horizontal = 48.dp
+                    ),
+                    color = colorResource(id = R.color.text_primary)
+                )
+                Spacer(modifier = Modifier.height(20.dp))
+                Buttons(
+                    newMember = state.newMember,
+                    buttons = state.buttons,
+                    onAddViewerClicked = onAddViewerClicked,
+                    onAddEditorClicked = onAddEditorClicked,
+                    onRejectClicked = onRejectClicked,
+                    onUpgradeClicked = onUpgradeClicked
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
         }
-        Spacer(modifier = Modifier.height(20.dp))
-        Text(
-            text = stringResource(
-                R.string.multiplayer_space_join_request_header,
-                state.newMemberName.ifEmpty { stringResource(id = R.string.untitled) },
-                state.spaceName.ifEmpty { stringResource(id = R.string.untitled) }
-            ),
-            style = HeadlineHeading,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(
-                horizontal = 48.dp
-            ),
-            color = colorResource(id = R.color.text_primary)
-        )
-        Spacer(modifier = Modifier.height(20.dp))
-        Buttons(
-            newMember = state.newMember,
-            buttons = state.buttons,
-            onAddViewerClicked = onAddViewerClicked,
-            onAddEditorClicked = onAddEditorClicked,
-            onRejectClicked = onRejectClicked,
-            onUpgradeClicked = onUpgradeClicked,
-            onAddMoreViewerClicked = onAddMoreViewerClicked,
-            onAddMoreEditorClicked = onAddMoreEditorClicked
-        )
-        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
@@ -139,9 +174,7 @@ fun SpaceJoinRequestScreen(
 private fun Buttons(newMember: Id,
                     buttons: List<InviteButton>,
                     onAddViewerClicked: (Id) -> Unit,
-                    onAddMoreViewerClicked: () -> Unit,
                     onAddEditorClicked: (Id) -> Unit,
-                    onAddMoreEditorClicked: () -> Unit,
                     onRejectClicked: (Id) -> Unit,
                     onUpgradeClicked: () -> Unit,
 ) {
@@ -202,7 +235,7 @@ private fun Buttons(newMember: Id,
             InviteButton.ADD_MORE_VIEWERS -> ButtonSecondary(
                 text = stringResource(R.string.multiplayer_space_add_more_viewer),
                 onClick = throttledClick(
-                    onClick = { onAddMoreViewerClicked() }
+                    onClick = { onUpgradeClicked() }
                 ),
                 size = ButtonSize.Large,
                 modifier = Modifier
@@ -212,7 +245,7 @@ private fun Buttons(newMember: Id,
             InviteButton.ADD_MORE_EDITORS -> ButtonSecondary(
                 text = stringResource(R.string.multiplayer_space_add_more_editor),
                 onClick = throttledClick(
-                    onClick = { onAddMoreEditorClicked() }
+                    onClick = { onUpgradeClicked() }
                 ),
                 size = ButtonSize.Large,
                 modifier = Modifier

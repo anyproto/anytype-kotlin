@@ -44,25 +44,13 @@ class SpaceJoinRequestFragment : BaseBottomSheetComposeFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MaterialTheme(typography = typography) {
-                    when(val state = vm.viewState.collectAsStateWithLifecycle().value) {
-                        SpaceJoinRequestViewModel.ViewState.Error.EmptyMember -> {
-                            // TODO Send toast.
-                        }
-                        SpaceJoinRequestViewModel.ViewState.Init -> {
-                            // Draw nothing.
-                        }
-                        is SpaceJoinRequestViewModel.ViewState.Success -> {
-                            SpaceJoinRequestScreen(
-                                state = state,
-                                onAddViewerClicked = vm::onJoinAsReaderClicked,
-                                onAddEditorClicked = vm::onJoinAsEditorClicked,
-                                onRejectClicked = vm::onRejectRequestClicked,
-                                onUpgradeClicked = vm::onUpgradeClicked,
-                                onAddMoreViewerClicked = vm::onAddMoreViewerClicked,
-                                onAddMoreEditorClicked = vm::onAddMoreEditorClicked
-                            )
-                        }
-                    }
+                    SpaceJoinRequestScreen(
+                        state = vm.viewState.collectAsStateWithLifecycle().value,
+                        onAddViewerClicked = vm::onJoinAsReaderClicked,
+                        onAddEditorClicked = vm::onJoinAsEditorClicked,
+                        onRejectClicked = vm::onRejectRequestClicked,
+                        onUpgradeClicked = vm::onUpgradeClicked
+                    )
                     LaunchedEffect(Unit) {
                         vm.toasts.collect { toast(it) }
                     }

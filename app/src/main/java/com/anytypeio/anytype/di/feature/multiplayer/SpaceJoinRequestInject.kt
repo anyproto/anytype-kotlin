@@ -33,7 +33,7 @@ interface SpaceJoinRequestComponent {
     interface Builder {
         fun withDependencies(dependencies: SpaceJoinRequestDependencies): Builder
         @BindsInstance
-        fun withParams(params: SpaceJoinRequestViewModel.Params): Builder
+        fun withParams(params: SpaceJoinRequestViewModel.VmParams): Builder
         fun build(): SpaceJoinRequestComponent
     }
 

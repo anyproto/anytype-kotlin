@@ -88,7 +88,9 @@ fun SpaceJoinRequestScreen(
     onUpgradeClicked: () -> Unit
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth().wrapContentHeight()
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
     ) {
         Dragger(
             modifier = Modifier
@@ -97,28 +99,16 @@ fun SpaceJoinRequestScreen(
         )
         Spacer(modifier = Modifier.height(20.dp))
         when (state) {
-            ViewState.Error.EmptyMember -> {
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(346.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "Some Error1983",
-                        style = BodyRegular,
-                        color = colorResource(R.color.text_primary)
-                    )
-                }
-            }
             ViewState.Init -> {
                 AnimatedVisibility(
                     visible = state is ViewState.Init,
                     enter = fadeIn(),
                     exit = fadeOut()
                 ) {
-                    Box(modifier = Modifier
-                        .fillMaxWidth()
-                        .height(346.dp),
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(346.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator(
@@ -130,6 +120,7 @@ fun SpaceJoinRequestScreen(
                     }
                 }
             }
+
             is ViewState.Success -> {
                 Box(
                     modifier = Modifier
@@ -166,17 +157,51 @@ fun SpaceJoinRequestScreen(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
             }
+
+            is ViewState.Error.ActiveTierError -> {
+                ErrorState(msg = stringResource(R.string.multiplayer_space_join_request_membership_status_error))
+            }
+
+            is ViewState.Error.CurrentUserStatusError -> {
+                ErrorState(msg = stringResource(R.string.multiplayer_space_join_request_current_user_error))
+            }
+
+            is ViewState.Error.NewMemberError -> {
+                ErrorState(msg = stringResource(R.string.multiplayer_space_join_request_new_member_error))
+            }
+
+            is ViewState.Error.SpaceParticipantsError -> {
+                ErrorState(msg = stringResource(R.string.multiplayer_space_join_request_participants_error))
+            }
         }
     }
 }
 
 @Composable
-private fun Buttons(newMember: Id,
-                    buttons: List<InviteButton>,
-                    onAddViewerClicked: (Id) -> Unit,
-                    onAddEditorClicked: (Id) -> Unit,
-                    onRejectClicked: (Id) -> Unit,
-                    onUpgradeClicked: () -> Unit,
+private fun ErrorState(msg: String) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(346.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = msg,
+            style = BodyRegular,
+            color = colorResource(R.color.text_primary),
+            maxLines = 3
+        )
+    }
+}
+
+@Composable
+private fun Buttons(
+    newMember: Id,
+    buttons: List<InviteButton>,
+    onAddViewerClicked: (Id) -> Unit,
+    onAddEditorClicked: (Id) -> Unit,
+    onRejectClicked: (Id) -> Unit,
+    onUpgradeClicked: () -> Unit,
 ) {
     buttons.forEach {
         when (it) {
@@ -190,10 +215,11 @@ private fun Buttons(newMember: Id,
                     .padding(start = 20.dp, end = 20.dp, top = 8.dp)
                     .fillMaxWidth()
             )
+
             InviteButton.JOIN_AS_VIEWER_DISABLED -> ButtonSecondary(
                 text = stringResource(R.string.multiplayer_space_add_viewer),
                 onClick = throttledClick(
-                    onClick = {  }
+                    onClick = { }
                 ),
                 size = ButtonSize.Large,
                 modifier = Modifier
@@ -201,6 +227,7 @@ private fun Buttons(newMember: Id,
                     .fillMaxWidth(),
                 enabled = false
             )
+
             InviteButton.JOIN_AS_EDITOR -> ButtonSecondary(
                 text = stringResource(R.string.multiplayer_space_add_editor),
                 onClick = throttledClick(
@@ -211,6 +238,7 @@ private fun Buttons(newMember: Id,
                     .padding(start = 20.dp, end = 20.dp, top = 8.dp)
                     .fillMaxWidth()
             )
+
             InviteButton.JOIN_AS_EDITOR_DISABLED -> ButtonSecondary(
                 text = stringResource(R.string.multiplayer_space_add_editor),
                 onClick = throttledClick(
@@ -222,6 +250,7 @@ private fun Buttons(newMember: Id,
                     .fillMaxWidth(),
                 enabled = false
             )
+
             InviteButton.REJECT -> ButtonWarning(
                 text = stringResource(R.string.multiplayer_space_request_reject),
                 onClick = throttledClick(
@@ -232,6 +261,7 @@ private fun Buttons(newMember: Id,
                     .padding(start = 20.dp, end = 20.dp, top = 10.dp)
                     .fillMaxWidth(),
             )
+
             InviteButton.ADD_MORE_VIEWERS -> ButtonSecondary(
                 text = stringResource(R.string.multiplayer_space_add_more_viewer),
                 onClick = throttledClick(
@@ -242,6 +272,7 @@ private fun Buttons(newMember: Id,
                     .padding(start = 20.dp, end = 20.dp, top = 8.dp)
                     .fillMaxWidth()
             )
+
             InviteButton.ADD_MORE_EDITORS -> ButtonSecondary(
                 text = stringResource(R.string.multiplayer_space_add_more_editor),
                 onClick = throttledClick(
@@ -252,6 +283,7 @@ private fun Buttons(newMember: Id,
                     .padding(start = 20.dp, end = 20.dp, top = 8.dp)
                     .fillMaxWidth()
             )
+
             InviteButton.UPGRADE -> ButtonUpgrade(
                 modifier = Modifier
                     .padding(start = 20.dp, end = 20.dp, top = 10.dp)

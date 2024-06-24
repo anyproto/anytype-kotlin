@@ -128,7 +128,8 @@ class ShareSpaceViewModel(
             }.collect { (spaceResponse, membersResponse, isCurrentUserOwner) ->
                 val spaceView = spaceResponse.toSpaceView()
                 val spaceMembers
-                = membersResponse.toSpaceMembers().sortedByDescending { it.status == ParticipantStatus.JOINING }
+                = membersResponse.toSpaceMembers()
+                    .sortedByDescending { it.status == ParticipantStatus.JOINING || it.status == ParticipantStatus.REMOVING}
                 spaceAccessType.value = spaceView?.spaceAccessType
                 setShareLinkViewState(spaceView, isCurrentUserOwner)
                 members.value = spaceMembers.toView(

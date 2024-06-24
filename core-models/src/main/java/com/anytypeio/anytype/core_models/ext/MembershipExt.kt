@@ -10,6 +10,8 @@ fun TierId.isPossibleToUpgrade(
     return when (reason) {
         MembershipUpgradeReason.NumberOfEditors -> isPossibleToUpgradeNumberOfSpaceMembers()
         MembershipUpgradeReason.NumberOfReaders -> isPossibleToUpgradeNumberOfSpaceMembers()
+        //24-07-24 https://linear.app/anytype/issue/PROD-1368/[part-1]-release-4-or-payment-for-the-end-user
+        //not possible to upgrade the number of shared spaces
         MembershipUpgradeReason.NumberOfSharedSpaces -> false
         MembershipUpgradeReason.StorageSpace -> isPossibleToUpgradeStorageSpace()
     }

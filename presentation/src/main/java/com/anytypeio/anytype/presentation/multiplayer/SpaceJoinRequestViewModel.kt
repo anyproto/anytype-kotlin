@@ -35,15 +35,18 @@ import com.anytypeio.anytype.presentation.objects.toSpaceMembers
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.filterParticipants
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class SpaceJoinRequestViewModel(
-    private val params: Params,
+    private val vmParams: VmParams,
     private val approveJoinSpaceRequest: ApproveJoinSpaceRequest,
     private val declineSpaceJoinRequest: DeclineSpaceJoinRequest,
     private val searchObjects: SearchObjects,
@@ -52,51 +55,62 @@ class SpaceJoinRequestViewModel(
     private val userPermissionProvider: UserPermissionProvider,
     private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
     private val membershipProvider: MembershipProvider
-): BaseViewModel() {
+) : BaseViewModel() {
 
     val isDismissed = MutableStateFlow(false)
     private val _isCurrentUserOwner = MutableStateFlow(false)
-    private val _spaceMembers = MutableStateFlow<List<ObjectWrapper.SpaceMember>>(mutableListOf())
-    private val _newMember = MutableStateFlow<ObjectWrapper.SpaceMember?>(null)
+    private val _spaceMembers = MutableStateFlow<SpaceMembersState>(SpaceMembersState.Init)
+    private val _newMember = MutableStateFlow<NewMemberState>(NewMemberState.Init)
     private val _viewState = MutableStateFlow<ViewState>(ViewState.Init)
-    private val _activeTier = MutableStateFlow<TierId?>(null)
+    private val _activeTier = MutableStateFlow<ActiveTierState>(ActiveTierState.Init)
     val viewState: StateFlow<ViewState> = _viewState
 
-    private val _commands = MutableStateFlow<Command?>(null)
-    val commands: StateFlow<Command?> = _commands
+    private val _commands = MutableSharedFlow<Command>(replay = 0)
+    val commands: SharedFlow<Command> = _commands
 
     init {
         viewModelScope.launch {
             combine(
-                _activeTier.filterNotNull(),
-                spaceViewSubscriptionContainer.observe(params.space),
                 _isCurrentUserOwner,
-                _spaceMembers,
-                _newMember
-            ) { tierId, spaceView, isCurrentUserOwner, spaceMembers, newMember ->
-                Resultat(tierId, spaceView, isCurrentUserOwner, spaceMembers, newMember)
-            }.collect { (tierId, spaceView, isCurrentUserOwner, spaceMembers, newMember) ->
-                proceedWithState(
-                    tierId = tierId,
+                spaceViewSubscriptionContainer.observe(vmParams.space),
+                _activeTier.filterIsInstance<ActiveTierState.Success>(),
+                _spaceMembers.filterIsInstance<SpaceMembersState.Success>(),
+                _newMember.filterIsInstance<NewMemberState.Success>()
+            ) { isCurrentUserOwner, spaceView, tierState, spaceMembersState, newMemberState ->
+                Result(
+                    isCurrentUserOwner = isCurrentUserOwner,
                     spaceView = spaceView,
-                    spaceMembers = spaceMembers,
-                    newMember = newMember,
-                    isCurrentUserOwner = isCurrentUserOwner
+                    tierId = tierState.tierId,
+                    spaceMembers = spaceMembersState.spaceMembers,
+                    newMember = newMemberState.newMember
+                )
+            }.collect { result ->
+                proceedWithState(
+                    tierId = result.tierId,
+                    spaceView = result.spaceView,
+                    spaceMembers = result.spaceMembers,
+                    newMember = result.newMember,
+                    isCurrentUserOwner = result.isCurrentUserOwner
                 )
             }
         }
         sendAnalyticsInviteScreen()
-        proceedWithUserPermissions(space = params.space)
-        proceedWithSpaceMembers(space = params.space)
+        proceedWithUserPermissions(space = vmParams.space)
+        proceedWithSpaceMembers(space = vmParams.space)
         proceedGettingNewMember()
         proceedWithGettingActiveTier()
     }
 
     private fun proceedWithGettingActiveTier() {
         viewModelScope.launch {
-            membershipProvider.activeTier().collect { tierId ->
-                _activeTier.value = tierId
-            }
+            membershipProvider.activeTier()
+                .catch { e ->
+                    Timber.e(e, "Error while fetching active tier")
+                    _viewState.value = ViewState.Error.ActiveTierError(e.msg())
+                }
+                .collect { tierId ->
+                    _activeTier.value = ActiveTierState.Success(tierId)
+                }
         }
     }
 
@@ -105,7 +119,7 @@ class SpaceJoinRequestViewModel(
             analytics.sendEvent(
                 eventName = EventsDictionary.screenInviteConfirm,
                 props = Props(
-                    mapOf(EventsPropertiesKey.route to params.route)
+                    mapOf(EventsPropertiesKey.route to vmParams.route)
                 )
             )
         }
@@ -115,14 +129,32 @@ class SpaceJoinRequestViewModel(
         tierId: TierId,
         spaceView: ObjectWrapper.SpaceView,
         spaceMembers: List<ObjectWrapper.SpaceMember>,
-        newMember: ObjectWrapper.SpaceMember?,
+        newMember: ObjectWrapper.SpaceMember,
         isCurrentUserOwner: Boolean
     ) {
         Timber.d("proceedWithState, tierId: $tierId, spaceView: $spaceView, spaceMembers: $spaceMembers, newMember: $newMember, isCurrentUserOwner: $isCurrentUserOwner")
+
         val state = when (tierId.value) {
-            EXPLORER_ID -> createExplorerState(spaceView, spaceMembers, newMember, isCurrentUserOwner)
-            BUILDER_ID -> createBuilderState(spaceView, spaceMembers, newMember, isCurrentUserOwner)
-            else -> createOtherState(spaceView, spaceMembers, newMember, isCurrentUserOwner)
+            EXPLORER_ID -> createExplorerState(
+                spaceView = spaceView,
+                spaceMembers = spaceMembers,
+                newMember = newMember,
+                isCurrentUserOwner = isCurrentUserOwner
+            )
+
+            BUILDER_ID -> createBuilderState(
+                spaceView = spaceView,
+                spaceMembers = spaceMembers,
+                newMember = newMember,
+                isCurrentUserOwner = isCurrentUserOwner
+            )
+
+            else -> createOtherState(
+                spaceView = spaceView,
+                spaceMembers = spaceMembers,
+                newMember = newMember,
+                isCurrentUserOwner = isCurrentUserOwner
+            )
         }
         _viewState.value = state
     }
@@ -130,21 +162,27 @@ class SpaceJoinRequestViewModel(
     private fun createExplorerState(
         spaceView: ObjectWrapper.SpaceView,
         spaceMembers: List<ObjectWrapper.SpaceMember>,
-        newMember: ObjectWrapper.SpaceMember?,
+        newMember: ObjectWrapper.SpaceMember,
         isCurrentUserOwner: Boolean
     ): ViewState {
         val canAddReaders = spaceView.canAddReaders(isCurrentUserOwner, spaceMembers)
         val canAddWriters = spaceView.canAddWriters(isCurrentUserOwner, spaceMembers)
-
         return when {
-            newMember == null -> ViewState.Error.EmptyMember
-            !canAddReaders && !canAddWriters -> createViewStateWithButtons(spaceView, newMember, listOf(InviteButton.UPGRADE, InviteButton.REJECT))
+            !canAddReaders && !canAddWriters ->
+                createViewStateWithButtons(
+                    spaceView = spaceView,
+                    newMember = newMember,
+                    buttons = listOf(InviteButton.UPGRADE, InviteButton.REJECT)
+                )
+
             else -> createViewStateWithButtons(
-                spaceView,
-                newMember,
-                buildList {
-                    if (!canAddReaders) add(InviteButton.JOIN_AS_VIEWER_DISABLED) else add(InviteButton.JOIN_AS_VIEWER)
-                    if (!canAddWriters) add(InviteButton.JOIN_AS_EDITOR_DISABLED) else add(InviteButton.JOIN_AS_EDITOR)
+                spaceView = spaceView,
+                newMember = newMember,
+                buttons = buildList {
+                    if (!canAddReaders) add(InviteButton.JOIN_AS_VIEWER_DISABLED)
+                    else add(InviteButton.JOIN_AS_VIEWER)
+                    if (!canAddWriters) add(InviteButton.JOIN_AS_EDITOR_DISABLED)
+                    else add(InviteButton.JOIN_AS_EDITOR)
                     add(InviteButton.REJECT)
                 }
             )
@@ -154,18 +192,27 @@ class SpaceJoinRequestViewModel(
     private fun createBuilderState(
         spaceView: ObjectWrapper.SpaceView,
         spaceMembers: List<ObjectWrapper.SpaceMember>,
-        newMember: ObjectWrapper.SpaceMember?,
+        newMember: ObjectWrapper.SpaceMember,
         isCurrentUserOwner: Boolean
     ): ViewState {
         val canAddReaders = spaceView.canAddReaders(isCurrentUserOwner, spaceMembers)
         val canAddWriters = spaceView.canAddWriters(isCurrentUserOwner, spaceMembers)
         return when {
-            newMember == null -> ViewState.Error.EmptyMember
-            !canAddReaders && !canAddWriters -> createViewStateWithButtons(spaceView, newMember, listOf(InviteButton.ADD_MORE_VIEWERS, InviteButton.ADD_MORE_EDITORS, InviteButton.REJECT))
+            !canAddReaders && !canAddWriters ->
+                createViewStateWithButtons(
+                    spaceView = spaceView,
+                    newMember = newMember,
+                    buttons = listOf(
+                        InviteButton.ADD_MORE_VIEWERS,
+                        InviteButton.ADD_MORE_EDITORS,
+                        InviteButton.REJECT
+                    )
+                )
+
             else -> createViewStateWithButtons(
-                spaceView,
-                newMember,
-                buildList {
+                spaceView = spaceView,
+                newMember = newMember,
+                buttons = buildList {
                     if (!canAddReaders) add(InviteButton.ADD_MORE_VIEWERS) else add(InviteButton.JOIN_AS_VIEWER)
                     if (!canAddWriters) add(InviteButton.ADD_MORE_EDITORS) else add(InviteButton.JOIN_AS_EDITOR)
                     add(InviteButton.REJECT)
@@ -177,18 +224,26 @@ class SpaceJoinRequestViewModel(
     private fun createOtherState(
         spaceView: ObjectWrapper.SpaceView,
         spaceMembers: List<ObjectWrapper.SpaceMember>,
-        newMember: ObjectWrapper.SpaceMember?,
+        newMember: ObjectWrapper.SpaceMember,
         isCurrentUserOwner: Boolean
     ): ViewState {
         val canAddReaders = spaceView.canAddReaders(isCurrentUserOwner, spaceMembers)
         val canAddWriters = spaceView.canAddWriters(isCurrentUserOwner, spaceMembers)
         return when {
-            newMember == null -> ViewState.Error.EmptyMember
-            !canAddReaders && !canAddWriters -> createViewStateWithButtons(spaceView, newMember, listOf(InviteButton.ADD_MORE_VIEWERS, InviteButton.ADD_MORE_EDITORS, InviteButton.REJECT))
+            !canAddReaders && !canAddWriters -> createViewStateWithButtons(
+                spaceView = spaceView,
+                newMember = newMember,
+                buttons = listOf(
+                    InviteButton.ADD_MORE_VIEWERS,
+                    InviteButton.ADD_MORE_EDITORS,
+                    InviteButton.REJECT
+                )
+            )
+
             else -> createViewStateWithButtons(
-                spaceView,
-                newMember,
-                buildList {
+                spaceView = spaceView,
+                newMember = newMember,
+                buttons = buildList {
                     if (!canAddReaders) add(InviteButton.ADD_MORE_VIEWERS) else add(InviteButton.JOIN_AS_VIEWER)
                     if (!canAddWriters) add(InviteButton.ADD_MORE_EDITORS) else add(InviteButton.JOIN_AS_EDITOR)
                     add(InviteButton.REJECT)
@@ -207,7 +262,7 @@ class SpaceJoinRequestViewModel(
             newMember = newMember.identity,
             newMemberName = newMember.name.orEmpty(),
             icon = SpaceMemberIconView.icon(
-                obj = ObjectWrapper.SpaceMember(mapOf()),
+                obj = newMember,
                 urlBuilder = urlBuilder
             ),
             buttons = buttons
@@ -218,6 +273,10 @@ class SpaceJoinRequestViewModel(
         viewModelScope.launch {
             userPermissionProvider
                 .observe(space = space)
+                .catch {
+                    Timber.e(it, "Error while fetching user permissions")
+                    _viewState.value = ViewState.Error.CurrentUserStatusError(it.msg())
+                }
                 .collect { permission ->
                     _isCurrentUserOwner.value = permission == SpaceMemberPermissions.OWNER
                 }
@@ -232,12 +291,15 @@ class SpaceJoinRequestViewModel(
             keys = ObjectSearchConstants.spaceMemberKeys
         )
         viewModelScope.launch {
-            searchObjects(searchMembersParams).proceed(
-                failure = { Timber.e(it, "Error while fetching participants") },
+            searchObjects(searchMembersParams).process(
+                failure = {
+                    Timber.e(it, "Error while fetching participants")
+                    _viewState.value = ViewState.Error.SpaceParticipantsError(it.msg())
+                },
                 success = { result ->
+                    Timber.d("proceedWithSpaceMembers, success: $result")
                     val spaceMembers = result.toSpaceMembers()
-                    _spaceMembers.value = spaceMembers
-                    true
+                    _spaceMembers.value = SpaceMembersState.Success(spaceMembers)
                 }
             )
         }
@@ -245,23 +307,26 @@ class SpaceJoinRequestViewModel(
 
     private fun proceedGettingNewMember() {
         viewModelScope.launch {
-            val filters = ObjectSearchConstants.filterNewMember(params.member)
+            val filters = ObjectSearchConstants.filterNewMember(vmParams.member)
             searchObjects(
                 SearchObjects.Params(
                     filters = filters,
                     keys = ObjectSearchConstants.spaceMemberKeys,
                     limit = 1
                 )
-            ).proceed(
-                failure = { Timber.e(it, "Error while fetching new member") },
+            ).process(
+                failure = {
+                    Timber.e(it, "Error while fetching new member")
+                    _viewState.value = ViewState.Error.NewMemberError(it.msg())
+                },
                 success = { result ->
                     val memberMap = result.firstOrNull()?.map
-                    _newMember.value = if (memberMap.isNullOrEmpty()) {
-                        null
+                    if (memberMap.isNullOrEmpty()) {
+                        _viewState.value = ViewState.Error.NewMemberError("New member not found")
                     } else {
-                        ObjectWrapper.SpaceMember(memberMap)
+                        _newMember.value =
+                            NewMemberState.Success(ObjectWrapper.SpaceMember(memberMap))
                     }
-                    true
                 }
             )
         }
@@ -272,7 +337,7 @@ class SpaceJoinRequestViewModel(
         viewModelScope.launch {
             declineSpaceJoinRequest.async(
                 DeclineSpaceJoinRequest.Params(
-                    space = params.space,
+                    space = vmParams.space,
                     identity = newMember
                 )
             ).fold(
@@ -294,7 +359,7 @@ class SpaceJoinRequestViewModel(
         viewModelScope.launch {
             approveJoinSpaceRequest.async(
                 ApproveJoinSpaceRequest.Params(
-                    space = params.space,
+                    space = vmParams.space,
                     identity = newMember,
                     permissions = permissions
                 )
@@ -321,11 +386,11 @@ class SpaceJoinRequestViewModel(
     }
 
     fun onUpgradeClicked() {
-        val activeTier = _activeTier.value
-        val isPossibleToUpgrade = activeTier?.isPossibleToUpgradeNumberOfSpaceMembers()
+        val activeTier = (_activeTier.value as? ActiveTierState.Success) ?: return
+        val isPossibleToUpgrade = activeTier.tierId.isPossibleToUpgradeNumberOfSpaceMembers()
         viewModelScope.launch {
-            if (isPossibleToUpgrade == true) {
-                _commands.value = Command.NavigateToMembership
+            if (isPossibleToUpgrade) {
+                _commands.emit(Command.NavigateToMembership)
             } else {
                 //todo navigate to membership email screen
             }
@@ -333,7 +398,7 @@ class SpaceJoinRequestViewModel(
     }
 
     class Factory @Inject constructor(
-        private val params: Params,
+        private val params: VmParams,
         private val approveJoinSpaceRequest: ApproveJoinSpaceRequest,
         private val declineSpaceJoinRequest: DeclineSpaceJoinRequest,
         private val searchObjects: SearchObjects,
@@ -345,7 +410,7 @@ class SpaceJoinRequestViewModel(
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = SpaceJoinRequestViewModel(
-            params = params,
+            vmParams = params,
             declineSpaceJoinRequest = declineSpaceJoinRequest,
             approveJoinSpaceRequest = approveJoinSpaceRequest,
             searchObjects = searchObjects,
@@ -357,32 +422,60 @@ class SpaceJoinRequestViewModel(
         ) as T
     }
 
-    data class Params(val space: SpaceId, val member: Id, val route: String)
+    data class VmParams(val space: SpaceId, val member: Id, val route: String)
 
-    data class Resultat(
-        val tierId: TierId,
-        val spaceView: ObjectWrapper.SpaceView,
+    data class Result(
         val isCurrentUserOwner: Boolean,
+        val spaceView: ObjectWrapper.SpaceView,
+        val tierId: TierId,
         val spaceMembers: List<ObjectWrapper.SpaceMember>,
-        val newMember: ObjectWrapper.SpaceMember?
+        val newMember: ObjectWrapper.SpaceMember
     )
 
+    //We're trying to add or remove new member to this space
+    sealed class SpaceViewState {
+        data object Init : SpaceViewState()
+        data class Success(val spaceView: ObjectWrapper.SpaceView) : SpaceViewState()
+    }
+
+    //All participants of this space
+    sealed class SpaceMembersState {
+        data object Init : SpaceMembersState()
+        data class Success(val spaceMembers: List<ObjectWrapper.SpaceMember>) : SpaceMembersState()
+    }
+
+    //New member that we're trying to add or remove
+    sealed class NewMemberState {
+        data object Init : NewMemberState()
+        data class Success(val newMember: ObjectWrapper.SpaceMember) : NewMemberState()
+    }
+
+    //Active membership status of the current user
+    sealed class ActiveTierState {
+        data object Init : ActiveTierState()
+        data class Success(val tierId: TierId) : ActiveTierState()
+    }
+
     sealed class ViewState {
-        data object Init: ViewState()
+        data object Init : ViewState()
         data class Success(
             val newMember: Id,
             val newMemberName: String,
             val spaceName: String,
             val icon: SpaceMemberIconView,
             val buttons: List<InviteButton>
-        ): ViewState()
-        sealed class Error: ViewState() {
-            data object EmptyMember: Error()
+        ) : ViewState()
+
+        sealed class Error : ViewState() {
+            data class SpaceParticipantsError(val message: String) : Error()
+            data class ActiveTierError(val message: String) : Error()
+            data class CurrentUserStatusError(val message: String) : Error()
+            data class NewMemberError(val message: String) : Error()
         }
     }
 
     sealed class Command {
-        data object NavigateToMembership: Command()
+        data object NavigateToMembership : Command()
     }
 }
 

@@ -82,7 +82,7 @@ class SpaceJoinRequestFragment : BaseBottomSheetComposeFragment() {
 
     override fun injectDependencies() {
         componentManager().spaceJoinRequestComponent.get(
-            SpaceJoinRequestViewModel.Params(
+            SpaceJoinRequestViewModel.VmParams(
                 space = SpaceId(space),
                 member = member,
                 route = analyticsRoute

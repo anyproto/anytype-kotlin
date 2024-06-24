@@ -1408,6 +1408,9 @@ En concreto,
     <string name="multiplayer_space_join_request_new_member_error">Request\'s member error</string>
     <string name="multiplayer_space_join_request_current_user_error">Current user status error</string>
     <string name="multiplayer_space_join_request_membership_status_error">Current membership status error</string>
+    <string name="membership_upgrade_title">Ampliación de la suscripción</string>
+    <string name="membership_upgrade_description">Habla con nosotros si quieres aumentar el almacenamiento, los editores de tus espacios o los espacios compartidos. El equipo de Anytype te ofrecerá detalles y condiciones adaptados a tus necesidades.</string>
+    <string name="membership_upgrade_button">Hablar con el equipo de Anytype</string>
     <plurals name="period_years">
         <item quantity="one">año</item>
         <item quantity="other">%d años</item>

@@ -819,7 +819,7 @@
     <string name="space_type_default">Entry</string>
     <string name="space_type_default_space">Entry space</string>
     <string name="space_type_private">Privado</string>
-    <string name="space_type_private_space">Private space</string>
+    <string name="space_type_private_space">Espaço privado</string>
     <string name="space_type_shared">Compartilhado</string>
     <string name="space_type_shared_space">Shared space</string>
     <string name="space_type_unknown">Tipo desconhecido</string>

@@ -177,21 +177,27 @@ fun SpaceSettingsScreen(
             item {
                 SettingsItem(
                     title = stringResource(id = R.string.space_id),
-                    value = state.data.spaceId,
+                    value = state.data.spaceId.orEmpty().ifEmpty {
+                        stringResource(id = R.string.unknown)
+                    },
                     onClick = { onSpaceIdClicked(it) }
                 )
             }
             item {
                 SettingsItem(
                     title = stringResource(id = R.string.network_id),
-                    value = state.data.network,
+                    value = state.data.network.orEmpty().ifEmpty {
+                        stringResource(id = R.string.unknown)
+                    },
                     onClick = { onNetworkIdClicked(it) }
                 )
             }
             item {
                 SettingsItem(
                     title = stringResource(id = R.string.created_by),
-                    value = state.data.createdBy,
+                    value = state.data.createdBy.orEmpty().ifEmpty {
+                        stringResource(id = R.string.unknown)
+                    },
                     onClick = { onCreatedByClicked(it) }
                 )
             }

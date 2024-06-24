@@ -185,7 +185,8 @@ fun defaultProfileIconImage(
         contentDescription = "Icon from URI",
         modifier = modifier
             .size(iconSize)
-            .clip(CircleShape)
+            .clip(CircleShape),
+        contentScale = ContentScale.Crop,
     )
 }
 

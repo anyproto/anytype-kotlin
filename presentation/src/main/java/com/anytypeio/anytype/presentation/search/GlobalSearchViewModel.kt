@@ -104,7 +104,7 @@ class GlobalSearchViewModel(
                 query = query,
                 limit = DEFAULT_SEARCH_LIMIT,
                 offset = 0,
-                keys = emptyList(),
+                keys = DEFAULT_KEYS,
                 filters = buildList {
                     addAll(
                         ObjectSearchConstants.filterSearchObjects(
@@ -166,7 +166,7 @@ class GlobalSearchViewModel(
                 query = query,
                 limit = DEFAULT_SEARCH_LIMIT,
                 offset = 0,
-                keys = emptyList(),
+                keys = DEFAULT_KEYS,
                 filters = ObjectSearchConstants.filterSearchObjects(
                     // TODO add tech space?
                     spaces = listOf(spaceManager.get())
@@ -297,6 +297,11 @@ class GlobalSearchViewModel(
     companion object {
         const val DEFAULT_DEBOUNCE_DURATION = 300L
         const val DEFAULT_SEARCH_LIMIT = 50
+        val DEFAULT_KEYS = buildList {
+            addAll(ObjectSearchConstants.defaultKeys)
+            add(Relations.LINKS)
+            add(Relations.BACKLINKS)
+        }
     }
 }
 

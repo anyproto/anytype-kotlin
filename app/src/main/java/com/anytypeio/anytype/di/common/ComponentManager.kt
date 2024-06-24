@@ -1143,6 +1143,10 @@ class ComponentManager(
         DaggerMembershipComponent.factory().create(findComponentDependencies())
     }
 
+    val membershipUpgradeComponent = Component {
+        //DaggerMembershipUpgradeComponent.factory().create(findComponentDependencies())
+    }
+
     val galleryInstallationsComponent =
         ComponentWithParams { params: GalleryInstallationViewModel.ViewModelParams ->
             DaggerGalleryInstallationComponent.builder()

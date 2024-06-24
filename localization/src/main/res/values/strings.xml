@@ -1638,6 +1638,10 @@ Please provide specific details of your needs here.</string>
     <string name="membership_support_different_subscription">Found a subscription with a different id</string>
     <string name="membership_support_more_then_one_subscription">Found more than one subscription</string>
 
+    <string name="membership_upgrade_title">Membership upgrade</string>
+    <string name="membership_upgrade_description">Reach us for extra storage, space editors, or more shared spaces. Anytype team will provide details and conditions tailored to your needs.</string>
+    <string name="membership_upgrade_button">Contact Anytype Team</string>
+
     <plurals name="period_years">
         <item quantity="one">year</item>
         <item quantity="other">%d years</item>

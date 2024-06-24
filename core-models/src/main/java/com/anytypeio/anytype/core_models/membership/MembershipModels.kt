@@ -74,3 +74,9 @@ enum class EmailVerificationStatus {
     STATUS_VERIFIED
 }
 
+sealed class MembershipUpgradeReason {
+    data object NumberOfReaders : MembershipUpgradeReason()
+    data object NumberOfEditors : MembershipUpgradeReason()
+    data object NumberOfSharedSpaces : MembershipUpgradeReason()
+    data object StorageSpace : MembershipUpgradeReason()
+}

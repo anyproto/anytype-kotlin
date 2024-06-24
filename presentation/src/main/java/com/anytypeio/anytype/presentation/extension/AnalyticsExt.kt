@@ -46,6 +46,7 @@ import com.anytypeio.anytype.core_models.TextStyle
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -2055,3 +2056,21 @@ fun CoroutineScope.sendAnalyticsMembershipPurchaseEvent(
     )
 }
 //endregion
+
+suspend fun Analytics.sendAnalyticsApproveInvite(
+    permissions: SpaceMemberPermissions
+) {
+    val type = when (permissions) {
+        SpaceMemberPermissions.READER -> EventsDictionary.SharingInviteRequest.reader
+        SpaceMemberPermissions.WRITER -> EventsDictionary.SharingInviteRequest.writer
+        else -> ""
+    }
+    sendEvent(
+        eventName = EventsDictionary.approveInviteRequest,
+        props = Props(
+            mapOf(
+                EventsPropertiesKey.type to type
+            )
+        )
+    )
+}

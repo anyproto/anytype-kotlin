@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.payments.constants
+package com.anytypeio.anytype.core_models.membership
 
 object MembershipConstants {
 

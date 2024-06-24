@@ -218,6 +218,11 @@ object EventsDictionary {
         const val shareTypeShareQr = "ShareQr"
     }
 
+    object SharingInviteRequest {
+        const val reader = "Read"
+        const val writer = "Write"
+    }
+
     // Network mode
     const val selectNetwork = "SelectNetwork"
     const val uploadNetworkConfiguration = "UploadNetworkConfiguration"

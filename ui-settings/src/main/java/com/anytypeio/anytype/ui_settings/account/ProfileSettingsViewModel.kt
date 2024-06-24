@@ -25,7 +25,7 @@ import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.search.PROFILE_SUBSCRIPTION_ID
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendScreenSettingsDeleteEvent
-import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
+import com.anytypeio.anytype.core_models.membership.MembershipStatus
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon

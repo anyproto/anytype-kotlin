@@ -34,10 +34,9 @@ import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.ButtonWarningLoading
-import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.Title1
-import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
+import com.anytypeio.anytype.core_models.membership.MembershipStatus
 
 @Composable
 fun Toolbar(

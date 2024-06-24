@@ -4,7 +4,7 @@ import androidx.annotation.StringRes
 import com.anytypeio.anytype.core_models.membership.MembershipErrors
 import com.anytypeio.anytype.payments.models.TierPreview
 import com.anytypeio.anytype.payments.models.Tier
-import com.anytypeio.anytype.presentation.membership.models.TierId
+import com.anytypeio.anytype.core_models.membership.TierId
 
 
 sealed class MembershipMainState {

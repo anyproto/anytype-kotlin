@@ -2,7 +2,7 @@ package com.anytypeio.anytype.payments.models
 
 import com.anytypeio.anytype.core_models.membership.MembershipErrors
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
-import com.anytypeio.anytype.presentation.membership.models.TierId
+import com.anytypeio.anytype.core_models.membership.TierId
 
 //This is a data class that represents a tier preview view in the main Membership screen
 data class TierPreview(

@@ -42,7 +42,7 @@ import com.anytypeio.anytype.payments.models.TierEmail
 import com.anytypeio.anytype.payments.models.TierPeriod
 import com.anytypeio.anytype.payments.models.Tier
 import com.anytypeio.anytype.payments.viewmodel.WelcomeState
-import com.anytypeio.anytype.presentation.membership.models.TierId
+import com.anytypeio.anytype.core_models.membership.TierId
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

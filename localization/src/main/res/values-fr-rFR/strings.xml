@@ -552,7 +552,7 @@
     <string name="sign_up">Inscription</string>
     <string name="type_your_recovery_phrase">ou saisissez votre Clé</string>
     <string name="login_with_recovery_phrase">Connexion avec votre Clé</string>
-    <string name="or_scan_qr_code">Scanner un QR code</string>
+    <string name="or_scan_qr_code">Scan Qr code</string>
     <string name="choose_pin_code">Choisir un code PIN</string>
     <string name="congratulations">Félicitations !</string>
     <string name="time_to_update_title">Il est temps de mettre à jour</string>
@@ -984,7 +984,7 @@
     <string name="onboarding_soul_creation_description">Seulement vu par les personnes avec qui vous partagez quelque chose. Il n\'y a pas de registre central des utilisateurs.</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
-    <string name="onboarding_type_your_key">Saisissez votre Clé</string>
+    <string name="onboarding_type_your_key">Type your recovery phrase</string>
     <string name="onboarding_login_or">OU</string>
     <string name="onboarding_entering_void_title">Entrer dans le Vide</string>
     <string name="onboarding_your_key_can_t_be_empty">Votre Clé ne peut pas être vide</string>
@@ -1120,7 +1120,7 @@
     <!--endregion-->
     <!--region MULTIPLAYER -->
     <string name="multiplayer_share_invite_link">Partager le lien d\'invitation</string>
-    <string name="multiplayer_share_invite_link_description">Envoyez ce lien pour inviter d\'autres personnes. Attribuez les droits d\'accès lors de l\'approbation de leur demande.\"</string>
+    <string name="multiplayer_share_invite_link_description">Partagez ce lien d\'invitation pour que d\'autres puissent rejoindre votre espace. Une fois qu\'ils cliquent sur votre lien et demandent l\'accès, vous pouvez définir leurs droits d\'accès.</string>
     <string name="multiplayer_invite_link">Lien d\'invitation</string>
     <string name="multiplayer_join_a_space">Rejoindre un espace</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Commentaire privé pour un propriétaire d\'espace</string>
@@ -1130,6 +1130,8 @@
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tapotez pour écrire votre commentaire</string>
     <string name="multiplayer_share_space">Partager l\'espace</string>
     <string name="multiplayer_members_and_requests">Membres et demandes</string>
+    <string name="multiplayer_cant_add_members">Vous ne pouvez plus ajouter de membres</string>
+    <string name="multiplayer_upgrade_button">✦ Upgrade</string>
     <string name="multiplayer_members">Membres</string>
     <string name="multiplayer_leave_request">Annuler la demande</string>
     <string name="multiplayer_join_request">Demande d\'admission !</string>

@@ -27,7 +27,6 @@ import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalLayoutApi::class)
 class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
 
     @Inject

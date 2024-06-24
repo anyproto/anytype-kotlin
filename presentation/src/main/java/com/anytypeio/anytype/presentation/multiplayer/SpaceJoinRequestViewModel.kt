@@ -56,9 +56,7 @@ class SpaceJoinRequestViewModel(
 
     val isDismissed = MutableStateFlow(false)
     private val _isCurrentUserOwner = MutableStateFlow(false)
-    private val _spaceMembers = MutableStateFlow<List<ObjectWrapper.SpaceMember>>(
-        mutableListOf()
-    )
+    private val _spaceMembers = MutableStateFlow<List<ObjectWrapper.SpaceMember>>(mutableListOf())
     private val _newMember = MutableStateFlow<ObjectWrapper.SpaceMember?>(null)
     private val _viewState = MutableStateFlow<ViewState>(ViewState.Init)
     private val _activeTier = MutableStateFlow<TierId?>(null)
@@ -121,173 +119,99 @@ class SpaceJoinRequestViewModel(
         isCurrentUserOwner: Boolean
     ) {
         Timber.d("proceedWithState, tierId: $tierId, spaceView: $spaceView, spaceMembers: $spaceMembers, newMember: $newMember, isCurrentUserOwner: $isCurrentUserOwner")
-        when (tierId.value) {
-            EXPLORER_ID -> proceedWithExplorerState(spaceView, spaceMembers, newMember, isCurrentUserOwner)
-            BUILDER_ID -> proceedWithBuilderState(spaceView, spaceMembers, newMember, isCurrentUserOwner)
-            else -> proceedWithOtherState(spaceView, spaceMembers, newMember, isCurrentUserOwner)
+        val state = when (tierId.value) {
+            EXPLORER_ID -> createExplorerState(spaceView, spaceMembers, newMember, isCurrentUserOwner)
+            BUILDER_ID -> createBuilderState(spaceView, spaceMembers, newMember, isCurrentUserOwner)
+            else -> createOtherState(spaceView, spaceMembers, newMember, isCurrentUserOwner)
         }
+        _viewState.value = state
     }
 
-    private fun proceedWithExplorerState(
+    private fun createExplorerState(
         spaceView: ObjectWrapper.SpaceView,
         spaceMembers: List<ObjectWrapper.SpaceMember>,
         newMember: ObjectWrapper.SpaceMember?,
         isCurrentUserOwner: Boolean
-    ) {
+    ): ViewState {
         val canAddReaders = spaceView.canAddReaders(isCurrentUserOwner, spaceMembers)
         val canAddWriters = spaceView.canAddWriters(isCurrentUserOwner, spaceMembers)
-        _viewState.value = when {
-            newMember == null -> {
-                ViewState.Error.EmptyMember
-            }
-            !canAddReaders && !canAddWriters -> {
-                val buttons =
-                    listOf(InviteButton.UPGRADE, InviteButton.REJECT)
-                ViewState.Success(
-                    spaceName = spaceView.name.orEmpty(),
-                    newMember = newMember.identity,
-                    newMemberName = newMember.name.orEmpty(),
-                    icon = SpaceMemberIconView.icon(
-                        obj = ObjectWrapper.SpaceMember(mapOf()),
-                        urlBuilder = urlBuilder
-                    ),
-                    buttons = buttons
-                )
-            }
-            else -> {
-                val buttons = buildList {
-                    if (!canAddReaders) {
-                        add(InviteButton.JOIN_AS_VIEWER_DISABLED)
-                    } else {
-                        add(InviteButton.JOIN_AS_VIEWER)
-                    }
-                    if (!canAddWriters) {
-                        add(InviteButton.JOIN_AS_EDITOR_DISABLED)
-                    } else {
-                        add(InviteButton.JOIN_AS_EDITOR)
-                    }
+
+        return when {
+            newMember == null -> ViewState.Error.EmptyMember
+            !canAddReaders && !canAddWriters -> createViewStateWithButtons(spaceView, newMember, listOf(InviteButton.UPGRADE, InviteButton.REJECT))
+            else -> createViewStateWithButtons(
+                spaceView,
+                newMember,
+                buildList {
+                    if (!canAddReaders) add(InviteButton.JOIN_AS_VIEWER_DISABLED) else add(InviteButton.JOIN_AS_VIEWER)
+                    if (!canAddWriters) add(InviteButton.JOIN_AS_EDITOR_DISABLED) else add(InviteButton.JOIN_AS_EDITOR)
                     add(InviteButton.REJECT)
                 }
-                ViewState.Success(
-                    spaceName = spaceView.name.orEmpty(),
-                    newMember = newMember.identity,
-                    newMemberName = newMember.name.orEmpty(),
-                    icon = SpaceMemberIconView.icon(
-                        obj = ObjectWrapper.SpaceMember(mapOf()),
-                        urlBuilder = urlBuilder
-                    ),
-                    buttons = buttons
-                )
-            }
+            )
         }
     }
 
-    private fun proceedWithBuilderState(
+    private fun createBuilderState(
         spaceView: ObjectWrapper.SpaceView,
         spaceMembers: List<ObjectWrapper.SpaceMember>,
         newMember: ObjectWrapper.SpaceMember?,
         isCurrentUserOwner: Boolean
-    ) {
+    ): ViewState {
         val canAddReaders = spaceView.canAddReaders(isCurrentUserOwner, spaceMembers)
         val canAddWriters = spaceView.canAddWriters(isCurrentUserOwner, spaceMembers)
-        _viewState.value = when {
-            newMember == null -> {
-                ViewState.Error.EmptyMember
-            }
-            !canAddReaders && !canAddWriters -> {
-                val buttons =
-                    listOf(InviteButton.ADD_MORE_VIEWERS, InviteButton.ADD_MORE_EDITORS, InviteButton.REJECT)
-                ViewState.Success(
-                    spaceName = spaceView.name.orEmpty(),
-                    newMember = newMember.identity,
-                    newMemberName = newMember.name.orEmpty(),
-                    icon = SpaceMemberIconView.icon(
-                        obj = ObjectWrapper.SpaceMember(mapOf()),
-                        urlBuilder = urlBuilder
-                    ),
-                    buttons = buttons
-                )
-            }
-            else -> {
-                val buttons = buildList {
-                    if (!canAddReaders) {
-                        add(InviteButton.ADD_MORE_VIEWERS)
-                    } else {
-                        add(InviteButton.JOIN_AS_VIEWER)
-                    }
-                    if (!canAddWriters) {
-                        add(InviteButton.ADD_MORE_EDITORS)
-                    } else {
-                        add(InviteButton.JOIN_AS_EDITOR)
-                    }
+        return when {
+            newMember == null -> ViewState.Error.EmptyMember
+            !canAddReaders && !canAddWriters -> createViewStateWithButtons(spaceView, newMember, listOf(InviteButton.ADD_MORE_VIEWERS, InviteButton.ADD_MORE_EDITORS, InviteButton.REJECT))
+            else -> createViewStateWithButtons(
+                spaceView,
+                newMember,
+                buildList {
+                    if (!canAddReaders) add(InviteButton.ADD_MORE_VIEWERS) else add(InviteButton.JOIN_AS_VIEWER)
+                    if (!canAddWriters) add(InviteButton.ADD_MORE_EDITORS) else add(InviteButton.JOIN_AS_EDITOR)
                     add(InviteButton.REJECT)
                 }
-                ViewState.Success(
-                    spaceName = spaceView.name.orEmpty(),
-                    newMember = newMember.identity,
-                    newMemberName = newMember.name.orEmpty(),
-                    icon = SpaceMemberIconView.icon(
-                        obj = ObjectWrapper.SpaceMember(mapOf()),
-                        urlBuilder = urlBuilder
-                    ),
-                    buttons = buttons
-                )
-            }
+            )
         }
     }
 
-    private fun proceedWithOtherState(
+    private fun createOtherState(
         spaceView: ObjectWrapper.SpaceView,
         spaceMembers: List<ObjectWrapper.SpaceMember>,
         newMember: ObjectWrapper.SpaceMember?,
         isCurrentUserOwner: Boolean
-    ) {
+    ): ViewState {
         val canAddReaders = spaceView.canAddReaders(isCurrentUserOwner, spaceMembers)
         val canAddWriters = spaceView.canAddWriters(isCurrentUserOwner, spaceMembers)
-        _viewState.value = when {
-            newMember == null -> {
-                ViewState.Error.EmptyMember
-            }
-            !canAddReaders && !canAddWriters -> {
-                val buttons =
-                    listOf(InviteButton.ADD_MORE_VIEWERS, InviteButton.ADD_MORE_EDITORS, InviteButton.REJECT)
-                ViewState.Success(
-                    spaceName = spaceView.name.orEmpty(),
-                    newMember = newMember.identity,
-                    newMemberName = newMember.name.orEmpty(),
-                    icon = SpaceMemberIconView.icon(
-                        obj = ObjectWrapper.SpaceMember(mapOf()),
-                        urlBuilder = urlBuilder
-                    ),
-                    buttons = buttons
-                )
-            }
-            else -> {
-                val buttons = buildList {
-                    if (!canAddReaders) {
-                        add(InviteButton.ADD_MORE_VIEWERS)
-                    } else {
-                        add(InviteButton.JOIN_AS_VIEWER)
-                    }
-                    if (!canAddWriters) {
-                        add(InviteButton.ADD_MORE_EDITORS)
-                    } else {
-                        add(InviteButton.JOIN_AS_EDITOR)
-                    }
+        return when {
+            newMember == null -> ViewState.Error.EmptyMember
+            !canAddReaders && !canAddWriters -> createViewStateWithButtons(spaceView, newMember, listOf(InviteButton.ADD_MORE_VIEWERS, InviteButton.ADD_MORE_EDITORS, InviteButton.REJECT))
+            else -> createViewStateWithButtons(
+                spaceView,
+                newMember,
+                buildList {
+                    if (!canAddReaders) add(InviteButton.ADD_MORE_VIEWERS) else add(InviteButton.JOIN_AS_VIEWER)
+                    if (!canAddWriters) add(InviteButton.ADD_MORE_EDITORS) else add(InviteButton.JOIN_AS_EDITOR)
                     add(InviteButton.REJECT)
                 }
-                ViewState.Success(
-                    spaceName = spaceView.name.orEmpty(),
-                    newMember = newMember.identity,
-                    newMemberName = newMember.name.orEmpty(),
-                    icon = SpaceMemberIconView.icon(
-                        obj = ObjectWrapper.SpaceMember(mapOf()),
-                        urlBuilder = urlBuilder
-                    ),
-                    buttons = buttons
-                )
-            }
+            )
         }
+    }
+
+    private fun createViewStateWithButtons(
+        spaceView: ObjectWrapper.SpaceView,
+        newMember: ObjectWrapper.SpaceMember,
+        buttons: List<InviteButton>
+    ): ViewState.Success {
+        return ViewState.Success(
+            spaceName = spaceView.name.orEmpty(),
+            newMember = newMember.identity,
+            newMemberName = newMember.name.orEmpty(),
+            icon = SpaceMemberIconView.icon(
+                obj = ObjectWrapper.SpaceMember(mapOf()),
+                urlBuilder = urlBuilder
+            ),
+            buttons = buttons
+        )
     }
 
     private fun proceedWithUserPermissions(space: SpaceId) {

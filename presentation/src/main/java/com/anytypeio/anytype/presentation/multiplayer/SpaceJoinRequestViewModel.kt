@@ -12,7 +12,6 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.ext.isPossibleToUpgradeNumberOfSpaceMembers
-import com.anytypeio.anytype.core_models.membership.MembershipConstants
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.BUILDER_ID
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.EXPLORER_ID
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
@@ -110,7 +109,7 @@ class SpaceJoinRequestViewModel(
                     _viewState.value = ViewState.Error.ActiveTierError(e.msg())
                 }
                 .collect { tierId ->
-                    _activeTier.value = ActiveTierState.Success(TierId(MembershipConstants.BUILDER_ID))
+                    _activeTier.value = ActiveTierState.Success(tierId)
                 }
         }
     }

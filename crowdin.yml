@@ -3,6 +3,7 @@ commit_message: 'l10n | Enhancement | %language% [skip ci]'
 pull_request_title: "l10n | Enhancement"
 export_languages:                          
   - 'zh-CN'
+  - 'zh-TW'
   - 'no'
   - 'id'
   - 'es-ES'

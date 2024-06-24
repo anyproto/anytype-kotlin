@@ -552,7 +552,7 @@
     <string name="sign_up">Registrer deg</string>
     <string name="type_your_recovery_phrase">or type your Key</string>
     <string name="login_with_recovery_phrase">Login with your Key</string>
-    <string name="or_scan_qr_code">Skann QR-kode</string>
+    <string name="or_scan_qr_code">Scan Qr code</string>
     <string name="choose_pin_code">Velg pin-kode</string>
     <string name="congratulations">Gratulerer!</string>
     <string name="time_to_update_title">Det er på tide å oppdatere</string>
@@ -984,7 +984,7 @@
     <string name="onboarding_soul_creation_description">Only seen by people you share something with. There is no central registry of these names.</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
-    <string name="onboarding_type_your_key">Type your Key</string>
+    <string name="onboarding_type_your_key">Type your recovery phrase</string>
     <string name="onboarding_login_or">ELLER</string>
     <string name="onboarding_entering_void_title">Går inn i Void</string>
     <string name="onboarding_your_key_can_t_be_empty">Your Key can\'t be empty</string>
@@ -1120,7 +1120,7 @@
     <!--endregion-->
     <!--region MULTIPLAYER -->
     <string name="multiplayer_share_invite_link">Del invitasjonslenke</string>
-    <string name="multiplayer_share_invite_link_description">Send denne lenken for å invitere andre. Tildel tilgangsrettigheter når deres forespørsel er godkjent</string>
+    <string name="multiplayer_share_invite_link_description">Share this invite link so that others can join your Space. Once they click your link and request access, you can set their access rights.</string>
     <string name="multiplayer_invite_link">Invitasjonslenke</string>
     <string name="multiplayer_join_a_space">Bli med i et rom</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Private comment for a space owner</string>
@@ -1130,6 +1130,8 @@
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tap to write your comment</string>
     <string name="multiplayer_share_space">Del rom</string>
     <string name="multiplayer_members_and_requests">Medlemmer og forespørsler</string>
+    <string name="multiplayer_cant_add_members">You can’t add more members</string>
+    <string name="multiplayer_upgrade_button">✦ Upgrade</string>
     <string name="multiplayer_members">Medlemmer</string>
     <string name="multiplayer_leave_request">Leave request</string>
     <string name="multiplayer_join_request">Medlemsforespørsel</string>

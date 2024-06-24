@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -303,30 +304,35 @@ fun GlobalSearchScreen(
                     )
                 }
             }
-            state.views.forEachIndexed { idx, item ->
-                item(key = item.id) {
-                    if (idx == 0) {
-                        Spacer(modifier = Modifier.height(10.dp))
-                    }
-                    GlobalSearchItem(
-                        globalSearchItemView = item,
-                        onObjectClicked = {
-                            focus.clearFocus(true)
-                            onObjectClicked(it)
-                        },
-                        onShowRelatedClicked = {
-                            onShowRelatedClicked(it).also {
-                                query = TextFieldValue()
-                            }
-                        },
-                        focusManager = focus
-                    )
-                    if (idx != state.views.lastIndex) {
-                        Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
-                    } else {
-                        Spacer(modifier = Modifier.height(48.dp))
-                    }
+            items(
+                count = state.views.size,
+                key = { idx ->
+                    state.views[idx].id
                 }
+            ) { idx ->
+                val item = state.views[idx]
+                if (idx == 0) {
+                    Spacer(modifier = Modifier.height(10.dp))
+                }
+                GlobalSearchItem(
+                    globalSearchItemView = item,
+                    onObjectClicked = {
+                        focus.clearFocus(true)
+                        onObjectClicked(it)
+                    },
+                    onShowRelatedClicked = {
+                        onShowRelatedClicked(it).also {
+                            query = TextFieldValue()
+                        }
+                    },
+                    focusManager = focus
+                )
+                if (idx != state.views.lastIndex) {
+                    Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
+                } else {
+                    Spacer(modifier = Modifier.height(48.dp))
+                }
+
             }
             item {
                 AnimatedVisibility(
@@ -384,24 +390,27 @@ private fun GlobalSearchItem(
     globalSearchItemView: GlobalSearchItemView,
     onObjectClicked: (GlobalSearchItemView) -> Unit,
     onShowRelatedClicked: (GlobalSearchItemView) -> Unit,
-    focusManager: FocusManager
+    focusManager: FocusManager,
+    modifier: Modifier = Modifier
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val haptic = LocalHapticFeedback.current
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .combinedClickable(
                 onClick = {
                     onObjectClicked(globalSearchItemView)
                 },
                 onLongClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    focusManager.clearFocus(true)
-                    scope.launch {
-                        delay(AVOID_DROPDOWN_FLICKERING_DELAY)
-                        isMenuExpanded = true
+                    if (globalSearchItemView.links.isNotEmpty()) {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        focusManager.clearFocus(true)
+                        scope.launch {
+                            delay(AVOID_DROPDOWN_FLICKERING_DELAY)
+                            isMenuExpanded = true
+                        }
                     }
                 },
                 enabled = true

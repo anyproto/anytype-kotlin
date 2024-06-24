@@ -1402,6 +1402,9 @@ Please provide specific details of your needs here.</string>
     <string name="multiplayer_space_join_request_new_member_error">Request\'s member error</string>
     <string name="multiplayer_space_join_request_current_user_error">Current user status error</string>
     <string name="multiplayer_space_join_request_membership_status_error">Current membership status error</string>
+    <string name="membership_upgrade_title">會員升級</string>
+    <string name="membership_upgrade_description">如需更多額外的儲存容量、更多空間編輯者或更多共享空間，請與我們聯絡。 Anytype 團隊將根據您的需求和條件為您量身定製。</string>
+    <string name="membership_upgrade_button">聯絡 Anytype 團隊</string>
     <plurals name="period_years">
         <item quantity="other">%d 年</item>
     </plurals>

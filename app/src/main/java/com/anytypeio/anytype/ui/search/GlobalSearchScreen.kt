@@ -397,11 +397,13 @@ private fun GlobalSearchItem(
                     onObjectClicked(globalSearchItemView)
                 },
                 onLongClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    focusManager.clearFocus(true)
-                    scope.launch {
-                        delay(AVOID_DROPDOWN_FLICKERING_DELAY)
-                        isMenuExpanded = true
+                    if (globalSearchItemView.links.isNotEmpty()) {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        focusManager.clearFocus(true)
+                        scope.launch {
+                            delay(AVOID_DROPDOWN_FLICKERING_DELAY)
+                            isMenuExpanded = true
+                        }
                     }
                 },
                 enabled = true

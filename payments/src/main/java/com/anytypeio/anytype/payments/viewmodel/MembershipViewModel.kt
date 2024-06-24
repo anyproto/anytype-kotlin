@@ -20,8 +20,8 @@ import com.anytypeio.anytype.domain.payments.GetMembershipPaymentUrl
 import com.anytypeio.anytype.domain.payments.IsMembershipNameValid
 import com.anytypeio.anytype.domain.payments.SetMembershipEmail
 import com.anytypeio.anytype.domain.payments.VerifyMembershipEmailCode
-import com.anytypeio.anytype.payments.constants.MembershipConstants.EXPLORER_ID
-import com.anytypeio.anytype.payments.constants.MembershipConstants.MEMBERSHIP_NAME_MIN_LENGTH
+import com.anytypeio.anytype.core_models.membership.MembershipConstants.EXPLORER_ID
+import com.anytypeio.anytype.core_models.membership.MembershipConstants.MEMBERSHIP_NAME_MIN_LENGTH
 import com.anytypeio.anytype.payments.mapping.toMainView
 import com.anytypeio.anytype.payments.models.MembershipPurchase
 import com.anytypeio.anytype.payments.models.TierAnyName
@@ -34,8 +34,8 @@ import com.anytypeio.anytype.payments.playbilling.BillingPurchaseState
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsMembershipClickEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsMembershipPurchaseEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsMembershipScreenEvent
-import com.anytypeio.anytype.presentation.membership.models.MembershipStatus
-import com.anytypeio.anytype.presentation.membership.models.TierId
+import com.anytypeio.anytype.core_models.membership.MembershipStatus
+import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job

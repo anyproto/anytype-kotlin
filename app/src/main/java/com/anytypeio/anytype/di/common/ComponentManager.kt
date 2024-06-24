@@ -1123,7 +1123,7 @@ class ComponentManager(
             .build()
     }
 
-    val spaceJoinRequestComponent = ComponentWithParams { params: SpaceJoinRequestViewModel.Params ->
+    val spaceJoinRequestComponent = ComponentWithParams { params: SpaceJoinRequestViewModel.VmParams ->
         DaggerSpaceJoinRequestComponent
             .builder()
             .withDependencies(findComponentDependencies())

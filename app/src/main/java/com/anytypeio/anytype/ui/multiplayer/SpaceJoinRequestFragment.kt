@@ -11,6 +11,8 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.fragment.findNavController
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.multiplayer.SpaceJoinRequestScreen
@@ -42,22 +44,13 @@ class SpaceJoinRequestFragment : BaseBottomSheetComposeFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MaterialTheme(typography = typography) {
-                    when(val state = vm.viewState.collectAsStateWithLifecycle().value) {
-                        SpaceJoinRequestViewModel.ViewState.Error -> {
-                            // TODO Send toast.
-                        }
-                        SpaceJoinRequestViewModel.ViewState.Init -> {
-                            // Draw nothing.
-                        }
-                        is SpaceJoinRequestViewModel.ViewState.Success -> {
-                            SpaceJoinRequestScreen(
-                                state = state,
-                                onAddViewerClicked = vm::onJoinAsReaderClicked,
-                                onAddEditorClicked = vm::onJoinAsEditorClicked,
-                                onRejectClicked = vm::onRejectRequestClicked
-                            )
-                        }
-                    }
+                    SpaceJoinRequestScreen(
+                        state = vm.viewState.collectAsStateWithLifecycle().value,
+                        onAddViewerClicked = vm::onJoinAsReaderClicked,
+                        onAddEditorClicked = vm::onJoinAsEditorClicked,
+                        onRejectClicked = vm::onRejectRequestClicked,
+                        onUpgradeClicked = vm::onUpgradeClicked
+                    )
                     LaunchedEffect(Unit) {
                         vm.toasts.collect { toast(it) }
                     }
@@ -66,14 +59,30 @@ class SpaceJoinRequestFragment : BaseBottomSheetComposeFragment() {
                             if (isDismissed) dismiss()
                         }
                     }
+                    LaunchedEffect(Unit) {
+                        vm.commands.collect { command ->
+                            proceedWithCommand(command)
+                        }
+                    }
                 }
+            }
+        }
+    }
+
+    private fun proceedWithCommand(command: SpaceJoinRequestViewModel.Command?) {
+        when(command) {
+            SpaceJoinRequestViewModel.Command.NavigateToMembership -> {
+                findNavController().navigate(R.id.paymentsScreen)
+            }
+            null -> {
+                // Do nothing.
             }
         }
     }
 
     override fun injectDependencies() {
         componentManager().spaceJoinRequestComponent.get(
-            SpaceJoinRequestViewModel.Params(
+            SpaceJoinRequestViewModel.VmParams(
                 space = SpaceId(space),
                 member = member,
                 route = analyticsRoute

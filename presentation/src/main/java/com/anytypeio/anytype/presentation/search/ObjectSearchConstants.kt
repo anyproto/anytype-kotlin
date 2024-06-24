@@ -807,6 +807,30 @@ object ObjectSearchConstants {
         )
     }
 
+    fun filterNewMember(member: Id) : List<DVFilter> = buildList {
+        add(
+            DVFilter(
+                relation = Relations.IS_ARCHIVED,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.IS_DELETED,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.ID,
+                condition = DVFilterCondition.IN,
+                value = listOf(member)
+            )
+        )
+    }
+
     fun defaultDataViewFilters(spaces: List<Id>) = buildList {
         add(
             DVFilter(
@@ -1132,6 +1156,7 @@ object ObjectSearchConstants {
     val spaceMemberKeys = listOf(
         Relations.ID,
         Relations.SPACE_ID,
+        Relations.TARGET_SPACE_ID,
         Relations.IDENTITY,
         Relations.NAME,
         Relations.ICON_IMAGE,

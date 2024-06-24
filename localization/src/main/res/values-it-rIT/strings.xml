@@ -1130,9 +1130,10 @@
     <string name="multiplayer_space_request_to_join_msg">Sei stato invitato a unirti allo spazio %1$s, creato da %2$s. Invia una richiesta così il proprietario dello spazio può farti entrare.</string>
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tocca per scrivere il tuo commento</string>
     <string name="multiplayer_share_space">Condividi lo spazio</string>
-    <string name="multiplayer_members_and_requests">Membri e richieste</string>
+    <string name="multiplayer_members_and_requests">Membri</string>
     <string name="multiplayer_cant_add_members">Non puoi aggiungere altri membri</string>
     <string name="multiplayer_upgrade_button">✦ Upgrade</string>
+    <string name="multiplayer_upgrade_button_request">✦ Upgrade to add more members</string>
     <string name="multiplayer_members">Membri</string>
     <string name="multiplayer_leave_request">Richiesta di uscita</string>
     <string name="multiplayer_join_request">Richiesta di partecipazione</string>
@@ -1142,7 +1143,9 @@
     <string name="multiplayer_can_edit">Può modificare</string>
     <string name="multiplayer_can_view">Può visualizzare</string>
     <string name="multiplayer_space_add_viewer">Aggiungi visualizzatore</string>
+    <string name="multiplayer_space_add_more_viewer">✦ Add more viewers</string>
     <string name="multiplayer_space_add_editor">Aggiungi editor</string>
+    <string name="multiplayer_space_add_more_editor">✦ Add more editors</string>
     <string name="multiplayer_space_request_reject">Rifiuta</string>
     <string name="multiplayer_space_join_request_header">%1$s ha richiesto di unirsi allo spazio %2$s</string>
     <string name="multiplayer_remove_member">Remove member</string>
@@ -1402,6 +1405,10 @@ Please provide specific details of your needs here.</string>
     <string name="membership_support_already_acquired">Hai già acquisito un piano Membership utilizzando un altro account Anytype.</string>
     <string name="membership_support_different_subscription">Trovato un abbonamento con un id diverso</string>
     <string name="membership_support_more_then_one_subscription">Trovato più di un abbonamento</string>
+    <string name="multiplayer_space_join_request_participants_error">Space participant\'s error</string>
+    <string name="multiplayer_space_join_request_new_member_error">Request\'s member error</string>
+    <string name="multiplayer_space_join_request_current_user_error">Current user status error</string>
+    <string name="multiplayer_space_join_request_membership_status_error">Current membership status error</string>
     <plurals name="period_years">
         <item quantity="one">anno</item>
         <item quantity="other">%d anni</item>

@@ -552,7 +552,7 @@
     <string name="sign_up">Aanmelden</string>
     <string name="type_your_recovery_phrase">or type your Key</string>
     <string name="login_with_recovery_phrase">Login with your Key</string>
-    <string name="or_scan_qr_code">Scan QR code</string>
+    <string name="or_scan_qr_code">Scan Qr code</string>
     <string name="choose_pin_code">Kies pincode</string>
     <string name="congratulations">Gefeliciteerd!</string>
     <string name="time_to_update_title">Het is tijd om te updaten</string>
@@ -984,7 +984,7 @@
     <string name="onboarding_soul_creation_description">Alleen zichtbaar voor mensen met wie je iets deelt. Er is geen centraal register van deze namen.</string>
     <string name="onboarding_soul_creation_placeholder">Anytype identiteit</string>
     <string name="onboarding_soul_creation">Jouw identiteit aan het aanmaken…</string>
-    <string name="onboarding_type_your_key">Type your Key</string>
+    <string name="onboarding_type_your_key">Type your recovery phrase</string>
     <string name="onboarding_login_or">OF</string>
     <string name="onboarding_entering_void_title">De Void binnengaan</string>
     <string name="onboarding_your_key_can_t_be_empty">Your Key can\'t be empty</string>
@@ -1120,7 +1120,7 @@
     <!--endregion-->
     <!--region MULTIPLAYER -->
     <string name="multiplayer_share_invite_link">Deel uitnodigingslink</string>
-    <string name="multiplayer_share_invite_link_description">Stuur deze link om anderen uit te nodigen. Wijs toegangsrechten toe na hun goedkeuring.</string>
+    <string name="multiplayer_share_invite_link_description">Deel deze uitnodigingslink zodat anderen zich bij jouw ruimte kunnen aansluiten. Zodra ze op jouw link klikken en toegang vragen, kun je hun toegangsrechten instellen.</string>
     <string name="multiplayer_invite_link">Uitnodigingslink</string>
     <string name="multiplayer_join_a_space">Sluit je aan bij een ruimte</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Persoonlijk bericht voor een eigenaar van de ruimte</string>
@@ -1130,6 +1130,8 @@
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tik om je reactie te schrijven</string>
     <string name="multiplayer_share_space">Deel ruimte</string>
     <string name="multiplayer_members_and_requests">Leden en verzoeken</string>
+    <string name="multiplayer_cant_add_members">You can’t add more members</string>
+    <string name="multiplayer_upgrade_button">✦ Upgrade</string>
     <string name="multiplayer_members">Leden</string>
     <string name="multiplayer_leave_request">Afmeldverzoek</string>
     <string name="multiplayer_join_request">Deelnameverzoek</string>

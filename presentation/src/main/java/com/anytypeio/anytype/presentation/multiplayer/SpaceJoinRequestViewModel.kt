@@ -23,6 +23,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ApproveJoinSpaceRequest
 import com.anytypeio.anytype.domain.multiplayer.DeclineSpaceJoinRequest
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.canAddReaders
 import com.anytypeio.anytype.domain.`object`.canAddWriters
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -33,6 +34,7 @@ import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.filterParticipants
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -43,16 +45,20 @@ class SpaceJoinRequestViewModel(
     private val searchObjects: SearchObjects,
     private val spaceManager: SpaceManager,
     private val urlBuilder: UrlBuilder,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val userPermissionProvider: UserPermissionProvider
 ): BaseViewModel() {
 
     val isDismissed = MutableStateFlow(false)
+    private val _isCurrentUserOwner = MutableStateFlow(false)
 
     private val state = MutableStateFlow<State>(State.Init)
 
     val viewState = MutableStateFlow<ViewState>(ViewState.Init)
 
     init {
+        proceedWithUserPermissions()
+
         viewModelScope.launch {
             val config = spaceManager.getConfig()
             if (config != null && config.space == params.space.id) {
@@ -119,7 +125,9 @@ class SpaceJoinRequestViewModel(
         }
 
         viewModelScope.launch {
-            state.collect { curr ->
+            state.combine(_isCurrentUserOwner) { state, isCurrentUserOwner ->
+                state to isCurrentUserOwner
+            }.collect { (curr, isCurrentUserOwner) ->
                 viewState.value = when (curr) {
                     is State.Error -> ViewState.Error
                     is State.Init -> ViewState.Init
@@ -130,8 +138,8 @@ class SpaceJoinRequestViewModel(
                             obj = curr.member,
                             urlBuilder = urlBuilder
                         ),
-                        canAddAsReader = curr.spaceView.canAddReaders(curr.participants),
-                        canAddAsEditor = curr.spaceView.canAddWriters(curr.participants)
+                        canAddAsReader = curr.spaceView.canAddReaders(isCurrentUserOwner, curr.participants),
+                        canAddAsEditor = curr.spaceView.canAddWriters(isCurrentUserOwner, curr.participants)
                     )
                 }
             }
@@ -144,6 +152,16 @@ class SpaceJoinRequestViewModel(
                     mapOf(EventsPropertiesKey.route to params.route)
                 )
             )
+        }
+    }
+
+    private fun proceedWithUserPermissions() {
+        viewModelScope.launch {
+            userPermissionProvider
+                .observe(space = params.space)
+                .collect { permission ->
+                    _isCurrentUserOwner.value = permission == SpaceMemberPermissions.OWNER
+                }
         }
     }
 
@@ -289,7 +307,8 @@ class SpaceJoinRequestViewModel(
         private val searchObjects: SearchObjects,
         private val spaceManager: SpaceManager,
         private val urlBuilder: UrlBuilder,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val userPermissionProvider: UserPermissionProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = SpaceJoinRequestViewModel(
@@ -299,7 +318,8 @@ class SpaceJoinRequestViewModel(
             searchObjects = searchObjects,
             spaceManager = spaceManager,
             urlBuilder = urlBuilder,
-            analytics = analytics
+            analytics = analytics,
+            userPermissionProvider = userPermissionProvider
         ) as T
     }
 

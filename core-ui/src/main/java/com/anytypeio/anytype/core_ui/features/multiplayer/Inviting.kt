@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_ui.features.multiplayer
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -37,7 +38,8 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Title1
 
 @Composable
-@Preview
+@Preview(backgroundColor = 0xFFFFFFFF, showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Mode")
+@Preview(backgroundColor = 0x000000, showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 fun ShareInviteLinkCardPreview() {
     ShareInviteLinkCard(
         link = "https://anytype.io/ibafyrfhfsag6rea3ifffsasssa3ifffsasssga3ifffsasssga3ifffsas",
@@ -49,7 +51,8 @@ fun ShareInviteLinkCardPreview() {
 }
 
 @Composable
-@Preview
+@Preview(backgroundColor = 0xFFFFFFFF, showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Mode")
+@Preview(backgroundColor = 0x000000, showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 fun GenerateInviteLinkCardPreview() {
     GenerateInviteLinkCard(
         modifier = Modifier,
@@ -120,14 +123,7 @@ fun ShareInviteLinkCard(
                 }
             }
         }
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = stringResource(R.string.multiplayer_share_invite_link_description),
-            style = BodyCalloutRegular,
-            color = colorResource(id = R.color.text_primary),
-            modifier = Modifier.padding(horizontal = 20.dp)
-        )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(4.dp))
         Box(
             modifier = Modifier
                 .padding(horizontal = 20.dp)
@@ -140,12 +136,19 @@ fun ShareInviteLinkCard(
                 style = BodyCalloutRegular,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                color = colorResource(id = R.color.text_secondary),
+                color = colorResource(id = R.color.text_primary),
                 modifier = Modifier.fillMaxWidth()
             )
         }
         Divider()
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(10.dp))
+        Text(
+            text = stringResource(R.string.multiplayer_share_invite_link_description),
+            style = BodyCalloutRegular,
+            color = colorResource(id = R.color.text_secondary),
+            modifier = Modifier.padding(horizontal = 20.dp)
+        )
+        Spacer(modifier = Modifier.height(20.dp))
         Box(
             modifier = Modifier
                 .fillMaxWidth()

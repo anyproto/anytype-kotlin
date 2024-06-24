@@ -8,6 +8,7 @@ import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.multiplayer.SpaceJoinRequestViewModel
@@ -57,4 +58,5 @@ interface SpaceJoinRequestDependencies : ComponentDependencies {
     fun spaceManager(): SpaceManager
     fun analytics(): Analytics
     fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
+    fun userPermissions(): UserPermissionProvider
 }

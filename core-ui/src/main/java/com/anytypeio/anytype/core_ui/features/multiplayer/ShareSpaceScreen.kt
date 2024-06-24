@@ -1,10 +1,17 @@
 package com.anytypeio.anytype.core_ui.features.multiplayer
 
+import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.AnchoredDraggableState
+import androidx.compose.foundation.gestures.DraggableAnchors
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,17 +19,22 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,7 +43,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -40,6 +55,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -60,6 +76,8 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
+import com.anytypeio.anytype.core_ui.views.ButtonUpgrade
+import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.core_ui.views.Relations3
@@ -68,12 +86,14 @@ import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel.ShareLinkViewState
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ShareSpaceScreen(
     spaceAccessType: SpaceAccessType?,
     isCurrentUserOwner: Boolean,
     members: List<ShareSpaceMemberView>,
     shareLinkViewState: ShareLinkViewState,
+    incentiveState: ShareSpaceViewModel.ShareSpaceIncentiveState,
     onGenerateInviteLinkClicked: () -> Unit,
     onShareInviteLinkClicked: () -> Unit,
     onViewRequestClicked: (ShareSpaceMemberView) -> Unit,
@@ -84,142 +104,184 @@ fun ShareSpaceScreen(
     onStopSharingClicked: () -> Unit,
     onMoreInfoClicked: () -> Unit,
     onShareQrCodeClicked: () -> Unit,
-    onDeleteLinkClicked: () -> Unit
+    onDeleteLinkClicked: () -> Unit,
+    onIncentiveClicked: () -> Unit
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            item {
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    Dragger(
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .padding(vertical = 6.dp)
-                    )
-                }
+    val nestedScrollInteropConnection = rememberNestedScrollInteropConnection()
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .nestedScroll(nestedScrollInteropConnection)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Dragger(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(vertical = 6.dp)
+                )
             }
-            item {
-                var isMenuExpanded by remember { mutableStateOf(false) }
-                Box(modifier = Modifier.fillMaxWidth()) {
+            var isMenuExpanded by remember { mutableStateOf(false) }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                if (isCurrentUserOwner) {
+                    Toolbar(title = stringResource(R.string.multiplayer_sharing))
+                } else {
+                    Toolbar(title = stringResource(R.string.multiplayer_members))
+                }
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(end = 16.dp)
+                ) {
                     if (isCurrentUserOwner) {
-                        Toolbar(title = stringResource(R.string.multiplayer_sharing))
-                    } else {
-                        Toolbar(title = stringResource(R.string.multiplayer_members))
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_action_more),
+                            contentDescription = "Menu button",
+                            modifier = Modifier.noRippleClickable {
+                                isMenuExpanded = true
+                            }
+                        )
                     }
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .padding(end = 16.dp)
+                    DropdownMenu(
+                        expanded = isMenuExpanded,
+                        onDismissRequest = {
+                            isMenuExpanded = false
+                        },
+                        modifier = Modifier.background(
+                            color = colorResource(id = R.color.background_secondary)
+                        )
                     ) {
-                        if (isCurrentUserOwner) {
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_action_more),
-                                contentDescription = "Menu button",
-                                modifier = Modifier.noRippleClickable {
-                                    isMenuExpanded = true
-                                }
+                        DropdownMenuItem(
+                            onClick = {
+                                onMoreInfoClicked()
+                                isMenuExpanded = false
+                            }
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.multiplayer_more_info),
+                                style = BodyRegular,
+                                color = colorResource(id = R.color.text_primary),
+                                modifier = Modifier.weight(1.0f)
                             )
                         }
-                        DropdownMenu(
-                            expanded = isMenuExpanded,
-                            onDismissRequest = {
-                                isMenuExpanded = false
-                            },
-                            modifier = Modifier.background(
-                                color = colorResource(id = R.color.background_secondary)
+                        if (spaceAccessType == SpaceAccessType.SHARED) {
+                            Divider(
+                                paddingStart = 0.dp,
+                                paddingEnd = 0.dp
                             )
-                        ) {
                             DropdownMenuItem(
                                 onClick = {
-                                    onMoreInfoClicked()
+                                    onStopSharingClicked()
                                     isMenuExpanded = false
                                 }
                             ) {
                                 Text(
-                                    text = stringResource(id = R.string.multiplayer_more_info),
+                                    text = stringResource(id = R.string.multiplayer_space_stop_sharing),
                                     style = BodyRegular,
-                                    color = colorResource(id = R.color.text_primary),
+                                    color = colorResource(id = R.color.palette_dark_red),
                                     modifier = Modifier.weight(1.0f)
                                 )
-                            }
-                            if (spaceAccessType == SpaceAccessType.SHARED) {
-                                Divider(
-                                    paddingStart = 0.dp,
-                                    paddingEnd = 0.dp
-                                )
-                                DropdownMenuItem(
-                                    onClick = {
-                                        onStopSharingClicked()
-                                        isMenuExpanded = false
-                                    }
-                                ) {
-                                    Text(
-                                        text = stringResource(id = R.string.multiplayer_space_stop_sharing),
-                                        style = BodyRegular,
-                                        color = colorResource(id = R.color.palette_dark_red),
-                                        modifier = Modifier.weight(1.0f)
-                                    )
-                                }
                             }
                         }
                     }
                 }
             }
             if (isCurrentUserOwner) {
-                item {
-                    Section(
-                        title = stringResource(R.string.multiplayer_members_and_requests)
-                    )
-                }
+                Section(
+                    title = stringResource(R.string.multiplayer_members_and_requests)
+                )
             }
-            members.forEachIndexed { index, member ->
-                item {
-                    when(val config = member.config) {
-                        is ShareSpaceMemberView.Config.Member -> {
-                            SpaceMember(
-                                member = member.obj,
-                                isCurrentUserOwner = isCurrentUserOwner,
-                                config = config,
-                                onCanEditClicked = {
-                                    onCanEditClicked(member)
-                                },
-                                onCanViewClicked = {
-                                    onCanViewClicked(member)
-                                },
-                                onRemoveMemberClicked = {
-                                    onRemoveMemberClicked(member)
-                                },
-                                icon = member.icon,
-                                canEditEnabled = member.canEditEnabled,
-                                canReadEnabled = member.canReadEnabled,
-                                isUser = member.isUser
-                            )
+            Incentive(
+                incentiveState = incentiveState,
+                onIncentiveClicked = onIncentiveClicked
+            )
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+            ) {
+                members.forEachIndexed { index, member ->
+                    item {
+                        when (val config = member.config) {
+                            is ShareSpaceMemberView.Config.Member -> {
+                                SpaceMember(
+                                    member = member.obj,
+                                    isCurrentUserOwner = isCurrentUserOwner,
+                                    config = config,
+                                    onCanEditClicked = {
+                                        onCanEditClicked(member)
+                                    },
+                                    onCanViewClicked = {
+                                        onCanViewClicked(member)
+                                    },
+                                    onRemoveMemberClicked = {
+                                        onRemoveMemberClicked(member)
+                                    },
+                                    icon = member.icon,
+                                    canEditEnabled = member.canEditEnabled,
+                                    canReadEnabled = member.canReadEnabled,
+                                    isUser = member.isUser
+                                )
+                            }
+
+                            is ShareSpaceMemberView.Config.Request -> {
+                                SpaceMemberRequest(
+                                    member = member.obj,
+                                    icon = member.icon,
+                                    request = config,
+                                    onViewRequestClicked = {
+                                        onViewRequestClicked(member)
+                                    },
+                                    onApproveLeaveRequestClicked = {
+                                        onApproveLeaveRequestClicked(member)
+                                    },
+                                    isUser = member.isUser
+                                )
+                            }
                         }
-                        is ShareSpaceMemberView.Config.Request -> {
-                            SpaceMemberRequest(
-                                member = member.obj,
-                                icon = member.icon,
-                                request = config,
-                                onViewRequestClicked = {
-                                    onViewRequestClicked(member)
-                                },
-                                onApproveLeaveRequestClicked = {
-                                    onApproveLeaveRequestClicked(member)
-                                },
-                                isUser = member.isUser
-                            )
+                        if (index != members.lastIndex) {
+                            Divider()
                         }
                     }
-                    if (index != members.lastIndex) {
-                        Divider()
+                }
+                if (members.size > 2) {
+                    // Workaround adding footer to prevent content invisible behind link card
+                    item {
+                        Spacer(modifier = Modifier.height(324.dp))
                     }
                 }
             }
-            if (members.size > 4) {
-                // Workaround adding footer to prevent content invisible behind link card
-                item {
-                    Spacer(modifier = Modifier.height(324.dp))
-                }
-            }
+        }
+
+        val density = LocalDensity.current
+        val draggedDownAnchorTop = with(density) { 250.dp.toPx() }
+
+        val anchors = DraggableAnchors {
+            DragValue.DRAGGED_DOWN at draggedDownAnchorTop
+            DragValue.DRAGGED_UP at 0f
+        }
+        val anchoredDraggableState = remember {
+            AnchoredDraggableState(
+                initialValue = DragValue.DRAGGED_UP,
+                anchors = anchors,
+                positionalThreshold = { distance: Float -> distance * 0.5f },
+                velocityThreshold = { with(density) { 100.dp.toPx() } },
+                animationSpec = tween()
+            )
+        }
+        val offset =
+            if (anchoredDraggableState.offset.isNaN()) 0 else anchoredDraggableState.offset.toInt()
+        SideEffect {
+            anchoredDraggableState.updateAnchors(anchors)
         }
         AnimatedVisibility(
             visible = shareLinkViewState is ShareLinkViewState.Shared,
@@ -227,7 +289,13 @@ fun ShareSpaceScreen(
             exit = slideOutVertically { it },
             modifier = Modifier.align(Alignment.BottomStart)
         ) {
-            Box(modifier = Modifier.padding(16.dp)) {
+            Box(modifier = Modifier
+                .padding(16.dp)
+                .offset {
+                    IntOffset(x = 0, y = offset)
+                }
+                .anchoredDraggable(anchoredDraggableState, Orientation.Vertical)
+            ) {
                 if (shareLinkViewState is ShareLinkViewState.Shared) {
                     ShareInviteLinkCard(
                         link = shareLinkViewState.link,
@@ -252,6 +320,57 @@ fun ShareSpaceScreen(
         }
     }
 }
+
+@Composable
+private fun Incentive(
+    incentiveState: ShareSpaceViewModel.ShareSpaceIncentiveState,
+    onIncentiveClicked: () -> Unit
+) {
+    when (incentiveState) {
+        is ShareSpaceViewModel.ShareSpaceIncentiveState.VisibleSpaceReaders -> {
+            Text(
+                modifier = Modifier
+                    .padding(horizontal = 20.dp),
+                text = stringResource(id = R.string.multiplayer_cant_add_members),
+                style = Caption1Regular,
+                color = colorResource(id = R.color.text_primary)
+            )
+            ButtonUpgrade(
+                modifier = Modifier
+                    .padding(top = 12.dp, bottom = 24.dp, start = 16.dp, end = 16.dp)
+                    .height(36.dp)
+                    .verticalScroll(rememberScrollState()),
+                onClick = onIncentiveClicked,
+                text = stringResource(id = R.string.multiplayer_upgrade_button)
+            )
+        }
+
+        ShareSpaceViewModel.ShareSpaceIncentiveState.VisibleSpaceEditors -> {
+            Text(
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .verticalScroll(rememberScrollState()),
+                text = stringResource(id = R.string.multiplayer_cant_add_members),
+                style = Caption1Regular,
+                color = colorResource(id = R.color.text_primary)
+            )
+            ButtonUpgrade(
+                modifier = Modifier
+                    .padding(top = 12.dp, bottom = 24.dp, start = 16.dp, end = 16.dp)
+                    .height(36.dp)
+                    .verticalScroll(rememberScrollState()),
+                onClick = onIncentiveClicked,
+                text = stringResource(id = R.string.multiplayer_upgrade_button)
+            )
+        }
+
+        ShareSpaceViewModel.ShareSpaceIncentiveState.Hidden -> {
+            //show nothing
+        }
+    }
+}
+
+enum class DragValue { DRAGGED_DOWN, DRAGGED_UP }
 
 @Composable
 private fun SpaceMember(
@@ -304,16 +423,19 @@ private fun SpaceMember(
             }
             Spacer(modifier = Modifier.height(2.dp))
             Text(
-                text = when(config) {
+                text = when (config) {
                     ShareSpaceMemberView.Config.Member.Writer -> {
                         stringResource(id = R.string.multiplayer_can_edit)
                     }
+
                     ShareSpaceMemberView.Config.Member.Owner -> {
                         stringResource(id = R.string.multiplayer_owner)
                     }
+
                     ShareSpaceMemberView.Config.Member.Reader -> {
                         stringResource(id = R.string.multiplayer_can_view)
                     }
+
                     else -> EMPTY_STRING_VALUE
                 },
                 style = Relations3,
@@ -350,13 +472,13 @@ private fun SpaceMember(
                             color = colorResource(id = R.color.text_primary),
                             modifier = Modifier.weight(1.0f)
                         )
-                    if (config is ShareSpaceMemberView.Config.Member.Reader) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_dropdown_menu_check),
-                            contentDescription = "Checked icon",
-                            modifier = Modifier.align(Alignment.CenterVertically)
-                        )
-                    }
+                        if (config is ShareSpaceMemberView.Config.Member.Reader) {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_dropdown_menu_check),
+                                contentDescription = "Checked icon",
+                                modifier = Modifier.align(Alignment.CenterVertically)
+                            )
+                        }
                     }
                     Divider()
                     DropdownMenuItem(
@@ -373,13 +495,13 @@ private fun SpaceMember(
                             color = colorResource(id = R.color.text_primary),
                             modifier = Modifier.weight(1.0f)
                         )
-                    if (config is ShareSpaceMemberView.Config.Member.Writer) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_dropdown_menu_check),
-                            contentDescription = "Checked icon",
-                            modifier = Modifier.align(Alignment.CenterVertically)
-                        )
-                    }
+                        if (config is ShareSpaceMemberView.Config.Member.Writer) {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_dropdown_menu_check),
+                                contentDescription = "Checked icon",
+                                modifier = Modifier.align(Alignment.CenterVertically)
+                            )
+                        }
                     }
                     Divider()
                     DropdownMenuItem(
@@ -488,14 +610,15 @@ private fun SpaceMemberRequest(
                 }
             }
             Spacer(modifier = Modifier.height(2.dp))
-            val color = when(request) {
+            val color = when (request) {
                 ShareSpaceMemberView.Config.Request.Join -> ThemeColor.PINK
                 ShareSpaceMemberView.Config.Request.Leave -> ThemeColor.RED
             }
-            val text = when(request) {
+            val text = when (request) {
                 ShareSpaceMemberView.Config.Request.Join -> stringResource(
                     id = R.string.multiplayer_join_request
                 )
+
                 ShareSpaceMemberView.Config.Request.Leave -> stringResource(
                     id = R.string.multiplayer_leave_request
                 )
@@ -515,7 +638,7 @@ private fun SpaceMemberRequest(
                 style = Relations1
             )
         }
-        when(request) {
+        when (request) {
             ShareSpaceMemberView.Config.Request.Join -> {
                 ButtonSecondary(
                     text = stringResource(R.string.multiplayer_view_request),
@@ -526,6 +649,7 @@ private fun SpaceMemberRequest(
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
             }
+
             ShareSpaceMemberView.Config.Request.Leave -> {
                 ButtonSecondary(
                     text = stringResource(R.string.multiplayer_approve_request),
@@ -580,7 +704,18 @@ fun SpaceLeaveRequestPreview() {
 }
 
 @Composable
-@Preview
+@Preview(
+    backgroundColor = 0xFFFFFFFF,
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    name = "Light Mode"
+)
+@Preview(
+    backgroundColor = 0x000000,
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    name = "Dark Mode"
+)
 fun ShareSpaceScreenPreview() {
     ShareSpaceScreen(
         shareLinkViewState = ShareSpaceViewModel.ShareLinkViewState.Shared(
@@ -649,13 +784,15 @@ fun ShareSpaceScreenPreview() {
         onRemoveMemberClicked = {},
         onCanViewClicked = {},
         onCanEditClicked = {},
-        isCurrentUserOwner = false,
+        isCurrentUserOwner = true,
         onStopSharingClicked = {},
         onGenerateInviteLinkClicked = {},
         onMoreInfoClicked = {},
         onShareQrCodeClicked = {},
         onDeleteLinkClicked = {},
-        spaceAccessType = null
+        spaceAccessType = null,
+        incentiveState = ShareSpaceViewModel.ShareSpaceIncentiveState.VisibleSpaceReaders,
+        onIncentiveClicked = {}
     )
 }
 

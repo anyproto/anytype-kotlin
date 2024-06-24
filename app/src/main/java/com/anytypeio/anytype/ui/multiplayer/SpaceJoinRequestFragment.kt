@@ -23,6 +23,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.multiplayer.SpaceJoinRequestViewModel
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
+import timber.log.Timber
 
 class SpaceJoinRequestFragment : BaseBottomSheetComposeFragment() {
 
@@ -69,16 +70,18 @@ class SpaceJoinRequestFragment : BaseBottomSheetComposeFragment() {
         }
     }
 
-    private fun proceedWithCommand(command: SpaceJoinRequestViewModel.Command?) {
-        when(command) {
+    private fun proceedWithCommand(command: SpaceJoinRequestViewModel.Command) {
+        Timber.d("proceedWithCommand: $command")
+        when (command) {
             SpaceJoinRequestViewModel.Command.NavigateToMembership -> {
                 findNavController().navigate(R.id.paymentsScreen)
             }
-            null -> {
-                // Do nothing.
+            SpaceJoinRequestViewModel.Command.NavigateToMembershipUpdate -> {
+                findNavController().navigate(R.id.membershipUpdateScreen)
             }
         }
     }
+
 
     override fun injectDependencies() {
         componentManager().spaceJoinRequestComponent.get(

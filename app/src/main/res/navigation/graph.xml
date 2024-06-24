@@ -277,6 +277,10 @@
         android:name="com.anytypeio.anytype.ui.payments.MembershipFragment" />
 
     <dialog
+        android:id="@+id/membershipUpdateScreen"
+        android:name="com.anytypeio.anytype.ui.payments.MembershipUpgradeFragment" />
+
+    <dialog
         android:id="@+id/galleryInstallationScreen"
         android:name="com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment" />
 

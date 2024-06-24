@@ -33,6 +33,7 @@ import com.anytypeio.anytype.di.feature.onboarding.login.OnboardingMnemonicLogin
 import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingMnemonicDependencies
 import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingSoulCreationDependencies
 import com.anytypeio.anytype.di.feature.membership.MembershipComponentDependencies
+import com.anytypeio.anytype.di.feature.membership.MembershipUpdateComponentDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromLibraryDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationEditDependencies
 import com.anytypeio.anytype.di.feature.search.GlobalSearchDependencies
@@ -122,7 +123,8 @@ interface MainComponent :
     MembershipComponentDependencies,
     GalleryInstallationComponentDependencies,
     NotificationDependencies,
-    GlobalSearchDependencies
+    GlobalSearchDependencies,
+    MembershipUpdateComponentDependencies
 {
 
     fun inject(app: AndroidApplication)
@@ -338,4 +340,9 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(GlobalSearchDependencies::class)
     abstract fun provideGlobalSearchDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(MembershipUpdateComponentDependencies::class)
+    abstract fun provideMembershipUpdateComponentDependencies(component: MainComponent): ComponentDependencies
 }

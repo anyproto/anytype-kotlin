@@ -392,7 +392,7 @@ class SpaceJoinRequestViewModel(
             if (isPossibleToUpgrade) {
                 _commands.emit(Command.NavigateToMembership)
             } else {
-                //todo navigate to membership email screen
+                _commands.emit(Command.NavigateToMembershipUpdate)
             }
         }
     }
@@ -476,6 +476,7 @@ class SpaceJoinRequestViewModel(
 
     sealed class Command {
         data object NavigateToMembership : Command()
+        data object NavigateToMembershipUpdate : Command()
     }
 }
 

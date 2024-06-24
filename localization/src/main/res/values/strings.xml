@@ -1640,10 +1640,14 @@ Please provide specific details of your needs here.</string>
     <string name="membership_support_already_acquired">You’ve already acquired a Membership plan using another Anytype account.</string>
     <string name="membership_support_different_subscription">Found a subscription with a different id</string>
     <string name="membership_support_more_then_one_subscription">Found more than one subscription</string>
-    <string name="multiplayer_space_join_request_participants_error">Space participant's error</string>
-    <string name="multiplayer_space_join_request_new_member_error">Request's member error</string>
+    <string name="multiplayer_space_join_request_participants_error">Space participant\'s error</string>
+    <string name="multiplayer_space_join_request_new_member_error">Request\'s member error</string>
     <string name="multiplayer_space_join_request_current_user_error">Current user status error</string>
     <string name="multiplayer_space_join_request_membership_status_error">Current membership status error</string>
+
+    <string name="membership_upgrade_title">Membership upgrade</string>
+    <string name="membership_upgrade_description">Reach us for extra storage, space editors, or more shared spaces. Anytype team will provide details and conditions tailored to your needs.</string>
+    <string name="membership_upgrade_button">Contact Anytype Team</string>
 
     <plurals name="period_years">
         <item quantity="one">year</item>

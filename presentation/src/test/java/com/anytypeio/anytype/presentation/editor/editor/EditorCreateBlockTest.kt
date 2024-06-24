@@ -95,7 +95,7 @@ class EditorCreateBlockTest : EditorPresentationTestSetup() {
                         position = Position.BOTTOM,
                         prototype = Block.Prototype.Link(
                             target = linkToObject,
-                            cardStyle = Block.Content.Link.CardStyle.TEXT,
+                            cardStyle = Block.Content.Link.CardStyle.CARD,
                             iconSize = Block.Content.Link.IconSize.SMALL,
                             description = Block.Content.Link.Description.NONE
                         )

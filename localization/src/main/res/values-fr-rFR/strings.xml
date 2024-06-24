@@ -1405,6 +1405,9 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="multiplayer_space_join_request_new_member_error">Request\'s member error</string>
     <string name="multiplayer_space_join_request_current_user_error">Current user status error</string>
     <string name="multiplayer_space_join_request_membership_status_error">Current membership status error</string>
+    <string name="membership_upgrade_title">Mise à niveau de l\'abonnement</string>
+    <string name="membership_upgrade_description">Contactez-nous pour obtenir du stockage supplémentaire, plus de rédacteurs, ou davantage d\'espaces partagés. L\'équipe d\'Anytype vous fournira l\'offre adaptée à vos besoins.</string>
+    <string name="membership_upgrade_button">Contacter l\'équipe d\'Anytype</string>
     <plurals name="period_years">
         <item quantity="one">année</item>
         <item quantity="other">%d années</item>

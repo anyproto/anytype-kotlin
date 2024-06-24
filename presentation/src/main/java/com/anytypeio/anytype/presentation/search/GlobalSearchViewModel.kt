@@ -51,6 +51,8 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
@@ -72,7 +74,6 @@ class GlobalSearchViewModel(
 
     private val mode = MutableStateFlow<Mode>(Mode.Default)
 
-    val views = MutableStateFlow<List<GlobalSearchItemView>>(emptyList())
     val navigation = MutableSharedFlow<OpenObjectNavigation>()
 
     val state = combine(
@@ -88,6 +89,28 @@ class GlobalSearchViewModel(
             is Mode.Related -> {
                 buildRelatedSearchFlow(query, mode)
             }
+        }
+    }.scan<ViewState, ViewState>(initial = ViewState.Init) { curr, new ->
+        when(new) {
+            is ViewState.Default -> {
+                if (new.isLoading) {
+                    new.copy(
+                        views = curr.views
+                    )
+                } else {
+                    new
+                }
+            }
+            is ViewState.Related -> {
+                if (new.isLoading) {
+                    new.copy(
+                        views = curr.views
+                    )
+                } else {
+                    new
+                }
+            }
+            else -> new
         }
     }.stateIn(
         scope = viewModelScope,
@@ -131,7 +154,6 @@ class GlobalSearchViewModel(
                 is Resultat.Failure -> {
                     ViewState.Related(
                         target = mode.target,
-                        views = emptyList(),
                         isLoading = false
                     )
                 }
@@ -139,11 +161,9 @@ class GlobalSearchViewModel(
                 is Resultat.Loading -> {
                     ViewState.Related(
                         target = mode.target,
-                        views = emptyList(),
                         isLoading = true
                     )
                 }
-
                 is Resultat.Success -> {
                     ViewState.Related(
                         target = mode.target,
@@ -183,14 +203,11 @@ class GlobalSearchViewModel(
                         isLoading = false
                     )
                 }
-
                 is Resultat.Loading -> {
                     ViewState.Default(
-                        views = emptyList(),
                         isLoading = true
                     )
                 }
-
                 is Resultat.Success -> {
                     ViewState.Default(
                         views = result.value.mapNotNull {
@@ -279,13 +296,13 @@ class GlobalSearchViewModel(
         }
 
         data class Default (
-            override val views: List<GlobalSearchItemView>,
+            override val views: List<GlobalSearchItemView> = emptyList(),
             override val isLoading: Boolean
         ): ViewState()
 
         data class Related (
             val target: GlobalSearchItemView,
-            override val views: List<GlobalSearchItemView>,
+            override val views: List<GlobalSearchItemView> = emptyList(),
             override val isLoading: Boolean
         ): ViewState()
 

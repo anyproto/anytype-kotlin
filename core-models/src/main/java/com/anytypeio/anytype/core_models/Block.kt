@@ -405,7 +405,7 @@ data class Block(
 
         data class Link(
             val target: Id,
-            val cardStyle: Content.Link.CardStyle = Content.Link.CardStyle.TEXT,
+            val cardStyle: Content.Link.CardStyle = Content.Link.CardStyle.CARD,
             val iconSize: Content.Link.IconSize = Content.Link.IconSize.SMALL,
             val description: Content.Link.Description = Content.Link.Description.NONE
         ) : Prototype()

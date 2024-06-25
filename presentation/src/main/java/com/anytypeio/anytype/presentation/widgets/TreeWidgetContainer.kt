@@ -141,55 +141,60 @@ class TreeWidgetContainer(
     }
 
     private suspend fun fetchRootLevelBundledSourceObjects(): Flow<List<ObjectWrapper.Basic>> {
-        return if (widget.source.id == BundledWidgetSourceIds.FAVORITE) {
-            objectWatcher
-                .watch(config.home)
-                .map { obj -> obj.orderOfRootObjects(obj.root) }
-                .catch { emit(emptyMap()) }
-                .flatMapLatest { order ->
-                    container.subscribe(
-                        StoreSearchByIdsParams(
-                            subscription = widget.source.id,
-                            targets = order.keys.toList(),
-                            keys = keys
-                        )
-                    ).map { favorites ->
-                        favorites
-                            .filter { obj -> obj.notDeletedNorArchived }
-                            .sortedBy { obj -> order[obj.id] }
+        return when (widget.source.id) {
+            BundledWidgetSourceIds.FAVORITE -> {
+                objectWatcher
+                    .watch(config.home)
+                    .map { obj -> obj.orderOfRootObjects(obj.root) }
+                    .catch { emit(emptyMap()) }
+                    .flatMapLatest { order ->
+                        container.subscribe(
+                            StoreSearchByIdsParams(
+                                subscription = widget.source.id,
+                                targets = order.keys.toList(),
+                                keys = keys
+                            )
+                        ).map { favorites ->
+                            favorites
+                                .filter { obj -> obj.notDeletedNorArchived }
+                                .sortedBy { obj -> order[obj.id] }
+                                .take(rootLevelLimit)
+                        }
                     }
-                }
-        } else if (widget.source.id == BundledWidgetSourceIds.RECENT) {
-            val spaceView = getSpaceView.async(
-                GetSpaceView.Params.BySpaceViewId(config.spaceView)
-            ).getOrNull()
-            val spaceViewCreationDate = spaceView
-                ?.getValue<Double?>(Relations.CREATED_DATE)
-                ?.toLong()
-            container.subscribe(
-                ListWidgetContainer.params(
-                    subscription = widget.source.id,
-                    spaces = buildList {
-                        add(config.space)
-                        add(config.techSpace)
-                    },
-                    keys = keys,
-                    limit = rootLevelLimit,
-                    spaceCreationDateInSeconds = spaceViewCreationDate
+            }
+            BundledWidgetSourceIds.RECENT -> {
+                val spaceView = getSpaceView.async(
+                    GetSpaceView.Params.BySpaceViewId(config.spaceView)
+                ).getOrNull()
+                val spaceViewCreationDate = spaceView
+                    ?.getValue<Double?>(Relations.CREATED_DATE)
+                    ?.toLong()
+                container.subscribe(
+                    ListWidgetContainer.params(
+                        subscription = widget.source.id,
+                        spaces = buildList {
+                            add(config.space)
+                            add(config.techSpace)
+                        },
+                        keys = keys,
+                        limit = rootLevelLimit,
+                        spaceCreationDateInSeconds = spaceViewCreationDate
+                    )
                 )
-            )
-        } else {
-            container.subscribe(
-                ListWidgetContainer.params(
-                    subscription = widget.source.id,
-                    spaces = buildList {
-                        add(config.space)
-                        add(config.techSpace)
-                    },
-                    keys = keys,
-                    limit = rootLevelLimit
+            }
+            else -> {
+                container.subscribe(
+                    ListWidgetContainer.params(
+                        subscription = widget.source.id,
+                        spaces = buildList {
+                            add(config.space)
+                            add(config.techSpace)
+                        },
+                        keys = keys,
+                        limit = rootLevelLimit
+                    )
                 )
-            )
+            }
         }
     }
 

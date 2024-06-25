@@ -250,7 +250,8 @@ fun Block.Align.toView(): Alignment = when (this) {
     Block.Align.AlignCenter -> Alignment.CENTER
     Block.Align.AlignLeft -> Alignment.START
     Block.Align.AlignRight -> Alignment.END
-    else -> TODO()
+    // TODO support justify.
+    Block.Align.AlignJustify -> Alignment.START
 }
 
 fun Block.Content.Text.marks(

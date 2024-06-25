@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
+import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import dagger.Binds
@@ -34,7 +35,7 @@ interface ShareSpaceComponent {
     interface Builder {
         fun withDependencies(dependencies: ShareSpaceDependencies): Builder
         @BindsInstance
-        fun withParams(params: ShareSpaceViewModel.Params): Builder
+        fun withParams(params: ShareSpaceViewModel.VmParams): Builder
         fun build(): ShareSpaceComponent
     }
 
@@ -62,4 +63,5 @@ interface ShareSpaceDependencies : ComponentDependencies {
     fun permissions(): UserPermissionProvider
     fun analytics(): Analytics
     fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
+    fun provideMembershipProvider(): MembershipProvider
 }

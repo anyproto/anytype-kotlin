@@ -350,7 +350,7 @@ private fun Incentive(
                 modifier = Modifier
                     .padding(horizontal = 20.dp)
                     .verticalScroll(rememberScrollState()),
-                text = stringResource(id = R.string.multiplayer_cant_add_members),
+                text = stringResource(id = R.string.multiplayer_cant_add_editors),
                 style = Caption1Regular,
                 color = colorResource(id = R.color.text_primary)
             )

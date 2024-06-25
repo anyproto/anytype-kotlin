@@ -1120,7 +1120,7 @@ class ComponentManager(
         DaggerShareSpaceComponent
             .builder()
             .withDependencies(findComponentDependencies())
-            .withParams(params = ShareSpaceViewModel.Params(space))
+            .withParams(params = ShareSpaceViewModel.VmParams(space))
             .build()
     }
 

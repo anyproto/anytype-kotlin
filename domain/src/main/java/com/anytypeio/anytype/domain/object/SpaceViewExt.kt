@@ -39,23 +39,23 @@ fun SpaceView.canChangeReaderToWriter(participants: List<SpaceMember>): Boolean 
     return !isSubscriberLimitReached(activeWriters(participants), writersLimit?.toInt())
 }
 
-private fun activeReaders(participants: List<SpaceMember>): Int =
+fun activeReaders(participants: List<SpaceMember>): Int =
     participants.count {
         it.permissions in listOf(
             SpaceMemberPermissions.READER,
             SpaceMemberPermissions.WRITER,
             SpaceMemberPermissions.OWNER
-        )
+        ) && it.status == ParticipantStatus.ACTIVE
     }
 
-private fun activeWriters(participants: List<SpaceMember>): Int =
+fun activeWriters(participants: List<SpaceMember>): Int =
     participants.count {
         it.permissions in listOf(
             SpaceMemberPermissions.WRITER,
             SpaceMemberPermissions.OWNER
-        )
+        ) && it.status == ParticipantStatus.ACTIVE
     }
 
-private fun isSubscriberLimitReached(currentSubscribers: Int, subscriberLimit: Int?): Boolean {
+fun isSubscriberLimitReached(currentSubscribers: Int, subscriberLimit: Int?): Boolean {
     return subscriberLimit?.let { currentSubscribers >= it } ?: false
 }

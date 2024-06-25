@@ -1130,6 +1130,7 @@
     <string name="multiplayer_cant_add_editors">Kamu tidak bisa menambah penyunting lagi</string>
     <string name="multiplayer_upgrade_button">✦ Tingkatkan</string>
     <string name="multiplayer_upgrade_button_request">✦ Upgrade to add more members</string>
+    <string name="multiplayer_upgrade_spaces_button">✦ Upgrade to add more spaces</string>
     <string name="multiplayer_members">Anggota</string>
     <string name="multiplayer_leave_request">Permintaan keluar</string>
     <string name="multiplayer_join_request">Permintaan bergabung</string>
@@ -1406,6 +1407,7 @@ Please provide specific details of your needs here.</string>
     <string name="membership_upgrade_title">Membership upgrade</string>
     <string name="membership_upgrade_description">Reach us for extra storage, space editors, or more shared spaces. Anytype team will provide details and conditions tailored to your needs.</string>
     <string name="membership_upgrade_button">Contact Anytype Team</string>
+    <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d spaces that can be shared</string>
     <plurals name="period_years">
         <item quantity="other">%d tahun</item>
     </plurals>

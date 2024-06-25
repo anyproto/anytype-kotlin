@@ -108,7 +108,10 @@ class SpaceSettingsViewModel(
                     isDeletable = resolveIsSpaceDeletable(spaceView),
                     spaceType = spaceView.spaceAccessType?.asSpaceType() ?: UNKNOWN_SPACE_TYPE,
                     permissions = permission ?: SpaceMemberPermissions.NO_PERMISSIONS,
-                    shareLimitReached = shareLimitReached,
+                    shareLimitReached = ShareLimitsState(
+                        shareLimitReached = shareLimitReached.first,
+                        sharedSpacesLimit = shareLimitReached.second
+                    ),
                     requests = requests
                 )
             }.collect { spaceData ->
@@ -286,7 +289,8 @@ class SpaceSettingsViewModel(
         viewModelScope.launch {
             val data = spaceViewState.value
             if (data is ViewState.Success) {
-                if (!data.data.shareLimitReached) {
+                val shareLimits = data.data.shareLimitReached
+                if (!shareLimits.shareLimitReached) {
                     commands.emit(Command.SharePrivateSpace(params.space))
                 } else {
                     commands.emit(Command.ShowShareLimitReachedError)
@@ -305,8 +309,13 @@ class SpaceSettingsViewModel(
         val isDeletable: Boolean = false,
         val spaceType: SpaceType,
         val permissions: SpaceMemberPermissions,
-        val shareLimitReached: Boolean = false,
+        val shareLimitReached: ShareLimitsState,
         val requests: Int = 0
+    )
+
+    data class ShareLimitsState(
+        val shareLimitReached: Boolean = false,
+        val sharedSpacesLimit: Int = 0
     )
 
     sealed class Command {

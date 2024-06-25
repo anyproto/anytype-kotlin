@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.SpacesUsageInfo
+import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import javax.inject.Inject
 
 class SpacesStorageViewModelFactory @Inject constructor(
@@ -19,6 +20,7 @@ class SpacesStorageViewModelFactory @Inject constructor(
     private val interceptFileLimitEvents: InterceptFileLimitEvents,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val getAccount: GetAccount,
+    private val membershipProvider: MembershipProvider
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -31,5 +33,6 @@ class SpacesStorageViewModelFactory @Inject constructor(
         interceptFileLimitEvents = interceptFileLimitEvents,
         storelessSubscriptionContainer = storelessSubscriptionContainer,
         getAccount = getAccount,
+        membershipProvider = membershipProvider
     ) as T
 }

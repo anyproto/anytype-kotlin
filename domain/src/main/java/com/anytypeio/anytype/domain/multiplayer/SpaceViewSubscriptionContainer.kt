@@ -174,7 +174,7 @@ fun SpaceViewSubscriptionContainer.isSharingLimitReached(
         sharedSpaceLimit,
         sharedSpacesCount
     ) { limit, count ->
-        val b = limit == 0 || count >= limit
-        Pair(b, limit)
+        val isLimitReached = limit == 0 || count >= limit
+        Pair(isLimitReached, limit)
     }
 }

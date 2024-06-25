@@ -117,6 +117,7 @@ import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
+import com.anytypeio.anytype.presentation.objects.ObjectRestrictionProvider
 import com.anytypeio.anytype.presentation.relations.providers.DefaultObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DefaultObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
@@ -217,6 +218,11 @@ object EditorSessionModule {
     @Provides
     @PerScreen
     fun provideStorage(): Editor.Storage = Editor.Storage()
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideRestriction(storage: Editor.Storage): ObjectRestrictionProvider = storage
 
     @JvmStatic
     @Provides

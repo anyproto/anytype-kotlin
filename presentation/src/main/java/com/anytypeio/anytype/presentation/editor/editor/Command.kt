@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.editor.editor
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
@@ -82,12 +83,6 @@ sealed class Command {
     }
 
     sealed class OpenObjectRelationScreen : Command() {
-        data class RelationList(
-            val ctx: String,
-            val target: String?,
-            val isLocked: Boolean
-        ) : OpenObjectRelationScreen()
-
         data class RelationAdd(val ctx: String, val target: String) : OpenObjectRelationScreen()
         sealed class Value : OpenObjectRelationScreen() {
             abstract val isReadOnlyValue: Boolean

@@ -14,6 +14,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_ui.features.relations.DocumentRelationAdapter
 import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -188,6 +189,13 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
     override fun onStart() {
         jobs += lifecycleScope.subscribe(vm.commands) { command -> execute(command) }
         jobs += lifecycleScope.subscribe(vm.toasts) { toast(it) }
+        jobs += lifecycleScope.subscribe(vm.restrictions) { restrictions ->
+            if (restrictions.contains(ObjectRestriction.RELATIONS) || restrictions.contains(ObjectRestriction.DETAILS)) {
+                binding.topToolbar.gone()
+            } else {
+                binding.topToolbar.visible()
+            }
+        }
         jobs += lifecycleScope.subscribe(vm.isEditMode) { isEditMode ->
             if (isEditMode) {
                 binding.btnEditOrDone.setText(R.string.done)

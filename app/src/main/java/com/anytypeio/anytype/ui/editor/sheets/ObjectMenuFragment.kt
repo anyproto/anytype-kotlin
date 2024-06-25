@@ -46,7 +46,6 @@ class ObjectMenuFragment : ObjectMenuBaseFragment() {
     }
 
     companion object {
-
         fun new(
             ctx: Id,
             space: Id,

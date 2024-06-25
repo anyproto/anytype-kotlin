@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.diff.DefaultObjectDiffIdentifier
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -27,6 +28,7 @@ import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationDeleteEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
+import com.anytypeio.anytype.presentation.objects.ObjectRestrictionProvider
 import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.relations.model.RelationOperationError
 import com.anytypeio.anytype.presentation.relations.providers.RelationListProvider
@@ -41,6 +43,7 @@ import timber.log.Timber
 
 class RelationListViewModel(
     private val relationListProvider: RelationListProvider,
+    private val objectRestrictionProvider: ObjectRestrictionProvider,
     private val lockedStateProvider: LockedStateProvider,
     private val urlBuilder: UrlBuilder,
     private val dispatcher: Dispatcher<Payload>,
@@ -60,6 +63,7 @@ class RelationListViewModel(
     private val isInAddMode = MutableStateFlow(false)
     val commands = MutableSharedFlow<Command>(replay = 0)
     val views = MutableStateFlow<List<Model>>(emptyList())
+    val restrictions = MutableStateFlow(objectRestrictionProvider.provide())
 
     fun onStartListMode(ctx: Id) {
         Timber.d("onStartListMode, ctx: $ctx")

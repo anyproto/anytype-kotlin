@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.ui_settings.space
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,8 +11,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -25,10 +26,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.foundation.Dragger
-import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
+import com.anytypeio.anytype.core_ui.views.ButtonUpgrade
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.Title1
@@ -73,14 +74,13 @@ fun SpaceStorageScreen(
                     style = BodyCalloutRegular
                 )
                 if (data.isShowGetMoreSpace) {
-                    Text(
-                        text = stringResource(id = R.string.get_more_space),
-                        color = colorResource(R.color.palette_system_red),
-                        style = BodyCalloutMedium,
+                    ButtonUpgrade(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 4.dp)
-                            .clickable { onGetMoreSpaceClicked() }
+                            .padding(top = 16.dp, bottom = 20.dp)
+                            .height(36.dp)
+                            .verticalScroll(rememberScrollState()),
+                        onClick = { onGetMoreSpaceClicked() },
+                        text = stringResource(id = com.anytypeio.anytype.core_ui.R.string.multiplayer_upgrade_button)
                     )
                 }
                 Spacer(modifier = Modifier.height(20.dp))

@@ -102,6 +102,9 @@ class SpacesStorageFragment : BaseBottomSheetComposeFragment() {
                     )
                 )
             }
+            SpacesStorageViewModel.Command.ShowMembershipScreen -> {
+                findNavController().navigate(R.id.paymentsScreen)
+            }
         }
     }
 

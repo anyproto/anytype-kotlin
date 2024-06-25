@@ -1,8 +1,6 @@
-package com.anytypeio.anytype.presentation.membership.models
+package com.anytypeio.anytype.core_models.membership
 
-import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.Membership.Status
-import com.anytypeio.anytype.core_models.membership.MembershipTierData
 
 data class MembershipStatus(
     val activeTier: TierId,

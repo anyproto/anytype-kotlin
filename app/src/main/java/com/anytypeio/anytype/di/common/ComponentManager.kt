@@ -64,6 +64,7 @@ import com.anytypeio.anytype.di.feature.gallery.DaggerGalleryInstallationCompone
 import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
 import com.anytypeio.anytype.di.feature.library.DaggerLibraryComponent
 import com.anytypeio.anytype.di.feature.membership.DaggerMembershipComponent
+import com.anytypeio.anytype.di.feature.membership.DaggerMembershipUpdateComponent
 import com.anytypeio.anytype.di.feature.multiplayer.DaggerRequestJoinSpaceComponent
 import com.anytypeio.anytype.di.feature.multiplayer.DaggerShareSpaceComponent
 import com.anytypeio.anytype.di.feature.multiplayer.DaggerSpaceJoinRequestComponent
@@ -1119,11 +1120,11 @@ class ComponentManager(
         DaggerShareSpaceComponent
             .builder()
             .withDependencies(findComponentDependencies())
-            .withParams(params = ShareSpaceViewModel.Params(space))
+            .withParams(params = ShareSpaceViewModel.VmParams(space))
             .build()
     }
 
-    val spaceJoinRequestComponent = ComponentWithParams { params: SpaceJoinRequestViewModel.Params ->
+    val spaceJoinRequestComponent = ComponentWithParams { params: SpaceJoinRequestViewModel.VmParams ->
         DaggerSpaceJoinRequestComponent
             .builder()
             .withDependencies(findComponentDependencies())
@@ -1141,6 +1142,10 @@ class ComponentManager(
 
     val membershipComponent = Component {
         DaggerMembershipComponent.factory().create(findComponentDependencies())
+    }
+
+    val membershipUpgradeComponent = Component {
+        DaggerMembershipUpdateComponent.factory().create(findComponentDependencies())
     }
 
     val galleryInstallationsComponent =

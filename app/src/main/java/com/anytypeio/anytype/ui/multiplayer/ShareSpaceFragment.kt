@@ -186,6 +186,9 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
             Command.ShowMembershipScreen -> {
                 findNavController().navigate(R.id.paymentsScreen)
             }
+            Command.ShowMembershipUpgradeScreen -> {
+                findNavController().navigate(R.id.membershipUpdateScreen)
+            }
         }
     }
 

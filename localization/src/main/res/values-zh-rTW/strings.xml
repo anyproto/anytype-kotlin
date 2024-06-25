@@ -1130,6 +1130,7 @@
     <string name="multiplayer_cant_add_editors">您無法新增更多編輯者</string>
     <string name="multiplayer_upgrade_button">✦ 升級</string>
     <string name="multiplayer_upgrade_button_request">✦ Upgrade to add more members</string>
+    <string name="multiplayer_upgrade_spaces_button">✦ Upgrade to add more spaces</string>
     <string name="multiplayer_members">成員</string>
     <string name="multiplayer_leave_request">離開請求</string>
     <string name="multiplayer_join_request">加入請求</string>
@@ -1406,6 +1407,7 @@ Please provide specific details of your needs here.</string>
     <string name="membership_upgrade_title">會員升級</string>
     <string name="membership_upgrade_description">如需更多額外的儲存容量、更多空間編輯者或更多共享空間，請與我們聯絡。 Anytype 團隊將根據您的需求和條件為您量身定製。</string>
     <string name="membership_upgrade_button">聯絡 Anytype 團隊</string>
+    <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d spaces that can be shared</string>
     <plurals name="period_years">
         <item quantity="other">%d 年</item>
     </plurals>

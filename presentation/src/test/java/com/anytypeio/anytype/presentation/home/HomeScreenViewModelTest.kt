@@ -929,7 +929,7 @@ class HomeScreenViewModelTest {
                     subscription = BundledWidgetSourceIds.RECENT,
                     spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
                     keys = TreeWidgetContainer.keys,
-                    limit = WidgetConfig.NO_LIMIT
+                    limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 ),
                 results = listOf(firstLink, secondLink)
             )
@@ -941,7 +941,7 @@ class HomeScreenViewModelTest {
                     subscription = BundledWidgetSourceIds.SETS,
                     spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
                     keys = TreeWidgetContainer.keys,
-                    limit = WidgetConfig.NO_LIMIT
+                    limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 ),
                 results = listOf(firstLink, secondLink)
             )
@@ -1683,7 +1683,7 @@ class HomeScreenViewModelTest {
                 subscription = BundledWidgetSourceIds.RECENT,
                 spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
                 keys = TreeWidgetContainer.keys,
-                limit = WidgetConfig.NO_LIMIT
+                limit = WidgetConfig.DEFAULT_TREE_LIMIT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1695,7 +1695,7 @@ class HomeScreenViewModelTest {
                 subscription = BundledWidgetSourceIds.SETS,
                 spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
                 keys = TreeWidgetContainer.keys,
-                limit = WidgetConfig.NO_LIMIT
+                limit = WidgetConfig.DEFAULT_TREE_LIMIT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1733,7 +1733,7 @@ class HomeScreenViewModelTest {
                     subscription = setsSource.id,
                     spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
                     keys = TreeWidgetContainer.keys,
-                    limit = WidgetConfig.NO_LIMIT
+                    limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 )
             )
         }
@@ -1744,7 +1744,7 @@ class HomeScreenViewModelTest {
                     subscription = recentSource.id,
                     spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
                     keys = TreeWidgetContainer.keys,
-                    limit = WidgetConfig.NO_LIMIT
+                    limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 )
             )
         }
@@ -1788,7 +1788,7 @@ class HomeScreenViewModelTest {
                     subscription = setsSource.id,
                     spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
                     keys = TreeWidgetContainer.keys,
-                    limit = WidgetConfig.NO_LIMIT
+                    limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 )
             )
         }
@@ -1799,7 +1799,7 @@ class HomeScreenViewModelTest {
                     subscription = recentSource.id,
                     spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
                     keys = TreeWidgetContainer.keys,
-                    limit = WidgetConfig.NO_LIMIT
+                    limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 )
             )
         }

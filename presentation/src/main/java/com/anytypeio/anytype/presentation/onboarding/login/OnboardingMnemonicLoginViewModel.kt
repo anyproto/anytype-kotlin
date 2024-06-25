@@ -107,28 +107,34 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         viewModelScope.launch {
             when(state.value) {
                 is SetupState.InProgress -> {
-                    state.value = SetupState.Abort
-                    Timber.d("Starting abort")
-                    jobs.cancel()
-                    logout(Logout.Params(clearLocalRepositoryData = true)).collect { status ->
-                        when(status) {
-                            is Interactor.Status.Error -> {
-                                Timber.e(status.throwable, "Failed to logout after unsuccessful login")
-                                sideEffects.emit(SideEffect.Exit)
-                            }
-                            is Interactor.Status.Started -> {
-                                Timber.d("Logout started...")
-                            }
-                            is Interactor.Status.Success -> {
-                                sideEffects.emit(SideEffect.Exit)
-                            }
-                        }
-                    }
+                    proceedWithAbortAndExit()
                 }
                 is SetupState.Abort -> {
                     command.emit(Command.ShowToast("Aborting... Please wait!"))
                 }
                 else -> {
+                    sideEffects.emit(SideEffect.Exit)
+                }
+            }
+        }
+    }
+
+    private suspend fun proceedWithAbortAndExit() {
+        state.value = SetupState.Abort
+        Timber.d("Starting abort")
+        jobs.cancel()
+        logout(Logout.Params(clearLocalRepositoryData = true)).collect { status ->
+            when (status) {
+                is Interactor.Status.Error -> {
+                    Timber.e(status.throwable, "Failed to logout after unsuccessful login")
+                    sideEffects.emit(SideEffect.Exit)
+                }
+
+                is Interactor.Status.Started -> {
+                    Timber.d("Logout started...")
+                }
+
+                is Interactor.Status.Success -> {
                     sideEffects.emit(SideEffect.Exit)
                 }
             }

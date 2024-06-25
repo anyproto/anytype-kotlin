@@ -154,7 +154,7 @@ interface SpaceViewSubscriptionContainer {
 
 fun SpaceViewSubscriptionContainer.isSharingLimitReached(
     spaceToUserPermissions: Flow<Map<Id, SpaceMemberPermissions>>
-) : Flow<Boolean> {
+) : Flow<Pair<Boolean, Int>> {
     val sharedSpacesCount = combine(
         observe(),
         spaceToUserPermissions
@@ -174,6 +174,7 @@ fun SpaceViewSubscriptionContainer.isSharingLimitReached(
         sharedSpaceLimit,
         sharedSpacesCount
     ) { limit, count ->
-        limit == 0 || count >= limit
+        val b = limit == 0 || count >= limit
+        Pair(b, limit)
     }
 }

@@ -349,10 +349,17 @@ class SpaceSettingsViewModel(
                                 Relations.ICON_EMOJI to null
                             )
                         )
+                    ).fold(
+                        onSuccess = {
+                            Timber.d("Successfully set image as space icon.")
+                        },
+                        onFailure = { e ->
+                            Timber.e(e, "Error while setting image as space icon")
+                        }
                     )
                 },
                 onFailure = {
-                    Timber.e(it)
+                    Timber.e(it, "Error while uploading image as space icon")
                 }
             )
 

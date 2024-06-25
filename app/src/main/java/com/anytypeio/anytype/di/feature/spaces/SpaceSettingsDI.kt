@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.payments.GetMembershipStatus
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
@@ -70,6 +71,19 @@ object SpaceSettingsModule {
         debugSpace = debugSpace,
         debugSpaceContentSaver = debugSpaceContentSaver,
         dispatchers = dispatchers
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideMembershipStatus(
+        debugSpace: DebugSpace,
+        debugSpaceContentSaver: DebugSpaceContentSaver,
+        dispatchers: AppCoroutineDispatchers,
+        repository: BlockRepository
+    ) : GetMembershipStatus = GetMembershipStatus(
+        dispatchers = dispatchers,
+        repo = repository
     )
 
     @Module

@@ -100,7 +100,8 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                     onDebugClicked = vm::onSpaceDebugClicked,
                     onRandomGradientClicked = vm::onRandomSpaceGradientClicked,
                     onManageSharedSpaceClicked = vm::onManageSharedSpaceClicked,
-                    onSharePrivateSpaceClicked = vm::onSharePrivateSpaceClicked
+                    onSharePrivateSpaceClicked = vm::onSharePrivateSpaceClicked,
+                    onAddMoreSpacesClicked = vm::onAddMoreSpacesClicked
                 )
                 LaunchedEffect(Unit) { vm.toasts.collect { toast(it) } }
                 LaunchedEffect(Unit) {
@@ -175,6 +176,12 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                 }
                 is Command.ShowShareLimitReachedError -> {
                     toast(getString(R.string.multiplayer_toast_share_limit_reached))
+                }
+                Command.NavigateToMembership -> {
+                    findNavController().navigate(R.id.paymentsScreen)
+                }
+                Command.NavigateToMembershipUpdate -> {
+                    findNavController().navigate(R.id.membershipUpdateScreen)
                 }
             }
         }

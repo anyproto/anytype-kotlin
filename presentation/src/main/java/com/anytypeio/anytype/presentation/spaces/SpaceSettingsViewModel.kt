@@ -16,6 +16,9 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SpaceType
 import com.anytypeio.anytype.core_models.UNKNOWN_SPACE_TYPE
 import com.anytypeio.anytype.core_models.asSpaceType
+import com.anytypeio.anytype.core_models.ext.isPossibleToUpgrade
+import com.anytypeio.anytype.core_models.membership.MembershipUpgradeReason
+import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
@@ -29,10 +32,13 @@ import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionCon
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.multiplayer.isSharingLimitReached
+import com.anytypeio.anytype.domain.payments.GetMembershipStatus
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
+import com.anytypeio.anytype.presentation.multiplayer.SpaceJoinRequestViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -53,7 +59,8 @@ class SpaceSettingsViewModel(
     private val spaceGradientProvider: SpaceGradientProvider,
     private val userPermissionProvider: UserPermissionProvider,
     private val spaceViewContainer: SpaceViewSubscriptionContainer,
-    private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer
+    private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer,
+    private val getMembership: GetMembershipStatus
 ): BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>()
@@ -299,6 +306,27 @@ class SpaceSettingsViewModel(
         }
     }
 
+    fun onAddMoreSpacesClicked() {
+        viewModelScope.launch {
+            getMembership.async(GetMembershipStatus.Params(noCache = false)).fold(
+                onSuccess = { membership ->
+                    if (membership != null) {
+                        val activeTier = TierId(membership.tier)
+                        if (activeTier.isPossibleToUpgrade(reason = MembershipUpgradeReason.NumberOfSharedSpaces)) {
+                            commands.emit(Command.NavigateToMembership)
+                        } else {
+                            commands.emit(Command.NavigateToMembershipUpdate)
+                        }
+                    }
+                },
+                onFailure = {
+                    Timber.e(it, "Error while getting membership status")
+                    commands.emit(Command.NavigateToMembershipUpdate)
+                }
+            )
+        }
+    }
+
     data class SpaceData(
         val spaceId: Id?,
         val createdDateInMillis: Long?,
@@ -325,6 +353,8 @@ class SpaceSettingsViewModel(
         data object ShowDeleteSpaceWarning : Command()
         data object ShowLeaveSpaceWarning : Command()
         data object ShowShareLimitReachedError : Command()
+        data object NavigateToMembership : Command()
+        data object NavigateToMembershipUpdate : Command()
     }
 
     class Factory @Inject constructor(
@@ -340,7 +370,8 @@ class SpaceSettingsViewModel(
         private val debugFileShareDownloader: DebugSpaceShareDownloader,
         private val spaceGradientProvider: SpaceGradientProvider,
         private val userPermissionProvider: UserPermissionProvider,
-        private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer
+        private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer,
+        private val getMembership: GetMembershipStatus
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -358,7 +389,8 @@ class SpaceSettingsViewModel(
             spaceGradientProvider = spaceGradientProvider,
             params = params,
             userPermissionProvider = userPermissionProvider,
-            activeSpaceMemberSubscriptionContainer = activeSpaceMemberSubscriptionContainer
+            activeSpaceMemberSubscriptionContainer = activeSpaceMemberSubscriptionContainer,
+            getMembership = getMembership
         ) as T
     }
 

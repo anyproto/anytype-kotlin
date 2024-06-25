@@ -66,7 +66,8 @@ fun SpaceSettingsScreen(
     onDebugClicked: () -> Unit,
     onRandomGradientClicked: () -> Unit,
     onSharePrivateSpaceClicked: () -> Unit,
-    onManageSharedSpaceClicked: () -> Unit
+    onManageSharedSpaceClicked: () -> Unit,
+    onAddMoreSpacesClicked: () -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier
@@ -114,7 +115,8 @@ fun SpaceSettingsScreen(
                     PRIVATE_SPACE_TYPE -> {
                         PrivateSpaceSharing(
                             onSharePrivateSpaceClicked = onSharePrivateSpaceClicked,
-                            shareLimitStateState = state.data.shareLimitReached
+                            shareLimitStateState = state.data.shareLimitReached,
+                            onAddMoreSpacesClicked = onAddMoreSpacesClicked
                         )
                     }
                     SHARED_SPACE_TYPE -> {
@@ -322,13 +324,15 @@ fun SpaceSettingsScreenPreview() {
         onDebugClicked = {},
         onRandomGradientClicked = {},
         onManageSharedSpaceClicked = {},
-        onSharePrivateSpaceClicked = {}
+        onSharePrivateSpaceClicked = {},
+        onAddMoreSpacesClicked = {}
     )
 }
 
 @Composable
 fun PrivateSpaceSharing(
     onSharePrivateSpaceClicked: () -> Unit,
+    onAddMoreSpacesClicked: () -> Unit,
     shareLimitStateState: SpaceSettingsViewModel.ShareLimitsState
 ) {
     Column {
@@ -388,7 +392,7 @@ fun PrivateSpaceSharing(
                 modifier = Modifier
                     .padding(start = 20.dp, end = 20.dp, top = 10.dp)
                     .height(32.dp),
-                onClick = { },
+                onClick = { onAddMoreSpacesClicked() },
                 text = stringResource(id = R.string.multiplayer_upgrade_spaces_button)
             )
         }
@@ -494,7 +498,8 @@ private fun PrivateSpaceSharingPreview() {
         shareLimitStateState = SpaceSettingsViewModel.ShareLimitsState(
             shareLimitReached = true,
             sharedSpacesLimit = 5
-        )
+        ),
+        onAddMoreSpacesClicked = {}
     )
 }
 

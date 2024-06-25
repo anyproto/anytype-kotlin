@@ -1135,6 +1135,7 @@
     <string name="multiplayer_cant_add_editors">Non puoi aggiungere altri editor</string>
     <string name="multiplayer_upgrade_button">✦ Upgrade</string>
     <string name="multiplayer_upgrade_button_request">✦ Upgrade to add more members</string>
+    <string name="multiplayer_upgrade_spaces_button">✦ Upgrade to add more spaces</string>
     <string name="multiplayer_members">Membri</string>
     <string name="multiplayer_leave_request">Richiesta di uscita</string>
     <string name="multiplayer_join_request">Richiesta di partecipazione</string>
@@ -1413,6 +1414,7 @@ Please provide specific details of your needs here.</string>
     <string name="membership_upgrade_title">Aggiornamento Membership</string>
     <string name="membership_upgrade_description">Contattaci per ottenere più spazio di archiviazione, editor di spazi o più spazi condivisi. Il team di Anytype fornirà dettagli e condizioni su misura per le tue esigenze.</string>
     <string name="membership_upgrade_button">Contatta il Team Anytype</string>
+    <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d spaces that can be shared</string>
     <plurals name="period_years">
         <item quantity="one">anno</item>
         <item quantity="other">%d anni</item>

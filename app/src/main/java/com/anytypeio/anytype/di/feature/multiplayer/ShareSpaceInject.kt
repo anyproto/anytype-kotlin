@@ -35,7 +35,7 @@ interface ShareSpaceComponent {
     interface Builder {
         fun withDependencies(dependencies: ShareSpaceDependencies): Builder
         @BindsInstance
-        fun withParams(params: ShareSpaceViewModel.Params): Builder
+        fun withParams(params: ShareSpaceViewModel.VmParams): Builder
         fun build(): ShareSpaceComponent
     }
 

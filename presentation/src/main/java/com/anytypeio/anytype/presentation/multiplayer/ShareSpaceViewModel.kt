@@ -61,7 +61,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class ShareSpaceViewModel(
-    private val params: Params,
+    private val vmParams: VmParams,
     private val makeSpaceShareable: MakeSpaceShareable,
     private val getSpaceInviteLink: GetSpaceInviteLink,
     private val generateSpaceInviteLink: GenerateSpaceInviteLink,
@@ -88,8 +88,8 @@ class ShareSpaceViewModel(
     val showIncentive = MutableStateFlow<ShareSpaceIncentiveState>(ShareSpaceIncentiveState.Hidden)
 
     init {
-        Timber.d("Share-space init with params: $params")
-        proceedWithUserPermissions(space = params.space)
+        Timber.d("Share-space init with params: $vmParams")
+        proceedWithUserPermissions(space = vmParams.space)
         proceedWithSubscriptions()
         proceedWithGettingActiveTier()
     }
@@ -125,11 +125,11 @@ class ShareSpaceViewModel(
         viewModelScope.launch {
             val account = getAccount.async(Unit).getOrNull()?.id
             val spaceSearchParams = getSpaceViewSearchParams(
-                targetSpaceId = params.space.id,
+                targetSpaceId = vmParams.space.id,
                 subscription = SHARE_SPACE_SPACE_SUBSCRIPTION
             )
             val spaceMembersSearchParams = getSpaceMembersSearchParams(
-                spaceId = params.space.id,
+                spaceId = vmParams.space.id,
                 subscription = SHARE_SPACE_MEMBER_SUBSCRIPTION
             )
             combine(
@@ -177,7 +177,7 @@ class ShareSpaceViewModel(
             shareLinkViewState.value = when (space?.spaceAccessType) {
                 SpaceAccessType.PRIVATE -> ShareLinkViewState.NotGenerated
                 SpaceAccessType.SHARED -> {
-                    val link = getSpaceInviteLink.async(params.space)
+                    val link = getSpaceInviteLink.async(vmParams.space)
                     if (link.isSuccess) {
                         ShareLinkViewState.Shared(link.getOrThrow().scheme)
                     } else {
@@ -196,7 +196,7 @@ class ShareSpaceViewModel(
         viewModelScope.launch {
             if (spaceAccessType.value == SpaceAccessType.PRIVATE) {
                 makeSpaceShareable.async(
-                    params = params.space
+                    params = vmParams.space
                 ).fold(
                     onSuccess = {
                         analytics.sendEvent(eventName = EventsDictionary.shareSpace)
@@ -208,7 +208,7 @@ class ShareSpaceViewModel(
                 )
             }
             generateSpaceInviteLink
-                .async(params.space)
+                .async(vmParams.space)
                 .fold(
                     onSuccess = { link ->
                         shareLinkViewState.value = ShareLinkViewState.Shared(link = link.scheme)
@@ -262,7 +262,7 @@ class ShareSpaceViewModel(
         viewModelScope.launch {
             commands.emit(
                 Command.ViewJoinRequest(
-                    space = params.space,
+                    space = vmParams.space,
                     member = view.obj.id
                 )
             )
@@ -273,7 +273,7 @@ class ShareSpaceViewModel(
         viewModelScope.launch {
             approveLeaveSpaceRequest.async(
                 ApproveLeaveSpaceRequest.Params(
-                    space = params.space,
+                    space = vmParams.space,
                     identities = listOf(view.obj.identity)
                 )
             ).fold(
@@ -305,7 +305,7 @@ class ShareSpaceViewModel(
             if (view.config != ShareSpaceMemberView.Config.Member.Writer) {
                 changeSpaceMemberPermissions.async(
                     ChangeSpaceMemberPermissions.Params(
-                        space = params.space,
+                        space = vmParams.space,
                         identity = view.obj.identity,
                         permission = SpaceMemberPermissions.WRITER
                     )
@@ -344,7 +344,7 @@ class ShareSpaceViewModel(
             if (view.config != ShareSpaceMemberView.Config.Member.Reader) {
                 changeSpaceMemberPermissions.async(
                     ChangeSpaceMemberPermissions.Params(
-                        space = params.space,
+                        space = vmParams.space,
                         identity = view.obj.identity,
                         permission = SpaceMemberPermissions.READER
                     )
@@ -389,7 +389,7 @@ class ShareSpaceViewModel(
         viewModelScope.launch {
             removeSpaceMembers.async(
                 RemoveSpaceMembers.Params(
-                    space = params.space,
+                    space = vmParams.space,
                     identities = listOf(identity)
                 )
             ).fold(
@@ -423,7 +423,7 @@ class ShareSpaceViewModel(
         viewModelScope.launch {
             if (isCurrentUserOwner.value && spaceAccessType.value == SpaceAccessType.SHARED) {
                 stopSharingSpace.async(
-                    params = params.space
+                    params = vmParams.space
                 ).fold(
                     onSuccess = {
                         Timber.d("Stopped sharing space")
@@ -476,7 +476,7 @@ class ShareSpaceViewModel(
         viewModelScope.launch {
             if (isCurrentUserOwner.value) {
                 revokeSpaceInviteLink.async(
-                    params = params.space
+                    params = vmParams.space
                 ).fold(
                     onSuccess = {
                         Timber.d("Revoked space invite link").also {
@@ -525,7 +525,7 @@ class ShareSpaceViewModel(
     }
 
     class Factory @Inject constructor(
-        private val params: Params,
+        private val params: VmParams,
         private val makeSpaceShareable: MakeSpaceShareable,
         private val generateSpaceInviteLink: GenerateSpaceInviteLink,
         private val revokeSpaceInviteLink: RevokeSpaceInviteLink,
@@ -543,7 +543,7 @@ class ShareSpaceViewModel(
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = ShareSpaceViewModel(
-            params = params,
+            vmParams = params,
             generateSpaceInviteLink = generateSpaceInviteLink,
             revokeSpaceInviteLink = revokeSpaceInviteLink,
             changeSpaceMemberPermissions = changeSpaceMemberPermissions,
@@ -561,7 +561,7 @@ class ShareSpaceViewModel(
         ) as T
     }
 
-    data class Params(
+    data class VmParams(
         val space: SpaceId
     )
 

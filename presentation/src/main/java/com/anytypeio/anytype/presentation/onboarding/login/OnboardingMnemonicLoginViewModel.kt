@@ -106,10 +106,10 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         Timber.d("onBackButtonPressed")
         viewModelScope.launch {
             when(state.value) {
-                SetupState.InProgress -> {
+                is SetupState.InProgress -> {
+                    state.value = SetupState.Abort
                     Timber.d("Starting abort")
                     jobs.cancel()
-                    state.value = SetupState.Abort
                     logout(Logout.Params(clearLocalRepositoryData = true)).collect { status ->
                         when(status) {
                             is Interactor.Status.Error -> {
@@ -124,6 +124,9 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                             }
                         }
                     }
+                }
+                is SetupState.Abort -> {
+                    command.emit(Command.ShowToast("Aborting... Please wait!"))
                 }
                 else -> {
                     sideEffects.emit(SideEffect.Exit)

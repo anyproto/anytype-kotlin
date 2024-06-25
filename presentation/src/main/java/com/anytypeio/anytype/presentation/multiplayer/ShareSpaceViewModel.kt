@@ -21,6 +21,8 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.ext.isPossibleToUpgradeNumberOfSpaceMembers
+import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
@@ -41,10 +43,9 @@ import com.anytypeio.anytype.domain.multiplayer.RemoveSpaceMembers
 import com.anytypeio.anytype.domain.multiplayer.RevokeSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.StopSharingSpace
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
-import com.anytypeio.anytype.domain.`object`.canChangeReaderToWriter
-import com.anytypeio.anytype.domain.`object`.canChangeWriterToReader
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.mapper.toView
+import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 import com.anytypeio.anytype.presentation.objects.toSpaceMembers
 import com.anytypeio.anytype.presentation.objects.toSpaceView
@@ -55,6 +56,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -72,8 +74,11 @@ class ShareSpaceViewModel(
     private val permissions: UserPermissionProvider,
     private val getAccount: GetAccount,
     private val urlBuilder: UrlBuilder,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val membershipProvider: MembershipProvider
 ) : BaseViewModel() {
+
+    private val _activeTier = MutableStateFlow<ActiveTierState>(ActiveTierState.Init)
 
     val members = MutableStateFlow<List<ShareSpaceMemberView>>(emptyList())
     val shareLinkViewState = MutableStateFlow<ShareLinkViewState>(ShareLinkViewState.Init)
@@ -84,14 +89,15 @@ class ShareSpaceViewModel(
 
     init {
         Timber.d("Share-space init with params: $params")
-        proceedWithUserPermissions()
+        proceedWithUserPermissions(space = params.space)
         proceedWithSubscriptions()
+        proceedWithGettingActiveTier()
     }
 
-    private fun proceedWithUserPermissions() {
+    private fun proceedWithUserPermissions(space: SpaceId) {
         viewModelScope.launch {
             permissions
-                .observe(space = params.space)
+                .observe(space = space)
                 .collect { permission ->
                     isCurrentUserOwner.value = permission == OWNER
                     if (permission == OWNER) {
@@ -99,6 +105,18 @@ class ShareSpaceViewModel(
                     } else {
                         analytics.sendEvent(eventName = screenSettingsSpaceMembers)
                     }
+                }
+        }
+    }
+
+    private fun proceedWithGettingActiveTier() {
+        viewModelScope.launch {
+            membershipProvider.activeTier()
+                .catch { e ->
+                    Timber.e(e, "Error while fetching active tier")
+                }
+                .collect { tierId ->
+                    _activeTier.value = ActiveTierState.Success(tierId)
                 }
         }
     }
@@ -117,30 +135,35 @@ class ShareSpaceViewModel(
             combine(
                 container.subscribe(spaceSearchParams),
                 container.subscribe(spaceMembersSearchParams),
-                isCurrentUserOwner
-            ) { spaceResponse, membersResponse, isCurrentUserOwner ->
-                Triple(spaceResponse, membersResponse, isCurrentUserOwner)
+                isCurrentUserOwner,
+                _activeTier.filterIsInstance<ActiveTierState.Success>()
+            ) { spaceResponse, membersResponse, isCurrentUserOwner, activeTier ->
+                CombineResult(
+                    isCurrentUserOwner = isCurrentUserOwner,
+                    spaceView = spaceResponse.toSpaceView(),
+                    tierId = activeTier.tierId,
+                    spaceMembers = membersResponse.toSpaceMembers()
+                )
             }.catch {
                 Timber.e(
                     it, "Error while $SHARE_SPACE_MEMBER_SUBSCRIPTION " +
                             "and $SHARE_SPACE_SPACE_SUBSCRIPTION subscription"
                 )
-            }.collect { (spaceResponse, membersResponse, isCurrentUserOwner) ->
-                val spaceView = spaceResponse.toSpaceView()
-                val spaceMembers
-                = membersResponse.toSpaceMembers()
+            }.collect { result ->
+                val spaceView = result.spaceView
+                val spaceMembers = result.spaceMembers
                     .sortedByDescending { it.status == ParticipantStatus.JOINING || it.status == ParticipantStatus.REMOVING}
                 spaceAccessType.value = spaceView?.spaceAccessType
-                setShareLinkViewState(spaceView, isCurrentUserOwner)
+                setShareLinkViewState(spaceView, result.isCurrentUserOwner)
                 members.value = spaceMembers.toView(
                     spaceView = spaceView,
                     urlBuilder = urlBuilder,
-                    isCurrentUserOwner = isCurrentUserOwner,
+                    isCurrentUserOwner = result.isCurrentUserOwner,
                     account = account
                 )
                 showIncentive.value = spaceView?.getIncentiveState(
                     spaceMembers = spaceMembers,
-                    isCurrentUserOwner = isCurrentUserOwner
+                    isCurrentUserOwner = result.isCurrentUserOwner
                 ) ?: ShareSpaceIncentiveState.Hidden
             }
         }
@@ -437,8 +460,14 @@ class ShareSpaceViewModel(
     }
 
     fun onIncentiveClicked() {
+        val activeTier = (_activeTier.value as? ActiveTierState.Success) ?: return
+        val isPossibleToUpgrade = activeTier.tierId.isPossibleToUpgradeNumberOfSpaceMembers()
         viewModelScope.launch {
-            commands.emit(Command.ShowMembershipScreen)
+            if (isPossibleToUpgrade) {
+                commands.emit(Command.ShowMembershipScreen)
+            } else {
+                commands.emit(Command.ShowMembershipUpgradeScreen)
+            }
         }
     }
 
@@ -509,7 +538,8 @@ class ShareSpaceViewModel(
         private val urlBuilder: UrlBuilder,
         private val getSpaceInviteLink: GetSpaceInviteLink,
         private val permissions: UserPermissionProvider,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val membershipProvider: MembershipProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = ShareSpaceViewModel(
@@ -526,7 +556,8 @@ class ShareSpaceViewModel(
             approveLeaveSpaceRequest = approveLeaveSpaceRequest,
             permissions = permissions,
             makeSpaceShareable = makeSpaceShareable,
-            analytics = analytics
+            analytics = analytics,
+            membershipProvider = membershipProvider
         ) as T
     }
 
@@ -551,6 +582,7 @@ class ShareSpaceViewModel(
         data object ToastPermission : Command()
         data object Dismiss : Command()
         data object ShowMembershipScreen : Command()
+        data object ShowMembershipUpgradeScreen : Command()
     }
 
     sealed class ShareSpaceIncentiveState {
@@ -563,6 +595,19 @@ class ShareSpaceViewModel(
         const val SHARE_SPACE_MEMBER_SUBSCRIPTION = "share-space-subscription.member"
         const val SHARE_SPACE_SPACE_SUBSCRIPTION = "share-space-subscription.space"
     }
+
+    //Active membership status of the current user
+    sealed class ActiveTierState {
+        data object Init : ActiveTierState()
+        data class Success(val tierId: TierId) : ActiveTierState()
+    }
+
+    data class CombineResult(
+        val isCurrentUserOwner: Boolean,
+        val spaceView: ObjectWrapper.SpaceView?,
+        val tierId: TierId,
+        val spaceMembers: List<ObjectWrapper.SpaceMember>,
+    )
 }
 
 data class ShareSpaceMemberView(

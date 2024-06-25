@@ -11,6 +11,10 @@ import com.anytypeio.anytype.core_models.NodeUsageInfo
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.ext.isPossibleToUpgrade
+import com.anytypeio.anytype.core_models.ext.isPossibleToUpgradeStorageSpace
+import com.anytypeio.anytype.core_models.membership.MembershipUpgradeReason
+import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.readableFileSize
@@ -28,6 +32,8 @@ import com.anytypeio.anytype.domain.workspace.SpacesUsageInfo
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendGetMoreSpaceEvent
 import com.anytypeio.anytype.presentation.extension.sendSettingsSpaceStorageManageEvent
+import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
+import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -49,9 +55,11 @@ class SpacesStorageViewModel(
     private val spacesUsageInfo: SpacesUsageInfo,
     private val interceptFileLimitEvents: InterceptFileLimitEvents,
     private val getAccount: GetAccount,
-    private val storelessSubscriptionContainer: StorelessSubscriptionContainer
+    private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
+    private val membershipProvider: MembershipProvider
 ) : BaseViewModel() {
 
+    private val _activeTier = MutableStateFlow<ActiveTierState>(ActiveTierState.Init)
     private val _nodeUsageInfo = MutableStateFlow(NodeUsageInfo())
     private val _viewState: MutableStateFlow<SpacesStorageScreenState?> = MutableStateFlow(null)
     val viewState: StateFlow<SpacesStorageScreenState?> = _viewState
@@ -63,6 +71,7 @@ class SpacesStorageViewModel(
         subscribeToViewEvents()
         subscribeToMiddlewareEvents()
         proceedWithGettingNodeUsageInfo()
+        proceedWithGettingActiveTier()
     }
 
     private fun subscribeToViewEvents() {
@@ -258,27 +267,46 @@ class SpacesStorageViewModel(
         return percentUsage != null && percentUsage >= FilesStorageViewModel.WARNING_PERCENT
     }
 
+    private fun proceedWithGettingActiveTier() {
+        viewModelScope.launch {
+            membershipProvider.activeTier()
+                .catch { e ->
+                    Timber.e(e, "Error while fetching active tier")
+                }
+                .collect { tierId ->
+                    _activeTier.value = ActiveTierState.Success(tierId)
+                }
+        }
+    }
+
     private fun onGetMoreSpaceClicked() {
         viewModelScope.launch {
-            val config = spaceManager.getConfig() ?: return@launch
-            val params = StoreSearchByIdsParams(
-                subscription = PROFILE_SUBSCRIPTION_ID,
-                keys = listOf(Relations.ID, Relations.NAME),
-                targets = listOf(config.profile)
-            )
-            combine(
-                getAccount.asFlow(Unit),
-                storelessSubscriptionContainer.subscribe(params)
-            ) { account: Account, profileObj: List<ObjectWrapper.Basic> ->
-                Command.SendGetMoreSpaceEmail(
-                    account = account.id,
-                    name = profileObj.firstOrNull()?.name.orEmpty(),
-                    limit = _viewState.value?.spaceLimit.orEmpty()
+            val activeTier = (_activeTier.value as? ActiveTierState.Success)?.tierId
+            val isPossibleToUpgrade =
+                activeTier?.isPossibleToUpgrade(reason = MembershipUpgradeReason.StorageSpace)
+            if (isPossibleToUpgrade == true) {
+                commands.emit(Command.ShowMembershipScreen)
+            } else {
+                val config = spaceManager.getConfig() ?: return@launch
+                val params = StoreSearchByIdsParams(
+                    subscription = PROFILE_SUBSCRIPTION_ID,
+                    keys = listOf(Relations.ID, Relations.NAME),
+                    targets = listOf(config.profile)
                 )
+                combine(
+                    getAccount.asFlow(Unit),
+                    storelessSubscriptionContainer.subscribe(params)
+                ) { account: Account, profileObj: List<ObjectWrapper.Basic> ->
+                    Command.SendGetMoreSpaceEmail(
+                        account = account.id,
+                        name = profileObj.firstOrNull()?.name.orEmpty(),
+                        limit = _viewState.value?.spaceLimit.orEmpty()
+                    )
+                }
+                    .catch { Timber.e(it, "onGetMoreSpaceClicked error") }
+                    .flowOn(appCoroutineDispatchers.io)
+                    .collect { commands.emit(it) }
             }
-                .catch { Timber.e(it, "onGetMoreSpaceClicked error") }
-                .flowOn(appCoroutineDispatchers.io)
-                .collect { commands.emit(it) }
         }
     }
 
@@ -386,6 +414,13 @@ class SpacesStorageViewModel(
         data class OpenRemoteFilesManageScreen(val subscription: Id) : Command()
         data class SendGetMoreSpaceEmail(val account: Id, val name: String, val limit: String) :
             Command()
+        data object ShowMembershipScreen : Command()
+    }
+
+    //Active membership status of the current user
+    sealed class ActiveTierState {
+        data object Init : ActiveTierState()
+        data class Success(val tierId: TierId) : ActiveTierState()
     }
 
     companion object {

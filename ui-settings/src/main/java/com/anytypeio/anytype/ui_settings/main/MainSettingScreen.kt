@@ -1,5 +1,9 @@
 package com.anytypeio.anytype.ui_settings.main
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -15,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
@@ -26,6 +31,7 @@ import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.ui_settings.R
+import timber.log.Timber
 
 @Composable
 fun SpaceHeader(
@@ -34,8 +40,18 @@ fun SpaceHeader(
     modifier: Modifier = Modifier,
     onNameSet: (String) -> Unit,
     onRandomGradientClicked: () -> Unit,
-    isEditEnabled: Boolean
+    isEditEnabled: Boolean,
+    onSpaceImagePicked: (Uri) -> Unit
 ) {
+    val context = LocalContext.current
+    val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri ->
+            if (uri != null) {
+                onSpaceImagePicked(uri)
+            }
+        }
+    )
     val isSpaceIconMenuExpanded = remember {
         mutableStateOf(false)
     }
@@ -74,6 +90,24 @@ fun SpaceHeader(
                         style = BodyRegular,
                         color = colorResource(id = R.color.text_primary)
                     )
+                }
+                if (ActivityResultContracts.PickVisualMedia.isPhotoPickerAvailable(context)) {
+                    DropdownMenuItem(
+                        onClick = {
+                            singlePhotoPickerLauncher.launch(
+                                PickVisualMediaRequest(
+                                    ActivityResultContracts.PickVisualMedia.ImageOnly
+                                )
+                            )
+                            isSpaceIconMenuExpanded.value = false
+                        },
+                    ) {
+                        Text(
+                            text = stringResource(R.string.space_settings_apply_upload_image),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                    }
                 }
             }
         }

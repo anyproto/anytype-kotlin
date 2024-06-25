@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_utils.clipboard.copyPlainTextToClipboard
 import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.parseImagePath
 import com.anytypeio.anytype.core_utils.ext.shareFile
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
@@ -101,7 +102,16 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                     onRandomGradientClicked = vm::onRandomSpaceGradientClicked,
                     onManageSharedSpaceClicked = vm::onManageSharedSpaceClicked,
                     onSharePrivateSpaceClicked = vm::onSharePrivateSpaceClicked,
-                    onAddMoreSpacesClicked = vm::onAddMoreSpacesClicked
+                    onAddMoreSpacesClicked = vm::onAddMoreSpacesClicked,
+                    onSpaceImagePicked = { uri ->
+                        runCatching {
+                            vm.onSpaceImagePicked(
+                                path = uri.parseImagePath(requireContext())
+                            )
+                        }.onFailure {
+                            toast(getString(R.string.error_while_loading_picture))
+                        }
+                    }
                 )
                 LaunchedEffect(Unit) { vm.toasts.collect { toast(it) } }
                 LaunchedEffect(Unit) {

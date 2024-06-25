@@ -362,7 +362,6 @@ class SpaceSettingsViewModel(
                     Timber.e(it, "Error while uploading image as space icon")
                 }
             )
-
         }
     }
 

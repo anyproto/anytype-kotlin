@@ -41,7 +41,9 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSize
+import com.anytypeio.anytype.core_ui.views.ButtonUpgrade
 import com.anytypeio.anytype.core_ui.views.ButtonWarning
+import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
@@ -64,7 +66,8 @@ fun SpaceSettingsScreen(
     onDebugClicked: () -> Unit,
     onRandomGradientClicked: () -> Unit,
     onSharePrivateSpaceClicked: () -> Unit,
-    onManageSharedSpaceClicked: () -> Unit
+    onManageSharedSpaceClicked: () -> Unit,
+    onAddMoreSpacesClicked: () -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier
@@ -112,7 +115,8 @@ fun SpaceSettingsScreen(
                     PRIVATE_SPACE_TYPE -> {
                         PrivateSpaceSharing(
                             onSharePrivateSpaceClicked = onSharePrivateSpaceClicked,
-                            shareLimitReached = state.data.shareLimitReached
+                            shareLimitStateState = state.data.shareLimitReached,
+                            onAddMoreSpacesClicked = onAddMoreSpacesClicked
                         )
                     }
                     SHARED_SPACE_TYPE -> {
@@ -303,7 +307,11 @@ fun SpaceSettingsScreenPreview() {
                 icon = SpaceIconView.Placeholder,
                 isDeletable = true,
                 spaceType = DEFAULT_SPACE_TYPE,
-                permissions = SpaceMemberPermissions.OWNER
+                permissions = SpaceMemberPermissions.OWNER,
+                shareLimitReached = SpaceSettingsViewModel.ShareLimitsState(
+                    shareLimitReached = false,
+                    sharedSpacesLimit = 0
+                ),
             )
         ),
         onNameSet = {},
@@ -316,52 +324,76 @@ fun SpaceSettingsScreenPreview() {
         onDebugClicked = {},
         onRandomGradientClicked = {},
         onManageSharedSpaceClicked = {},
-        onSharePrivateSpaceClicked = {}
+        onSharePrivateSpaceClicked = {},
+        onAddMoreSpacesClicked = {}
     )
 }
 
 @Composable
 fun PrivateSpaceSharing(
     onSharePrivateSpaceClicked: () -> Unit,
-    shareLimitReached: Boolean
+    onAddMoreSpacesClicked: () -> Unit,
+    shareLimitStateState: SpaceSettingsViewModel.ShareLimitsState
 ) {
-    Box(
-        modifier = Modifier
-            .height(52.dp)
-            .fillMaxWidth()
-            .noRippleClickable(
-                onClick = throttledClick(
-                    onClick = { onSharePrivateSpaceClicked() }
-                )
-            )
-    ) {
-        Text(
+    Column {
+        Box(
             modifier = Modifier
-                .padding(start = 20.dp)
-                .align(Alignment.CenterStart),
-            text = stringResource(id = R.string.space_type_private_space),
-            color = if (shareLimitReached)
-                colorResource(id = R.color.text_secondary)
-            else
-                colorResource(id = R.color.text_primary),
-            style = BodyRegular
-        )
-        Row(
-            modifier = Modifier.align(Alignment.CenterEnd)
+                .height(52.dp)
+                .fillMaxWidth()
+                .noRippleClickable(
+                    onClick = throttledClick(
+                        onClick = { onSharePrivateSpaceClicked() }
+                    )
+                )
         ) {
             Text(
-                modifier = Modifier.align(Alignment.CenterVertically),
-                text = stringResource(id = R.string.multiplayer_share),
-                color = colorResource(id = R.color.text_secondary),
+                modifier = Modifier
+                    .padding(start = 20.dp)
+                    .align(Alignment.CenterStart),
+                text = stringResource(id = R.string.space_type_private_space),
+                color = if (shareLimitStateState.shareLimitReached)
+                    colorResource(id = R.color.text_secondary)
+                else
+                    colorResource(id = R.color.text_primary),
                 style = BodyRegular
             )
-            Spacer(Modifier.width(10.dp))
-            Image(
-                painter = painterResource(R.drawable.ic_arrow_forward),
-                contentDescription = "Arrow forward",
+            Row(
+                modifier = Modifier.align(Alignment.CenterEnd)
+            ) {
+                Text(
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                    text = stringResource(id = R.string.multiplayer_share),
+                    color = colorResource(id = R.color.text_secondary),
+                    style = BodyRegular
+                )
+                Spacer(Modifier.width(10.dp))
+                Image(
+                    painter = painterResource(R.drawable.ic_arrow_forward),
+                    contentDescription = "Arrow forward",
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .padding(end = 20.dp)
+                )
+            }
+        }
+        if (shareLimitStateState.shareLimitReached) {
+            Text(
                 modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .padding(end = 20.dp)
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, end = 20.dp),
+                text = stringResource(
+                    id = R.string.membership_space_settings_share_limit,
+                    shareLimitStateState.sharedSpacesLimit
+                ),
+                color = colorResource(id = R.color.text_primary),
+                style = Caption1Regular
+            )
+            ButtonUpgrade(
+                modifier = Modifier
+                    .padding(start = 20.dp, end = 20.dp, top = 10.dp)
+                    .height(32.dp),
+                onClick = { onAddMoreSpacesClicked() },
+                text = stringResource(id = R.string.multiplayer_upgrade_spaces_button)
             )
         }
     }
@@ -463,7 +495,11 @@ fun TypeOfSpace(spaceType: SpaceType?) {
 private fun PrivateSpaceSharingPreview() {
     PrivateSpaceSharing(
         onSharePrivateSpaceClicked = {},
-        shareLimitReached = false
+        shareLimitStateState = SpaceSettingsViewModel.ShareLimitsState(
+            shareLimitReached = true,
+            sharedSpacesLimit = 5
+        ),
+        onAddMoreSpacesClicked = {}
     )
 }
 

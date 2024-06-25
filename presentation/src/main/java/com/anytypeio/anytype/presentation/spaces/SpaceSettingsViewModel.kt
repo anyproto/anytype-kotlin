@@ -16,6 +16,9 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SpaceType
 import com.anytypeio.anytype.core_models.UNKNOWN_SPACE_TYPE
 import com.anytypeio.anytype.core_models.asSpaceType
+import com.anytypeio.anytype.core_models.ext.isPossibleToUpgrade
+import com.anytypeio.anytype.core_models.membership.MembershipUpgradeReason
+import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
@@ -29,6 +32,7 @@ import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionCon
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.multiplayer.isSharingLimitReached
+import com.anytypeio.anytype.domain.payments.GetMembershipStatus
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -53,7 +57,8 @@ class SpaceSettingsViewModel(
     private val spaceGradientProvider: SpaceGradientProvider,
     private val userPermissionProvider: UserPermissionProvider,
     private val spaceViewContainer: SpaceViewSubscriptionContainer,
-    private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer
+    private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer,
+    private val getMembership: GetMembershipStatus
 ): BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>()
@@ -108,7 +113,10 @@ class SpaceSettingsViewModel(
                     isDeletable = resolveIsSpaceDeletable(spaceView),
                     spaceType = spaceView.spaceAccessType?.asSpaceType() ?: UNKNOWN_SPACE_TYPE,
                     permissions = permission ?: SpaceMemberPermissions.NO_PERMISSIONS,
-                    shareLimitReached = shareLimitReached,
+                    shareLimitReached = ShareLimitsState(
+                        shareLimitReached = shareLimitReached.first,
+                        sharedSpacesLimit = shareLimitReached.second
+                    ),
                     requests = requests
                 )
             }.collect { spaceData ->
@@ -286,12 +294,34 @@ class SpaceSettingsViewModel(
         viewModelScope.launch {
             val data = spaceViewState.value
             if (data is ViewState.Success) {
-                if (!data.data.shareLimitReached) {
+                val shareLimits = data.data.shareLimitReached
+                if (!shareLimits.shareLimitReached) {
                     commands.emit(Command.SharePrivateSpace(params.space))
                 } else {
                     commands.emit(Command.ShowShareLimitReachedError)
                 }
             }
+        }
+    }
+
+    fun onAddMoreSpacesClicked() {
+        viewModelScope.launch {
+            getMembership.async(GetMembershipStatus.Params(noCache = false)).fold(
+                onSuccess = { membership ->
+                    if (membership != null) {
+                        val activeTier = TierId(membership.tier)
+                        if (activeTier.isPossibleToUpgrade(reason = MembershipUpgradeReason.NumberOfSharedSpaces)) {
+                            commands.emit(Command.NavigateToMembership)
+                        } else {
+                            commands.emit(Command.NavigateToMembershipUpdate)
+                        }
+                    }
+                },
+                onFailure = {
+                    Timber.e(it, "Error while getting membership status")
+                    commands.emit(Command.NavigateToMembershipUpdate)
+                }
+            )
         }
     }
 
@@ -305,8 +335,13 @@ class SpaceSettingsViewModel(
         val isDeletable: Boolean = false,
         val spaceType: SpaceType,
         val permissions: SpaceMemberPermissions,
-        val shareLimitReached: Boolean = false,
+        val shareLimitReached: ShareLimitsState,
         val requests: Int = 0
+    )
+
+    data class ShareLimitsState(
+        val shareLimitReached: Boolean = false,
+        val sharedSpacesLimit: Int = 0
     )
 
     sealed class Command {
@@ -316,6 +351,8 @@ class SpaceSettingsViewModel(
         data object ShowDeleteSpaceWarning : Command()
         data object ShowLeaveSpaceWarning : Command()
         data object ShowShareLimitReachedError : Command()
+        data object NavigateToMembership : Command()
+        data object NavigateToMembershipUpdate : Command()
     }
 
     class Factory @Inject constructor(
@@ -331,7 +368,8 @@ class SpaceSettingsViewModel(
         private val debugFileShareDownloader: DebugSpaceShareDownloader,
         private val spaceGradientProvider: SpaceGradientProvider,
         private val userPermissionProvider: UserPermissionProvider,
-        private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer
+        private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer,
+        private val getMembership: GetMembershipStatus
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -349,7 +387,8 @@ class SpaceSettingsViewModel(
             spaceGradientProvider = spaceGradientProvider,
             params = params,
             userPermissionProvider = userPermissionProvider,
-            activeSpaceMemberSubscriptionContainer = activeSpaceMemberSubscriptionContainer
+            activeSpaceMemberSubscriptionContainer = activeSpaceMemberSubscriptionContainer,
+            getMembership = getMembership
         ) as T
     }
 

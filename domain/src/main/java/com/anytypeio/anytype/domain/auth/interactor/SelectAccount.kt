@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.platform.MetricsProvider
 import javax.inject.Inject
+import kotlinx.coroutines.delay
 
 /**
  * Use case for selecting user account.

@@ -1129,9 +1129,11 @@
     <string name="multiplayer_space_request_to_join_msg">Sie wurden eingeladen, dem Space %1$s, erstellt von %2$s beizutreten. Senden Sie eine Anfrage, damit der Spacebesitzer Sie einladen kann.</string>
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tippen, um deinen Kommentar zu schreiben</string>
     <string name="multiplayer_share_space">Geteilter Space</string>
-    <string name="multiplayer_members_and_requests">Mitglieder und Anfragen</string>
+    <string name="multiplayer_members_and_requests">Mitglieder</string>
     <string name="multiplayer_cant_add_members">Du kannst keine weiteren Mitglieder hinzufügen</string>
+    <string name="multiplayer_cant_add_editors">Du kannst keine weiteren Editoren hinzufügen</string>
     <string name="multiplayer_upgrade_button">✦ Upgrade</string>
+    <string name="multiplayer_upgrade_button_request">✦ Upgrade to add more members</string>
     <string name="multiplayer_members">Mitglieder</string>
     <string name="multiplayer_leave_request">Anfrage abgeben</string>
     <string name="multiplayer_join_request">Beitrittsanfrage</string>
@@ -1141,7 +1143,9 @@
     <string name="multiplayer_can_edit">Darf bearbeiten</string>
     <string name="multiplayer_can_view">Darf ansehen</string>
     <string name="multiplayer_space_add_viewer">Viewer hinzufügen</string>
+    <string name="multiplayer_space_add_more_viewer">✦ Add more viewers</string>
     <string name="multiplayer_space_add_editor">Editor hinzufügen</string>
+    <string name="multiplayer_space_add_more_editor">✦ Add more editors</string>
     <string name="multiplayer_space_request_reject">Ablehnen</string>
     <string name="multiplayer_space_join_request_header">%1$s beantragte den Beitritt zu %2$s</string>
     <string name="multiplayer_remove_member">Mitglied entfernen</string>
@@ -1401,6 +1405,13 @@ Please provide specific details of your needs here.</string>
     <string name="membership_support_already_acquired">You’ve already acquired a Membership plan using another Anytype account.</string>
     <string name="membership_support_different_subscription">Ein Abonnement mit einer anderen ID gefunden</string>
     <string name="membership_support_more_then_one_subscription">Mehr als ein Abonnement gefunden</string>
+    <string name="multiplayer_space_join_request_participants_error">Space participant\'s error</string>
+    <string name="multiplayer_space_join_request_new_member_error">Request\'s member error</string>
+    <string name="multiplayer_space_join_request_current_user_error">Current user status error</string>
+    <string name="multiplayer_space_join_request_membership_status_error">Current membership status error</string>
+    <string name="membership_upgrade_title">Hochstufen der Mitgliedschaft</string>
+    <string name="membership_upgrade_description">Reach us for extra storage, space editors, or more shared spaces. Anytype team will provide details and conditions tailored to your needs.</string>
+    <string name="membership_upgrade_button">Anytype-Team kontaktieren</string>
     <plurals name="period_years">
         <item quantity="one">Jahr</item>
         <item quantity="other">%d Jahre</item>

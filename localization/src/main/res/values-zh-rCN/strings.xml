@@ -1129,8 +1129,8 @@
     <string name="multiplayer_cant_add_members">您无法添加更多成员</string>
     <string name="multiplayer_cant_add_editors">您无法添加更多编辑者</string>
     <string name="multiplayer_upgrade_button">✦ 升级</string>
-    <string name="multiplayer_upgrade_button_request">✦ Upgrade to add more members</string>
-    <string name="multiplayer_upgrade_spaces_button">✦ Upgrade to add more spaces</string>
+    <string name="multiplayer_upgrade_button_request">✦ 升级以添加更多成员</string>
+    <string name="multiplayer_upgrade_spaces_button">✦ 升级以创建更多空间</string>
     <string name="multiplayer_members">参与的人</string>
     <string name="multiplayer_leave_request">退出请求</string>
     <string name="multiplayer_join_request">加入请求</string>
@@ -1140,9 +1140,9 @@
     <string name="multiplayer_can_edit">可编辑</string>
     <string name="multiplayer_can_view">可查看</string>
     <string name="multiplayer_space_add_viewer">Add viewer</string>
-    <string name="multiplayer_space_add_more_viewer">✦ Add more viewers</string>
+    <string name="multiplayer_space_add_more_viewer">✦ 增加更多浏览者</string>
     <string name="multiplayer_space_add_editor">Add editor</string>
-    <string name="multiplayer_space_add_more_editor">✦ Add more editors</string>
+    <string name="multiplayer_space_add_more_editor">✦ 增加更多编辑者</string>
     <string name="multiplayer_space_request_reject">拒绝</string>
     <string name="multiplayer_space_join_request_header">%1$s requested to join %2$s space</string>
     <string name="multiplayer_remove_member">Remove member</string>
@@ -1402,12 +1402,12 @@ Please provide specific details of your needs here.</string>
     <string name="membership_support_more_then_one_subscription">找到了不止一个订阅</string>
     <string name="multiplayer_space_join_request_participants_error">Space participant\'s error</string>
     <string name="multiplayer_space_join_request_new_member_error">Request\'s member error</string>
-    <string name="multiplayer_space_join_request_current_user_error">Current user status error</string>
+    <string name="multiplayer_space_join_request_current_user_error">当前用户状态错误</string>
     <string name="multiplayer_space_join_request_membership_status_error">Current membership status error</string>
     <string name="membership_upgrade_title">会员升级</string>
     <string name="membership_upgrade_description">联系我们以获取额外的存储空间、空间编辑器或更多共享空间。任何类型的团队都将根据您的需求提供量身定制的细节和条件。</string>
     <string name="membership_upgrade_button">联系Anytype团队</string>
-    <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d spaces that can be shared</string>
+    <string name="membership_space_settings_share_limit">您已经达到 %1$d 个可共享空间的限制</string>
     <plurals name="period_years">
         <item quantity="other">%d 年</item>
     </plurals>

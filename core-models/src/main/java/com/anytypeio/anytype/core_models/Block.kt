@@ -89,7 +89,7 @@ data class Block(
         /**
          * Smart block.
          */
-        object Smart : Content()
+        data object Smart : Content()
 
         /**
          * Textual block.
@@ -416,7 +416,7 @@ data class Block(
             /**
              * Creates placeholder block for bookmark
              */
-            object New : Bookmark()
+            data object New : Bookmark()
             /**
              * Creates bookmark block from an existing bookmark object
              * @property [target] bookmark object id

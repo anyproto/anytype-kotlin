@@ -9,8 +9,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -72,41 +75,49 @@ fun SpaceHeader(
                 },
                 gradientCornerRadius = 4.dp
             )
-            DropdownMenu(
-                expanded = isSpaceIconMenuExpanded.value,
-                offset = DpOffset(x = 0.dp, y = 6.dp),
-                onDismissRequest = {
-                    isSpaceIconMenuExpanded.value = false
-                }
+            MaterialTheme(
+                shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp))
             ) {
-                DropdownMenuItem(
-                    onClick = {
-                        onRandomGradientClicked()
+                DropdownMenu(
+                    expanded = isSpaceIconMenuExpanded.value,
+                    offset = DpOffset(x = 0.dp, y = 6.dp),
+                    onDismissRequest = {
                         isSpaceIconMenuExpanded.value = false
-                    },
+                    }
                 ) {
-                    Text(
-                        text = stringResource(R.string.space_settings_apply_random_gradient),
-                        style = BodyRegular,
-                        color = colorResource(id = R.color.text_primary)
-                    )
-                }
-                if (ActivityResultContracts.PickVisualMedia.isPhotoPickerAvailable(context)) {
                     DropdownMenuItem(
                         onClick = {
-                            singlePhotoPickerLauncher.launch(
-                                PickVisualMediaRequest(
-                                    ActivityResultContracts.PickVisualMedia.ImageOnly
-                                )
-                            )
+                            onRandomGradientClicked()
                             isSpaceIconMenuExpanded.value = false
                         },
                     ) {
                         Text(
-                            text = stringResource(R.string.space_settings_apply_upload_image),
+                            text = stringResource(R.string.space_settings_apply_random_gradient),
                             style = BodyRegular,
                             color = colorResource(id = R.color.text_primary)
                         )
+                    }
+                    if (ActivityResultContracts.PickVisualMedia.isPhotoPickerAvailable(context)) {
+                        Divider(
+                            thickness = 0.5.dp,
+                            color = colorResource(id = R.color.shape_primary)
+                        )
+                        DropdownMenuItem(
+                            onClick = {
+                                singlePhotoPickerLauncher.launch(
+                                    PickVisualMediaRequest(
+                                        ActivityResultContracts.PickVisualMedia.ImageOnly
+                                    )
+                                )
+                                isSpaceIconMenuExpanded.value = false
+                            },
+                        ) {
+                            Text(
+                                text = stringResource(R.string.space_settings_apply_upload_image),
+                                style = BodyRegular,
+                                color = colorResource(id = R.color.text_primary)
+                            )
+                        }
                     }
                 }
             }

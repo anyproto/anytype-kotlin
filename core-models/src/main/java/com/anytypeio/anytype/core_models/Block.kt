@@ -89,7 +89,7 @@ data class Block(
         /**
          * Smart block.
          */
-        object Smart : Content()
+        data object Smart : Content()
 
         /**
          * Textual block.
@@ -265,7 +265,7 @@ data class Block(
             enum class Style { LINE, DOTS }
         }
 
-        object FeaturedRelations : Content()
+        data object FeaturedRelations : Content()
 
         data class RelationBlock(val key: Id?) : Content()
 
@@ -366,12 +366,12 @@ data class Block(
         }
 
         data class Latex(val latex: String) : Content()
-        object TableOfContents : Content()
-        object Unsupported : Content()
+        data object TableOfContents : Content()
+        data object Unsupported : Content()
 
-        object Table : Content()
+        data object Table : Content()
         data class TableRow(val isHeader: Boolean) : Content()
-        object TableColumn : Content()
+        data object TableColumn : Content()
 
         data class Widget(
             val layout: Layout,
@@ -410,26 +410,26 @@ data class Block(
             val description: Content.Link.Description = Content.Link.Description.NONE
         ) : Prototype()
 
-        object DividerLine : Prototype()
-        object DividerDots : Prototype()
+        data object DividerLine : Prototype()
+        data object DividerDots : Prototype()
         sealed class Bookmark : Prototype() {
             /**
              * Creates placeholder block for bookmark
              */
-            object New : Bookmark()
+            data object New : Bookmark()
             /**
              * Creates bookmark block from an existing bookmark object
              * @property [target] bookmark object id
              */
             data class Existing(val target: Id) : Bookmark()
         }
-        object Latex : Prototype()
+        data object Latex : Prototype()
         data class Relation(
             val key: Id
         ) : Prototype()
 
-        object TableOfContents : Prototype()
-        object SimpleTable : Prototype()
+        data object TableOfContents : Prototype()
+        data object SimpleTable : Prototype()
     }
 
     /**

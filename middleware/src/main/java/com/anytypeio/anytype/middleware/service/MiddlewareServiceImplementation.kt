@@ -82,7 +82,7 @@ class MiddlewareServiceImplementation @Inject constructor(
         if (error != null && error.code != Rpc.Account.Select.Response.Error.Code.NULL) {
             when(error.code) {
                 Rpc.Account.Select.Response.Error.Code.FAILED_TO_FIND_ACCOUNT_INFO -> {
-                    throw MigrationNeededException()
+                    throw LoginException.FailedToFindAccountInfo()
                 }
                 Rpc.Account.Select.Response.Error.Code.ACCOUNT_IS_DELETED -> {
                     throw AccountIsDeletedException()

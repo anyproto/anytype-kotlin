@@ -44,6 +44,7 @@
     <string name="space_name">Space-Name</string>
     <string name="default_space">Standard Space</string>
     <string name="space_settings_apply_random_gradient">Zufälligen Farbverlauf anwenden</string>
+    <string name="space_settings_apply_upload_image">Bild hochladen</string>
     <string name="delete_space">Space löschen</string>
     <string name="you_can_store">Du kannst bis zu %1$s deiner Dateien auf unserem verschlüsselten und kostenlosen Backup-Knoten speichern. Wenn das Limit erreicht wurde, werden Dateien nur noch lokal gespeichert.</string>
     <string name="in_order_to_save">Um Platz auf deinem Gerät zu sparen, können alle deine Dateien auf unseren verschlüsselten Backup-Knoten ausgelagert werden. Die Dateien werden beim Öffnen dann wieder heruntergeladen.</string>
@@ -509,6 +510,7 @@
     <string name="collection_widget_description">Deine Sammlungen von Objekten</string>
     <string name="no_type_named">Es gibt keinen Typen namens „%1$s“</string>
     <string name="try_to_create_new_one_or_search_for_something_else">Versuche ein neues zu erstellen oder suche nach etwas anderem</string>
+    <string name="try_different_search_query">Try a different search query.</string>
     <string name="change_wallpaper">Hintergrundbild ändern</string>
     <string name="change_icon">Symbol ändern</string>
     <string name="random">Zufällig</string>
@@ -1433,6 +1435,7 @@ Please provide specific details of your needs here.</string>
     <string name="membership_error_button_text_action">Kontaktiere uns</string>
     <string name="membership_error_button_text_dismiss">OK</string>
     <string name="error_login_network_id_mismatch">Netzwerk-ID stimmt nicht überein. Bitte überprüfe deine Netzwerkkonfiguration.</string>
+    <string name="error_login_select_vault_error">Select vault error.</string>
     <string name="global_search_related_to">"Zugehörig zu: "</string>
     <string name="global_search_no_related_objects_found">Keine zugehörigen Objekte gefunden</string>
 </resources>

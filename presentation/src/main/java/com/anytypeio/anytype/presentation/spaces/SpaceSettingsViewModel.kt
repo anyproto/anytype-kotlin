@@ -331,6 +331,7 @@ class SpaceSettingsViewModel(
     }
 
     fun onSpaceImagePicked(path: String) {
+        Timber.d("onSpaceImageClicked: $path")
         viewModelScope.launch {
             uploadFile.async(
                 params = UploadFile.Params(
@@ -340,29 +341,33 @@ class SpaceSettingsViewModel(
                 )
             ).fold(
                 onSuccess = { file ->
-                    setSpaceDetails.async(
-                        SetSpaceDetails.Params(
-                            space = params.space,
-                            details = mapOf(
-                                Relations.ICON_OPTION to null,
-                                Relations.ICON_IMAGE to file.id,
-                                Relations.ICON_EMOJI to null
-                            )
-                        )
-                    ).fold(
-                        onSuccess = {
-                            Timber.d("Successfully set image as space icon.")
-                        },
-                        onFailure = { e ->
-                            Timber.e(e, "Error while setting image as space icon")
-                        }
-                    )
+                    proceedWithSettingSpaceIconImage(file)
                 },
                 onFailure = {
                     Timber.e(it, "Error while uploading image as space icon")
                 }
             )
         }
+    }
+
+    private suspend fun proceedWithSettingSpaceIconImage(file: ObjectWrapper.File) {
+        setSpaceDetails.async(
+            SetSpaceDetails.Params(
+                space = params.space,
+                details = mapOf(
+                    Relations.ICON_OPTION to null,
+                    Relations.ICON_IMAGE to file.id,
+                    Relations.ICON_EMOJI to null
+                )
+            )
+        ).fold(
+            onSuccess = {
+                Timber.d("Successfully set image as space icon.")
+            },
+            onFailure = { e ->
+                Timber.e(e, "Error while setting image as space icon")
+            }
+        )
     }
 
     data class SpaceData(

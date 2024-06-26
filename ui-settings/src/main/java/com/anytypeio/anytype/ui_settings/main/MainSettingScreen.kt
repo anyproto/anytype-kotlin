@@ -52,6 +52,8 @@ fun SpaceHeader(
         onResult = { uri ->
             if (uri != null) {
                 onSpaceImagePicked(uri)
+            } else {
+                Timber.w("Uri was null after picking image")
             }
         }
     )

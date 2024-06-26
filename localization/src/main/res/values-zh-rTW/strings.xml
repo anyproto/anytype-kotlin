@@ -44,6 +44,7 @@
     <string name="space_name">空間名稱</string>
     <string name="default_space">初始空間</string>
     <string name="space_settings_apply_random_gradient">套用隨機漸層</string>
+    <string name="space_settings_apply_upload_image">上傳圖片</string>
     <string name="delete_space">刪除空間</string>
     <string name="you_can_store">您目前擁有 %1$s 的加密節點儲存空間，您可以將檔案備份到我們的節點當中。 當儲存空間容量到達上限，新的檔案只能存放在您的本地儲存區中。</string>
     <string name="in_order_to_save">為了節省本地設備上的空間，您可以將所有檔案傳輸到我們的加密備份節點。 當您打開這些檔案時，它們將被重新載入。</string>
@@ -508,6 +509,7 @@
     <string name="collection_widget_description">您的物件集錦</string>
     <string name="no_type_named">沒有名為 \"%1$s\" 的類型</string>
     <string name="try_to_create_new_one_or_search_for_something_else">嘗試建立一個新的或搜尋其他內容</string>
+    <string name="try_different_search_query">Try a different search query.</string>
     <string name="change_wallpaper">變更桌布</string>
     <string name="change_icon">更改圖示</string>
     <string name="random">隨機</string>
@@ -1423,6 +1425,7 @@ Please provide specific details of your needs here.</string>
     <string name="membership_error_button_text_action">聯繫我們</string>
     <string name="membership_error_button_text_dismiss">好的</string>
     <string name="error_login_network_id_mismatch">Network ID 配對失敗，請件查您的網路設定</string>
+    <string name="error_login_select_vault_error">Select vault error.</string>
     <string name="global_search_related_to">"關聯到： "</string>
     <string name="global_search_no_related_objects_found">找不到關聯的物件</string>
 </resources>

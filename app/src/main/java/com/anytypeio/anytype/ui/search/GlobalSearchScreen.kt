@@ -368,7 +368,7 @@ fun GlobalSearchScreen(
                                     style = BodyCalloutMedium
                                 )
                                 Text(
-                                    text = stringResource(id = R.string.try_to_create_new_one_or_search_for_something_else),
+                                    text = stringResource(id = R.string.try_different_search_query),
                                     style = BodyCalloutRegular,
                                     modifier = Modifier.padding(horizontal = 12.dp)
                                 )

@@ -394,6 +394,10 @@ class OnboardingFragment : Fragment() {
                         errorText.value = getString(R.string.error_login_network_id_mismatch)
                         isErrorDialogVisible.value = true
                     }
+                    is OnboardingMnemonicLoginViewModel.SideEffect.Error.SelectVaultError -> {
+                        errorText.value = getString(R.string.error_login_select_vault_error)
+                        isErrorDialogVisible.value = true
+                    }
                 }
             }
         }

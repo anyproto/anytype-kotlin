@@ -44,6 +44,7 @@
     <string name="space_name">Nome dello Spazio</string>
     <string name="default_space">Spazio d\'ingresso</string>
     <string name="space_settings_apply_random_gradient">Applica gradiente casuale</string>
+    <string name="space_settings_apply_upload_image">Upload image</string>
     <string name="delete_space">Elimina spazio</string>
     <string name="you_can_store">Puoi archiviare gratuitamente fino a %1$s di file personali sul nostro nodo di backup crittografato. Se raggiungi il limite, i file verranno archiviati solo localmente.</string>
     <string name="in_order_to_save">Per risparmiare spazio sul tuo dispositivo locale, puoi liberare tutti i tuoi file trasferendoli al nostro nodo di backup criptato. I file verranno ricaricati quando li apri</string>
@@ -509,6 +510,7 @@
     <string name="collection_widget_description">La tua collezione di oggetti</string>
     <string name="no_type_named">Non c\'è nessun tipo denominato %1$s\"</string>
     <string name="try_to_create_new_one_or_search_for_something_else">Prova a crearne uno nuovo o cerca qualcos\'altro</string>
+    <string name="try_different_search_query">Try a different search query.</string>
     <string name="change_wallpaper">Cambia sfondo</string>
     <string name="change_icon">Cambia icona</string>
     <string name="random">Casuale</string>
@@ -1434,6 +1436,7 @@ Please provide specific details of your needs here.</string>
     <string name="membership_error_button_text_action">Contattaci</string>
     <string name="membership_error_button_text_dismiss">Ok</string>
     <string name="error_login_network_id_mismatch">Rilevata una mancata corrispondenza con l\'ID di rete. Verifica la configurazione della rete.</string>
+    <string name="error_login_select_vault_error">Select vault error.</string>
     <string name="global_search_related_to">"Correlato a: "</string>
     <string name="global_search_no_related_objects_found">Nessun oggetto correlato trovato</string>
 </resources>

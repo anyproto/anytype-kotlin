@@ -191,7 +191,7 @@ class TreeWidgetContainer(
                             add(config.techSpace)
                         },
                         keys = keys,
-                        limit = rootLevelLimit
+                        limit = WidgetConfig.NO_LIMIT
                     )
                 )
             }

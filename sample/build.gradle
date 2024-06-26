@@ -2,6 +2,7 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "kotlin-kapt"
+    alias(libs.plugins.compose.compiler)
     id 'com.google.gms.google-services'
 }
 
@@ -34,9 +35,6 @@ android {
         compose true
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion libs.versions.composeKotlinCompilerVersion.get()
-    }
     namespace 'com.anytypeio.anytype.sample'
 }
 

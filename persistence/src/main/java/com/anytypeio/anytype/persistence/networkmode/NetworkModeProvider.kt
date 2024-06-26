@@ -83,7 +83,7 @@ class DefaultNetworkModeProvider(private val sharedPreferences: SharedPreference
         const val NETWORK_MODE_PREF = "pref.network_mode"
         const val NETWORK_MODE_APP_FILE_PATH_PREF = "pref.network_config_file_path"
         const val NETWORK_MODE_USER_FILE_PATH_PREF = "pref.network_mode_user_config_file_path"
-        const val USE_RESERVE_MULTIPLEX_LIBRARY_PREF = "pref.use_reserve_multiplex_library"
+        const val USE_RESERVE_MULTIPLEX_LIBRARY_PREF = "pref.use_reserve_multiplex_library_1"
 
         const val NAMED_NETWORK_MODE_PREFS = "network_mode"
     }

@@ -1,6 +1,7 @@
 plugins {
     id "com.android.library"
     id "kotlin-android"
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -8,9 +9,6 @@ android {
         compose true
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion libs.versions.composeKotlinCompilerVersion.get()
-    }
     namespace 'com.anytypeio.anytype.payments'
 
     testOptions {

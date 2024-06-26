@@ -1,11 +1,10 @@
 [versions]
 middlewareVersion = "v0.34.3"
-kotlinVersion = '1.9.22'
+kotlinVersion = '2.0.0'
 
 androidxCoreVersion = "1.13.0"
 
 androidxComposeVersion = '1.6.8'
-composeKotlinCompilerVersion = '1.5.10'
 composeMaterial3Version = '1.2.1'
 composeMaterialVersion = '1.6.6'
 composeConstraintLayoutVersion = '1.0.1'
@@ -21,7 +20,7 @@ fragmentVersion = "1.8.0"
 exoplayerVersion = "2.19.1"
 wireVersion = "4.9.8"
 glideVersion = "4.14.2"
-mockitoKotlinVersion = "5.2.1"
+mockitoKotlinVersion = "5.3.1"
 junitVersion = '4.13.2'
 androidJunitVersion = "1.1.5"
 runnerVersion = "1.5.2"
@@ -176,6 +175,8 @@ playBilling = { module = "com.android.billingclient:billing", version = "7.0.0" 
 application = { id = "com.android.application", version = "8.4.1" }
 library = { id = "com.android.library", version = "8.4.1" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinVersion" }
+org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinVersion" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlinVersion" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokkaVersion" }
 kserialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinVersion" }
 wire = { id = "com.squareup.wire", version = "4.9.8" }

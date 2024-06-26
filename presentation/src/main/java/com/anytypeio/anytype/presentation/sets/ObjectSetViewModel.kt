@@ -735,7 +735,8 @@ class ObjectSetViewModel(
                     objects = dataViewState.objects,
                     dataViewRelations = relations,
                     details = objectState.details,
-                    store = objectStore
+                    store = objectStore,
+                    storeOfRelations = storeOfRelations
                 )
 
                 when {
@@ -787,7 +788,8 @@ class ObjectSetViewModel(
                 dataViewRelations = relations,
                 details = objectState.details,
                 store = objectStore,
-                objectOrderIds = objectOrderIds
+                objectOrderIds = objectOrderIds,
+                storeOfRelations = storeOfRelations
             )
         }
     }

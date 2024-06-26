@@ -275,6 +275,9 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                         is LoginException.NetworkIdMismatch -> {
                             sideEffects.emit(SideEffect.Error.NetworkIdMismatch)
                         }
+                        is LoginException.FailedToFindAccountInfo -> {
+                            sideEffects.emit(SideEffect.Error.NetworkIdMismatch)
+                        }
                         else -> {
                             val msg = e.message ?: "Unknown error"
                             error.value = "${ERROR_MESSAGE}: $msg"

@@ -110,7 +110,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                     proceedWithAbortAndExit()
                 }
                 is SetupState.Abort -> {
-                    command.emit(Command.ShowToast("Aborting... Please wait!"))
+                    sideEffects.emit(SideEffect.Exit)
                 }
                 else -> {
                     sideEffects.emit(SideEffect.Exit)

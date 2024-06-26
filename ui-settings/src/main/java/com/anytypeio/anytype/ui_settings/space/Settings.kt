@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui_settings.space
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -68,6 +70,7 @@ fun SpaceSettingsScreen(
     onSharePrivateSpaceClicked: () -> Unit,
     onManageSharedSpaceClicked: () -> Unit,
     onAddMoreSpacesClicked: () -> Unit,
+    onSpaceImagePicked: (Uri) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -95,7 +98,8 @@ fun SpaceSettingsScreen(
                     ViewState.Init -> false
                     ViewState.Loading -> false
                     is ViewState.Success -> state.data.permissions.isOwnerOrEditor()
-                }
+                },
+                onSpaceImagePicked = onSpaceImagePicked
             )
         }
         item { Divider() }
@@ -311,7 +315,7 @@ fun SpaceSettingsScreenPreview() {
                 shareLimitReached = SpaceSettingsViewModel.ShareLimitsState(
                     shareLimitReached = false,
                     sharedSpacesLimit = 0
-                ),
+                )
             )
         ),
         onNameSet = {},
@@ -325,7 +329,8 @@ fun SpaceSettingsScreenPreview() {
         onRandomGradientClicked = {},
         onManageSharedSpaceClicked = {},
         onSharePrivateSpaceClicked = {},
-        onAddMoreSpacesClicked = {}
+        onAddMoreSpacesClicked = {},
+        onSpaceImagePicked = {}
     )
 }
 

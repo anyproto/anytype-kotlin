@@ -44,6 +44,7 @@
     <string name="space_name">Nombre del espacio</string>
     <string name="default_space">Espacio inicial</string>
     <string name="space_settings_apply_random_gradient">Aplicar degradado aleatorio</string>
+    <string name="space_settings_apply_upload_image">Cargar una imagen</string>
     <string name="delete_space">Eliminar espacio</string>
     <string name="you_can_store">Puedes almacenar gratuitamente hasta %1$s de archivos en nuestro nodo de respaldo cifrado. Si llegas al límite, los archivos se almacenarán solo localmente.</string>
     <string name="in_order_to_save">Para ahorrar espacio en tu dispositivo local, puedes guardar todos tus archivos en nuestro nodo de respaldo cifrado. Los archivos se cargarán de nuevo cuando los abras.</string>
@@ -509,6 +510,7 @@
     <string name="collection_widget_description">Tus colecciones de objetos</string>
     <string name="no_type_named">No hay ningún tipo llamado «%1$s«</string>
     <string name="try_to_create_new_one_or_search_for_something_else">Prueba a crear uno nuevo o busca otro distinto.</string>
+    <string name="try_different_search_query">Try a different search query.</string>
     <string name="change_wallpaper">Cambiar fondo de pantalla</string>
     <string name="change_icon">Cambiar icono</string>
     <string name="random">Aleatorio</string>
@@ -1433,6 +1435,7 @@ En concreto,
     <string name="membership_error_button_text_action">Contacto</string>
     <string name="membership_error_button_text_dismiss">Ok</string>
     <string name="error_login_network_id_mismatch">Se ha detectado un ID de red que no coincide. Comprueba tu configuración de red.</string>
+    <string name="error_login_select_vault_error">Select vault error.</string>
     <string name="global_search_related_to">"Relacionado con: "</string>
     <string name="global_search_no_related_objects_found">No se ha encontrado ningún objeto relacionado.</string>
 </resources>

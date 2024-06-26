@@ -4,8 +4,9 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import javax.inject.Inject
 
-class SetDocumentImageIcon(
+class SetDocumentImageIcon @Inject constructor(
     private val repo: BlockRepository
 ) : SetImageIcon<Id>() {
 

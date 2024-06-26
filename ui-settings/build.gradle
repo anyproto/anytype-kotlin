@@ -38,6 +38,7 @@ dependencies {
     implementation libs.composeFoundation
     implementation libs.composeMaterial
     implementation libs.composeToolingPreview
+    implementation libs.activityCompose
 
     implementation libs.coilCompose
 

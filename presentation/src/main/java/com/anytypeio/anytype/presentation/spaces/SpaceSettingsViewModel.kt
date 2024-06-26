@@ -9,6 +9,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.screenLeaveSpace
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Filepath
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -27,6 +28,9 @@ import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
+import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
+import com.anytypeio.anytype.domain.icon.SetImageIcon
+import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -58,7 +62,8 @@ class SpaceSettingsViewModel(
     private val userPermissionProvider: UserPermissionProvider,
     private val spaceViewContainer: SpaceViewSubscriptionContainer,
     private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer,
-    private val getMembership: GetMembershipStatus
+    private val getMembership: GetMembershipStatus,
+    private val uploadFile: UploadFile
 ): BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>()
@@ -325,6 +330,46 @@ class SpaceSettingsViewModel(
         }
     }
 
+    fun onSpaceImagePicked(path: String) {
+        Timber.d("onSpaceImageClicked: $path")
+        viewModelScope.launch {
+            uploadFile.async(
+                params = UploadFile.Params(
+                    path = path,
+                    space = params.space,
+                    type = Block.Content.File.Type.IMAGE
+                )
+            ).fold(
+                onSuccess = { file ->
+                    proceedWithSettingSpaceIconImage(file)
+                },
+                onFailure = {
+                    Timber.e(it, "Error while uploading image as space icon")
+                }
+            )
+        }
+    }
+
+    private suspend fun proceedWithSettingSpaceIconImage(file: ObjectWrapper.File) {
+        setSpaceDetails.async(
+            SetSpaceDetails.Params(
+                space = params.space,
+                details = mapOf(
+                    Relations.ICON_OPTION to null,
+                    Relations.ICON_IMAGE to file.id,
+                    Relations.ICON_EMOJI to null
+                )
+            )
+        ).fold(
+            onSuccess = {
+                Timber.d("Successfully set image as space icon.")
+            },
+            onFailure = { e ->
+                Timber.e(e, "Error while setting image as space icon")
+            }
+        )
+    }
+
     data class SpaceData(
         val spaceId: Id?,
         val createdDateInMillis: Long?,
@@ -369,7 +414,8 @@ class SpaceSettingsViewModel(
         private val spaceGradientProvider: SpaceGradientProvider,
         private val userPermissionProvider: UserPermissionProvider,
         private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer,
-        private val getMembership: GetMembershipStatus
+        private val getMembership: GetMembershipStatus,
+        private val uploadFile: UploadFile
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -388,7 +434,8 @@ class SpaceSettingsViewModel(
             params = params,
             userPermissionProvider = userPermissionProvider,
             activeSpaceMemberSubscriptionContainer = activeSpaceMemberSubscriptionContainer,
-            getMembership = getMembership
+            getMembership = getMembership,
+            uploadFile = uploadFile
         ) as T
     }
 

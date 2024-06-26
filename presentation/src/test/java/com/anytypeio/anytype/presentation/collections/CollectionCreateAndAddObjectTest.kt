@@ -176,7 +176,7 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
             val first = awaitItem()
             assertIs<DataViewViewState.Init>(first)
 
-            advanceTimeBy(300)
+            advanceUntilIdle()
 
             val second = awaitItem()
             assertIs<DataViewViewState.Collection.Default>(second)
@@ -188,7 +188,8 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
                 templateId = newObjectTemplate
             )
 
-            advanceTimeBy(300)
+            advanceUntilIdle()
+
             val spaceId = SpaceId(mockObjectCollection.spaceId)
             val command = Command.CreateObject(
                 prefilled = mapOf(filters[0].relation to filters[0].value, filters[1].relation to filters[1].value),

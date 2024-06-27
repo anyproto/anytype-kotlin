@@ -111,8 +111,6 @@ class DataViewListWidgetContainer(
                 }
             }
         }
-    }.onStart {
-
     }.catch {
         emit(defaultEmptyState())
     }

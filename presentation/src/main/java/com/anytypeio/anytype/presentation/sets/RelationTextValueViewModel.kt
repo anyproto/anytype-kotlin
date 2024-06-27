@@ -11,7 +11,6 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Url
-import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.intents.SystemAction
 import com.anytypeio.anytype.domain.`object`.ReloadObject
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -23,12 +22,8 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationUrlOpen
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -47,8 +42,6 @@ class RelationTextValueViewModel(
     val isDismissed = MutableStateFlow<Boolean>(false)
 
     private var isEditableRelation = false
-
-    private val jobs = mutableListOf<Job>()
 
     fun onDateStart(
         name: String,
@@ -70,101 +63,99 @@ class RelationTextValueViewModel(
         isLocked: Boolean = false
     ) {
         Timber.d("onStart, ctx:[$ctx], relationKey:[$relationKey], object:[$objectId], isLocked:[$isLocked]")
-        jobs += viewModelScope.launch {
-            val pipeline = combine(
-                relations.observe(relationKey),
-                values.subscribe(ctx = ctx, target = objectId)
-            ) { relation, values ->
-                Timber.d("combine, relation:[$relation], values:[$values]")
-                setupIsRelationNotEditable(relation, isLocked)
-                val obj = ObjectWrapper.Basic(values)
-                val value = values[relationKey]?.toString()
-                title.value = relation.name.orEmpty()
-                when (relation.format) {
-                    RelationFormat.SHORT_TEXT -> {
-                        views.value = listOf(
-                            RelationTextValueView.TextShort(
-                                value = value,
-                                isEditable = isEditableRelation
-                            )
+        viewModelScope.launch {
+            val values = values.get(ctx = ctx, target = objectId)
+            val relation = relations.get(relationKey)
+            Timber.d("combine, relation:[$relation], values:[$values]")
+            setupIsRelationNotEditable(relation, isLocked)
+            val obj = ObjectWrapper.Basic(values)
+            val value = values[relationKey]?.toString()
+            title.value = relation.name.orEmpty()
+            when (relation.format) {
+                RelationFormat.SHORT_TEXT -> {
+                    views.value = listOf(
+                        RelationTextValueView.TextShort(
+                            value = value,
+                            isEditable = isEditableRelation
                         )
-                    }
-                    RelationFormat.LONG_TEXT -> {
-                        views.value = listOf(
-                            RelationTextValueView.Text(
-                                value = value,
-                                isEditable = isEditableRelation
-                            )
+                    )
+                }
+
+                RelationFormat.LONG_TEXT -> {
+                    views.value = listOf(
+                        RelationTextValueView.Text(
+                            value = value,
+                            isEditable = isEditableRelation
                         )
-                    }
-                    RelationFormat.NUMBER -> {
-                        views.value = listOf(
-                            RelationTextValueView.Number(
-                                value = NumberParser.parse(value),
-                                isEditable = isEditableRelation
-                            )
+                    )
+                }
+
+                RelationFormat.NUMBER -> {
+                    views.value = listOf(
+                        RelationTextValueView.Number(
+                            value = NumberParser.parse(value),
+                            isEditable = isEditableRelation
                         )
-                    }
-                    RelationFormat.URL -> {
-                        views.value = listOf(
-                            RelationTextValueView.Url(
-                                value = value,
-                                isEditable = isEditableRelation
-                            )
+                    )
+                }
+
+                RelationFormat.URL -> {
+                    views.value = listOf(
+                        RelationTextValueView.Url(
+                            value = value,
+                            isEditable = isEditableRelation
                         )
-                        actions.value = buildList {
-                            if (!value.isNullOrEmpty()) {
-                                add(RelationValueAction.Url.Browse(value))
-                                add(RelationValueAction.Url.Copy(value))
-                            }
-                            if (relation.key == Relations.SOURCE) {
-                                val type = obj.type.firstOrNull()
-                                if (type != null) {
-                                    val wrapper = storeOfObjectTypes.get(type)
-                                    if (wrapper?.uniqueKey == ObjectTypeUniqueKeys.BOOKMARK) {
-                                        add(RelationValueAction.Url.Reload(value.orEmpty()))
-                                    }
+                    )
+                    actions.value = buildList {
+                        if (!value.isNullOrEmpty()) {
+                            add(RelationValueAction.Url.Browse(value))
+                            add(RelationValueAction.Url.Copy(value))
+                        }
+                        if (relation.key == Relations.SOURCE) {
+                            val type = obj.type.firstOrNull()
+                            if (type != null) {
+                                val wrapper = storeOfObjectTypes.get(type)
+                                if (wrapper?.uniqueKey == ObjectTypeUniqueKeys.BOOKMARK) {
+                                    add(RelationValueAction.Url.Reload(value.orEmpty()))
                                 }
                             }
                         }
                     }
-                    RelationFormat.EMAIL -> {
-                        views.value = listOf(
-                            RelationTextValueView.Email(
-                                value = value,
-                                isEditable = isEditableRelation
-                            )
-                        )
-                        if (value != null) {
-                            actions.value = listOf(
-                                RelationValueAction.Email.Mail(value),
-                                RelationValueAction.Email.Copy(value)
-                            )
-                        }
-                    }
-                    RelationFormat.PHONE -> {
-                        views.value = listOf(
-                            RelationTextValueView.Phone(
-                                value = value,
-                                isEditable = isEditableRelation
-                            )
-                        )
-                        if (value != null) {
-                            actions.value = listOf(
-                                RelationValueAction.Phone.Call(value),
-                                RelationValueAction.Phone.Copy(value)
-                            )
-                        }
-                    }
-                    else -> throw  IllegalArgumentException("Wrong format:${relation.format}")
                 }
-            }.catch { Timber.e(it, "Error getting relation") }
-            pipeline.collect()
-        }
-    }
 
-    fun onStop() {
-        jobs.cancel()
+                RelationFormat.EMAIL -> {
+                    views.value = listOf(
+                        RelationTextValueView.Email(
+                            value = value,
+                            isEditable = isEditableRelation
+                        )
+                    )
+                    if (value != null) {
+                        actions.value = listOf(
+                            RelationValueAction.Email.Mail(value),
+                            RelationValueAction.Email.Copy(value)
+                        )
+                    }
+                }
+
+                RelationFormat.PHONE -> {
+                    views.value = listOf(
+                        RelationTextValueView.Phone(
+                            value = value,
+                            isEditable = isEditableRelation
+                        )
+                    )
+                    if (value != null) {
+                        actions.value = listOf(
+                            RelationValueAction.Phone.Call(value),
+                            RelationValueAction.Phone.Copy(value)
+                        )
+                    }
+                }
+
+                else -> throw IllegalArgumentException("Wrong format:${relation.format}")
+            }
+        }
     }
 
     fun onAction(

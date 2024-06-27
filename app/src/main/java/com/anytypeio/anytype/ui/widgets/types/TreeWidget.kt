@@ -124,7 +124,11 @@ fun TreeWidgetCard(
                 )
             } else {
                 if (item.isExpanded) {
-                    EmptyWidgetPlaceholder(R.string.empty_tree_widget)
+                    if (item.isLoading) {
+                        EmptyWidgetPlaceholder(R.string.loading)
+                    } else {
+                        EmptyWidgetPlaceholder(R.string.empty_tree_widget)
+                    }
                     Spacer(modifier = Modifier.height(2.dp))
                 }
             }

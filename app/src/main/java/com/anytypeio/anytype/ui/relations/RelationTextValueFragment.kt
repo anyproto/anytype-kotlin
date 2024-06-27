@@ -122,17 +122,10 @@ open class RelationTextValueFragment :
             )
         }
         onHideKeyboardWhenBottomSheetHidden()
-    }
 
-    override fun onStart() {
         jobs += lifecycleScope.subscribe(vm.views) { relationValueAdapter.update(it) }
         jobs += lifecycleScope.subscribe(vm.actions) { relationValueActionAdapter.submitList(it) }
-        jobs += lifecycleScope.subscribe(vm.intents) { proceedWithAction(it) }
         jobs += lifecycleScope.subscribe(vm.title) { binding.tvRelationHeader.text = it }
-        jobs += lifecycleScope.subscribe(vm.isDismissed) { isDismissed ->
-            if (isDismissed) dismiss()
-        }
-        super.onStart()
 
         if (flow == FLOW_CHANGE_DATE) {
             vm.onDateStart(
@@ -149,9 +142,12 @@ open class RelationTextValueFragment :
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-        vm.onStop()
+    override fun onStart() {
+        jobs += lifecycleScope.subscribe(vm.intents) { proceedWithAction(it) }
+        jobs += lifecycleScope.subscribe(vm.isDismissed) { isDismissed ->
+            if (isDismissed) dismiss()
+        }
+        super.onStart()
     }
 
     private fun dispatchTextResultAndExit(txt: String) {

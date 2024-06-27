@@ -122,7 +122,11 @@ fun ListWidgetCard(
                 }
             } else {
                 if (item.isExpanded) {
-                    EmptyWidgetPlaceholder(R.string.this_widget_has_no_object)
+                    if (item.isLoading) {
+                        EmptyWidgetPlaceholder(R.string.loading)
+                    } else {
+                        EmptyWidgetPlaceholder(R.string.this_widget_has_no_object)
+                    }
                     Spacer(modifier = Modifier.height(2.dp))
                 }
             }

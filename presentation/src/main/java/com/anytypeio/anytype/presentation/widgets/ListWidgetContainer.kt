@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.take
 import timber.log.Timber
 
 class ListWidgetContainer(
@@ -44,8 +45,24 @@ class ListWidgetContainer(
 ) : WidgetContainer {
 
     override val view: Flow<WidgetView> = isSessionActive.flatMapLatest { isActive ->
-        if (isActive) buildViewFlow()
-        else emptyFlow()
+        if (isActive)
+            buildViewFlow().onStart {
+                isWidgetCollapsed.take(1).collect { isCollapsed ->
+                    emit(
+                        WidgetView.ListOfObjects(
+                            id = widget.id,
+                            source = widget.source,
+                            type = resolveType(),
+                            elements = emptyList(),
+                            isExpanded = !isCollapsed,
+                            isCompact = widget.isCompact,
+                            isLoading = true
+                        )
+                    )
+                }
+            }
+        else
+            emptyFlow()
     }
 
     private fun buildViewFlow() = isWidgetCollapsed.flatMapLatest { isCollapsed ->
@@ -88,19 +105,6 @@ class ListWidgetContainer(
                             )
                         }
                     }
-                    .onStart {
-                        emit(
-                            WidgetView.ListOfObjects(
-                                id = widget.id,
-                                source = widget.source,
-                                type = resolveType(),
-                                elements = emptyList(),
-                                isExpanded = true,
-                                isCompact = widget.isCompact,
-                                isLoading = true
-                            )
-                        )
-                    }
             } else if (subscription == BundledWidgetSourceIds.RECENT) {
                 Timber.d("DROID-2619: Before fetching RECENT objects for list widget")
                 val spaceView = getSpaceView.async(
@@ -118,18 +122,6 @@ class ListWidgetContainer(
                     buildWidgetViewWithElements(
                         objects = objects
                     )
-                }.onStart {
-                    emit(
-                        WidgetView.ListOfObjects(
-                            id = widget.id,
-                            source = widget.source,
-                            type = resolveType(),
-                            elements = emptyList(),
-                            isExpanded = true,
-                            isCompact = widget.isCompact,
-                            isLoading = true
-                        )
-                    )
                 }.onEach {
                     Timber.d("DROID-2619: Emitting recent widget:\n$it")
                 }
@@ -137,18 +129,6 @@ class ListWidgetContainer(
                 storage.subscribe(buildParams()).map { objects ->
                     buildWidgetViewWithElements(
                         objects = objects
-                    )
-                }.onStart {
-                    emit(
-                        WidgetView.ListOfObjects(
-                            id = widget.id,
-                            source = widget.source,
-                            type = resolveType(),
-                            elements = emptyList(),
-                            isExpanded = true,
-                            isCompact = widget.isCompact,
-                            isLoading = true
-                        )
                     )
                 }
             }

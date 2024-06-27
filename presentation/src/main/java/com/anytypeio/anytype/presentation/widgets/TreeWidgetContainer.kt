@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import timber.log.Timber
@@ -49,15 +50,17 @@ class TreeWidgetContainer(
     override val view = isSessionActive.flatMapLatest { isActive ->
         if (isActive)
             buildViewFlow().onStart {
-                emit(
-                    WidgetView.Tree(
-                        id = widget.id,
-                        source = widget.source,
-                        isExpanded = false,
-                        elements = emptyList(),
-                        isLoading = true
+                isWidgetCollapsed.take(1).collect { isCollapsed ->
+                    emit(
+                        WidgetView.Tree(
+                            id = widget.id,
+                            source = widget.source,
+                            isExpanded = !isCollapsed,
+                            elements = emptyList(),
+                            isLoading = true
+                        )
                     )
-                )
+                }
             }.onEach {
                 Timber.d("DROID-2619: Emitting tree widget: $it")
             }

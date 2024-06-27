@@ -178,7 +178,7 @@ private suspend fun getCoverFromRelationOrLayout(
     }
     if (coverImage == null && obj.layout == ObjectType.Layout.IMAGE) {
         coverImage = if (isLargeSize) {
-            urlBuilder.image(obj.id)
+            urlBuilder.thumbnail(obj.id)
         } else {
             urlBuilder.thumbnail(obj.id)
         }
@@ -206,7 +206,7 @@ private suspend fun getCoverImageFromRelation(
         }
         if (!previewId.isNullOrBlank()) {
             return if (isLargeSize) {
-                urlBuilder.image(previewId)
+                urlBuilder.thumbnail(previewId)
             } else {
                 urlBuilder.thumbnail(previewId)
             }

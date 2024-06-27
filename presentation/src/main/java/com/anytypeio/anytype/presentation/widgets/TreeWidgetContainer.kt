@@ -19,8 +19,11 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import timber.log.Timber
 
 
 class TreeWidgetContainer(
@@ -45,7 +48,19 @@ class TreeWidgetContainer(
 
     override val view = isSessionActive.flatMapLatest { isActive ->
         if (isActive)
-            buildViewFlow()
+            buildViewFlow().onStart {
+                emit(
+                    WidgetView.Tree(
+                        id = widget.id,
+                        source = widget.source,
+                        isExpanded = false,
+                        elements = emptyList(),
+                        isLoading = true
+                    )
+                )
+            }.onEach {
+                Timber.d("DROID-2619: Emitting tree widget: $it")
+            }
         else
             emptyFlow()
     }

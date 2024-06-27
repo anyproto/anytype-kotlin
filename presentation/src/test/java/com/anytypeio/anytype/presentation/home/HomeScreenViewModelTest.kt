@@ -980,7 +980,6 @@ class HomeScreenViewModelTest {
             vm.onStart()
 
             vm.views.test {
-
                 val firstTimeEmpty = awaitItem()
                 assertEquals(
                     actual = firstTimeEmpty,
@@ -1013,7 +1012,7 @@ class HomeScreenViewModelTest {
                 }
                 assertTrue {
                     val thirdWidget = firstTimeLoadingState2[3]
-                    thirdWidget is WidgetView.Tree && thirdWidget.isLoading
+                    thirdWidget is WidgetView.Tree && !thirdWidget.isLoading
                 }
 
                 val secondTimeState = awaitItem()

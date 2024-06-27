@@ -962,7 +962,7 @@
     <!--region ONBOARDING -->
     <string name="onboarding_auth_title">学习与思考集于一身的创作应用</string>
     <string name="onboarding_auth_subtitle">for those\nwho celebrate\ntrust &amp; autonomy</string>
-    <string name="onboarding_auth_description">Create &amp; collaborate in spaces you own. Encrypted, offline &amp; open.</string>
+    <string name="onboarding_auth_description">在您拥有的空间中创建和协作。加密、离线和开放。</string>
     <string name="onboarding_terms_and_policy_prefix">"继续即代表您同意"</string>
     <string name="onboarding_terms_and_policy_terms">\u00A0使用的条款\u00A0</string>
     <string name="onboarding_terms_and_policy_infix">" 和 "</string>
@@ -1402,10 +1402,10 @@ Please provide specific details of your needs here.</string>
     <string name="membership_support_already_acquired">您已经使用其他的 Anytype 账户获得了一个会员计划。</string>
     <string name="membership_support_different_subscription">找到不同 ID 的订阅</string>
     <string name="membership_support_more_then_one_subscription">找到了不止一个订阅</string>
-    <string name="multiplayer_space_join_request_participants_error">Space participant\'s error</string>
-    <string name="multiplayer_space_join_request_new_member_error">Request\'s member error</string>
+    <string name="multiplayer_space_join_request_participants_error">空间参与者错误</string>
+    <string name="multiplayer_space_join_request_new_member_error">请求成员错误</string>
     <string name="multiplayer_space_join_request_current_user_error">当前用户状态错误</string>
-    <string name="multiplayer_space_join_request_membership_status_error">Current membership status error</string>
+    <string name="multiplayer_space_join_request_membership_status_error">当前会员状态错误</string>
     <string name="membership_upgrade_title">会员升级</string>
     <string name="membership_upgrade_description">联系我们以获取额外的存储空间、空间编辑器或更多共享空间。任何类型的团队都将根据您的需求提供量身定制的细节和条件。</string>
     <string name="membership_upgrade_button">联系Anytype团队</string>
@@ -1425,7 +1425,7 @@ Please provide specific details of your needs here.</string>
     <string name="membership_error_button_text_action">联系我们</string>
     <string name="membership_error_button_text_dismiss">好的</string>
     <string name="error_login_network_id_mismatch">检测到网络 ID 不匹配。请验证您的网络配置。</string>
-    <string name="error_login_select_vault_error">Select vault error.</string>
+    <string name="error_login_select_vault_error">文库选择错误.</string>
     <string name="global_search_related_to">"与之相关的："</string>
     <string name="global_search_no_related_objects_found">没有找到相关对象</string>
 </resources>

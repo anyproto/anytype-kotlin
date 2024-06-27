@@ -78,58 +78,62 @@ class ListWidgetContainer(
                 )
             )
         } else {
-            if (subscription == BundledWidgetSourceIds.FAVORITE) {
-                // Objects from favorites have custom sorting logic.
-                Timber.d("DROID-2619: Before opening favorite object in list widget")
-                objectWatcher
-                    .watch(config.home)
-                    .map { obj -> obj.orderOfRootObjects(obj.root) }
-                    .catch { emit(emptyMap()) }
-                    .flatMapLatest { order ->
-                        storage.subscribe(
-                            StoreSearchByIdsParams(
-                                subscription = subscription,
-                                keys = keys,
-                                targets = order.keys
-                                    .sortedBy { key -> order[key] }
-                                    .take(resolveLimit()),
-                            )
-                        ).map { objects ->
-                            Timber.d("DROID-2619: Fetched favorite objects in list widget")
-                            buildWidgetViewWithElements(
-                                objects = objects
-                                    .filter { obj ->
-                                        obj.isArchived != true && obj.isDeleted != true
-                                    }
-                                    .sortedBy { obj -> order[obj.id] }
-                            )
+            when (subscription) {
+                BundledWidgetSourceIds.FAVORITE -> {
+                    // Objects from favorites have custom sorting logic.
+                    Timber.d("DROID-2619: Before opening favorite object in list widget")
+                    objectWatcher
+                        .watch(config.home)
+                        .map { obj -> obj.orderOfRootObjects(obj.root) }
+                        .catch { emit(emptyMap()) }
+                        .flatMapLatest { order ->
+                            storage.subscribe(
+                                StoreSearchByIdsParams(
+                                    subscription = subscription,
+                                    keys = keys,
+                                    targets = order.keys
+                                        .sortedBy { key -> order[key] }
+                                        .take(resolveLimit()),
+                                )
+                            ).map { objects ->
+                                Timber.d("DROID-2619: Fetched favorite objects in list widget")
+                                buildWidgetViewWithElements(
+                                    objects = objects
+                                        .filter { obj ->
+                                            obj.isArchived != true && obj.isDeleted != true
+                                        }
+                                        .sortedBy { obj -> order[obj.id] }
+                                )
+                            }
                         }
-                    }
-            } else if (subscription == BundledWidgetSourceIds.RECENT) {
-                Timber.d("DROID-2619: Before fetching RECENT objects for list widget")
-                val spaceView = getSpaceView.async(
-                    GetSpaceView.Params.BySpaceViewId(config.spaceView)
-                ).getOrNull()
-                val spaceViewCreationDate = spaceView
-                    ?.getValue<Double?>(Relations.CREATED_DATE)
-                    ?.toLong()
-                storage.subscribe(
-                    buildParams(
-                        spaceCreationDateInSeconds = spaceViewCreationDate
-                    )
-                ).map { objects ->
-                    Timber.d("DROID-2619: Fetched RECENT objects for list widget.")
-                    buildWidgetViewWithElements(
-                        objects = objects
-                    )
-                }.onEach {
-                    Timber.d("DROID-2619: Emitting recent widget:\n$it")
                 }
-            } else {
-                storage.subscribe(buildParams()).map { objects ->
-                    buildWidgetViewWithElements(
-                        objects = objects
-                    )
+                BundledWidgetSourceIds.RECENT -> {
+                    Timber.d("DROID-2619: Before fetching RECENT objects for list widget")
+                    val spaceView = getSpaceView.async(
+                        GetSpaceView.Params.BySpaceViewId(config.spaceView)
+                    ).getOrNull()
+                    val spaceViewCreationDate = spaceView
+                        ?.getValue<Double?>(Relations.CREATED_DATE)
+                        ?.toLong()
+                    storage.subscribe(
+                        buildParams(
+                            spaceCreationDateInSeconds = spaceViewCreationDate
+                        )
+                    ).map { objects ->
+                        Timber.d("DROID-2619: Fetched RECENT objects for list widget.")
+                        buildWidgetViewWithElements(
+                            objects = objects
+                        )
+                    }.onEach {
+                        Timber.d("DROID-2619: Emitting recent widget:\n$it")
+                    }
+                }
+                else -> {
+                    storage.subscribe(buildParams()).map { objects ->
+                        buildWidgetViewWithElements(
+                            objects = objects
+                        )
+                    }
                 }
             }
         }

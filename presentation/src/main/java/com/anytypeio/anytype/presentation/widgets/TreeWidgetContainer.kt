@@ -61,8 +61,6 @@ class TreeWidgetContainer(
                         )
                     )
                 }
-            }.onEach {
-                Timber.d("DROID-2619: Emitting tree widget: $it")
             }
         else
             emptyFlow()

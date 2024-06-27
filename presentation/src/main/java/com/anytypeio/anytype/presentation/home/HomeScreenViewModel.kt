@@ -215,7 +215,6 @@ class HomeScreenViewModel(
              proceedWithClearingObjectSessionHistory(currentConfig)
         }
         .flatMapLatest { config ->
-            Timber.d("DROID-2619: Opening WIDGET object for current space")
             openObject.stream(
                 OpenObject.Params(
                     obj = config.widgets,
@@ -227,7 +226,6 @@ class HomeScreenViewModel(
         .onEach { result ->
             result.fold(
                 onSuccess = { objectView ->
-                    Timber.d("DROID-2619: Opening WIDGET object for current space - DONE")
                     onSessionStarted().also {
                         mutex.withLock { openWidgetObjectsHistory.add(objectView.root) }
                     }

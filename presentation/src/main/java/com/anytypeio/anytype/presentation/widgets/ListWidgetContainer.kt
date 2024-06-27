@@ -81,7 +81,6 @@ class ListWidgetContainer(
             when (subscription) {
                 BundledWidgetSourceIds.FAVORITE -> {
                     // Objects from favorites have custom sorting logic.
-                    Timber.d("DROID-2619: Before opening favorite object in list widget")
                     objectWatcher
                         .watch(config.home)
                         .map { obj -> obj.orderOfRootObjects(obj.root) }
@@ -96,7 +95,6 @@ class ListWidgetContainer(
                                         .take(resolveLimit()),
                                 )
                             ).map { objects ->
-                                Timber.d("DROID-2619: Fetched favorite objects in list widget")
                                 buildWidgetViewWithElements(
                                     objects = objects
                                         .filter { obj ->
@@ -108,7 +106,6 @@ class ListWidgetContainer(
                         }
                 }
                 BundledWidgetSourceIds.RECENT -> {
-                    Timber.d("DROID-2619: Before fetching RECENT objects for list widget")
                     val spaceView = getSpaceView.async(
                         GetSpaceView.Params.BySpaceViewId(config.spaceView)
                     ).getOrNull()
@@ -120,12 +117,9 @@ class ListWidgetContainer(
                             spaceCreationDateInSeconds = spaceViewCreationDate
                         )
                     ).map { objects ->
-                        Timber.d("DROID-2619: Fetched RECENT objects for list widget.")
                         buildWidgetViewWithElements(
                             objects = objects
                         )
-                    }.onEach {
-                        Timber.d("DROID-2619: Emitting recent widget:\n$it")
                     }
                 }
                 else -> {

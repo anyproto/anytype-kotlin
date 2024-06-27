@@ -18,11 +18,9 @@ sealed class WidgetView {
     }
 
     abstract val id: Id
-    abstract val isLoading: Boolean
 
     data class Tree(
         override val id: Id,
-        override val isLoading: Boolean = false,
         val source: Widget.Source,
         val elements: List<Element> = emptyList(),
         val isExpanded: Boolean = false,
@@ -38,21 +36,19 @@ sealed class WidgetView {
 
         sealed class ElementIcon {
             data class Branch(val isExpanded: Boolean) : ElementIcon()
-            data object Leaf : ElementIcon()
-            data object Set : ElementIcon()
-            data object Collection: ElementIcon()
+            object Leaf : ElementIcon()
+            object Set : ElementIcon()
+            object Collection: ElementIcon()
         }
     }
 
     data class Link(
         override val id: Id,
-        override val isLoading: Boolean = false,
         val source: Widget.Source,
     ) : WidgetView(), Draggable
 
     data class SetOfObjects(
         override val id: Id,
-        override val isLoading: Boolean = false,
         val source: Widget.Source,
         val tabs: List<Tab>,
         val elements: List<Element>,
@@ -72,7 +68,6 @@ sealed class WidgetView {
 
     data class ListOfObjects(
         override val id: Id,
-        override val isLoading: Boolean = false,
         val source: Widget.Source,
         val type: Type,
         val elements: List<Element>,
@@ -84,17 +79,15 @@ sealed class WidgetView {
             override val obj: ObjectWrapper.Basic
         ) : WidgetView.Element
         sealed class Type {
-            data object Recent : Type()
-            data object RecentLocal : Type()
-            data object Favorites : Type()
-            data object Sets: Type()
-            data object Collections: Type()
+            object Recent : Type()
+            object RecentLocal : Type()
+            object Favorites : Type()
+            object Sets: Type()
+            object Collections: Type()
         }
     }
 
-    data class Bin(override val id: Id) : WidgetView() {
-        override val isLoading: Boolean = false
-    }
+    data class Bin(override val id: Id) : WidgetView()
 
     sealed class SpaceWidget: WidgetView() {
         override val id: Id get() = SpaceWidgetContainer.SPACE_WIDGET_SUBSCRIPTION
@@ -105,19 +98,16 @@ sealed class WidgetView {
             val membersCount: Int
         ) : SpaceWidget() {
             val isShared: Boolean get() = type == SHARED_SPACE_TYPE
-            override val isLoading: Boolean = false
         }
     }
 
-    data object Library : WidgetView() {
+    object Library : WidgetView() {
         override val id: Id get() = "id.button.library"
-        override val isLoading: Boolean = false
     }
 
     sealed class Action : WidgetView() {
-        data object EditWidgets : Action() {
+        object EditWidgets : Action() {
             override val id: Id get() = "id.action.edit-widgets"
-            override val isLoading: Boolean = false
         }
     }
 
@@ -125,12 +115,12 @@ sealed class WidgetView {
 }
 
 sealed class DropDownMenuAction {
-    data object ChangeWidgetType : DropDownMenuAction()
-    data object ChangeWidgetSource : DropDownMenuAction()
-    data object RemoveWidget : DropDownMenuAction()
-    data object AddBelow: DropDownMenuAction()
-    data object EditWidgets : DropDownMenuAction()
-    data object EmptyBin: DropDownMenuAction()
+    object ChangeWidgetType : DropDownMenuAction()
+    object ChangeWidgetSource : DropDownMenuAction()
+    object RemoveWidget : DropDownMenuAction()
+    object AddBelow: DropDownMenuAction()
+    object EditWidgets : DropDownMenuAction()
+    object EmptyBin: DropDownMenuAction()
 }
 
 fun ObjectWrapper.Basic.getWidgetObjectName(): String? {

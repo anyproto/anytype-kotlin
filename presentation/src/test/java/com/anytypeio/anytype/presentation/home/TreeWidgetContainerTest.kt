@@ -119,11 +119,6 @@ class TreeWidgetContainerTest {
             // TESTING
 
             container.view.test {
-                val first = awaitItem()
-                assertEquals(
-                    expected = true,
-                    actual = first.isLoading
-                )
                 awaitItem()
                 awaitComplete()
                 verifyBlocking(storelessSubscriptionContainer, times(1)) {
@@ -202,11 +197,6 @@ class TreeWidgetContainerTest {
         // TESTING
 
         container.view.test {
-            val first = awaitItem()
-            assertEquals(
-                expected = true,
-                actual = first.isLoading
-            )
             awaitItem()
             awaitItem()
             awaitComplete()
@@ -294,11 +284,6 @@ class TreeWidgetContainerTest {
             // TESTING
 
             container.view.test {
-                val first = awaitItem()
-                assertEquals(
-                    expected = true,
-                    actual = first.isLoading
-                )
                 val firstTimeState = awaitItem()
                 assertEquals(
                     expected = WidgetView.Tree(
@@ -435,11 +420,6 @@ class TreeWidgetContainerTest {
         // TESTING
 
         container.view.test {
-            val first = awaitItem()
-            assertEquals(
-                expected = true,
-                actual = first.isLoading
-            )
             awaitItem()
             awaitComplete()
             verifyBlocking(storelessSubscriptionContainer, times(1)) {
@@ -499,11 +479,6 @@ class TreeWidgetContainerTest {
         // TESTING
 
         container.view.test {
-            val first = awaitItem()
-            assertEquals(
-                expected = true,
-                actual = first.isLoading
-            )
             awaitItem()
             awaitComplete()
             verifyBlocking(storelessSubscriptionContainer, times(1)) {

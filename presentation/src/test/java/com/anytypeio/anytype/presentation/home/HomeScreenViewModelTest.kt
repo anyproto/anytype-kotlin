@@ -96,8 +96,10 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.ArgumentMatchers
 import org.mockito.BDDMockito.given
 import org.mockito.Mock
+import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
@@ -436,16 +438,11 @@ class HomeScreenViewModelTest {
         vm.onStart()
 
         vm.views.test {
-            val firstTimeEmptyState = awaitItem()
+            val firstTimeState = awaitItem()
             assertEquals(
-                actual = firstTimeEmptyState,
+                actual = firstTimeState,
                 expected = emptyList()
             )
-            val firstTimeLoadingState = awaitItem()
-            assertTrue {
-                val firstWidget = firstTimeLoadingState[1]
-                firstWidget is WidgetView.Tree && firstWidget.isLoading
-            }
             val secondTimeState = awaitItem()
             assertEquals(
                 expected = buildList {
@@ -548,16 +545,11 @@ class HomeScreenViewModelTest {
         vm.onStart()
 
         vm.views.test {
-            val firstTimeEmptyState = awaitItem()
+            val firstTimeState = awaitItem()
             assertEquals(
-                actual = firstTimeEmptyState,
+                actual = firstTimeState,
                 expected = emptyList()
             )
-            val firstTimeLoadingState = awaitItem()
-            assertTrue {
-                val secondWidget = firstTimeLoadingState[1]
-                secondWidget is WidgetView.Tree && secondWidget.isLoading
-            }
             val secondTimeState = awaitItem()
             assertEquals(
                 expected = buildList {
@@ -668,16 +660,11 @@ class HomeScreenViewModelTest {
         vm.onStart()
 
         vm.views.test {
-            val firstTimeEmpty = awaitItem()
+            val firstTimeState = awaitItem()
             assertEquals(
-                actual = firstTimeEmpty,
+                actual = firstTimeState,
                 expected = emptyList()
             )
-            val firstTimeLoadingState = awaitItem()
-            assertTrue {
-                val firstWidget = firstTimeLoadingState[1]
-                firstWidget is WidgetView.SetOfObjects && firstWidget.isLoading
-            }
             val secondTimeState = awaitItem()
             assertEquals(
                 expected = buildList {
@@ -775,16 +762,11 @@ class HomeScreenViewModelTest {
         vm.onStart()
 
         vm.views.test {
-            val firstTimeEmpty = awaitItem()
+            val firstTimeState = awaitItem()
             assertEquals(
-                actual = firstTimeEmpty,
+                actual = firstTimeState,
                 expected = emptyList()
             )
-            val firstTimeLoadingState = awaitItem()
-            assertTrue {
-                val firstWidget = firstTimeLoadingState[1]
-                firstWidget is WidgetView.SetOfObjects && firstWidget.isLoading
-            }
             val secondTimeState = awaitItem()
             assertEquals(
                 expected = buildList {
@@ -980,45 +962,12 @@ class HomeScreenViewModelTest {
             vm.onStart()
 
             vm.views.test {
-                val firstTimeEmpty = awaitItem()
+                val firstTimeState = awaitItem()
                 assertEquals(
-                    actual = firstTimeEmpty,
+                    actual = firstTimeState,
                     expected = emptyList()
                 )
-                val firstTimeLoadingState1 = awaitItem()
-                assertTrue {
-                    val firstWidget = firstTimeLoadingState1[1]
-                    firstWidget is WidgetView.Tree && firstWidget.isLoading
-                }
-                assertTrue {
-                    val secondWidget = firstTimeLoadingState1[2]
-                    secondWidget is WidgetView.Tree && secondWidget.isLoading
-                }
-                assertTrue {
-                    val thirdWidget = firstTimeLoadingState1[3]
-                    thirdWidget is WidgetView.Tree && thirdWidget.isLoading
-                }
-
-                advanceUntilIdle()
-
-                val firstTimeLoadingState2 = awaitItem()
-                assertTrue {
-                    val firstWidget = firstTimeLoadingState2[1]
-                    firstWidget is WidgetView.Tree && firstWidget.isLoading
-                }
-                assertTrue {
-                    val secondWidget = firstTimeLoadingState2[2]
-                    secondWidget is WidgetView.Tree && !secondWidget.isLoading
-                }
-                assertTrue {
-                    val thirdWidget = firstTimeLoadingState2[3]
-                    thirdWidget is WidgetView.Tree && !thirdWidget.isLoading
-                }
-
                 val secondTimeState = awaitItem()
-
-                advanceUntilIdle()
-
                 assertEquals(
                     expected = buildList {
                         add(defaultSpaceWidgetView)
@@ -2377,38 +2326,22 @@ class HomeScreenViewModelTest {
             vm.onStart()
 
             vm.views.test {
-                val firstTimeEmpty = awaitItem()
+                val firstTimeState = awaitItem()
                 assertEquals(
-                    actual = firstTimeEmpty,
+                    actual = firstTimeState,
                     expected = emptyList()
                 )
-                val firstTimeLoadingState = awaitItem()
-                assertTrue {
-                    val firstWidget = firstTimeLoadingState[1]
-                    firstWidget is WidgetView.Tree && firstWidget.isLoading
-                }
                 delay(1)
                 val secondTimeItem = awaitItem()
                 assertTrue {
                     val secondWidget = secondTimeItem[1]
-                    (secondWidget is WidgetView.Tree
-                            && secondWidget.source.id == currentSourceObject.id && !secondWidget.isLoading)
+                    secondWidget is WidgetView.Tree && secondWidget.source.id == currentSourceObject.id
                 }
                 val thirdTimeItem = awaitItem()
                 advanceUntilIdle()
                 assertTrue {
                     val secondWidget = thirdTimeItem[1]
-                    secondWidget is WidgetView.Tree
-                            && secondWidget.source.id == newSourceObject.id
-                            && secondWidget.isLoading
-                }
-                advanceUntilIdle()
-                val fourthTimeItem = awaitItem()
-                assertTrue {
-                    val secondWidget = fourthTimeItem[1]
-                    secondWidget is WidgetView.Tree
-                            && secondWidget.source.id == newSourceObject.id
-                            && !secondWidget.isLoading
+                    secondWidget is WidgetView.Tree && secondWidget.source.id == newSourceObject.id
                 }
             }
         }
@@ -2482,16 +2415,11 @@ class HomeScreenViewModelTest {
         vm.onStart()
 
         vm.views.test {
-            val firstTimeEmpty = awaitItem()
+            val firstTimeState = awaitItem()
             assertEquals(
-                actual = firstTimeEmpty,
+                actual = firstTimeState,
                 expected = emptyList()
             )
-            val firstTimeLoadingState = awaitItem()
-            assertTrue {
-                val firstWidget = firstTimeLoadingState[1]
-                firstWidget is WidgetView.Tree && firstWidget.isLoading
-            }
             delay(1)
             val secondTimeItem = awaitItem()
             assertTrue {
@@ -2653,16 +2581,11 @@ class HomeScreenViewModelTest {
         vm.onStart()
 
         vm.views.test {
-            val firstTimeEmpty = awaitItem()
+            val firstTimeState = awaitItem()
             assertEquals(
-                actual = firstTimeEmpty,
+                actual = firstTimeState,
                 expected = emptyList()
             )
-            val firstTimeLoadingState = awaitItem()
-            assertTrue {
-                val secondWidget = firstTimeLoadingState[1]
-                secondWidget is WidgetView.SetOfObjects && secondWidget.isLoading
-            }
             delay(1)
             val secondTimeItem = awaitItem()
             assertTrue {
@@ -3013,6 +2936,6 @@ class HomeScreenViewModelTest {
     )
 
     companion object {
-        val WIDGET_OBJECT_ID: Id = "Widget-object-${MockDataFactory.randomUuid()}"
+        val WIDGET_OBJECT_ID: Id = MockDataFactory.randomUuid()
     }
 }

@@ -138,12 +138,10 @@ fun DataViewListWidgetCard(
                 }
             } else {
                 if (item.isExpanded) {
-                    when {
-                        item.isLoading -> EmptyWidgetPlaceholder(R.string.loading)
-                        item.tabs.isNotEmpty() -> EmptyWidgetPlaceholder(R.string.empty_list_widget)
-                        else -> EmptyWidgetPlaceholder(text = R.string.empty_list_widget_no_view)
-                    }
-
+                    if (item.tabs.isNotEmpty())
+                        EmptyWidgetPlaceholder(R.string.empty_list_widget)
+                    else
+                        EmptyWidgetPlaceholder(text = R.string.empty_list_widget_no_view)
                     Spacer(modifier = Modifier.height(2.dp))
                 }
             }

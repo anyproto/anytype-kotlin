@@ -25,10 +25,6 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.take
-import timber.log.Timber
 
 class ListWidgetContainer(
     private val widget: Widget.List,
@@ -45,24 +41,8 @@ class ListWidgetContainer(
 ) : WidgetContainer {
 
     override val view: Flow<WidgetView> = isSessionActive.flatMapLatest { isActive ->
-        if (isActive)
-            buildViewFlow().onStart {
-                isWidgetCollapsed.take(1).collect { isCollapsed ->
-                    emit(
-                        WidgetView.ListOfObjects(
-                            id = widget.id,
-                            source = widget.source,
-                            type = resolveType(),
-                            elements = emptyList(),
-                            isExpanded = !isCollapsed,
-                            isCompact = widget.isCompact,
-                            isLoading = true
-                        )
-                    )
-                }
-            }
-        else
-            emptyFlow()
+        if (isActive) buildViewFlow()
+        else emptyFlow()
     }
 
     private fun buildViewFlow() = isWidgetCollapsed.flatMapLatest { isCollapsed ->
@@ -78,56 +58,52 @@ class ListWidgetContainer(
                 )
             )
         } else {
-            when (subscription) {
-                BundledWidgetSourceIds.FAVORITE -> {
-                    // Objects from favorites have custom sorting logic.
-                    objectWatcher
-                        .watch(config.home)
-                        .map { obj -> obj.orderOfRootObjects(obj.root) }
-                        .catch { emit(emptyMap()) }
-                        .flatMapLatest { order ->
-                            storage.subscribe(
-                                StoreSearchByIdsParams(
-                                    subscription = subscription,
-                                    keys = keys,
-                                    targets = order.keys
-                                        .sortedBy { key -> order[key] }
-                                        .take(resolveLimit()),
-                                )
-                            ).map { objects ->
-                                buildWidgetViewWithElements(
-                                    objects = objects
-                                        .filter { obj ->
-                                            obj.isArchived != true && obj.isDeleted != true
-                                        }
-                                        .sortedBy { obj -> order[obj.id] }
-                                )
-                            }
+            if (subscription == BundledWidgetSourceIds.FAVORITE) {
+                // Objects from favorites have custom sorting logic.
+                objectWatcher
+                    .watch(config.home)
+                    .map { obj -> obj.orderOfRootObjects(obj.root) }
+                    .catch { emit(emptyMap()) }
+                    .flatMapLatest { order ->
+                        storage.subscribe(
+                            StoreSearchByIdsParams(
+                                subscription = subscription,
+                                keys = keys,
+                                targets = order.keys
+                                    .sortedBy { key -> order[key] }
+                                    .take(resolveLimit()),
+                            )
+                        ).map { objects ->
+                            buildWidgetViewWithElements(
+                                objects = objects
+                                    .filter { obj ->
+                                        obj.isArchived != true && obj.isDeleted != true
+                                    }
+                                    .sortedBy { obj -> order[obj.id] }
+                            )
                         }
-                }
-                BundledWidgetSourceIds.RECENT -> {
-                    val spaceView = getSpaceView.async(
-                        GetSpaceView.Params.BySpaceViewId(config.spaceView)
-                    ).getOrNull()
-                    val spaceViewCreationDate = spaceView
-                        ?.getValue<Double?>(Relations.CREATED_DATE)
-                        ?.toLong()
-                    storage.subscribe(
-                        buildParams(
-                            spaceCreationDateInSeconds = spaceViewCreationDate
-                        )
-                    ).map { objects ->
-                        buildWidgetViewWithElements(
-                            objects = objects
-                        )
                     }
+            } else if (subscription == BundledWidgetSourceIds.RECENT) {
+                val spaceView = getSpaceView.async(
+                    GetSpaceView.Params.BySpaceViewId(config.spaceView)
+                ).getOrNull()
+                val spaceViewCreationDate = spaceView
+                    ?.getValue<Double?>(Relations.CREATED_DATE)
+                    ?.toLong()
+                storage.subscribe(
+                    buildParams(
+                        spaceCreationDateInSeconds = spaceViewCreationDate
+                    )
+                ).map { objects ->
+                    buildWidgetViewWithElements(
+                        objects = objects
+                    )
                 }
-                else -> {
-                    storage.subscribe(buildParams()).map { objects ->
-                        buildWidgetViewWithElements(
-                            objects = objects
-                        )
-                    }
+            } else {
+                storage.subscribe(buildParams()).map { objects ->
+                    buildWidgetViewWithElements(
+                        objects = objects
+                    )
                 }
             }
         }

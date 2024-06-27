@@ -70,8 +70,14 @@ class RelationValueListWidget @JvmOverloads constructor(
 
     //region DEFAULT
     private fun setDefaultRelation(relation: ObjectRelationView.Default) {
+        val relationValue = relation.value
+        val value = if (relationValue.isNullOrBlank()) {
+            relation.name
+        } else {
+            relationValue
+        }
         setupSingleTextItem(
-            name = relation.value ?: relation.name,
+            name = value,
             textColor = if (relation.value != null) textColorPrimary else textColorSecondary
         )
     }

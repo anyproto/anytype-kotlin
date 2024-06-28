@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.library
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -231,7 +232,7 @@ class LibraryFragment : BaseComposeFragment() {
     }
 
     override fun onApplyWindowRootInsets(view: View) {
-        if (BuildConfig.USE_EDGE_TO_EDGE) {
+        if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             // Do nothing.
         } else {
             super.onApplyWindowRootInsets(view)

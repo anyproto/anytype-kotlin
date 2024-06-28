@@ -96,7 +96,7 @@ class TreeWidgetContainer(
                             expanded = paths,
                             path = widget.id + SEPARATOR + widget.source.id + SEPARATOR,
                             data = data,
-                            limit = rootLevelLimit
+                            rootLimit = rootLevelLimit
                         )
                     )
                 }
@@ -134,7 +134,7 @@ class TreeWidgetContainer(
                             expanded = paths,
                             path = widget.id + SEPARATOR + widget.source.id + SEPARATOR,
                             data = data,
-                            limit = 0
+                            rootLimit = 0
                         )
                     )
                 }
@@ -232,11 +232,11 @@ class TreeWidgetContainer(
         level: Int,
         path: TreePath,
         data: Map<Id, ObjectWrapper.Basic>,
-        limit: Int
+        rootLimit: Int
     ): List<WidgetView.Tree.Element> = buildList {
         links.forEachIndexed { index, link ->
             // Applying limit only for root level:
-            if (level == 0 && limit > 0 && index == limit) {
+            if (level == 0 && rootLimit > 0 && index == rootLimit) {
                 return@buildList
             }
             val obj = data[link]
@@ -267,7 +267,7 @@ class TreeWidgetContainer(
                             expanded = expanded,
                             path = currentLinkPath + SEPARATOR,
                             data = data,
-                            limit = limit
+                            rootLimit = rootLimit
                         )
                     )
                 }

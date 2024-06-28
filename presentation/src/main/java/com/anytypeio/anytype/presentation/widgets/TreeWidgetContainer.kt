@@ -134,7 +134,7 @@ class TreeWidgetContainer(
                             expanded = paths,
                             path = widget.id + SEPARATOR + widget.source.id + SEPARATOR,
                             data = data,
-                            rootLimit = 0
+                            rootLimit = WidgetConfig.NO_LIMIT
                         )
                     )
                 }

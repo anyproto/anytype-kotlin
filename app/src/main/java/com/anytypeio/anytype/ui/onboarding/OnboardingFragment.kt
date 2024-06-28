@@ -73,6 +73,7 @@ import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.shareFirstFileFromPath
 import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MINIM_SDK
 import com.anytypeio.anytype.core_utils.insets.RootViewDeferringInsetsCallback
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.daggerViewModel
@@ -126,7 +127,7 @@ class OnboardingFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        if (USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MINIM_SDK) {
             runCatching {
                 WindowCompat
                     .getInsetsController(
@@ -142,7 +143,7 @@ class OnboardingFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)  {
+        if (USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MINIM_SDK)  {
             runCatching {
                 WindowCompat
                     .getInsetsController(
@@ -186,7 +187,7 @@ class OnboardingFragment : Fragment() {
                     modifier = Modifier
                         .fillMaxSize()
                         .then(
-                            if (USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+                            if (USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MINIM_SDK)
                                 Modifier.windowInsetsPadding(insets = WindowInsets.systemBars)
                             else
                                 Modifier
@@ -237,7 +238,7 @@ class OnboardingFragment : Fragment() {
     }
 
     private fun onApplyWindowRootInsets(view: View) {
-        if ( USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        if ( USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MINIM_SDK) {
             return
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {

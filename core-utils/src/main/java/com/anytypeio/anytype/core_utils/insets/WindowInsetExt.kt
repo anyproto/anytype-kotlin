@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_utils.insets
 
+import android.os.Build
 import android.view.View
 import androidx.core.graphics.Insets
 import androidx.core.view.*
@@ -50,3 +51,5 @@ fun View.doOnApplyWindowInsets(
         requestApplyInsets()
     }
 }
+
+const val EDGE_TO_EDGE_MINIM_SDK = Build.VERSION_CODES.S

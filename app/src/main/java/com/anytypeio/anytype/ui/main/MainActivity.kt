@@ -274,7 +274,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         if (BuildConfig.USE_NEW_WINDOW_INSET_API && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             window.setDecorFitsSystemWindows(false)
         }
-        if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             enableEdgeToEdge()
         }
     }
@@ -560,6 +560,5 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         const val SHARE_DIALOG_LABEL = "anytype.dialog.share.label"
         const val SHARE_IMAGE_INTENT_PATTERN = "image/"
         const val SHARE_FILE_INTENT_PATTERN = "application/"
-
     }
 }

@@ -125,7 +125,7 @@ fun ScreenContent(
     )
     {
         Box(
-            modifier = if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+            modifier = if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
                 Modifier.windowInsetsPadding(WindowInsets.systemBars)
             else
                 Modifier

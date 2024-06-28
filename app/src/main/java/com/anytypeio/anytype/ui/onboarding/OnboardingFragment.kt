@@ -126,7 +126,7 @@ class OnboardingFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             runCatching {
                 WindowCompat
                     .getInsetsController(
@@ -142,7 +142,7 @@ class OnboardingFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)  {
+        if (USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)  {
             runCatching {
                 WindowCompat
                     .getInsetsController(
@@ -186,7 +186,7 @@ class OnboardingFragment : Fragment() {
                     modifier = Modifier
                         .fillMaxSize()
                         .then(
-                            if (USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                            if (USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
                                 Modifier.windowInsetsPadding(insets = WindowInsets.systemBars)
                             else
                                 Modifier
@@ -237,7 +237,7 @@ class OnboardingFragment : Fragment() {
     }
 
     private fun onApplyWindowRootInsets(view: View) {
-        if ( USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if ( USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             return
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {

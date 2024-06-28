@@ -76,7 +76,7 @@ fun LibraryScreen(
             Menu(
                 viewModel,
                 modifier = modifier.then(
-                    if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                    if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
                         Modifier.windowInsetsPadding(WindowInsets.navigationBars)
                     else
                         Modifier
@@ -89,7 +89,7 @@ fun LibraryScreen(
         println(it)
         Column(
             modifier = modifier.then(
-                if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
                     Modifier.windowInsetsPadding(WindowInsets.systemBars)
                 else
                     Modifier

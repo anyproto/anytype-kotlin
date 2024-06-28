@@ -148,7 +148,7 @@ class CollectionFragment : BaseComposeFragment() {
     }
 
     override fun onApplyWindowRootInsets(view: View) {
-        if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             // Do nothing.
         } else {
             super.onApplyWindowRootInsets(view)

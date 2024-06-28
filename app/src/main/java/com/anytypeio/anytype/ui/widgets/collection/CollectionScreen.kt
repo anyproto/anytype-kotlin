@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.ui.widgets.collection
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -124,7 +125,7 @@ fun ScreenContent(
     )
     {
         Box(
-            modifier = if (BuildConfig.USE_EDGE_TO_EDGE)
+            modifier = if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
                 Modifier.windowInsetsPadding(WindowInsets.systemBars)
             else
                 Modifier

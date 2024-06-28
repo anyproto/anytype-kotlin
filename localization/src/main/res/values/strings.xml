@@ -1678,4 +1678,8 @@ Please provide specific details of your needs here.</string>
     <string name="global_search_related_to">"Related to: "</string>
     <string name="global_search_no_related_objects_found">No related objects found</string>
 
+    <string name="sort_empty_values_desc">Show empty values</string>
+    <string name="sort_empty_values_bottom">On bottom</string>
+    <string name="sort_empty_values_top">On top</string>
+
 </resources>

@@ -2,6 +2,7 @@
 
 package com.anytypeio.anytype.ui.library
 
+import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
@@ -75,7 +76,7 @@ fun LibraryScreen(
             Menu(
                 viewModel,
                 modifier = modifier.then(
-                    if (BuildConfig.USE_EDGE_TO_EDGE)
+                    if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
                         Modifier.windowInsetsPadding(WindowInsets.navigationBars)
                     else
                         Modifier
@@ -88,7 +89,7 @@ fun LibraryScreen(
         println(it)
         Column(
             modifier = modifier.then(
-                if (BuildConfig.USE_EDGE_TO_EDGE)
+                if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
                     Modifier.windowInsetsPadding(WindowInsets.systemBars)
                 else
                     Modifier

@@ -31,6 +31,7 @@ import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.core_utils.ext.parseActionSendMultipleUris
 import com.anytypeio.anytype.core_utils.ext.parseActionSendUri
 import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.domain.base.BaseUseCase
@@ -274,7 +275,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         if (BuildConfig.USE_NEW_WINDOW_INSET_API && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             window.setDecorFitsSystemWindows(false)
         }
-        if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
             enableEdgeToEdge()
         }
     }
@@ -560,6 +561,5 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         const val SHARE_DIALOG_LABEL = "anytype.dialog.share.label"
         const val SHARE_IMAGE_INTENT_PATTERN = "image/"
         const val SHARE_FILE_INTENT_PATTERN = "application/"
-
     }
 }

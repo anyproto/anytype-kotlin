@@ -12,9 +12,10 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.isPossibleToUpgrade
-import com.anytypeio.anytype.core_models.ext.isPossibleToUpgradeStorageSpace
 import com.anytypeio.anytype.core_models.membership.MembershipUpgradeReason
 import com.anytypeio.anytype.core_models.membership.TierId
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.readableFileSize
@@ -25,6 +26,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.search.PROFILE_SUBSCRIPTION_ID
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -33,7 +35,6 @@ import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendGetMoreSpaceEvent
 import com.anytypeio.anytype.presentation.extension.sendSettingsSpaceStorageManageEvent
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
-import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -56,7 +57,8 @@ class SpacesStorageViewModel(
     private val interceptFileLimitEvents: InterceptFileLimitEvents,
     private val getAccount: GetAccount,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
-    private val membershipProvider: MembershipProvider
+    private val membershipProvider: MembershipProvider,
+    private val userPermissionProvider: UserPermissionProvider
 ) : BaseViewModel() {
 
     private val _activeTier = MutableStateFlow<ActiveTierState>(ActiveTierState.Init)
@@ -347,29 +349,25 @@ class SpacesStorageViewModel(
         activeSpace: ObjectWrapper.Basic?,
         allSpaces: List<ObjectWrapper.Basic> = emptyList()
     ): List<SegmentLineItem> {
-        val result = mutableListOf<SegmentLineItem>()
         val bytesLimit = nodeUsageInfo.nodeUsage.bytesLimit?.toFloat()
+        val nodeSpaces = nodeUsageInfo.spaces
+
         if (activeSpace == null || bytesLimit == null || bytesLimit == 0F) {
             Timber.e("SpacesStorage, Space Id or Node bytesLimit is null or 0")
-            return result
+            return emptyList()
         }
 
-        val nodeSpaces = nodeUsageInfo.spaces
-        val items = allSpaces.map { s ->
-            val space = nodeSpaces.firstOrNull { it.space == s.targetSpaceId }
-            if (space == null) {
-                if (s.targetSpaceId == activeSpace.targetSpaceId) {
-                    SegmentLineItem.Active(0F)
-                } else {
-                    SegmentLineItem.Other(0F)
-                }
+        val items = allSpaces.mapNotNull { space ->
+            val spaceId = space.targetSpaceId?.let(::SpaceId) ?: return@mapNotNull null
+            val spacePermission = userPermissionProvider.get(spaceId)
+            if (spacePermission != SpaceMemberPermissions.OWNER) return@mapNotNull null
+
+            val spaceUsage = nodeSpaces.firstOrNull { it.space == space.targetSpaceId }
+            val value = spaceUsage?.bytesUsage?.toFloat()?.div(bytesLimit) ?: 0F
+            if (space.targetSpaceId == activeSpace.targetSpaceId) {
+                SegmentLineItem.Active(value)
             } else {
-                val value = space.bytesUsage.toFloat() / bytesLimit
-                if (space.space == activeSpace.targetSpaceId) {
-                    SegmentLineItem.Active(value)
-                } else {
-                    SegmentLineItem.Other(value)
-                }
+                SegmentLineItem.Other(value)
             }
         }.sortedByDescending { it is SegmentLineItem.Active }
 

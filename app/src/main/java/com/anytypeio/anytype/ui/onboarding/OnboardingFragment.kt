@@ -73,6 +73,7 @@ import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.shareFirstFileFromPath
 import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.core_utils.insets.RootViewDeferringInsetsCallback
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.daggerViewModel
@@ -81,7 +82,6 @@ import com.anytypeio.anytype.presentation.onboarding.OnboardingStartViewModel.Si
 import com.anytypeio.anytype.presentation.onboarding.OnboardingViewModel
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel
-import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.onboarding.screens.AuthScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signin.RecoveryScreenWrapper
@@ -126,7 +126,7 @@ class OnboardingFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (USE_EDGE_TO_EDGE) {
+        if (USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
             runCatching {
                 WindowCompat
                     .getInsetsController(
@@ -142,7 +142,7 @@ class OnboardingFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (USE_EDGE_TO_EDGE) {
+        if (USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)  {
             runCatching {
                 WindowCompat
                     .getInsetsController(
@@ -186,7 +186,7 @@ class OnboardingFragment : Fragment() {
                     modifier = Modifier
                         .fillMaxSize()
                         .then(
-                            if (USE_EDGE_TO_EDGE)
+                            if (USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
                                 Modifier.windowInsetsPadding(insets = WindowInsets.systemBars)
                             else
                                 Modifier
@@ -237,7 +237,7 @@ class OnboardingFragment : Fragment() {
     }
 
     private fun onApplyWindowRootInsets(view: View) {
-        if ( USE_EDGE_TO_EDGE) {
+        if ( USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
             return
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {

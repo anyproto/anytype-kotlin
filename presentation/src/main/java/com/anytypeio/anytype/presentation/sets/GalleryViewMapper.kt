@@ -118,7 +118,8 @@ private suspend fun ObjectWrapper.Basic.mapToCoverItem(
         coverImageHashProvider = coverImageHashProvider,
         urlBuilder = urlBuilder,
         store = store,
-        storeOfRelations = storeOfRelations
+        storeOfRelations = storeOfRelations,
+        isLargeSize = isLargeSize
     )
     val cover = createCoverView(coverContainer = coverContainer)
 
@@ -149,12 +150,13 @@ private suspend fun getCoverContainer(
     coverImageHashProvider: CoverImageHashProvider,
     urlBuilder: UrlBuilder,
     store: ObjectStore,
-    storeOfRelations: StoreOfRelations
+    storeOfRelations: StoreOfRelations,
+    isLargeSize: Boolean
 ): CoverContainer {
     return if (obj.coverType != CoverType.NONE) {
         BasicObjectCoverWrapper(obj).getCover(urlBuilder, coverImageHashProvider)
     } else {
-        getCoverFromRelationOrLayout(obj, dvViewer, urlBuilder, store, storeOfRelations)
+        getCoverFromRelationOrLayout(obj, dvViewer, urlBuilder, store, storeOfRelations, isLargeSize)
     }
 }
 
@@ -163,18 +165,23 @@ private suspend fun getCoverFromRelationOrLayout(
     dvViewer: DVViewer,
     urlBuilder: UrlBuilder,
     store: ObjectStore,
-    storeOfRelations: StoreOfRelations
+    storeOfRelations: StoreOfRelations,
+    isLargeSize: Boolean
 ): CoverContainer {
     val coverRelationKey = dvViewer.coverRelationKey
     var coverImage: Url? = null
     if (coverRelationKey != null) {
         val relation = storeOfRelations.getByKey(coverRelationKey)
         coverImage = relation?.let {
-            getCoverImageFromRelation(it, obj, coverRelationKey, store, urlBuilder)
+            getCoverImageFromRelation(it, obj, coverRelationKey, store, urlBuilder, isLargeSize)
         }
     }
     if (coverImage == null && obj.layout == ObjectType.Layout.IMAGE) {
-        coverImage = urlBuilder.image(obj.id)
+        coverImage = if (isLargeSize) {
+            urlBuilder.thumbnail(obj.id)
+        } else {
+            urlBuilder.thumbnail(obj.id)
+        }
     }
     return CoverContainer(coverImage = coverImage)
 }
@@ -184,7 +191,8 @@ private suspend fun getCoverImageFromRelation(
     obj: ObjectWrapper.Basic,
     coverRelationKey: String,
     store: ObjectStore,
-    urlBuilder: UrlBuilder
+    urlBuilder: UrlBuilder,
+    isLargeSize: Boolean
 ): Url? {
     if (relation.format == Relation.Format.FILE) {
         val ids: List<Id> = when (val value = obj.map[coverRelationKey]) {
@@ -197,7 +205,11 @@ private suspend fun getCoverImageFromRelation(
             preview != null && preview.layout == ObjectType.Layout.IMAGE
         }
         if (!previewId.isNullOrBlank()) {
-            return urlBuilder.image(previewId)
+            return if (isLargeSize) {
+                urlBuilder.thumbnail(previewId)
+            } else {
+                urlBuilder.thumbnail(previewId)
+            }
         }
     }
     return null

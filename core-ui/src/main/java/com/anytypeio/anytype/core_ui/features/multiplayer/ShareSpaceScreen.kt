@@ -120,6 +120,7 @@ fun ShareSpaceScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
             ) {
                 Dragger(
                     modifier = Modifier
@@ -131,6 +132,7 @@ fun ShareSpaceScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
             ) {
                 if (isCurrentUserOwner) {
                     Toolbar(title = stringResource(R.string.multiplayer_sharing))

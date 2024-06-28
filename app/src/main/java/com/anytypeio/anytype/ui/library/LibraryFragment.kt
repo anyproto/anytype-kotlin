@@ -24,7 +24,7 @@ import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.safeNavigate
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
-import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MINIM_SDK
+import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.library.LibraryViewModel
@@ -233,7 +233,7 @@ class LibraryFragment : BaseComposeFragment() {
     }
 
     override fun onApplyWindowRootInsets(view: View) {
-        if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MINIM_SDK) {
+        if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
             // Do nothing.
         } else {
             super.onApplyWindowRootInsets(view)

@@ -92,7 +92,7 @@ import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.setVisible
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MINIM_SDK
+import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionObjectView
@@ -126,7 +126,7 @@ fun ScreenContent(
     )
     {
         Box(
-            modifier = if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MINIM_SDK)
+            modifier = if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
                 Modifier.windowInsetsPadding(WindowInsets.systemBars)
             else
                 Modifier

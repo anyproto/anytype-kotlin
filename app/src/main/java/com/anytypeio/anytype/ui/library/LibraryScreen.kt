@@ -40,7 +40,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
-import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MINIM_SDK
+import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.presentation.library.LibraryEvent
 import com.anytypeio.anytype.presentation.library.LibraryViewModel
 import com.anytypeio.anytype.ui.library.views.LibraryTabs
@@ -77,7 +77,7 @@ fun LibraryScreen(
             Menu(
                 viewModel,
                 modifier = modifier.then(
-                    if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MINIM_SDK)
+                    if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
                         Modifier.windowInsetsPadding(WindowInsets.navigationBars)
                     else
                         Modifier
@@ -90,7 +90,7 @@ fun LibraryScreen(
         println(it)
         Column(
             modifier = modifier.then(
-                if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MINIM_SDK)
+                if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
                     Modifier.windowInsetsPadding(WindowInsets.systemBars)
                 else
                     Modifier

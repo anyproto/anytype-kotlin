@@ -510,7 +510,7 @@
     <string name="collection_widget_description">La tua collezione di oggetti</string>
     <string name="no_type_named">Non c\'è nessun tipo denominato %1$s\"</string>
     <string name="try_to_create_new_one_or_search_for_something_else">Prova a crearne uno nuovo o cerca qualcos\'altro</string>
-    <string name="try_different_search_query">Try a different search query.</string>
+    <string name="try_different_search_query">Prova un termine di ricerca diverso.</string>
     <string name="change_wallpaper">Cambia sfondo</string>
     <string name="change_icon">Cambia icona</string>
     <string name="random">Casuale</string>
@@ -1137,7 +1137,7 @@
     <string name="multiplayer_cant_add_editors">Non puoi aggiungere altri editor</string>
     <string name="multiplayer_upgrade_button">✦ Aggiorna</string>
     <string name="multiplayer_upgrade_button_request">✦ Aggiorna per aggiungere più membri</string>
-    <string name="multiplayer_upgrade_spaces_button">✦ Upgrade to add more spaces</string>
+    <string name="multiplayer_upgrade_spaces_button">✦ Fai l\'upgrade per aggiungere più spazi</string>
     <string name="multiplayer_members">Membri</string>
     <string name="multiplayer_leave_request">Richiesta di uscita</string>
     <string name="multiplayer_join_request">Richiesta di partecipazione</string>
@@ -1411,12 +1411,12 @@ Please provide specific details of your needs here.</string>
     <string name="membership_support_more_then_one_subscription">Trovato più di un abbonamento</string>
     <string name="multiplayer_space_join_request_participants_error">Errore del partecipante allo spazio</string>
     <string name="multiplayer_space_join_request_new_member_error">Errore membro della richiesta</string>
-    <string name="multiplayer_space_join_request_current_user_error">Current user status error</string>
-    <string name="multiplayer_space_join_request_membership_status_error">Current membership status error</string>
+    <string name="multiplayer_space_join_request_current_user_error">Errore di stato utente corrente</string>
+    <string name="multiplayer_space_join_request_membership_status_error">Errore stato attuale membership</string>
     <string name="membership_upgrade_title">Aggiornamento Membership</string>
     <string name="membership_upgrade_description">Contattaci per ottenere più spazio di archiviazione, editor di spazi o più spazi condivisi. Il team di Anytype fornirà dettagli e condizioni su misura per le tue esigenze.</string>
     <string name="membership_upgrade_button">Contatta il Team Anytype</string>
-    <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d spaces that can be shared</string>
+    <string name="membership_space_settings_share_limit">Hai raggiunto il limite di %1$d spazi che possono essere condivisi</string>
     <plurals name="period_years">
         <item quantity="one">anno</item>
         <item quantity="other">%d anni</item>
@@ -1436,7 +1436,7 @@ Please provide specific details of your needs here.</string>
     <string name="membership_error_button_text_action">Contattaci</string>
     <string name="membership_error_button_text_dismiss">Ok</string>
     <string name="error_login_network_id_mismatch">Rilevata una mancata corrispondenza con l\'ID di rete. Verifica la configurazione della rete.</string>
-    <string name="error_login_select_vault_error">Select vault error.</string>
+    <string name="error_login_select_vault_error">Errore nella selezione della cassaforte.</string>
     <string name="global_search_related_to">"Correlato a: "</string>
     <string name="global_search_no_related_objects_found">Nessun oggetto correlato trovato</string>
 </resources>

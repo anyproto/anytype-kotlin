@@ -12,12 +12,15 @@ import com.anytypeio.anytype.core_models.exceptions.AccountIsDeletedException
 import com.anytypeio.anytype.core_models.exceptions.LoginException
 import com.anytypeio.anytype.core_models.exceptions.MigrationNeededException
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
+import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.auth.interactor.ConvertWallet
+import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.interactor.ObserveAccounts
 import com.anytypeio.anytype.domain.auth.interactor.RecoverWallet
 import com.anytypeio.anytype.domain.auth.interactor.SaveMnemonic
 import com.anytypeio.anytype.domain.auth.interactor.SelectAccount
 import com.anytypeio.anytype.domain.auth.interactor.StartLoadingAccounts
+import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.DebugGoroutines
@@ -56,7 +59,8 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     private val localeProvider: LocaleProvider,
     private val userPermissionProvider: UserPermissionProvider,
     private val debugGoroutines: DebugGoroutines,
-    private val uriFileProvider: UriFileProvider
+    private val uriFileProvider: UriFileProvider,
+    private val logout: Logout
 ) : ViewModel() {
 
     private val jobs = mutableListOf<Job>()
@@ -101,7 +105,39 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     fun onBackButtonPressed() {
         Timber.d("onBackButtonPressed")
         viewModelScope.launch {
-            sideEffects.emit(SideEffect.Exit)
+            when(state.value) {
+                is SetupState.InProgress -> {
+                    proceedWithAbortAndExit()
+                }
+                is SetupState.Abort -> {
+                    sideEffects.emit(SideEffect.Exit)
+                }
+                else -> {
+                    sideEffects.emit(SideEffect.Exit)
+                }
+            }
+        }
+    }
+
+    private suspend fun proceedWithAbortAndExit() {
+        state.value = SetupState.Abort
+        Timber.d("Starting abort")
+        jobs.cancel()
+        logout(Logout.Params(clearLocalRepositoryData = true)).collect { status ->
+            when (status) {
+                is Interactor.Status.Error -> {
+                    Timber.e(status.throwable, "Failed to logout after unsuccessful login")
+                    sideEffects.emit(SideEffect.Exit)
+                }
+
+                is Interactor.Status.Started -> {
+                    Timber.d("Logout started...")
+                }
+
+                is Interactor.Status.Success -> {
+                    sideEffects.emit(SideEffect.Exit)
+                }
+            }
         }
     }
 
@@ -215,7 +251,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
 
     private fun proceedWithSelectingAccount(id: String) {
         val startTime = System.currentTimeMillis()
-        viewModelScope.launch {
+        jobs += viewModelScope.launch {
             selectAccount(
                 SelectAccount.Params(
                     id = id,
@@ -238,6 +274,9 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                         }
                         is LoginException.NetworkIdMismatch -> {
                             sideEffects.emit(SideEffect.Error.NetworkIdMismatch)
+                        }
+                        is LoginException.FailedToFindAccountInfo -> {
+                            sideEffects.emit(SideEffect.Error.SelectVaultError)
                         }
                         else -> {
                             val msg = e.message ?: "Unknown error"
@@ -279,11 +318,6 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         }
     }
 
-    fun onRetryClicked(id: Id) {
-        // TODO
-        proceedWithSelectingAccount(id)
-    }
-
     fun onEnterMyVaultClicked() {
         Timber.d("onEnterMyVaultClicked")
         viewModelScope.launch {
@@ -323,15 +357,17 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         sealed class Error : SideEffect() {
             data object InvalidMnemonic : Error()
             data object NetworkIdMismatch: Error()
+            data object SelectVaultError: Error()
             data class Unknown(val msg: String): SideEffect()
         }
         data object Exit: SideEffect()
     }
 
     sealed class SetupState {
-        object Idle : SetupState()
-        object InProgress: SetupState()
-        object Failed: SetupState()
+        data object Idle : SetupState()
+        data object InProgress: SetupState()
+        data object Failed: SetupState()
+        data object Abort: SetupState()
     }
 
     sealed class Command {
@@ -359,7 +395,8 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         private val localeProvider: LocaleProvider,
         private val userPermissionProvider: UserPermissionProvider,
         private val debugGoroutines: DebugGoroutines,
-        private val uriFileProvider: UriFileProvider
+        private val uriFileProvider: UriFileProvider,
+        private val logout: Logout
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -380,7 +417,8 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                 localeProvider = localeProvider,
                 userPermissionProvider = userPermissionProvider,
                 debugGoroutines = debugGoroutines,
-                uriFileProvider = uriFileProvider
+                uriFileProvider = uriFileProvider,
+                logout = logout
             ) as T
         }
     }

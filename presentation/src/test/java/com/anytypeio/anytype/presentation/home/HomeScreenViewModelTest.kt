@@ -97,6 +97,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.BDDMockito.given
 import org.mockito.Mock
 import org.mockito.Mockito
@@ -277,7 +278,7 @@ class HomeScreenViewModelTest {
         stubConfig()
         stubInterceptEvents(events)
         stubOpenWidgetObject(givenObjectView)
-        stubCollapsedWidgetState(any())
+        stubCollapsedWidgetState(id = anyString())
         stubGetWidgetSession()
         stubSpaceManager()
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
@@ -337,7 +338,7 @@ class HomeScreenViewModelTest {
             stubConfig()
             stubInterceptEvents(events = emptyFlow())
             stubOpenWidgetObject(givenObjectView)
-            stubCollapsedWidgetState(any())
+            stubCollapsedWidgetState(id = anyString())
             stubGetWidgetSession()
             stubSpaceManager()
             stubSpaceWidgetContainer(defaultSpaceWidgetView)
@@ -423,7 +424,7 @@ class HomeScreenViewModelTest {
             subscription = widgetBlock.id,
             targets = emptyList()
         )
-        stubCollapsedWidgetState(any())
+        stubCollapsedWidgetState(id = anyString())
         stubWidgetActiveView(widgetBlock)
         stubGetWidgetSession()
         stubSpaceManager()
@@ -530,7 +531,7 @@ class HomeScreenViewModelTest {
             results = listOf(firstLink, secondLink)
         )
 
-        stubCollapsedWidgetState(any())
+        stubCollapsedWidgetState(id = anyString())
         stubWidgetActiveView(widgetBlock)
         stubGetWidgetSession()
         stubSpaceManager()
@@ -645,7 +646,7 @@ class HomeScreenViewModelTest {
             results = listOf(firstLink, secondLink)
         )
 
-        stubCollapsedWidgetState(any())
+        stubCollapsedWidgetState(id = anyString())
         stubWidgetActiveView(widgetBlock)
         stubGetWidgetSession()
         stubSpaceManager()
@@ -747,7 +748,7 @@ class HomeScreenViewModelTest {
             results = listOf(firstLink, secondLink)
         )
 
-        stubCollapsedWidgetState(any())
+        stubCollapsedWidgetState(id = anyString())
         stubWidgetActiveView(widgetBlock)
         stubGetWidgetSession()
         stubSpaceManager()
@@ -929,7 +930,7 @@ class HomeScreenViewModelTest {
                     subscription = BundledWidgetSourceIds.RECENT,
                     spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
                     keys = TreeWidgetContainer.keys,
-                    limit = WidgetConfig.NO_LIMIT
+                    limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 ),
                 results = listOf(firstLink, secondLink)
             )
@@ -941,12 +942,12 @@ class HomeScreenViewModelTest {
                     subscription = BundledWidgetSourceIds.SETS,
                     spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
                     keys = TreeWidgetContainer.keys,
-                    limit = WidgetConfig.NO_LIMIT
+                    limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 ),
                 results = listOf(firstLink, secondLink)
             )
 
-            stubCollapsedWidgetState(any())
+            stubCollapsedWidgetState(id = anyString())
             stubGetWidgetSession()
             stubWidgetActiveView(favoriteWidgetBlock)
 
@@ -1096,7 +1097,7 @@ class HomeScreenViewModelTest {
             subscription = widgetBlock.id,
             targets = emptyList()
         )
-        stubCollapsedWidgetState(any())
+        stubCollapsedWidgetState(id = anyString())
         stubGetWidgetSession()
         stubSpaceManager()
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
@@ -1187,7 +1188,7 @@ class HomeScreenViewModelTest {
             subscription = widgetBlock.id,
             targets = emptyList()
         )
-        stubCollapsedWidgetState(any())
+        stubCollapsedWidgetState(id = anyString())
         stubGetWidgetSession()
         stubSaveWidgetSession()
         stubGetDefaultPageType()
@@ -1310,7 +1311,7 @@ class HomeScreenViewModelTest {
             subscription = widgetBlock.id,
             targets = emptyList()
         )
-        stubCollapsedWidgetState(any())
+        stubCollapsedWidgetState(id = anyString())
         stubGetWidgetSession()
         stubSpaceManager()
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
@@ -1380,7 +1381,7 @@ class HomeScreenViewModelTest {
                 subscription = widgetBlock.id,
                 targets = emptyList()
             )
-            stubCollapsedWidgetState(any())
+            stubCollapsedWidgetState(id = anyString())
             stubGetWidgetSession()
             stubCloseObject()
             stubSpaceManager()
@@ -1518,7 +1519,7 @@ class HomeScreenViewModelTest {
             results = listOf(firstLink, secondLink)
         )
 
-        stubCollapsedWidgetState(any())
+        stubCollapsedWidgetState(id = anyString())
         stubGetWidgetSession()
         stubWidgetActiveView(favoriteWidgetBlock)
         stubSpaceManager()
@@ -1683,7 +1684,7 @@ class HomeScreenViewModelTest {
                 subscription = BundledWidgetSourceIds.RECENT,
                 spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
                 keys = TreeWidgetContainer.keys,
-                limit = WidgetConfig.NO_LIMIT
+                limit = WidgetConfig.DEFAULT_TREE_LIMIT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1695,12 +1696,12 @@ class HomeScreenViewModelTest {
                 subscription = BundledWidgetSourceIds.SETS,
                 spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
                 keys = TreeWidgetContainer.keys,
-                limit = WidgetConfig.NO_LIMIT
+                limit = WidgetConfig.DEFAULT_TREE_LIMIT
             ),
             results = listOf(firstLink, secondLink)
         )
 
-        stubCollapsedWidgetState(any())
+        stubCollapsedWidgetState(id = anyString())
         stubGetWidgetSession()
         stubWidgetActiveView(favoriteWidgetBlock)
         stubCloseObject()
@@ -1733,7 +1734,7 @@ class HomeScreenViewModelTest {
                     subscription = setsSource.id,
                     spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
                     keys = TreeWidgetContainer.keys,
-                    limit = WidgetConfig.NO_LIMIT
+                    limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 )
             )
         }
@@ -1744,7 +1745,7 @@ class HomeScreenViewModelTest {
                     subscription = recentSource.id,
                     spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
                     keys = TreeWidgetContainer.keys,
-                    limit = WidgetConfig.NO_LIMIT
+                    limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 )
             )
         }
@@ -1788,7 +1789,7 @@ class HomeScreenViewModelTest {
                     subscription = setsSource.id,
                     spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
                     keys = TreeWidgetContainer.keys,
-                    limit = WidgetConfig.NO_LIMIT
+                    limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 )
             )
         }
@@ -1799,7 +1800,7 @@ class HomeScreenViewModelTest {
                     subscription = recentSource.id,
                     spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
                     keys = TreeWidgetContainer.keys,
-                    limit = WidgetConfig.NO_LIMIT
+                    limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 )
             )
         }
@@ -1922,7 +1923,7 @@ class HomeScreenViewModelTest {
             results = listOf(firstLink, secondLink)
         )
 
-        stubCollapsedWidgetState(any())
+        stubCollapsedWidgetState(id = anyString())
         stubGetWidgetSession()
         stubWidgetActiveView(favoriteWidgetBlock)
         stubFavoritesObjectWatcher()
@@ -2076,7 +2077,7 @@ class HomeScreenViewModelTest {
             subscription = widgetBlock.id,
             targets = emptyList()
         )
-        stubCollapsedWidgetState(any())
+        stubCollapsedWidgetState(id = anyString())
 
         stubObserveSpaceObject()
         stubGetWidgetSession()
@@ -2157,7 +2158,7 @@ class HomeScreenViewModelTest {
             subscription = widgetBlock.id,
             targets = emptyList()
         )
-        stubCollapsedWidgetState(any())
+        stubCollapsedWidgetState(id = anyString())
         stubGetWidgetSession()
         stubSpaceManager()
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
@@ -2226,7 +2227,7 @@ class HomeScreenViewModelTest {
                 subscription = widgetBlock.id,
                 targets = emptyList()
             )
-            stubCollapsedWidgetState(any())
+            stubCollapsedWidgetState(id = anyString())
             stubGetWidgetSession()
             stubSpaceManager()
             stubSpaceWidgetContainer(defaultSpaceWidgetView)
@@ -2314,7 +2315,7 @@ class HomeScreenViewModelTest {
                 subscription = widgetBlock.id,
                 targets = emptyList()
             )
-            stubCollapsedWidgetState(any())
+            stubCollapsedWidgetState(id = anyString())
             stubGetWidgetSession()
             stubSpaceManager()
             stubSpaceWidgetContainer(defaultSpaceWidgetView)
@@ -2403,7 +2404,7 @@ class HomeScreenViewModelTest {
             subscription = widgetBlock.id,
             targets = emptyList()
         )
-        stubCollapsedWidgetState(any())
+        stubCollapsedWidgetState(id = anyString())
         stubGetWidgetSession()
         stubSpaceManager()
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
@@ -2563,7 +2564,7 @@ class HomeScreenViewModelTest {
             results = emptyList()
         )
 
-        stubCollapsedWidgetState(any())
+        stubCollapsedWidgetState(id = anyString())
         stubGetWidgetSession()
         stubGetDefaultPageType()
         stubObserveSpaceObject()

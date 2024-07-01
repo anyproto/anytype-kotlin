@@ -95,7 +95,8 @@ class TreeWidgetContainer(
                             level = ROOT_INDENT,
                             expanded = paths,
                             path = widget.id + SEPARATOR + widget.source.id + SEPARATOR,
-                            data = data
+                            data = data,
+                            rootLimit = rootLevelLimit
                         )
                     )
                 }
@@ -132,7 +133,8 @@ class TreeWidgetContainer(
                             level = ROOT_INDENT,
                             expanded = paths,
                             path = widget.id + SEPARATOR + widget.source.id + SEPARATOR,
-                            data = data
+                            data = data,
+                            rootLimit = WidgetConfig.NO_LIMIT
                         )
                     )
                 }
@@ -141,55 +143,60 @@ class TreeWidgetContainer(
     }
 
     private suspend fun fetchRootLevelBundledSourceObjects(): Flow<List<ObjectWrapper.Basic>> {
-        return if (widget.source.id == BundledWidgetSourceIds.FAVORITE) {
-            objectWatcher
-                .watch(config.home)
-                .map { obj -> obj.orderOfRootObjects(obj.root) }
-                .catch { emit(emptyMap()) }
-                .flatMapLatest { order ->
-                    container.subscribe(
-                        StoreSearchByIdsParams(
-                            subscription = widget.source.id,
-                            targets = order.keys.toList(),
-                            keys = keys
-                        )
-                    ).map { favorites ->
-                        favorites
-                            .filter { obj -> obj.notDeletedNorArchived }
-                            .sortedBy { obj -> order[obj.id] }
+        return when (widget.source.id) {
+            BundledWidgetSourceIds.FAVORITE -> {
+                objectWatcher
+                    .watch(config.home)
+                    .map { obj -> obj.orderOfRootObjects(obj.root) }
+                    .catch { emit(emptyMap()) }
+                    .flatMapLatest { order ->
+                        container.subscribe(
+                            StoreSearchByIdsParams(
+                                subscription = widget.source.id,
+                                targets = order.keys.toList(),
+                                keys = keys
+                            )
+                        ).map { favorites ->
+                            favorites
+                                .filter { obj -> obj.notDeletedNorArchived }
+                                .sortedBy { obj -> order[obj.id] }
+                                .take(rootLevelLimit)
+                        }
                     }
-                }
-        } else if (widget.source.id == BundledWidgetSourceIds.RECENT) {
-            val spaceView = getSpaceView.async(
-                GetSpaceView.Params.BySpaceViewId(config.spaceView)
-            ).getOrNull()
-            val spaceViewCreationDate = spaceView
-                ?.getValue<Double?>(Relations.CREATED_DATE)
-                ?.toLong()
-            container.subscribe(
-                ListWidgetContainer.params(
-                    subscription = widget.source.id,
-                    spaces = buildList {
-                        add(config.space)
-                        add(config.techSpace)
-                    },
-                    keys = keys,
-                    limit = rootLevelLimit,
-                    spaceCreationDateInSeconds = spaceViewCreationDate
+            }
+            BundledWidgetSourceIds.RECENT -> {
+                val spaceView = getSpaceView.async(
+                    GetSpaceView.Params.BySpaceViewId(config.spaceView)
+                ).getOrNull()
+                val spaceViewCreationDate = spaceView
+                    ?.getValue<Double?>(Relations.CREATED_DATE)
+                    ?.toLong()
+                container.subscribe(
+                    ListWidgetContainer.params(
+                        subscription = widget.source.id,
+                        spaces = buildList {
+                            add(config.space)
+                            add(config.techSpace)
+                        },
+                        keys = keys,
+                        limit = rootLevelLimit,
+                        spaceCreationDateInSeconds = spaceViewCreationDate
+                    )
                 )
-            )
-        } else {
-            container.subscribe(
-                ListWidgetContainer.params(
-                    subscription = widget.source.id,
-                    spaces = buildList {
-                        add(config.space)
-                        add(config.techSpace)
-                    },
-                    keys = keys,
-                    limit = rootLevelLimit
+            }
+            else -> {
+                container.subscribe(
+                    ListWidgetContainer.params(
+                        subscription = widget.source.id,
+                        spaces = buildList {
+                            add(config.space)
+                            add(config.techSpace)
+                        },
+                        keys = keys,
+                        limit = rootLevelLimit
+                    )
                 )
-            )
+            }
         }
     }
 
@@ -224,11 +231,12 @@ class TreeWidgetContainer(
         expanded: List<TreePath>,
         level: Int,
         path: TreePath,
-        data: Map<Id, ObjectWrapper.Basic>
+        data: Map<Id, ObjectWrapper.Basic>,
+        rootLimit: Int
     ): List<WidgetView.Tree.Element> = buildList {
         links.forEachIndexed { index, link ->
             // Applying limit only for root level:
-            if (level == 0 && rootLevelLimit > 0 && index == rootLevelLimit) {
+            if (level == 0 && rootLimit > 0 && index == rootLimit) {
                 return@buildList
             }
             val obj = data[link]
@@ -258,7 +266,8 @@ class TreeWidgetContainer(
                             level = level.inc(),
                             expanded = expanded,
                             path = currentLinkPath + SEPARATOR,
-                            data = data
+                            data = data,
+                            rootLimit = rootLimit
                         )
                     )
                 }

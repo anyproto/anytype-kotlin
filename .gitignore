@@ -22,3 +22,4 @@ ktlint
 .idea/*.xml
 signing.properties
 app/release
+.kotlin/

@@ -6,7 +6,7 @@ import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectTypeIds.IMAGE
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
@@ -14,13 +14,14 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
-import com.anytypeio.anytype.presentation.editor.cover.CoverColor
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.objects.values
 import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
+import com.anytypeio.anytype.presentation.relations.CoverContainer
 import com.anytypeio.anytype.presentation.relations.getCover
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 
@@ -32,7 +33,8 @@ suspend fun DVViewer.buildGalleryViews(
     coverImageHashProvider: CoverImageHashProvider,
     urlBuilder: UrlBuilder,
     objectStore: ObjectStore,
-    objectOrderIds: List<Id>
+    objectOrderIds: List<Id>,
+    storeOfRelations: StoreOfRelations
 ): List<Viewer.GalleryView.Item> {
 
     val filteredRelations = viewerRelations.mapNotNull { setting ->
@@ -55,17 +57,15 @@ suspend fun DVViewer.buildGalleryViews(
                     dvViewer = this,
                     coverImageHashProvider = coverImageHashProvider,
                     urlBuilder = urlBuilder,
-                    details = details,
                     store = objectStore,
-                    relations = relations,
                     filteredRelations = filteredRelations,
-                    isLargeSize = cardSize == DVViewerCardSize.LARGE
+                    isLargeSize = cardSize == DVViewerCardSize.LARGE,
+                    storeOfRelations = storeOfRelations
                 )
             } else {
                 obj.mapToDefaultItem(
                     hideIcon = hideIcon,
                     urlBuilder = urlBuilder,
-                    details = details,
                     viewerRelations = viewerRelations,
                     store = objectStore,
                     filteredRelations = filteredRelations
@@ -78,7 +78,6 @@ suspend fun DVViewer.buildGalleryViews(
 private suspend fun ObjectWrapper.Basic.mapToDefaultItem(
     hideIcon: Boolean,
     urlBuilder: UrlBuilder,
-    details: Map<Id, Block.Fields>,
     viewerRelations: List<DVViewerRelation>,
     store: ObjectStore,
     filteredRelations: List<ObjectWrapper.Relation>
@@ -104,57 +103,25 @@ private suspend fun ObjectWrapper.Basic.mapToDefaultItem(
 
 private suspend fun ObjectWrapper.Basic.mapToCoverItem(
     dvViewer: DVViewer,
-    relations: List<ObjectWrapper.Relation>,
-    details: Map<Id, Block.Fields>,
     coverImageHashProvider: CoverImageHashProvider,
     urlBuilder: UrlBuilder,
     store: ObjectStore,
     filteredRelations: List<ObjectWrapper.Relation>,
-    isLargeSize: Boolean
+    isLargeSize: Boolean,
+    storeOfRelations: StoreOfRelations
 ): Viewer.GalleryView.Item {
     val obj = this
-    var cover: CoverView? = null
 
-    var coverColor: CoverColor? = null
-    var coverImage: Url? = null
-    var coverGradient: String? = null
-
-    if (obj.coverType != CoverType.NONE) {
-        val coverContainer = BasicObjectCoverWrapper(obj)
-            .getCover(urlBuilder, coverImageHashProvider)
-
-        coverColor = coverContainer.coverColor
-        coverImage = coverContainer.coverImage
-        coverGradient = coverContainer.coverGradient
-    } else {
-        val previewRelation = relations.find { it.key == dvViewer.coverRelationKey }
-        if (previewRelation != null && previewRelation.format == Relation.Format.FILE) {
-            val ids: List<Id> = when (val value = obj.map[previewRelation.key]) {
-                is Id -> listOf(value)
-                is List<*> -> value.typeOf()
-                else -> emptyList()
-            }
-            val previewId = ids.find { id ->
-                val preview = details[id]
-                preview != null && preview.type.contains(IMAGE)
-            }
-            if (!previewId.isNullOrBlank()) {
-                coverImage = urlBuilder.image(previewId)
-            }
-        }
-    }
-
-    when {
-        coverImage != null -> {
-            cover = CoverView.Image(coverImage)
-        }
-        coverColor != null -> {
-            cover = CoverView.Color(coverColor)
-        }
-        coverGradient != null -> {
-            cover = CoverView.Gradient(coverGradient)
-        }
-    }
+    val coverContainer = getCoverContainer(
+        obj = obj,
+        dvViewer = dvViewer,
+        coverImageHashProvider = coverImageHashProvider,
+        urlBuilder = urlBuilder,
+        store = store,
+        storeOfRelations = storeOfRelations,
+        isLargeSize = isLargeSize
+    )
+    val cover = createCoverView(coverContainer = coverContainer)
 
     return Viewer.GalleryView.Item.Cover(
         objectId = obj.id,
@@ -175,4 +142,82 @@ private suspend fun ObjectWrapper.Basic.mapToCoverItem(
         fitImage = dvViewer.coverFit,
         isLargeSize = isLargeSize
     )
+}
+
+private suspend fun getCoverContainer(
+    obj: ObjectWrapper.Basic,
+    dvViewer: DVViewer,
+    coverImageHashProvider: CoverImageHashProvider,
+    urlBuilder: UrlBuilder,
+    store: ObjectStore,
+    storeOfRelations: StoreOfRelations,
+    isLargeSize: Boolean
+): CoverContainer {
+    return if (obj.coverType != CoverType.NONE) {
+        BasicObjectCoverWrapper(obj).getCover(urlBuilder, coverImageHashProvider)
+    } else {
+        getCoverFromRelationOrLayout(obj, dvViewer, urlBuilder, store, storeOfRelations, isLargeSize)
+    }
+}
+
+private suspend fun getCoverFromRelationOrLayout(
+    obj: ObjectWrapper.Basic,
+    dvViewer: DVViewer,
+    urlBuilder: UrlBuilder,
+    store: ObjectStore,
+    storeOfRelations: StoreOfRelations,
+    isLargeSize: Boolean
+): CoverContainer {
+    val coverRelationKey = dvViewer.coverRelationKey
+    var coverImage: Url? = null
+    if (coverRelationKey != null) {
+        val relation = storeOfRelations.getByKey(coverRelationKey)
+        coverImage = relation?.let {
+            getCoverImageFromRelation(it, obj, coverRelationKey, store, urlBuilder, isLargeSize)
+        }
+    }
+    if (coverImage == null && obj.layout == ObjectType.Layout.IMAGE) {
+        coverImage = if (isLargeSize) {
+            urlBuilder.thumbnail(obj.id)
+        } else {
+            urlBuilder.thumbnail(obj.id)
+        }
+    }
+    return CoverContainer(coverImage = coverImage)
+}
+
+private suspend fun getCoverImageFromRelation(
+    relation: ObjectWrapper.Relation,
+    obj: ObjectWrapper.Basic,
+    coverRelationKey: String,
+    store: ObjectStore,
+    urlBuilder: UrlBuilder,
+    isLargeSize: Boolean
+): Url? {
+    if (relation.format == Relation.Format.FILE) {
+        val ids: List<Id> = when (val value = obj.map[coverRelationKey]) {
+            is Id -> listOf(value)
+            is List<*> -> value.typeOf()
+            else -> emptyList()
+        }
+        val previewId = ids.find { id ->
+            val preview = store.get(id)
+            preview != null && preview.layout == ObjectType.Layout.IMAGE
+        }
+        if (!previewId.isNullOrBlank()) {
+            return if (isLargeSize) {
+                urlBuilder.thumbnail(previewId)
+            } else {
+                urlBuilder.thumbnail(previewId)
+            }
+        }
+    }
+    return null
+}
+
+private fun createCoverView(coverContainer: CoverContainer): CoverView? = when {
+    coverContainer.coverImage != null -> CoverView.Image(coverContainer.coverImage)
+    coverContainer.coverColor != null -> CoverView.Color(coverContainer.coverColor)
+    coverContainer.coverGradient != null -> CoverView.Gradient(coverContainer.coverGradient)
+    else -> null
 }

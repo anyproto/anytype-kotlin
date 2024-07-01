@@ -40,6 +40,7 @@ plugins {
     alias(libs.plugins.application) apply false
     alias(libs.plugins.library) apply false
     alias(libs.plugins.kotlinAndroid) apply false
+    alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.kserialization) apply false
     alias(libs.plugins.wire) apply false
     alias(libs.plugins.dokka) apply false

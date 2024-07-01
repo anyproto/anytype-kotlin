@@ -60,6 +60,7 @@
     <string name="space_name">Space name</string>
     <string name="default_space">Entry space</string>
     <string name="space_settings_apply_random_gradient">Apply random gradient</string>
+    <string name="space_settings_apply_upload_image">Upload image</string>
     <string name="delete_space">Delete space</string>
     <string name="you_can_store">You can store up to %1$s of your files on our encrypted backup node for free. If you reach the limit, files will be stored only locally.</string>
     <string name="in_order_to_save">In order to save space on your local device, you can offload all your files to our encrypted backup node. The files will be loaded back when you open them.</string>
@@ -569,6 +570,7 @@
     <string name="collection_widget_description">Your collections of objects</string>
     <string name="no_type_named">There is no type named \"%1$s\"</string>
     <string name="try_to_create_new_one_or_search_for_something_else">Try to create a new one or search for something else</string>
+    <string name="try_different_search_query">Try a different search query.</string>
     <string name="change_wallpaper">Change wallpaper</string>
     <string name="change_icon">Change icon</string>
     <string name="random">Random</string>
@@ -1672,6 +1674,7 @@ Please provide specific details of your needs here.</string>
     <string name="membership_error_button_text_action">Contact us</string>
     <string name="membership_error_button_text_dismiss">Ok</string>
     <string name="error_login_network_id_mismatch">Network ID mismatch detected. Please verify your network configuration.</string>
+    <string name="error_login_select_vault_error">Select vault error.</string>
     <string name="global_search_related_to">"Related to: "</string>
     <string name="global_search_no_related_objects_found">No related objects found</string>
 

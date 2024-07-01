@@ -79,7 +79,8 @@ suspend fun DVViewer.render(
     details: Map<Id, Block.Fields>,
     dataViewRelations: List<ObjectWrapper.Relation>,
     store: ObjectStore,
-    objectOrderIds: List<Id> = emptyList()
+    objectOrderIds: List<Id> = emptyList(),
+    storeOfRelations: StoreOfRelations
 ): Viewer {
     return when (type) {
         DVViewerType.GRID -> {
@@ -102,7 +103,8 @@ suspend fun DVViewer.render(
                     coverImageHashProvider = coverImageHashProvider,
                     urlBuilder = builder,
                     objectStore = store,
-                    objectOrderIds = objectOrderIds
+                    objectOrderIds = objectOrderIds,
+                    storeOfRelations = storeOfRelations
                 ),
                 title = name,
                 largeCards = cardSize == DVViewerCardSize.LARGE

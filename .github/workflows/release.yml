@@ -67,4 +67,5 @@ jobs:
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
           aws_bucket: ${{ secrets.AWS_BUCKET }}
           endpoint: ${{ secrets.AWS_ENDPOINT }}
-          path: app/build/outputs/apk/release/release-artefacts/
+          source_dir: app/build/outputs/apk/release/release-artefacts/
+          destination_dir: "/"

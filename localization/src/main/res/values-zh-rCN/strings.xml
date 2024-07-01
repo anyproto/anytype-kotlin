@@ -665,6 +665,8 @@
     <string name="reset">重置</string>
     <string name="search_a_relation">搜索关联</string>
     <string name="content_description_check_icon">Check icon</string>
+    <string name="content_desc_empty_values_bottom_check_icon">Sort empty values at the bottom</string>
+    <string name="content_desc_empty_values_top_check_icon">Sort empty values at the top</string>
     <string name="filter_condition_is">是</string>
     <string name="today">今天</string>
     <string name="yesterday">昨天</string>
@@ -1428,4 +1430,7 @@ Please provide specific details of your needs here.</string>
     <string name="error_login_select_vault_error">文库选择错误.</string>
     <string name="global_search_related_to">"与之相关的："</string>
     <string name="global_search_no_related_objects_found">没有找到相关对象</string>
+    <string name="sort_empty_values_desc">显示空白值</string>
+    <string name="sort_empty_values_bottom">在底部</string>
+    <string name="sort_empty_values_top">在顶部</string>
 </resources>

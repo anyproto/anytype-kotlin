@@ -666,6 +666,8 @@
     <string name="reset">Restablecer</string>
     <string name="search_a_relation">Buscar una relación</string>
     <string name="content_description_check_icon">Icono de marca</string>
+    <string name="content_desc_empty_values_bottom_check_icon">Sort empty values at the bottom</string>
+    <string name="content_desc_empty_values_top_check_icon">Sort empty values at the top</string>
     <string name="filter_condition_is">Es</string>
     <string name="today">Hoy</string>
     <string name="yesterday">Ayer</string>
@@ -1438,4 +1440,7 @@ En concreto,
     <string name="error_login_select_vault_error">Select vault error.</string>
     <string name="global_search_related_to">"Relacionado con: "</string>
     <string name="global_search_no_related_objects_found">No se ha encontrado ningún objeto relacionado.</string>
+    <string name="sort_empty_values_desc">Mostrar valores vacíos</string>
+    <string name="sort_empty_values_bottom">Al final</string>
+    <string name="sort_empty_values_top">Al principio</string>
 </resources>

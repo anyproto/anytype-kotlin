@@ -665,6 +665,8 @@
     <string name="reset">重置</string>
     <string name="search_a_relation">搜尋關聯</string>
     <string name="content_description_check_icon">打勾圖示</string>
+    <string name="content_desc_empty_values_bottom_check_icon">Sort empty values at the bottom</string>
+    <string name="content_desc_empty_values_top_check_icon">Sort empty values at the top</string>
     <string name="filter_condition_is">是</string>
     <string name="today">今天</string>
     <string name="yesterday">昨天</string>
@@ -1428,4 +1430,7 @@ Please provide specific details of your needs here.</string>
     <string name="error_login_select_vault_error">Select vault error.</string>
     <string name="global_search_related_to">"關聯到： "</string>
     <string name="global_search_no_related_objects_found">找不到關聯的物件</string>
+    <string name="sort_empty_values_desc">顯示空值</string>
+    <string name="sort_empty_values_bottom">在底部</string>
+    <string name="sort_empty_values_top">在頂部</string>
 </resources>

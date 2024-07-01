@@ -45,7 +45,8 @@ class ModifyViewerSortViewModel(
                         viewState.value = ViewState(
                             format = relation.format,
                             type = sort.type,
-                            name = relation.name.orEmpty()
+                            name = relation.name.orEmpty(),
+                            emptyType = sort.emptyType
                         )
                     } else {
                         Timber.e("Couldn't find relation in StoreOfRelations by relationKey:[$relationKey]")
@@ -78,6 +79,26 @@ class ModifyViewerSortViewModel(
             ctx = ctx,
             sortId = sortId,
             type = DVSortType.ASC,
+            viewerId = viewerId
+        )
+    }
+
+    fun onEmptyBottomSelected(ctx: Id, viewerId: Id, sortId: Id) {
+        Timber.d("onEmptyBottomSelected, ctx:[$ctx], sortId:[$sortId]")
+        proceedWithUpdatingEmptySortType(
+            ctx = ctx,
+            sortId = sortId,
+            type = DVSortEmptyType.END,
+            viewerId = viewerId
+        )
+    }
+
+    fun onEmptyUpSelected(ctx: Id, viewerId: Id, sortId: Id) {
+        Timber.d("onEmptyUpSelected, ctx:[$ctx], sortId:[$sortId]")
+        proceedWithUpdatingEmptySortType(
+            ctx = ctx,
+            sortId = sortId,
+            type = DVSortEmptyType.START,
             viewerId = viewerId
         )
     }
@@ -121,9 +142,49 @@ class ModifyViewerSortViewModel(
         }
     }
 
+    private fun proceedWithUpdatingEmptySortType(
+        ctx: Id,
+        viewerId: Id,
+        sortId: Id,
+        type: DVSortEmptyType
+    ) {
+        val state = objectState.value.dataViewState() ?: return
+        val viewer = state.viewerById(viewerId) ?: return
+        val sort = viewer.sorts.find { it.id == sortId }
+        if (sort == null) {
+            Timber.e("Couldn't find sort in view:[$viewer] by sortId:[$sortId]")
+            return
+        }
+        val startTime = System.currentTimeMillis()
+        viewModelScope.launch {
+            val params = UpdateDataViewViewer.Params.Sort.Replace(
+                ctx = ctx,
+                dv = state.dataViewBlock.id,
+                view = viewer.id,
+                sort = sort.copy(emptyType = type)
+            )
+            updateDataViewViewer.async(params).fold(
+                onSuccess = {
+                    dispatcher.send(it).also {
+                        logEvent(
+                            state = objectState.value,
+                            analytics = analytics,
+                            event = ObjectStateAnalyticsEvent.CHANGE_SORT_VALUE,
+                            startTime = startTime,
+                            type = type.formattedName
+                        )
+                        isDismissed.emit(true)
+                    }
+                },
+                onFailure = { Timber.e(it, "Error while updating empty sort type") }
+            )
+        }
+    }
+
     class ViewState(
         val format: Relation.Format,
         val type: DVSortType,
+        val emptyType: DVSortEmptyType?,
         val name: String
     )
 

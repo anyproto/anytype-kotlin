@@ -25,6 +25,7 @@ typealias DVFilterQuickOption = Block.Content.DataView.Filter.QuickOption
 typealias DVFilterOperator = Block.Content.DataView.Filter.Operator
 typealias DVSort = Block.Content.DataView.Sort
 typealias DVSortType = Block.Content.DataView.Sort.Type
+typealias DVSortEmptyType = Block.Content.DataView.Sort.EmptyType
 typealias DVDateFormat = Block.Content.DataView.DateFormat
 typealias DVTimeFormat = Block.Content.DataView.TimeFormat
 typealias DVViewerRelation = Block.Content.DataView.Viewer.ViewerRelation

@@ -53,8 +53,8 @@ jobs:
       - name: Build APKS
         run: ./gradlew :app:assembleRelease
 
-      - name: Build AAB
-        run: ./gradlew :app:bundleRelease
+#      - name: Build AAB
+#        run: ./gradlew :app:bundleRelease
 
       - name: Clean secrets
         if: always()

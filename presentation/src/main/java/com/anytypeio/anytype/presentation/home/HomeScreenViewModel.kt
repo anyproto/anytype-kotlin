@@ -97,6 +97,7 @@ import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.presentation.widgets.parseActiveViews
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
 import javax.inject.Inject
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -254,6 +255,23 @@ class HomeScreenViewModel(
         proceedWithRenderingPipeline()
         proceedWithObservingDispatches()
         proceedWithSettingUpShortcuts()
+        proceedWithViewStatePipeline()
+    }
+
+    private fun proceedWithViewStatePipeline() {
+        widgetObjectPipelineJobs += viewModelScope.launch {
+            if (!isWidgetSessionRestored) {
+                val session = withContext(appCoroutineDispatchers.io) {
+                    getWidgetSession.async(Unit).getOrNull()
+                }
+                if (session != null) {
+                    collapsedWidgetStateHolder.set(session.collapsed)
+                }
+            }
+            widgetObjectPipeline.collect {
+                objectViewState.value = it
+            }
+        }
     }
 
     private fun proceedWithUserPermissions() {
@@ -1097,19 +1115,6 @@ class HomeScreenViewModel(
 
     fun onStart() {
         Timber.d("onStart")
-        widgetObjectPipelineJobs += viewModelScope.launch {
-            if (!isWidgetSessionRestored) {
-                val session = withContext(appCoroutineDispatchers.io) {
-                    getWidgetSession.async(Unit).getOrNull()
-                }
-                if (session != null) {
-                    collapsedWidgetStateHolder.set(session.collapsed)
-                }
-            }
-            widgetObjectPipeline.collect {
-                objectViewState.value = it
-            }
-        }
     }
 
     fun onResume(deeplink: DeepLinkResolver.Action? = null) {
@@ -1526,8 +1531,19 @@ class HomeScreenViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        viewModelScope.launch {
-            unsubscriber.unsubscribe(listOf(HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION))
+        Timber.d("onCleared")
+        try {
+            GlobalScope.launch(appCoroutineDispatchers.io) {
+                unsubscriber.unsubscribe(listOf(HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION))
+                val config = spaceManager.getConfig()
+                if (config != null) {
+                    proceedWithClosingWidgetObject(widgetObject = config.widgets)
+                }
+                jobs.cancel()
+                widgetObjectPipelineJobs.cancel()
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Error while closing widget object")
         }
     }
 

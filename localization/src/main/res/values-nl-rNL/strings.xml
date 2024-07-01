@@ -44,6 +44,7 @@
     <string name="space_name">Naam ruimte</string>
     <string name="default_space">Standaard ruimte</string>
     <string name="space_settings_apply_random_gradient">Pas willekeurig verloop toe</string>
+    <string name="space_settings_apply_upload_image">Upload afbeelding</string>
     <string name="delete_space">Verwijder ruimte</string>
     <string name="you_can_store">Je kunt maximaal %1$s van je bestanden gratis opslaan op onze versleutelde back-up node. Als de limiet is bereikt, zullen bestanden alleen lokaal worden opgeslagen.</string>
     <string name="in_order_to_save">Om ruimte op jouw lokale apparaat te besparen, kun je al jouw bestanden naar onze versleutelde back-up node verplaatsen. De bestanden worden opnieuw geladen wanneer je ze opent.</string>
@@ -509,6 +510,7 @@
     <string name="collection_widget_description">Jouw collecties van objecten</string>
     <string name="no_type_named">Er is geen type genaamd \"%1$s\"</string>
     <string name="try_to_create_new_one_or_search_for_something_else">Probeer een nieuwe aan te maken of zoek naar iets anders</string>
+    <string name="try_different_search_query">Try a different search query.</string>
     <string name="change_wallpaper">Wijzig achtergrond</string>
     <string name="change_icon">Wijzig icoon</string>
     <string name="random">Willekeurig</string>
@@ -664,6 +666,8 @@
     <string name="reset">Reset</string>
     <string name="search_a_relation">Zoek een relatie</string>
     <string name="content_description_check_icon">Check icon</string>
+    <string name="content_desc_empty_values_bottom_check_icon">Sort empty values at the bottom</string>
+    <string name="content_desc_empty_values_top_check_icon">Sort empty values at the top</string>
     <string name="filter_condition_is">Is</string>
     <string name="today">Vandaag</string>
     <string name="yesterday">Gisteren</string>
@@ -1134,6 +1138,7 @@
     <string name="multiplayer_cant_add_editors">You can’t add more editors</string>
     <string name="multiplayer_upgrade_button">✦ Upgrade</string>
     <string name="multiplayer_upgrade_button_request">✦ Upgrade to add more members</string>
+    <string name="multiplayer_upgrade_spaces_button">✦ Upgrade to add more spaces</string>
     <string name="multiplayer_members">Leden</string>
     <string name="multiplayer_leave_request">Afmeldverzoek</string>
     <string name="multiplayer_join_request">Deelnameverzoek</string>
@@ -1412,6 +1417,7 @@ Please provide specific details of your needs here.</string>
     <string name="membership_upgrade_title">Membership upgrade</string>
     <string name="membership_upgrade_description">Reach us for extra storage, space editors, or more shared spaces. Anytype team will provide details and conditions tailored to your needs.</string>
     <string name="membership_upgrade_button">Contact Anytype Team</string>
+    <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d spaces that can be shared</string>
     <plurals name="period_years">
         <item quantity="one">year</item>
         <item quantity="other">%d years</item>
@@ -1431,6 +1437,10 @@ Please provide specific details of your needs here.</string>
     <string name="membership_error_button_text_action">Neem contact met ons op</string>
     <string name="membership_error_button_text_dismiss">Ok</string>
     <string name="error_login_network_id_mismatch">Network ID mismatch detected. Please verify your network configuration.</string>
+    <string name="error_login_select_vault_error">Select vault error.</string>
     <string name="global_search_related_to">"Related to: "</string>
     <string name="global_search_no_related_objects_found">No related objects found</string>
+    <string name="sort_empty_values_desc">Show empty values</string>
+    <string name="sort_empty_values_bottom">On bottom</string>
+    <string name="sort_empty_values_top">On top</string>
 </resources>

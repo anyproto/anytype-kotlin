@@ -44,6 +44,7 @@
     <string name="space_name">Название пространства</string>
     <string name="default_space">Entry space</string>
     <string name="space_settings_apply_random_gradient">Применить случайный градиент</string>
+    <string name="space_settings_apply_upload_image">Загрузить изображение</string>
     <string name="delete_space">Удалить пространство</string>
     <string name="you_can_store">Вы можете бесплатно хранить до %1$s ваших файлов на нашем узле резервного копирования. При достижении лимита файлы будут храниться только локально.</string>
     <string name="in_order_to_save">Чтобы сохранить место на вашем локальном устройстве, вы можете выгрузить все ваши файлы в наш зашифрованный узел резервного копирования. Файлы будут загружены обратно, когда вы откроете их.</string>
@@ -511,6 +512,7 @@
     <string name="collection_widget_description">Коллекция объектов</string>
     <string name="no_type_named">Нет типа с именем \"%1$s\"</string>
     <string name="try_to_create_new_one_or_search_for_something_else">Создайте новый или найдите что-то другое</string>
+    <string name="try_different_search_query">Try a different search query.</string>
     <string name="change_wallpaper">Изменить обои</string>
     <string name="change_icon">Изменить иконку</string>
     <string name="random">Случайно</string>
@@ -666,6 +668,8 @@
     <string name="reset">Сброс</string>
     <string name="search_a_relation">Поиск свойств</string>
     <string name="content_description_check_icon">Check icon</string>
+    <string name="content_desc_empty_values_bottom_check_icon">Sort empty values at the bottom</string>
+    <string name="content_desc_empty_values_top_check_icon">Sort empty values at the top</string>
     <string name="filter_condition_is">Является</string>
     <string name="today">Сегодня</string>
     <string name="yesterday">Вчера</string>
@@ -1142,6 +1146,7 @@
     <string name="multiplayer_cant_add_editors">You can’t add more editors</string>
     <string name="multiplayer_upgrade_button">✦ Upgrade</string>
     <string name="multiplayer_upgrade_button_request">✦ Upgrade to add more members</string>
+    <string name="multiplayer_upgrade_spaces_button">✦ Upgrade to add more spaces</string>
     <string name="multiplayer_members">Участники</string>
     <string name="multiplayer_leave_request">Оставить запрос</string>
     <string name="multiplayer_join_request">Запрос на присоединение</string>
@@ -1424,6 +1429,7 @@ Please provide specific details of your needs here.</string>
     <string name="membership_upgrade_title">Membership upgrade</string>
     <string name="membership_upgrade_description">Reach us for extra storage, space editors, or more shared spaces. Anytype team will provide details and conditions tailored to your needs.</string>
     <string name="membership_upgrade_button">Contact Anytype Team</string>
+    <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d spaces that can be shared</string>
     <plurals name="period_years">
         <item quantity="one">year</item>
         <item quantity="few">%d years</item>
@@ -1451,6 +1457,10 @@ Please provide specific details of your needs here.</string>
     <string name="membership_error_button_text_action">Связаться с нами</string>
     <string name="membership_error_button_text_dismiss">Ок</string>
     <string name="error_login_network_id_mismatch">Network ID mismatch detected. Please verify your network configuration.</string>
+    <string name="error_login_select_vault_error">Select vault error.</string>
     <string name="global_search_related_to">"Related to: "</string>
     <string name="global_search_no_related_objects_found">No related objects found</string>
+    <string name="sort_empty_values_desc">Показать пустые значения</string>
+    <string name="sort_empty_values_bottom">Снизу</string>
+    <string name="sort_empty_values_top">Наверху</string>
 </resources>

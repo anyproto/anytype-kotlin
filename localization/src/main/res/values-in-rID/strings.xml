@@ -44,6 +44,7 @@
     <string name="space_name">Nama Ruang</string>
     <string name="default_space">Entry space</string>
     <string name="space_settings_apply_random_gradient">Terapkan gradasi acak</string>
+    <string name="space_settings_apply_upload_image">Upload image</string>
     <string name="delete_space">Hapus ruang</string>
     <string name="you_can_store">Kamu bisa menyimpan berkasmu hingga %1$s di simpul cadangan terenkripsi kami secara gratis. Jika melewati batas, berkasmu hanya akan disimpan secara lokal.</string>
     <string name="in_order_to_save">Untuk menghemat penyimpanan ruang pada perangkat lokal, anda dapat melepaskan semua berkas ke simpul cadangan terenkripsi kami. Berkas - berkas akan diunduh kembali saat kamu membuka mereka. </string>
@@ -508,6 +509,7 @@
     <string name="collection_widget_description">Your collections of objects</string>
     <string name="no_type_named">There is no type named \"%1$s\"</string>
     <string name="try_to_create_new_one_or_search_for_something_else">Try to create a new one or search for something else</string>
+    <string name="try_different_search_query">Try a different search query.</string>
     <string name="change_wallpaper">Ubah latar belakang</string>
     <string name="change_icon">Ubah ikon</string>
     <string name="random">Acak</string>
@@ -663,6 +665,8 @@
     <string name="reset">Atur ulang</string>
     <string name="search_a_relation">Search a relation</string>
     <string name="content_description_check_icon">Check icon</string>
+    <string name="content_desc_empty_values_bottom_check_icon">Sort empty values at the bottom</string>
+    <string name="content_desc_empty_values_top_check_icon">Sort empty values at the top</string>
     <string name="filter_condition_is">Adalah</string>
     <string name="today">Hari ini</string>
     <string name="yesterday">Kemarin</string>
@@ -1130,6 +1134,7 @@
     <string name="multiplayer_cant_add_editors">Kamu tidak bisa menambah penyunting lagi</string>
     <string name="multiplayer_upgrade_button">✦ Tingkatkan</string>
     <string name="multiplayer_upgrade_button_request">✦ Upgrade to add more members</string>
+    <string name="multiplayer_upgrade_spaces_button">✦ Upgrade to add more spaces</string>
     <string name="multiplayer_members">Anggota</string>
     <string name="multiplayer_leave_request">Permintaan keluar</string>
     <string name="multiplayer_join_request">Permintaan bergabung</string>
@@ -1406,6 +1411,7 @@ Please provide specific details of your needs here.</string>
     <string name="membership_upgrade_title">Membership upgrade</string>
     <string name="membership_upgrade_description">Reach us for extra storage, space editors, or more shared spaces. Anytype team will provide details and conditions tailored to your needs.</string>
     <string name="membership_upgrade_button">Contact Anytype Team</string>
+    <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d spaces that can be shared</string>
     <plurals name="period_years">
         <item quantity="other">%d tahun</item>
     </plurals>
@@ -1421,6 +1427,10 @@ Please provide specific details of your needs here.</string>
     <string name="membership_error_button_text_action">Hubungi kami</string>
     <string name="membership_error_button_text_dismiss">Oke</string>
     <string name="error_login_network_id_mismatch">Network ID mismatch detected. Please verify your network configuration.</string>
+    <string name="error_login_select_vault_error">Select vault error.</string>
     <string name="global_search_related_to">"Terkait dengan: "</string>
     <string name="global_search_no_related_objects_found">No related objects found</string>
+    <string name="sort_empty_values_desc">Tampilkan nilai kosong</string>
+    <string name="sort_empty_values_bottom">Di bawah</string>
+    <string name="sort_empty_values_top">Di atas</string>
 </resources>

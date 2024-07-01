@@ -8,6 +8,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.DVSortEmptyType
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -42,11 +43,17 @@ class ModifyViewerSortFragment : BaseBottomSheetFragment<FragmentModifyViewerSor
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(lifecycleScope) {
-            subscribe(binding.tvSortAsc.clicks()) {
+            subscribe(binding.flSortAsc.clicks()) {
                 vm.onSortAscSelected(ctx = ctx, viewerId = viewer, sortId = sortId)
             }
-            subscribe(binding.tvSortDesc.clicks()) {
+            subscribe(binding.flSortDesc.clicks()) {
                 vm.onSortDescSelected(ctx = ctx, viewerId = viewer, sortId = sortId)
+            }
+            subscribe(binding.flSortEmptyBottom.clicks()) {
+                vm.onEmptyBottomSelected(ctx = ctx, viewerId = viewer, sortId = sortId)
+            }
+            subscribe(binding.flSortEmptyUp.clicks()) {
+                vm.onEmptyUpSelected(ctx = ctx, viewerId = viewer, sortId = sortId)
             }
         }
     }
@@ -69,6 +76,20 @@ class ModifyViewerSortFragment : BaseBottomSheetFragment<FragmentModifyViewerSor
                             ivDescSelected.visible()
                         }
                         else -> {}
+                    }
+                    when (state.emptyType) {
+                        DVSortEmptyType.START -> {
+                            ivEmptyUpSelected.visible()
+                            ivEmptyBottomSelected.invisible()
+                        }
+                        DVSortEmptyType.END -> {
+                            ivEmptyUpSelected.invisible()
+                            ivEmptyBottomSelected.visible()
+                        }
+                        else -> {
+                            ivEmptyUpSelected.invisible()
+                            ivEmptyBottomSelected.invisible()
+                        }
                     }
                 }
             }

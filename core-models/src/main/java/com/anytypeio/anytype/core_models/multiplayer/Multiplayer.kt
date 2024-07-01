@@ -35,6 +35,10 @@ enum class SpaceMemberPermissions(
     OWNER(2),
     NO_PERMISSIONS(3);
 
+    fun isOwner() : Boolean {
+        return this == OWNER
+    }
+
     fun isOwnerOrEditor() : Boolean {
         return this == OWNER || this == WRITER
     }

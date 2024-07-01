@@ -554,7 +554,7 @@
     <string name="sign_up">Inscription</string>
     <string name="type_your_recovery_phrase">ou saisissez votre Clé</string>
     <string name="login_with_recovery_phrase">Connexion avec votre Clé</string>
-    <string name="or_scan_qr_code">Scan Qr code</string>
+    <string name="or_scan_qr_code">Scanner un code QR</string>
     <string name="choose_pin_code">Choisir un code PIN</string>
     <string name="congratulations">Félicitations !</string>
     <string name="time_to_update_title">Il est temps de mettre à jour</string>
@@ -666,8 +666,8 @@
     <string name="reset">Reset</string>
     <string name="search_a_relation">Search a relation</string>
     <string name="content_description_check_icon">Check icon</string>
-    <string name="content_desc_empty_values_bottom_check_icon">Sort empty values at the bottom</string>
-    <string name="content_desc_empty_values_top_check_icon">Sort empty values at the top</string>
+    <string name="content_desc_empty_values_bottom_check_icon">Trier les valeurs vides en bas</string>
+    <string name="content_desc_empty_values_top_check_icon">Trier les valeurs vides en haut</string>
     <string name="filter_condition_is">Est</string>
     <string name="today">Aujourd\'hui</string>
     <string name="yesterday">Hier</string>
@@ -988,7 +988,7 @@
     <string name="onboarding_soul_creation_description">Seulement vu par les personnes avec qui vous partagez quelque chose. Il n\'y a pas de registre central des utilisateurs.</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
-    <string name="onboarding_type_your_key">Type your recovery phrase</string>
+    <string name="onboarding_type_your_key">Saisissez votre phrase de récupération</string>
     <string name="onboarding_login_or">OU</string>
     <string name="onboarding_entering_void_title">Entrer dans le Vide</string>
     <string name="onboarding_your_key_can_t_be_empty">Votre Clé ne peut pas être vide</string>
@@ -1136,9 +1136,9 @@
     <string name="multiplayer_members_and_requests">Membres</string>
     <string name="multiplayer_cant_add_members">Vous ne pouvez plus ajouter de membres</string>
     <string name="multiplayer_cant_add_editors">You can’t add more editors</string>
-    <string name="multiplayer_upgrade_button">✦ Upgrade</string>
+    <string name="multiplayer_upgrade_button">✦ Passer à un abonnement supérieur</string>
     <string name="multiplayer_upgrade_button_request">✦ Mettre à niveau pour ajouter plus de membres</string>
-    <string name="multiplayer_upgrade_spaces_button">✦ Upgrade to add more spaces</string>
+    <string name="multiplayer_upgrade_spaces_button">✦ Mettre à niveau pour ajouter plus d’espaces</string>
     <string name="multiplayer_members">Membres</string>
     <string name="multiplayer_leave_request">Annuler la demande</string>
     <string name="multiplayer_join_request">Demande d\'admission !</string>
@@ -1414,7 +1414,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="membership_upgrade_title">Mise à niveau de l\'abonnement</string>
     <string name="membership_upgrade_description">Contactez-nous pour obtenir du stockage supplémentaire, plus de rédacteurs, ou davantage d\'espaces partagés. L\'équipe d\'Anytype vous fournira l\'offre adaptée à vos besoins.</string>
     <string name="membership_upgrade_button">Contacter l\'équipe d\'Anytype</string>
-    <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d spaces that can be shared</string>
+    <string name="membership_space_settings_share_limit">Vous avez atteint la limite de %1$d espaces pouvant être partagés</string>
     <plurals name="period_years">
         <item quantity="one">année</item>
         <item quantity="other">%d années</item>

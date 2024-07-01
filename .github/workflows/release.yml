@@ -32,7 +32,7 @@ jobs:
           RELEASE_STORE_PWD: ${{ secrets.RELEASE_STORE_PWD }}
         run: ./scripts/release/setup-store.sh $token_secret $RELEASE_KEY_ALIAS $RELEASE_KEY_PWD $RELEASE_STORE_PWD
 
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v3
         with:
           name: Setup license repository
           repository: anyproto/open
@@ -57,9 +57,14 @@ jobs:
         if: always()
         run: ./scripts/release/clean-secrets.sh
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@master
+      - name: Prepare artefacts
+        run: ./scripts/release/prepare-release-artefacts.sh
+
+      - name: Upload to S3
+        uses: shallwefootball/s3-upload-action@v1.3.3
         with:
-          name: Release APK.
-          path: |
-            app/build/outputs/apk/release/
+          aws_key_id: ${{ secrets.AWS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
+          aws_bucket: ${{ secrets.AWS_BUCKET }}
+          endpoint: ${{ secrets.AWS_ENDPOINT }}
+          path: app/build/outputs/apk/release/release-artefacts/

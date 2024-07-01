@@ -49,7 +49,7 @@
 
     <LinearLayout
         android:layout_width="0dp"
-        android:layout_height="22dp"
+        android:layout_height="20dp"
         android:layout_marginEnd="12dp"
         app:layout_constraintBottom_toBottomOf="@id/tvCondition"
         app:layout_constraintEnd_toStartOf="@id/iconArrow"
@@ -60,7 +60,7 @@
         <com.anytypeio.anytype.core_ui.widgets.ObjectIconTextWidget
             android:id="@+id/object0"
             android:layout_width="wrap_content"
-            android:layout_height="22dp"
+            android:layout_height="match_parent"
             android:layout_marginStart="8dp"
             android:visibility="gone"
             app:emojiSize="18dp"
@@ -71,23 +71,21 @@
         <com.anytypeio.anytype.core_ui.widgets.ObjectIconTextWidget
             android:id="@+id/object1"
             android:layout_width="wrap_content"
-            android:layout_height="22dp"
+            android:layout_height="match_parent"
+            style="@style/ViewerFilterObjectValueStyle"
             android:layout_marginStart="8dp"
             android:visibility="gone"
             app:emojiSize="18dp"
-            app:nameTextColor="#6C6A5F"
-            app:nameTextSize="15sp"
             tools:visibility="visible" />
 
         <com.anytypeio.anytype.core_ui.widgets.ObjectIconTextWidget
             android:id="@+id/object2"
             android:layout_width="wrap_content"
-            android:layout_height="22dp"
+            android:layout_height="match_parent"
+            style="@style/ViewerFilterObjectValueStyle"
             android:layout_marginStart="8dp"
             android:visibility="gone"
             app:emojiSize="18dp"
-            app:nameTextColor="#6C6A5F"
-            app:nameTextSize="15sp"
             tools:visibility="visible" />
     </LinearLayout>
 

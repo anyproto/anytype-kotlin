@@ -213,24 +213,23 @@ class HomeScreenViewModel(
     private val widgetObjectPipeline = spaceManager
         .observe()
         .distinctUntilChanged()
-        .onEach { currentConfig ->
-            // Closing previously opened widget object when switching spaces without leaving home screen
-             proceedWithClearingObjectSessionHistory(currentConfig).also {
-                 val subscriptions = buildList {
-                     addAll(
-                         widgets.value.orEmpty().map { widget ->
-                             if (widget.source is Widget.Source.Bundled)
-                                 widget.source.id
-                             else
-                                 widget.id
-                         }
-                     )
-                     add(SpaceWidgetContainer.SPACE_WIDGET_SUBSCRIPTION)
-                 }
-                 if (subscriptions.isNotEmpty()) {
-                     unsubscribe(subscriptions)
-                 }
-             }
+        .onEach {
+            val openObjectState = objectViewState.value
+            if (openObjectState is ObjectViewState.Success) {
+                val subscriptions = buildList {
+                    addAll(
+                        widgets.value.orEmpty().map { widget ->
+                            if (widget.source is Widget.Source.Bundled)
+                                widget.source.id
+                            else
+                                widget.id
+                        }
+                    )
+                }
+                if (subscriptions.isNotEmpty()) {
+                    unsubscribe(subscriptions)
+                }
+            }
         }
         .flatMapLatest { config ->
             openObject.stream(

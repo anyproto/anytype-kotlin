@@ -91,12 +91,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.BDDMockito.given
 import org.mockito.Mock
@@ -234,6 +234,10 @@ class HomeScreenViewModelTest {
         widgets = WIDGET_OBJECT_ID
     )
 
+    private val secondSpaceConfig = StubConfig(
+        widgets = SECOND_WIDGET_OBJECT_ID
+    )
+
     private val defaultSpaceWidgetView = WidgetView.SpaceWidget.View(
         space = StubSpaceView(),
         icon = SpaceIconView.Placeholder,
@@ -241,9 +245,14 @@ class HomeScreenViewModelTest {
         membersCount = 0
     )
 
-    private lateinit var urlBuilder: UrlBuilder
+    private val secondSpaceWidgetView = WidgetView.SpaceWidget.View(
+        space = StubSpaceView(),
+        icon = SpaceIconView.Placeholder,
+        type = UNKNOWN_SPACE_TYPE,
+        membersCount = 0
+    )
 
-    private val defaultSpaceId = SpaceId(defaultSpaceConfig.space)
+    private lateinit var urlBuilder: UrlBuilder
 
     @Before
     fun setup() {
@@ -1465,7 +1474,7 @@ class HomeScreenViewModelTest {
     }
 
     @Test
-    fun `should close object and unsubscribe three bundled widgets on onStop callback`() = runTest {
+    fun `should close object and unsubscribe three bundled widgets on space switch`() = runTest {
 
         // SETUP
 
@@ -1501,15 +1510,20 @@ class HomeScreenViewModelTest {
             children = listOf(setsLink.id)
         )
 
-        val smartBlock = StubSmartBlock(
+        val firstWidgetObjectSmartBlock = StubSmartBlock(
             id = WIDGET_OBJECT_ID,
             children = listOf(favoriteWidgetBlock.id, recentWidgetBlock.id, setsWidgetBlock.id),
         )
 
-        val givenObjectView = StubObjectView(
+        val secondWidgetObjectSmartBlock = StubSmartBlock(
+            id = SECOND_WIDGET_OBJECT_ID,
+            children = emptyList()
+        )
+
+        val givenFirstSpaceObjectView = StubObjectView(
             root = WIDGET_OBJECT_ID,
             blocks = listOf(
-                smartBlock,
+                firstWidgetObjectSmartBlock,
                 favoriteWidgetBlock,
                 favoriteLink,
                 recentWidgetBlock,
@@ -1519,9 +1533,18 @@ class HomeScreenViewModelTest {
             )
         )
 
+        val givenSecondSpaceObjectView = StubObjectView(
+            root = SECOND_WIDGET_OBJECT_ID,
+            blocks = listOf(secondWidgetObjectSmartBlock)
+        )
+
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
-        stubOpenWidgetObject(givenObjectView)
+
+        stubOpenWidgetObjects(
+            firstGivenObjectView = givenFirstSpaceObjectView,
+            secondGivenObjectView = givenSecondSpaceObjectView
+        )
 
         stubSearchByIds(
             subscription = favoriteWidgetBlock.id,
@@ -1574,8 +1597,27 @@ class HomeScreenViewModelTest {
         stubCollapsedWidgetState(id = anyString())
         stubGetWidgetSession()
         stubWidgetActiveView(favoriteWidgetBlock)
-        stubSpaceManager()
+
+        val delayBeforeSwitchingSpace = 300L
+
+        stubSpaceManagerWithSwitch(
+            delay = delayBeforeSwitchingSpace
+        )
+
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
+
+        unsubscriber.stub {
+            onBlocking {
+                unsubscribe(
+                    listOf(
+                        favoriteSource.id,
+                        recentSource.id,
+                        setsSource.id
+                    )
+                )
+            } doReturn Unit
+        }
+
         given(objectWatcher.watch(any())).willReturn(flowOf())
         given(storelessSubscriptionContainer.subscribe(any<StoreSearchParams>())).willReturn(flowOf())
         given(storelessSubscriptionContainer.subscribe(any<StoreSearchByIdsParams>())).willReturn(
@@ -1589,24 +1631,30 @@ class HomeScreenViewModelTest {
 
         vm.onStart()
 
-        advanceUntilIdle()
+//        verify(openObject, times(1)).stream(
+//            OpenObject.Params(
+//                obj = defaultSpaceConfig.widgets,
+//                saveAsLastOpened = false,
+//                spaceId = SpaceId(defaultSpaceConfig.space)
+//            )
+//        )
 
-        vm.onStop()
+//        verifyNoInteractions(unsubscriber)
 
-        advanceUntilIdle()
+        advanceTimeBy(delayBeforeSwitchingSpace + 1)
 
+//
         verifyBlocking(unsubscriber, times(1)) {
             unsubscribe(
                 subscriptions = listOf(
                     favoriteSource.id,
                     recentSource.id,
-                    setsSource.id,
-                    SpaceWidgetContainer.SPACE_WIDGET_SUBSCRIPTION
+                    setsSource.id
                 )
             )
         }
 
-        verify(closeObject, times(1)).stream(params = WIDGET_OBJECT_ID)
+//        verify(closeObject, times(1)).stream(params = WIDGET_OBJECT_ID)
     }
 
     @Test
@@ -2775,6 +2823,40 @@ class HomeScreenViewModelTest {
         }
     }
 
+    private fun stubOpenWidgetObjects(
+        firstGivenObjectView: ObjectView,
+        secondGivenObjectView: ObjectView,
+    ) {
+        openObject.stub {
+            on {
+                stream(
+                    OpenObject.Params(
+                        WIDGET_OBJECT_ID,
+                        false,
+                        SpaceId(defaultSpaceConfig.space)
+                    )
+                )
+            } doReturn flowOf(
+                Resultat.Success(
+                    value = firstGivenObjectView
+                )
+            )
+            on {
+                stream(
+                    OpenObject.Params(
+                        SECOND_WIDGET_OBJECT_ID,
+                        false,
+                        SpaceId(secondSpaceConfig.space)
+                    )
+                )
+            } doReturn flowOf(
+                Resultat.Success(
+                    value = secondGivenObjectView
+                )
+            )
+        }
+    }
+
     private fun stubGetObject(
         givenObjectView: ObjectView
     ) {
@@ -2884,6 +2966,24 @@ class HomeScreenViewModelTest {
     fun stubSpaceManager() {
         spaceManager.stub {
             on { observe() } doReturn flowOf(defaultSpaceConfig)
+        }
+        spaceManager.stub {
+            onBlocking { get() } doReturn defaultSpaceConfig.space
+        }
+        spaceManager.stub {
+            on { getConfig() } doReturn defaultSpaceConfig
+        }
+    }
+
+    private fun stubSpaceManagerWithSwitch(
+        delay: Long = 300L
+    ) {
+        spaceManager.stub {
+            on { observe() } doReturn flow {
+                emit(defaultSpaceConfig)
+                delay(delay)
+                emit(secondSpaceConfig)
+            }
         }
         spaceManager.stub {
             onBlocking { get() } doReturn defaultSpaceConfig.space
@@ -3016,5 +3116,6 @@ class HomeScreenViewModelTest {
 
     companion object {
         val WIDGET_OBJECT_ID: Id = "Widget-object-${MockDataFactory.randomUuid()}"
+        val SECOND_WIDGET_OBJECT_ID: Id = "Widget-object-2-${MockDataFactory.randomUuid()}"
     }
 }

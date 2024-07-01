@@ -666,6 +666,8 @@
     <string name="reset">Reset</string>
     <string name="search_a_relation">Search a relation</string>
     <string name="content_description_check_icon">Check icon</string>
+    <string name="content_desc_empty_values_bottom_check_icon">Sort empty values at the bottom</string>
+    <string name="content_desc_empty_values_top_check_icon">Sort empty values at the top</string>
     <string name="filter_condition_is">Est</string>
     <string name="today">Aujourd\'hui</string>
     <string name="yesterday">Hier</string>
@@ -1435,4 +1437,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="error_login_select_vault_error">Erreur de sélection du coffre.</string>
     <string name="global_search_related_to">"Associé à : "</string>
     <string name="global_search_no_related_objects_found">Aucun objet associé trouvé</string>
+    <string name="sort_empty_values_desc">Afficher les valeurs vides</string>
+    <string name="sort_empty_values_bottom">En bas</string>
+    <string name="sort_empty_values_top">En haut</string>
 </resources>

@@ -1610,7 +1610,7 @@ class HomeScreenViewModelTest {
     }
 
     @Test
-    fun `should resume subscriptions for three bundled widgets with tree layout`() = runTest {
+    fun `should preserve subscriptions for three bundled widgets with tree layout`() = runTest {
 
         // SETUP
 
@@ -1825,7 +1825,7 @@ class HomeScreenViewModelTest {
 
         // Verifying subscription on resume
 
-        verifyBlocking(storelessSubscriptionContainer, times(2)) {
+        verifyBlocking(storelessSubscriptionContainer, times(1)) {
             subscribe(
                 StoreSearchByIdsParams(
                     subscription = favoriteSource.id,
@@ -1835,7 +1835,7 @@ class HomeScreenViewModelTest {
             )
         }
 
-        verifyBlocking(storelessSubscriptionContainer, times(2)) {
+        verifyBlocking(storelessSubscriptionContainer, times(1)) {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = setsSource.id,
@@ -1846,7 +1846,7 @@ class HomeScreenViewModelTest {
             )
         }
 
-        verifyBlocking(storelessSubscriptionContainer, times(2)) {
+        verifyBlocking(storelessSubscriptionContainer, times(1)) {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = recentSource.id,
@@ -1859,7 +1859,7 @@ class HomeScreenViewModelTest {
     }
 
     @Test
-    fun `should resume subscriptions for three bundled widgets with list layout`() = runTest {
+    fun `should preserve subscriptions for three bundled widgets with list layout`() = runTest {
 
         // SETUP
 
@@ -2048,7 +2048,7 @@ class HomeScreenViewModelTest {
 
         // Verifying subscription on resume
 
-        verifyBlocking(storelessSubscriptionContainer, times(2)) {
+        verifyBlocking(storelessSubscriptionContainer, times(1)) {
             subscribe(
                 StoreSearchByIdsParams(
                     subscription = favoriteSource.id,
@@ -2058,7 +2058,7 @@ class HomeScreenViewModelTest {
             )
         }
 
-        verifyBlocking(storelessSubscriptionContainer, times(2)) {
+        verifyBlocking(storelessSubscriptionContainer, times(1)) {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = setsSource.id,
@@ -2069,7 +2069,7 @@ class HomeScreenViewModelTest {
             )
         }
 
-        verifyBlocking(storelessSubscriptionContainer, times(2)) {
+        verifyBlocking(storelessSubscriptionContainer, times(1)) {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = recentSource.id,

@@ -634,7 +634,7 @@ suspend fun DVFilter.toView(
             isInEditMode = isInEditMode
         )
     }
-    Relation.Format.OBJECT -> {
+    Relation.Format.OBJECT, Relation.Format.FILE -> {
         FilterView.Expression.Object(
             id = id,
             relation = this.relation,
@@ -688,7 +688,7 @@ suspend fun ObjectWrapper.Relation.toFilterValue(
     Relation.Format.URL -> FilterValue.Url(toText(value))
     Relation.Format.EMAIL -> FilterValue.Email(toText(value))
     Relation.Format.PHONE -> FilterValue.Phone(toText(value))
-    Relation.Format.OBJECT -> FilterValue.Object(toObjects(value, details, urlBuilder))
+    Relation.Format.OBJECT, Relation.Format.FILE -> FilterValue.Object(toObjects(value, details, urlBuilder))
     Relation.Format.CHECKBOX -> FilterValue.Check(toCheckbox(value))
     else -> throw UnsupportedOperationException("Unsupported relation format:${format}")
 }

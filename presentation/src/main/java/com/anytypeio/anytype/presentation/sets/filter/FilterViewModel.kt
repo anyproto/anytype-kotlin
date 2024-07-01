@@ -285,7 +285,7 @@ open class FilterViewModel(
         Relation.Format.STATUS -> {
             proceedWithParsingStatusValues(filter, relation)
         }
-        Relation.Format.OBJECT -> {
+        Relation.Format.OBJECT, Relation.Format.FILE -> {
             val ids = filter?.value as? List<*>
             val limitObjectTypes = buildList {
                 if (relation.relationFormatObjectTypes.isNotEmpty()) {
@@ -564,7 +564,7 @@ open class FilterViewModel(
                             condition = condition.toDomain()
                         )
                     }
-                    ColumnView.Format.OBJECT -> {
+                    ColumnView.Format.OBJECT, ColumnView.Format.FILE -> {
                         val objects =
                             filterValueListState.value.filterIsInstance<CreateFilterView.Object>()
                         val selected = objects

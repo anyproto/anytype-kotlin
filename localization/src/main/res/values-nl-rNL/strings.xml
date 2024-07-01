@@ -666,6 +666,8 @@
     <string name="reset">Reset</string>
     <string name="search_a_relation">Zoek een relatie</string>
     <string name="content_description_check_icon">Check icon</string>
+    <string name="content_desc_empty_values_bottom_check_icon">Sort empty values at the bottom</string>
+    <string name="content_desc_empty_values_top_check_icon">Sort empty values at the top</string>
     <string name="filter_condition_is">Is</string>
     <string name="today">Vandaag</string>
     <string name="yesterday">Gisteren</string>
@@ -1438,4 +1440,7 @@ Please provide specific details of your needs here.</string>
     <string name="error_login_select_vault_error">Select vault error.</string>
     <string name="global_search_related_to">"Related to: "</string>
     <string name="global_search_no_related_objects_found">No related objects found</string>
+    <string name="sort_empty_values_desc">Show empty values</string>
+    <string name="sort_empty_values_bottom">On bottom</string>
+    <string name="sort_empty_values_top">On top</string>
 </resources>

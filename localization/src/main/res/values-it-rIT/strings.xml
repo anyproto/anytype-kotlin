@@ -666,6 +666,8 @@
     <string name="reset">Reset</string>
     <string name="search_a_relation">Search a relation</string>
     <string name="content_description_check_icon">Check icon</string>
+    <string name="content_desc_empty_values_bottom_check_icon">Sort empty values at the bottom</string>
+    <string name="content_desc_empty_values_top_check_icon">Sort empty values at the top</string>
     <string name="filter_condition_is">È</string>
     <string name="today">Oggi</string>
     <string name="yesterday">Ieri</string>
@@ -1439,4 +1441,7 @@ Please provide specific details of your needs here.</string>
     <string name="error_login_select_vault_error">Errore nella selezione della cassaforte.</string>
     <string name="global_search_related_to">"Correlato a: "</string>
     <string name="global_search_no_related_objects_found">Nessun oggetto correlato trovato</string>
+    <string name="sort_empty_values_desc">Mostra valori vuoti</string>
+    <string name="sort_empty_values_bottom">In basso</string>
+    <string name="sort_empty_values_top">In alto</string>
 </resources>

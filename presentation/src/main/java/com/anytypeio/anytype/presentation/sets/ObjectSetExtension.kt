@@ -199,7 +199,7 @@ private fun ObjectState.DataView.mapFeaturedRelations(
         else -> {
             val relation = relations.firstOrNull { it.key == key }
             relation?.view(
-                details = details,
+                details = details.details,
                 values = details.details[ctx]?.map ?: emptyMap(),
                 urlBuilder = urlBuilder,
                 isFeatured = true

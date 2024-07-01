@@ -58,7 +58,6 @@ jobs:
         run: ./scripts/release/clean-secrets.sh
 
       - name: Prepare artefacts
-        uses: actions/upload-artifact@master
         run: mkdir app/build/outputs/apk/release/release-artefacts/ mv app/build/outputs/apk/release/*.apk app/build/outputs/apk/release/release-artefacts/
 
       - name: Upload to S3

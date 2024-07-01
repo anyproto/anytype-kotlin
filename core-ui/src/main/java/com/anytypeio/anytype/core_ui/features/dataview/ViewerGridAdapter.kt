@@ -131,8 +131,8 @@ class ViewerGridAdapter(
             when (row.layout) {
                 Layout.TODO -> binding.objectIcon.setTask(row.isChecked)
                 Layout.BASIC, Layout.BOOKMARK, Layout.SET, Layout.COLLECTION -> {
-                    if ((row.image != null || row.emoji != null)) {
-                        if (row.image != null) {
+                    if (!row.image.isNullOrEmpty() || !row.emoji.isNullOrEmpty()) {
+                        if (!row.image.isNullOrEmpty()) {
                             binding.objectIcon.setRectangularImage(row.image)
                         } else {
                             binding.objectIcon.setEmoji(row.emoji)
@@ -142,7 +142,7 @@ class ViewerGridAdapter(
                     }
                 }
                 Layout.PROFILE -> {
-                    if (row.image != null) {
+                    if (!row.image.isNullOrEmpty()) {
                         binding.objectIcon.setCircularImage(row.image)
                     } else {
                         binding.objectIcon.setProfileInitials(row.name.orEmpty())

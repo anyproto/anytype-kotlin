@@ -50,11 +50,8 @@ jobs:
           -Pcom.anytype.ci=true \
           -Dorg.gradle.unsafe.configuration-cache=false"
 
-      - name: Build APKS
+      - name: Build release APKS
         run: ./gradlew :app:assembleRelease
-
-#      - name: Build AAB
-#        run: ./gradlew :app:bundleRelease
 
       - name: Clean secrets
         if: always()
@@ -63,7 +60,6 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@master
         with:
-          name: APK + BUNDLE
+          name: Release APK.
           path: |
             app/build/outputs/apk/release/
-            app/build/outputs/bundle/release/

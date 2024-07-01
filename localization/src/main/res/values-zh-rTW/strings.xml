@@ -44,6 +44,7 @@
     <string name="space_name">空間名稱</string>
     <string name="default_space">初始空間</string>
     <string name="space_settings_apply_random_gradient">套用隨機漸層</string>
+    <string name="space_settings_apply_upload_image">上傳圖片</string>
     <string name="delete_space">刪除空間</string>
     <string name="you_can_store">您目前擁有 %1$s 的加密節點儲存空間，您可以將檔案備份到我們的節點當中。 當儲存空間容量到達上限，新的檔案只能存放在您的本地儲存區中。</string>
     <string name="in_order_to_save">為了節省本地設備上的空間，您可以將所有檔案傳輸到我們的加密備份節點。 當您打開這些檔案時，它們將被重新載入。</string>
@@ -508,6 +509,7 @@
     <string name="collection_widget_description">您的物件集錦</string>
     <string name="no_type_named">沒有名為 \"%1$s\" 的類型</string>
     <string name="try_to_create_new_one_or_search_for_something_else">嘗試建立一個新的或搜尋其他內容</string>
+    <string name="try_different_search_query">嘗試不同的搜索查詢。</string>
     <string name="change_wallpaper">變更桌布</string>
     <string name="change_icon">更改圖示</string>
     <string name="random">隨機</string>
@@ -982,7 +984,7 @@
     <string name="onboarding_soul_creation_description">只有被您分享內容的人才能查看。這裡沒有中心化的管理名稱。</string>
     <string name="onboarding_soul_creation_placeholder">Anytype 身份識別</string>
     <string name="onboarding_soul_creation">建立您的身份…</string>
-    <string name="onboarding_type_your_key">Type your recovery phrase</string>
+    <string name="onboarding_type_your_key">輸入您的恢復短語</string>
     <string name="onboarding_login_or">或</string>
     <string name="onboarding_entering_void_title">正在進入 Void 身份集錦圖表</string>
     <string name="onboarding_your_key_can_t_be_empty">您的密鑰不能為空</string>
@@ -1129,7 +1131,8 @@
     <string name="multiplayer_cant_add_members">您無法新增更多成員</string>
     <string name="multiplayer_cant_add_editors">您無法新增更多編輯者</string>
     <string name="multiplayer_upgrade_button">✦ 升級</string>
-    <string name="multiplayer_upgrade_button_request">✦ Upgrade to add more members</string>
+    <string name="multiplayer_upgrade_button_request">✦ 升級以新增更多成員</string>
+    <string name="multiplayer_upgrade_spaces_button">✦ 升級以使用更多空間</string>
     <string name="multiplayer_members">成員</string>
     <string name="multiplayer_leave_request">離開請求</string>
     <string name="multiplayer_join_request">加入請求</string>
@@ -1406,6 +1409,7 @@ Please provide specific details of your needs here.</string>
     <string name="membership_upgrade_title">會員升級</string>
     <string name="membership_upgrade_description">如需更多額外的儲存容量、更多空間編輯者或更多共享空間，請與我們聯絡。 Anytype 團隊將根據您的需求和條件為您量身定製。</string>
     <string name="membership_upgrade_button">聯絡 Anytype 團隊</string>
+    <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d spaces that can be shared</string>
     <plurals name="period_years">
         <item quantity="other">%d 年</item>
     </plurals>
@@ -1421,6 +1425,7 @@ Please provide specific details of your needs here.</string>
     <string name="membership_error_button_text_action">聯繫我們</string>
     <string name="membership_error_button_text_dismiss">好的</string>
     <string name="error_login_network_id_mismatch">Network ID 配對失敗，請件查您的網路設定</string>
+    <string name="error_login_select_vault_error">Select vault error.</string>
     <string name="global_search_related_to">"關聯到： "</string>
     <string name="global_search_no_related_objects_found">找不到關聯的物件</string>
 </resources>

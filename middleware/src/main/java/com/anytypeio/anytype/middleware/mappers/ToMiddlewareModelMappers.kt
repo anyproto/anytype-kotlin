@@ -7,6 +7,7 @@ import anytype.model.RelationFormat
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.BlockSplitMode
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.DVSortEmptyType
 import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.ObjectType
@@ -350,15 +351,35 @@ fun Block.Content.DataView.Viewer.Type.toMiddlewareModel(): MDVViewType = when (
     Block.Content.DataView.Viewer.Type.GRAPH -> MDVViewType.Graph
 }
 
-fun Block.Content.DataView.Sort.toMiddlewareModel(): MDVSort =
-    MDVSort(
-        id = id,
-        RelationKey = relationKey,
-        type = type.toMiddlewareModel(),
-        includeTime = includeTime,
-        customOrder = customOrder,
-        format = relationFormat.toMiddlewareModel()
-    )
+fun Block.Content.DataView.Sort.toMiddlewareModel(): MDVSort {
+    val emptyType = this.emptyType
+    return if (emptyType != null) {
+        MDVSort(
+            id = id,
+            RelationKey = relationKey,
+            type = type.toMiddlewareModel(),
+            includeTime = includeTime,
+            customOrder = customOrder,
+            format = relationFormat.toMiddlewareModel(),
+            emptyPlacement = emptyType.toMiddlewareModel()
+        )
+    } else {
+        MDVSort(
+            id = id,
+            RelationKey = relationKey,
+            type = type.toMiddlewareModel(),
+            includeTime = includeTime,
+            customOrder = customOrder,
+            format = relationFormat.toMiddlewareModel(),
+        )
+    }
+}
+
+fun DVSortEmptyType.toMiddlewareModel(): MDVSortEmptyType = when (this) {
+    DVSortEmptyType.NOT_SPECIFIC -> MDVSortEmptyType.NotSpecified
+    DVSortEmptyType.START -> MDVSortEmptyType.Start
+    DVSortEmptyType.END -> MDVSortEmptyType.End
+}
 
 fun Block.Content.DataView.Sort.Type.toMiddlewareModel(): MDVSortType = when (this) {
     Block.Content.DataView.Sort.Type.ASC -> MDVSortType.Asc

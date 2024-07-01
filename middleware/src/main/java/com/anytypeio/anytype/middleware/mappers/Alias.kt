@@ -38,6 +38,7 @@ typealias MDVViewType = anytype.model.Block.Content.Dataview.View.Type
 typealias MDVViewCardSize = anytype.model.Block.Content.Dataview.View.Size
 typealias MDVSort = anytype.model.Block.Content.Dataview.Sort
 typealias MDVSortType = anytype.model.Block.Content.Dataview.Sort.Type
+typealias MDVSortEmptyType = anytype.model.Block.Content.Dataview.Sort.EmptyType
 typealias MDVFilter = anytype.model.Block.Content.Dataview.Filter
 typealias MDVFilterCondition = anytype.model.Block.Content.Dataview.Filter.Condition
 typealias MDVFilterQuickOption = anytype.model.Block.Content.Dataview.Filter.QuickOption

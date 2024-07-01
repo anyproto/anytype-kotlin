@@ -106,6 +106,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -211,9 +212,25 @@ class HomeScreenViewModel(
 
     private val widgetObjectPipeline = spaceManager
         .observe()
+        .distinctUntilChanged()
         .onEach { currentConfig ->
             // Closing previously opened widget object when switching spaces without leaving home screen
-             proceedWithClearingObjectSessionHistory(currentConfig)
+             proceedWithClearingObjectSessionHistory(currentConfig).also {
+                 val subscriptions = buildList {
+                     addAll(
+                         widgets.value.orEmpty().map { widget ->
+                             if (widget.source is Widget.Source.Bundled)
+                                 widget.source.id
+                             else
+                                 widget.id
+                         }
+                     )
+                     add(SpaceWidgetContainer.SPACE_WIDGET_SUBSCRIPTION)
+                 }
+                 if (subscriptions.isNotEmpty()) {
+                     unsubscribe(subscriptions)
+                 }
+             }
         }
         .flatMapLatest { config ->
             openObject.stream(
@@ -1167,18 +1184,6 @@ class HomeScreenViewModel(
 
     fun onStop() {
         Timber.d("onStop")
-        // Temporary workaround for app crash when user is logged out and config storage is not initialized.
-        try {
-            viewModelScope.launch {
-                val config = spaceManager.getConfig()
-                if (config != null) {
-                    proceedWithClosingWidgetObject(widgetObject = config.widgets)
-                }
-            }
-        } catch (e: Exception) {
-            Timber.e(e, "Error while closing widget object")
-        }
-        jobs.cancel()
     }
 
     private fun proceedWithExitingEditMode() {

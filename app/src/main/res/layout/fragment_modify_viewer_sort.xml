@@ -136,17 +136,27 @@
         <TextView
             android:id="@+id/tvSectionEmptyBottom"
             style="@style/TextView.UXStyle.Body"
-            android:textColor="@color/text_primary"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="12dp"
             android:layout_marginEnd="16dp"
             android:text="@string/sort_empty_values_bottom"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
+            android:textColor="@color/text_primary"
+            app:layout_constraintEnd_toStartOf="@+id/ivEmptyUpSelected"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/divider2" />
+
+        <ImageView
+            android:id="@+id/ivEmptyBottomSelected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="12dp"
+            android:contentDescription="@string/content_desc_empty_values_bottom_check_icon"
+            android:src="@drawable/ic_viewer_chosen"
+            app:layout_constraintBottom_toBottomOf="@+id/tvSectionEmptyBottom"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tvSectionEmptyBottom" />
 
         <View
             android:id="@+id/divider3"
@@ -163,17 +173,27 @@
         <TextView
             android:id="@+id/tvSectionEmptyUp"
             style="@style/TextView.UXStyle.Body"
-            android:textColor="@color/text_primary"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="12dp"
             android:layout_marginEnd="16dp"
             android:text="@string/sort_empty_values_top"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
+            android:textColor="@color/text_primary"
+            app:layout_constraintEnd_toStartOf="@+id/ivEmptyUpSelected"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/divider3" />
+
+        <ImageView
+            android:id="@+id/ivEmptyUpSelected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="12dp"
+            android:contentDescription="@string/content_desc_empty_values_top_check_icon"
+            android:src="@drawable/ic_viewer_chosen"
+            app:layout_constraintBottom_toBottomOf="@+id/tvSectionEmptyUp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tvSectionEmptyUp" />
 
         <View
             android:id="@+id/divider4"

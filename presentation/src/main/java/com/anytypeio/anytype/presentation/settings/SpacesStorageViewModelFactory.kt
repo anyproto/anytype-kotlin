@@ -6,6 +6,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.SpacesUsageInfo
@@ -20,7 +21,8 @@ class SpacesStorageViewModelFactory @Inject constructor(
     private val interceptFileLimitEvents: InterceptFileLimitEvents,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val getAccount: GetAccount,
-    private val membershipProvider: MembershipProvider
+    private val membershipProvider: MembershipProvider,
+    private val userPermissionProvider: UserPermissionProvider
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -33,6 +35,7 @@ class SpacesStorageViewModelFactory @Inject constructor(
         interceptFileLimitEvents = interceptFileLimitEvents,
         storelessSubscriptionContainer = storelessSubscriptionContainer,
         getAccount = getAccount,
-        membershipProvider = membershipProvider
+        membershipProvider = membershipProvider,
+        userPermissionProvider = userPermissionProvider
     ) as T
 }

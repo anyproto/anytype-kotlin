@@ -141,7 +141,7 @@ fun SpaceSettingsScreen(
         }
         when(state) {
             is ViewState.Success -> {
-                if (state.data.permissions.isOwnerOrEditor()) {
+                if (state.data.permissions.isOwner()) {
                     item {
                         Option(
                             image = R.drawable.ic_file_storage,

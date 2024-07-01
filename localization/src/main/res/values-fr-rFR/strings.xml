@@ -44,6 +44,7 @@
     <string name="space_name">Nom de l\'espace</string>
     <string name="default_space">Espace d\'entrée</string>
     <string name="space_settings_apply_random_gradient">Appliquer un dégradé aléatoire</string>
+    <string name="space_settings_apply_upload_image">Upload image</string>
     <string name="delete_space">Supprimer l\'espace</string>
     <string name="you_can_store">Vous pouvez stocker gratuitement jusqu\'à %1$s de vos fichiers sur notre nœud de sauvegarde chiffré. Si vous atteignez la limite, les fichiers ne seront stockés que localement.</string>
     <string name="in_order_to_save">Afin d\'économiser de l\'espace sur votre appareil, vous pouvez décharger tous vos fichiers vers notre nœud de sauvegarde chiffré. Les fichiers seront rechargés lorsque vous les ouvrirez.</string>
@@ -509,6 +510,7 @@
     <string name="collection_widget_description">Your collections of objects</string>
     <string name="no_type_named">There is no type named \"%1$s\"</string>
     <string name="try_to_create_new_one_or_search_for_something_else">Try to create a new one or search for something else</string>
+    <string name="try_different_search_query">Essayez un autre terme de recherche.</string>
     <string name="change_wallpaper">Changer le fond d\'écran</string>
     <string name="change_icon">Changer d\'icône</string>
     <string name="random">Aléatoire</string>
@@ -1134,6 +1136,7 @@
     <string name="multiplayer_cant_add_editors">You can’t add more editors</string>
     <string name="multiplayer_upgrade_button">✦ Upgrade</string>
     <string name="multiplayer_upgrade_button_request">✦ Mettre à niveau pour ajouter plus de membres</string>
+    <string name="multiplayer_upgrade_spaces_button">✦ Upgrade to add more spaces</string>
     <string name="multiplayer_members">Membres</string>
     <string name="multiplayer_leave_request">Annuler la demande</string>
     <string name="multiplayer_join_request">Demande d\'admission !</string>
@@ -1409,6 +1412,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="membership_upgrade_title">Mise à niveau de l\'abonnement</string>
     <string name="membership_upgrade_description">Contactez-nous pour obtenir du stockage supplémentaire, plus de rédacteurs, ou davantage d\'espaces partagés. L\'équipe d\'Anytype vous fournira l\'offre adaptée à vos besoins.</string>
     <string name="membership_upgrade_button">Contacter l\'équipe d\'Anytype</string>
+    <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d spaces that can be shared</string>
     <plurals name="period_years">
         <item quantity="one">année</item>
         <item quantity="other">%d années</item>
@@ -1428,6 +1432,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="membership_error_button_text_action">Contactez-nous</string>
     <string name="membership_error_button_text_dismiss">Ok</string>
     <string name="error_login_network_id_mismatch">L\'identifiant réseau ne correspond pas. Veuillez vérifier votre configuration réseau.</string>
+    <string name="error_login_select_vault_error">Erreur de sélection du coffre.</string>
     <string name="global_search_related_to">"Associé à : "</string>
     <string name="global_search_no_related_objects_found">Aucun objet associé trouvé</string>
 </resources>

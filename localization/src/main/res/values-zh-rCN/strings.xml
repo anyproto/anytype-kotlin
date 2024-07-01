@@ -44,6 +44,7 @@
     <string name="space_name">空间名称</string>
     <string name="default_space">默认空间</string>
     <string name="space_settings_apply_random_gradient">应用随机渐变色</string>
+    <string name="space_settings_apply_upload_image">上传图像</string>
     <string name="delete_space">删除空间</string>
     <string name="you_can_store">您可以在我们的节点上免费加密备份存储多达 %1$s 的文件。如果达到限制，文件将仅存储在本地。</string>
     <string name="in_order_to_save">为了节省本地设备上的空间，您可以将所有文件卸载到我们的加密备份节点。打开文件时，文件将被重新加载。</string>
@@ -508,6 +509,7 @@
     <string name="collection_widget_description">您的对象的集锦</string>
     <string name="no_type_named">没有名为 “%1$s” 的类型</string>
     <string name="try_to_create_new_one_or_search_for_something_else">试试创建一个新的或搜索其他内容</string>
+    <string name="try_different_search_query">尝试不同的搜索查询。</string>
     <string name="change_wallpaper">更换壁纸</string>
     <string name="change_icon">更改图标</string>
     <string name="random">随机</string>
@@ -960,7 +962,7 @@
     <!--region ONBOARDING -->
     <string name="onboarding_auth_title">学习与思考集于一身的创作应用</string>
     <string name="onboarding_auth_subtitle">for those\nwho celebrate\ntrust &amp; autonomy</string>
-    <string name="onboarding_auth_description">Create &amp; collaborate in spaces you own. Encrypted, offline &amp; open.</string>
+    <string name="onboarding_auth_description">在您拥有的空间中创建和协作。加密、离线和开放。</string>
     <string name="onboarding_terms_and_policy_prefix">"继续即代表您同意"</string>
     <string name="onboarding_terms_and_policy_terms">\u00A0使用的条款\u00A0</string>
     <string name="onboarding_terms_and_policy_infix">" 和 "</string>
@@ -1129,7 +1131,8 @@
     <string name="multiplayer_cant_add_members">您无法添加更多成员</string>
     <string name="multiplayer_cant_add_editors">您无法添加更多编辑者</string>
     <string name="multiplayer_upgrade_button">✦ 升级</string>
-    <string name="multiplayer_upgrade_button_request">✦ Upgrade to add more members</string>
+    <string name="multiplayer_upgrade_button_request">✦ 升级以添加更多成员</string>
+    <string name="multiplayer_upgrade_spaces_button">✦ 升级以创建更多空间</string>
     <string name="multiplayer_members">参与的人</string>
     <string name="multiplayer_leave_request">退出请求</string>
     <string name="multiplayer_join_request">加入请求</string>
@@ -1139,9 +1142,9 @@
     <string name="multiplayer_can_edit">可编辑</string>
     <string name="multiplayer_can_view">可查看</string>
     <string name="multiplayer_space_add_viewer">Add viewer</string>
-    <string name="multiplayer_space_add_more_viewer">✦ Add more viewers</string>
+    <string name="multiplayer_space_add_more_viewer">✦ 增加更多浏览者</string>
     <string name="multiplayer_space_add_editor">Add editor</string>
-    <string name="multiplayer_space_add_more_editor">✦ Add more editors</string>
+    <string name="multiplayer_space_add_more_editor">✦ 增加更多编辑者</string>
     <string name="multiplayer_space_request_reject">拒绝</string>
     <string name="multiplayer_space_join_request_header">%1$s requested to join %2$s space</string>
     <string name="multiplayer_remove_member">Remove member</string>
@@ -1399,13 +1402,14 @@ Please provide specific details of your needs here.</string>
     <string name="membership_support_already_acquired">您已经使用其他的 Anytype 账户获得了一个会员计划。</string>
     <string name="membership_support_different_subscription">找到不同 ID 的订阅</string>
     <string name="membership_support_more_then_one_subscription">找到了不止一个订阅</string>
-    <string name="multiplayer_space_join_request_participants_error">Space participant\'s error</string>
-    <string name="multiplayer_space_join_request_new_member_error">Request\'s member error</string>
-    <string name="multiplayer_space_join_request_current_user_error">Current user status error</string>
-    <string name="multiplayer_space_join_request_membership_status_error">Current membership status error</string>
+    <string name="multiplayer_space_join_request_participants_error">空间参与者错误</string>
+    <string name="multiplayer_space_join_request_new_member_error">请求成员错误</string>
+    <string name="multiplayer_space_join_request_current_user_error">当前用户状态错误</string>
+    <string name="multiplayer_space_join_request_membership_status_error">当前会员状态错误</string>
     <string name="membership_upgrade_title">会员升级</string>
     <string name="membership_upgrade_description">联系我们以获取额外的存储空间、空间编辑器或更多共享空间。任何类型的团队都将根据您的需求提供量身定制的细节和条件。</string>
     <string name="membership_upgrade_button">联系Anytype团队</string>
+    <string name="membership_space_settings_share_limit">您已经达到 %1$d 个可共享空间的限制</string>
     <plurals name="period_years">
         <item quantity="other">%d 年</item>
     </plurals>
@@ -1421,6 +1425,7 @@ Please provide specific details of your needs here.</string>
     <string name="membership_error_button_text_action">联系我们</string>
     <string name="membership_error_button_text_dismiss">好的</string>
     <string name="error_login_network_id_mismatch">检测到网络 ID 不匹配。请验证您的网络配置。</string>
+    <string name="error_login_select_vault_error">文库选择错误.</string>
     <string name="global_search_related_to">"与之相关的："</string>
     <string name="global_search_no_related_objects_found">没有找到相关对象</string>
 </resources>

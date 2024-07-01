@@ -255,7 +255,10 @@ class HomeScreenViewModel(
         proceedWithRenderingPipeline()
         proceedWithObservingDispatches()
         proceedWithSettingUpShortcuts()
+        proceedWithViewStatePipeline()
+    }
 
+    private fun proceedWithViewStatePipeline() {
         widgetObjectPipelineJobs += viewModelScope.launch {
             if (!isWidgetSessionRestored) {
                 val session = withContext(appCoroutineDispatchers.io) {
@@ -1537,6 +1540,7 @@ class HomeScreenViewModel(
                     proceedWithClosingWidgetObject(widgetObject = config.widgets)
                 }
                 jobs.cancel()
+                widgetObjectPipelineJobs.cancel()
             }
         } catch (e: Exception) {
             Timber.e(e, "Error while closing widget object")

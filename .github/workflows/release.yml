@@ -58,7 +58,7 @@ jobs:
         run: ./scripts/release/clean-secrets.sh
 
       - name: Prepare artefacts
-        run: mkdir app/build/outputs/apk/release/release-artefacts/ mv app/build/outputs/apk/release/*.apk app/build/outputs/apk/release/release-artefacts/
+        run: ./scripts/release/prepare-release-artefacts.sh
 
       - name: Upload to S3
         uses: shallwefootball/s3-upload-action@v1.3.3

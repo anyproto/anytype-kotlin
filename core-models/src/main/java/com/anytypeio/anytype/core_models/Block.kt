@@ -330,12 +330,17 @@ data class Block(
                 val type: Type,
                 val includeTime: Boolean = false,
                 val customOrder: List<Id> = emptyList(),
-                val relationFormat: RelationFormat
+                val relationFormat: RelationFormat,
+                val emptyType: EmptyType? =null
             ) {
                 enum class Type(val formattedName: String) {
                     ASC("ascending"),
                     DESC("descending"),
                     CUSTOM("custom")
+                }
+
+                enum class EmptyType(val formattedName: String) {
+                    NOT_SPECIFIC("None"), START("Start"), END("End")
                 }
             }
 

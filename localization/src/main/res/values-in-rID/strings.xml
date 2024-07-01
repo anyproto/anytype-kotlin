@@ -665,6 +665,8 @@
     <string name="reset">Atur ulang</string>
     <string name="search_a_relation">Search a relation</string>
     <string name="content_description_check_icon">Check icon</string>
+    <string name="content_desc_empty_values_bottom_check_icon">Sort empty values at the bottom</string>
+    <string name="content_desc_empty_values_top_check_icon">Sort empty values at the top</string>
     <string name="filter_condition_is">Adalah</string>
     <string name="today">Hari ini</string>
     <string name="yesterday">Kemarin</string>
@@ -1428,4 +1430,7 @@ Please provide specific details of your needs here.</string>
     <string name="error_login_select_vault_error">Select vault error.</string>
     <string name="global_search_related_to">"Terkait dengan: "</string>
     <string name="global_search_no_related_objects_found">No related objects found</string>
+    <string name="sort_empty_values_desc">Tampilkan nilai kosong</string>
+    <string name="sort_empty_values_bottom">Di bawah</string>
+    <string name="sort_empty_values_top">Di atas</string>
 </resources>

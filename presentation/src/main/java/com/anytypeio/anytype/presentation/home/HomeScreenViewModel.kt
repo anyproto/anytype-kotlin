@@ -254,6 +254,20 @@ class HomeScreenViewModel(
         proceedWithRenderingPipeline()
         proceedWithObservingDispatches()
         proceedWithSettingUpShortcuts()
+
+        widgetObjectPipelineJobs += viewModelScope.launch {
+            if (!isWidgetSessionRestored) {
+                val session = withContext(appCoroutineDispatchers.io) {
+                    getWidgetSession.async(Unit).getOrNull()
+                }
+                if (session != null) {
+                    collapsedWidgetStateHolder.set(session.collapsed)
+                }
+            }
+            widgetObjectPipeline.collect {
+                objectViewState.value = it
+            }
+        }
     }
 
     private fun proceedWithUserPermissions() {
@@ -1097,19 +1111,6 @@ class HomeScreenViewModel(
 
     fun onStart() {
         Timber.d("onStart")
-        widgetObjectPipelineJobs += viewModelScope.launch {
-            if (!isWidgetSessionRestored) {
-                val session = withContext(appCoroutineDispatchers.io) {
-                    getWidgetSession.async(Unit).getOrNull()
-                }
-                if (session != null) {
-                    collapsedWidgetStateHolder.set(session.collapsed)
-                }
-            }
-            widgetObjectPipeline.collect {
-                objectViewState.value = it
-            }
-        }
     }
 
     fun onResume(deeplink: DeepLinkResolver.Action? = null) {

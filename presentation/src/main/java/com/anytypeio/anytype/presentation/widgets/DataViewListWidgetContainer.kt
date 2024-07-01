@@ -25,6 +25,8 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.take
 
 class DataViewListWidgetContainer(
     private val widget: Widget.List,
@@ -40,7 +42,21 @@ class DataViewListWidgetContainer(
 
     override val view = isSessionActive.flatMapLatest { isActive ->
         if (isActive)
-            buildViewFlow()
+            buildViewFlow().onStart {
+                isWidgetCollapsed.take(1).collect { isCollapsed ->
+                    emit(
+                        WidgetView.SetOfObjects(
+                            id = widget.id,
+                            source = widget.source,
+                            tabs = emptyList(),
+                            elements = emptyList(),
+                            isExpanded = !isCollapsed,
+                            isCompact = widget.isCompact,
+                            isLoading = true
+                        )
+                    )
+                }
+            }
         else
             emptyFlow()
     }

@@ -666,6 +666,8 @@
     <string name="reset">Zurücksetzen</string>
     <string name="search_a_relation">Beziehung suchen</string>
     <string name="content_description_check_icon">Check icon</string>
+    <string name="content_desc_empty_values_bottom_check_icon">Sort empty values at the bottom</string>
+    <string name="content_desc_empty_values_top_check_icon">Sort empty values at the top</string>
     <string name="filter_condition_is">Ist</string>
     <string name="today">Heute</string>
     <string name="yesterday">Gestern</string>
@@ -1438,4 +1440,7 @@ Please provide specific details of your needs here.</string>
     <string name="error_login_select_vault_error">Fehler beim Auswählen des Tresors.</string>
     <string name="global_search_related_to">"Zugehörig zu: "</string>
     <string name="global_search_no_related_objects_found">Keine zugehörigen Objekte gefunden</string>
+    <string name="sort_empty_values_desc">Leere Werte anzeigen</string>
+    <string name="sort_empty_values_bottom">Ganz unten</string>
+    <string name="sort_empty_values_top">Ganz oben</string>
 </resources>

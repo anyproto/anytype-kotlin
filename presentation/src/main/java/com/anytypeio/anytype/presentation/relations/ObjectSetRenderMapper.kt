@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.ext.DateParser
@@ -42,6 +43,8 @@ import com.anytypeio.anytype.presentation.mapper.toTextView
 import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.mapper.toViewerColumns
 import com.anytypeio.anytype.presentation.number.NumberParser
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.sets.buildGalleryViews
 import com.anytypeio.anytype.presentation.sets.buildListViews
 import com.anytypeio.anytype.presentation.sets.dataViewState
@@ -55,7 +58,6 @@ import com.anytypeio.anytype.presentation.sets.model.TagView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.model.ViewerTabView
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
-import com.anytypeio.anytype.presentation.sets.toObjectView
 import timber.log.Timber
 
 fun DV.tabs(activeViewerId: String? = null): List<ViewerTabView> {
@@ -476,7 +478,22 @@ fun ObjectWrapper.Relation.toObjects(
             val raw = details[id]?.map
             if (!raw.isNullOrEmpty()) {
                 val wrapper = ObjectWrapper.Basic(raw)
-                add(wrapper.toObjectView(urlBuilder))
+                val obj = when (isDeleted) {
+                    true -> ObjectView.Deleted(id)
+                    else -> ObjectView.Default(
+                        id = id,
+                        name = wrapper.getProperName(),
+                        icon = ObjectIcon.from(
+                            obj = wrapper,
+                            layout = wrapper.layout,
+                            builder = urlBuilder,
+                            objectTypeNoIcon = false
+                        ),
+                        types = type,
+                        isRelation = wrapper.layout == ObjectType.Layout.RELATION
+                    )
+                }
+                add(obj)
             }
         }
     }

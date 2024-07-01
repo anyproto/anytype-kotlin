@@ -2,7 +2,6 @@ package com.anytypeio.anytype.core_ui.widgets
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.TypedValue
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.anytypeio.anytype.core_ui.R
@@ -26,23 +25,7 @@ class ObjectIconTextWidget @JvmOverloads constructor(
 
         val attrs = context.obtainStyledAttributes(set, R.styleable.ObjectIconTextWidget, 0, 0)
 
-        val nameTextSize = attrs.getDimensionPixelSize(R.styleable.ObjectIconTextWidget_nameTextSize, 0)
-        if (nameTextSize > 0) {
-            setTextSize(nameTextSize.toFloat())
-        }
-
-        val nameTextColor = attrs.getColor(R.styleable.ObjectIconTextWidget_nameTextColor, 0)
-        setTextColor(nameTextColor)
-
         attrs.recycle()
-    }
-
-    fun setTextSize(textSize: Float) {
-        binding.objectName.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
-    }
-
-    fun setTextColor(textColor: Int) {
-        binding.objectName.setTextColor(textColor)
     }
 
     fun setup(

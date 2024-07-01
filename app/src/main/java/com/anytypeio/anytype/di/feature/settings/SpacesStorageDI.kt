@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
 import com.anytypeio.anytype.domain.workspace.SpacesUsageInfo
@@ -108,4 +109,5 @@ interface SpacesStorageDependencies : ComponentDependencies {
     fun spaceManager(): SpaceManager
     fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
     fun membershipProvider(): MembershipProvider
+    fun userPermissionProvider(): UserPermissionProvider
 }

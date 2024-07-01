@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVFilterOperator
 import com.anytypeio.anytype.core_models.DVFilterQuickOption
 import com.anytypeio.anytype.core_models.DVSort
+import com.anytypeio.anytype.core_models.DVSortEmptyType
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.DVTimeFormat
 import com.anytypeio.anytype.core_models.DVViewer
@@ -632,8 +633,15 @@ fun MDVSort.toCoreModels(): Block.Content.DataView.Sort = DVSort(
     customOrder = customOrder.mapNotNull { value ->
         if (value is Id) value else null
     },
-    relationFormat = format.format()
+    relationFormat = format.format(),
+    emptyType = emptyPlacement.toCoreModels()
 )
+
+fun MDVSortEmptyType.toCoreModels(): DVSortEmptyType = when (this) {
+    MDVSortEmptyType.NotSpecified -> DVSortEmptyType.NOT_SPECIFIC
+    MDVSortEmptyType.Start -> DVSortEmptyType.START
+    MDVSortEmptyType.End -> DVSortEmptyType.END
+}
 
 fun MDVSortType.toCoreModels(): DVSortType = when (this) {
     MDVSortType.Asc -> DVSortType.ASC

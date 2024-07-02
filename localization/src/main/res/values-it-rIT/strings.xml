@@ -666,8 +666,8 @@
     <string name="reset">Reset</string>
     <string name="search_a_relation">Search a relation</string>
     <string name="content_description_check_icon">Check icon</string>
-    <string name="content_desc_empty_values_bottom_check_icon">Sort empty values at the bottom</string>
-    <string name="content_desc_empty_values_top_check_icon">Sort empty values at the top</string>
+    <string name="content_desc_empty_values_bottom_check_icon">Ordina i valori vuoti in fondo</string>
+    <string name="content_desc_empty_values_top_check_icon">Ordina i valori vuoti in alto</string>
     <string name="filter_condition_is">È</string>
     <string name="today">Oggi</string>
     <string name="yesterday">Ieri</string>

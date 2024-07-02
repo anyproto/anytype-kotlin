@@ -4,12 +4,14 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.sets.model.ColumnView.Format
 import kotlinx.coroutines.flow.MutableStateFlow
+import timber.log.Timber
 
 class CreateFilterFlowViewModel : BaseViewModel() {
 
     val step = MutableStateFlow<Step>(Step.SelectRelation)
 
     fun onRelationSelected(ctx: Id, relation: Id, format: Format) {
+        Timber.d("onRelationSelected: ctx=$ctx, relation=$relation, format=$format")
         step.value = Step.CreateFilter(
             ctx = ctx,
             relation = relation,

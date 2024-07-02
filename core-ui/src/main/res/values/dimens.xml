@@ -162,7 +162,7 @@
     <dimen name="viewer_grid_header_width">144dp</dimen>
 
     <dimen name="viewer_base_item_list_height">40dp</dimen>
-    <dimen name="dv_viewer_filter_item_height">68dp</dimen>
+    <dimen name="dv_viewer_filter_item_height">72dp</dimen>
     <dimen name="db_viewer_filter_condition_item_height">48dp</dimen>
     <dimen name="default_dragger_width">48dp</dimen>
     <dimen name="default_dragger_height">4dp</dimen>

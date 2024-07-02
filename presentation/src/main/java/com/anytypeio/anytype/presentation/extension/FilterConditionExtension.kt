@@ -45,7 +45,8 @@ fun ObjectWrapper.Relation.toConditionView(condition: DVFilterCondition?): Viewe
         }
         Relation.Format.STATUS,
         Relation.Format.TAG,
-        Relation.Format.OBJECT -> {
+        Relation.Format.OBJECT,
+        Relation.Format.FILE -> {
             condition?.toView(category = DVFilterConditionCategory.SELECT)
                 ?: Viewer.Filter.Condition.Selected.selectConditions().first()
         }

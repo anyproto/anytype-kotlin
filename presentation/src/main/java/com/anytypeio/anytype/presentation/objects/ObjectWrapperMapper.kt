@@ -208,7 +208,7 @@ fun List<ObjectWrapper.Basic>.toCreateFilterObjectView(
             ),
             isSelected = ids?.contains(obj.id) ?: false
         )
-    }
+    }.sortedByDescending { it.isSelected }
 
 fun List<ObjectWrapper.Basic>.toRelationObjectValueView(
     excluded: List<Id>,

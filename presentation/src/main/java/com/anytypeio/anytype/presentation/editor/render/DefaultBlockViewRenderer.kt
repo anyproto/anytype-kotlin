@@ -2073,7 +2073,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             val relation = storeOfRelations.getByKey(relationKey)
             if (relation != null) {
                 val view = relation.view(
-                    details = details,
+                    details = details.details,
                     values = details.details[ctx]?.map ?: emptyMap(),
                     urlBuilder = urlBuilder
                 )
@@ -2179,7 +2179,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             else -> {
                 val relation = storeOfRelations.getByKey(key)
                 relation?.view(
-                    details = details,
+                    details = details.details,
                     values = details.details[ctx]?.map ?: emptyMap(),
                     urlBuilder = urlBuilder,
                     isFeatured = true

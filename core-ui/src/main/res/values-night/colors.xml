@@ -124,4 +124,6 @@
     <color name="tier_gradient_purple_start">#00000000</color>
     <color name="tier_gradient_purple_end">#E86DE3</color>
 
+    <color name="object_number_background">#393835</color>
+
 </resources>

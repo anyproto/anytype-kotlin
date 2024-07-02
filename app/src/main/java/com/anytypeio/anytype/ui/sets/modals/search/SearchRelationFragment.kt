@@ -16,13 +16,13 @@ import com.anytypeio.anytype.core_utils.ext.drawable
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetTextInputFragment
+import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentSelectSortOrFilterRelationBinding
 import com.anytypeio.anytype.presentation.sets.SearchRelationViewModel
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 
 abstract class SearchRelationFragment :
-    BaseBottomSheetTextInputFragment<FragmentSelectSortOrFilterRelationBinding>() {
+    BaseBottomSheetFragment<FragmentSelectSortOrFilterRelationBinding>() {
 
     abstract val ctx: String
     abstract val vm: SearchRelationViewModel
@@ -32,7 +32,7 @@ abstract class SearchRelationFragment :
         SearchRelationAdapter { relation -> onRelationClicked(ctx = ctx, relation = relation) }
     }
 
-    override val textInput: EditText get() = binding.searchBar.root.findViewById(R.id.filterInputField)
+    val textInput: EditText get() = binding.searchBar.root.findViewById(R.id.filterInputField)
 
     lateinit var searchRelationInput: EditText
     lateinit var clearSearchText: View
@@ -41,6 +41,8 @@ abstract class SearchRelationFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setFullHeightSheet()
+        skipCollapsed()
         searchRelationInput = binding.searchBar.root.findViewById(R.id.filterInputField)
         searchRelationInput.apply {
             hint = getString(R.string.choose_relation_to_filter)
@@ -74,6 +76,7 @@ abstract class SearchRelationFragment :
 
     override fun onStart() {
         super.onStart()
+        expand()
         vm.onStart(viewerId = viewer)
     }
 

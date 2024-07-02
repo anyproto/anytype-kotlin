@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.search.DataViewState
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
 import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
 import com.anytypeio.anytype.presentation.extension.logEvent
@@ -45,25 +46,29 @@ class ViewerFilterViewModel(
     fun onStart(viewerId: Id) {
         Timber.d("ViewerFilterViewModel, onStart, viewerId: [$viewerId]")
         jobs += viewModelScope.launch {
-            objectState.filterIsInstance<ObjectState.DataView>().collect { objectSet ->
-                val filterExpression = objectSet.filterExpression(viewerId = viewerId)
-                if (filterExpression.isEmpty()) {
-                    screenState.value = ScreenState.EMPTY
-                } else {
-                    screenState.value = when (screenState.value) {
-                        ScreenState.LIST -> ScreenState.LIST
-                        ScreenState.EDIT -> ScreenState.EDIT
-                        ScreenState.EMPTY -> ScreenState.LIST
+            db.index.filterIsInstance<DataViewState.Loaded>()
+                .combine(
+                    objectState.filterIsInstance<ObjectState.DataView>()
+                ) { _, objectSet ->
+                    objectSet
+                }.collect { objectSet ->
+                    val filterExpression = objectSet.filterExpression(viewerId = viewerId)
+                    if (filterExpression.isEmpty()) {
+                        screenState.value = ScreenState.EMPTY
+                    } else {
+                        screenState.value = when (screenState.value) {
+                            ScreenState.LIST -> ScreenState.LIST
+                            ScreenState.EDIT -> ScreenState.EDIT
+                            ScreenState.EMPTY -> ScreenState.LIST
+                        }
                     }
+                    _views.value = filterExpression.toView(
+                        storeOfRelations = storeOfRelations,
+                        storeOfObjects = db.store,
+                        screenState = screenState.value,
+                        urlBuilder = urlBuilder
+                    )
                 }
-                _views.value = filterExpression.toView(
-                    storeOfRelations = storeOfRelations,
-                    storeOfObjects = db.store,
-                    details = objectSet.details,
-                    screenState = screenState.value,
-                    urlBuilder = urlBuilder
-                )
-            }
         }
     }
 

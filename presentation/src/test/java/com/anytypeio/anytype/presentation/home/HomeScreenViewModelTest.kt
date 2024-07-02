@@ -1539,7 +1539,9 @@ class HomeScreenViewModelTest {
         )
 
         stubConfig()
+
         stubInterceptEvents(events = emptyFlow())
+        stubSecondWidgetObjectInterceptEvents(events = emptyFlow())
 
         stubOpenWidgetObjects(
             firstGivenObjectView = givenFirstSpaceObjectView,
@@ -1606,6 +1608,10 @@ class HomeScreenViewModelTest {
 
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
 
+        stubObserveSpaceObject()
+        stubUserPermission()
+        stubAnalyticSpaceHelperDelegate()
+
         unsubscriber.stub {
             onBlocking {
                 unsubscribe(
@@ -1631,19 +1637,18 @@ class HomeScreenViewModelTest {
 
         vm.onStart()
 
-//        verify(openObject, times(1)).stream(
-//            OpenObject.Params(
-//                obj = defaultSpaceConfig.widgets,
-//                saveAsLastOpened = false,
-//                spaceId = SpaceId(defaultSpaceConfig.space)
-//            )
-//        )
-
-//        verifyNoInteractions(unsubscriber)
+        verifyBlocking(unsubscriber, times(0)) {
+            unsubscribe(
+                subscriptions = listOf(
+                    favoriteSource.id,
+                    recentSource.id,
+                    setsSource.id
+                )
+            )
+        }
 
         advanceTimeBy(delayBeforeSwitchingSpace + 1)
 
-//
         verifyBlocking(unsubscriber, times(1)) {
             unsubscribe(
                 subscriptions = listOf(
@@ -1654,260 +1659,11 @@ class HomeScreenViewModelTest {
             )
         }
 
-//        verify(closeObject, times(1)).stream(params = WIDGET_OBJECT_ID)
+        verify(closeObject, times(1)).async(params = WIDGET_OBJECT_ID)
     }
 
     @Test
-    fun `should preserve subscriptions for three bundled widgets with tree layout`() = runTest {
-
-        // SETUP
-
-        val firstLink = StubObject(
-            id = "First link",
-            layout = ObjectType.Layout.BASIC.code.toDouble()
-        )
-        val secondLink = StubObject(
-            id = "Second link",
-            layout = ObjectType.Layout.BASIC.code.toDouble()
-        )
-
-        val favoriteSource = StubObject(id = BundledWidgetSourceIds.FAVORITE)
-        val recentSource = StubObject(id = BundledWidgetSourceIds.RECENT)
-        val setsSource = StubObject(id = BundledWidgetSourceIds.SETS)
-
-        val favoriteLink = StubLinkToObjectBlock(target = favoriteSource.id)
-        val recentLink = StubLinkToObjectBlock(target = recentSource.id)
-        val setsLink = StubLinkToObjectBlock(target = setsSource.id)
-
-        val layout = Block.Content.Widget.Layout.TREE
-
-        val favoriteWidgetBlock = StubWidgetBlock(
-            layout = layout,
-            children = listOf(favoriteLink.id)
-        )
-
-        val recentWidgetBlock = StubWidgetBlock(
-            layout = layout,
-            children = listOf(recentLink.id)
-        )
-
-        val setsWidgetBlock = StubWidgetBlock(
-            layout = layout,
-            children = listOf(setsLink.id)
-        )
-
-        val smartBlock = StubSmartBlock(
-            id = WIDGET_OBJECT_ID,
-            children = listOf(favoriteWidgetBlock.id, recentWidgetBlock.id, setsWidgetBlock.id),
-        )
-
-        val givenObjectView = StubObjectView(
-            root = WIDGET_OBJECT_ID,
-            blocks = listOf(
-                smartBlock,
-                favoriteWidgetBlock,
-                favoriteLink,
-                recentWidgetBlock,
-                recentLink,
-                setsWidgetBlock,
-                setsLink
-            )
-        )
-
-        stubConfig()
-        stubInterceptEvents(events = emptyFlow())
-        stubOpenWidgetObject(givenObjectView)
-
-        val firstLinkToObjectFavoriteObjectBlock = StubLinkToObjectBlock(
-            target = firstLink.id
-        )
-
-        val secondLinkToObjectFavoriteObjectBlock = StubLinkToObjectBlock(
-            target = secondLink.id
-        )
-
-        stubFavoritesObjectWatcher(
-            objectView = StubObjectView(
-                root = defaultSpaceConfig.home,
-                blocks = listOf(
-                    StubSmartBlock(
-                        id = defaultSpaceConfig.home,
-                        children = listOf(
-                            firstLinkToObjectFavoriteObjectBlock.id,
-                            secondLinkToObjectFavoriteObjectBlock.id
-                        )
-                    ),
-                    firstLinkToObjectFavoriteObjectBlock,
-                    secondLinkToObjectFavoriteObjectBlock
-                )
-            )
-        )
-
-        stubSearchByIds(
-            subscription = BundledWidgetSourceIds.FAVORITE,
-            targets = listOf(firstLink.id, secondLink.id),
-            results = listOf(firstLink, secondLink),
-            keys = TreeWidgetContainer.keys,
-        )
-
-        stubSearchByIds(
-            subscription = favoriteWidgetBlock.id,
-            targets = listOf(firstLink.id, secondLink.id),
-            results = listOf(firstLink, secondLink),
-            keys = TreeWidgetContainer.keys
-        )
-
-        stubSearchByIds(
-            subscription = recentWidgetBlock.id,
-            targets = listOf(firstLink.id, secondLink.id),
-            results = listOf(firstLink, secondLink)
-        )
-
-        stubSearchByIds(
-            subscription = setsWidgetBlock.id,
-            targets = listOf(firstLink.id, secondLink.id),
-            results = listOf(firstLink, secondLink)
-        )
-
-        stubDefaultSearch(
-            params = ListWidgetContainer.params(
-                subscription = BundledWidgetSourceIds.FAVORITE,
-                spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
-                keys = TreeWidgetContainer.keys,
-                limit = WidgetConfig.NO_LIMIT
-            ),
-            results = listOf(firstLink, secondLink)
-        )
-
-        stubDefaultSearch(
-            params = ListWidgetContainer.params(
-                subscription = BundledWidgetSourceIds.RECENT,
-                spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
-                keys = TreeWidgetContainer.keys,
-                limit = WidgetConfig.DEFAULT_TREE_LIMIT
-            ),
-            results = listOf(firstLink, secondLink)
-        )
-
-        stubGetSpaceView(defaultSpaceConfig.spaceView)
-
-        stubDefaultSearch(
-            params = ListWidgetContainer.params(
-                subscription = BundledWidgetSourceIds.SETS,
-                spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
-                keys = TreeWidgetContainer.keys,
-                limit = WidgetConfig.DEFAULT_TREE_LIMIT
-            ),
-            results = listOf(firstLink, secondLink)
-        )
-
-        stubCollapsedWidgetState(id = anyString())
-        stubGetWidgetSession()
-        stubWidgetActiveView(favoriteWidgetBlock)
-        stubCloseObject()
-        stubSpaceManager()
-        stubSpaceWidgetContainer(defaultSpaceWidgetView)
-
-        val vm = buildViewModel()
-
-        // TESTING
-
-        vm.onStart()
-
-        advanceUntilIdle()
-
-        // Verifying subscription on launch
-
-        verifyBlocking(storelessSubscriptionContainer, times(1)) {
-            subscribe(
-                StoreSearchByIdsParams(
-                    subscription = favoriteSource.id,
-                    targets = listOf(firstLink.id, secondLink.id),
-                    keys = TreeWidgetContainer.keys,
-                )
-            )
-        }
-
-        verifyBlocking(storelessSubscriptionContainer, times(1)) {
-            subscribe(
-                ListWidgetContainer.params(
-                    subscription = setsSource.id,
-                    spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
-                    keys = TreeWidgetContainer.keys,
-                    limit = WidgetConfig.DEFAULT_TREE_LIMIT
-                )
-            )
-        }
-
-        verifyBlocking(storelessSubscriptionContainer, times(1)) {
-            subscribe(
-                ListWidgetContainer.params(
-                    subscription = recentSource.id,
-                    spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
-                    keys = TreeWidgetContainer.keys,
-                    limit = WidgetConfig.DEFAULT_TREE_LIMIT
-                )
-            )
-        }
-
-        vm.onStop()
-
-        advanceUntilIdle()
-
-        // Verifying unsubscribe behavior
-
-        verifyBlocking(unsubscriber, times(1)) {
-            unsubscribe(
-                subscriptions = listOf(
-                    favoriteSource.id,
-                    recentSource.id,
-                    setsSource.id,
-                    SpaceWidgetContainer.SPACE_WIDGET_SUBSCRIPTION
-                )
-            )
-        }
-
-        vm.onStart()
-
-        advanceUntilIdle()
-
-        // Verifying subscription on resume
-
-        verifyBlocking(storelessSubscriptionContainer, times(1)) {
-            subscribe(
-                StoreSearchByIdsParams(
-                    subscription = favoriteSource.id,
-                    targets = listOf(firstLink.id, secondLink.id),
-                    keys = TreeWidgetContainer.keys,
-                )
-            )
-        }
-
-        verifyBlocking(storelessSubscriptionContainer, times(1)) {
-            subscribe(
-                ListWidgetContainer.params(
-                    subscription = setsSource.id,
-                    spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
-                    keys = TreeWidgetContainer.keys,
-                    limit = WidgetConfig.DEFAULT_TREE_LIMIT
-                )
-            )
-        }
-
-        verifyBlocking(storelessSubscriptionContainer, times(1)) {
-            subscribe(
-                ListWidgetContainer.params(
-                    subscription = recentSource.id,
-                    spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
-                    keys = TreeWidgetContainer.keys,
-                    limit = WidgetConfig.DEFAULT_TREE_LIMIT
-                )
-            )
-        }
-    }
-
-    @Test
-    fun `should preserve subscriptions for three bundled widgets with list layout`() = runTest {
+    fun `should close object and unsubscribe three bundled widgets with list layout on space switch`() = runTest {
 
         // SETUP
 
@@ -2073,8 +1829,6 @@ class HomeScreenViewModelTest {
             )
         }
 
-        vm.onStop()
-
         advanceUntilIdle()
 
         // Verifying unsubscribe behavior
@@ -2084,46 +1838,7 @@ class HomeScreenViewModelTest {
                 subscriptions = listOf(
                     favoriteSource.id,
                     recentSource.id,
-                    setsSource.id,
-                    SpaceWidgetContainer.SPACE_WIDGET_SUBSCRIPTION
-                )
-            )
-        }
-
-        vm.onStart()
-
-        advanceUntilIdle()
-
-        // Verifying subscription on resume
-
-        verifyBlocking(storelessSubscriptionContainer, times(1)) {
-            subscribe(
-                StoreSearchByIdsParams(
-                    subscription = favoriteSource.id,
-                    keys = ListWidgetContainer.keys,
-                    targets = emptyList()
-                )
-            )
-        }
-
-        verifyBlocking(storelessSubscriptionContainer, times(1)) {
-            subscribe(
-                ListWidgetContainer.params(
-                    subscription = setsSource.id,
-                    spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
-                    keys = ListWidgetContainer.keys,
-                    limit = WidgetConfig.DEFAULT_LIST_LIMIT
-                )
-            )
-        }
-
-        verifyBlocking(storelessSubscriptionContainer, times(1)) {
-            subscribe(
-                ListWidgetContainer.params(
-                    subscription = recentSource.id,
-                    spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
-                    keys = ListWidgetContainer.keys,
-                    limit = WidgetConfig.DEFAULT_LIST_LIMIT
+                    setsSource.id
                 )
             )
         }
@@ -2793,6 +2508,12 @@ class HomeScreenViewModelTest {
     private fun stubInterceptEvents(events: Flow<List<Event>>) {
         interceptEvents.stub {
             on { build(InterceptEvents.Params(WIDGET_OBJECT_ID)) } doReturn events
+        }
+    }
+
+    private fun stubSecondWidgetObjectInterceptEvents(events: Flow<List<Event>>) {
+        interceptEvents.stub {
+            on { build(InterceptEvents.Params(SECOND_WIDGET_OBJECT_ID)) } doReturn events
         }
     }
 

@@ -213,7 +213,7 @@ class HomeScreenViewModel(
     private val widgetObjectPipeline = spaceManager
         .observe()
         .distinctUntilChanged()
-        .onEach {
+        .onEach { newConfig ->
             val openObjectState = objectViewState.value
             if (openObjectState is ObjectViewState.Success) {
                 val subscriptions = buildList {
@@ -228,6 +228,29 @@ class HomeScreenViewModel(
                 }
                 if (subscriptions.isNotEmpty()) {
                     unsubscribe(subscriptions)
+                }
+                mutex.withLock {
+                    val closed = mutableSetOf<Id>()
+                    openWidgetObjectsHistory.forEach { previouslyOpenedWidgetObject ->
+                        if (previouslyOpenedWidgetObject != newConfig.widgets) {
+                            closeObject
+                                .async(params = previouslyOpenedWidgetObject)
+                                .fold(
+                                    onSuccess = {
+                                        closed.add(previouslyOpenedWidgetObject)
+                                    },
+                                    onFailure = {
+                                        Timber.e(
+                                            it,
+                                            "Error while closing object from history: $previouslyOpenedWidgetObject"
+                                        )
+                                    }
+                                )
+                        }
+                    }
+                    if (closed.isNotEmpty()) {
+                        openWidgetObjectsHistory.removeAll(closed)
+                    }
                 }
             }
         }
@@ -261,29 +284,32 @@ class HomeScreenViewModel(
                 is Resultat.Success -> ObjectViewState.Success(obj = result.value)
             }
         }
+        .catch {
+            emit(ObjectViewState.Failure(it))
+        }
 
     init {
         proceedWithUserPermissions()
-        proceedWithObservingProfileIcon()
+        //proceedWithObservingProfileIcon()
         proceedWithLaunchingUnsubscriber()
         proceedWithObjectViewStatePipeline()
         proceedWithWidgetContainerPipeline()
         proceedWithRenderingPipeline()
         proceedWithObservingDispatches()
-        proceedWithSettingUpShortcuts()
+        //proceedWithSettingUpShortcuts()
         proceedWithViewStatePipeline()
     }
 
     private fun proceedWithViewStatePipeline() {
         widgetObjectPipelineJobs += viewModelScope.launch {
-            if (!isWidgetSessionRestored) {
-                val session = withContext(appCoroutineDispatchers.io) {
-                    getWidgetSession.async(Unit).getOrNull()
-                }
-                if (session != null) {
-                    collapsedWidgetStateHolder.set(session.collapsed)
-                }
-            }
+//            if (!isWidgetSessionRestored) {
+//                val session = withContext(appCoroutineDispatchers.io) {
+//                    getWidgetSession.async(Unit).getOrNull()
+//                }
+//                if (session != null) {
+//                    collapsedWidgetStateHolder.set(session.collapsed)
+//                }
+//            }
             widgetObjectPipeline.collect {
                 objectViewState.value = it
             }

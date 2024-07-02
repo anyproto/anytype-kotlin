@@ -1828,27 +1828,27 @@ class HomeScreenViewModelTest {
             )
         }
 
-//        verifyBlocking(storelessSubscriptionContainer, times(1)) {
-//            subscribe(
-//                ListWidgetContainer.params(
-//                    subscription = setsSource.id,
-//                    spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
-//                    keys = ListWidgetContainer.keys,
-//                    limit = WidgetConfig.DEFAULT_LIST_LIMIT
-//                )
-//            )
-//        }
-//
-//        verifyBlocking(storelessSubscriptionContainer, times(1)) {
-//            subscribe(
-//                ListWidgetContainer.params(
-//                    subscription = recentSource.id,
-//                    spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
-//                    keys = ListWidgetContainer.keys,
-//                    limit = WidgetConfig.DEFAULT_LIST_LIMIT
-//                )
-//            )
-//        }
+        verifyBlocking(storelessSubscriptionContainer, times(1)) {
+            subscribe(
+                ListWidgetContainer.params(
+                    subscription = setsSource.id,
+                    spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                    keys = ListWidgetContainer.keys,
+                    limit = WidgetConfig.DEFAULT_LIST_LIMIT
+                )
+            )
+        }
+
+        verifyBlocking(storelessSubscriptionContainer, times(1)) {
+            subscribe(
+                ListWidgetContainer.params(
+                    subscription = recentSource.id,
+                    spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                    keys = ListWidgetContainer.keys,
+                    limit = WidgetConfig.DEFAULT_LIST_LIMIT
+                )
+            )
+        }
 
         advanceTimeBy(delayBeforeSwitchingSpace + 1)
 

@@ -12,6 +12,7 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
 sealed class WidgetView {
 
+// TODO? ALTERNATIVE FOR IMPLEMENTING WIDGET CACHE
 //    interface Cache {
 //        fun <T : WidgetView>get(widget: Id) : T?
 //        fun clear()

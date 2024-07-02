@@ -32,8 +32,6 @@ import timber.log.Timber
 
 class ListWidgetContainer(
     private val widget: Widget.List,
-    private val space: Id,
-    private val config: Config,
     private val subscription: Id,
     private val storage: StorelessSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
@@ -82,7 +80,7 @@ class ListWidgetContainer(
                 BundledWidgetSourceIds.FAVORITE -> {
                     // Objects from favorites have custom sorting logic.
                     objectWatcher
-                        .watch(config.home)
+                        .watch(widget.config.home)
                         .map { obj -> obj.orderOfRootObjects(obj.root) }
                         .catch { emit(emptyMap()) }
                         .flatMapLatest { order ->
@@ -107,7 +105,7 @@ class ListWidgetContainer(
                 }
                 BundledWidgetSourceIds.RECENT -> {
                     val spaceView = getSpaceView.async(
-                        GetSpaceView.Params.BySpaceViewId(config.spaceView)
+                        GetSpaceView.Params.BySpaceViewId(widget.config.spaceView)
                     ).getOrNull()
                     val spaceViewCreationDate = spaceView
                         ?.getValue<Double?>(Relations.CREATED_DATE)
@@ -157,8 +155,8 @@ class ListWidgetContainer(
     ) = params(
         subscription = subscription,
         spaces = buildList {
-            add(config.space)
-            add(config.techSpace)
+            add(widget.config.space)
+            add(widget.config.techSpace)
         },
         keys = keys,
         limit = resolveLimit(),

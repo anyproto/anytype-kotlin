@@ -103,11 +103,8 @@ class TreeWidgetContainerTest {
                 expandedBranches = expanded,
                 isWidgetCollapsed = flowOf(false),
                 urlBuilder = urlBuilder,
-                space = workspace,
                 isSessionActive = flowOf(true),
-                config = config,
                 objectWatcher = objectWatcher,
-                spaceGradientProvider = spaceGradientProvider,
                 getSpaceView = getSpaceView
             )
 
@@ -181,11 +178,8 @@ class TreeWidgetContainerTest {
             expandedBranches = expanded,
             isWidgetCollapsed = flowOf(false),
             urlBuilder = urlBuilder,
-            space = workspace,
             isSessionActive = flowOf(true),
-            config = config,
             objectWatcher = objectWatcher,
-            spaceGradientProvider = spaceGradientProvider,
             getSpaceView = getSpaceView
         )
 
@@ -274,11 +268,8 @@ class TreeWidgetContainerTest {
                 expandedBranches = expanded,
                 isWidgetCollapsed = flowOf(false),
                 urlBuilder = urlBuilder,
-                space = workspace,
                 isSessionActive = flowOf(true),
-                config = config,
                 objectWatcher = objectWatcher,
-                spaceGradientProvider = spaceGradientProvider,
                 getSpaceView = getSpaceView
             )
 
@@ -422,11 +413,8 @@ class TreeWidgetContainerTest {
             expandedBranches = expanded,
             isWidgetCollapsed = flowOf(false),
             urlBuilder = urlBuilder,
-            space = workspace,
             isSessionActive = flowOf(true),
-            config = config,
             objectWatcher = objectWatcher,
-            spaceGradientProvider = spaceGradientProvider,
             getSpaceView = getSpaceView
         )
 
@@ -487,11 +475,8 @@ class TreeWidgetContainerTest {
             expandedBranches = expanded,
             isWidgetCollapsed = flowOf(false),
             urlBuilder = urlBuilder,
-            space = workspace,
             isSessionActive = flowOf(true),
-            config = config,
             objectWatcher = objectWatcher,
-            spaceGradientProvider = spaceGradientProvider,
             getSpaceView = getSpaceView
         )
 

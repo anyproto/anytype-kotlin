@@ -29,11 +29,8 @@ import timber.log.Timber
 
 class TreeWidgetContainer(
     private val widget: Widget.Tree,
-    private val space: Id,
-    private val config: Config,
     private val container: StorelessSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
-    private val spaceGradientProvider: SpaceGradientProvider,
     private val expandedBranches: Flow<List<TreePath>>,
     private val isWidgetCollapsed: Flow<Boolean>,
     private val objectWatcher: ObjectWatcher,
@@ -162,7 +159,7 @@ class TreeWidgetContainer(
         return when (widget.source.id) {
             BundledWidgetSourceIds.FAVORITE -> {
                 objectWatcher
-                    .watch(config.home)
+                    .watch(widget.config.home)
                     .map { obj -> obj.orderOfRootObjects(obj.root) }
                     .catch { emit(emptyMap()) }
                     .flatMapLatest { order ->
@@ -182,7 +179,7 @@ class TreeWidgetContainer(
             }
             BundledWidgetSourceIds.RECENT -> {
                 val spaceView = getSpaceView.async(
-                    GetSpaceView.Params.BySpaceViewId(config.spaceView)
+                    GetSpaceView.Params.BySpaceViewId(widget.config.spaceView)
                 ).getOrNull()
                 val spaceViewCreationDate = spaceView
                     ?.getValue<Double?>(Relations.CREATED_DATE)
@@ -191,8 +188,8 @@ class TreeWidgetContainer(
                     ListWidgetContainer.params(
                         subscription = widget.source.id,
                         spaces = buildList {
-                            add(config.space)
-                            add(config.techSpace)
+                            add(widget.config.space)
+                            add(widget.config.techSpace)
                         },
                         keys = keys,
                         limit = rootLevelLimit,
@@ -205,8 +202,8 @@ class TreeWidgetContainer(
                     ListWidgetContainer.params(
                         subscription = widget.source.id,
                         spaces = buildList {
-                            add(config.space)
-                            add(config.techSpace)
+                            add(widget.config.space)
+                            add(widget.config.techSpace)
                         },
                         keys = keys,
                         limit = rootLevelLimit

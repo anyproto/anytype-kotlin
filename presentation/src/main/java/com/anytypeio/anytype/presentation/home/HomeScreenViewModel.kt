@@ -404,37 +404,30 @@ class HomeScreenViewModel(
                             isWidgetCollapsed = isCollapsed(widget.id),
                             isSessionActive = isSessionActive,
                             urlBuilder = urlBuilder,
-                            space = widget.config.space,
-                            config = widget.config,
                             objectWatcher = objectWatcher,
-                            spaceGradientProvider = spaceGradientProvider,
                             getSpaceView = getSpaceView
                         )
                         is Widget.List -> if (BundledWidgetSourceIds.ids.contains(widget.source.id)) {
                             ListWidgetContainer(
                                 widget = widget,
                                 subscription = widget.source.id,
-                                space = widget.config.space,
                                 storage = storelessSubscriptionContainer,
                                 isWidgetCollapsed = isCollapsed(widget.id),
                                 urlBuilder = urlBuilder,
                                 spaceGradientProvider = spaceGradientProvider,
                                 isSessionActive = isSessionActive,
                                 objectWatcher = objectWatcher,
-                                config = widget.config,
                                 getSpaceView = getSpaceView
                             )
                         } else {
                             DataViewListWidgetContainer(
                                 widget = widget,
-                                config = widget.config,
                                 storage = storelessSubscriptionContainer,
                                 getObject = getObject,
                                 activeView = observeCurrentWidgetView(widget.id),
                                 isWidgetCollapsed = isCollapsed(widget.id),
                                 isSessionActive = isSessionActive,
                                 urlBuilder = urlBuilder,
-                                gradientProvider = spaceGradientProvider
                             )
                         }
                     }

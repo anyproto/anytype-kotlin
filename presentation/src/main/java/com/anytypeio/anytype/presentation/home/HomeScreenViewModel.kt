@@ -217,14 +217,14 @@ class HomeScreenViewModel(
             val openObjectState = objectViewState.value
             if (openObjectState is ObjectViewState.Success) {
                 val subscriptions = buildList {
-                    addAll(
-                        widgets.value.orEmpty().map { widget ->
+                    widgets.value.orEmpty().forEach { widget ->
+                        if (widget.config.space != newConfig.space) {
                             if (widget.source is Widget.Source.Bundled)
-                                widget.source.id
+                                add(widget.source.id)
                             else
-                                widget.id
+                                add(widget.id)
                         }
-                    )
+                    }
                 }
                 if (subscriptions.isNotEmpty()) {
                     unsubscribe(subscriptions)
@@ -240,10 +240,7 @@ class HomeScreenViewModel(
                                         closed.add(previouslyOpenedWidgetObject)
                                     },
                                     onFailure = {
-                                        Timber.e(
-                                            it,
-                                            "Error while closing object from history: $previouslyOpenedWidgetObject"
-                                        )
+                                        Timber.e(it, "Error while closing object from history: $previouslyOpenedWidgetObject")
                                     }
                                 )
                         }

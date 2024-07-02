@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.DVFilterQuickOption
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
@@ -33,6 +34,7 @@ import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.extension.toConditionView
 import com.anytypeio.anytype.presentation.extension.type
 import com.anytypeio.anytype.presentation.mapper.toDomain
+import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.toCreateFilterObjectView
 import com.anytypeio.anytype.presentation.relations.FilterInputValueParser
 import com.anytypeio.anytype.presentation.relations.toCreateFilterCheckboxView
@@ -285,7 +287,7 @@ open class FilterViewModel(
         Relation.Format.STATUS -> {
             proceedWithParsingStatusValues(filter, relation)
         }
-        Relation.Format.OBJECT, Relation.Format.FILE -> {
+        Relation.Format.OBJECT -> {
             val ids = filter?.value as? List<*>
             val limitObjectTypes = buildList {
                 if (relation.relationFormatObjectTypes.isNotEmpty()) {
@@ -296,6 +298,14 @@ open class FilterViewModel(
                 ids = ids,
                 objectTypes = storeOfObjectTypes.getAll(),
                 limitObjectTypes = limitObjectTypes
+            )
+        }
+        Relation.Format.FILE -> {
+            val ids = filter?.value as? List<*>
+            proceedWithSearchObjectsByLayout(
+                ids = ids,
+                objectTypes = storeOfObjectTypes.getAll(),
+                layouts = SupportedLayouts.fileLayouts
             )
         }
         Relation.Format.CHECKBOX -> {
@@ -375,6 +385,39 @@ open class FilterViewModel(
                     sorts = ObjectSearchConstants.sortAddObjectToFilter,
                     filters = ObjectSearchConstants.filterAddObjectToFilter(
                         limitObjectTypes = limitObjectTypes,
+                        space = spaceManager.get()
+                    ),
+                    fulltext = SearchObjects.EMPTY_TEXT,
+                    offset = SearchObjects.INIT_OFFSET,
+                    limit = SearchObjects.LIMIT
+                )
+            ).process(
+                failure = { Timber.e(it, "Error while getting objects") },
+                success = { objects ->
+                    filterValueListState.value = objects.toCreateFilterObjectView(
+                        ids = ids,
+                        urlBuilder = urlBuilder,
+                        objectTypes = objectTypes
+                    ).also {
+                        optionCountState.value = it.count { view -> view.isSelected }
+                    }
+                }
+            )
+        }
+    }
+
+    private fun proceedWithSearchObjectsByLayout(
+        ids: List<*>? = null,
+        layouts: List<ObjectType.Layout>,
+        objectTypes: List<ObjectWrapper.Type>
+    ) {
+        Timber.d("proceedWithSearchObjectsByLayout, layouts:[$layouts], objectTypes:[$objectTypes]")
+        viewModelScope.launch {
+            searchObjects(
+                SearchObjects.Params(
+                    sorts = ObjectSearchConstants.sortAddObjectToFilter,
+                    filters = ObjectSearchConstants.filterAddObjectToFilterByLayout(
+                        layouts = layouts,
                         space = spaceManager.get()
                     ),
                     fulltext = SearchObjects.EMPTY_TEXT,

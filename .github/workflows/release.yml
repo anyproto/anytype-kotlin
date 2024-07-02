@@ -68,3 +68,4 @@ jobs:
           aws_bucket: ${{ secrets.AWS_BUCKET }}
           endpoint: ${{ secrets.AWS_ENDPOINT }}
           source_dir: app/build/outputs/apk/release/release-artefacts/
+          destination_dir: ''

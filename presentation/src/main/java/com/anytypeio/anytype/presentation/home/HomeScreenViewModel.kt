@@ -409,7 +409,7 @@ class HomeScreenViewModel(
                             getSpaceView = getSpaceView,
                             onRequestCache = {
                                 cached.find { view ->
-                                    view.id == widget.id && view is WidgetView.Tree
+                                    view.id == widget.id && view is WidgetView.Tree && view.source == widget.source
                                 } as? WidgetView.Tree
                             }
                         )
@@ -425,7 +425,7 @@ class HomeScreenViewModel(
                                 getSpaceView = getSpaceView,
                                 onRequestCache = {
                                     cached.find { view ->
-                                        view.id == widget.id && view is WidgetView.ListOfObjects
+                                        view.id == widget.id && view is WidgetView.ListOfObjects  && view.source == widget.source
                                     } as? WidgetView.ListOfObjects
                                 }
                             )
@@ -440,7 +440,7 @@ class HomeScreenViewModel(
                                 urlBuilder = urlBuilder,
                                 onRequestCache = {
                                     cached.find { view ->
-                                        view.id == widget.id && view is WidgetView.SetOfObjects
+                                        view.id == widget.id && view is WidgetView.SetOfObjects  && view.source == widget.source
                                     } as? WidgetView.SetOfObjects
                                 }
                             )

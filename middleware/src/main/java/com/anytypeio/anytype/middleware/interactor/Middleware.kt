@@ -813,12 +813,26 @@ class Middleware @Inject constructor(
         val request = Rpc.File.Upload.Request(
             localPath = command.path,
             type = type,
-            spaceId = command.space?.id.orEmpty()
+            spaceId = command.space.id
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.fileUpload(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return ObjectWrapper.File(response.details.orEmpty())
+    }
+
+    @Throws(Exception::class)
+    fun fileDrop(command: Command.FileDrop): Payload {
+        val request = Rpc.File.Drop.Request(
+            contextId = command.ctx,
+            dropTargetId = command.dropTarget,
+            position = command.blockPosition.toMiddlewareModel(),
+            localFilePaths = command.localFilePaths
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.fileDrop(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
     }
 
     @Throws(Exception::class)

@@ -200,6 +200,9 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun spaceUsage(request: Rpc.File.SpaceUsage.Request): Rpc.File.SpaceUsage.Response
 
+    @Throws(Exception::class)
+    fun fileDrop(request: Rpc.File.Drop.Request): Rpc.File.Drop.Response
+
     //endregion
 
     //region UNSPLASH commands

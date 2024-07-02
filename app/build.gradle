@@ -1,7 +1,7 @@
 plugins {
     id "com.android.application"
     id "kotlin-android"
-    id "kotlin-kapt"
+    id 'com.google.devtools.ksp'
     alias(libs.plugins.compose.compiler)
     id "com.google.firebase.appdistribution"
 }
@@ -163,8 +163,8 @@ dependencies {
     implementation project(':gallery-experience')
 
     //Compile time dependencies
-    kapt libs.daggerCompiler
-    kapt libs.glideCompiler
+    ksp libs.daggerCompiler
+    ksp libs.glideCompiler
     compileOnly libs.javaxAnnotation
     compileOnly libs.javaxInject
 

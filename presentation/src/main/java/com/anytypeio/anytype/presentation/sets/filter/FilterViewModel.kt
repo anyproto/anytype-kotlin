@@ -707,7 +707,7 @@ open class FilterViewModel(
                             )
                         )
                     }
-                    ColumnView.Format.OBJECT -> {
+                    ColumnView.Format.OBJECT, ColumnView.Format.FILE -> {
                         val value = filterValueListState.value.mapNotNull { view ->
                             if (view is CreateFilterView.Object && view.isSelected)
                                 view.id

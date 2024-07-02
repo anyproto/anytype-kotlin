@@ -446,62 +446,6 @@ class HomeScreenViewModel(
                 Timber.d("Emitting list of containers: ${it.size}")
                 containers.value = it
             }
-//            combine(
-//                spaceManager.observe(),
-//                widgets.filterNotNull()
-//            ) { config, widgets ->
-//                widgets.map { widget ->
-//                    // TODO caching logic for containers could be implemented here.
-//                    when (widget) {
-//                        is Widget.Link -> LinkWidgetContainer(
-//                            widget = widget
-//                        )
-//                        is Widget.Tree -> TreeWidgetContainer(
-//                            widget = widget,
-//                            container = storelessSubscriptionContainer,
-//                            expandedBranches = treeWidgetBranchStateHolder.stream(widget.id),
-//                            isWidgetCollapsed = isCollapsed(widget.id),
-//                            isSessionActive = isSessionActive,
-//                            urlBuilder = urlBuilder,
-//                            space = config.space,
-//                            config = config,
-//                            objectWatcher = objectWatcher,
-//                            spaceGradientProvider = spaceGradientProvider,
-//                            getSpaceView = getSpaceView
-//                        )
-//                        is Widget.List -> if (BundledWidgetSourceIds.ids.contains(widget.source.id)) {
-//                            ListWidgetContainer(
-//                                widget = widget,
-//                                subscription = widget.source.id,
-//                                space = config.space,
-//                                storage = storelessSubscriptionContainer,
-//                                isWidgetCollapsed = isCollapsed(widget.id),
-//                                urlBuilder = urlBuilder,
-//                                spaceGradientProvider = spaceGradientProvider,
-//                                isSessionActive = isSessionActive,
-//                                objectWatcher = objectWatcher,
-//                                config = config,
-//                                getSpaceView = getSpaceView
-//                            )
-//                        } else {
-//                            DataViewListWidgetContainer(
-//                                widget = widget,
-//                                config = config,
-//                                storage = storelessSubscriptionContainer,
-//                                getObject = getObject,
-//                                activeView = observeCurrentWidgetView(widget.id),
-//                                isWidgetCollapsed = isCollapsed(widget.id),
-//                                isSessionActive = isSessionActive,
-//                                urlBuilder = urlBuilder,
-//                                gradientProvider = spaceGradientProvider
-//                            )
-//                        }
-//                    }
-//                }
-//            }.collect {
-//                Timber.d("Emitting list of containers: ${it.size}")
-//                containers.value = it
-//            }
         }
     }
 

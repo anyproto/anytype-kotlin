@@ -1701,15 +1701,20 @@ class HomeScreenViewModelTest {
             children = listOf(setsLink.id)
         )
 
-        val smartBlock = StubSmartBlock(
+        val firstWidgetObjectSmartBlock = StubSmartBlock(
             id = WIDGET_OBJECT_ID,
             children = listOf(favoriteWidgetBlock.id, recentWidgetBlock.id, setsWidgetBlock.id),
         )
 
-        val givenObjectView = StubObjectView(
+        val secondWidgetObjectSmartBlock = StubSmartBlock(
+            id = SECOND_WIDGET_OBJECT_ID,
+            children = emptyList()
+        )
+
+        val givenFirstSpaceObjectView = StubObjectView(
             root = WIDGET_OBJECT_ID,
             blocks = listOf(
-                smartBlock,
+                firstWidgetObjectSmartBlock,
                 favoriteWidgetBlock,
                 favoriteLink,
                 recentWidgetBlock,
@@ -1719,9 +1724,22 @@ class HomeScreenViewModelTest {
             )
         )
 
+        val givenSecondSpaceObjectView = StubObjectView(
+            root = SECOND_WIDGET_OBJECT_ID,
+            blocks = listOf(secondWidgetObjectSmartBlock)
+        )
+
+
+        stubOpenWidgetObjects(
+            firstGivenObjectView = givenFirstSpaceObjectView,
+            secondGivenObjectView = givenSecondSpaceObjectView
+        )
+
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
-        stubOpenWidgetObject(givenObjectView)
+        stubOpenWidgetObjects(givenFirstSpaceObjectView, givenSecondSpaceObjectView)
+
+        stubSecondWidgetObjectInterceptEvents(events = emptyFlow())
 
         stubSearchByIds(
             subscription = favoriteWidgetBlock.id,
@@ -1784,18 +1802,24 @@ class HomeScreenViewModelTest {
         stubWidgetActiveView(favoriteWidgetBlock)
         stubFavoritesObjectWatcher()
         stubCloseObject()
-        stubSpaceManager()
+
+        val delayBeforeSwitchingSpace = 300L
+
+        stubSpaceManagerWithSwitch(
+            delay = delayBeforeSwitchingSpace
+        )
+
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
 
         val vm = buildViewModel()
 
         // TESTING
 
+        // Verifying subscription on launch
+
         vm.onStart()
 
         advanceUntilIdle()
-
-        // Verifying subscription on launch
 
         verifyBlocking(storelessSubscriptionContainer, times(1)) {
             subscribe(
@@ -1829,7 +1853,7 @@ class HomeScreenViewModelTest {
             )
         }
 
-        advanceUntilIdle()
+        advanceTimeBy(delayBeforeSwitchingSpace + 1)
 
         // Verifying unsubscribe behavior
 

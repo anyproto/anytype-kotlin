@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.home
 
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.core_models.StubLinkToObjectBlock
 import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.StubSmartBlock
@@ -72,7 +73,8 @@ class ParseWidgetTest {
             details = buildMap {
                 put(invalidSource.id, invalidSource.map)
                 put(validSource.id, validSource.map)
-            }
+            },
+            config = StubConfig()
         )
 
         assertTrue {
@@ -145,7 +147,8 @@ class ParseWidgetTest {
             details = buildMap {
                 put(invalidSource.id, invalidSource.map)
                 put(validSource.id, validSource.map)
-            }
+            },
+            config = StubConfig()
         )
 
         assertTrue {

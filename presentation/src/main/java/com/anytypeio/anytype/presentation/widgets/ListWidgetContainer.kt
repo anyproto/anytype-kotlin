@@ -202,7 +202,6 @@ class ListWidgetContainer(
                     limit = limit
                 )
             }
-
             BundledWidgetSourceIds.RECENT_LOCAL -> {
                 StoreSearchParams(
                     subscription = subscription,
@@ -212,7 +211,6 @@ class ListWidgetContainer(
                     limit = limit
                 )
             }
-
             BundledWidgetSourceIds.SETS -> {
                 StoreSearchParams(
                     subscription = subscription,

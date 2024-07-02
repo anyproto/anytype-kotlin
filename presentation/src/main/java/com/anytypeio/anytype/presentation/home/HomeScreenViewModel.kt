@@ -261,27 +261,28 @@ class HomeScreenViewModel(
                     saveAsLastOpened = false,
                     spaceId = SpaceId(config.space)
                 )
-            )
-        }
-        .onEach { result ->
-            result.fold(
-                onSuccess = { objectView ->
-                    onSessionStarted().also {
-                        mutex.withLock { openWidgetObjectsHistory.add(objectView.root) }
+            ).onEach { result ->
+                result.fold(
+                    onSuccess = { objectView ->
+                        onSessionStarted().also {
+                            mutex.withLock { openWidgetObjectsHistory.add(objectView.root) }
+                        }
+                    },
+                    onFailure = { e ->
+                        onSessionFailed().also {
+                            Timber.e(e, "Error while opening object.")
+                        }
                     }
-                },
-                onFailure = { e ->
-                    onSessionFailed().also {
-                        Timber.e(e, "Error while opening object.")
-                    }
+                )
+            }.map { result ->
+                when (result) {
+                    is Resultat.Failure -> ObjectViewState.Failure(result.exception)
+                    is Resultat.Loading -> ObjectViewState.Loading
+                    is Resultat.Success -> ObjectViewState.Success(
+                        obj = result.value,
+                        config = config
+                    )
                 }
-            )
-        }
-        .map { result ->
-            when (result) {
-                is Resultat.Failure -> ObjectViewState.Failure(result.exception)
-                is Resultat.Loading -> ObjectViewState.Loading
-                is Resultat.Success -> ObjectViewState.Success(obj = result.value)
             }
         }
         .catch {
@@ -393,12 +394,8 @@ class HomeScreenViewModel(
 
     private fun proceedWithWidgetContainerPipeline() {
         viewModelScope.launch {
-            combine(
-                spaceManager.observe(),
-                widgets.filterNotNull()
-            ) { config, widgets ->
+            widgets.filterNotNull().map { widgets ->
                 widgets.map { widget ->
-                    // TODO caching logic for containers could be implemented here.
                     when (widget) {
                         is Widget.Link -> LinkWidgetContainer(
                             widget = widget
@@ -410,8 +407,8 @@ class HomeScreenViewModel(
                             isWidgetCollapsed = isCollapsed(widget.id),
                             isSessionActive = isSessionActive,
                             urlBuilder = urlBuilder,
-                            space = config.space,
-                            config = config,
+                            space = widget.config.space,
+                            config = widget.config,
                             objectWatcher = objectWatcher,
                             spaceGradientProvider = spaceGradientProvider,
                             getSpaceView = getSpaceView
@@ -420,20 +417,20 @@ class HomeScreenViewModel(
                             ListWidgetContainer(
                                 widget = widget,
                                 subscription = widget.source.id,
-                                space = config.space,
+                                space = widget.config.space,
                                 storage = storelessSubscriptionContainer,
                                 isWidgetCollapsed = isCollapsed(widget.id),
                                 urlBuilder = urlBuilder,
                                 spaceGradientProvider = spaceGradientProvider,
                                 isSessionActive = isSessionActive,
                                 objectWatcher = objectWatcher,
-                                config = config,
+                                config = widget.config,
                                 getSpaceView = getSpaceView
                             )
                         } else {
                             DataViewListWidgetContainer(
                                 widget = widget,
-                                config = config,
+                                config = widget.config,
                                 storage = storelessSubscriptionContainer,
                                 getObject = getObject,
                                 activeView = observeCurrentWidgetView(widget.id),
@@ -449,6 +446,62 @@ class HomeScreenViewModel(
                 Timber.d("Emitting list of containers: ${it.size}")
                 containers.value = it
             }
+//            combine(
+//                spaceManager.observe(),
+//                widgets.filterNotNull()
+//            ) { config, widgets ->
+//                widgets.map { widget ->
+//                    // TODO caching logic for containers could be implemented here.
+//                    when (widget) {
+//                        is Widget.Link -> LinkWidgetContainer(
+//                            widget = widget
+//                        )
+//                        is Widget.Tree -> TreeWidgetContainer(
+//                            widget = widget,
+//                            container = storelessSubscriptionContainer,
+//                            expandedBranches = treeWidgetBranchStateHolder.stream(widget.id),
+//                            isWidgetCollapsed = isCollapsed(widget.id),
+//                            isSessionActive = isSessionActive,
+//                            urlBuilder = urlBuilder,
+//                            space = config.space,
+//                            config = config,
+//                            objectWatcher = objectWatcher,
+//                            spaceGradientProvider = spaceGradientProvider,
+//                            getSpaceView = getSpaceView
+//                        )
+//                        is Widget.List -> if (BundledWidgetSourceIds.ids.contains(widget.source.id)) {
+//                            ListWidgetContainer(
+//                                widget = widget,
+//                                subscription = widget.source.id,
+//                                space = config.space,
+//                                storage = storelessSubscriptionContainer,
+//                                isWidgetCollapsed = isCollapsed(widget.id),
+//                                urlBuilder = urlBuilder,
+//                                spaceGradientProvider = spaceGradientProvider,
+//                                isSessionActive = isSessionActive,
+//                                objectWatcher = objectWatcher,
+//                                config = config,
+//                                getSpaceView = getSpaceView
+//                            )
+//                        } else {
+//                            DataViewListWidgetContainer(
+//                                widget = widget,
+//                                config = config,
+//                                storage = storelessSubscriptionContainer,
+//                                getObject = getObject,
+//                                activeView = observeCurrentWidgetView(widget.id),
+//                                isWidgetCollapsed = isCollapsed(widget.id),
+//                                isSessionActive = isSessionActive,
+//                                urlBuilder = urlBuilder,
+//                                gradientProvider = spaceGradientProvider
+//                            )
+//                        }
+//                    }
+//                }
+//            }.collect {
+//                Timber.d("Emitting list of containers: ${it.size}")
+//                containers.value = it
+//            }
         }
     }
 
@@ -481,7 +534,8 @@ class HomeScreenViewModel(
             }.filterIsInstance<ObjectViewState.Success>().map { state ->
                 state.obj.blocks.parseWidgets(
                     root = state.obj.root,
-                    details = state.obj.details
+                    details = state.obj.details,
+                    config = state.config
                 ).also {
                     widgetActiveViewStateHolder.init(state.obj.blocks.parseActiveViews())
                 }
@@ -1693,7 +1747,7 @@ class HomeScreenViewModel(
 sealed class ObjectViewState {
     data object Idle : ObjectViewState()
     data object Loading : ObjectViewState()
-    data class Success(val obj: ObjectView) : ObjectViewState()
+    data class Success(val obj: ObjectView, val config: Config) : ObjectViewState()
     data class Failure(val e: Throwable) : ObjectViewState()
 }
 

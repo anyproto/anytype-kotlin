@@ -49,6 +49,7 @@ open class ViewerFilterFragment : BaseBottomSheetFragment<FragmentFilterBinding>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        expand()
         binding.recycler.layoutManager = LinearLayoutManager(requireContext())
         binding.recycler.adapter = filterAdapter
         with(lifecycleScope) {

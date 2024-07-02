@@ -48,6 +48,13 @@ sealed class Widget {
         val limit: Int = 0
     ) : Widget()
 
+    data class View(
+        override val id: Id,
+        override val source: Source.Default,
+        override val config: Config,
+        val limit: Int
+    ) : Widget()
+
     sealed class Source {
 
         abstract val id: Id
@@ -172,9 +179,17 @@ fun List<Block>.parseWidgets(
                                     )
                                 )
                             }
-
                             Block.Content.Widget.Layout.VIEW -> {
-                                // TODO
+                                if (source is Widget.Source.Default) {
+                                    add(
+                                        Widget.View(
+                                            id = w.id,
+                                            source = source,
+                                            limit = widgetContent.limit,
+                                            config = config
+                                        )
+                                    )
+                                }
                             }
                         }
                     }

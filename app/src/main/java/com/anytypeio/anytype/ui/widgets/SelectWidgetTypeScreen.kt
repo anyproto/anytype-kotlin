@@ -36,7 +36,7 @@ fun MySelectWidgetTypeScreen() {
             WidgetTypeView.Link(isSelected = true),
             WidgetTypeView.Tree(isSelected = true)
         ),
-        onViewClicked = {  }
+        onViewClicked = {}
     )
 }
 
@@ -56,7 +56,7 @@ fun SelectWidgetTypeScreen(
 
         Toolbar(stringResource(R.string.widget_type))
 
-        views.forEachIndexed { index, type ->
+        views.forEach { type ->
             when (type) {
                 is WidgetTypeView.Link -> WidgetTypeItem(
                     title = stringResource(
@@ -101,6 +101,19 @@ fun SelectWidgetTypeScreen(
                     ),
                     subtitle = stringResource(
                         R.string.widget_type_tree_description
+                    ),
+                    icon = R.drawable.ic_widget_type_tree,
+                    isChecked = type.isSelected,
+                    onClick = throttledClick(
+                        onClick = { onViewClicked(type) }
+                    )
+                )
+                is WidgetTypeView.View -> WidgetTypeItem(
+                    title = stringResource(
+                        R.string.widget_type_view
+                    ),
+                    subtitle = stringResource(
+                        R.string.widget_type_view_description
                     ),
                     icon = R.drawable.ic_widget_type_tree,
                     isChecked = type.isSelected,

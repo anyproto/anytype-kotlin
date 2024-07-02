@@ -290,26 +290,26 @@ class HomeScreenViewModel(
 
     init {
         proceedWithUserPermissions()
-        //proceedWithObservingProfileIcon()
+        proceedWithObservingProfileIcon()
         proceedWithLaunchingUnsubscriber()
         proceedWithObjectViewStatePipeline()
         proceedWithWidgetContainerPipeline()
         proceedWithRenderingPipeline()
         proceedWithObservingDispatches()
-        //proceedWithSettingUpShortcuts()
+        proceedWithSettingUpShortcuts()
         proceedWithViewStatePipeline()
     }
 
     private fun proceedWithViewStatePipeline() {
         widgetObjectPipelineJobs += viewModelScope.launch {
-//            if (!isWidgetSessionRestored) {
-//                val session = withContext(appCoroutineDispatchers.io) {
-//                    getWidgetSession.async(Unit).getOrNull()
-//                }
-//                if (session != null) {
-//                    collapsedWidgetStateHolder.set(session.collapsed)
-//                }
-//            }
+            if (!isWidgetSessionRestored) {
+                val session = withContext(appCoroutineDispatchers.io) {
+                    getWidgetSession.async(Unit).getOrNull()
+                }
+                if (session != null) {
+                    collapsedWidgetStateHolder.set(session.collapsed)
+                }
+            }
             widgetObjectPipeline.collect {
                 objectViewState.value = it
             }

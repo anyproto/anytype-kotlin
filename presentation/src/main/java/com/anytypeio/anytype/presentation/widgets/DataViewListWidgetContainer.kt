@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.widgets
 
-import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
@@ -16,7 +15,6 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
-import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
@@ -35,24 +33,28 @@ class DataViewListWidgetContainer(
     private val urlBuilder: UrlBuilder,
     private val activeView: Flow<Id?>,
     private val isWidgetCollapsed: Flow<Boolean>,
-    isSessionActive: Flow<Boolean>
+    isSessionActive: Flow<Boolean>,
+    onRequestCache: () -> WidgetView.SetOfObjects? = { null }
 ) : WidgetContainer {
 
     override val view = isSessionActive.flatMapLatest { isActive ->
         if (isActive)
             buildViewFlow().onStart {
                 isWidgetCollapsed.take(1).collect { isCollapsed ->
-                    emit(
-                        WidgetView.SetOfObjects(
-                            id = widget.id,
-                            source = widget.source,
-                            tabs = emptyList(),
-                            elements = emptyList(),
-                            isExpanded = !isCollapsed,
-                            isCompact = widget.isCompact,
-                            isLoading = true
-                        )
+                    val loadingStateView = WidgetView.SetOfObjects(
+                        id = widget.id,
+                        source = widget.source,
+                        tabs = emptyList(),
+                        elements = emptyList(),
+                        isExpanded = !isCollapsed,
+                        isCompact = widget.isCompact,
+                        isLoading = true
                     )
+                    if (isCollapsed) {
+                        emit(loadingStateView)
+                    } else {
+                        emit(onRequestCache() ?: loadingStateView)
+                    }
                 }
             }
         else

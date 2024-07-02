@@ -11,6 +11,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -62,7 +63,7 @@ fun TreeWidgetObjectIcon(
             }
         }
         is ObjectIcon.Profile.Image -> {
-            UriImage(
+            UriCircleImage(
                 uri = icon.hash,
                 modifier = modifier.padding(start = paddingStart, end = paddingEnd)
             )
@@ -114,5 +115,20 @@ fun UriImage(
         modifier = modifier
             .height(18.dp)
             .width(18.dp)
+    )
+}
+
+@Composable
+fun UriCircleImage(
+    uri: String,
+    modifier: Modifier
+) {
+    Image(
+        painter = rememberAsyncImagePainter(uri),
+        contentDescription = "Icon from URI",
+        modifier = modifier
+            .height(18.dp)
+            .width(18.dp)
+            .clip(CircleShape)
     )
 }

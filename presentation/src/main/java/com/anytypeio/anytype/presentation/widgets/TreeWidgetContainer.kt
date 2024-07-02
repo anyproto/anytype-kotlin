@@ -45,7 +45,7 @@ class TreeWidgetContainer(
         if (isActive)
             buildViewFlow().onStart {
                 isWidgetCollapsed.take(1).collect { isCollapsed ->
-                    val default =  WidgetView.Tree(
+                    val loadingStateView =  WidgetView.Tree(
                         id = widget.id,
                         source = widget.source,
                         isExpanded = !isCollapsed,
@@ -53,9 +53,9 @@ class TreeWidgetContainer(
                         isLoading = true
                     )
                     if (isCollapsed) {
-                        emit(default)
+                        emit(loadingStateView)
                     } else {
-                        emit(onRequestCache() ?: default)
+                        emit(onRequestCache() ?: loadingStateView)
                     }
                 }
             }

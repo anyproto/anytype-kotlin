@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.presentation.widgets
 
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
@@ -18,17 +17,14 @@ import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.collectionsSorts
 import com.anytypeio.anytype.presentation.search.Subscriptions
-import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.take
-import timber.log.Timber
 
 class ListWidgetContainer(
     private val widget: Widget.List,
@@ -46,7 +42,7 @@ class ListWidgetContainer(
         if (isActive)
             buildViewFlow().onStart {
                 isWidgetCollapsed.take(1).collect { isCollapsed ->
-                    val default = WidgetView.ListOfObjects(
+                    val loadingStateView = WidgetView.ListOfObjects(
                         id = widget.id,
                         source = widget.source,
                         type = resolveType(),
@@ -56,9 +52,9 @@ class ListWidgetContainer(
                         isLoading = true
                     )
                     if (isCollapsed) {
-                        emit(default)
+                        emit(loadingStateView)
                     } else {
-                        emit(onRequestCache() ?: default)
+                        emit(onRequestCache() ?: loadingStateView)
                     }
                 }
             }

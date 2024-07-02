@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.home
 
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.core_models.StubLinkToObjectBlock
 import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.StubSmartBlock
@@ -42,7 +43,8 @@ class ParseWidgetLimitTest {
             root = smartBlock.id,
             details = buildMap {
                 put(source.id, source.map)
-            }
+            },
+            config = StubConfig()
         )
 
         assertTrue {
@@ -79,7 +81,8 @@ class ParseWidgetLimitTest {
             root = smartBlock.id,
             details = buildMap {
                 put(source.id, source.map)
-            }
+            },
+            config = StubConfig()
         )
 
         assertTrue {
@@ -116,7 +119,8 @@ class ParseWidgetLimitTest {
             root = smartBlock.id,
             details = buildMap {
                 put(source.id, source.map)
-            }
+            },
+            config = StubConfig()
         )
 
         assertTrue {

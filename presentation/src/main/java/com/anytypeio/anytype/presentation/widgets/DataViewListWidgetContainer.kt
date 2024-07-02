@@ -30,11 +30,9 @@ import kotlinx.coroutines.flow.take
 
 class DataViewListWidgetContainer(
     private val widget: Widget.List,
-    private val config: Config,
     private val getObject: GetObject,
     private val storage: StorelessSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
-    private val gradientProvider: SpaceGradientProvider,
     private val activeView: Flow<Id?>,
     private val isWidgetCollapsed: Flow<Boolean>,
     isSessionActive: Flow<Boolean>
@@ -178,8 +176,8 @@ class DataViewListWidgetContainer(
                 addAll(
                     ObjectSearchConstants.defaultDataViewFilters(
                         spaces = buildList {
-                            add(config.space)
-                            add(config.techSpace)
+                            add(widget.config.space)
+                            add(widget.config.techSpace)
                         }
                     )
                 )

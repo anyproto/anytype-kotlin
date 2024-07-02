@@ -39,7 +39,7 @@ class ListWidgetContainer(
     private val objectWatcher: ObjectWatcher,
     private val getSpaceView: GetSpaceView,
     isSessionActive: Flow<Boolean>,
-    onRequestCache: () -> WidgetView.ListOfObjects?
+    onRequestCache: () -> WidgetView.ListOfObjects? = { null }
 ) : WidgetContainer {
 
     override val view: Flow<WidgetView> = isSessionActive.flatMapLatest { isActive ->

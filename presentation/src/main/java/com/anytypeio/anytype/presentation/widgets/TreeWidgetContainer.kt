@@ -32,7 +32,7 @@ class TreeWidgetContainer(
     private val objectWatcher: ObjectWatcher,
     private val getSpaceView: GetSpaceView,
     isSessionActive: Flow<Boolean>,
-    onRequestCache: () -> WidgetView.Tree?
+    onRequestCache: () -> WidgetView.Tree? = { null }
 ) : WidgetContainer {
 
     private val mutex = Mutex()

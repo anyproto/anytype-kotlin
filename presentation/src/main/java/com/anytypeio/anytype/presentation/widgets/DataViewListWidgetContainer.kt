@@ -36,7 +36,7 @@ class DataViewListWidgetContainer(
     private val activeView: Flow<Id?>,
     private val isWidgetCollapsed: Flow<Boolean>,
     isSessionActive: Flow<Boolean>,
-    onRequestCache: () -> WidgetView.SetOfObjects?
+    onRequestCache: () -> WidgetView.SetOfObjects? = { null }
 ) : WidgetContainer {
 
     override val view = isSessionActive.flatMapLatest { isActive ->

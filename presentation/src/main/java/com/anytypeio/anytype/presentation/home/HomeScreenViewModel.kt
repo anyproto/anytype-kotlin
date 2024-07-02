@@ -392,6 +392,7 @@ class HomeScreenViewModel(
     private fun proceedWithWidgetContainerPipeline() {
         viewModelScope.launch {
             widgets.filterNotNull().map { widgets ->
+                val cached = views.value
                 widgets.map { widget ->
                     when (widget) {
                         is Widget.Link -> LinkWidgetContainer(
@@ -405,7 +406,12 @@ class HomeScreenViewModel(
                             isSessionActive = isSessionActive,
                             urlBuilder = urlBuilder,
                             objectWatcher = objectWatcher,
-                            getSpaceView = getSpaceView
+                            getSpaceView = getSpaceView,
+                            onRequestCache = {
+                                cached.find { view ->
+                                    view.id == widget.id && view is WidgetView.Tree
+                                } as? WidgetView.Tree
+                            }
                         )
                         is Widget.List -> if (BundledWidgetSourceIds.ids.contains(widget.source.id)) {
                             ListWidgetContainer(
@@ -414,10 +420,14 @@ class HomeScreenViewModel(
                                 storage = storelessSubscriptionContainer,
                                 isWidgetCollapsed = isCollapsed(widget.id),
                                 urlBuilder = urlBuilder,
-                                spaceGradientProvider = spaceGradientProvider,
                                 isSessionActive = isSessionActive,
                                 objectWatcher = objectWatcher,
-                                getSpaceView = getSpaceView
+                                getSpaceView = getSpaceView,
+                                onRequestCache = {
+                                    cached.find { view ->
+                                        view.id == widget.id && view is WidgetView.ListOfObjects
+                                    } as? WidgetView.ListOfObjects
+                                }
                             )
                         } else {
                             DataViewListWidgetContainer(
@@ -428,6 +438,11 @@ class HomeScreenViewModel(
                                 isWidgetCollapsed = isCollapsed(widget.id),
                                 isSessionActive = isSessionActive,
                                 urlBuilder = urlBuilder,
+                                onRequestCache = {
+                                    cached.find { view ->
+                                        view.id == widget.id && view is WidgetView.SetOfObjects
+                                    } as? WidgetView.SetOfObjects
+                                }
                             )
                         }
                     }

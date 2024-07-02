@@ -12,6 +12,19 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
 sealed class WidgetView {
 
+//    interface Cache {
+//        fun <T : WidgetView>get(widget: Id) : T?
+//        fun clear()
+//        class Default : Cache {
+//            private val cached = mutableMapOf<Id, WidgetView>()
+//            override fun <T : WidgetView> get(widget: Id): T? {
+//                return cached[widget] as? T
+//            }
+//
+//            override fun clear() { cached.clear() }
+//        }
+//    }
+
     interface Element {
         val objectIcon: ObjectIcon
         val obj: ObjectWrapper.Basic

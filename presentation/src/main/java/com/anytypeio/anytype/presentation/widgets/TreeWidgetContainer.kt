@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.widgets
 
-import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -11,7 +10,6 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
-import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.widgets.WidgetConfig.isValidObject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -19,12 +17,10 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import timber.log.Timber
 
 
 class TreeWidgetContainer(
@@ -35,7 +31,8 @@ class TreeWidgetContainer(
     private val isWidgetCollapsed: Flow<Boolean>,
     private val objectWatcher: ObjectWatcher,
     private val getSpaceView: GetSpaceView,
-    isSessionActive: Flow<Boolean>
+    isSessionActive: Flow<Boolean>,
+    onRequestCache: () -> WidgetView.Tree?
 ) : WidgetContainer {
 
     private val mutex = Mutex()
@@ -48,15 +45,18 @@ class TreeWidgetContainer(
         if (isActive)
             buildViewFlow().onStart {
                 isWidgetCollapsed.take(1).collect { isCollapsed ->
-                    emit(
-                        WidgetView.Tree(
-                            id = widget.id,
-                            source = widget.source,
-                            isExpanded = !isCollapsed,
-                            elements = emptyList(),
-                            isLoading = true
-                        )
+                    val default =  WidgetView.Tree(
+                        id = widget.id,
+                        source = widget.source,
+                        isExpanded = !isCollapsed,
+                        elements = emptyList(),
+                        isLoading = true
                     )
+                    if (isCollapsed) {
+                        emit(default)
+                    } else {
+                        emit(onRequestCache() ?: default)
+                    }
                 }
             }
         else

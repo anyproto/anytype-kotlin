@@ -35,24 +35,28 @@ class DataViewListWidgetContainer(
     private val urlBuilder: UrlBuilder,
     private val activeView: Flow<Id?>,
     private val isWidgetCollapsed: Flow<Boolean>,
-    isSessionActive: Flow<Boolean>
+    isSessionActive: Flow<Boolean>,
+    onRequestCache: () -> WidgetView.SetOfObjects?
 ) : WidgetContainer {
 
     override val view = isSessionActive.flatMapLatest { isActive ->
         if (isActive)
             buildViewFlow().onStart {
                 isWidgetCollapsed.take(1).collect { isCollapsed ->
-                    emit(
-                        WidgetView.SetOfObjects(
-                            id = widget.id,
-                            source = widget.source,
-                            tabs = emptyList(),
-                            elements = emptyList(),
-                            isExpanded = !isCollapsed,
-                            isCompact = widget.isCompact,
-                            isLoading = true
-                        )
+                    val default = WidgetView.SetOfObjects(
+                        id = widget.id,
+                        source = widget.source,
+                        tabs = emptyList(),
+                        elements = emptyList(),
+                        isExpanded = !isCollapsed,
+                        isCompact = widget.isCompact,
+                        isLoading = true
                     )
+                    if (isCollapsed) {
+                        emit(default)
+                    } else {
+                        emit(onRequestCache() ?: default)
+                    }
                 }
             }
         else

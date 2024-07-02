@@ -35,28 +35,31 @@ class ListWidgetContainer(
     private val subscription: Id,
     private val storage: StorelessSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
-    private val spaceGradientProvider: SpaceGradientProvider,
     private val isWidgetCollapsed: Flow<Boolean>,
     private val objectWatcher: ObjectWatcher,
     private val getSpaceView: GetSpaceView,
-    isSessionActive: Flow<Boolean>
+    isSessionActive: Flow<Boolean>,
+    onRequestCache: () -> WidgetView.ListOfObjects?
 ) : WidgetContainer {
 
     override val view: Flow<WidgetView> = isSessionActive.flatMapLatest { isActive ->
         if (isActive)
             buildViewFlow().onStart {
                 isWidgetCollapsed.take(1).collect { isCollapsed ->
-                    emit(
-                        WidgetView.ListOfObjects(
-                            id = widget.id,
-                            source = widget.source,
-                            type = resolveType(),
-                            elements = emptyList(),
-                            isExpanded = !isCollapsed,
-                            isCompact = widget.isCompact,
-                            isLoading = true
-                        )
+                    val default = WidgetView.ListOfObjects(
+                        id = widget.id,
+                        source = widget.source,
+                        type = resolveType(),
+                        elements = emptyList(),
+                        isExpanded = !isCollapsed,
+                        isCompact = widget.isCompact,
+                        isLoading = true
                     )
+                    if (isCollapsed) {
+                        emit(default)
+                    } else {
+                        emit(onRequestCache() ?: default)
+                    }
                 }
             }
         else

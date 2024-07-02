@@ -392,7 +392,7 @@ class HomeScreenViewModel(
     private fun proceedWithWidgetContainerPipeline() {
         viewModelScope.launch {
             widgets.filterNotNull().map { widgets ->
-                val cached = views.value
+                val currentlyDisplayedViews = views.value
                 widgets.map { widget ->
                     when (widget) {
                         is Widget.Link -> LinkWidgetContainer(
@@ -408,7 +408,7 @@ class HomeScreenViewModel(
                             objectWatcher = objectWatcher,
                             getSpaceView = getSpaceView,
                             onRequestCache = {
-                                cached.find { view ->
+                                currentlyDisplayedViews.find { view ->
                                     view.id == widget.id
                                             && view is WidgetView.Tree
                                             && view.source == widget.source
@@ -426,7 +426,7 @@ class HomeScreenViewModel(
                                 objectWatcher = objectWatcher,
                                 getSpaceView = getSpaceView,
                                 onRequestCache = {
-                                    cached.find { view ->
+                                    currentlyDisplayedViews.find { view ->
                                         view.id == widget.id
                                                 && view is WidgetView.ListOfObjects
                                                 && view.source == widget.source
@@ -443,7 +443,7 @@ class HomeScreenViewModel(
                                 isSessionActive = isSessionActive,
                                 urlBuilder = urlBuilder,
                                 onRequestCache = {
-                                    cached.find { view ->
+                                    currentlyDisplayedViews.find { view ->
                                         view.id == widget.id
                                                 && view is WidgetView.SetOfObjects
                                                 && view.source == widget.source

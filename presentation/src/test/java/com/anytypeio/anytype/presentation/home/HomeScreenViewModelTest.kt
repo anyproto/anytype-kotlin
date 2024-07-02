@@ -1397,7 +1397,7 @@ class HomeScreenViewModelTest {
     }
 
     @Test
-    fun `should close widget-object and unsubscribe on onStop lifecycle event callback`() {
+    fun `should not close widget-object and unsubscribe on onStop lifecycle event callback`() {
         runTest {
 
             // SETUP
@@ -1460,16 +1460,13 @@ class HomeScreenViewModelTest {
 
             advanceUntilIdle()
 
-            verifyBlocking(unsubscriber, times(1)) {
+            verifyBlocking(unsubscriber, times(0)) {
                 unsubscribe(
-                    subscriptions = listOf(
-                        widgetBlock.id,
-                        SpaceWidgetContainer.SPACE_WIDGET_SUBSCRIPTION
-                    )
+                    subscriptions = any()
                 )
             }
 
-            verify(closeObject, times(1)).stream(params = WIDGET_OBJECT_ID)
+            verifyNoMoreInteractions(closeObject)
         }
     }
 

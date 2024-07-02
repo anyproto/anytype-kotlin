@@ -29,7 +29,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="12dp"
         app:layout_constraintEnd_toStartOf="@+id/iconArrow"
         app:layout_constraintStart_toEndOf="@+id/iconFormatContainer"
@@ -43,51 +43,58 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
+        app:layout_constraintBottom_toBottomOf="@+id/iconFormatContainer"
         app:layout_constraintStart_toEndOf="@+id/iconFormatContainer"
         app:layout_constraintTop_toBottomOf="@+id/tvTitle"
         tools:text="Contains" />
 
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="20dp"
-        android:layout_marginEnd="12dp"
-        app:layout_constraintBottom_toBottomOf="@id/tvCondition"
-        app:layout_constraintEnd_toStartOf="@id/iconArrow"
-        app:layout_constraintStart_toEndOf="@id/tvCondition"
+    <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+        android:id="@+id/objectIcon"
+        style="@style/ObjectIcon15Style"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="8dp"
+        app:emojiSize="18dp"
+        app:imageSize="18dp"
+        app:initialTextSize="11sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvCondition"
+        app:layout_constraintStart_toEndOf="@+id/tvCondition"
         app:layout_constraintTop_toTopOf="@+id/tvCondition"
-        app:layout_goneMarginEnd="@dimen/dp_20">
+        tools:visibility="visible" />
 
-        <com.anytypeio.anytype.core_ui.widgets.ObjectIconTextWidget
-            android:id="@+id/object0"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginStart="8dp"
-            android:visibility="gone"
-            app:emojiSize="18dp"
-            app:nameTextColor="#6C6A5F"
-            app:nameTextSize="15sp"
-            tools:visibility="visible" />
+    <TextView
+        android:id="@+id/objectName"
+        style="@style/ViewerFilterObjectValueStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:gravity="bottom"
+        android:maxWidth="150dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvCondition"
+        app:layout_constraintStart_toEndOf="@+id/objectIcon"
+        app:layout_constraintTop_toTopOf="@+id/tvCondition"
+        app:layout_goneMarginStart="8dp"
+        tools:text="SomeFileNameName"/>
 
-        <com.anytypeio.anytype.core_ui.widgets.ObjectIconTextWidget
-            android:id="@+id/object1"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            style="@style/ViewerFilterObjectValueStyle"
-            android:layout_marginStart="8dp"
-            android:visibility="gone"
-            app:emojiSize="18dp"
-            tools:visibility="visible" />
-
-        <com.anytypeio.anytype.core_ui.widgets.ObjectIconTextWidget
-            android:id="@+id/object2"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            style="@style/ViewerFilterObjectValueStyle"
-            android:layout_marginStart="8dp"
-            android:visibility="gone"
-            app:emojiSize="18dp"
-            tools:visibility="visible" />
-    </LinearLayout>
+    <TextView
+        android:id="@+id/number"
+        style="@style/TextView.ContentStyle.Relations.2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="6dp"
+        android:layout_weight="0.8"
+        android:background="@drawable/bg_relation_values_number"
+        android:paddingStart="@dimen/dp_4"
+        android:paddingEnd="@dimen/dp_4"
+        android:textColor="@color/text_secondary"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/tvCondition"
+        app:layout_constraintStart_toEndOf="@+id/objectName"
+        app:layout_constraintTop_toTopOf="@+id/tvCondition"
+        tools:text="+3"
+        tools:visibility="visible" />
 
     <ImageView
         android:id="@+id/iconArrow"

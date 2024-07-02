@@ -10,5 +10,5 @@
       android:fillColor="#00000000"
       android:pathData="M6,12L11,17L18,6"
       android:strokeWidth="1.5"
-      android:strokeColor="#ffffff" />
+      android:strokeColor="@color/text_button_label" />
 </vector>

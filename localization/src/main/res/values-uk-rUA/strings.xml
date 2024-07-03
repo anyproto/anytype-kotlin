@@ -281,7 +281,7 @@
     <string name="relation_format_number">Число</string>
     <string name="relation_format_date">Дата</string>
     <string name="relation_format_status">Select</string>
-    <string name="relation_format_file">Файл</string>
+    <string name="relation_format_file">File &amp; Media</string>
     <string name="relation_format_checkbox">Прапорець</string>
     <string name="relation_format_url">Url</string>
     <string name="relation_format_email">Ел. пошта</string>

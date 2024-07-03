@@ -70,6 +70,15 @@ sealed class WidgetView {
         ) : WidgetView.Element
     }
 
+    data class Gallery(
+        override val id: Id,
+        override val isLoading: Boolean = false,
+        val source: Widget.Source,
+        val tabs: List<SetOfObjects.Tab>,
+        val elements: List<SetOfObjects.Element>,
+        val isExpanded: Boolean
+    ) : WidgetView(), Draggable
+
     data class ListOfObjects(
         override val id: Id,
         override val isLoading: Boolean = false,

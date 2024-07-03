@@ -68,6 +68,7 @@ import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.widgets.menu.WidgetActionButton
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.DataViewListWidgetCard
+import com.anytypeio.anytype.ui.widgets.types.GalleryWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.LibraryWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.LinkWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.ListWidgetCard
@@ -329,6 +330,21 @@ private fun WidgetList(
                         )
                     }
                 }
+                is WidgetView.Gallery -> {
+                    GalleryWidgetItem(
+                        index = index,
+                        mode = mode,
+                        lazyListState = lazyListState,
+                        alpha = 1.0f,
+                        item = item,
+                        onWidgetObjectClicked = onWidgetObjectClicked,
+                        onWidgetSourceClicked = onWidgetSourceClicked,
+                        onWidgetMenuAction = onWidgetMenuAction,
+                        onChangeWidgetView = onChangeWidgetView,
+                        onToggleExpandedWidgetState = onToggleExpandedWidgetState,
+                        onObjectCheckboxClicked = onObjectCheckboxClicked
+                    )
+                }
                 is WidgetView.ListOfObjects -> {
                     if (mode is InteractionMode.Edit) {
                         ReorderableItem(
@@ -502,6 +518,69 @@ private fun SetOfObjectsItem(
             .alpha(alpha)
     ) {
         DataViewListWidgetCard(
+            item = item,
+            onWidgetObjectClicked = onWidgetObjectClicked,
+            onWidgetSourceClicked = onWidgetSourceClicked,
+            onDropDownMenuAction = { action ->
+                onWidgetMenuAction(item.id, action)
+            },
+            onChangeWidgetView = onChangeWidgetView,
+            onToggleExpandedWidgetState = onToggleExpandedWidgetState,
+            mode = mode,
+            onObjectCheckboxClicked = onObjectCheckboxClicked
+        )
+        AnimatedVisibility(
+            visible = mode is InteractionMode.Edit,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(start = 12.dp),
+            enter = fadeIn() + slideInHorizontally { it / 4 },
+            exit = fadeOut() + slideOutHorizontally { it / 4 }
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_remove_widget),
+                modifier = Modifier
+                    .height(24.dp)
+                    .width(24.dp)
+                    .noRippleClickable {
+                        onWidgetMenuAction(
+                            item.id, DropDownMenuAction.RemoveWidget
+                        )
+                    },
+                contentDescription = "Remove widget icon"
+            )
+        }
+    }
+}
+
+@Composable
+private fun GalleryWidgetItem(
+    index: Int,
+    mode: InteractionMode,
+    lazyListState: ReorderableLazyListState,
+    alpha: Float,
+    item: WidgetView.Gallery,
+    onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
+    onWidgetSourceClicked: (Widget.Source) -> Unit,
+    onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
+    onChangeWidgetView: (WidgetId, ViewId) -> Unit,
+    onToggleExpandedWidgetState: (WidgetId) -> Unit,
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .animateContentSize()
+            .fillMaxWidth()
+            .padding(top = if (index == 0) 6.dp else 0.dp)
+            .then(
+                if (mode is InteractionMode.Edit)
+                    Modifier.detectReorderAfterLongPress(lazyListState)
+                else
+                    Modifier
+            )
+            .alpha(alpha)
+    ) {
+        GalleryWidgetCard(
             item = item,
             onWidgetObjectClicked = onWidgetObjectClicked,
             onWidgetSourceClicked = onWidgetSourceClicked,

@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -105,7 +106,12 @@ fun DataViewListWidgetCard(
                 onDropDownMenuAction = onDropDownMenuAction
             )
             if (item.tabs.size > 1 && item.isExpanded) {
-                DataViewTabs(item, onChangeWidgetView)
+                DataViewTabs(
+                    tabs = item.tabs,
+                    onChangeWidgetView = { tab ->
+                        onChangeWidgetView(item.id, tab)
+                    }
+                )
             }
             if (item.elements.isNotEmpty()) {
                 if (item.isCompact) {
@@ -157,9 +163,123 @@ fun DataViewListWidgetCard(
 }
 
 @Composable
+fun GalleryWidgetCard(
+    item: WidgetView.Gallery,
+    mode: InteractionMode,
+    onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
+    onWidgetSourceClicked: (Widget.Source) -> Unit,
+    onDropDownMenuAction: (DropDownMenuAction) -> Unit,
+    onChangeWidgetView: (WidgetId, ViewId) -> Unit,
+    onToggleExpandedWidgetState: (WidgetId) -> Unit,
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit
+) {
+    val isCardMenuExpanded = remember {
+        mutableStateOf(false)
+    }
+    val isHeaderMenuExpanded = remember {
+        mutableStateOf(false)
+    }
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp)
+            .alpha(if (isCardMenuExpanded.value || isHeaderMenuExpanded.value) 0.8f else 1f)
+            .background(
+                shape = RoundedCornerShape(16.dp),
+                color = colorResource(id = R.color.dashboard_card_background)
+            )
+            .then(
+                if (mode is InteractionMode.Edit)
+                    Modifier.noRippleClickable {
+                        isCardMenuExpanded.value = !isCardMenuExpanded.value
+                    }
+                else
+                    Modifier
+            )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 0.dp, vertical = 6.dp)
+        ) {
+            WidgetHeader(
+                title = when (val source = item.source) {
+                    is Widget.Source.Default -> {
+                        source.obj.getWidgetObjectName() ?: stringResource(id = R.string.untitled)
+                    }
+
+                    is Widget.Source.Bundled -> {
+                        stringResource(id = source.res())
+                    }
+                },
+                isCardMenuExpanded = isCardMenuExpanded,
+                isHeaderMenuExpanded = isHeaderMenuExpanded,
+                onWidgetHeaderClicked = {
+                    if (mode is InteractionMode.Default) {
+                        onWidgetSourceClicked(item.source)
+                    }
+                },
+                onExpandElement = { onToggleExpandedWidgetState(item.id) },
+                isExpanded = item.isExpanded,
+                isInEditMode = mode is InteractionMode.Edit,
+                hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
+                onDropDownMenuAction = onDropDownMenuAction
+            )
+            if (item.tabs.size > 1 && item.isExpanded) {
+                DataViewTabs(
+                    tabs = item.tabs,
+                    onChangeWidgetView = { tab ->
+                        onChangeWidgetView(item.id, tab)
+                    }
+                )
+            }
+            if (item.elements.isNotEmpty()) {
+                Row {
+                    item.elements.forEachIndexed { idx, element ->
+                        ListWidgetElement(
+                            onWidgetObjectClicked = onWidgetObjectClicked,
+                            obj = element.obj,
+                            icon = element.objectIcon,
+                            mode = mode,
+                            onObjectCheckboxClicked = onObjectCheckboxClicked
+                        )
+                        if (idx != item.elements.lastIndex) {
+                            Divider(
+                                thickness = 0.5.dp,
+                                modifier = Modifier.padding(end = 16.dp, start = 16.dp),
+                                color = colorResource(id = R.color.widget_divider)
+                            )
+                        }
+                        if (idx == item.elements.lastIndex) {
+                            Spacer(modifier = Modifier.height(2.dp))
+                        }
+                    }
+                }
+            } else {
+                if (item.isExpanded) {
+                    when {
+                        item.isLoading -> EmptyWidgetPlaceholder(R.string.loading)
+                        item.tabs.isNotEmpty() -> EmptyWidgetPlaceholder(R.string.empty_list_widget)
+                        else -> EmptyWidgetPlaceholder(text = R.string.empty_list_widget_no_view)
+                    }
+
+                    Spacer(modifier = Modifier.height(2.dp))
+                }
+            }
+        }
+        WidgetMenu(
+            isExpanded = isCardMenuExpanded,
+            onDropDownMenuAction = onDropDownMenuAction,
+            canEditWidgets = mode is InteractionMode.Default
+        )
+    }
+}
+
+
+@Composable
 private fun DataViewTabs(
-    item: WidgetView.SetOfObjects,
-    onChangeWidgetView: (WidgetId, ViewId) -> Unit
+    tabs: List<WidgetView.SetOfObjects.Tab>,
+    onChangeWidgetView: (ViewId) -> Unit
 ) {
     LazyRow(
         modifier = Modifier
@@ -168,7 +288,7 @@ private fun DataViewTabs(
         verticalAlignment = Alignment.CenterVertically
     ) {
         itemsIndexed(
-            items = item.tabs,
+            items = tabs,
             itemContent = { index, tab ->
                 Text(
                     text = tab.name.ifEmpty { stringResource(id = R.string.untitled) },
@@ -180,10 +300,10 @@ private fun DataViewTabs(
                     modifier = Modifier
                         .padding(
                             start = 16.dp,
-                            end = if (index == item.tabs.lastIndex) 16.dp else 0.dp
+                            end = if (index == tabs.lastIndex) 16.dp else 0.dp
                         )
                         .noRippleClickable {
-                            onChangeWidgetView(item.id, tab.id)
+                            onChangeWidgetView(tab.id)
                         },
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -207,7 +327,7 @@ fun ListWidgetElement(
             .fillMaxWidth()
             .padding(end = 16.dp)
             .then(
-                if (mode !is InteractionMode.Edit )
+                if (mode !is InteractionMode.Edit)
                     Modifier.noRippleClickable { onWidgetObjectClicked(obj) }
                 else
                     Modifier

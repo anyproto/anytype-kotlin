@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.widgets
 
-import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -11,7 +10,6 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
-import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.widgets.WidgetConfig.isValidObject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -19,26 +17,22 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import timber.log.Timber
 
 
 class TreeWidgetContainer(
     private val widget: Widget.Tree,
-    private val space: Id,
-    private val config: Config,
     private val container: StorelessSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
-    private val spaceGradientProvider: SpaceGradientProvider,
     private val expandedBranches: Flow<List<TreePath>>,
     private val isWidgetCollapsed: Flow<Boolean>,
     private val objectWatcher: ObjectWatcher,
     private val getSpaceView: GetSpaceView,
-    isSessionActive: Flow<Boolean>
+    isSessionActive: Flow<Boolean>,
+    onRequestCache: () -> WidgetView.Tree? = { null }
 ) : WidgetContainer {
 
     private val mutex = Mutex()
@@ -51,15 +45,18 @@ class TreeWidgetContainer(
         if (isActive)
             buildViewFlow().onStart {
                 isWidgetCollapsed.take(1).collect { isCollapsed ->
-                    emit(
-                        WidgetView.Tree(
-                            id = widget.id,
-                            source = widget.source,
-                            isExpanded = !isCollapsed,
-                            elements = emptyList(),
-                            isLoading = true
-                        )
+                    val loadingStateView = WidgetView.Tree(
+                        id = widget.id,
+                        source = widget.source,
+                        isExpanded = !isCollapsed,
+                        elements = emptyList(),
+                        isLoading = true
                     )
+                    if (isCollapsed) {
+                        emit(loadingStateView)
+                    } else {
+                        emit(onRequestCache() ?: loadingStateView)
+                    }
                 }
             }
         else
@@ -162,7 +159,7 @@ class TreeWidgetContainer(
         return when (widget.source.id) {
             BundledWidgetSourceIds.FAVORITE -> {
                 objectWatcher
-                    .watch(config.home)
+                    .watch(widget.config.home)
                     .map { obj -> obj.orderOfRootObjects(obj.root) }
                     .catch { emit(emptyMap()) }
                     .flatMapLatest { order ->
@@ -182,7 +179,7 @@ class TreeWidgetContainer(
             }
             BundledWidgetSourceIds.RECENT -> {
                 val spaceView = getSpaceView.async(
-                    GetSpaceView.Params.BySpaceViewId(config.spaceView)
+                    GetSpaceView.Params.BySpaceViewId(widget.config.spaceView)
                 ).getOrNull()
                 val spaceViewCreationDate = spaceView
                     ?.getValue<Double?>(Relations.CREATED_DATE)
@@ -191,8 +188,8 @@ class TreeWidgetContainer(
                     ListWidgetContainer.params(
                         subscription = widget.source.id,
                         spaces = buildList {
-                            add(config.space)
-                            add(config.techSpace)
+                            add(widget.config.space)
+                            add(widget.config.techSpace)
                         },
                         keys = keys,
                         limit = rootLevelLimit,
@@ -205,8 +202,8 @@ class TreeWidgetContainer(
                     ListWidgetContainer.params(
                         subscription = widget.source.id,
                         spaces = buildList {
-                            add(config.space)
-                            add(config.techSpace)
+                            add(widget.config.space)
+                            add(widget.config.techSpace)
                         },
                         keys = keys,
                         limit = rootLevelLimit

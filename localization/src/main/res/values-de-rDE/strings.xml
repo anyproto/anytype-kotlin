@@ -1180,7 +1180,7 @@
     <string name="multiplayer_delete_space_sharing_link">Lösche Freigabelink</string>
     <string name="multiplayer_delete_link">Link löschen</string>
     <string name="multiplayer_delete_link_description">New members won’t be able to join the space. You can generate a new link anytime.</string>
-    <string name="multiplayer_already_space_member">You are already a member of this space</string>
+    <string name="multiplayer_already_space_member">Du bist bereits Mitglied dieses Spaces.</string>
     <string name="multiplayer_open_space">Öffne Space</string>
     <string name="multiplayer_error_space_deleted">Space gelöscht</string>
     <string name="multiplayer_error_space_not_found">Space nicht gefunden</string>
@@ -1358,11 +1358,11 @@ Please provide specific details of your needs here.</string>
     <string name="membership_name_too_long">Name ist zu lang</string>
     <string name="membership_name_too_short">Name ist zu kurz</string>
     <string name="membership_any_name_not_reserved">Dieser Name kann nicht reserviert werden</string>
-    <string name="membership_any_name_null_error">Empty error</string>
+    <string name="membership_any_name_null_error">Leerer Fehler</string>
     <string name="membership_any_name_unknown">Unbekannter Fehler</string>
     <string name="membership_email_wrong_format">Email has wrong format</string>
-    <string name="membership_email_already_verified">Email is already verified</string>
-    <string name="membership_email_already_sent">Email is already sent, try again after 1 minute</string>
+    <string name="membership_email_already_verified">E-Mail-Adresse bereits bestätigt</string>
+    <string name="membership_email_already_sent">E-Mail ist bereits gesendet, versuchen Sie es nach 1 Minute erneut</string>
     <string name="membership_email_failed_to_send">E-Mail konnte nicht gesendet werden</string>
     <string name="membership_email_membership_already_exists">Mitgliedschaft besteht bereits</string>
     <string name="membership_email_code_expired">Code abgelaufen</string>

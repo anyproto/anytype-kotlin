@@ -16,7 +16,6 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
-import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
@@ -30,31 +29,33 @@ import kotlinx.coroutines.flow.take
 
 class DataViewListWidgetContainer(
     private val widget: Widget.List,
-    private val config: Config,
     private val getObject: GetObject,
     private val storage: StorelessSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
-    private val gradientProvider: SpaceGradientProvider,
     private val activeView: Flow<Id?>,
     private val isWidgetCollapsed: Flow<Boolean>,
-    isSessionActive: Flow<Boolean>
+    isSessionActive: Flow<Boolean>,
+    onRequestCache: () -> WidgetView.SetOfObjects? = { null }
 ) : WidgetContainer {
 
     override val view = isSessionActive.flatMapLatest { isActive ->
         if (isActive)
             buildViewFlow().onStart {
                 isWidgetCollapsed.take(1).collect { isCollapsed ->
-                    emit(
-                        WidgetView.SetOfObjects(
-                            id = widget.id,
-                            source = widget.source,
-                            tabs = emptyList(),
-                            elements = emptyList(),
-                            isExpanded = !isCollapsed,
-                            isCompact = widget.isCompact,
-                            isLoading = true
-                        )
+                    val loadingStateView = WidgetView.SetOfObjects(
+                        id = widget.id,
+                        source = widget.source,
+                        tabs = emptyList(),
+                        elements = emptyList(),
+                        isExpanded = !isCollapsed,
+                        isCompact = widget.isCompact,
+                        isLoading = true
                     )
+                    if (isCollapsed) {
+                        emit(loadingStateView)
+                    } else {
+                        emit(onRequestCache() ?: loadingStateView)
+                    }
                 }
             }
         else
@@ -81,7 +82,16 @@ class DataViewListWidgetContainer(
                     )
                 } else {
                     val obj = getObject.run(widget.source.id)
-                    val params = obj.parse(viewer = view, source = source.obj)
+                    val params = obj.parseDataViewStoreSearchParams(
+                        subscription = widget.id,
+                        viewer = view,
+                        source = source.obj,
+                        config = widget.config,
+                        limit = WidgetConfig.resolveListWidgetLimit(
+                            isCompact = widget.isCompact,
+                            limit = widget.limit
+                        )
+                    )
                     if (params != null) {
                         storage.subscribe(params).map { results ->
                             val objects = resolveObjectOrder(
@@ -96,9 +106,7 @@ class DataViewListWidgetContainer(
                                 elements = objects.map { obj ->
                                     WidgetView.SetOfObjects.Element(
                                         obj = obj,
-                                        objectIcon = obj.widgetElementIcon(
-                                            builder = urlBuilder
-                                        )
+                                        objectIcon = obj.widgetElementIcon(builder = urlBuilder)
                                     )
                                 },
                                 isExpanded = true,
@@ -141,80 +149,78 @@ class DataViewListWidgetContainer(
         isExpanded = true,
         isCompact = widget.isCompact
     )
-
-    fun ObjectView.tabs(viewer: Id?): List<WidgetView.SetOfObjects.Tab> = buildList {
-        val block = blocks.find { it.content is DV }
-        block?.content<DV>()?.viewers?.forEachIndexed { idx, view ->
-            add(
-                WidgetView.SetOfObjects.Tab(
-                    id = view.id,
-                    name = view.name,
-                    isSelected = if (viewer != null) view.id == viewer else idx == 0
-                )
-            )
-        }
-    }
-
-    fun ObjectView.parse(
-        source: ObjectWrapper.Basic,
-        viewer: Id?
-    ): StoreSearchParams? {
-        if (source.isArchived == true || source.isDeleted == true) return null
-        val block = blocks.find { it.content is DV } ?: return null
-        val dv = block.content<DV>()
-        val view = dv.viewers.find { it.id == viewer } ?: dv.viewers.firstOrNull() ?: return null
-        val dataViewKeys = dv.relationLinks.map { it.key }
-        val defaultKeys = ObjectSearchConstants.defaultDataViewKeys
-        return StoreSearchParams(
-            subscription = widget.id,
-            sorts = view.sorts,
-            keys = buildList {
-                addAll(defaultKeys)
-                addAll(dataViewKeys)
-                add(Relations.DESCRIPTION)
-            }.distinct(),
-            filters = buildList {
-                addAll(view.filters)
-                addAll(
-                    ObjectSearchConstants.defaultDataViewFilters(
-                        spaces = buildList {
-                            add(config.space)
-                            add(config.techSpace)
-                        }
-                    )
-                )
-                add(
-                    DVFilter(
-                        relation = Relations.TYPE_UNIQUE_KEY,
-                        condition = DVFilterCondition.NOT_IN,
-                        value = listOf(
-                            ObjectTypeIds.OBJECT_TYPE,
-                            ObjectTypeIds.RELATION,
-                            ObjectTypeIds.TEMPLATE,
-                            ObjectTypeIds.DASHBOARD,
-                            ObjectTypeIds.RELATION_OPTION,
-                            ObjectTypeIds.DASHBOARD,
-                            ObjectTypeIds.DATE
-                        )
-                    ),
-                )
-            },
-            limit = resolveLimit(),
-            source = source.setOf,
-            collection = if (isCollection())
-                root
-            else
-                null
-        )
-    }
-
-    private fun resolveLimit(): Int = WidgetConfig.resolveListWidgetLimit(
-        isCompact = widget.isCompact,
-        limit = widget.limit
-    )
 }
 
 fun ObjectView.isCollection(): Boolean {
     val wrapper = ObjectWrapper.Basic(details.getOrDefault(root, emptyMap()))
     return wrapper.layout == ObjectType.Layout.COLLECTION
+}
+
+fun ObjectView.parseDataViewStoreSearchParams(
+    subscription: Id,
+    limit: Int,
+    config: Config,
+    source: ObjectWrapper.Basic,
+    viewer: Id?
+): StoreSearchParams? {
+    if (source.isArchived == true || source.isDeleted == true) return null
+    val block = blocks.find { it.content is DV } ?: return null
+    val dv = block.content<DV>()
+    val view = dv.viewers.find { it.id == viewer } ?: dv.viewers.firstOrNull() ?: return null
+    val dataViewKeys = dv.relationLinks.map { it.key }
+    val defaultKeys = ObjectSearchConstants.defaultDataViewKeys
+    return StoreSearchParams(
+        subscription =subscription,
+        sorts = view.sorts,
+        keys = buildList {
+            addAll(defaultKeys)
+            addAll(dataViewKeys)
+            add(Relations.DESCRIPTION)
+        }.distinct(),
+        filters = buildList {
+            addAll(view.filters)
+            addAll(
+                ObjectSearchConstants.defaultDataViewFilters(
+                    spaces = buildList {
+                        add(config.space)
+                        add(config.techSpace)
+                    }
+                )
+            )
+            add(
+                DVFilter(
+                    relation = Relations.TYPE_UNIQUE_KEY,
+                    condition = DVFilterCondition.NOT_IN,
+                    value = listOf(
+                        ObjectTypeIds.OBJECT_TYPE,
+                        ObjectTypeIds.RELATION,
+                        ObjectTypeIds.TEMPLATE,
+                        ObjectTypeIds.DASHBOARD,
+                        ObjectTypeIds.RELATION_OPTION,
+                        ObjectTypeIds.DASHBOARD,
+                        ObjectTypeIds.DATE
+                    )
+                ),
+            )
+        },
+        limit = limit,
+        source = source.setOf,
+        collection = if (isCollection())
+            root
+        else
+            null
+    )
+}
+
+fun ObjectView.tabs(viewer: Id?): List<WidgetView.SetOfObjects.Tab> = buildList {
+    val block = blocks.find { it.content is DV }
+    block?.content<DV>()?.viewers?.forEachIndexed { idx, view ->
+        add(
+            WidgetView.SetOfObjects.Tab(
+                id = view.id,
+                name = view.name,
+                isSelected = if (viewer != null) view.id == viewer else idx == 0
+            )
+        )
+    }
 }

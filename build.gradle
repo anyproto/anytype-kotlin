@@ -46,6 +46,7 @@ plugins {
     alias(libs.plugins.dokka) apply false
     alias(libs.plugins.firebaseDistribution) apply false
     alias(libs.plugins.gms) apply false
+    alias(libs.plugins.ksp) apply false
 }
 
 def testDebugAll = tasks.create("testDebugAll")

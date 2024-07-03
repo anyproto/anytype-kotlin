@@ -663,11 +663,9 @@ class HomeScreenViewModel(
                         sendToast("Error while creating widget: ${status.exception}")
                         Timber.e(status.exception, "Error while creating widget")
                     }
-
                     is Resultat.Loading -> {
                         // Do nothing?
                     }
-
                     is Resultat.Success -> {
                         objectPayloadDispatcher.send(status.value)
                     }

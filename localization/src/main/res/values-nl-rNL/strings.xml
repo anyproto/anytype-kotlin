@@ -932,6 +932,8 @@
     <string name="widget_type_list_description">Widget met lijstweergave van geselecteerde object</string>
     <string name="widget_type_compact_list_description">Widget met lijstweergave van geselecteerde object</string>
     <string name="widget_type_list">Lijst</string>
+    <string name="widget_type_view">Weergave</string>
+    <string name="widget_type_view_description">Widget with a view of set object</string>
     <string name="widget_type_compact_list">Compacte lijst</string>
     <string name="widget_change_source">Wijzig bron</string>
     <string name="widget_change_type">Wijzig type</string>

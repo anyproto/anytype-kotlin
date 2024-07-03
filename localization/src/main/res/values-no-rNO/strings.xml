@@ -279,7 +279,7 @@
     <string name="relation_format_number">Tall</string>
     <string name="relation_format_date">Dato</string>
     <string name="relation_format_status">Velg</string>
-    <string name="relation_format_file">Fil</string>
+    <string name="relation_format_file">File &amp; Media</string>
     <string name="relation_format_checkbox">Avkrysningsboks</string>
     <string name="relation_format_url">Url</string>
     <string name="relation_format_email">E-post</string>

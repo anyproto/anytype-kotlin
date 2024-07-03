@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.sharing
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,6 +17,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.LinearProgressIndicator
+import androidx.compose.material.ProgressIndicatorDefaults
 import androidx.compose.material.Text
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.runtime.Composable
@@ -28,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -39,7 +43,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
-import com.anytypeio.anytype.core_ui.views.ButtonPrimary
+import com.anytypeio.anytype.core_ui.views.ButtonPrimaryLoading
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
@@ -58,7 +62,8 @@ fun AddToAnytypeScreenUrlPreview() {
         onDoneClicked = {},
         spaces = emptyList(),
         onSelectSpaceClicked = {},
-        content = "https://en.wikipedia.org/wiki/Walter_Benjamin"
+        content = "https://en.wikipedia.org/wiki/Walter_Benjamin",
+        loading = null
     )
 }
 
@@ -71,7 +76,8 @@ fun AddToAnytypeScreenNotePreview() {
         onDoneClicked = {},
         spaces = emptyList(),
         onSelectSpaceClicked = {},
-        content = ""
+        content = "",
+        loading = 0.8f
     )
 }
 
@@ -82,7 +88,8 @@ fun AddToAnytypeScreen(
     data: SharingData,
     onCancelClicked: () -> Unit,
     onDoneClicked: (SaveAsOption) -> Unit,
-    onSelectSpaceClicked: (SpaceView) -> Unit
+    onSelectSpaceClicked: (SpaceView) -> Unit,
+    loading: Float?
 ) {
     var isSaveAsMenuExpanded by remember { mutableStateOf(false) }
     val items = when (data) {
@@ -209,9 +216,36 @@ fun AddToAnytypeScreen(
                 onSelectSpaceClicked = onSelectSpaceClicked
             )
         }
+        if (loading != null) {
+            DefaultLinearProgressIndicator(progress = loading)
+        }
         Spacer(modifier = Modifier.height(20.dp))
-        Buttons(onCancelClicked, onDoneClicked, selectedIndex)
+        Buttons(
+            onCancelClicked = onCancelClicked,
+            onDoneClicked = onDoneClicked,
+            selectedIndex = selectedIndex,
+            loading = loading
+        )
     }
+}
+
+@Composable
+private fun DefaultLinearProgressIndicator(progress: Float) {
+    val animatedProgress = animateFloatAsState(
+        targetValue = progress,
+        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
+        label = ""
+    ).value
+    LinearProgressIndicator(
+        progress = animatedProgress,
+        color = colorResource(id = R.color.text_primary),
+        modifier = Modifier
+            .height(6.dp)
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp),
+        backgroundColor = colorResource(id = R.color.shape_tertiary),
+        strokeCap = StrokeCap.Round
+    )
 }
 
 @Composable
@@ -256,7 +290,8 @@ private fun DataSection(content: String) {
 private fun Buttons(
     onCancelClicked: () -> Unit,
     onDoneClicked: (SaveAsOption) -> Unit,
-    selectedIndex: Int
+    selectedIndex: Int,
+    loading: Float?
 ) {
     Row(
         modifier = Modifier
@@ -272,11 +307,13 @@ private fun Buttons(
             modifier = Modifier.weight(1.0f)
         )
         Spacer(modifier = Modifier.width(12.dp))
-        ButtonPrimary(
+        ButtonPrimaryLoading(
             onClick = { onDoneClicked(selectedIndex) },
             size = ButtonSize.Large,
             text = stringResource(id = R.string.done),
-            modifier = Modifier.weight(1.0f)
+            modifierBox = Modifier.weight(1.0f),
+            modifierButton = Modifier.fillMaxWidth(),
+            loading = loading != null
         )
     }
 }

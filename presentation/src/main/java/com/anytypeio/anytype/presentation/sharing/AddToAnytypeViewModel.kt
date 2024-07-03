@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.NO_VALUE
 import com.anytypeio.anytype.core_models.ObjectOrigin
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Process
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -24,12 +25,14 @@ import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.device.FileSharer
+import com.anytypeio.anytype.domain.media.FileDrop
 import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.Permissions
 import com.anytypeio.anytype.domain.objects.CreateBookmarkObject
 import com.anytypeio.anytype.domain.objects.CreatePrefilledNote
 import com.anytypeio.anytype.domain.spaces.GetSpaceViews
+import com.anytypeio.anytype.domain.workspace.EventProcessChannel
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -40,6 +43,7 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -61,7 +65,9 @@ class AddToAnytypeViewModel(
     private val uploadFile: UploadFile,
     private val fileSharer: FileSharer,
     private val permissions: Permissions,
-    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val fileDrop: FileDrop,
+    private val eventProcessChannel: EventProcessChannel
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val selectedSpaceId = MutableStateFlow(NO_VALUE)
@@ -71,6 +77,7 @@ class AddToAnytypeViewModel(
     val navigation = MutableSharedFlow<OpenObjectNavigation>()
     val spaceViews = MutableStateFlow<List<SpaceView>>(emptyList())
     val commands = MutableSharedFlow<Command>()
+    val loading = MutableStateFlow<Float?>(null)
 
     val state = MutableStateFlow<ViewState>(ViewState.Init)
 
@@ -134,9 +141,48 @@ class AddToAnytypeViewModel(
                     spaceViews.value = views
                 }
         }
+        subscribeToEventProcessChannel()
     }
 
-    fun onShareMedia(uris: List<String>) {
+    private fun subscribeToEventProcessChannel() {
+        viewModelScope.launch {
+            eventProcessChannel.observe().collect { events ->
+                Timber.d("EventProcessChannel events: $events")
+                delay(1000)
+                when (val event = events.firstOrNull()) {
+                    is Process.Event.New -> {
+                        if (event.process?.type == Process.Type.DROP_FILES) {
+                            loading.value = 0f
+                        }
+                    }
+                    is Process.Event.Done -> {
+                        if (event.process?.type == Process.Type.DROP_FILES) {
+                            loading.value = null
+                        }
+                    }
+                    is Process.Event.Update -> {
+                        val process = event.process
+                        if (event.process?.type == Process.Type.DROP_FILES) {
+                            val progress = process?.progress
+                            val total = progress?.total
+                            val done = progress?.done
+                            val state = if (total != null && total != 0L && done != null) {
+                                done.toFloat() / total
+                            } else {
+                                null
+                            }
+                            loading.value = state
+                        }
+                    }
+                    null -> {
+                        loading.value = null
+                    }
+                }
+            }
+        }
+    }
+
+    fun onShareMedia(uris: List<String>, wrapperObjTitle: String? = null) {
         viewModelScope.launch(Dispatchers.IO) {
             val targetSpaceView = spaceViews.value.firstOrNull { view ->
                 view.isSelected
@@ -147,90 +193,146 @@ class AddToAnytypeViewModel(
                 val paths = uris.mapNotNull { uri ->
                     fileSharer.getPath(uri)
                 }
-                val files = mutableListOf<Id>()
-                paths.forEach { path ->
-                    uploadFile.async(
-                        UploadFile.Params(
-                            path = path,
-                            space = SpaceId(targetSpaceId),
-                            // Temporary workaround to fix issue on the MW side.
-                            type = Block.Content.File.Type.NONE
-                        )
-                    ).fold(
-                        onSuccess = { obj ->
-                            files.add(obj.id)
-                        },
-                        onFailure = { e ->
-                            Timber.e(e, "Error while uploading file").also {
-                                sendToast(e.msg())
-                            }
-                        }
+
+                when (paths.size) {
+                    0 -> sendToast("Could not get file paths")
+                    1 -> proceedWithSingleFileUpload(
+                        path = paths[0],
+                        targetSpaceId = targetSpaceId,
+                        targetSpaceView = targetSpaceView
+                    )
+                    else -> proceedWithCreatingWrapperObject(
+                        filePaths = paths,
+                        targetSpaceId = targetSpaceId,
+                        targetSpaceView = targetSpaceView,
+                        wrapperObjTitle = wrapperObjTitle
                     )
                 }
-                when (files.size) {
-                    0 -> {
-                        sendToast("Could not upload files")
-                    }
+            }
+        }
+    }
 
-                    1 -> {
-                        // No need to create a wrapper object, opening file object directly instead
-                        if (targetSpaceId == spaceManager.get()) {
-                            navigation.emit(
-                                OpenObjectNavigation.OpenEditor(
-                                    target = files.first(),
-                                    space = targetSpaceId
-                                )
-                            )
-                        } else {
-                            with(commands) {
-                                emit(Command.ObjectAddToSpaceToast(targetSpaceView.obj.name))
-                                emit(Command.Dismiss)
-                            }
-                        }
-                    }
-
-                    else -> {
-                        // Creating a wrapper object for file objects
-                        val startTime = System.currentTimeMillis()
-                        createPrefilledNote.async(
-                            CreatePrefilledNote.Params(
-                                text = EMPTY_STRING_VALUE,
-                                space = targetSpaceId,
-                                details = mapOf(
-                                    Relations.ORIGIN to ObjectOrigin.SHARING_EXTENSION.code.toDouble()
-                                ),
-                                attachments = files
-                            )
-                        ).fold(
-                            onSuccess = { result ->
-                                sendAnalyticsObjectCreateEvent(
-                                    analytics = analytics,
-                                    objType = MarketplaceObjectTypeIds.NOTE,
-                                    route = EventsDictionary.Routes.sharingExtension,
-                                    startTime = startTime,
-                                    spaceParams = provideParams(spaceManager.get())
-                                )
-                                if (targetSpaceId == spaceManager.get()) {
-                                    navigation.emit(
-                                        OpenObjectNavigation.OpenEditor(
-                                            target = result,
-                                            space = targetSpaceId
-                                        )
-                                    )
-                                } else {
-                                    with(commands) {
-                                        emit(Command.ObjectAddToSpaceToast(targetSpaceView.obj.name))
-                                        emit(Command.Dismiss)
-                                    }
-                                }
-                            },
-                            onFailure = {
-                                Timber.d(it, "Error while creating note")
-                                sendToast("Error while creating note: ${it.msg()}")
-                            }
-                        )
-                    }
+    private fun proceedWithCreatingWrapperObject(
+        filePaths: List<String>,
+        targetSpaceId: String,
+        targetSpaceView: SpaceView,
+        wrapperObjTitle: String? = null
+    ) {
+        viewModelScope.launch {
+            val startTime = System.currentTimeMillis()
+            createPrefilledNote.async(
+                CreatePrefilledNote.Params(
+                    text = wrapperObjTitle ?: EMPTY_STRING_VALUE,
+                    space = targetSpaceId,
+                    details = mapOf(
+                        Relations.ORIGIN to ObjectOrigin.SHARING_EXTENSION.code.toDouble(),
+                    ),
+                )
+            ).fold(
+                onSuccess = { wrapperObjId ->
+                    sendAnalyticsObjectCreateEvent(
+                        analytics = analytics,
+                        objType = MarketplaceObjectTypeIds.PAGE,
+                        route = EventsDictionary.Routes.sharingExtension,
+                        startTime = startTime,
+                        spaceParams = provideParams(spaceManager.get())
+                    )
+                    proceedWithFilesDrop(
+                        wrapperObjId = wrapperObjId,
+                        filePaths = filePaths,
+                        targetSpaceId = targetSpaceId,
+                        targetSpaceView = targetSpaceView
+                    )
+                },
+                onFailure = {
+                    Timber.d(it, "Error while creating page")
+                    sendToast("Error while creating page: ${it.msg()}")
                 }
+            )
+        }
+    }
+
+    private suspend fun proceedWithSingleFileUpload(
+        path: String,
+        targetSpaceId: String,
+        targetSpaceView: SpaceView
+    ) {
+        loading.value = 0f
+        val params = UploadFile.Params(
+            path = path,
+            space = SpaceId(targetSpaceId),
+            // Temporary workaround to fix issue on the MW side.
+            type = Block.Content.File.Type.NONE
+        )
+        uploadFile.async(params).fold(
+            onSuccess = {
+                Timber.d("File uploaded successfully, id: ${it.id}")
+                loading.value = null
+                proceedWithNavigation(
+                    result = it.id,
+                    targetSpaceId = targetSpaceId,
+                    targetSpaceView = targetSpaceView
+                )
+            },
+            onFailure = { e ->
+                loading.value = null
+                Timber.e(e, "Error while uploading file").also {
+                    sendToast(e.msg())
+                }
+            }
+        )
+    }
+
+    private suspend fun proceedWithFilesDrop(
+        wrapperObjId: Id,
+        filePaths: List<String>,
+        targetSpaceId: String,
+        targetSpaceView: SpaceView
+    ) {
+        val params = FileDrop.Params(
+            ctx = wrapperObjId,
+            space = SpaceId(targetSpaceId),
+            localFilePaths = filePaths
+        )
+        loading.value = 0f
+        fileDrop.async(params).fold(
+            onSuccess = { _ ->
+                delay(5000)
+                loading.value = null
+                proceedWithNavigation(
+                    targetSpaceId = targetSpaceId,
+                    result = wrapperObjId,
+                    targetSpaceView = targetSpaceView
+                )
+            },
+            onFailure = { e ->
+                loading.value = null
+                Timber.e(e, "Error while dropping files").also {
+                    sendToast(e.msg())
+                }
+            }
+        )
+    }
+
+    private suspend fun proceedWithNavigation(
+        targetSpaceId: String,
+        result: Id,
+        targetSpaceView: SpaceView
+    ) {
+        Timber.d("proceedWithNavigation: $result")
+        if (targetSpaceId == spaceManager.get()) {
+            Timber.d("proceedWithNavigation: OpenEditor")
+            navigation.emit(
+                OpenObjectNavigation.OpenEditor(
+                    target = result,
+                    space = targetSpaceId
+                )
+            )
+        } else {
+            Timber.d("proceedWithNavigation: ObjectAddToSpaceToast")
+            with(commands) {
+                emit(Command.ObjectAddToSpaceToast(targetSpaceView.obj.name))
+                emit(Command.Dismiss)
             }
         }
     }
@@ -384,7 +486,9 @@ class AddToAnytypeViewModel(
         private val uploadFile: UploadFile,
         private val fileSharer: FileSharer,
         private val permissions: Permissions,
-        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        private val fileDrop: FileDrop,
+        private val eventProcessChannel: EventProcessChannel
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -399,7 +503,9 @@ class AddToAnytypeViewModel(
                 uploadFile = uploadFile,
                 fileSharer = fileSharer,
                 permissions = permissions,
-                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+                fileDrop = fileDrop,
+                eventProcessChannel = eventProcessChannel
             ) as T
         }
     }

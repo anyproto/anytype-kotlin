@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.device.FileSharer
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.workspace.EventProcessChannel
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.sharing.AddToAnytypeViewModel
@@ -61,4 +62,5 @@ interface AddToAnytypeDependencies : ComponentDependencies {
     fun fileSharer(): FileSharer
     fun permissions(): UserPermissionProvider
     fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
+    fun eventProcessChannel(): EventProcessChannel
 }

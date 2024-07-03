@@ -2,6 +2,7 @@ package com.anytypeio.anytype.domain.media
 
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.NO_VALUE
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -28,8 +29,8 @@ class FileDrop @Inject constructor(
     data class Params(
         val space: SpaceId,
         val ctx: Id,
-        val dropTarget: Id,
-        val blockPosition: Position,
+        val dropTarget: Id = NO_VALUE,
+        val blockPosition: Position = Position.NONE,
         val localFilePaths: List<String>
     )
 }

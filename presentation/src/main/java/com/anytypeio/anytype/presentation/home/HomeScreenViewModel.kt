@@ -106,6 +106,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -211,9 +212,44 @@ class HomeScreenViewModel(
 
     private val widgetObjectPipeline = spaceManager
         .observe()
-        .onEach { currentConfig ->
-            // Closing previously opened widget object when switching spaces without leaving home screen
-             proceedWithClearingObjectSessionHistory(currentConfig)
+        .distinctUntilChanged()
+        .onEach { newConfig ->
+            val openObjectState = objectViewState.value
+            if (openObjectState is ObjectViewState.Success) {
+                val subscriptions = buildList {
+                    widgets.value.orEmpty().forEach { widget ->
+                        if (widget.config.space != newConfig.space) {
+                            if (widget.source is Widget.Source.Bundled)
+                                add(widget.source.id)
+                            else
+                                add(widget.id)
+                        }
+                    }
+                }
+                if (subscriptions.isNotEmpty()) {
+                    unsubscribe(subscriptions)
+                }
+                mutex.withLock {
+                    val closed = mutableSetOf<Id>()
+                    openWidgetObjectsHistory.forEach { previouslyOpenedWidgetObject ->
+                        if (previouslyOpenedWidgetObject != newConfig.widgets) {
+                            closeObject
+                                .async(params = previouslyOpenedWidgetObject)
+                                .fold(
+                                    onSuccess = {
+                                        closed.add(previouslyOpenedWidgetObject)
+                                    },
+                                    onFailure = {
+                                        Timber.e(it, "Error while closing object from history: $previouslyOpenedWidgetObject")
+                                    }
+                                )
+                        }
+                    }
+                    if (closed.isNotEmpty()) {
+                        openWidgetObjectsHistory.removeAll(closed)
+                    }
+                }
+            }
         }
         .flatMapLatest { config ->
             openObject.stream(
@@ -222,28 +258,32 @@ class HomeScreenViewModel(
                     saveAsLastOpened = false,
                     spaceId = SpaceId(config.space)
                 )
-            )
-        }
-        .onEach { result ->
-            result.fold(
-                onSuccess = { objectView ->
-                    onSessionStarted().also {
-                        mutex.withLock { openWidgetObjectsHistory.add(objectView.root) }
+            ).onEach { result ->
+                result.fold(
+                    onSuccess = { objectView ->
+                        onSessionStarted().also {
+                            mutex.withLock { openWidgetObjectsHistory.add(objectView.root) }
+                        }
+                    },
+                    onFailure = { e ->
+                        onSessionFailed().also {
+                            Timber.e(e, "Error while opening object.")
+                        }
                     }
-                },
-                onFailure = { e ->
-                    onSessionFailed().also {
-                        Timber.e(e, "Error while opening object.")
-                    }
+                )
+            }.map { result ->
+                when (result) {
+                    is Resultat.Failure -> ObjectViewState.Failure(result.exception)
+                    is Resultat.Loading -> ObjectViewState.Loading
+                    is Resultat.Success -> ObjectViewState.Success(
+                        obj = result.value,
+                        config = config
+                    )
                 }
-            )
-        }
-        .map { result ->
-            when (result) {
-                is Resultat.Failure -> ObjectViewState.Failure(result.exception)
-                is Resultat.Loading -> ObjectViewState.Loading
-                is Resultat.Success -> ObjectViewState.Success(obj = result.value)
             }
+        }
+        .catch {
+            emit(ObjectViewState.Failure(it))
         }
 
     init {
@@ -351,12 +391,9 @@ class HomeScreenViewModel(
 
     private fun proceedWithWidgetContainerPipeline() {
         viewModelScope.launch {
-            combine(
-                spaceManager.observe(),
-                widgets.filterNotNull()
-            ) { config, widgets ->
+            widgets.filterNotNull().map { widgets ->
+                val currentlyDisplayedViews = views.value
                 widgets.map { widget ->
-                    // TODO caching logic for containers could be implemented here.
                     when (widget) {
                         is Widget.Link -> LinkWidgetContainer(
                             widget = widget
@@ -368,37 +405,50 @@ class HomeScreenViewModel(
                             isWidgetCollapsed = isCollapsed(widget.id),
                             isSessionActive = isSessionActive,
                             urlBuilder = urlBuilder,
-                            space = config.space,
-                            config = config,
                             objectWatcher = objectWatcher,
-                            spaceGradientProvider = spaceGradientProvider,
-                            getSpaceView = getSpaceView
+                            getSpaceView = getSpaceView,
+                            onRequestCache = {
+                                currentlyDisplayedViews.find { view ->
+                                    view.id == widget.id
+                                            && view is WidgetView.Tree
+                                            && view.source == widget.source
+                                } as? WidgetView.Tree
+                            }
                         )
                         is Widget.List -> if (BundledWidgetSourceIds.ids.contains(widget.source.id)) {
                             ListWidgetContainer(
                                 widget = widget,
                                 subscription = widget.source.id,
-                                space = config.space,
                                 storage = storelessSubscriptionContainer,
                                 isWidgetCollapsed = isCollapsed(widget.id),
                                 urlBuilder = urlBuilder,
-                                spaceGradientProvider = spaceGradientProvider,
                                 isSessionActive = isSessionActive,
                                 objectWatcher = objectWatcher,
-                                config = config,
-                                getSpaceView = getSpaceView
+                                getSpaceView = getSpaceView,
+                                onRequestCache = {
+                                    currentlyDisplayedViews.find { view ->
+                                        view.id == widget.id
+                                                && view is WidgetView.ListOfObjects
+                                                && view.source == widget.source
+                                    } as? WidgetView.ListOfObjects
+                                }
                             )
                         } else {
                             DataViewListWidgetContainer(
                                 widget = widget,
-                                config = config,
                                 storage = storelessSubscriptionContainer,
                                 getObject = getObject,
                                 activeView = observeCurrentWidgetView(widget.id),
                                 isWidgetCollapsed = isCollapsed(widget.id),
                                 isSessionActive = isSessionActive,
                                 urlBuilder = urlBuilder,
-                                gradientProvider = spaceGradientProvider
+                                onRequestCache = {
+                                    currentlyDisplayedViews.find { view ->
+                                        view.id == widget.id
+                                                && view is WidgetView.SetOfObjects
+                                                && view.source == widget.source
+                                    } as? WidgetView.SetOfObjects
+                                }
                             )
                         }
                     }
@@ -439,7 +489,8 @@ class HomeScreenViewModel(
             }.filterIsInstance<ObjectViewState.Success>().map { state ->
                 state.obj.blocks.parseWidgets(
                     root = state.obj.root,
-                    details = state.obj.details
+                    details = state.obj.details,
+                    config = state.config
                 ).also {
                     widgetActiveViewStateHolder.init(state.obj.blocks.parseActiveViews())
                 }
@@ -1167,18 +1218,6 @@ class HomeScreenViewModel(
 
     fun onStop() {
         Timber.d("onStop")
-        // Temporary workaround for app crash when user is logged out and config storage is not initialized.
-        try {
-            viewModelScope.launch {
-                val config = spaceManager.getConfig()
-                if (config != null) {
-                    proceedWithClosingWidgetObject(widgetObject = config.widgets)
-                }
-            }
-        } catch (e: Exception) {
-            Timber.e(e, "Error while closing widget object")
-        }
-        jobs.cancel()
     }
 
     private fun proceedWithExitingEditMode() {
@@ -1663,7 +1702,7 @@ class HomeScreenViewModel(
 sealed class ObjectViewState {
     data object Idle : ObjectViewState()
     data object Loading : ObjectViewState()
-    data class Success(val obj: ObjectView) : ObjectViewState()
+    data class Success(val obj: ObjectView, val config: Config) : ObjectViewState()
     data class Failure(val e: Throwable) : ObjectViewState()
 }
 

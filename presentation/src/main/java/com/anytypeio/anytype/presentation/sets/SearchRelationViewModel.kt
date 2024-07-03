@@ -34,7 +34,7 @@ abstract class SearchRelationViewModel(
     private val notAllowedRelationFormats = listOf(
         ColumnView.Format.RELATIONS,
         ColumnView.Format.EMOJI,
-        ColumnView.Format.FILE
+        ColumnView.Format.UNDEFINED
     )
     private val jobs = mutableListOf<Job>()
 

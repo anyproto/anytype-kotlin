@@ -2,8 +2,9 @@ package com.anytypeio.anytype.core_ui.features.dataview.modals
 
 import android.widget.ImageView
 import android.widget.TextView
+import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemDvViewerFilterObjectBinding
-import com.anytypeio.anytype.core_ui.widgets.ObjectIconTextWidget
+import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.core_ui.widgets.RelationFormatIconWidget
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -12,13 +13,18 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.sets.model.FilterView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 
-class FilterObjectViewHolder(val binding: ItemDvViewerFilterObjectBinding) : FilterViewHolder(binding.root) {
+class FilterObjectViewHolder(val binding: ItemDvViewerFilterObjectBinding) :
+    FilterViewHolder(binding.root) {
 
     override val textTitle: TextView get() = binding.tvTitle
     override val textCondition: TextView get() = binding.tvCondition
     override val iconFormat: RelationFormatIconWidget get() = binding.iconFormat
     override val iconArrow: ImageView get() = binding.iconArrow
     override val iconRemove: ImageView get() = binding.iconRemoveObject
+
+    private val objectIcon: ObjectIconWidget get() = binding.objectIcon
+    private val number: TextView get() = binding.number
+    private val objectName: TextView get() = binding.objectName
 
     fun bind(item: FilterView.Expression.Object) = with(itemView) {
         setup(
@@ -28,38 +34,39 @@ class FilterObjectViewHolder(val binding: ItemDvViewerFilterObjectBinding) : Fil
             format = item.format
         )
 
-        for (i in 0..MAX_VISIBLE_OBJECTS_INDEX) getViewByIndex(i)?.gone()
         if (item.condition.hasValue()) {
             item.filterValue.value.forEachIndexed { index, objectView ->
                 if (objectView is ObjectView.Default) {
-                    when (index) {
-                        in 0..MAX_VISIBLE_OBJECTS_INDEX -> {
-                            getViewByIndex(index)?.let { view ->
-                                view.visible()
-                                view.setup(
-                                    name = objectView.name,
-                                    icon = objectView.icon
-                                )
+                    if (index == 0) {
+                        objectName.text = objectView.name.ifBlank {
+                            context.resources.getString(R.string.untitled)
+                        }
+                        when (objectView.icon) {
+                            ObjectIcon.None -> objectIcon.gone()
+                            else -> {
+                                objectIcon.visible()
+                                objectIcon.setIcon(objectView.icon)
                             }
                         }
                     }
                 }
             }
-        } else {
-            for (i in 0..MAX_VISIBLE_OBJECTS_INDEX) getViewByIndex(i)?.apply {
-                this.setup(name = null, icon = ObjectIcon.None)
+            val valuesSize = item.filterValue.value.size
+
+            if (valuesSize > MAX_ITEMS) {
+                number.visible()
+                number.text = "+${valuesSize - MAX_ITEMS}"
+            } else {
+                number.gone()
             }
+        } else {
+            objectIcon.gone()
+            number.gone()
+            objectName.text = null
         }
     }
 
-    private fun getViewByIndex(index: Int): ObjectIconTextWidget? = when (index) {
-        0 -> binding.object0
-        1 -> binding.object1
-        2 -> binding.object2
-        else -> null
-    }
-
     companion object {
-        const val MAX_VISIBLE_OBJECTS_INDEX = 2
+        private const val MAX_ITEMS = 1
     }
 }

@@ -325,7 +325,7 @@
     <string name="relation_format_number">Number</string>
     <string name="relation_format_date">Date</string>
     <string name="relation_format_status">Select</string>
-    <string name="relation_format_file">File</string>
+    <string name="relation_format_file">File &amp; Media</string>
     <string name="relation_format_checkbox">Checkbox</string>
     <string name="relation_format_url">Url</string>
     <string name="relation_format_email">Email</string>

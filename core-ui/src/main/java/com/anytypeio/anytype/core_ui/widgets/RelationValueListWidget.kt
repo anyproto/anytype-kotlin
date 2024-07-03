@@ -193,7 +193,7 @@ class RelationValueListWidget @JvmOverloads constructor(
 
     private fun setupTags(relation: ObjectRelationView.Tags) {
         relation.tags.take(MAX_ITEMS).forEachIndexed { index, tag ->
-            val color = ThemeColor.values().find { it.code == tag.color }
+            val color = ThemeColor.entries.find { it.code == tag.color }
             if (index == 0) setupTag(text1, color, tag.tag)
             else setupTag(
                 textView = text2.apply { maxWidth = maxTextWidth },
@@ -237,7 +237,7 @@ class RelationValueListWidget @JvmOverloads constructor(
         when {
             relation.status.isEmpty() -> setupSingleTextItem(name = relation.name)
             else -> {
-                val color = ThemeColor.values().find { it.code == relation.status[0].color }
+                val color = ThemeColor.entries.find { it.code == relation.status[0].color }
                 val txt = relation.status[0].status
                 setupStatus(text1, color, txt)
             }

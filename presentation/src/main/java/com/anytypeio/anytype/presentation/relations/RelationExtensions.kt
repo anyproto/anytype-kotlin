@@ -23,7 +23,7 @@ fun List<ObjectWrapper.Relation>.views(
     featured: List<Id> = emptyList()
 ): List<ObjectRelationView> = mapNotNull { relation ->
     relation.view(
-        details = details,
+        details = details.details,
         values = values,
         urlBuilder = urlBuilder,
         isFeatured = featured.contains(relation.key)
@@ -33,7 +33,7 @@ fun List<ObjectWrapper.Relation>.views(
 fun Key.isSystemKey() : Boolean = Relations.systemRelationKeys.contains(this)
 
 fun ObjectWrapper.Relation.view(
-    details: Block.Details,
+    details: Map<Id, Block.Fields>,
     values: Map<String, Any?>,
     urlBuilder: UrlBuilder,
     isFeatured: Boolean = false
@@ -43,7 +43,7 @@ fun ObjectWrapper.Relation.view(
         RelationFormat.OBJECT -> {
             val objects = values.buildRelationValueObjectViews(
                 relationKey = relation.key,
-                details = details.details,
+                details = details,
                 builder = urlBuilder
             )
             ObjectRelationView.Object(
@@ -59,7 +59,7 @@ fun ObjectWrapper.Relation.view(
         RelationFormat.FILE -> {
             val files = values.buildFileViews(
                 relationKey = relation.key,
-                details = details.details
+                details = details
             )
             ObjectRelationView.File(
                 id = relation.id,
@@ -99,7 +99,7 @@ fun ObjectWrapper.Relation.view(
             val options = buildList {
                 when(val value = values[relation.key]) {
                     is Id -> {
-                        val status = details.details[value]
+                        val status = details[value]
                         if (status != null && status.map.isNotEmpty()) {
                             add(
                                 ObjectWrapper.Option(status.map)
@@ -108,7 +108,7 @@ fun ObjectWrapper.Relation.view(
                     }
                     is List<*> -> {
                         value.forEach { id ->
-                            val status = details.details[id]
+                            val status = details[id]
                             if (status != null && status.map.isNotEmpty()) {
                                 add(
                                     ObjectWrapper.Option(status.map)
@@ -136,7 +136,7 @@ fun ObjectWrapper.Relation.view(
             val options = buildList {
                 when(val value = values[relation.key]) {
                     is Id -> {
-                        val status = details.details[value]
+                        val status = details[value]
                         if (status != null && status.map.isNotEmpty()) {
                             add(
                                 ObjectWrapper.Option(status.map)
@@ -145,7 +145,7 @@ fun ObjectWrapper.Relation.view(
                     }
                     is List<*> -> {
                         value.forEach { id ->
-                            val status = details.details[id]
+                            val status = details[id]
                             if (status != null && status.map.isNotEmpty()) {
                                 add(
                                     ObjectWrapper.Option(status.map)

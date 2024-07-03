@@ -278,7 +278,7 @@
     <string name="relation_format_number">數字</string>
     <string name="relation_format_date">日期</string>
     <string name="relation_format_status">選項</string>
-    <string name="relation_format_file">檔案</string>
+    <string name="relation_format_file">File &amp; Media</string>
     <string name="relation_format_checkbox">核取方塊列表</string>
     <string name="relation_format_url">Url</string>
     <string name="relation_format_email">email</string>

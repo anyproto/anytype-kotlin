@@ -278,7 +278,7 @@
     <string name="relation_format_number">Angka</string>
     <string name="relation_format_date">Tanggal</string>
     <string name="relation_format_status">Pilih</string>
-    <string name="relation_format_file">Berkas</string>
+    <string name="relation_format_file">File &amp; Media</string>
     <string name="relation_format_checkbox">Kotak centang</string>
     <string name="relation_format_url">URL</string>
     <string name="relation_format_email">Surel</string>

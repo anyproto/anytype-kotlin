@@ -451,6 +451,12 @@ class HomeScreenViewModel(
                                 }
                             )
                         }
+                        is Widget.View -> {
+                            // Falling back to link widget in case of
+                            LinkWidgetContainer(
+                                widget = widget
+                            )
+                        }
                     }
                 }
             }.collect {
@@ -630,6 +636,7 @@ class HomeScreenViewModel(
                         Command.ChangeWidgetType.TYPE_LINK -> WidgetLayout.LINK
                         Command.ChangeWidgetType.TYPE_TREE -> WidgetLayout.TREE
                         Command.ChangeWidgetType.TYPE_LIST -> WidgetLayout.LIST
+                        Command.ChangeWidgetType.TYPE_VIEW -> WidgetLayout.VIEW
                         Command.ChangeWidgetType.TYPE_COMPACT_LIST -> WidgetLayout.COMPACT_LIST
                         else -> WidgetLayout.LINK
                     },
@@ -676,6 +683,7 @@ class HomeScreenViewModel(
                         Command.ChangeWidgetType.TYPE_TREE -> WidgetLayout.TREE
                         Command.ChangeWidgetType.TYPE_LIST -> WidgetLayout.LIST
                         Command.ChangeWidgetType.TYPE_COMPACT_LIST -> WidgetLayout.COMPACT_LIST
+                        Command.ChangeWidgetType.TYPE_VIEW -> WidgetLayout.VIEW
                         else -> throw IllegalStateException("Unexpected type: $type")
                     }
                 )
@@ -1055,6 +1063,7 @@ class HomeScreenViewModel(
     private fun parseWidgetType(curr: Widget) = when (curr) {
         is Widget.Link -> Command.ChangeWidgetType.TYPE_LINK
         is Widget.Tree -> Command.ChangeWidgetType.TYPE_TREE
+        is Widget.View -> Command.ChangeWidgetType.TYPE_VIEW
         is Widget.List -> {
             if (curr.isCompact)
                 Command.ChangeWidgetType.TYPE_COMPACT_LIST
@@ -1755,6 +1764,7 @@ sealed class Command {
             const val TYPE_LINK = 1
             const val TYPE_LIST = 2
             const val TYPE_COMPACT_LIST = 3
+            const val TYPE_VIEW = 4
             const val UNDEFINED_LAYOUT_CODE = -1
         }
     }

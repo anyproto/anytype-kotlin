@@ -452,9 +452,22 @@ class HomeScreenViewModel(
                             )
                         }
                         is Widget.View -> {
-                            // Falling back to link widget in case of
-                            LinkWidgetContainer(
-                                widget = widget
+                            DataViewListWidgetContainer(
+                                widget = widget,
+                                storage = storelessSubscriptionContainer,
+                                getObject = getObject,
+                                activeView = observeCurrentWidgetView(widget.id),
+                                isWidgetCollapsed = isCollapsed(widget.id),
+                                isSessionActive = isSessionActive,
+                                urlBuilder = urlBuilder,
+                                // TODO handle cached item type.
+                                onRequestCache = {
+                                    currentlyDisplayedViews.find { view ->
+                                        view.id == widget.id
+                                                && view is WidgetView.SetOfObjects
+                                                && view.source == widget.source
+                                    } as? WidgetView.SetOfObjects
+                                }
                             )
                         }
                     }

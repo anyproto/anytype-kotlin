@@ -3,14 +3,18 @@ package com.anytypeio.anytype.di.feature.gallery
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.data.auth.event.EventProcessImportDateChannel
+import com.anytypeio.anytype.data.auth.event.EventProcessImportRemoteChannel
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
-import com.anytypeio.anytype.domain.workspace.EventProcessChannel
+import com.anytypeio.anytype.domain.workspace.EventProcessImportChannel
 import com.anytypeio.anytype.gallery_experience.viewmodel.GalleryInstallationViewModel
 import com.anytypeio.anytype.gallery_experience.viewmodel.GalleryInstallationViewModelFactory
+import com.anytypeio.anytype.middleware.EventProxy
+import com.anytypeio.anytype.middleware.interactor.EventProcessImportMiddlewareChannel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
 import dagger.Binds
@@ -46,6 +50,18 @@ object GalleryInstallationModule {
 
     @Provides
     @PerScreen
+    fun provideEventProcessRemoteChannel(
+        proxy: EventProxy
+    ): EventProcessImportRemoteChannel = EventProcessImportMiddlewareChannel(events = proxy)
+
+    @Provides
+    @PerScreen
+    fun provideEventProcessDateChannel(
+        channel: EventProcessImportRemoteChannel
+    ): EventProcessImportChannel = EventProcessImportDateChannel(channel = channel)
+
+    @Provides
+    @PerScreen
     fun provideGradientProvider(): SpaceGradientProvider {
         return SpaceGradientProvider.Default
     }
@@ -68,5 +84,5 @@ interface GalleryInstallationComponentDependencies : ComponentDependencies {
     fun analytics(): Analytics
     fun urlBuilder(): UrlBuilder
     fun userPermissionProvider(): UserPermissionProvider
-    fun eventProcessChannel(): EventProcessChannel
+    fun eventProxy(): EventProxy
 }

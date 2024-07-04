@@ -279,7 +279,7 @@
     <string name="relation_format_number">Nombre</string>
     <string name="relation_format_date">Date</string>
     <string name="relation_format_status">Sélectionner</string>
-    <string name="relation_format_file">Fichier</string>
+    <string name="relation_format_file">File &amp; Media</string>
     <string name="relation_format_checkbox">Case à cocher</string>
     <string name="relation_format_url">Url</string>
     <string name="relation_format_email">Email</string>
@@ -932,6 +932,8 @@
     <string name="widget_type_list_description">Widget avec vue en liste d\'un set d\'objets</string>
     <string name="widget_type_compact_list_description">Widget avec vue en liste d\'un set d\'objets</string>
     <string name="widget_type_list">Liste</string>
+    <string name="widget_type_view">Vue</string>
+    <string name="widget_type_view_description">Widget with a view of set object</string>
     <string name="widget_type_compact_list">Compact list</string>
     <string name="widget_change_source">Changer la Source</string>
     <string name="widget_change_type">Change Type</string>

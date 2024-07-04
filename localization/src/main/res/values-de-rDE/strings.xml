@@ -279,7 +279,7 @@
     <string name="relation_format_number">Nummer</string>
     <string name="relation_format_date">Datum</string>
     <string name="relation_format_status">Auswählen</string>
-    <string name="relation_format_file">File &amp; Media</string>
+    <string name="relation_format_file">Datei &amp; Medien</string>
     <string name="relation_format_checkbox">Checkbox</string>
     <string name="relation_format_url">URL</string>
     <string name="relation_format_email">E-Mail</string>

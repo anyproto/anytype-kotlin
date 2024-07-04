@@ -14,7 +14,7 @@
     <string name="debug_sync_report">Debug Sync Rapport</string>
     <string name="debug">Debug</string>
     <string name="account">Kluis</string>
-    <string name="reset_account">Reset vault</string>
+    <string name="reset_account">Kluis opnieuw instellen</string>
     <string name="delete_account">Verwijder kluis</string>
     <string name="space_debug">Debug ruimte</string>
     <string name="data">Gegevens</string>
@@ -28,7 +28,7 @@
     <string name="dark">Donker</string>
     <string name="system">Systeem</string>
     <string name="settings">Instellingen</string>
-    <string name="have_you_back_up_your_recovery_phrase">Have you backed up your Key?</string>
+    <string name="have_you_back_up_your_recovery_phrase">Heb je een back-up van jouw sleutel gemaakt?</string>
     <string name="you_will_need_to_sign_in">Je zult dit nodig hebben om in jouw kluis in te loggen. Bewaar het op een veilige plaats. Als je het verliest, heb je niet langer toegang tot jouw kluis.</string>
     <string name="about_help_and_community">Help &amp; Community</string>
     <string name="about_what_is_new">Wat is er nieuw</string>
@@ -59,7 +59,7 @@
     <string name="account_name">Naam</string>
     <string name="space_settings">Ruimte instellingen</string>
     <string name="data_management">Gegevensbeheer</string>
-    <string name="deleted_account_danger_zone_msg">Once you request your vault to be deleted, you have 30 days to cancel this request. After 30 days, your encrypted vault data is permanently removed from the backup node, you won\'t be able to sign into Anytype on new devices.</string>
+    <string name="deleted_account_danger_zone_msg">Zodra je een verzoek hebt ingediend om jouw kluis te verwijderen, heb je 30 dagen om dit verzoek te annuleren. Na 30 dagen worden jouw versleutelde kluisgegevens permanent verwijderd uit de back-up node, je kunt je dan niet meer inloggen in Anytype op nieuwe apparaten.</string>
     <string name="danger_zone">Gevarenzone</string>
     <string name="snackbar_template_add">Nieuw sjabloon is toegevoegd aan het type</string>
     <string name="settings_membership">Lidmaatschap</string>
@@ -279,7 +279,7 @@
     <string name="relation_format_number">Nummer</string>
     <string name="relation_format_date">Datum</string>
     <string name="relation_format_status">Selecteer</string>
-    <string name="relation_format_file">Bestand</string>
+    <string name="relation_format_file">Bestand &amp; Media</string>
     <string name="relation_format_checkbox">Selectievak</string>
     <string name="relation_format_url">URL</string>
     <string name="relation_format_email">E-mailadres</string>
@@ -436,7 +436,7 @@
     <string name="paste_link">Link</string>
     <string name="next">Volgende</string>
     <string name="limit_object_types">Beperkt objecttypes</string>
-    <string name="deleted_account_msg">We\'re sorry to see you go. Once you request your vault to be deleted, you have 30 days to cancel this request. After 30 days, your encrypted vault data is permanently removed from the backup node.</string>
+    <string name="deleted_account_msg">We vinden het jammer om je te zien gaan. Zodra je verzoekt om jouw account te verwijderen, heb je 30 dagen om dit verzoek te annuleren. Na 30 dagen worden jouw accountgegevens permanent verwijderd uit de back-up node.</string>
     <string name="swipe_down_to_skip">Veeg naar beneden om over te slaan</string>
     <string name="show">Toon</string>
     <string name="this_type_has_templates">Dit type heeft %1$d sjablonen</string>
@@ -510,7 +510,7 @@
     <string name="collection_widget_description">Jouw collecties van objecten</string>
     <string name="no_type_named">Er is geen type genaamd \"%1$s\"</string>
     <string name="try_to_create_new_one_or_search_for_something_else">Probeer een nieuwe aan te maken of zoek naar iets anders</string>
-    <string name="try_different_search_query">Try a different search query.</string>
+    <string name="try_different_search_query">Probeer een andere zoekopdracht.</string>
     <string name="change_wallpaper">Wijzig achtergrond</string>
     <string name="change_icon">Wijzig icoon</string>
     <string name="random">Willekeurig</string>
@@ -552,9 +552,9 @@
     <string name="start_login_text">Met Anytype kun je notities en documenten schrijven, taken beheren, bestanden delen en belangrijke inhoud van het web opslaan.</string>
     <string name="login">Aanmelden</string>
     <string name="sign_up">Aanmelden</string>
-    <string name="type_your_recovery_phrase">or type your Key</string>
-    <string name="login_with_recovery_phrase">Login with your Key</string>
-    <string name="or_scan_qr_code">Scan Qr code</string>
+    <string name="type_your_recovery_phrase">of typ jouw sleutel</string>
+    <string name="login_with_recovery_phrase">Meld je aan met jouw sleutel</string>
+    <string name="or_scan_qr_code">Scan QR-code</string>
     <string name="choose_pin_code">Kies pincode</string>
     <string name="congratulations">Gefeliciteerd!</string>
     <string name="time_to_update_title">Het is tijd om te updaten</string>
@@ -581,8 +581,8 @@
     <string name="other_settings">Andere instellingen</string>
     <string name="your_page">Jouw openbare pagina</string>
     <string name="updates">Updates</string>
-    <string name="recovery_phrase_text">You\'ll need it to sign in. Keep it in a safe place. If you lose it, you can no longer access your vault.</string>
-    <string name="back_up_your_recovery_phrase">Back up your Key</string>
+    <string name="recovery_phrase_text">Je zult dit nodig hebben om aan te melden. Bewaar dit op een veilige plek. Als je dit verliest, heb je niet langer toegang tot jouw kluis.</string>
+    <string name="back_up_your_recovery_phrase">Maak een back-up van jouw sleutel</string>
     <string name="i_ve_written_it_down">ik heb het opgeschreven</string>
     <string name="keychain_mock">witch collapse practice feed shame open despair creek road again ice least lake tree young address brain envelope</string>
     <string name="show_and_copy_mnemonic">Laat herstelzin zien en kopieer</string>
@@ -632,7 +632,7 @@
     <string name="link">Link</string>
     <string name="move_into_this_page">Verplaats naar deze pagina</string>
     <string name="move_into">Verplaats naar</string>
-    <string name="fetching_your_account">Fetching your vault…</string>
+    <string name="fetching_your_account">Jouw kluis wordt opgehaald...</string>
     <string name="search_on_page">Zoek op pagina</string>
     <string name="object_view_type">Object weergave type</string>
     <string name="object_type_name">Object type naam</string>
@@ -666,8 +666,8 @@
     <string name="reset">Reset</string>
     <string name="search_a_relation">Zoek een relatie</string>
     <string name="content_description_check_icon">Check icon</string>
-    <string name="content_desc_empty_values_bottom_check_icon">Sort empty values at the bottom</string>
-    <string name="content_desc_empty_values_top_check_icon">Sort empty values at the top</string>
+    <string name="content_desc_empty_values_bottom_check_icon">Sorteer lege waarden onderaan</string>
+    <string name="content_desc_empty_values_top_check_icon">Sorteer lege waarden bovenaan</string>
     <string name="filter_condition_is">Is</string>
     <string name="today">Vandaag</string>
     <string name="yesterday">Gisteren</string>
@@ -692,7 +692,7 @@
     <string name="btn_upload_gallery">Uploaden uit galerij</string>
     <string name="btn_upload_storage">Uploaden vanuit externe opslag</string>
     <string name="btn_upload">Upload</string>
-    <string name="alert_qr_camera">Go to Settings – Key on Desktop in order to find the QR code for login.</string>
+    <string name="alert_qr_camera">Ga naar Instellingen – Sleutel op desktop om de QR-code te vinden voor aanmelden.</string>
     <string name="alert_qr_camera_ok">Ok</string>
     <string name="choose_option">Kies optie</string>
     <string name="find_a_relation">Vind een relatie</string>
@@ -727,9 +727,9 @@
     <string name="shortcut_create_new_object_of_type">Nieuw %1$s</string>
     <string name="close">Sluit</string>
     <string name="go_to_settings">Ga naar instellingen</string>
-    <string name="do_not_forget_mnemonic_phrase">Don\'t forget to take and save your Key</string>
+    <string name="do_not_forget_mnemonic_phrase">Vergeet niet jouw herstelzin te kopiëren en op te slaan</string>
     <string name="you_can_always_find_mnemonic_in_settings">Je kunt de zin altijd vinden in de instellingen op het dashboardscherm.</string>
-    <string name="if_you_lose_recovery_phrase_warning">If you lose the Key and get logged out you will not be able to ever access your data again. Save this Key outside of Anytype for data recovery.</string>
+    <string name="if_you_lose_recovery_phrase_warning">Als je de sleutel verliest en wordt afgemeld, zul je nooit meer toegang tot jouw gegevens kunnen krijgen. Sla deze sleutel op buiten Anytype voor gegevensherstel.</string>
     <string name="card_size">Kaartgrootte</string>
     <string name="clear_cache">Wis cache</string>
     <string name="clear_cache_title">Weet je het zeker?</string>
@@ -743,22 +743,22 @@
     <string name="unsplash">Unsplash</string>
     <string name="cancel_deletion">Annuleer verwijdering</string>
     <string name="logout_and_clear_local_data">Log uit en wis lokale gegevens</string>
-    <string name="planned_for_deletion_in_n_days">This vault is planned for deletion in %1$d days</string>
-    <string name="planned_for_deletion_tomorrow">This vault is planned for deletion tomorrow</string>
-    <string name="planned_for_deletion_today">This vault is planned for deletion today</string>
-    <string name="planned_for_deletion_unknown">This vault is planned for deletion in ? days</string>
-    <string name="are_you_sure_to_delete_account">Are you sure to delete your vault?</string>
+    <string name="planned_for_deletion_in_n_days">Deze kluis is voorzien om te worden verwijderd over %1$d dagen</string>
+    <string name="planned_for_deletion_tomorrow">Deze kluis is voorzien om morgen te worden verwijderd</string>
+    <string name="planned_for_deletion_today">Deze kluis is voorzien om vandaag te worden verwijderd</string>
+    <string name="planned_for_deletion_unknown">Deze kluis is voorzien om te worden verwijderd over ? dagen</string>
+    <string name="are_you_sure_to_delete_account">Weet je zeker dat je jouw kluis wilt verwijderen?</string>
     <string name="deleted_account_warning_msg">Je zult op alle andere apparaten worden uitgelogd. Je hebt 30 dagen om het te herstellen. Daarna zal het permanent worden verwijderd.</string>
     <string name="use_template">Sjabloon selecteren</string>
     <string name="swipe_to_choose">Gebruik vegen om te kiezen</string>
     <string name="without_template">Zonder sjabloon</string>
     <string name="unsplash_generic_error">Fout tijdens het zoeken naar afbeeldingen op Unsplash. Probeer het later opnieuw.</string>
-    <string name="do_not_forget_to_save_recovery_phrase_msg">Don\'t forget to take and save your Key from settings</string>
+    <string name="do_not_forget_to_save_recovery_phrase_msg">Vergeet niet jouw sleutel vanuit de instellingen te kopiëren en op te slaan</string>
     <string name="unlock_your_object_to_add_new_relation">Ontgrendel jouw object om een nieuwe relatie toe te voegen</string>
     <string name="unlock_your_object_to_edit_relations">Ontgrendel jouw object om relaties aan te passen</string>
     <string name="fragment_relation_create_from_scratch_title">Selecteer relatie type</string>
     <string name="fragment_dashboard_restore">Herstel</string>
-    <string name="your_account_deleted">Your vault is deleted.</string>
+    <string name="your_account_deleted">Jouw kluis is verwijderd.</string>
     <plurals name="fragment_dashboard_selected_count">
         <item quantity="one">%d object geselecteerd</item>
         <item quantity="other">%d objecten geselecteerd</item>
@@ -776,7 +776,7 @@
     </string-array>
     <string name="snack_link_to">gelinkt naar</string>
     <string name="snack_move_to">verplaatst naar</string>
-    <string name="recovery_phrase_copied">Your Key copied</string>
+    <string name="recovery_phrase_copied">Jouw sleutel is gekopieerd</string>
     <string name="type_editing_title">Type instellingen</string>
     <string name="relation_editing_title">Relatie instellingen</string>
     <string name="type_editing_uninstall">Verwijder</string>
@@ -788,7 +788,7 @@
     <string name="almost_there">Bijna klaar!</string>
     <string name="i_did_not_not_complete_migration">Ik heb de migratie niet voltooid</string>
     <string name="not_completed_migration_steps">Ik heb de migratie niet voltooid</string>
-    <string name="almost_there_subtitle">To use this version of the app, please choose the correct option below to migrate your vault.</string>
+    <string name="almost_there_subtitle">Kies alsjeblieft de juiste optie hieronder om jouw kluis te migreren om deze versie van de app te gebruiken.</string>
     <string name="i_completed_migration">Ik heb migratie voltooid</string>
     <string name="here">hier</string>
     <string name="update_steps_first">1. Download de desktop app </string>
@@ -932,6 +932,8 @@
     <string name="widget_type_list_description">Widget met lijstweergave van geselecteerde object</string>
     <string name="widget_type_compact_list_description">Widget met lijstweergave van geselecteerde object</string>
     <string name="widget_type_list">Lijst</string>
+    <string name="widget_type_view">Weergave</string>
+    <string name="widget_type_view_description">Widget met een weergave van het geselecteerde object</string>
     <string name="widget_type_compact_list">Compacte lijst</string>
     <string name="widget_change_source">Wijzig bron</string>
     <string name="widget_change_type">Wijzig type</string>
@@ -966,12 +968,12 @@
     <!--region ONBOARDING -->
     <string name="onboarding_auth_title">de alles-app</string>
     <string name="onboarding_auth_subtitle">voor degenen \ndievertrouwen &amp; autonomie \nvieren</string>
-    <string name="onboarding_auth_description">Create &amp; collaborate in spaces you own. Encrypted, offline &amp; open.</string>
+    <string name="onboarding_auth_description">Creëer &amp; werk samen in jouw ruimten. Versleuteld, offline &amp;  open.</string>
     <string name="onboarding_terms_and_policy_prefix">"Door verder te gaan, ga je akkoord met "</string>
     <string name="onboarding_terms_and_policy_terms">Voorwaarden\u00A0van\u00A0gebruik</string>
     <string name="onboarding_terms_and_policy_infix">" en "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Beleid</string>
-    <string name="onboarding_new_vault_button_text">New vault</string>
+    <string name="onboarding_new_vault_button_text">Nieuwe kluis</string>
     <string name="onboarding_enter_my_vault">Get my Key</string>
     <string name="onboarding_have_key_button_text">Ik heb een sleutel</string>
     <string name="onboarding_get_my_key_button_text">Verkrijg mijn sleutel</string>
@@ -980,7 +982,7 @@
     <string name="onboarding_void_title">Dit is jouw ruimte</string>
     <string name="onboarding_void_description">Het is een versleutelde locatie voor alles wat je aanmaakt. Alles wordt opgeslagen op jouw apparaat en opgeslagen op het gedistribueerde netwerk.</string>
     <string name="onboarding_this_is_your_key_title">Dit is jouw sleutel</string>
-    <string name="onboarding_key_description">It gives you full ownership over your vault. It cannot be recovered.</string>
+    <string name="onboarding_key_description">Het geeft je het volledige eigendom over jouw kluis. Het kan niet worden hersteld.</string>
     <string name="onboarding_show_my_key">Toon mijn sleutel</string>
     <string name="onboarding_key_skip">Sla over</string>
     <string name="onboarding_key_copy">Kopieer naar klembord</string>
@@ -988,19 +990,19 @@
     <string name="onboarding_soul_creation_description">Alleen zichtbaar voor mensen met wie je iets deelt. Er is geen centraal register van deze namen.</string>
     <string name="onboarding_soul_creation_placeholder">Anytype identiteit</string>
     <string name="onboarding_soul_creation">Jouw identiteit aan het aanmaken…</string>
-    <string name="onboarding_type_your_key">Type your recovery phrase</string>
+    <string name="onboarding_type_your_key">Type jouw herstelzin</string>
     <string name="onboarding_login_or">OF</string>
     <string name="onboarding_entering_void_title">De Void binnengaan</string>
-    <string name="onboarding_your_key_can_t_be_empty">Your Key can\'t be empty</string>
+    <string name="onboarding_your_key_can_t_be_empty">Jouw sleutel kan niet leeg zijn</string>
     <string name="onboarding_mnemonic_read_more">Lees meer</string>
     <string name="onboarding_key_additional_info">Je kunt deze sleutel later terugvinden in de Anytype instellingen</string>
     <string name="onboarding_what_is_the_key">Wat is de sleutel?</string>
     <string name="onboarding_recovery_phrase_description">Het bestaat uit een herstelzin –  12 willekeurige woorden van waaruit jouw kluis op magische wijze wordt aangemaakt op dit apparaat.</string>
-    <string name="onboarding_recovery_phrase_description_2">Whomever knows the combination of these words owns your vault. </string>
-    <string name="onboarding_recovery_phrase_description_3">Right now, you are the only person in the world who knows it.</string>
+    <string name="onboarding_recovery_phrase_description_2">Wie de combinatie van deze woorden kent, is eigenaar van jouw kluis. </string>
+    <string name="onboarding_recovery_phrase_description_3">Op dit moment ben jij de enige persoon ter wereld die deze kent.</string>
     <string name="onboarding_recovery_phrase_description_4">Alle rekenmiddelen op aarde zijn niet genoeg om in te breken. Als je het verliest, kan het niet worden hersteld. Dus sla het ergens veilig op!</string>
-    <string name="onboarding_how_to_save_my_phrase">How to save my Key?</string>
-    <string name="onboarding_how_to_save_my_phrase_2">The easiest way to store your Key is to save it in your password manager.</string>
+    <string name="onboarding_how_to_save_my_phrase">Hoe bewaar ik mijn sleutel?</string>
+    <string name="onboarding_how_to_save_my_phrase_2">De eenvoudigste manier om jouw sleutel te bewaren is door deze op te slaan in jouw wachtwoordmanager.</string>
     <string name="onboarding_how_to_save_my_phrase_3">De meest veilige manier is om het op papier op te schrijven en het offline te houden, op een veilige plek. </string>
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
@@ -1137,8 +1139,8 @@
     <string name="multiplayer_cant_add_members">You can’t add more members</string>
     <string name="multiplayer_cant_add_editors">You can’t add more editors</string>
     <string name="multiplayer_upgrade_button">✦ Upgrade</string>
-    <string name="multiplayer_upgrade_button_request">✦ Upgrade to add more members</string>
-    <string name="multiplayer_upgrade_spaces_button">✦ Upgrade to add more spaces</string>
+    <string name="multiplayer_upgrade_button_request">✦ Upgrade om meer leden toe te voegen</string>
+    <string name="multiplayer_upgrade_spaces_button">✦ Upgrade om meer ruimten toe te voegen</string>
     <string name="multiplayer_members">Leden</string>
     <string name="multiplayer_leave_request">Afmeldverzoek</string>
     <string name="multiplayer_join_request">Deelnameverzoek</string>
@@ -1148,9 +1150,9 @@
     <string name="multiplayer_can_edit">Kan bewerken</string>
     <string name="multiplayer_can_view">Kan zien</string>
     <string name="multiplayer_space_add_viewer">Voeg lezer toe</string>
-    <string name="multiplayer_space_add_more_viewer">✦ Add more viewers</string>
+    <string name="multiplayer_space_add_more_viewer">✦ Meer lezers toevoegen</string>
     <string name="multiplayer_space_add_editor">Voeg bewerker toe</string>
-    <string name="multiplayer_space_add_more_editor">✦ Add more editors</string>
+    <string name="multiplayer_space_add_more_editor">✦ Meer bewerkers toevoegen</string>
     <string name="multiplayer_space_request_reject">Weiger</string>
     <string name="multiplayer_space_join_request_header">%1$s heeft verzocht om deel te nemen aan de ruimte %2$s</string>
     <string name="multiplayer_remove_member">Verwijder lid</string>
@@ -1205,17 +1207,17 @@
     <string name="multiplayer_toast_share_limit_reached">Deellimiet bereikt</string>
     <string name="multiplayer_deeplink_to_your_object">Deeplink naar jouw object</string>
     <string name="multiplayer_deeplink_to_your_object_error">Deze deeplink werkt niet. Object kan worden verwijderd of er kunnen problemen zijn met toegang tot de ruimte.</string>
-    <string name="multiplayer_collaborate_on_spaces">Collaborate on spaces</string>
-    <string name="multiplayer_collaborate_step_1">1.  Tap the Space widget to access settings</string>
-    <string name="multiplayer_collaborate_step_2">2.  Open Share section</string>
-    <string name="multiplayer_collaborate_step_3">3.  Generate an invite link and share it</string>
+    <string name="multiplayer_collaborate_on_spaces">Aan ruimtes samenwerken</string>
+    <string name="multiplayer_collaborate_step_1">1. Tik op de ruimte widget om toegang te krijgen tot instellingen</string>
+    <string name="multiplayer_collaborate_step_2">2. Open delen sectie</string>
+    <string name="multiplayer_collaborate_step_3">3. Genereer een uitnodigingskoppeling en deel deze</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="one">%1$d lid</item>
         <item quantity="other">%1$d leden</item>
     </plurals>
     <plurals name="multiplayer_number_of_join_requests">
-        <item quantity="one">%1$d request</item>
-        <item quantity="other">%1$d requests</item>
+        <item quantity="one">%1$d verzoek</item>
+        <item quantity="other">%1$d verzoeken</item>
     </plurals>
     <string name="multiplayer_you_as_member">jij</string>
     <string name="multiplayer_spaces">Ruimtes</string>
@@ -1225,9 +1227,9 @@
     <string name="multiplayer_cancel_join_request">Annuleer deelnameverzoek</string>
     <string name="multiplayer_cancel_join_request_msg">Je zult het deelnameverzoek opnieuw moeten sturen</string>
     <string name="multiplayer_do_not_cancel_join_request">Annuleer niet</string>
-    <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">This link does not seem to work</string>
-    <string name="multiplayer_invite_link_space_deleted">This invite link is no longer valid because the space has been deleted.</string>
-    <string name="multiplayer_invite_link_space_not_found">This invite link is no longer valid because the space was not found.</string>
+    <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">Deze koppeling lijkt niet te werken</string>
+    <string name="multiplayer_invite_link_space_deleted">Deze uitnodigingskoppeling is niet langer geldig omdat de ruimte is verwijderd.</string>
+    <string name="multiplayer_invite_link_space_not_found">Deze uitnodigingskoppeling is niet langer geldig omdat de ruimte niet werd gevonden.</string>
     <string name="multiplayer_invite_link_request_already_sent">Verzoek verzonden</string>
     <!--endregion-->
     <!--region PAYMENTS -->
@@ -1254,7 +1256,7 @@
     <string name="payments_button_contact">Contacteer</string>
     <string name="payments_button_info">Meer informatie</string>
     <string name="payments_button_submit">Verstuur</string>
-    <string name="payments_button_pay">Pay by card</string>
+    <string name="payments_button_pay">Betalen met kaart</string>
     <string name="payments_button_change_email">Wijzig e-mailadres</string>
     <string name="payments_member_link">Lidmaatschap niveaus details</string>
     <string name="payments_privacy_link">Privacybeleid</string>
@@ -1269,10 +1271,10 @@
     <string name="payments_tier_details_name_domain">.any</string>
     <string name="payments_tier_details_name_min">Minimaal 7 tekens</string>
     <string name="payments_tier_details_name_error">Deze naam is al in gebruik!</string>
-    <string name="payments_tier_details_name_validated">This name [%1$s] is up for grabs!</string>
-    <string name="payments_tier_details_name_validating">Validating name</string>
+    <string name="payments_tier_details_name_validated">Deze naam [%1$s] ligt voor het oprapen!</string>
+    <string name="payments_tier_details_name_validating">Naam aan het valideren</string>
     <string name="payments_tier_details_free_forever">Voor altijd</string>
-    <string name="payments_tier_details_valid_until">Valid until %1$s</string>
+    <string name="payments_tier_details_valid_until">Geldig tot %1$s</string>
     <string name="payments_tier_details_info_explorer">Duik in het netwerk en geniet van de spanning van één-op-één samenwerking</string>
     <string-array name="payments_benefits_explorer">
         <item>1 GB aan netwerkruimte</item>
@@ -1303,7 +1305,7 @@
     <string name="payments_email_hint">E-mailadres</string>
     <string name="payments_tier_current_title">Je huidige status:</string>
     <string name="payments_tier_current_valid">Geldig tot</string>
-    <string name="payments_tier_current_paid_by">Paid by</string>
+    <string name="payments_tier_current_paid_by">Betaald door</string>
     <string name="payments_tier_current_paid_by_card">Kaart</string>
     <string name="payments_tier_current_paid_by_crypto">Crypto</string>
     <string name="payments_tier_current_paid_by_apple">Apple abonnement</string>
@@ -1313,14 +1315,14 @@
     <!-- Payments Code -->
     <string name="payments_code_title">Voer de code in die naar jouw e-mailadres is verstuurd</string>
     <string name="payments_code_resend">Verstuur opnieuw</string>
-    <string name="payments_code_resend_in">Resend in %1$d sec</string>
+    <string name="payments_code_resend_in">Verstuur opnieuw over %1$d seconden</string>
     <!-- Membership Welcome -->
     <string name="payments_welcome_title">Welkom bij het netwerk, \n%1$s</string>
     <string name="payments_welcome_subtitle">Hulde voor jouw nieuwsgierigheid!</string>
     <string name="payments_welcome_button">Ga verder</string>
     <!-- Membership Email -->
     <string name="membership_support_email">support@anytype.io</string>
-    <string name="membership_support_subject">Membership Screen Error Report - %1$s</string>
+    <string name="membership_support_subject">Lidmaatschapsscherm foutmelding - %1$s</string>
     <string name="membership_support_body">        Hi Anytype Support Team,\n\n
 
         I encountered an error on the Membership Screen in the app. Below are the details:\n
@@ -1340,12 +1342,12 @@
     </string>
     <string name="payments_email_to">membership-upgrade@anytype.io</string>
     <string name="payments_email_subject">Upgrade %1$s</string>
-    <string name="payments_email_body">Hello Anytype team! I would like to extend my current membership for more (please choose an option):\n
-- Extra remote storage\n
-- More space editors\n
-- Additional shared spaces\n
-Specifically,
-Please provide specific details of your needs here.</string>
+    <string name="payments_email_body">Halllo Anytype team! Ik zou graag mijn huidige lidmaatschap willen uitbreiden voor meer (kies alsjeblieft een optie):\n
+- Extra opslag\n
+- Meer ruimte bewerkers\n
+- Aanvullende gedeelde ruimtes\n
+Specifiek,
+Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <!-- Membership name errors -->
     <string name="membership_name_bad_input">Er ging iets mis met invoeren, probeer het opnieuw</string>
     <string name="membership_name_cache_error">Fout aan onze kant, probeer het later opnieuw</string>
@@ -1358,18 +1360,18 @@ Please provide specific details of your needs here.</string>
     <string name="membership_name_too_long">Naam is te lang</string>
     <string name="membership_name_too_short">Naam is te kort</string>
     <string name="membership_any_name_not_reserved">This name cannot be reserved</string>
-    <string name="membership_any_name_null_error">Empty error</string>
+    <string name="membership_any_name_null_error">Lege fout</string>
     <string name="membership_any_name_unknown">Onbekende foutmelding</string>
-    <string name="membership_email_wrong_format">Email has wrong format</string>
-    <string name="membership_email_already_verified">Email is already verified</string>
-    <string name="membership_email_already_sent">Email is already sent, try again after 1 minute</string>
-    <string name="membership_email_failed_to_send">Email failed to send</string>
-    <string name="membership_email_membership_already_exists">Membership already exists</string>
-    <string name="membership_email_code_expired">Code expired</string>
-    <string name="membership_email_code_wrong">Code is wrong</string>
-    <string name="membership_email_code_success">Code is correct</string>
-    <string name="membership_email_membership_not_found">Membership not found</string>
-    <string name="membership_email_membership_already_active">Membership already active</string>
+    <string name="membership_email_wrong_format">E-mailadres heeft een verkeerd formaat</string>
+    <string name="membership_email_already_verified">E-mailadres is al geverifieerd</string>
+    <string name="membership_email_already_sent">E-mail is al verzonden, probeer het opnieuw na 1 minuut</string>
+    <string name="membership_email_failed_to_send">E-mail kon niet worden verzonden</string>
+    <string name="membership_email_membership_already_exists">Lidmaatschap bestaat al</string>
+    <string name="membership_email_code_expired">De code is verlopen</string>
+    <string name="membership_email_code_wrong">De code is verkeerd</string>
+    <string name="membership_email_code_success">De code is juist</string>
+    <string name="membership_email_membership_not_found">Lidmaatschap niet gevonden</string>
+    <string name="membership_email_membership_already_active">Lidmaatschap is al actief</string>
     <!-- Notifications -->
     <string name="notifications_alert_error_unknown">Er heeft zich een onbekende fout voorgedaan. Probeer het later opnieuw.</string>
     <string name="notifications_alert_error_bad_input">Ongeldige invoer gedetecteerd. Controleer jouw gegevens en probeer het opnieuw.</string>
@@ -1398,47 +1400,47 @@ Please provide specific details of your needs here.</string>
     <string name="error_unexpected_layout">Fout: onverwachte lay-out</string>
     <string name="membership_price_pending">In behandeling...</string>
     <string name="per_period">per %1$s</string>
-    <string name="free_for">Free for %1$s</string>
-    <string name="free_for_unknown">Free until...</string>
-    <string name="free_until">Free until</string>
-    <string name="membership_valid_forever">Valid forever</string>
-    <string name="membership_valid_for_unknown">Valid until...</string>
-    <string name="membership_agree_start">By continuing you agree to our</string>
+    <string name="free_for">Gratis voor %1$s</string>
+    <string name="free_for_unknown">Gratis tot...</string>
+    <string name="free_until">Gratis tot</string>
+    <string name="membership_valid_forever">Voor altijd geldig</string>
+    <string name="membership_valid_for_unknown">Geldig tot...</string>
+    <string name="membership_agree_start">Door verder te gaan, ga je akkoord met onze</string>
     <string name="membership_agree_terms">Gebruikersvoorwaarden</string>
-    <string name="membership_agree_middle">and</string>
+    <string name="membership_agree_middle">en</string>
     <string name="membership_agree_privacy">Privacybeleid</string>
-    <string name="membership_support_already_acquired">You’ve already acquired a Membership plan using another Anytype account.</string>
-    <string name="membership_support_different_subscription">Found a subscription with a different id</string>
-    <string name="membership_support_more_then_one_subscription">Found more than one subscription</string>
-    <string name="multiplayer_space_join_request_participants_error">Space participant\'s error</string>
-    <string name="multiplayer_space_join_request_new_member_error">Request\'s member error</string>
-    <string name="multiplayer_space_join_request_current_user_error">Current user status error</string>
-    <string name="multiplayer_space_join_request_membership_status_error">Current membership status error</string>
+    <string name="membership_support_already_acquired">Je hebt al een Lidmaatschap met een ander Anytype account verkregen.</string>
+    <string name="membership_support_different_subscription">Een abonnement met een ander ID gevonden</string>
+    <string name="membership_support_more_then_one_subscription">Meer dan één abonnement gevonden</string>
+    <string name="multiplayer_space_join_request_participants_error">Fout met deelnemer ruimte</string>
+    <string name="multiplayer_space_join_request_new_member_error">Fout met lidmaatschapsverzoek</string>
+    <string name="multiplayer_space_join_request_current_user_error">Fout met huidige gebruikersstatus</string>
+    <string name="multiplayer_space_join_request_membership_status_error">Fout met huidige lidmaatschapsstatus</string>
     <string name="membership_upgrade_title">Membership upgrade</string>
     <string name="membership_upgrade_description">Reach us for extra storage, space editors, or more shared spaces. Anytype team will provide details and conditions tailored to your needs.</string>
     <string name="membership_upgrade_button">Contact Anytype Team</string>
-    <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d spaces that can be shared</string>
+    <string name="membership_space_settings_share_limit">Je hebt de limiet bereikt van %1$d ruimtes die kunnen worden gedeeld</string>
     <plurals name="period_years">
-        <item quantity="one">year</item>
-        <item quantity="other">%d years</item>
+        <item quantity="one">jaar</item>
+        <item quantity="other">%d jaren</item>
     </plurals>
     <plurals name="period_months">
-        <item quantity="one">month</item>
-        <item quantity="other">%d months</item>
+        <item quantity="one">maand</item>
+        <item quantity="other">%d maanden</item>
     </plurals>
     <plurals name="period_weeks">
         <item quantity="one">week</item>
-        <item quantity="other">%d weeks</item>
+        <item quantity="other">%d weken</item>
     </plurals>
     <plurals name="period_days">
-        <item quantity="one">day</item>
-        <item quantity="other">%d days</item>
+        <item quantity="one">dag</item>
+        <item quantity="other">%d dagen</item>
     </plurals>
     <string name="membership_error_button_text_action">Neem contact met ons op</string>
     <string name="membership_error_button_text_dismiss">Ok</string>
-    <string name="error_login_network_id_mismatch">Network ID mismatch detected. Please verify your network configuration.</string>
-    <string name="error_login_select_vault_error">Select vault error.</string>
-    <string name="global_search_related_to">"Related to: "</string>
+    <string name="error_login_network_id_mismatch">Verkeerde netwerk-ID gedetecteerd. Controleer alsjeblieft jouw netwerkconfiguratie.</string>
+    <string name="error_login_select_vault_error">Fout met het selecteren van kluis.</string>
+    <string name="global_search_related_to">"Gerelateerd aan: "</string>
     <string name="global_search_no_related_objects_found">No related objects found</string>
     <string name="sort_empty_values_desc">Show empty values</string>
     <string name="sort_empty_values_bottom">On bottom</string>

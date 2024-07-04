@@ -279,7 +279,7 @@
     <string name="relation_format_number">Nummer</string>
     <string name="relation_format_date">Datum</string>
     <string name="relation_format_status">Auswählen</string>
-    <string name="relation_format_file">Datei</string>
+    <string name="relation_format_file">File &amp; Media</string>
     <string name="relation_format_checkbox">Checkbox</string>
     <string name="relation_format_url">URL</string>
     <string name="relation_format_email">E-Mail</string>
@@ -666,8 +666,8 @@
     <string name="reset">Zurücksetzen</string>
     <string name="search_a_relation">Beziehung suchen</string>
     <string name="content_description_check_icon">Check icon</string>
-    <string name="content_desc_empty_values_bottom_check_icon">Sort empty values at the bottom</string>
-    <string name="content_desc_empty_values_top_check_icon">Sort empty values at the top</string>
+    <string name="content_desc_empty_values_bottom_check_icon">Leere Werte nach ganz unten sortieren</string>
+    <string name="content_desc_empty_values_top_check_icon">Leere Werte nach ganz oben sortieren</string>
     <string name="filter_condition_is">Ist</string>
     <string name="today">Heute</string>
     <string name="yesterday">Gestern</string>
@@ -932,6 +932,8 @@
     <string name="widget_type_list_description">Widget mit Listenansicht für ein bestimmtes Objekt</string>
     <string name="widget_type_compact_list_description">Widget mit Listenansicht für ein bestimmtes Objekt</string>
     <string name="widget_type_list">Liste</string>
+    <string name="widget_type_view">Ansicht</string>
+    <string name="widget_type_view_description">Widget with a view of set object</string>
     <string name="widget_type_compact_list">Kompakte Liste</string>
     <string name="widget_change_source">Quelle ändern</string>
     <string name="widget_change_type">Typ ändern</string>

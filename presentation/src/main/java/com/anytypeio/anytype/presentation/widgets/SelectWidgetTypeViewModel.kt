@@ -64,8 +64,7 @@ class SelectWidgetTypeViewModel(
             val objectLayout = ObjectType.Layout.values().find { it.code == sourceLayout }
             if (objectLayout.isDataView()) {
                 views.value = listOf(
-                    WidgetTypeView.CompactList().setIsSelected(currentType),
-                    WidgetTypeView.List().setIsSelected(currentType),
+                    WidgetTypeView.View().setIsSelected(currentType),
                     WidgetTypeView.Link().setIsSelected(currentType)
                 )
             } else {
@@ -96,8 +95,7 @@ class SelectWidgetTypeViewModel(
             val objectLayout = ObjectType.Layout.values().find { it.code == layout }
             if (objectLayout.isDataView()) {
                 views.value = listOf(
-                    WidgetTypeView.CompactList(isSelected = false),
-                    WidgetTypeView.List(isSelected = false),
+                    WidgetTypeView.View(isSelected = false),
                     WidgetTypeView.Link(isSelected = false)
                 )
             } else {
@@ -125,6 +123,7 @@ class SelectWidgetTypeViewModel(
                     is WidgetTypeView.Link -> WidgetLayout.LINK
                     is WidgetTypeView.Tree -> WidgetLayout.TREE
                     is WidgetTypeView.List -> WidgetLayout.LIST
+                    is WidgetTypeView.View -> WidgetLayout.VIEW
                     is WidgetTypeView.CompactList -> WidgetLayout.COMPACT_LIST
                 }
                 updateWidget(
@@ -173,6 +172,7 @@ class SelectWidgetTypeViewModel(
                             is WidgetTypeView.Link -> Command.ChangeWidgetType.TYPE_LINK
                             is WidgetTypeView.Tree -> Command.ChangeWidgetType.TYPE_TREE
                             is WidgetTypeView.List -> Command.ChangeWidgetType.TYPE_LIST
+                            is WidgetTypeView.View -> Command.ChangeWidgetType.TYPE_VIEW
                             is WidgetTypeView.CompactList -> Command.ChangeWidgetType.TYPE_COMPACT_LIST
                         }
                     )

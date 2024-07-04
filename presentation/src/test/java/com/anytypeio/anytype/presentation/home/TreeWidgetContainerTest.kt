@@ -91,7 +91,8 @@ class TreeWidgetContainerTest {
 
             val widget = Widget.Tree(
                 id = MockDataFactory.randomUuid(),
-                source = Widget.Source.Default(source)
+                source = Widget.Source.Default(source),
+                config = config
             )
 
             val expanded = flowOf(emptyList<TreePath>())
@@ -102,11 +103,8 @@ class TreeWidgetContainerTest {
                 expandedBranches = expanded,
                 isWidgetCollapsed = flowOf(false),
                 urlBuilder = urlBuilder,
-                space = workspace,
                 isSessionActive = flowOf(true),
-                config = config,
                 objectWatcher = objectWatcher,
-                spaceGradientProvider = spaceGradientProvider,
                 getSpaceView = getSpaceView
             )
 
@@ -163,7 +161,8 @@ class TreeWidgetContainerTest {
 
         val widget = Widget.Tree(
             id = "widget",
-            source = Widget.Source.Default(source)
+            source = Widget.Source.Default(source),
+            config = config
         )
 
         val expanded = flowOf(
@@ -179,11 +178,8 @@ class TreeWidgetContainerTest {
             expandedBranches = expanded,
             isWidgetCollapsed = flowOf(false),
             urlBuilder = urlBuilder,
-            space = workspace,
             isSessionActive = flowOf(true),
-            config = config,
             objectWatcher = objectWatcher,
-            spaceGradientProvider = spaceGradientProvider,
             getSpaceView = getSpaceView
         )
 
@@ -254,7 +250,8 @@ class TreeWidgetContainerTest {
 
             val widget = Widget.Tree(
                 id = "widget",
-                source = Widget.Source.Default(source)
+                source = Widget.Source.Default(source),
+                config = config
             )
 
             val delayBeforeExpanded = 100L
@@ -271,11 +268,8 @@ class TreeWidgetContainerTest {
                 expandedBranches = expanded,
                 isWidgetCollapsed = flowOf(false),
                 urlBuilder = urlBuilder,
-                space = workspace,
                 isSessionActive = flowOf(true),
-                config = config,
                 objectWatcher = objectWatcher,
-                spaceGradientProvider = spaceGradientProvider,
                 getSpaceView = getSpaceView
             )
 
@@ -407,7 +401,8 @@ class TreeWidgetContainerTest {
 
         val widget = Widget.Tree(
             id = MockDataFactory.randomUuid(),
-            source = Widget.Source.Default(source)
+            source = Widget.Source.Default(source),
+            config = config
         )
 
         val expanded = flowOf(emptyList<TreePath>())
@@ -418,11 +413,8 @@ class TreeWidgetContainerTest {
             expandedBranches = expanded,
             isWidgetCollapsed = flowOf(false),
             urlBuilder = urlBuilder,
-            space = workspace,
             isSessionActive = flowOf(true),
-            config = config,
             objectWatcher = objectWatcher,
-            spaceGradientProvider = spaceGradientProvider,
             getSpaceView = getSpaceView
         )
 
@@ -471,7 +463,8 @@ class TreeWidgetContainerTest {
 
         val widget = Widget.Tree(
             id = MockDataFactory.randomUuid(),
-            source = Widget.Source.Default(source)
+            source = Widget.Source.Default(source),
+            config = config
         )
 
         val expanded = flowOf(emptyList<TreePath>())
@@ -482,11 +475,8 @@ class TreeWidgetContainerTest {
             expandedBranches = expanded,
             isWidgetCollapsed = flowOf(false),
             urlBuilder = urlBuilder,
-            space = workspace,
             isSessionActive = flowOf(true),
-            config = config,
             objectWatcher = objectWatcher,
-            spaceGradientProvider = spaceGradientProvider,
             getSpaceView = getSpaceView
         )
 

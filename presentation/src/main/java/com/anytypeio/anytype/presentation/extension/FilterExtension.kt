@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.search.DataViewState
 import com.anytypeio.anytype.presentation.relations.toView
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
 import com.anytypeio.anytype.presentation.sets.filter.ViewerFilterViewModel
@@ -60,7 +61,6 @@ fun List<CreateFilterView>.checkboxFilterValue(): Boolean? {
 suspend fun List<DVFilter>.toView(
     storeOfRelations: StoreOfRelations,
     storeOfObjects: ObjectStore,
-    details: Map<Id, Block.Fields>,
     screenState: ViewerFilterViewModel.ScreenState,
     urlBuilder: UrlBuilder
 ): List<FilterView.Expression> = mapNotNull { filter ->
@@ -68,7 +68,6 @@ suspend fun List<DVFilter>.toView(
     if (relation != null) {
         filter.toView(
             relation = relation,
-            details = details,
             isInEditMode = screenState == ViewerFilterViewModel.ScreenState.EDIT,
             urlBuilder = urlBuilder,
             store = storeOfObjects

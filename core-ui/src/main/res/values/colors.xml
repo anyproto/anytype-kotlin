@@ -245,4 +245,6 @@
     <color name="membership_info_gradient_pink">#FFEBEB</color>
     <color name="membership_info_gradient_purple">#EBEDFE</color>
 
+    <color name="object_number_background">#F2F2F2</color>
+
 </resources>

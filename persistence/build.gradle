@@ -1,7 +1,7 @@
 plugins {
     id "com.android.library"
     id "kotlin-android"
-    id "kotlin-kapt"
+    id "com.google.devtools.ksp"
     id "kotlinx-serialization"
     id "com.squareup.wire"
 }
@@ -21,7 +21,7 @@ dependencies {
     implementation libs.roomKtx
     implementation libs.dataStore
 
-    kapt libs.annotations
+    ksp libs.annotations
 
     implementation libs.timber
 

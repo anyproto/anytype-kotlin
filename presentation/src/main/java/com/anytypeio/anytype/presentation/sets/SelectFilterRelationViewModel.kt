@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import kotlinx.coroutines.flow.StateFlow
+import timber.log.Timber
 
 class SelectFilterRelationViewModel(
     private val objectState: StateFlow<ObjectState>,
@@ -13,6 +14,10 @@ class SelectFilterRelationViewModel(
     objectState = objectState,
     storeOfRelations = storeOfRelations
 ) {
+
+    init {
+        Timber.d("SelectFilterRelationViewModel, init")
+    }
 
     class Factory(
         private val objectState: StateFlow<ObjectState>,

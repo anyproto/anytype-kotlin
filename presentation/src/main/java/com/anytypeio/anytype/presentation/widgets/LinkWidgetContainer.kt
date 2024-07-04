@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
 class LinkWidgetContainer(
-    widget: Widget.Link
+    widget: Widget
 ) : WidgetContainer {
     override val view: Flow<WidgetView.Link> = flowOf(
         WidgetView.Link(

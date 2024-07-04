@@ -37,6 +37,7 @@ import com.anytypeio.anytype.domain.workspace.NotificationsChannel
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
+import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.Unsubscriber
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
@@ -47,6 +48,7 @@ import com.anytypeio.anytype.presentation.widgets.DefaultObjectViewReducer
 import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.presentation.widgets.WidgetSessionStateHolder
+import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import dagger.Binds
 import dagger.Component
@@ -215,6 +217,11 @@ object HomeScreenModule {
     @Provides
     @PerScreen
     fun gradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Default
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun coverHashProvider() : CoverImageHashProvider = DefaultCoverImageHashProvider()
 
     @Module
     interface Declarations {

@@ -1446,4 +1446,5 @@ Please provide specific details of your needs here.</string>
     <string name="sort_empty_values_desc">Mostra valori vuoti</string>
     <string name="sort_empty_values_bottom">In basso</string>
     <string name="sort_empty_values_top">In alto</string>
+    <string name="widget_view_see_all_objects">Vedi tutti gli oggetti</string>
 </resources>

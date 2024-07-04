@@ -1,13 +1,23 @@
 package com.anytypeio.anytype.ui.widgets.types
 
+import android.content.res.Configuration.UI_MODE_NIGHT_NO
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.annotation.StringRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,20 +29,37 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.toColor
+import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_utils.ext.orNull
+import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
+import com.anytypeio.anytype.presentation.editor.cover.CoverView
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.Widget
@@ -105,7 +132,12 @@ fun DataViewListWidgetCard(
                 onDropDownMenuAction = onDropDownMenuAction
             )
             if (item.tabs.size > 1 && item.isExpanded) {
-                DataViewTabs(item, onChangeWidgetView)
+                DataViewTabs(
+                    tabs = item.tabs,
+                    onChangeWidgetView = { tab ->
+                        onChangeWidgetView(item.id, tab)
+                    }
+                )
             }
             if (item.elements.isNotEmpty()) {
                 if (item.isCompact) {
@@ -157,9 +189,153 @@ fun DataViewListWidgetCard(
 }
 
 @Composable
+fun GalleryWidgetCard(
+    item: WidgetView.Gallery,
+    mode: InteractionMode,
+    onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
+    onWidgetSourceClicked: (Widget.Source) -> Unit,
+    onDropDownMenuAction: (DropDownMenuAction) -> Unit,
+    onChangeWidgetView: (WidgetId, ViewId) -> Unit,
+    onToggleExpandedWidgetState: (WidgetId) -> Unit,
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit
+) {
+    val isCardMenuExpanded = remember {
+        mutableStateOf(false)
+    }
+    val isHeaderMenuExpanded = remember {
+        mutableStateOf(false)
+    }
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp)
+            .alpha(if (isCardMenuExpanded.value || isHeaderMenuExpanded.value) 0.8f else 1f)
+            .background(
+                shape = RoundedCornerShape(16.dp),
+                color = colorResource(id = R.color.dashboard_card_background)
+            )
+            .then(
+                if (mode is InteractionMode.Edit)
+                    Modifier.noRippleClickable {
+                        isCardMenuExpanded.value = !isCardMenuExpanded.value
+                    }
+                else
+                    Modifier
+            )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 0.dp, vertical = 6.dp)
+        ) {
+            WidgetHeader(
+                title = when (val source = item.source) {
+                    is Widget.Source.Default -> {
+                        source.obj.getWidgetObjectName() ?: stringResource(id = R.string.untitled)
+                    }
+
+                    is Widget.Source.Bundled -> {
+                        stringResource(id = source.res())
+                    }
+                },
+                isCardMenuExpanded = isCardMenuExpanded,
+                isHeaderMenuExpanded = isHeaderMenuExpanded,
+                onWidgetHeaderClicked = {
+                    if (mode is InteractionMode.Default) {
+                        onWidgetSourceClicked(item.source)
+                    }
+                },
+                onExpandElement = { onToggleExpandedWidgetState(item.id) },
+                isExpanded = item.isExpanded,
+                isInEditMode = mode is InteractionMode.Edit,
+                hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
+                onDropDownMenuAction = onDropDownMenuAction
+            )
+            if (item.tabs.size > 1 && item.isExpanded) {
+                DataViewTabs(
+                    tabs = item.tabs,
+                    onChangeWidgetView = { tab ->
+                        onChangeWidgetView(item.id, tab)
+                    }
+                )
+            }
+            if (item.elements.isNotEmpty()) {
+                val isCardSmall = item.elements.none { it.cover != null }
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    item.elements.forEachIndexed { idx, element ->
+                        if (idx == 0) {
+                            item {
+                                Spacer(modifier = Modifier.width(8.dp))
+                            }
+                        }
+                        item(key = element.obj.id) {
+                            GalleryWidgetItemCard(
+                                item = element,
+                                onItemClicked = {
+                                    onWidgetObjectClicked(element.obj)
+                                },
+                                isCardSmall = isCardSmall
+                            )
+                        }
+                        if (idx == item.elements.lastIndex) {
+                            item {
+                                Box(
+                                    modifier = Modifier
+                                        .width(136.dp)
+                                        .height(if (isCardSmall) 56.dp else 136.dp)
+                                        .border(
+                                            width = 1.dp,
+                                            color = colorResource(id = R.color.shape_primary),
+                                            shape = RoundedCornerShape(8.dp)
+                                        )
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .clickable {
+                                            onWidgetSourceClicked(item.source)
+                                        }
+                                ) {
+                                    Text(
+                                        text = stringResource(id = R.string.widget_view_see_all_objects),
+                                        style = Caption1Medium,
+                                        color = colorResource(id = R.color.glyph_active),
+                                        modifier = Modifier
+                                            .align(Alignment.Center)
+                                    )
+                                }
+                            }
+                            item {
+                                Spacer(modifier = Modifier.width(8.dp))
+                            }
+                        }
+                    }
+                }
+            } else {
+                if (item.isExpanded) {
+                    when {
+                        item.isLoading -> EmptyWidgetPlaceholder(R.string.loading)
+                        item.tabs.isNotEmpty() -> EmptyWidgetPlaceholder(R.string.empty_list_widget)
+                        else -> EmptyWidgetPlaceholder(text = R.string.empty_list_widget_no_view)
+                    }
+
+                    Spacer(modifier = Modifier.height(2.dp))
+                }
+            }
+        }
+        WidgetMenu(
+            isExpanded = isCardMenuExpanded,
+            onDropDownMenuAction = onDropDownMenuAction,
+            canEditWidgets = mode is InteractionMode.Default
+        )
+    }
+}
+
+
+@Composable
 private fun DataViewTabs(
-    item: WidgetView.SetOfObjects,
-    onChangeWidgetView: (WidgetId, ViewId) -> Unit
+    tabs: List<WidgetView.SetOfObjects.Tab>,
+    onChangeWidgetView: (ViewId) -> Unit
 ) {
     LazyRow(
         modifier = Modifier
@@ -168,7 +344,7 @@ private fun DataViewTabs(
         verticalAlignment = Alignment.CenterVertically
     ) {
         itemsIndexed(
-            items = item.tabs,
+            items = tabs,
             itemContent = { index, tab ->
                 Text(
                     text = tab.name.ifEmpty { stringResource(id = R.string.untitled) },
@@ -180,10 +356,10 @@ private fun DataViewTabs(
                     modifier = Modifier
                         .padding(
                             start = 16.dp,
-                            end = if (index == item.tabs.lastIndex) 16.dp else 0.dp
+                            end = if (index == tabs.lastIndex) 16.dp else 0.dp
                         )
                         .noRippleClickable {
-                            onChangeWidgetView(item.id, tab.id)
+                            onChangeWidgetView(tab.id)
                         },
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -207,7 +383,7 @@ fun ListWidgetElement(
             .fillMaxWidth()
             .padding(end = 16.dp)
             .then(
-                if (mode !is InteractionMode.Edit )
+                if (mode !is InteractionMode.Edit)
                     Modifier.noRippleClickable { onWidgetObjectClicked(obj) }
                 else
                     Modifier
@@ -264,6 +440,173 @@ fun ListWidgetElement(
             )
         }
     }
+}
+
+@Composable
+private fun GalleryWidgetItemCard(
+    item: WidgetView.SetOfObjects.Element,
+    onItemClicked: () -> Unit,
+    isCardSmall: Boolean = false
+) {
+    Box(
+        modifier = Modifier
+            .width(136.dp)
+            .height(if (isCardSmall) 56.dp else 136.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .clickable {
+                onItemClicked()
+            }
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .border(
+                    width = 1.dp,
+                    color = colorResource(id = R.color.shape_primary),
+                    shape = RoundedCornerShape(8.dp)
+                )
+        )
+
+        when(val cover = item.cover) {
+            is CoverView.Color -> {
+                Box(
+                    modifier = Modifier
+                        .width(136.dp)
+                        .height(80.dp)
+                        .background(
+                            color = Color(cover.coverColor.color),
+                            shape = RoundedCornerShape(topEnd = 8.dp, topStart = 8.dp)
+                        )
+                )
+            }
+            is CoverView.Gradient -> {
+                Box(
+                    modifier = Modifier
+                        .width(136.dp)
+                        .height(80.dp)
+                        .background(
+                            Brush.horizontalGradient(
+                                colors = gradient(cover.gradient)
+                            ),
+                            shape = RoundedCornerShape(topEnd = 8.dp, topStart = 8.dp)
+                        )
+                )
+            }
+            is CoverView.Image -> {
+                Image(
+                    painter = rememberAsyncImagePainter(cover.url),
+                    contentDescription = "Cover image",
+                    modifier = Modifier
+                        .width(136.dp)
+                        .height(80.dp)
+                        .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
+                    ,
+                    contentScale = ContentScale.Crop,
+                )
+            }
+            else -> {
+                // Draw nothing.
+            }
+        }
+        Text(
+            text = item.obj.getProperName().ifEmpty { stringResource(id = R.string.untitled) },
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            style = Caption1Medium,
+            color = colorResource(id = R.color.text_primary),
+            modifier = Modifier
+                .padding(
+                    start = 12.dp,
+                    end = 10.dp,
+                    top = 9.dp,
+                    bottom = 11.dp
+                )
+                .align(
+                    if (item.cover != null) {
+                        Alignment.BottomStart
+                    } else {
+                        Alignment.TopStart
+                    }
+                )
+        )
+    }
+}
+
+fun gradient(
+    gradient: String
+) : List<Color> {
+    return when(gradient) {
+        CoverGradient.YELLOW -> {
+            return listOf(
+                Color(0xFFecd91b),
+                Color(0xFFffb522)
+            )
+        }
+        CoverGradient.RED -> {
+            return listOf(
+                Color(0xFFe51ca0),
+                Color(0xFFf55522)
+            )
+        }
+        CoverGradient.BLUE -> {
+            return listOf(
+                Color(0xFF3e58eb),
+                Color(0xFFab50cc)
+            )
+        }
+        CoverGradient.TEAL -> {
+            return listOf(
+                Color(0xFF0fc8ba),
+                Color(0xFF2aa7ee)
+            )
+        }
+        CoverGradient.PINK_ORANGE -> {
+            return listOf(
+                Color(0xFFD8A4E1),
+                Color(0xFFFDD0CD),
+                Color(0xFFFFCC81)
+            )
+        }
+        CoverGradient.BLUE_PINK -> {
+            return listOf(
+                Color(0xFF73B7F0),
+                Color(0xFFABB6ED),
+                Color(0xFFF3BFAC)
+            )
+        }
+        CoverGradient.GREEN_ORANGE -> {
+            return listOf(
+                Color(0xFF63B3CB),
+                Color(0xFFC5D3AC),
+                Color(0xFFF6C47A)
+            )
+        }
+        CoverGradient.SKY -> {
+            return listOf(
+                Color(0xFF6EB6E4),
+                Color(0xFFA4CFEC),
+                Color(0xFFDAEAF3)
+            )
+        }
+        else -> return emptyList()
+    }
+}
+
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES, name = "Light Mode")
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO, name = "Dark Mode")
+@Composable
+fun GalleryWidgetItemCardPreview() {
+    GalleryWidgetItemCard(
+        item = WidgetView.SetOfObjects.Element(
+            objectIcon = ObjectIcon.None,
+            obj = ObjectWrapper.Basic(
+                map = mapOf(
+                    Relations.NAME to "Stephen Bann"
+                )
+            )
+        ),
+        onItemClicked = {}
+    )
 }
 
 @StringRes

@@ -42,7 +42,7 @@
     <string name="about_meta_info_for_copy">Apparaat: %1$s\nAndroid versie: %2$d\nApp versie: %3$s\nBuild nummer: %4$d\nbibliotheek versie: %5$s\nAccount:\u00A0ID:\u00A0%6$s\nApparaat\u00A0ID:\u00A0%7$s\nAnalyse\u00A0ID:\u00A0%8$s</string>
     <string name="space">Ruimte</string>
     <string name="space_name">Naam ruimte</string>
-    <string name="default_space">Standaard ruimte</string>
+    <string name="default_space">Startruimte</string>
     <string name="space_settings_apply_random_gradient">Pas willekeurig verloop toe</string>
     <string name="space_settings_apply_upload_image">Upload afbeelding</string>
     <string name="delete_space">Verwijder ruimte</string>
@@ -182,7 +182,7 @@
     <string name="error_while_loading_picture">Fout tijdens het laden van de afbeelding</string>
     <string name="block_with_a_picture">Blok met een afbeelding</string>
     <string name="tap_here_to_insert_a_bookmark_url">Tik hier om een bladwijzer URL toe te voegen</string>
-    <string name="archive">Archiveer</string>
+    <string name="archive">Archiveren</string>
     <string name="add_block_option_icon">Add block option icon</string>
     <string name="bookmark_error_menu_button">Bookmark error menu button</string>
     <string name="bookmark_error">Er is iets verkeerd gegaan, probeer het opnieuw</string>
@@ -551,7 +551,7 @@
     <string name="enter_invitation_text">Als je er geen hebt, ga dan naar anytype.io en schrijf je in op de wachtlijst. We nodigen mensen uit op volgorde van inschrijven.</string>
     <string name="start_login_text">Met Anytype kun je notities en documenten schrijven, taken beheren, bestanden delen en belangrijke inhoud van het web opslaan.</string>
     <string name="login">Aanmelden</string>
-    <string name="sign_up">Aanmelden</string>
+    <string name="sign_up">Registreren</string>
     <string name="type_your_recovery_phrase">of typ jouw sleutel</string>
     <string name="login_with_recovery_phrase">Meld je aan met jouw sleutel</string>
     <string name="or_scan_qr_code">Scan QR-code</string>
@@ -666,8 +666,8 @@
     <string name="reset">Reset</string>
     <string name="search_a_relation">Zoek een relatie</string>
     <string name="content_description_check_icon">Check icon</string>
-    <string name="content_desc_empty_values_bottom_check_icon">Sorteer lege waarden onderaan</string>
-    <string name="content_desc_empty_values_top_check_icon">Sorteer lege waarden bovenaan</string>
+    <string name="content_desc_empty_values_bottom_check_icon">Lege waarden onderaan sorteren</string>
+    <string name="content_desc_empty_values_top_check_icon">Lege waarden bovenaan sorteren</string>
     <string name="filter_condition_is">Is</string>
     <string name="today">Vandaag</string>
     <string name="yesterday">Gisteren</string>
@@ -821,7 +821,7 @@
     <string name="anytype_update_alert_description">Een deel van je gegevens werd beheerd door een nieuwere versie van Anytype. Update de app alsjeblieft om met al je documenten en de nieuwe functies te werken.</string>
     <string name="anytype_update_alert_title">Het is tijd om te updaten</string>
     <string name="space_type_default">Invoer</string>
-    <string name="space_type_default_space">Standaard ruimte</string>
+    <string name="space_type_default_space">Startruimte</string>
     <string name="space_type_private">Persoonlijk</string>
     <string name="space_type_private_space">Privé ruimte</string>
     <string name="space_type_shared">Gedeeld</string>
@@ -1136,8 +1136,8 @@
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tik om je reactie te schrijven</string>
     <string name="multiplayer_share_space">Deel ruimte</string>
     <string name="multiplayer_members_and_requests">Leden</string>
-    <string name="multiplayer_cant_add_members">You can’t add more members</string>
-    <string name="multiplayer_cant_add_editors">You can’t add more editors</string>
+    <string name="multiplayer_cant_add_members">Je kunt niet meer deelnemers toevoegen</string>
+    <string name="multiplayer_cant_add_editors">Je kunt niet meer bewerkers toevoegen</string>
     <string name="multiplayer_upgrade_button">✦ Upgrade</string>
     <string name="multiplayer_upgrade_button_request">✦ Upgrade om meer leden toe te voegen</string>
     <string name="multiplayer_upgrade_spaces_button">✦ Upgrade om meer ruimten toe te voegen</string>
@@ -1224,7 +1224,7 @@
     <string name="multiplayer_space_status_joining">Aan het aansluiten</string>
     <string name="multiplayer_space_status_active">Actief</string>
     <string name="multiplayer_space_status_removing">Verwijderd</string>
-    <string name="multiplayer_cancel_join_request">Annuleer deelnameverzoek</string>
+    <string name="multiplayer_cancel_join_request">Deelnameverzoek annuleren</string>
     <string name="multiplayer_cancel_join_request_msg">Je zult het deelnameverzoek opnieuw moeten sturen</string>
     <string name="multiplayer_do_not_cancel_join_request">Annuleer niet</string>
     <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">Deze koppeling lijkt niet te werken</string>
@@ -1299,8 +1299,8 @@
     <string name="payments_detials_button_pay">Betaal met kaart</string>
     <string name="payments_detials_button_submit">Verstuur</string>
     <string name="payments_details_whats_included">Wat is inbegrepen</string>
-    <string name="payments_email_title">Get updates and enjoy free perks!</string>
-    <string name="payments_email_subtitle">It is not linked to your account in any way.</string>
+    <string name="payments_email_title">Ontvang updates en geniet van gratis voordelen!</string>
+    <string name="payments_email_subtitle">Het is op geen enkele manier gekoppeld met jouw account.</string>
     <string name="payments_email_checkbox_text">Ik zou graag updates over producten willen ontvangen en genieten van gratis voordelen!</string>
     <string name="payments_email_hint">E-mailadres</string>
     <string name="payments_tier_current_title">Je huidige status:</string>
@@ -1359,7 +1359,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="membership_name_tier_not_found">Abonnement niet gevonden, probeer het later opnieuw</string>
     <string name="membership_name_too_long">Naam is te lang</string>
     <string name="membership_name_too_short">Naam is te kort</string>
-    <string name="membership_any_name_not_reserved">This name cannot be reserved</string>
+    <string name="membership_any_name_not_reserved">Deze naam kan niet worden gereserveerd</string>
     <string name="membership_any_name_null_error">Lege fout</string>
     <string name="membership_any_name_unknown">Onbekende foutmelding</string>
     <string name="membership_email_wrong_format">E-mailadres heeft een verkeerd formaat</string>
@@ -1416,9 +1416,9 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="multiplayer_space_join_request_new_member_error">Fout met lidmaatschapsverzoek</string>
     <string name="multiplayer_space_join_request_current_user_error">Fout met huidige gebruikersstatus</string>
     <string name="multiplayer_space_join_request_membership_status_error">Fout met huidige lidmaatschapsstatus</string>
-    <string name="membership_upgrade_title">Membership upgrade</string>
-    <string name="membership_upgrade_description">Reach us for extra storage, space editors, or more shared spaces. Anytype team will provide details and conditions tailored to your needs.</string>
-    <string name="membership_upgrade_button">Contact Anytype Team</string>
+    <string name="membership_upgrade_title">Lidmaatschap upgrade</string>
+    <string name="membership_upgrade_description">Contacteer ons voor extra opslagruimte, ruimte bewerkers of meer gedeelde ruimten. Het team van Anytype zal details en voorwaarden geven die zijn afgestemd op jouw behoeften.</string>
+    <string name="membership_upgrade_button">Contacteer Anytype team</string>
     <string name="membership_space_settings_share_limit">Je hebt de limiet bereikt van %1$d ruimtes die kunnen worden gedeeld</string>
     <plurals name="period_years">
         <item quantity="one">jaar</item>
@@ -1441,8 +1441,9 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="error_login_network_id_mismatch">Verkeerde netwerk-ID gedetecteerd. Controleer alsjeblieft jouw netwerkconfiguratie.</string>
     <string name="error_login_select_vault_error">Fout met het selecteren van kluis.</string>
     <string name="global_search_related_to">"Gerelateerd aan: "</string>
-    <string name="global_search_no_related_objects_found">No related objects found</string>
-    <string name="sort_empty_values_desc">Show empty values</string>
-    <string name="sort_empty_values_bottom">On bottom</string>
-    <string name="sort_empty_values_top">On top</string>
+    <string name="global_search_no_related_objects_found">Geen gerelateerde objecten gevonden</string>
+    <string name="sort_empty_values_desc">Toon lege waarden</string>
+    <string name="sort_empty_values_bottom">Onderaan</string>
+    <string name="sort_empty_values_top">Bovenaan</string>
+    <string name="widget_view_see_all_objects">Toon alle objecten</string>
 </resources>

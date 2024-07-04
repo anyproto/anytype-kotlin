@@ -6,8 +6,10 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SHARED_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SpaceType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.editor.cover.CoverView
 import com.anytypeio.anytype.presentation.editor.model.Indent
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
 sealed class WidgetView {
@@ -66,9 +68,19 @@ sealed class WidgetView {
         )
         data class Element(
             override val objectIcon: ObjectIcon,
-            override val obj: ObjectWrapper.Basic
+            override val obj: ObjectWrapper.Basic,
+            val cover: CoverView? = null
         ) : WidgetView.Element
     }
+
+    data class Gallery(
+        override val id: Id,
+        override val isLoading: Boolean = false,
+        val source: Widget.Source,
+        val tabs: List<SetOfObjects.Tab>,
+        val elements: List<SetOfObjects.Element>,
+        val isExpanded: Boolean
+    ) : WidgetView(), Draggable
 
     data class ListOfObjects(
         override val id: Id,

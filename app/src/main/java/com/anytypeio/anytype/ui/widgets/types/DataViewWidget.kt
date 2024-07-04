@@ -288,12 +288,16 @@ fun GalleryWidgetCard(
                                             color = colorResource(id = R.color.shape_primary),
                                             shape = RoundedCornerShape(8.dp)
                                         )
+                                        .clickable {
+                                            onWidgetSourceClicked(item.source)
+                                        }
                                 ) {
                                     Text(
                                         text = stringResource(id = R.string.widget_view_see_all_objects),
                                         style = Caption1Medium,
                                         color = colorResource(id = R.color.glyph_active),
-                                        modifier = Modifier.align(Alignment.Center)
+                                        modifier = Modifier
+                                            .align(Alignment.Center)
                                     )
                                 }
                             }

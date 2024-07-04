@@ -3,13 +3,16 @@ package com.anytypeio.anytype.ui.widgets.types
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.annotation.StringRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -27,12 +30,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.toColor
+import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -43,6 +55,8 @@ import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_utils.ext.orNull
+import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
+import com.anytypeio.anytype.presentation.editor.cover.CoverView
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
@@ -258,7 +272,10 @@ fun GalleryWidgetCard(
                         }
                         item(key = element.obj.id) {
                             GalleryWidgetItemCard(
-                                item = element
+                                item = element,
+                                onItemClicked = {
+                                    onWidgetObjectClicked(element.obj)
+                                }
                             )
                         }
                         if (idx == item.elements.lastIndex) {
@@ -419,38 +436,149 @@ fun ListWidgetElement(
 
 @Composable
 private fun GalleryWidgetItemCard(
-    item: WidgetView.SetOfObjects.Element
+    item: WidgetView.SetOfObjects.Element,
+    onItemClicked: () -> Unit
 ) {
     Box(
         modifier = Modifier
             .size(136.dp)
-            .border(
-                width = 1.dp,
-                color = colorResource(id = R.color.shape_primary),
-                shape = RoundedCornerShape(8.dp)
-            )
+            .clip(RoundedCornerShape(8.dp))
+            .clickable {
+                onItemClicked()
+            }
     ) {
         Box(
             modifier = Modifier
-                .width(136.dp)
-                .height(80.dp)
-                .background(
-                    shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
-                    color = Color.Red
+                .fillMaxSize()
+                .border(
+                    width = 1.dp,
+                    color = colorResource(id = R.color.shape_primary),
+                    shape = RoundedCornerShape(8.dp)
                 )
         )
+
+        when(val cover = item.cover) {
+            is CoverView.Color -> {
+                Box(
+                    modifier = Modifier
+                        .width(136.dp)
+                        .height(80.dp)
+                        .background(
+                            color = Color(cover.coverColor.color),
+                            shape = RoundedCornerShape(topEnd = 8.dp, topStart = 8.dp)
+                        )
+                )
+            }
+            is CoverView.Gradient -> {
+                Box(
+                    modifier = Modifier
+                        .width(136.dp)
+                        .height(80.dp)
+                        .background(
+                            Brush.horizontalGradient(
+                                colors = gradient(cover.gradient)
+                            ),
+                            shape = RoundedCornerShape(topEnd = 8.dp, topStart = 8.dp)
+                        )
+                )
+            }
+            is CoverView.Image -> {
+                Image(
+                    painter = rememberAsyncImagePainter(cover.url),
+                    contentDescription = "Cover image",
+                    modifier = Modifier
+                        .width(136.dp)
+                        .height(80.dp)
+                        .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
+                    ,
+                    contentScale = ContentScale.Crop,
+                )
+            }
+            else -> {
+                // Draw nothing.
+            }
+        }
         Text(
-            text = item.obj.getProperName(),
+            text = item.obj.getProperName().ifEmpty { stringResource(id = R.string.untitled) },
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             style = Caption1Medium,
             color = colorResource(id = R.color.text_primary),
-            modifier = Modifier.padding(
-                start = 12.dp,
-                end = 12.dp,
-                top = 10.dp
-            )
+            modifier = Modifier
+                .padding(
+                    start = 12.dp,
+                    end = 12.dp,
+                    top = 10.dp,
+                    bottom = 10.dp
+                )
+                .align(
+                    if (item.cover != null) {
+                        Alignment.BottomStart
+                    } else {
+                        Alignment.TopStart
+                    }
+                )
         )
+    }
+}
+
+fun gradient(
+    gradient: String
+) : List<Color> {
+    return when(gradient) {
+        CoverGradient.YELLOW -> {
+            return listOf(
+                Color(0xFFecd91b),
+                Color(0xFFffb522)
+            )
+        }
+        CoverGradient.RED -> {
+            return listOf(
+                Color(0xFFe51ca0),
+                Color(0xFFf55522)
+            )
+        }
+        CoverGradient.BLUE -> {
+            return listOf(
+                Color(0xFF3e58eb),
+                Color(0xFFab50cc)
+            )
+        }
+        CoverGradient.TEAL -> {
+            return listOf(
+                Color(0xFF0fc8ba),
+                Color(0xFF2aa7ee)
+            )
+        }
+        CoverGradient.PINK_ORANGE -> {
+            return listOf(
+                Color(0xFFD8A4E1),
+                Color(0xFFFDD0CD),
+                Color(0xFFFFCC81)
+            )
+        }
+        CoverGradient.BLUE_PINK -> {
+            return listOf(
+                Color(0xFF73B7F0),
+                Color(0xFFABB6ED),
+                Color(0xFFF3BFAC)
+            )
+        }
+        CoverGradient.GREEN_ORANGE -> {
+            return listOf(
+                Color(0xFF63B3CB),
+                Color(0xFFC5D3AC),
+                Color(0xFFF6C47A)
+            )
+        }
+        CoverGradient.SKY -> {
+            return listOf(
+                Color(0xFF6EB6E4),
+                Color(0xFFA4CFEC),
+                Color(0xFFDAEAF3)
+            )
+        }
+        else -> return emptyList()
     }
 }
 
@@ -466,7 +594,8 @@ fun GalleryWidgetItemCardPreview() {
                     Relations.NAME to "Stephen Bann"
                 )
             )
-        )
+        ),
+        onItemClicked = {}
     )
 }
 

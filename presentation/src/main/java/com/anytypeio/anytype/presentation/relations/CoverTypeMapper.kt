@@ -77,9 +77,7 @@ fun ObjectWrapper.Basic.cover(
             val hash = coverId?.let { id ->
                 coverImageHashProvider.provide(id)
             }
-            if (!hash.isNullOrBlank()) {
-                coverImage = urlBuilder.image(hash)
-            }
+            if (!hash.isNullOrBlank()) coverImage = urlBuilder.image(hash)
         }
         CoverType.COLOR -> {
             coverColor = coverId?.let { id ->

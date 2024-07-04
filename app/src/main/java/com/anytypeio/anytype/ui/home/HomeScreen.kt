@@ -331,19 +331,40 @@ private fun WidgetList(
                     }
                 }
                 is WidgetView.Gallery -> {
-                    GalleryWidgetItem(
-                        index = index,
-                        mode = mode,
-                        lazyListState = lazyListState,
-                        alpha = 1.0f,
-                        item = item,
-                        onWidgetObjectClicked = onWidgetObjectClicked,
-                        onWidgetSourceClicked = onWidgetSourceClicked,
-                        onWidgetMenuAction = onWidgetMenuAction,
-                        onChangeWidgetView = onChangeWidgetView,
-                        onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-                        onObjectCheckboxClicked = onObjectCheckboxClicked
-                    )
+                    if (mode is InteractionMode.Edit) {
+                        ReorderableItem(
+                            lazyListState, key = item.id
+                        ) { isDragged ->
+                            val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
+                            GalleryWidgetItem(
+                                index = index,
+                                mode = mode,
+                                lazyListState = lazyListState,
+                                alpha = alpha.value,
+                                item = item,
+                                onWidgetObjectClicked = onWidgetObjectClicked,
+                                onWidgetSourceClicked = onWidgetSourceClicked,
+                                onWidgetMenuAction = onWidgetMenuAction,
+                                onChangeWidgetView = onChangeWidgetView,
+                                onToggleExpandedWidgetState = onToggleExpandedWidgetState,
+                                onObjectCheckboxClicked = onObjectCheckboxClicked
+                            )
+                        }
+                    } else {
+                        GalleryWidgetItem(
+                            index = index,
+                            mode = mode,
+                            lazyListState = lazyListState,
+                            alpha = 1.0f,
+                            item = item,
+                            onWidgetObjectClicked = onWidgetObjectClicked,
+                            onWidgetSourceClicked = onWidgetSourceClicked,
+                            onWidgetMenuAction = onWidgetMenuAction,
+                            onChangeWidgetView = onChangeWidgetView,
+                            onToggleExpandedWidgetState = onToggleExpandedWidgetState,
+                            onObjectCheckboxClicked = onObjectCheckboxClicked
+                        )
+                    }
                 }
                 is WidgetView.ListOfObjects -> {
                     if (mode is InteractionMode.Edit) {

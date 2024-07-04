@@ -288,6 +288,7 @@ fun GalleryWidgetCard(
                                             color = colorResource(id = R.color.shape_primary),
                                             shape = RoundedCornerShape(8.dp)
                                         )
+                                        .clip(RoundedCornerShape(8.dp))
                                         .clickable {
                                             onWidgetSourceClicked(item.source)
                                         }

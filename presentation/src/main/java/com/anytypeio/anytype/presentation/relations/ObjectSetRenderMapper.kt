@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.ext.DateParser
@@ -29,6 +30,7 @@ import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.search.DataViewState
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.extension.isValueRequired
@@ -42,6 +44,8 @@ import com.anytypeio.anytype.presentation.mapper.toTextView
 import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.mapper.toViewerColumns
 import com.anytypeio.anytype.presentation.number.NumberParser
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.sets.buildGalleryViews
 import com.anytypeio.anytype.presentation.sets.buildListViews
 import com.anytypeio.anytype.presentation.sets.dataViewState
@@ -55,7 +59,6 @@ import com.anytypeio.anytype.presentation.sets.model.TagView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.model.ViewerTabView
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
-import com.anytypeio.anytype.presentation.sets.toObjectView
 import timber.log.Timber
 
 fun DV.tabs(activeViewerId: String? = null): List<ViewerTabView> {
@@ -465,18 +468,33 @@ suspend fun ObjectWrapper.Relation.toStatus(
     }
 }
 
-fun ObjectWrapper.Relation.toObjects(
+suspend fun ObjectWrapper.Relation.toObjects(
     value: Any?,
-    details: Map<Id, Block.Fields>,
+    store: ObjectStore,
     urlBuilder: UrlBuilder
 ) : List<ObjectView> {
     val ids = value.values<Id>()
     return buildList {
         ids.forEach { id ->
-            val raw = details[id]?.map
+            val raw = store.get(id)?.map
             if (!raw.isNullOrEmpty()) {
                 val wrapper = ObjectWrapper.Basic(raw)
-                add(wrapper.toObjectView(urlBuilder))
+                val obj = when (isDeleted) {
+                    true -> ObjectView.Deleted(id)
+                    else -> ObjectView.Default(
+                        id = id,
+                        name = wrapper.getProperName(),
+                        icon = ObjectIcon.from(
+                            obj = wrapper,
+                            layout = wrapper.layout,
+                            builder = urlBuilder,
+                            objectTypeNoIcon = false
+                        ),
+                        types = type,
+                        isRelation = wrapper.layout == ObjectType.Layout.RELATION
+                    )
+                }
+                add(obj)
             }
         }
     }
@@ -485,7 +503,6 @@ fun ObjectWrapper.Relation.toObjects(
 suspend fun DVFilter.toView(
     store: ObjectStore,
     relation: ObjectWrapper.Relation,
-    details: Map<Id, Block.Fields>,
     isInEditMode: Boolean,
     urlBuilder: UrlBuilder
 ): FilterView.Expression = when (relation.format) {
@@ -582,18 +599,17 @@ suspend fun DVFilter.toView(
         )
     }
     Relation.Format.STATUS -> {
+        val updatedFilterValue = relation.toStatus(
+            value = value,
+            store = store
+        )
         FilterView.Expression.Status(
             id = id,
             relation = this.relation,
             title = relation.name.orEmpty(),
             operator = operator.toView(),
             condition = condition.toSelectedView(),
-            filterValue = FilterValue.Status(
-                relation.toStatus(
-                    value = value,
-                    store = store
-                )
-            ),
+            filterValue = FilterValue.Status(value = updatedFilterValue),
             format = relation.format.toView(),
             isValueRequired = condition.isValueRequired(),
             isInEditMode = isInEditMode
@@ -617,14 +633,20 @@ suspend fun DVFilter.toView(
             isInEditMode = isInEditMode
         )
     }
-    Relation.Format.OBJECT -> {
+    Relation.Format.OBJECT, Relation.Format.FILE -> {
         FilterView.Expression.Object(
             id = id,
             relation = this.relation,
             title = relation.name.orEmpty(),
             operator = operator.toView(),
             condition = condition.toSelectedView(),
-            filterValue = FilterValue.Object(relation.toObjects(value, details, urlBuilder)),
+            filterValue = FilterValue.Object(
+                relation.toObjects(
+                    value = value,
+                    store = store,
+                    urlBuilder = urlBuilder
+                )
+            ),
             format = relation.format.toView(),
             isValueRequired = condition.isValueRequired(),
             isInEditMode = isInEditMode
@@ -671,7 +693,14 @@ suspend fun ObjectWrapper.Relation.toFilterValue(
     Relation.Format.URL -> FilterValue.Url(toText(value))
     Relation.Format.EMAIL -> FilterValue.Email(toText(value))
     Relation.Format.PHONE -> FilterValue.Phone(toText(value))
-    Relation.Format.OBJECT -> FilterValue.Object(toObjects(value, details, urlBuilder))
+    Relation.Format.OBJECT, Relation.Format.FILE -> {
+        val obj = toObjects(
+            value = value,
+            store = store,
+            urlBuilder = urlBuilder
+        )
+        FilterValue.Object(obj)
+    }
     Relation.Format.CHECKBOX -> FilterValue.Check(toCheckbox(value))
     else -> throw UnsupportedOperationException("Unsupported relation format:${format}")
 }

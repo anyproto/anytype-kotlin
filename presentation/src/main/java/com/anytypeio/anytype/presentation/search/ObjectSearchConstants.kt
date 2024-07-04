@@ -290,6 +290,44 @@ object ObjectSearchConstants {
         }
     }
 
+    fun filterAddObjectToFilterByLayout(space: Id, layouts: List<ObjectType.Layout>) = buildList {
+        add(
+            DVFilter(
+                relation = Relations.IS_ARCHIVED,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.IS_HIDDEN,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.IS_DELETED,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.SPACE_ID,
+                condition = DVFilterCondition.EQUAL,
+                value = space
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.LAYOUT,
+                condition = DVFilterCondition.IN,
+                value = layouts.map { it.code.toDouble() }
+            )
+        )
+    }
+
     val sortAddObjectToFilter = listOf(
         DVSort(
             relationKey = Relations.NAME,

@@ -38,6 +38,9 @@ class FilterStatusViewHolder(val binding: ItemDvViewerFilterStatusBinding) :
             if (status != null) {
                 binding.tvValue.text = status.status
                 setTextColor(binding.tvValue, status.color)
+            } else {
+                binding.tvValue.text = null
+                binding.tvValue.invisible()
             }
         } else {
             binding.tvValue.text = null
@@ -47,7 +50,7 @@ class FilterStatusViewHolder(val binding: ItemDvViewerFilterStatusBinding) :
 
     private fun setTextColor(view: TextView, color: String) {
         val defaultColor = view.context.color(R.color.default_filter_tag_text_color)
-        val value = ThemeColor.values().find { value -> value.code == color }
+        val value = ThemeColor.entries.find { value -> value.code == color }
         if (value == null) {
             Timber.w("Could not find value for text color: $color")
         }

@@ -512,9 +512,9 @@ private fun GalleryWidgetItemCard(
             modifier = Modifier
                 .padding(
                     start = 12.dp,
-                    end = 12.dp,
-                    top = 10.dp,
-                    bottom = 10.dp
+                    end = 10.dp,
+                    top = 9.dp,
+                    bottom = 11.dp
                 )
                 .align(
                     if (item.cover != null) {

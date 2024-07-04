@@ -263,6 +263,24 @@ fun GalleryWidgetCard(
                         }
                         if (idx == item.elements.lastIndex) {
                             item {
+                                Box(
+                                    modifier = Modifier
+                                        .size(136.dp)
+                                        .border(
+                                            width = 1.dp,
+                                            color = colorResource(id = R.color.shape_primary),
+                                            shape = RoundedCornerShape(8.dp)
+                                        )
+                                ) {
+                                    Text(
+                                        text = stringResource(id = R.string.widget_view_see_all_objects),
+                                        style = Caption1Medium,
+                                        color = colorResource(id = R.color.glyph_active),
+                                        modifier = Modifier.align(Alignment.Center)
+                                    )
+                                }
+                            }
+                            item {
                                 Spacer(modifier = Modifier.width(8.dp))
                             }
                         }
@@ -412,6 +430,15 @@ private fun GalleryWidgetItemCard(
                 shape = RoundedCornerShape(8.dp)
             )
     ) {
+        Box(
+            modifier = Modifier
+                .width(136.dp)
+                .height(80.dp)
+                .background(
+                    shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
+                    color = Color.Red
+                )
+        )
         Text(
             text = item.obj.getProperName(),
             maxLines = 2,

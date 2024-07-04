@@ -17,6 +17,8 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.presentation.BuildConfig
+import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.relations.cover
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import java.lang.UnsupportedOperationException
 import kotlinx.coroutines.flow.Flow
@@ -38,6 +40,7 @@ class DataViewListWidgetContainer(
     private val urlBuilder: UrlBuilder,
     private val activeView: Flow<Id?>,
     private val isWidgetCollapsed: Flow<Boolean>,
+    private val coverImageHashProvider: CoverImageHashProvider,
     isSessionActive: Flow<Boolean>,
     onRequestCache: () -> WidgetView.SetOfObjects? = { null }
 ) : WidgetContainer {
@@ -165,7 +168,13 @@ class DataViewListWidgetContainer(
                                     elements = objects.map { obj ->
                                         WidgetView.SetOfObjects.Element(
                                             obj = obj,
-                                            objectIcon = obj.widgetElementIcon(builder = urlBuilder)
+                                            objectIcon = obj.widgetElementIcon(
+                                                builder = urlBuilder
+                                            ),
+                                            cover = obj.cover(
+                                                urlBuilder = urlBuilder,
+                                                coverImageHashProvider = coverImageHashProvider
+                                            )
                                         )
                                     },
                                     isExpanded = true

@@ -17,7 +17,6 @@ import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.NO_VALUE
 import com.anytypeio.anytype.core_models.ObjectOrigin
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.Process
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -32,7 +31,7 @@ import com.anytypeio.anytype.domain.multiplayer.Permissions
 import com.anytypeio.anytype.domain.objects.CreateBookmarkObject
 import com.anytypeio.anytype.domain.objects.CreatePrefilledNote
 import com.anytypeio.anytype.domain.spaces.GetSpaceViews
-import com.anytypeio.anytype.domain.workspace.EventProcessChannel
+import com.anytypeio.anytype.domain.workspace.EventProcessDropFilesChannel
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -67,7 +66,7 @@ class AddToAnytypeViewModel(
     private val permissions: Permissions,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val fileDrop: FileDrop,
-    private val eventProcessChannel: EventProcessChannel
+    private val eventProcessChannel: EventProcessDropFilesChannel
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val selectedSpaceId = MutableStateFlow(NO_VALUE)
@@ -77,7 +76,7 @@ class AddToAnytypeViewModel(
     val navigation = MutableSharedFlow<OpenObjectNavigation>()
     val spaceViews = MutableStateFlow<List<SpaceView>>(emptyList())
     val commands = MutableSharedFlow<Command>()
-    val loading = MutableStateFlow<Float?>(null)
+    val progressState = MutableStateFlow<ProgressState>(ProgressState.Init)
 
     val state = MutableStateFlow<ViewState>(ViewState.Init)
 
@@ -144,43 +143,7 @@ class AddToAnytypeViewModel(
         subscribeToEventProcessChannel()
     }
 
-    private fun subscribeToEventProcessChannel() {
-        viewModelScope.launch {
-            eventProcessChannel.observe().collect { events ->
-                Timber.d("EventProcessChannel events: $events")
-                delay(1000)
-                when (val event = events.firstOrNull()) {
-                    is Process.Event.New -> {
-                        if (event.process?.type == Process.Type.DROP_FILES) {
-                            loading.value = 0f
-                        }
-                    }
-                    is Process.Event.Done -> {
-                        if (event.process?.type == Process.Type.DROP_FILES) {
-                            loading.value = null
-                        }
-                    }
-                    is Process.Event.Update -> {
-                        val process = event.process
-                        if (event.process?.type == Process.Type.DROP_FILES) {
-                            val progress = process?.progress
-                            val total = progress?.total
-                            val done = progress?.done
-                            val state = if (total != null && total != 0L && done != null) {
-                                done.toFloat() / total
-                            } else {
-                                null
-                            }
-                            loading.value = state
-                        }
-                    }
-                    null -> {
-                        loading.value = null
-                    }
-                }
-            }
-        }
-    }
+    private fun subscribeToEventProcessChannel() {}
 
     fun onShareMedia(uris: List<String>, wrapperObjTitle: String? = null) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -257,7 +220,6 @@ class AddToAnytypeViewModel(
         targetSpaceId: String,
         targetSpaceView: SpaceView
     ) {
-        loading.value = 0f
         val params = UploadFile.Params(
             path = path,
             space = SpaceId(targetSpaceId),
@@ -267,7 +229,6 @@ class AddToAnytypeViewModel(
         uploadFile.async(params).fold(
             onSuccess = {
                 Timber.d("File uploaded successfully, id: ${it.id}")
-                loading.value = null
                 proceedWithNavigation(
                     result = it.id,
                     targetSpaceId = targetSpaceId,
@@ -275,7 +236,6 @@ class AddToAnytypeViewModel(
                 )
             },
             onFailure = { e ->
-                loading.value = null
                 Timber.e(e, "Error while uploading file").also {
                     sendToast(e.msg())
                 }
@@ -294,19 +254,16 @@ class AddToAnytypeViewModel(
             space = SpaceId(targetSpaceId),
             localFilePaths = filePaths
         )
-        loading.value = 0f
         fileDrop.async(params).fold(
             onSuccess = { _ ->
-                delay(5000)
-                loading.value = null
-                proceedWithNavigation(
-                    targetSpaceId = targetSpaceId,
-                    result = wrapperObjId,
-                    targetSpaceView = targetSpaceView
-                )
+                Timber.d("Files dropped successfully")
+//                proceedWithNavigation(
+//                    targetSpaceId = targetSpaceId,
+//                    result = wrapperObjId,
+//                    targetSpaceView = targetSpaceView
+//                )
             },
             onFailure = { e ->
-                loading.value = null
                 Timber.e(e, "Error while dropping files").also {
                     sendToast(e.msg())
                 }
@@ -322,6 +279,7 @@ class AddToAnytypeViewModel(
         Timber.d("proceedWithNavigation: $result")
         if (targetSpaceId == spaceManager.get()) {
             Timber.d("proceedWithNavigation: OpenEditor")
+            delay(300)
             navigation.emit(
                 OpenObjectNavigation.OpenEditor(
                     target = result,
@@ -330,6 +288,7 @@ class AddToAnytypeViewModel(
             )
         } else {
             Timber.d("proceedWithNavigation: ObjectAddToSpaceToast")
+            delay(300)
             with(commands) {
                 emit(Command.ObjectAddToSpaceToast(targetSpaceView.obj.name))
                 emit(Command.Dismiss)
@@ -488,7 +447,7 @@ class AddToAnytypeViewModel(
         private val permissions: Permissions,
         private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         private val fileDrop: FileDrop,
-        private val eventProcessChannel: EventProcessChannel
+        private val eventProcessChannel: EventProcessDropFilesChannel
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -517,15 +476,21 @@ class AddToAnytypeViewModel(
     )
 
     sealed class Command {
-        object Dismiss : Command()
+        data object Dismiss : Command()
         data class ObjectAddToSpaceToast(
             val spaceName: String?
         ) : Command()
     }
 
     sealed class ViewState {
-        object Init : ViewState()
+        data object Init : ViewState()
         data class Default(val content: String) : ViewState()
+    }
+
+    sealed class ProgressState {
+        data object Init : ProgressState()
+        data class Progress(val processId: Id, val progress: Float) : ProgressState()
+        data class Error(val error: String) : ProgressState()
     }
 
     companion object {

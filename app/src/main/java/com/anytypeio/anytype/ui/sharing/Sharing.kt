@@ -50,6 +50,7 @@ import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.TitleInter15
 import com.anytypeio.anytype.core_utils.ui.MultipleEventCutter
 import com.anytypeio.anytype.core_utils.ui.get
+import com.anytypeio.anytype.presentation.sharing.AddToAnytypeViewModel
 import com.anytypeio.anytype.presentation.sharing.AddToAnytypeViewModel.SpaceView
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
@@ -63,7 +64,7 @@ fun AddToAnytypeScreenUrlPreview() {
         spaces = emptyList(),
         onSelectSpaceClicked = {},
         content = "https://en.wikipedia.org/wiki/Walter_Benjamin",
-        loading = null
+        progressState = AddToAnytypeViewModel.ProgressState.Init
     )
 }
 
@@ -77,7 +78,7 @@ fun AddToAnytypeScreenNotePreview() {
         spaces = emptyList(),
         onSelectSpaceClicked = {},
         content = "",
-        loading = 0.8f
+        progressState = AddToAnytypeViewModel.ProgressState.Progress(processId = "dasda", progress = 0.8f)
     )
 }
 
@@ -89,7 +90,7 @@ fun AddToAnytypeScreen(
     onCancelClicked: () -> Unit,
     onDoneClicked: (SaveAsOption) -> Unit,
     onSelectSpaceClicked: (SpaceView) -> Unit,
-    loading: Float?
+    progressState: AddToAnytypeViewModel.ProgressState
 ) {
     var isSaveAsMenuExpanded by remember { mutableStateOf(false) }
     val items = when (data) {
@@ -216,15 +217,15 @@ fun AddToAnytypeScreen(
                 onSelectSpaceClicked = onSelectSpaceClicked
             )
         }
-        if (loading != null) {
-            DefaultLinearProgressIndicator(progress = loading)
+        if (progressState is AddToAnytypeViewModel.ProgressState.Progress) {
+            DefaultLinearProgressIndicator(progress = progressState.progress)
         }
         Spacer(modifier = Modifier.height(20.dp))
         Buttons(
             onCancelClicked = onCancelClicked,
             onDoneClicked = onDoneClicked,
             selectedIndex = selectedIndex,
-            loading = loading
+            loading = progressState
         )
     }
 }
@@ -291,7 +292,7 @@ private fun Buttons(
     onCancelClicked: () -> Unit,
     onDoneClicked: (SaveAsOption) -> Unit,
     selectedIndex: Int,
-    loading: Float?
+    loading: AddToAnytypeViewModel.ProgressState
 ) {
     Row(
         modifier = Modifier
@@ -313,7 +314,7 @@ private fun Buttons(
             text = stringResource(id = R.string.done),
             modifierBox = Modifier.weight(1.0f),
             modifierButton = Modifier.fillMaxWidth(),
-            loading = loading != null
+            loading = loading is AddToAnytypeViewModel.ProgressState.Progress
         )
     }
 }

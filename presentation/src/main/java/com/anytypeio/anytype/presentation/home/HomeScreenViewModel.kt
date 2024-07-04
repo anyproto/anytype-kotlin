@@ -60,6 +60,7 @@ import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
+import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.extension.sendAddWidgetEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectTypeSelectOrChangeEvent
@@ -169,7 +170,8 @@ class HomeScreenViewModel(
     private val getPinnedObjectTypes: GetPinnedObjectTypes,
     private val userPermissionProvider: UserPermissionProvider,
     private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
-    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val coverImageHashProvider: CoverImageHashProvider
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -442,6 +444,7 @@ class HomeScreenViewModel(
                                 isWidgetCollapsed = isCollapsed(widget.id),
                                 isSessionActive = isSessionActive,
                                 urlBuilder = urlBuilder,
+                                coverImageHashProvider = coverImageHashProvider,
                                 onRequestCache = {
                                     currentlyDisplayedViews.find { view ->
                                         view.id == widget.id
@@ -452,9 +455,23 @@ class HomeScreenViewModel(
                             )
                         }
                         is Widget.View -> {
-                            // Falling back to link widget in case of
-                            LinkWidgetContainer(
-                                widget = widget
+                            DataViewListWidgetContainer(
+                                widget = widget,
+                                storage = storelessSubscriptionContainer,
+                                getObject = getObject,
+                                activeView = observeCurrentWidgetView(widget.id),
+                                isWidgetCollapsed = isCollapsed(widget.id),
+                                isSessionActive = isSessionActive,
+                                urlBuilder = urlBuilder,
+                                coverImageHashProvider = coverImageHashProvider,
+                                // TODO handle cached item type.
+                                onRequestCache = {
+                                    currentlyDisplayedViews.find { view ->
+                                        view.id == widget.id
+                                                && view is WidgetView.SetOfObjects
+                                                && view.source == widget.source
+                                    } as? WidgetView.SetOfObjects
+                                }
                             )
                         }
                     }
@@ -650,11 +667,9 @@ class HomeScreenViewModel(
                         sendToast("Error while creating widget: ${status.exception}")
                         Timber.e(status.exception, "Error while creating widget")
                     }
-
                     is Resultat.Loading -> {
                         // Do nothing?
                     }
-
                     is Resultat.Success -> {
                         objectPayloadDispatcher.send(status.value)
                     }
@@ -1652,7 +1667,8 @@ class HomeScreenViewModel(
         private val getPinnedObjectTypes: GetPinnedObjectTypes,
         private val userPermissionProvider: UserPermissionProvider,
         private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
-        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        private val coverImageHashProvider: CoverImageHashProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -1692,7 +1708,8 @@ class HomeScreenViewModel(
             getPinnedObjectTypes = getPinnedObjectTypes,
             userPermissionProvider = userPermissionProvider,
             deepLinkToObjectDelegate = deepLinkToObjectDelegate,
-            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            coverImageHashProvider = coverImageHashProvider
         ) as T
     }
 

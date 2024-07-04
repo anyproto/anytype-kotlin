@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.widgets
 
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVFilter
@@ -15,7 +16,11 @@ import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
+import com.anytypeio.anytype.presentation.BuildConfig
+import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.relations.cover
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import java.lang.UnsupportedOperationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
@@ -26,31 +31,56 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.take
+import timber.log.Timber
 
 class DataViewListWidgetContainer(
-    private val widget: Widget.List,
+    private val widget: Widget,
     private val getObject: GetObject,
     private val storage: StorelessSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
     private val activeView: Flow<Id?>,
     private val isWidgetCollapsed: Flow<Boolean>,
+    private val coverImageHashProvider: CoverImageHashProvider,
     isSessionActive: Flow<Boolean>,
     onRequestCache: () -> WidgetView.SetOfObjects? = { null }
 ) : WidgetContainer {
 
-    override val view = isSessionActive.flatMapLatest { isActive ->
+    init {
+        if (BuildConfig.DEBUG) {
+            assert(widget is Widget.List || widget is Widget.View) { "Incompatible container." }
+        }
+    }
+
+    override val view : Flow<WidgetView> = isSessionActive.flatMapLatest { isActive ->
         if (isActive)
             buildViewFlow().onStart {
                 isWidgetCollapsed.take(1).collect { isCollapsed ->
-                    val loadingStateView = WidgetView.SetOfObjects(
-                        id = widget.id,
-                        source = widget.source,
-                        tabs = emptyList(),
-                        elements = emptyList(),
-                        isExpanded = !isCollapsed,
-                        isCompact = widget.isCompact,
-                        isLoading = true
-                    )
+                    val loadingStateView = when(widget) {
+                        is Widget.List -> {
+                            WidgetView.SetOfObjects(
+                                id = widget.id,
+                                source = widget.source,
+                                tabs = emptyList(),
+                                elements = emptyList(),
+                                isExpanded = !isCollapsed,
+                                isCompact = widget.isCompact,
+                                isLoading = true
+                            )
+                        }
+                        is Widget.View -> {
+                            WidgetView.Gallery(
+                                id = widget.id,
+                                source = widget.source,
+                                tabs = emptyList(),
+                                elements = emptyList(),
+                                isExpanded = !isCollapsed,
+                                isLoading = true
+                            )
+                        }
+                        is Widget.Link, is Widget.Tree -> {
+                            throw IllegalStateException("Incompatible widget type.")
+                        }
+                    }
                     if (isCollapsed) {
                         emit(loadingStateView)
                     } else {
@@ -62,24 +92,43 @@ class DataViewListWidgetContainer(
             emptyFlow()
     }
 
-    private fun buildViewFlow() = combine(
+    private fun buildViewFlow() : Flow<WidgetView> = combine(
         activeView.distinctUntilChanged(),
         isWidgetCollapsed
     ) { view, isCollapsed -> view to isCollapsed }.flatMapLatest { (view, isCollapsed) ->
         when (val source = widget.source) {
             is Widget.Source.Bundled -> throw IllegalStateException("Bundled widgets do not support data view layout")
             is Widget.Source.Default -> {
+                val isCompact = widget is Widget.List && widget.isCompact
                 if (isCollapsed) {
-                    flowOf(
-                        WidgetView.SetOfObjects(
-                            id = widget.id,
-                            source = widget.source,
-                            tabs = emptyList(),
-                            elements = emptyList(),
-                            isExpanded = false,
-                            isCompact = widget.isCompact
-                        )
-                    )
+                    when(val w = widget) {
+                        is Widget.List -> {
+                            flowOf(
+                                WidgetView.SetOfObjects(
+                                    id = widget.id,
+                                    source = widget.source,
+                                    tabs = emptyList(),
+                                    elements = emptyList(),
+                                    isExpanded = false,
+                                    isCompact = isCompact
+                                )
+                            )
+                        }
+                        is Widget.View -> {
+                            flowOf(
+                                WidgetView.Gallery(
+                                    id = widget.id,
+                                    source = widget.source,
+                                    tabs = emptyList(),
+                                    elements = emptyList(),
+                                    isExpanded = false
+                                )
+                            )
+                        }
+                        is Widget.Tree, is Widget.Link -> {
+                            throw IllegalStateException("Incompatible widget type.")
+                        }
+                    }
                 } else {
                     val obj = getObject.run(widget.source.id)
                     val params = obj.parseDataViewStoreSearchParams(
@@ -88,8 +137,14 @@ class DataViewListWidgetContainer(
                         source = source.obj,
                         config = widget.config,
                         limit = WidgetConfig.resolveListWidgetLimit(
-                            isCompact = widget.isCompact,
-                            limit = widget.limit
+                            isCompact = isCompact,
+                            limit = when(widget) {
+                                is Widget.List -> widget.limit
+                                is Widget.View -> widget.limit
+                                is Widget.Tree, is Widget.Link -> {
+                                    throw IllegalStateException("Incompatible widget type.")
+                                }
+                            }
                         )
                     )
                     if (params != null) {
@@ -99,19 +154,46 @@ class DataViewListWidgetContainer(
                                 obj = obj,
                                 activeView = view
                             )
-                            WidgetView.SetOfObjects(
-                                id = widget.id,
-                                source = widget.source,
-                                tabs = obj.tabs(viewer = view),
-                                elements = objects.map { obj ->
-                                    WidgetView.SetOfObjects.Element(
-                                        obj = obj,
-                                        objectIcon = obj.widgetElementIcon(builder = urlBuilder)
-                                    )
-                                },
-                                isExpanded = true,
-                                isCompact = widget.isCompact
-                            )
+                            val dv = obj.blocks.find { it.content is DV }?.content
+                            val target = if (dv is DV) {
+                                dv.viewers.find { it.id == view }
+                            } else {
+                                null
+                            }
+                            if (target?.type == Block.Content.DataView.Viewer.Type.GALLERY) {
+                                WidgetView.Gallery(
+                                    id = widget.id,
+                                    source = widget.source,
+                                    tabs = obj.tabs(viewer = view),
+                                    elements = objects.map { obj ->
+                                        WidgetView.SetOfObjects.Element(
+                                            obj = obj,
+                                            objectIcon = obj.widgetElementIcon(
+                                                builder = urlBuilder
+                                            ),
+                                            cover = obj.cover(
+                                                urlBuilder = urlBuilder,
+                                                coverImageHashProvider = coverImageHashProvider
+                                            )
+                                        )
+                                    },
+                                    isExpanded = true
+                                )
+                            } else {
+                                WidgetView.SetOfObjects(
+                                    id = widget.id,
+                                    source = widget.source,
+                                    tabs = obj.tabs(viewer = view),
+                                    elements = objects.map { obj ->
+                                        WidgetView.SetOfObjects.Element(
+                                            obj = obj,
+                                            objectIcon = obj.widgetElementIcon(builder = urlBuilder)
+                                        )
+                                    },
+                                    isExpanded = true,
+                                    isCompact = isCompact
+                                )
+                            }
                         }
                     } else {
                         flowOf(defaultEmptyState())
@@ -119,36 +201,42 @@ class DataViewListWidgetContainer(
                 }
             }
         }
-    }.catch {
-        emit(defaultEmptyState())
-    }
-
-    private fun resolveObjectOrder(
-        searchResults: List<ObjectWrapper.Basic>,
-        obj: ObjectView,
-        activeView: Id?
-    ): List<ObjectWrapper.Basic> {
-        var objects = searchResults
-        val dv = obj.blocks.find { b -> b.content is DV }
-        val content = dv?.content as? DV
-        if (content?.isCollection == true) {
-            val targetView = activeView ?: content.viewers.firstOrNull()?.id
-            val order = content.objectOrders.find { order -> order.view == targetView }
-            if (order != null && order.ids.isNotEmpty()) {
-                objects = objects.sortedBy { order.ids.indexOf(it.id) }
+    }.catch { e ->
+        when(widget) {
+            is Widget.List -> {
+                emit(defaultEmptyState())
+            }
+            is Widget.View -> {
+                emit(defaultEmptyState())
+            }
+            else -> {
+                Timber.e(e, "Error in data view container flow")
             }
         }
-        return objects
     }
 
-    private fun defaultEmptyState() = WidgetView.SetOfObjects(
-        id = widget.id,
-        source = widget.source,
-        tabs = emptyList(),
-        elements = emptyList(),
-        isExpanded = true,
-        isCompact = widget.isCompact
-    )
+    private fun defaultEmptyState() : WidgetView {
+        return when(widget) {
+            is Widget.List -> WidgetView.SetOfObjects(
+                id = widget.id,
+                source = widget.source,
+                tabs = emptyList(),
+                elements = emptyList(),
+                isExpanded = true,
+                isCompact = (widget as? Widget.List)?.isCompact ?: false
+            )
+            is Widget.View -> WidgetView.Gallery(
+                id = widget.id,
+                source = widget.source,
+                tabs = emptyList(),
+                elements = emptyList(),
+                isExpanded = true
+            )
+            is Widget.Link, is Widget.Tree -> {
+                throw IllegalStateException("Incompatible widget type.")
+            }
+        }
+    }
 }
 
 fun ObjectView.isCollection(): Boolean {
@@ -223,4 +311,22 @@ fun ObjectView.tabs(viewer: Id?): List<WidgetView.SetOfObjects.Tab> = buildList 
             )
         )
     }
+}
+
+fun resolveObjectOrder(
+    searchResults: List<ObjectWrapper.Basic>,
+    obj: ObjectView,
+    activeView: Id?
+): List<ObjectWrapper.Basic> {
+    var objects = searchResults
+    val dv = obj.blocks.find { b -> b.content is DV }
+    val content = dv?.content as? DV
+    if (content?.isCollection == true) {
+        val targetView = activeView ?: content.viewers.firstOrNull()?.id
+        val order = content.objectOrders.find { order -> order.view == targetView }
+        if (order != null && order.ids.isNotEmpty()) {
+            objects = objects.sortedBy { order.ids.indexOf(it.id) }
+        }
+    }
+    return objects
 }

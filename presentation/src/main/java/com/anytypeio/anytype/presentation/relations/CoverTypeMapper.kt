@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.editor.cover.CoverView
 
 fun CoverWrapper.getCover(
     urlBuilder: UrlBuilder,
@@ -49,6 +50,54 @@ fun CoverWrapper.getCover(
         coverImage = coverImage,
         coverGradient = coverGradient
     )
+}
+
+fun ObjectWrapper.Basic.cover(
+    urlBuilder: UrlBuilder,
+    coverImageHashProvider: CoverImageHashProvider
+): CoverView? {
+
+    val type = coverType
+
+    var coverColor: CoverColor? = null
+    var coverImage: Url? = null
+    var coverGradient: String? = null
+
+    when (type) {
+        CoverType.UPLOADED_IMAGE,
+        CoverType.UNSPLASH_IMAGE -> {
+            val targetObjectId = coverId
+            coverImage = if (!targetObjectId.isNullOrBlank()) {
+                urlBuilder.image(targetObjectId)
+            } else {
+                null
+            }
+        }
+        CoverType.BUNDLED_IMAGE -> {
+            val hash = coverId?.let { id ->
+                coverImageHashProvider.provide(id)
+            }
+            if (!hash.isNullOrBlank()) coverImage = urlBuilder.image(hash)
+        }
+        CoverType.COLOR -> {
+            coverColor = coverId?.let { id ->
+                CoverColor.values().find { it.code == id }
+            }
+        }
+        CoverType.GRADIENT -> {
+            coverGradient = coverId
+        }
+        CoverType.NONE -> {
+            // Do nothing.
+        }
+    }
+
+    return when {
+        coverImage != null -> CoverView.Image(coverImage)
+        coverGradient != null -> CoverView.Gradient(coverGradient)
+        coverColor != null -> CoverView.Color(coverColor)
+        else -> null
+    }
 }
 
 class CoverContainer(

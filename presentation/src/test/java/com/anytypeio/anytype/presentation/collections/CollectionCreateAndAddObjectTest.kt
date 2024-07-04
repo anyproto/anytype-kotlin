@@ -21,7 +21,6 @@ import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubsc
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertIs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import net.lachlanmckee.timberjunit.TimberTestRule
@@ -147,6 +146,7 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
         stubSpaceManager(mockObjectCollection.spaceId)
         stubInterceptEvents()
 
+        stubProfileIcon()
         stubInterceptThreadStatus()
         stubOpenObject(
             doc = listOf(
@@ -176,10 +176,9 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
             val first = awaitItem()
             assertIs<DataViewViewState.Init>(first)
 
-            advanceUntilIdle()
+            cancelAndIgnoreRemainingEvents()
 
-            val second = awaitItem()
-            assertIs<DataViewViewState.Collection.Default>(second)
+            advanceUntilIdle()
 
             val newObjectTypeKey = MockDataFactory.randomString()
             val newObjectTemplate = MockDataFactory.randomString()

@@ -20,6 +20,8 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.Process.Event
+import com.anytypeio.anytype.core_models.Process.State
 import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.fold
@@ -143,7 +145,65 @@ class AddToAnytypeViewModel(
         subscribeToEventProcessChannel()
     }
 
-    private fun subscribeToEventProcessChannel() {}
+    private fun subscribeToEventProcessChannel() {
+        viewModelScope.launch {
+            eventProcessChannel.observe()
+                .collect { events ->
+                    events.forEach { event ->
+                        when (event) {
+                            is Event.DropFiles.New -> {
+                                val currentProgressState = progressState.value
+                                if (currentProgressState is ProgressState.Init
+                                    && event.process.state == State.RUNNING
+                                ) {
+                                    progressState.value = ProgressState.Progress(
+                                        processId = event.process.id,
+                                        progress = 0f
+                                    )
+                                } else {
+                                    //some process is already running
+                                }
+                            }
+
+                            is Event.DropFiles.Update -> {
+                                val currentProgressState = progressState.value
+                                val newProcess = event.process
+                                if (currentProgressState is ProgressState.Progress
+                                    && currentProgressState.processId == event.process.id
+                                    && newProcess.state == State.RUNNING
+                                ) {
+                                    val progress = newProcess.progress
+                                    val total = progress?.total
+                                    val done = progress?.done
+                                    progressState.value =
+                                        if (total != null && total != 0L && done != null) {
+                                            currentProgressState.copy(progress = done.toFloat() / total)
+                                        } else {
+                                            currentProgressState.copy(progress = 0f)
+                                        }
+                                }
+                            }
+
+                            is Event.DropFiles.Done -> {
+                                val currentProgressState = progressState.value
+                                val newProcess = event.process
+                                if (currentProgressState is ProgressState.Progress
+                                    && event.process.state == State.RUNNING
+                                    && newProcess.id == currentProgressState.processId
+                                ) {
+                                    progressState.value = ProgressState.Progress(
+                                        processId = event.process.id,
+                                        progress = 1f
+                                    )
+                                    delay(300)
+                                    progressState.value = ProgressState.Init
+                                }
+                            }
+                        }
+                    }
+                }
+        }
+    }
 
     fun onShareMedia(uris: List<String>, wrapperObjTitle: String? = null) {
         viewModelScope.launch(Dispatchers.IO) {

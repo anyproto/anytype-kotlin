@@ -118,7 +118,7 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
                     },
                     spaces = vm.spaceViews.collectAsStateWithLifecycle().value,
                     onSelectSpaceClicked = { vm.onSelectSpaceClicked(it) },
-                    loading = vm.loading.collectAsStateWithLifecycle().value,
+                    progressState = vm.progressState.collectAsStateWithLifecycle().value,
                 )
                 LaunchedEffect(Unit) {
                     vm.navigation.collect { nav ->

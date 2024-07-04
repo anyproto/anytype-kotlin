@@ -261,8 +261,8 @@ fun GalleryWidgetCard(
             }
             if (item.elements.isNotEmpty()) {
                 LazyRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     item.elements.forEachIndexed { idx, element ->
                         if (idx == 0) {

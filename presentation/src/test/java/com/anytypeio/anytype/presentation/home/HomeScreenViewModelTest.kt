@@ -62,6 +62,7 @@ import com.anytypeio.anytype.domain.widgets.SetWidgetActiveView
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
+import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -213,6 +214,9 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+
+    @Mock
+    lateinit var coverImageHashProvider: CoverImageHashProvider
 
     lateinit var userPermissionProvider: UserPermissionProvider
 
@@ -2853,7 +2857,8 @@ class HomeScreenViewModelTest {
         getPinnedObjectTypes = getPinnedObjectTypes,
         userPermissionProvider = userPermissionProvider,
         deepLinkToObjectDelegate = deepLinkToObjectDelegate,
-        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+        coverImageHashProvider = coverImageHashProvider
     )
 
     companion object {

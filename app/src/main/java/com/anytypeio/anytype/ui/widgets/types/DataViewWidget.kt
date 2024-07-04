@@ -260,6 +260,7 @@ fun GalleryWidgetCard(
                 )
             }
             if (item.elements.isNotEmpty()) {
+                val isCardSmall = item.elements.none { it.cover != null }
                 LazyRow(
                     modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -275,14 +276,16 @@ fun GalleryWidgetCard(
                                 item = element,
                                 onItemClicked = {
                                     onWidgetObjectClicked(element.obj)
-                                }
+                                },
+                                isCardSmall = isCardSmall
                             )
                         }
                         if (idx == item.elements.lastIndex) {
                             item {
                                 Box(
                                     modifier = Modifier
-                                        .size(136.dp)
+                                        .width(136.dp)
+                                        .height(if (isCardSmall) 56.dp else 136.dp)
                                         .border(
                                             width = 1.dp,
                                             color = colorResource(id = R.color.shape_primary),
@@ -442,11 +445,13 @@ fun ListWidgetElement(
 @Composable
 private fun GalleryWidgetItemCard(
     item: WidgetView.SetOfObjects.Element,
-    onItemClicked: () -> Unit
+    onItemClicked: () -> Unit,
+    isCardSmall: Boolean = false
 ) {
     Box(
         modifier = Modifier
-            .size(136.dp)
+            .width(136.dp)
+            .height(if (isCardSmall) 56.dp else 136.dp)
             .clip(RoundedCornerShape(8.dp))
             .clickable {
                 onItemClicked()
@@ -512,9 +517,9 @@ private fun GalleryWidgetItemCard(
             modifier = Modifier
                 .padding(
                     start = 12.dp,
-                    end = 12.dp,
-                    top = 10.dp,
-                    bottom = 10.dp
+                    end = 10.dp,
+                    top = 9.dp,
+                    bottom = 11.dp
                 )
                 .align(
                     if (item.cover != null) {

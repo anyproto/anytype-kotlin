@@ -1,24 +1,21 @@
 package com.anytypeio.anytype.core_ui.features.dataview.modals
 
-import android.content.res.ColorStateList
 import android.widget.ImageView
 import android.widget.TextView
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemDvViewerFilterTagBinding
-import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.widgets.RelationFormatIconWidget
 import com.anytypeio.anytype.core_utils.ext.gone
-import com.anytypeio.anytype.core_utils.ext.invisible
+import com.anytypeio.anytype.core_utils.ext.setDrawableColor
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.extension.hasValue
 import com.anytypeio.anytype.presentation.sets.model.FilterView
-import com.anytypeio.anytype.presentation.sets.model.TagView
-import com.google.android.material.chip.Chip
 
-class FilterTagViewHolder(val binding: ItemDvViewerFilterTagBinding) : FilterViewHolder(binding.root) {
+class FilterTagViewHolder(val binding: ItemDvViewerFilterTagBinding) :
+    FilterViewHolder(binding.root) {
 
     override val textTitle: TextView get() = binding.tvTitle
     override val textCondition: TextView get() = binding.tvCondition
@@ -26,10 +23,8 @@ class FilterTagViewHolder(val binding: ItemDvViewerFilterTagBinding) : FilterVie
     override val iconArrow: ImageView get() = binding.iconArrow
     override val iconRemove: ImageView get() = binding.iconRemoveTag
 
-    private val chip1 = binding.tvValue.chip1
-    private val chip2 = binding.tvValue.chip2
-    private val chipDots = binding.tvValue.chipDots
-    private val chips = listOf(chip1, chip2, chipDots)
+    private val tagView = binding.tag
+    private val numberView: TextView get() = binding.number
 
     fun bind(
         item: FilterView.Expression.Tag
@@ -40,40 +35,45 @@ class FilterTagViewHolder(val binding: ItemDvViewerFilterTagBinding) : FilterVie
             condition = item.condition.title,
             format = item.format
         )
-        chips.forEach { it.gone() }
         if (item.condition.hasValue()) {
-            item.filterValue.value.forEachIndexed { index, s ->
-                when (index) {
-                    0 -> bindChip(chip1, s)
-                    1 -> bindChip(chip2, s)
-                    2 -> chipDots.visible()
-                }
+            val valuesSize = item.filterValue.value.size
+            if (item.filterValue.value.isNotEmpty()) {
+                val tag = item.filterValue.value.first()
+                val color = ThemeColor.entries.find { it.code == tag.color }
+                setupTag(tagView, color, tag.tag)
+            } else {
+                tagView.gone()
+            }
+            if (valuesSize > MAX_ITEMS) {
+                numberView.visible()
+                numberView.text = "+${valuesSize - MAX_ITEMS}"
+            } else {
+                numberView.gone()
             }
         } else {
-            bindChip(chip1, null)
-            bindChip(chip2, null)
-            chipDots.invisible()
+            tagView.gone()
+            numberView.gone()
         }
     }
 
-    private fun bindChip(chip: Chip, value: TagView?) {
-        with(chip) {
-            val defaultTextColor = itemView.resources.getColor(R.color.text_primary, null)
-            val defaultBackground = itemView.resources.getColor(R.color.shape_primary, null)
-            val color = ThemeColor.values().find { v -> v.code == value?.color }
-            if (color != null && color != ThemeColor.DEFAULT) {
-                chipBackgroundColor = ColorStateList.valueOf(resources.light(color, defaultBackground))
-                setTextColor(resources.dark(color, defaultTextColor))
-            } else {
-                setChipBackgroundColorResource(R.color.default_filter_tag_background_color)
-                setTextColor(context.color(R.color.default_filter_tag_text_color))
-            }
-            text = value?.tag
-            if (value != null) {
-                visible()
-            } else {
-                invisible()
-            }
+    private fun setupTag(
+        textView: TextView,
+        color: ThemeColor?,
+        txt: String
+    ) {
+        textView.apply {
+            visible()
+            val textColorPrimary = resources.getColor(R.color.text_secondary, null)
+            val defaultBackground = resources.getColor(R.color.shape_primary, null)
+            setTextColor(color?.let { resources.dark(it, textColorPrimary) } ?: textColorPrimary)
+            setBackgroundResource(R.drawable.rect_dv_cell_tag_item)
+            background.setDrawableColor(color?.let { resources.light(it, defaultBackground) }
+                ?: defaultBackground)
+            text = txt
         }
+    }
+
+    companion object {
+        private const val MAX_ITEMS = 1
     }
 }

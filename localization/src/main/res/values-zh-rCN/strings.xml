@@ -278,7 +278,7 @@
     <string name="relation_format_number">数目</string>
     <string name="relation_format_date">日期</string>
     <string name="relation_format_status">选择</string>
-    <string name="relation_format_file">文件</string>
+    <string name="relation_format_file">文件与媒体</string>
     <string name="relation_format_checkbox">复选框</string>
     <string name="relation_format_url">URL</string>
     <string name="relation_format_email">电子邮件</string>
@@ -930,6 +930,8 @@
     <string name="widget_type_list_description">具有集合对象列表视图的小部件</string>
     <string name="widget_type_compact_list_description">具有集合对象列表视图的小部件</string>
     <string name="widget_type_list">列表</string>
+    <string name="widget_type_view">视图</string>
+    <string name="widget_type_view_description">Widget with a view of set object</string>
     <string name="widget_type_compact_list">紧凑列表</string>
     <string name="widget_change_source">更改来源</string>
     <string name="widget_change_type">更改类型</string>

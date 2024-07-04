@@ -278,7 +278,7 @@
     <string name="relation_format_number">數字</string>
     <string name="relation_format_date">日期</string>
     <string name="relation_format_status">選項</string>
-    <string name="relation_format_file">檔案</string>
+    <string name="relation_format_file">File &amp; Media</string>
     <string name="relation_format_checkbox">核取方塊列表</string>
     <string name="relation_format_url">Url</string>
     <string name="relation_format_email">email</string>
@@ -930,6 +930,8 @@
     <string name="widget_type_list_description">具有物件集合列表視圖的小工具</string>
     <string name="widget_type_compact_list_description">具有物件集合列表視圖的小工具</string>
     <string name="widget_type_list">列表</string>
+    <string name="widget_type_view">檢視</string>
+    <string name="widget_type_view_description">Widget with a view of set object</string>
     <string name="widget_type_compact_list">緊湊型列表</string>
     <string name="widget_change_source">變更來源</string>
     <string name="widget_change_type">更改類型</string>

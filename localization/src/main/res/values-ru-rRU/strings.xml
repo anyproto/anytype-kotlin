@@ -281,7 +281,7 @@
     <string name="relation_format_number">Число</string>
     <string name="relation_format_date">Дата</string>
     <string name="relation_format_status">Выбрать</string>
-    <string name="relation_format_file">Файл</string>
+    <string name="relation_format_file">File &amp; Media</string>
     <string name="relation_format_checkbox">Флажок</string>
     <string name="relation_format_url">URL</string>
     <string name="relation_format_email">E-mail</string>
@@ -936,6 +936,8 @@
     <string name="widget_type_list_description">Виджет со списком объектов из набора</string>
     <string name="widget_type_compact_list_description">Виджет со списком объектов из набора</string>
     <string name="widget_type_list">Список</string>
+    <string name="widget_type_view">Вид</string>
+    <string name="widget_type_view_description">Widget with a view of set object</string>
     <string name="widget_type_compact_list">Компактный список</string>
     <string name="widget_change_source">Изменить источник</string>
     <string name="widget_change_type">Изменить тип</string>

@@ -12,8 +12,10 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationLink
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.StubConfig
+import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
@@ -34,6 +36,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
+import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -65,6 +68,8 @@ import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
+import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Companion.HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION
 import com.anytypeio.anytype.presentation.home.UserPermissionProviderStub
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -368,6 +373,24 @@ open class ObjectSetViewModelTestSetup {
         repo.stub {
             onBlocking { getSpaceConfig(space) } doReturn spaceConfig
             spaceManager.set(space)
+        }
+    }
+
+    fun stubProfileIcon() {
+        val searchParams = StoreSearchByIdsParams(
+            subscription = HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
+            targets = listOf(spaceConfig.profile),
+            keys = listOf(
+                Relations.ID,
+                Relations.SPACE_ID,
+                Relations.NAME,
+                Relations.ICON_EMOJI,
+                Relations.ICON_IMAGE,
+                Relations.ICON_OPTION
+            )
+        )
+        storelessSubscriptionContainer.stub {
+            onBlocking { subscribe(searchParams) } doReturn flowOf(listOf(StubObject()))
         }
     }
 

@@ -9,7 +9,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.domain.spaces.GetSpaceViews
-import com.anytypeio.anytype.domain.workspace.EventProcessChannel
+import com.anytypeio.anytype.domain.workspace.EventProcessImportChannel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import javax.inject.Inject
 
@@ -23,7 +23,7 @@ class GalleryInstallationViewModelFactory @Inject constructor(
     private val urlBuilder: UrlBuilder,
     private val spaceGradientProvider: SpaceGradientProvider,
     private val  userPermissionProvider: UserPermissionProvider,
-    private val eventProcessChannel: EventProcessChannel
+    private val eventProcessChannel: EventProcessImportChannel
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

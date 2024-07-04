@@ -13,7 +13,6 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.ManifestInfo
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.Process
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
@@ -23,12 +22,11 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.domain.spaces.GetSpaceViews
-import com.anytypeio.anytype.domain.workspace.EventProcessChannel
+import com.anytypeio.anytype.domain.workspace.EventProcessImportChannel
 import com.anytypeio.anytype.gallery_experience.models.GalleryInstallationNavigation
 import com.anytypeio.anytype.gallery_experience.models.GalleryInstallationSpacesState
 import com.anytypeio.anytype.gallery_experience.models.GalleryInstallationState
 import com.anytypeio.anytype.gallery_experience.models.GallerySpaceView
-import com.anytypeio.anytype.presentation.extension.getTypePropName
 import com.anytypeio.anytype.presentation.spaces.SelectSpaceViewModel.Companion.MAX_SPACE_COUNT
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
@@ -47,7 +45,7 @@ class GalleryInstallationViewModel(
     private val urlBuilder: UrlBuilder,
     private val spaceGradientProvider: SpaceGradientProvider,
     private val userPermissionProvider: UserPermissionProvider,
-    private val eventProcessChannel: EventProcessChannel
+    private val eventProcessChannel: EventProcessImportChannel
 ) : ViewModel() {
 
     val mainState = MutableStateFlow<GalleryInstallationState>(GalleryInstallationState.Loading)
@@ -225,9 +223,6 @@ class GalleryInstallationViewModel(
         viewModelScope.launch {
             eventProcessChannel.observe().collect { events ->
                 Timber.d("EventProcessChannel events: $events")
-                if (events.any { it is Process.Event.Done && it.process?.type == Process.Type.IMPORT }) {
-                    command.emit(GalleryInstallationNavigation.Dismiss)
-                }
             }
         }
     }

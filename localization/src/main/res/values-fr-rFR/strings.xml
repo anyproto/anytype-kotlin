@@ -1442,4 +1442,5 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="sort_empty_values_desc">Afficher les valeurs vides</string>
     <string name="sort_empty_values_bottom">En bas</string>
     <string name="sort_empty_values_top">En haut</string>
+    <string name="widget_view_see_all_objects">See all objects</string>
 </resources>

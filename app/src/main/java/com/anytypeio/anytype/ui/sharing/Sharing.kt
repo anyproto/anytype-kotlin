@@ -80,8 +80,10 @@ fun AddToAnytypeScreenUrlPreview() {
             )
         ),
         onSelectSpaceClicked = {},
+        onOpenClicked = {},
         content = "https://en.wikipedia.org/wiki/Walter_Benjamin",
-        progressState = AddToAnytypeViewModel.ProgressState.Error(" I understand that contributing to this repository will require me to agree with the CLA  I understand that contributing to this repository will require me to agree with the CLA\n")
+        progressState = AddToAnytypeViewModel.ProgressState.Done
+        //progressState = AddToAnytypeViewModel.ProgressState.Error(" I understand that contributing to this repository will require me to agree with the CLA  I understand that contributing to this repository will require me to agree with the CLA\n")
         //progressState = AddToAnytypeViewModel.ProgressState.Progress(processId = "dasda", progress = 0.8f)
     )
 }
@@ -105,7 +107,8 @@ fun AddToAnytypeScreenNotePreview() {
         progressState = AddToAnytypeViewModel.ProgressState.Progress(
             processId = "dasda",
             progress = 0.8f
-        )
+        ),
+        onOpenClicked = {}
     )
 }
 
@@ -117,7 +120,8 @@ fun AddToAnytypeScreen(
     onCancelClicked: () -> Unit,
     onDoneClicked: (SaveAsOption) -> Unit,
     onSelectSpaceClicked: (SpaceView) -> Unit,
-    progressState: AddToAnytypeViewModel.ProgressState
+    progressState: AddToAnytypeViewModel.ProgressState,
+    onOpenClicked: () -> Unit
 ) {
     var isSaveAsMenuExpanded by remember { mutableStateOf(false) }
     val items = when (data) {
@@ -246,9 +250,10 @@ fun AddToAnytypeScreen(
         DefaultLinearProgressIndicator(progressState = progressState)
         Buttons(
             onCancelClicked = onCancelClicked,
-            onDoneClicked = onDoneClicked,
+            onAddClicked = onDoneClicked,
             selectedIndex = selectedIndex,
-            progressState = progressState
+            progressState = progressState,
+            onOpenClicked = onOpenClicked
         )
     }
 }
@@ -271,6 +276,20 @@ private fun DefaultLinearProgressIndicator(progressState: AddToAnytypeViewModel.
             if (progressState is AddToAnytypeViewModel.ProgressState.Progress) {
                 Indicator(progress = progressState.progress)
             }
+        }
+        val doneVisibility = progressState is AddToAnytypeViewModel.ProgressState.Done
+        AnimatedVisibility(
+            visible = doneVisibility,
+            modifier = Modifier,
+            enter = fadeIn() + slideInVertically { it },
+            exit = fadeOut() + slideOutVertically { it }
+        ) {
+            Text(
+                text = stringResource(id = R.string.sharing_menu_add_to_anytype_success),
+                style = Caption1Medium,
+                color = colorResource(id = R.color.palette_system_green),
+                modifier = Modifier.padding(top = 4.dp, start = 20.dp, end = 20.dp)
+            )
         }
         val errorVisible = progressState is AddToAnytypeViewModel.ProgressState.Error
         AnimatedVisibility(
@@ -357,10 +376,17 @@ private fun DataSection(content: String) {
 @Composable
 private fun Buttons(
     onCancelClicked: () -> Unit,
-    onDoneClicked: (SaveAsOption) -> Unit,
+    onAddClicked: (SaveAsOption) -> Unit,
+    onOpenClicked: () -> Unit,
     selectedIndex: Int,
     progressState: AddToAnytypeViewModel.ProgressState
 ) {
+    val isInDoneState = progressState is AddToAnytypeViewModel.ProgressState.Done
+    val text = if (isInDoneState) {
+        stringResource(id = R.string.sharing_menu_btn_open)
+    } else {
+        stringResource(id = R.string.sharing_menu_btn_add)
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -376,9 +402,14 @@ private fun Buttons(
         )
         Spacer(modifier = Modifier.width(12.dp))
         ButtonPrimaryLoading(
-            onClick = { onDoneClicked(selectedIndex) },
+            onClick = {
+                if (isInDoneState)
+                    onOpenClicked()
+                else
+                    onAddClicked(selectedIndex)
+            },
             size = ButtonSize.Large,
-            text = stringResource(id = R.string.add),
+            text = text,
             modifierBox = Modifier.weight(1.0f),
             modifierButton = Modifier.fillMaxWidth(),
             loading = progressState is AddToAnytypeViewModel.ProgressState.Progress

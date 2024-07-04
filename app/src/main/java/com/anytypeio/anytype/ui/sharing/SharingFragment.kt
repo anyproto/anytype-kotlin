@@ -85,9 +85,8 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
                         when(option) {
                             SAVE_AS_BOOKMARK -> vm.onCreateBookmark(url = sharedData.data)
                             SAVE_AS_NOTE -> vm.onCreateNote(sharedData.data)
-                            SAVE_AS_IMAGE -> vm.onShareMedia(listOf(sharedData.data))
                             SAVE_AS_FILE -> vm.onShareMedia(listOf(sharedData.data))
-                            SAVE_AS_IMAGES -> {
+                            SAVE_AS_IMAGES, SAVE_AS_IMAGE -> {
                                 val formattedDateTime = getFormattedDateTime(Locale.getDefault())
                                 val objTitle =
                                     getString(R.string.sharing_media_wrapper_object_title, formattedDateTime)
@@ -119,6 +118,7 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
                     spaces = vm.spaceViews.collectAsStateWithLifecycle().value,
                     onSelectSpaceClicked = { vm.onSelectSpaceClicked(it) },
                     progressState = vm.progressState.collectAsStateWithLifecycle().value,
+                    onOpenClicked = vm::proceedWithNavigation
                 )
                 LaunchedEffect(Unit) {
                     vm.navigation.collect { nav ->

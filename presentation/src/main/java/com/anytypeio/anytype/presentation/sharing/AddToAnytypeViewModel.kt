@@ -11,7 +11,6 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.CLICK_ONBOARDING_TO
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.props.Props
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.NO_VALUE
@@ -81,6 +80,8 @@ class AddToAnytypeViewModel(
     val progressState = MutableStateFlow<ProgressState>(ProgressState.Init)
 
     val state = MutableStateFlow<ViewState>(ViewState.Init)
+
+    private var createdWrapperObjId : String? = null
 
     init {
         viewModelScope.launch {
@@ -188,7 +189,7 @@ class AddToAnytypeViewModel(
                                 val currentProgressState = progressState.value
                                 val newProcess = event.process
                                 if (currentProgressState is ProgressState.Progress
-                                    && event.process.state == State.RUNNING
+                                    && event.process.state == State.DONE
                                     && newProcess.id == currentProgressState.processId
                                 ) {
                                     progressState.value = ProgressState.Progress(
@@ -196,7 +197,7 @@ class AddToAnytypeViewModel(
                                         progress = 1f
                                     )
                                     delay(300)
-                                    progressState.value = ProgressState.Init
+                                    progressState.value = ProgressState.Done
                                 }
                             }
                         }
@@ -219,15 +220,9 @@ class AddToAnytypeViewModel(
 
                 when (paths.size) {
                     0 -> sendToast("Could not get file paths")
-                    1 -> proceedWithSingleFileUpload(
-                        path = paths[0],
-                        targetSpaceId = targetSpaceId,
-                        targetSpaceView = targetSpaceView
-                    )
                     else -> proceedWithCreatingWrapperObject(
                         filePaths = paths,
                         targetSpaceId = targetSpaceId,
-                        targetSpaceView = targetSpaceView,
                         wrapperObjTitle = wrapperObjTitle
                     )
                 }
@@ -238,7 +233,6 @@ class AddToAnytypeViewModel(
     private fun proceedWithCreatingWrapperObject(
         filePaths: List<String>,
         targetSpaceId: String,
-        targetSpaceView: SpaceView,
         wrapperObjTitle: String? = null
     ) {
         viewModelScope.launch {
@@ -253,6 +247,7 @@ class AddToAnytypeViewModel(
                 )
             ).fold(
                 onSuccess = { wrapperObjId ->
+                    createdWrapperObjId = wrapperObjId
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
                         objType = MarketplaceObjectTypeIds.PAGE,
@@ -263,8 +258,7 @@ class AddToAnytypeViewModel(
                     proceedWithFilesDrop(
                         wrapperObjId = wrapperObjId,
                         filePaths = filePaths,
-                        targetSpaceId = targetSpaceId,
-                        targetSpaceView = targetSpaceView
+                        targetSpaceId = targetSpaceId
                     )
                 },
                 onFailure = {
@@ -275,39 +269,10 @@ class AddToAnytypeViewModel(
         }
     }
 
-    private suspend fun proceedWithSingleFileUpload(
-        path: String,
-        targetSpaceId: String,
-        targetSpaceView: SpaceView
-    ) {
-        val params = UploadFile.Params(
-            path = path,
-            space = SpaceId(targetSpaceId),
-            // Temporary workaround to fix issue on the MW side.
-            type = Block.Content.File.Type.NONE
-        )
-        uploadFile.async(params).fold(
-            onSuccess = {
-                Timber.d("File uploaded successfully, id: ${it.id}")
-                proceedWithNavigation(
-                    result = it.id,
-                    targetSpaceId = targetSpaceId,
-                    targetSpaceView = targetSpaceView
-                )
-            },
-            onFailure = { e ->
-                Timber.e(e, "Error while uploading file").also {
-                    sendToast(e.msg())
-                }
-            }
-        )
-    }
-
     private suspend fun proceedWithFilesDrop(
         wrapperObjId: Id,
         filePaths: List<String>,
         targetSpaceId: String,
-        targetSpaceView: SpaceView
     ) {
         val params = FileDrop.Params(
             ctx = wrapperObjId,
@@ -315,14 +280,7 @@ class AddToAnytypeViewModel(
             localFilePaths = filePaths
         )
         fileDrop.async(params).fold(
-            onSuccess = { _ ->
-                Timber.d("Files dropped successfully")
-//                proceedWithNavigation(
-//                    targetSpaceId = targetSpaceId,
-//                    result = wrapperObjId,
-//                    targetSpaceView = targetSpaceView
-//                )
-            },
+            onSuccess = { _ -> Timber.d("Files dropped successfully") },
             onFailure = { e ->
                 Timber.e(e, "Error while dropping files").also {
                     sendToast(e.msg())
@@ -331,27 +289,30 @@ class AddToAnytypeViewModel(
         )
     }
 
-    private suspend fun proceedWithNavigation(
-        targetSpaceId: String,
-        result: Id,
-        targetSpaceView: SpaceView
-    ) {
-        Timber.d("proceedWithNavigation: $result")
-        if (targetSpaceId == spaceManager.get()) {
-            Timber.d("proceedWithNavigation: OpenEditor")
-            delay(300)
-            navigation.emit(
-                OpenObjectNavigation.OpenEditor(
-                    target = result,
-                    space = targetSpaceId
+    fun proceedWithNavigation() {
+        val targetSpaceView = spaceViews.value.firstOrNull { view ->
+            view.isSelected
+        }
+        val targetSpaceId = targetSpaceView?.obj?.targetSpaceId
+        val objId = createdWrapperObjId
+        viewModelScope.launch {
+            Timber.d("proceedWithNavigation: $objId, $targetSpaceId")
+            if (targetSpaceId == spaceManager.get() && objId != null) {
+                Timber.d("proceedWithNavigation: OpenEditor")
+                delay(300)
+                navigation.emit(
+                    OpenObjectNavigation.OpenEditor(
+                        target = objId,
+                        space = targetSpaceId
+                    )
                 )
-            )
-        } else {
-            Timber.d("proceedWithNavigation: ObjectAddToSpaceToast")
-            delay(300)
-            with(commands) {
-                emit(Command.ObjectAddToSpaceToast(targetSpaceView.obj.name))
-                emit(Command.Dismiss)
+            } else {
+                Timber.d("proceedWithNavigation: ObjectAddToSpaceToast")
+                delay(300)
+                with(commands) {
+                    emit(Command.ObjectAddToSpaceToast(targetSpaceView?.obj?.name))
+                    emit(Command.Dismiss)
+                }
             }
         }
     }
@@ -550,6 +511,7 @@ class AddToAnytypeViewModel(
     sealed class ProgressState {
         data object Init : ProgressState()
         data class Progress(val processId: Id, val progress: Float) : ProgressState()
+        data object Done : ProgressState()
         data class Error(val error: String) : ProgressState()
     }
 

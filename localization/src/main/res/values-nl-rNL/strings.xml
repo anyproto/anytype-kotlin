@@ -1445,4 +1445,5 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="sort_empty_values_desc">Toon lege waarden</string>
     <string name="sort_empty_values_bottom">Onderaan</string>
     <string name="sort_empty_values_top">Bovenaan</string>
+    <string name="widget_view_see_all_objects">Toon alle objecten</string>
 </resources>

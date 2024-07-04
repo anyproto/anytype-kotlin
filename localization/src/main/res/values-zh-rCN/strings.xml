@@ -1435,4 +1435,5 @@ Please provide specific details of your needs here.</string>
     <string name="sort_empty_values_desc">显示空白值</string>
     <string name="sort_empty_values_bottom">在底部</string>
     <string name="sort_empty_values_top">在顶部</string>
+    <string name="widget_view_see_all_objects">查看所有对象</string>
 </resources>

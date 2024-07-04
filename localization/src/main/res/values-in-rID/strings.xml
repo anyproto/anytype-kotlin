@@ -1435,4 +1435,5 @@ Please provide specific details of your needs here.</string>
     <string name="sort_empty_values_desc">Tampilkan nilai kosong</string>
     <string name="sort_empty_values_bottom">Di bawah</string>
     <string name="sort_empty_values_top">Di atas</string>
+    <string name="widget_view_see_all_objects">Lihat semua objek</string>
 </resources>

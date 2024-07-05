@@ -1209,7 +1209,7 @@
     <string name="multiplayer_deeplink_to_your_object_error">This deeplink is not working. Object might be deleted or there might be issues with space access.</string>
     <string name="multiplayer_collaborate_on_spaces">Collaborate on spaces</string>
     <string name="multiplayer_collaborate_step_1">1.  Tap the Space widget to access settings</string>
-    <string name="multiplayer_collaborate_step_2">2.  Open Share section</string>
+    <string name="multiplayer_collaborate_step_2">2. Teilen-Bereich öffnen</string>
     <string name="multiplayer_collaborate_step_3">3.  Generate an invite link and share it</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="one">%1$d Mitglied</item>

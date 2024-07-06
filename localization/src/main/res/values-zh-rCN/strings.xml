@@ -1046,7 +1046,13 @@
     <string name="sharing_menu_save_as_files_option">文件</string>
     <string name="sharing_menu_data">数据</string>
     <string name="sharing_menu_add_to_anytype_header_title">添加至 Anytype</string>
+    <string name="sharing_menu_add_to_anytype_error">Anytype file upload error: %1$s</string>
+    <string name="sharing_menu_add_to_anytype_success">All files have been successfully uploaded</string>
     <string name="sharing_menu_toast_object_added">新对象已添加到空间 ”%1$s“</string>
+    <string name="sharing_media_wrapper_object_title">Shared Media, %1$s, this object is auxiliary and can be deleted; all media or files will remain in Space.</string>
+    <string name="sharing_files_wrapper_object_title">Shared Files, %1$s, this object is auxiliary and can be deleted; all media or files will remain in Space.</string>
+    <string name="sharing_menu_btn_add">添加</string>
+    <string name="sharing_menu_btn_open">打开</string>
     <!--endregion-->
     <!--region ORIGIN RELATION VALUES -->
     <string name="relation_origin_none">无</string>

@@ -225,7 +225,7 @@ class AddToAnytypeViewModel(
                     else -> proceedWithCreatingWrapperObject(
                         filePaths = paths,
                         targetSpaceId = targetSpaceId,
-                        wrapperObjTitle = wrapperObjTitle
+                        wrapperObjTitle = wrapperObjTitle,
                     )
                 }
             }
@@ -248,7 +248,7 @@ class AddToAnytypeViewModel(
             )
         ).fold(
             onSuccess = { wrapperObjId ->
-                sendAnalyticsObjectCreateEvent(
+                viewModelScope.sendAnalyticsObjectCreateEvent(
                     analytics = analytics,
                     objType = MarketplaceObjectTypeIds.PAGE,
                     route = EventsDictionary.Routes.sharingExtension,

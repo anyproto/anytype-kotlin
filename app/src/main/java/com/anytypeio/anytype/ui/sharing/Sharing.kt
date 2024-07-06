@@ -50,9 +50,11 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonPrimaryLoading
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
@@ -71,7 +73,7 @@ fun AddToAnytypeScreenUrlPreview() {
     AddToAnytypeScreen(
         data = SharingData.Url("https://en.wikipedia.org/wiki/Walter_Benjamin"),
         onCancelClicked = {},
-        onDoneClicked = {},
+        onAddClicked = {},
         spaces = listOf(
             SpaceView(
                 obj = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
@@ -82,7 +84,8 @@ fun AddToAnytypeScreenUrlPreview() {
         onSelectSpaceClicked = {},
         onOpenClicked = {},
         content = "https://en.wikipedia.org/wiki/Walter_Benjamin",
-        progressState = AddToAnytypeViewModel.ProgressState.Done
+        progressState = AddToAnytypeViewModel.ProgressState.Done(""),
+        onCancelProcessClicked = {}
         //progressState = AddToAnytypeViewModel.ProgressState.Error(" I understand that contributing to this repository will require me to agree with the CLA  I understand that contributing to this repository will require me to agree with the CLA\n")
         //progressState = AddToAnytypeViewModel.ProgressState.Progress(processId = "dasda", progress = 0.8f)
     )
@@ -94,7 +97,7 @@ fun AddToAnytypeScreenNotePreview() {
     AddToAnytypeScreen(
         data = SharingData.Text("The Work of Art in the Age of its Technological Reproducibility"),
         onCancelClicked = {},
-        onDoneClicked = {},
+        onAddClicked = {},
         spaces = listOf(
             SpaceView(
                 obj = ObjectWrapper.SpaceView(map = mapOf()),
@@ -106,9 +109,11 @@ fun AddToAnytypeScreenNotePreview() {
         content = "",
         progressState = AddToAnytypeViewModel.ProgressState.Progress(
             processId = "dasda",
-            progress = 0.8f
+            progress = 0.8f,
+            wrapperObjId = ""
         ),
-        onOpenClicked = {}
+        onOpenClicked = {},
+        onCancelProcessClicked = {}
     )
 }
 
@@ -117,11 +122,12 @@ fun AddToAnytypeScreen(
     content: String,
     spaces: List<SpaceView>,
     data: SharingData,
-    onCancelClicked: () -> Unit,
-    onDoneClicked: (SaveAsOption) -> Unit,
-    onSelectSpaceClicked: (SpaceView) -> Unit,
     progressState: AddToAnytypeViewModel.ProgressState,
-    onOpenClicked: () -> Unit
+    onCancelClicked: () -> Unit,
+    onCancelProcessClicked: (Id) -> Unit,
+    onAddClicked: (SaveAsOption) -> Unit,
+    onSelectSpaceClicked: (SpaceView) -> Unit,
+    onOpenClicked: (Id) -> Unit
 ) {
     var isSaveAsMenuExpanded by remember { mutableStateOf(false) }
     val items = when (data) {
@@ -134,7 +140,7 @@ fun AddToAnytypeScreen(
     }
     var selectedIndex by remember {
         mutableStateOf(
-            when(data) {
+            when (data) {
                 is SharingData.Url -> SAVE_AS_BOOKMARK
                 is SharingData.Image -> SAVE_AS_IMAGE
                 is SharingData.File -> SAVE_AS_FILE
@@ -201,7 +207,7 @@ fun AddToAnytypeScreen(
                                 isSaveAsMenuExpanded = false
                             }
                         ) {
-                            when(s) {
+                            when (s) {
                                 SAVE_AS_BOOKMARK -> {
                                     Text(
                                         text = stringResource(id = R.string.sharing_menu_save_as_bookmark_option),
@@ -209,6 +215,7 @@ fun AddToAnytypeScreen(
                                         color = colorResource(id = R.color.text_primary)
                                     )
                                 }
+
                                 SAVE_AS_NOTE -> {
                                     Text(
                                         text = stringResource(id = R.string.sharing_menu_save_as_note_option),
@@ -216,6 +223,7 @@ fun AddToAnytypeScreen(
                                         color = colorResource(id = R.color.text_primary)
                                     )
                                 }
+
                                 else -> {
                                     // Draw nothing
                                 }
@@ -248,13 +256,37 @@ fun AddToAnytypeScreen(
             )
         }
         DefaultLinearProgressIndicator(progressState = progressState)
-        Buttons(
-            onCancelClicked = onCancelClicked,
-            onAddClicked = onDoneClicked,
-            selectedIndex = selectedIndex,
-            progressState = progressState,
-            onOpenClicked = onOpenClicked
-        )
+        when (progressState) {
+            is AddToAnytypeViewModel.ProgressState.Done -> {
+                ButtonsDone(
+                    progressState = progressState,
+                    onCancelClicked = onCancelClicked,
+                    onOpenClicked = onOpenClicked
+                )
+            }
+            is AddToAnytypeViewModel.ProgressState.Error -> {
+                Buttons(
+                    onCancelClicked = onCancelClicked,
+                    selectedIndex = selectedIndex,
+                    progressState = progressState,
+                    onAddClicked = onAddClicked
+                )
+            }
+            AddToAnytypeViewModel.ProgressState.Init -> {
+                Buttons(
+                    onCancelClicked = onCancelClicked,
+                    selectedIndex = selectedIndex,
+                    progressState = progressState,
+                    onAddClicked = onAddClicked
+                )
+            }
+            is AddToAnytypeViewModel.ProgressState.Progress -> {
+                ButtonsProgress(
+                    onCancelProcessClicked = onCancelProcessClicked,
+                    progressState = progressState,
+                )
+            }
+        }
     }
 }
 
@@ -315,7 +347,7 @@ private fun DefaultLinearProgressIndicator(progressState: AddToAnytypeViewModel.
 }
 
 @Composable
-private fun Indicator(progress: Float){
+private fun Indicator(progress: Float) {
     val animatedProgress = animateFloatAsState(
         targetValue = progress,
         animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
@@ -374,19 +406,72 @@ private fun DataSection(content: String) {
 }
 
 @Composable
+private fun ButtonsDone(
+    progressState: AddToAnytypeViewModel.ProgressState.Done,
+    onCancelClicked: () -> Unit,
+    onOpenClicked: (Id) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(68.dp)
+            .padding(horizontal = 20.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        ButtonSecondary(
+            onClick = onCancelClicked,
+            size = ButtonSize.Large,
+            text = stringResource(id = R.string.cancel),
+            modifier = Modifier.weight(1.0f)
+        )
+        Spacer(modifier = Modifier.width(12.dp))
+        ButtonPrimary(
+            onClick = {
+                onOpenClicked(progressState.wrapperObjId)
+            },
+            size = ButtonSize.Large,
+            text = stringResource(id = R.string.sharing_menu_btn_open),
+            modifier = Modifier.weight(1.0f),
+        )
+    }
+}
+
+@Composable
+private fun ButtonsProgress(
+    onCancelProcessClicked: (Id) -> Unit,
+    progressState: AddToAnytypeViewModel.ProgressState.Progress
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(68.dp)
+            .padding(horizontal = 20.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        ButtonSecondary(
+            onClick = { onCancelProcessClicked(progressState.processId) },
+            size = ButtonSize.Large,
+            text = stringResource(id = R.string.cancel),
+            modifier = Modifier.weight(1.0f)
+        )
+        Spacer(modifier = Modifier.width(12.dp))
+        ButtonPrimaryLoading(
+            size = ButtonSize.Large,
+            text = stringResource(id = R.string.sharing_menu_btn_add),
+            modifierBox = Modifier.weight(1.0f),
+            modifierButton = Modifier.fillMaxWidth(),
+            loading = true
+        )
+    }
+}
+
+@Composable
 private fun Buttons(
     onCancelClicked: () -> Unit,
     onAddClicked: (SaveAsOption) -> Unit,
-    onOpenClicked: () -> Unit,
     selectedIndex: Int,
     progressState: AddToAnytypeViewModel.ProgressState
 ) {
-    val isInDoneState = progressState is AddToAnytypeViewModel.ProgressState.Done
-    val text = if (isInDoneState) {
-        stringResource(id = R.string.sharing_menu_btn_open)
-    } else {
-        stringResource(id = R.string.sharing_menu_btn_add)
-    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -402,14 +487,9 @@ private fun Buttons(
         )
         Spacer(modifier = Modifier.width(12.dp))
         ButtonPrimaryLoading(
-            onClick = {
-                if (isInDoneState)
-                    onOpenClicked()
-                else
-                    onAddClicked(selectedIndex)
-            },
+            onClick = { onAddClicked(selectedIndex) },
             size = ButtonSize.Large,
-            text = text,
+            text = stringResource(id = R.string.sharing_menu_btn_add),
             modifierBox = Modifier.weight(1.0f),
             modifierButton = Modifier.fillMaxWidth(),
             loading = progressState is AddToAnytypeViewModel.ProgressState.Progress
@@ -523,7 +603,7 @@ private fun SmallSpaceIcon(
     icon: SpaceIconView,
     modifier: Modifier
 ) {
-   val size = 20.dp
+    val size = 20.dp
     when (icon) {
         is SpaceIconView.Image -> {
             Image(
@@ -553,6 +633,7 @@ private fun SmallSpaceIcon(
                     .background(gradient)
             )
         }
+
         else -> {
             // Draw nothing.
         }
@@ -569,30 +650,33 @@ typealias SaveAsOption = Int
 
 sealed class SharingData {
     abstract val data: String
+
     data class Url(val url: String) : SharingData() {
         override val data: String
             get() = url
     }
+
     data class Text(val raw: String) : SharingData() {
         override val data: String
             get() = raw
     }
+
     data class Image(val uri: String) : SharingData() {
         override val data: String
             get() = uri
     }
 
-    data class Images(val uris: List<String>): SharingData() {
+    data class Images(val uris: List<String>) : SharingData() {
         override val data: String
             get() = uris.toString()
     }
 
-    data class Files(val uris: List<String>): SharingData() {
+    data class Files(val uris: List<String>) : SharingData() {
         override val data: String
             get() = uris.toString()
     }
 
-    data class File(val uri: String): SharingData() {
+    data class File(val uri: String) : SharingData() {
         override val data: String
             get() = uri
     }

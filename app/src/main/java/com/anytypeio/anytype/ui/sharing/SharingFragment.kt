@@ -81,7 +81,7 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
                         }
                     }.collectAsState(initial = "").value,
                     data = sharedData,
-                    onDoneClicked = { option ->
+                    onAddClicked = { option ->
                         when(option) {
                             SAVE_AS_BOOKMARK -> vm.onCreateBookmark(url = sharedData.data)
                             SAVE_AS_NOTE -> vm.onCreateNote(sharedData.data)
@@ -118,7 +118,8 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
                     spaces = vm.spaceViews.collectAsStateWithLifecycle().value,
                     onSelectSpaceClicked = { vm.onSelectSpaceClicked(it) },
                     progressState = vm.progressState.collectAsStateWithLifecycle().value,
-                    onOpenClicked = vm::proceedWithNavigation
+                    onOpenClicked = vm::proceedWithNavigation,
+                    onCancelProcessClicked = { processId -> }
                 )
                 LaunchedEffect(Unit) {
                     vm.navigation.collect { nav ->

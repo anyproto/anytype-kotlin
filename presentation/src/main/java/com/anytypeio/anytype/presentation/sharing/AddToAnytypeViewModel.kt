@@ -43,6 +43,7 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -80,7 +81,7 @@ class AddToAnytypeViewModel(
 
     val state = MutableStateFlow<ViewState>(ViewState.Init)
 
-    private var createdWrapperObjId : String? = null
+    private var progressJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -142,11 +143,13 @@ class AddToAnytypeViewModel(
                     spaceViews.value = views
                 }
         }
-        subscribeToEventProcessChannel()
     }
 
-    private fun subscribeToEventProcessChannel() {
-        viewModelScope.launch {
+    private fun subscribeToEventProcessChannel(wrapperObjId: Id) {
+        if (progressJob?.isActive == true) {
+            progressJob?.cancel()
+        }
+        progressJob = viewModelScope.launch {
             eventProcessChannel.observe()
                 .collect { events ->
                     events.forEach { event ->
@@ -158,7 +161,8 @@ class AddToAnytypeViewModel(
                                 ) {
                                     progressState.value = ProgressState.Progress(
                                         processId = event.process.id,
-                                        progress = 0f
+                                        progress = 0f,
+                                        wrapperObjId = wrapperObjId
                                     )
                                 } else {
                                     //some process is already running
@@ -191,12 +195,11 @@ class AddToAnytypeViewModel(
                                     && event.process.state == State.DONE
                                     && newProcess.id == currentProgressState.processId
                                 ) {
-                                    progressState.value = ProgressState.Progress(
-                                        processId = event.process.id,
-                                        progress = 1f
-                                    )
+                                    progressState.value = currentProgressState.copy(progress = 1f)
                                     delay(300)
-                                    progressState.value = ProgressState.Done
+                                    progressState.value = ProgressState.Done(
+                                        wrapperObjId = currentProgressState.wrapperObjId
+                                    )
                                 }
                             }
                         }
@@ -229,43 +232,40 @@ class AddToAnytypeViewModel(
         }
     }
 
-    private fun proceedWithCreatingWrapperObject(
+    private suspend fun proceedWithCreatingWrapperObject(
         filePaths: List<String>,
         targetSpaceId: String,
         wrapperObjTitle: String? = null
     ) {
-        viewModelScope.launch {
-            val startTime = System.currentTimeMillis()
-            createPrefilledNote.async(
-                CreatePrefilledNote.Params(
-                    text = wrapperObjTitle ?: EMPTY_STRING_VALUE,
-                    space = targetSpaceId,
-                    details = mapOf(
-                        Relations.ORIGIN to ObjectOrigin.SHARING_EXTENSION.code.toDouble(),
-                    ),
-                )
-            ).fold(
-                onSuccess = { wrapperObjId ->
-                    createdWrapperObjId = wrapperObjId
-                    sendAnalyticsObjectCreateEvent(
-                        analytics = analytics,
-                        objType = MarketplaceObjectTypeIds.PAGE,
-                        route = EventsDictionary.Routes.sharingExtension,
-                        startTime = startTime,
-                        spaceParams = provideParams(spaceManager.get())
-                    )
-                    proceedWithFilesDrop(
-                        wrapperObjId = wrapperObjId,
-                        filePaths = filePaths,
-                        targetSpaceId = targetSpaceId
-                    )
-                },
-                onFailure = {
-                    Timber.d(it, "Error while creating page")
-                    sendToast("Error while creating page: ${it.msg()}")
-                }
+        val startTime = System.currentTimeMillis()
+        createPrefilledNote.async(
+            CreatePrefilledNote.Params(
+                text = wrapperObjTitle ?: EMPTY_STRING_VALUE,
+                space = targetSpaceId,
+                details = mapOf(
+                    Relations.ORIGIN to ObjectOrigin.SHARING_EXTENSION.code.toDouble(),
+                ),
             )
-        }
+        ).fold(
+            onSuccess = { wrapperObjId ->
+                sendAnalyticsObjectCreateEvent(
+                    analytics = analytics,
+                    objType = MarketplaceObjectTypeIds.PAGE,
+                    route = EventsDictionary.Routes.sharingExtension,
+                    startTime = startTime,
+                    spaceParams = provideParams(spaceManager.get())
+                )
+                proceedWithFilesDrop(
+                    wrapperObjId = wrapperObjId,
+                    filePaths = filePaths,
+                    targetSpaceId = targetSpaceId
+                )
+            },
+            onFailure = {
+                Timber.d(it, "Error while creating page")
+                sendToast("Error while creating page: ${it.msg()}")
+            }
+        )
     }
 
     private suspend fun proceedWithFilesDrop(
@@ -273,6 +273,7 @@ class AddToAnytypeViewModel(
         filePaths: List<String>,
         targetSpaceId: String,
     ) {
+        subscribeToEventProcessChannel(wrapperObjId = wrapperObjId)
         val params = FileDrop.Params(
             ctx = wrapperObjId,
             space = SpaceId(targetSpaceId),
@@ -288,20 +289,19 @@ class AddToAnytypeViewModel(
         )
     }
 
-    fun proceedWithNavigation() {
+    fun proceedWithNavigation(wrapperObjId: Id) {
         val targetSpaceView = spaceViews.value.firstOrNull { view ->
             view.isSelected
         }
         val targetSpaceId = targetSpaceView?.obj?.targetSpaceId
-        val objId = createdWrapperObjId
         viewModelScope.launch {
-            Timber.d("proceedWithNavigation: $objId, $targetSpaceId")
-            if (targetSpaceId == spaceManager.get() && objId != null) {
+            Timber.d("proceedWithNavigation: $wrapperObjId, $targetSpaceId")
+            if (targetSpaceId == spaceManager.get()) {
                 Timber.d("proceedWithNavigation: OpenEditor")
                 delay(300)
                 navigation.emit(
                     OpenObjectNavigation.OpenEditor(
-                        target = objId,
+                        target = wrapperObjId,
                         space = targetSpaceId
                     )
                 )
@@ -507,8 +507,10 @@ class AddToAnytypeViewModel(
 
     sealed class ProgressState {
         data object Init : ProgressState()
-        data class Progress(val processId: Id, val progress: Float) : ProgressState()
-        data object Done : ProgressState()
+        data class Progress(val wrapperObjId: Id, val processId: Id, val progress: Float) :
+            ProgressState()
+
+        data class Done(val wrapperObjId: Id) : ProgressState()
         data class Error(val error: String) : ProgressState()
     }
 

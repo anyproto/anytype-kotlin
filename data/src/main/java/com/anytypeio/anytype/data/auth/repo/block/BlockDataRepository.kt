@@ -265,6 +265,10 @@ class BlockDataRepository(
         command: Command.UploadFile
     ): ObjectWrapper.File = remote.uploadFile(command)
 
+    override suspend fun fileDrop(command: Command.FileDrop): Payload {
+        return remote.fileDrop(command)
+    }
+
     override suspend fun downloadFile(
         command: Command.DownloadFile
     ): String = remote.downloadFile(command)

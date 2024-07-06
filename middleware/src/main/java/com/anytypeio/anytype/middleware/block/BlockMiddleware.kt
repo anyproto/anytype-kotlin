@@ -230,6 +230,10 @@ class BlockMiddleware(
         command: Command.UploadFile
     ): ObjectWrapper.File = middleware.fileUpload(command)
 
+    override suspend fun fileDrop(command: Command.FileDrop): Payload {
+        return middleware.fileDrop(command)
+    }
+
     override suspend fun downloadFile(
         command: Command.DownloadFile
     ): String = middleware.fileDownload(command).localPath

@@ -1,5 +1,12 @@
 package com.anytypeio.anytype.ui.sharing
 
+import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -12,10 +19,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.LinearProgressIndicator
+import androidx.compose.material.ProgressIndicatorDefaults
 import androidx.compose.material.Text
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.runtime.Composable
@@ -28,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -37,28 +50,44 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
+import com.anytypeio.anytype.core_ui.views.ButtonPrimaryLoading
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
-import com.anytypeio.anytype.core_ui.views.TitleInter15
+import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.core_utils.ui.MultipleEventCutter
 import com.anytypeio.anytype.core_utils.ui.get
+import com.anytypeio.anytype.presentation.sharing.AddToAnytypeViewModel
 import com.anytypeio.anytype.presentation.sharing.AddToAnytypeViewModel.SpaceView
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
-@Preview
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
 @Composable
 fun AddToAnytypeScreenUrlPreview() {
     AddToAnytypeScreen(
         data = SharingData.Url("https://en.wikipedia.org/wiki/Walter_Benjamin"),
         onCancelClicked = {},
-        onDoneClicked = {},
-        spaces = emptyList(),
+        onAddClicked = {},
+        spaces = listOf(
+            SpaceView(
+                obj = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
+                isSelected = true,
+                icon = SpaceIconView.Gradient(from = "#FF0000", to = "#00FF00")
+            )
+        ),
         onSelectSpaceClicked = {},
-        content = "https://en.wikipedia.org/wiki/Walter_Benjamin"
+        onOpenClicked = {},
+        content = "https://en.wikipedia.org/wiki/Walter_Benjamin",
+        progressState = AddToAnytypeViewModel.ProgressState.Done(""),
+        onCancelProcessClicked = {}
+        //progressState = AddToAnytypeViewModel.ProgressState.Error(" I understand that contributing to this repository will require me to agree with the CLA  I understand that contributing to this repository will require me to agree with the CLA\n")
+        //progressState = AddToAnytypeViewModel.ProgressState.Progress(processId = "dasda", progress = 0.8f)
     )
 }
 
@@ -68,10 +97,23 @@ fun AddToAnytypeScreenNotePreview() {
     AddToAnytypeScreen(
         data = SharingData.Text("The Work of Art in the Age of its Technological Reproducibility"),
         onCancelClicked = {},
-        onDoneClicked = {},
-        spaces = emptyList(),
+        onAddClicked = {},
+        spaces = listOf(
+            SpaceView(
+                obj = ObjectWrapper.SpaceView(map = mapOf()),
+                isSelected = false,
+                icon = SpaceIconView.Gradient(from = "#FF0000", to = "#00FF00")
+            )
+        ),
         onSelectSpaceClicked = {},
-        content = ""
+        content = "",
+        progressState = AddToAnytypeViewModel.ProgressState.Progress(
+            processId = "dasda",
+            progress = 0.8f,
+            wrapperObjId = ""
+        ),
+        onOpenClicked = {},
+        onCancelProcessClicked = {}
     )
 }
 
@@ -80,9 +122,12 @@ fun AddToAnytypeScreen(
     content: String,
     spaces: List<SpaceView>,
     data: SharingData,
+    progressState: AddToAnytypeViewModel.ProgressState,
     onCancelClicked: () -> Unit,
-    onDoneClicked: (SaveAsOption) -> Unit,
-    onSelectSpaceClicked: (SpaceView) -> Unit
+    onCancelProcessClicked: (Id) -> Unit,
+    onAddClicked: (SaveAsOption) -> Unit,
+    onSelectSpaceClicked: (SpaceView) -> Unit,
+    onOpenClicked: (Id) -> Unit
 ) {
     var isSaveAsMenuExpanded by remember { mutableStateOf(false) }
     val items = when (data) {
@@ -95,7 +140,7 @@ fun AddToAnytypeScreen(
     }
     var selectedIndex by remember {
         mutableStateOf(
-            when(data) {
+            when (data) {
                 is SharingData.Url -> SAVE_AS_BOOKMARK
                 is SharingData.Image -> SAVE_AS_IMAGE
                 is SharingData.File -> SAVE_AS_FILE
@@ -112,10 +157,9 @@ fun AddToAnytypeScreen(
         }
         Header()
         DataSection(content)
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(76.dp)
                 .noRippleClickable {
                     throttler.processEvent {
                         isSaveAsMenuExpanded = !isSaveAsMenuExpanded
@@ -140,8 +184,7 @@ fun AddToAnytypeScreen(
                     else -> stringResource(id = R.string.sharing_menu_save_as_note_option)
                 },
                 modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(bottom = 14.dp, start = 20.dp),
+                    .padding(top = 6.dp, start = 20.dp, bottom = 14.dp),
                 style = BodyRegular,
                 color = colorResource(id = R.color.text_primary)
             )
@@ -164,7 +207,7 @@ fun AddToAnytypeScreen(
                                 isSaveAsMenuExpanded = false
                             }
                         ) {
-                            when(s) {
+                            when (s) {
                                 SAVE_AS_BOOKMARK -> {
                                     Text(
                                         text = stringResource(id = R.string.sharing_menu_save_as_bookmark_option),
@@ -172,6 +215,7 @@ fun AddToAnytypeScreen(
                                         color = colorResource(id = R.color.text_primary)
                                     )
                                 }
+
                                 SAVE_AS_NOTE -> {
                                     Text(
                                         text = stringResource(id = R.string.sharing_menu_save_as_note_option),
@@ -179,6 +223,7 @@ fun AddToAnytypeScreen(
                                         color = colorResource(id = R.color.text_primary)
                                     )
                                 }
+
                                 else -> {
                                     // Draw nothing
                                 }
@@ -194,6 +239,7 @@ fun AddToAnytypeScreen(
                 }
             }
         }
+        com.anytypeio.anytype.core_ui.foundation.Divider(paddingEnd = 20.dp, paddingStart = 20.dp)
         val selected = spaces.firstOrNull { it.isSelected }
         if (selected != null) {
             CurrentSpaceSection(
@@ -209,9 +255,114 @@ fun AddToAnytypeScreen(
                 onSelectSpaceClicked = onSelectSpaceClicked
             )
         }
-        Spacer(modifier = Modifier.height(20.dp))
-        Buttons(onCancelClicked, onDoneClicked, selectedIndex)
+        DefaultLinearProgressIndicator(progressState = progressState)
+        when (progressState) {
+            is AddToAnytypeViewModel.ProgressState.Done -> {
+                ButtonsDone(
+                    progressState = progressState,
+                    onCancelClicked = onCancelClicked,
+                    onOpenClicked = onOpenClicked
+                )
+            }
+            is AddToAnytypeViewModel.ProgressState.Error -> {
+                Buttons(
+                    onCancelClicked = onCancelClicked,
+                    selectedIndex = selectedIndex,
+                    progressState = progressState,
+                    onAddClicked = onAddClicked
+                )
+            }
+            AddToAnytypeViewModel.ProgressState.Init -> {
+                Buttons(
+                    onCancelClicked = onCancelClicked,
+                    selectedIndex = selectedIndex,
+                    progressState = progressState,
+                    onAddClicked = onAddClicked
+                )
+            }
+            is AddToAnytypeViewModel.ProgressState.Progress -> {
+                ButtonsProgress(
+                    onCancelProcessClicked = onCancelProcessClicked,
+                    progressState = progressState,
+                )
+            }
+        }
     }
+}
+
+@Composable
+private fun DefaultLinearProgressIndicator(progressState: AddToAnytypeViewModel.ProgressState) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(46.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        val visible = progressState is AddToAnytypeViewModel.ProgressState.Progress
+        AnimatedVisibility(
+            visible = visible,
+            modifier = Modifier,
+            enter = fadeIn() + slideInVertically { it },
+            exit = fadeOut() + slideOutVertically { it }
+        ) {
+            if (progressState is AddToAnytypeViewModel.ProgressState.Progress) {
+                Indicator(progress = progressState.progress)
+            }
+        }
+        val doneVisibility = progressState is AddToAnytypeViewModel.ProgressState.Done
+        AnimatedVisibility(
+            visible = doneVisibility,
+            modifier = Modifier,
+            enter = fadeIn() + slideInVertically { it },
+            exit = fadeOut() + slideOutVertically { it }
+        ) {
+            Text(
+                text = stringResource(id = R.string.sharing_menu_add_to_anytype_success),
+                style = Caption1Medium,
+                color = colorResource(id = R.color.palette_system_green),
+                modifier = Modifier.padding(top = 4.dp, start = 20.dp, end = 20.dp)
+            )
+        }
+        val errorVisible = progressState is AddToAnytypeViewModel.ProgressState.Error
+        AnimatedVisibility(
+            visible = errorVisible,
+            modifier = Modifier,
+            enter = fadeIn() + slideInVertically { it },
+            exit = fadeOut() + slideOutVertically { it }
+        ) {
+            if (progressState is AddToAnytypeViewModel.ProgressState.Error) {
+                Text(
+                    text = stringResource(
+                        id = R.string.sharing_menu_add_to_anytype_error,
+                        progressState.error
+                    ),
+                    style = Caption1Medium,
+                    maxLines = 2,
+                    color = colorResource(id = R.color.palette_dark_red),
+                    modifier = Modifier.padding(horizontal = 20.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun Indicator(progress: Float) {
+    val animatedProgress = animateFloatAsState(
+        targetValue = progress,
+        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
+        label = ""
+    ).value
+    LinearProgressIndicator(
+        progress = animatedProgress,
+        color = colorResource(id = R.color.text_primary),
+        modifier = Modifier
+            .height(6.dp)
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp),
+        backgroundColor = colorResource(id = R.color.shape_tertiary),
+        strokeCap = StrokeCap.Round
+    )
 }
 
 @Composable
@@ -241,22 +392,24 @@ private fun DataSection(content: String) {
             text = content,
             style = BodyRegular,
             color = colorResource(id = R.color.text_primary),
-            modifier = Modifier.padding(
-                top = 30.dp,
-                start = 16.dp,
-                end = 16.dp,
-                bottom = 10.dp
-            ),
+            modifier = Modifier
+                .padding(
+                    top = 30.dp,
+                    start = 16.dp,
+                    end = 16.dp,
+                    bottom = 10.dp
+                )
+                .verticalScroll(rememberScrollState()),
             maxLines = 5
         )
     }
 }
 
 @Composable
-private fun Buttons(
+private fun ButtonsDone(
+    progressState: AddToAnytypeViewModel.ProgressState.Done,
     onCancelClicked: () -> Unit,
-    onDoneClicked: (SaveAsOption) -> Unit,
-    selectedIndex: Int
+    onOpenClicked: (Id) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -273,10 +426,73 @@ private fun Buttons(
         )
         Spacer(modifier = Modifier.width(12.dp))
         ButtonPrimary(
-            onClick = { onDoneClicked(selectedIndex) },
+            onClick = {
+                onOpenClicked(progressState.wrapperObjId)
+            },
             size = ButtonSize.Large,
-            text = stringResource(id = R.string.done),
+            text = stringResource(id = R.string.sharing_menu_btn_open),
+            modifier = Modifier.weight(1.0f),
+        )
+    }
+}
+
+@Composable
+private fun ButtonsProgress(
+    onCancelProcessClicked: (Id) -> Unit,
+    progressState: AddToAnytypeViewModel.ProgressState.Progress
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(68.dp)
+            .padding(horizontal = 20.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        ButtonSecondary(
+            onClick = { onCancelProcessClicked(progressState.processId) },
+            size = ButtonSize.Large,
+            text = stringResource(id = R.string.cancel),
             modifier = Modifier.weight(1.0f)
+        )
+        Spacer(modifier = Modifier.width(12.dp))
+        ButtonPrimaryLoading(
+            size = ButtonSize.Large,
+            text = stringResource(id = R.string.sharing_menu_btn_add),
+            modifierBox = Modifier.weight(1.0f),
+            modifierButton = Modifier.fillMaxWidth(),
+            loading = true
+        )
+    }
+}
+
+@Composable
+private fun Buttons(
+    onCancelClicked: () -> Unit,
+    onAddClicked: (SaveAsOption) -> Unit,
+    selectedIndex: Int,
+    progressState: AddToAnytypeViewModel.ProgressState
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(68.dp)
+            .padding(horizontal = 20.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        ButtonSecondary(
+            onClick = onCancelClicked,
+            size = ButtonSize.Large,
+            text = stringResource(id = R.string.cancel),
+            modifier = Modifier.weight(1.0f)
+        )
+        Spacer(modifier = Modifier.width(12.dp))
+        ButtonPrimaryLoading(
+            onClick = { onAddClicked(selectedIndex) },
+            size = ButtonSize.Large,
+            text = stringResource(id = R.string.sharing_menu_btn_add),
+            modifierBox = Modifier.weight(1.0f),
+            modifierButton = Modifier.fillMaxWidth(),
+            loading = progressState is AddToAnytypeViewModel.ProgressState.Progress
         )
     }
 }
@@ -292,10 +508,10 @@ private fun CurrentSpaceSection(
     val throttler = remember {
         MultipleEventCutter.Companion.get(interval = DROPDOWN_MENU_VISIBILITY_WINDOW_INTERVAL)
     }
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .height(76.dp)
+            .wrapContentHeight()
             .noRippleClickable {
                 throttler.processEvent {
                     isSpaceSelectMenuExpanded = true
@@ -309,29 +525,26 @@ private fun CurrentSpaceSection(
             style = Caption1Medium,
             color = colorResource(id = R.color.text_secondary)
         )
-        val hasIcon = icon is SpaceIconView.Gradient || icon is SpaceIconView.Image
-        if (icon != null && hasIcon) {
-            SmallSpaceIcon(
-                icon = icon,
-                modifier = Modifier
-                    .padding(
-                        start = 20.dp,
-                        bottom = 17.dp
-                    )
-                    .align(Alignment.BottomStart)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 14.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            val hasIcon = icon is SpaceIconView.Gradient || icon is SpaceIconView.Image
+            if (icon != null && hasIcon) {
+                SmallSpaceIcon(
+                    icon = icon,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+            }
+            Text(
+                text = name,
+                modifier = Modifier,
+                style = BodyRegular,
+                color = colorResource(id = R.color.text_primary)
             )
         }
-        Text(
-            text = name,
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(
-                    bottom = 14.dp,
-                    start = if (hasIcon) 44.dp else 20.dp
-                ),
-            style = BodyRegular,
-            color = colorResource(id = R.color.text_primary)
-        )
         DropdownMenu(
             expanded = isSpaceSelectMenuExpanded,
             onDismissRequest = {
@@ -365,6 +578,7 @@ private fun CurrentSpaceSection(
             }
         }
     }
+    com.anytypeio.anytype.core_ui.foundation.Divider(paddingEnd = 20.dp, paddingStart = 20.dp)
 }
 
 @Composable
@@ -378,7 +592,7 @@ private fun Header() {
             text = stringResource(R.string.sharing_menu_add_to_anytype_header_title),
             color = colorResource(id = R.color.text_primary),
             modifier = Modifier.align(Alignment.Center),
-            style = TitleInter15
+            style = Title2
         )
     }
 }
@@ -389,7 +603,7 @@ private fun SmallSpaceIcon(
     icon: SpaceIconView,
     modifier: Modifier
 ) {
-   val size = 18.dp
+    val size = 20.dp
     when (icon) {
         is SpaceIconView.Image -> {
             Image(
@@ -419,6 +633,7 @@ private fun SmallSpaceIcon(
                     .background(gradient)
             )
         }
+
         else -> {
             // Draw nothing.
         }
@@ -435,30 +650,33 @@ typealias SaveAsOption = Int
 
 sealed class SharingData {
     abstract val data: String
+
     data class Url(val url: String) : SharingData() {
         override val data: String
             get() = url
     }
+
     data class Text(val raw: String) : SharingData() {
         override val data: String
             get() = raw
     }
+
     data class Image(val uri: String) : SharingData() {
         override val data: String
             get() = uri
     }
 
-    data class Images(val uris: List<String>): SharingData() {
+    data class Images(val uris: List<String>) : SharingData() {
         override val data: String
             get() = uris.toString()
     }
 
-    data class Files(val uris: List<String>): SharingData() {
+    data class Files(val uris: List<String>) : SharingData() {
         override val data: String
             get() = uris.toString()
     }
 
-    data class File(val uri: String): SharingData() {
+    data class File(val uri: String) : SharingData() {
         override val data: String
             get() = uri
     }

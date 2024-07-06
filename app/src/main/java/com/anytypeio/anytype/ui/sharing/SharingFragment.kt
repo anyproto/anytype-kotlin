@@ -17,6 +17,7 @@ import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argStringList
+import com.anytypeio.anytype.core_utils.ext.getFormattedDateTime
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -24,6 +25,7 @@ import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.sharing.AddToAnytypeViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.settings.typography
+import java.util.Locale
 import javax.inject.Inject
 import kotlinx.coroutines.flow.map
 
@@ -79,24 +81,29 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
                         }
                     }.collectAsState(initial = "").value,
                     data = sharedData,
-                    onDoneClicked = { option ->
+                    onAddClicked = { option ->
                         when(option) {
                             SAVE_AS_BOOKMARK -> vm.onCreateBookmark(url = sharedData.data)
                             SAVE_AS_NOTE -> vm.onCreateNote(sharedData.data)
-                            SAVE_AS_IMAGE -> vm.onShareMedia(listOf(sharedData.data))
                             SAVE_AS_FILE -> vm.onShareMedia(listOf(sharedData.data))
-                            SAVE_AS_IMAGES -> {
+                            SAVE_AS_IMAGES, SAVE_AS_IMAGE -> {
+                                val formattedDateTime = getFormattedDateTime(Locale.getDefault())
+                                val objTitle =
+                                    getString(R.string.sharing_media_wrapper_object_title, formattedDateTime)
                                 val data = sharedData
                                 if (data is SharingData.Images) {
-                                    vm.onShareMedia(uris = data.uris)
+                                    vm.onShareMedia(uris = data.uris, wrapperObjTitle = objTitle)
                                 } else {
                                     toast("Unexpected data format")
                                 }
                             }
                             SAVE_AS_FILES -> {
+                                val formattedDateTime = getFormattedDateTime(Locale.getDefault())
+                                val objTitle =
+                                    getString(R.string.sharing_files_wrapper_object_title, formattedDateTime)
                                 val data = sharedData
                                 if (data is SharingData.Files) {
-                                    vm.onShareMedia(uris = data.uris)
+                                    vm.onShareMedia(uris = data.uris, wrapperObjTitle = objTitle)
                                 } else {
                                     toast("Unexpected data format")
                                 }
@@ -109,7 +116,10 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
                         }
                     },
                     spaces = vm.spaceViews.collectAsStateWithLifecycle().value,
-                    onSelectSpaceClicked = { vm.onSelectSpaceClicked(it) }
+                    onSelectSpaceClicked = { vm.onSelectSpaceClicked(it) },
+                    progressState = vm.progressState.collectAsStateWithLifecycle().value,
+                    onOpenClicked = vm::proceedWithNavigation,
+                    onCancelProcessClicked = { processId -> }
                 )
                 LaunchedEffect(Unit) {
                     vm.navigation.collect { nav ->

@@ -1695,6 +1695,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun processCancel(request: Rpc.Process.Cancel.Request): Rpc.Process.Cancel.Response {
+        val encoded = Service.processCancel(
+            Rpc.Process.Cancel.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Process.Cancel.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Process.Cancel.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun setInternalFlags(request: Rpc.Object.SetInternalFlags.Request): Rpc.Object.SetInternalFlags.Response {
         val encoded = Service.objectSetInternalFlags(
             Rpc.Object.SetInternalFlags.Request.ADAPTER.encode(request)

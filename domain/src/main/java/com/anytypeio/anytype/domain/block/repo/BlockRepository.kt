@@ -474,4 +474,6 @@ interface BlockRepository {
     suspend fun membershipGetVerificationEmail(command: Command.Membership.GetVerificationEmail)
     suspend fun membershipVerifyEmailCode(command: Command.Membership.VerifyEmailCode)
     suspend fun membershipGetTiers(command: Command.Membership.GetTiers): List<MembershipTierData>
+
+    suspend fun processCancel(command: Command.ProcessCancel)
 }

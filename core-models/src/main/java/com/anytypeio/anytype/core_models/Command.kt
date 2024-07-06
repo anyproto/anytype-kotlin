@@ -533,4 +533,8 @@ sealed class Command {
             }
         }
     }
+
+    data class ProcessCancel(
+        val processId: Id
+    ) : Command()
 }

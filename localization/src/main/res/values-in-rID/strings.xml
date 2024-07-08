@@ -1044,6 +1044,7 @@
     <string name="sharing_menu_save_as_file_option">Berkas</string>
     <string name="sharing_menu_save_as_images_option">Gambar</string>
     <string name="sharing_menu_save_as_files_option">Berkas</string>
+    <string name="sharing_menu_save_as_videos_option">Videos</string>
     <string name="sharing_menu_data">Data</string>
     <string name="sharing_menu_add_to_anytype_header_title">Tambah ke Anytype</string>
     <string name="sharing_menu_add_to_anytype_error">Anytype file upload error: %1$s</string>

@@ -17,10 +17,7 @@ fun Rpc.Account.Create.Response.toAccountSetup() : AccountSetup {
 
     return AccountSetup(
         account = Account(
-            id = acc.id,
-            name = acc.name,
-            color = acc.avatar?.color,
-            avatar = null
+            id = acc.id
         ),
         config = info.config(),
         status = status?.core() ?: AccountStatus.Unknown
@@ -36,10 +33,7 @@ fun Rpc.Account.Select.Response.toAccountSetup(): AccountSetup {
 
     return AccountSetup(
         account = Account(
-            id = acc.id,
-            name = acc.name,
-            color = acc.avatar?.color,
-            avatar = null
+            id = acc.id
         ),
         config = Config(
             home = info.homeObjectId,

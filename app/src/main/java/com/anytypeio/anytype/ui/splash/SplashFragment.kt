@@ -135,10 +135,18 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                 } else {
                     deepLink = null
                 }
-                Timber.d("Deep link: ${deepLink}")
+                if (!deepLink.isNullOrEmpty()) {
+                    // Clearing intent to only handle it once:
+                    with(requireNotNull(intent)) {
+                        setAction(null)
+                        setData(null)
+                        putExtras(Bundle())
+                    }
+                }
+                Timber.d("Deep link is empty: ${deepLink.isNullOrEmpty()}")
                 findNavController().navigate(
                     R.id.action_splashFragment_to_authStart,
-                    OnboardingFragment.args(deepLink)
+                    args = OnboardingFragment.args(deepLink)
                 )
             }
             is SplashViewModel.Command.NavigateToMigration -> {
@@ -152,6 +160,12 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                 if (intent != null && intent.action == Intent.ACTION_VIEW) {
                     val data = intent.dataString
                     if (data != null && DefaultDeepLinkResolver.isDeepLink(data)) {
+                        // Clearing intent to only handle it once:
+                        with(intent) {
+                            setAction(null)
+                            setData(null)
+                            putExtras(Bundle())
+                        }
                         vm.onDeepLinkLaunch(data)
                     } else {
                         val bundle = intent.extras

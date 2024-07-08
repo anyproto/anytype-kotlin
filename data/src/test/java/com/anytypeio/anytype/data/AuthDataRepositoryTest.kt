@@ -191,9 +191,7 @@ class AuthDataRepositoryTest {
     fun `should call only cache in order to get current account`() = runBlocking {
 
         val account = AccountEntity(
-            id = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            color = null
+            id = MockDataFactory.randomUuid()
         )
 
         authCache.stub {
@@ -275,9 +273,7 @@ class AuthDataRepositoryTest {
     fun `should call only cache in order to get available accounts`() = runBlocking {
 
         val account = AccountEntity(
-            id = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            color = null
+            id = MockDataFactory.randomUuid()
         )
 
         val accounts = listOf(account)

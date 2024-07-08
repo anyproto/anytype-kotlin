@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
@@ -18,6 +19,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.cover
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import java.lang.UnsupportedOperationException
@@ -160,7 +162,9 @@ class DataViewListWidgetContainer(
                             } else {
                                 null
                             }
-                            if (target?.type == Block.Content.DataView.Viewer.Type.GALLERY) {
+                            if (target != null && target.type == DVViewerType.GALLERY) {
+                                val withCover = !target.coverRelationKey.isNullOrEmpty()
+                                val withIcon = !target.hideIcon
                                 WidgetView.Gallery(
                                     id = widget.id,
                                     source = widget.source,
@@ -168,16 +172,26 @@ class DataViewListWidgetContainer(
                                     elements = objects.map { obj ->
                                         WidgetView.SetOfObjects.Element(
                                             obj = obj,
-                                            objectIcon = obj.widgetElementIcon(
-                                                builder = urlBuilder
-                                            ),
-                                            cover = obj.cover(
-                                                urlBuilder = urlBuilder,
-                                                coverImageHashProvider = coverImageHashProvider
-                                            )
+                                            objectIcon = if (withIcon) {
+                                                obj.widgetElementIcon(
+                                                    builder = urlBuilder
+                                                )
+                                            } else {
+                                                ObjectIcon.None
+                                            },
+                                            cover = if (withCover) {
+                                                obj.cover(
+                                                    urlBuilder = urlBuilder,
+                                                    coverImageHashProvider = coverImageHashProvider
+                                                )
+                                            } else {
+                                                null
+                                            }
                                         )
                                     },
-                                    isExpanded = true
+                                    isExpanded = true,
+                                    showIcon = withIcon,
+                                    showCover = withCover
                                 )
                             } else {
                                 WidgetView.SetOfObjects(

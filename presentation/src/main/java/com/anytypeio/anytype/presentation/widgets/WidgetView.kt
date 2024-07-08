@@ -79,7 +79,9 @@ sealed class WidgetView {
         val source: Widget.Source,
         val tabs: List<SetOfObjects.Tab>,
         val elements: List<SetOfObjects.Element>,
-        val isExpanded: Boolean
+        val isExpanded: Boolean,
+        val showIcon: Boolean = false,
+        val showCover: Boolean = false
     ) : WidgetView(), Draggable
 
     data class ListOfObjects(

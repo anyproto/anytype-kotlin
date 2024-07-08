@@ -2691,6 +2691,16 @@ class Middleware @Inject constructor(
         return response.tiers.map { it.toCoreModel() }
     }
 
+    @Throws
+    fun processCancel(command: Command.ProcessCancel) {
+        val request = Rpc.Process.Cancel.Request(
+            id = command.processId
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.processCancel(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+    }
+
     private fun logRequest(any: Any) {
         logger.logRequest(any).also {
             if (BuildConfig.DEBUG && threadInfo.isOnMainThread()) {

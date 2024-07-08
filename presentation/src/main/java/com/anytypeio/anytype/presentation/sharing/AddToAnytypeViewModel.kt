@@ -16,17 +16,17 @@ import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.NO_VALUE
 import com.anytypeio.anytype.core_models.ObjectOrigin
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Process.Event
+import com.anytypeio.anytype.core_models.Process.State
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_models.Process.Event
-import com.anytypeio.anytype.core_models.Process.State
 import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.device.FileSharer
+import com.anytypeio.anytype.domain.download.ProcessCancel
 import com.anytypeio.anytype.domain.media.FileDrop
-import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.Permissions
 import com.anytypeio.anytype.domain.objects.CreateBookmarkObject
@@ -48,10 +48,13 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.onSubscription
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -145,12 +148,29 @@ class AddToAnytypeViewModel(
         }
     }
 
-    private fun subscribeToEventProcessChannel(wrapperObjId: Id) {
+    private fun subscribeToEventProcessChannel(
+        wrapperObjId: Id,
+        filePaths: List<String>,
+        targetSpaceId: String
+    ) {
         if (progressJob?.isActive == true) {
+            Timber.d("Progress job is already active")
             progressJob?.cancel()
         }
         progressJob = viewModelScope.launch {
             eventProcessChannel.observe()
+                .shareIn(
+                    viewModelScope,
+                    replay = 0,
+                    started = SharingStarted.WhileSubscribed()
+                )
+                .onSubscription {
+                    proceedWithFilesDrop(
+                        wrapperObjId = wrapperObjId,
+                        filePaths = filePaths,
+                        targetSpaceId = targetSpaceId
+                    )
+                }
                 .collect { events ->
                     events.forEach { event ->
                         when (event) {
@@ -208,7 +228,7 @@ class AddToAnytypeViewModel(
         }
     }
 
-    fun onShareMedia(uris: List<String>, wrapperObjTitle: String? = null) {
+    fun onShareFiles(uris: List<String>, wrapperObjTitle: String? = null) {
         viewModelScope.launch(Dispatchers.IO) {
             val targetSpaceView = spaceViews.value.firstOrNull { view ->
                 view.isSelected
@@ -255,7 +275,7 @@ class AddToAnytypeViewModel(
                     startTime = startTime,
                     spaceParams = provideParams(spaceManager.get())
                 )
-                proceedWithFilesDrop(
+                subscribeToEventProcessChannel(
                     wrapperObjId = wrapperObjId,
                     filePaths = filePaths,
                     targetSpaceId = targetSpaceId
@@ -273,7 +293,6 @@ class AddToAnytypeViewModel(
         filePaths: List<String>,
         targetSpaceId: String,
     ) {
-        subscribeToEventProcessChannel(wrapperObjId = wrapperObjId)
         val params = FileDrop.Params(
             ctx = wrapperObjId,
             space = SpaceId(targetSpaceId),
@@ -466,7 +485,8 @@ class AddToAnytypeViewModel(
         private val permissions: Permissions,
         private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         private val fileDrop: FileDrop,
-        private val eventProcessChannel: EventProcessDropFilesChannel
+        private val eventProcessChannel: EventProcessDropFilesChannel,
+        private val processCancel: ProcessCancel
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {

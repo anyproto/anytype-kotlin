@@ -1027,4 +1027,8 @@ class BlockDataRepository(
     override suspend fun membershipGetTiers(command: Command.Membership.GetTiers): List<MembershipTierData> {
         return remote.membershipGetTiers(command)
     }
+
+    override suspend fun processCancel(command: Command.ProcessCancel) {
+        remote.processCancel(command)
+    }
 }

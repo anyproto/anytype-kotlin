@@ -53,7 +53,11 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
             } else if (args.containsKey(SHARING_MULTIPLE_FILES_KEY)) {
                 val result = argStringList(SHARING_MULTIPLE_FILES_KEY)
                 SharingData.Files(uris = result)
-            } else {
+            } else if (args.containsKey(SHARING_MULTIPLE_VIDEOS_KEY)) {
+                val result = argStringList(SHARING_MULTIPLE_VIDEOS_KEY)
+                SharingData.Videos(uris = result)
+            }
+            else {
                 throw IllegalStateException("Unexpcted shared data")
             }
         }
@@ -85,17 +89,17 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
                         when(option) {
                             SAVE_AS_BOOKMARK -> vm.onCreateBookmark(url = sharedData.data)
                             SAVE_AS_NOTE -> vm.onCreateNote(sharedData.data)
-                            SAVE_AS_FILE -> vm.onShareMedia(listOf(sharedData.data))
-                            SAVE_AS_IMAGES, SAVE_AS_IMAGE -> {
+                            SAVE_AS_FILE -> {
                                 val formattedDateTime = getFormattedDateTime(Locale.getDefault())
                                 val objTitle =
-                                    getString(R.string.sharing_media_wrapper_object_title, formattedDateTime)
-                                val data = sharedData
-                                if (data is SharingData.Images) {
-                                    vm.onShareMedia(uris = data.uris, wrapperObjTitle = objTitle)
-                                } else {
-                                    toast("Unexpected data format")
-                                }
+                                    getString(
+                                        R.string.sharing_files_wrapper_object_title,
+                                        formattedDateTime
+                                    )
+                                vm.onShareFiles(
+                                    uris = listOf(sharedData.data),
+                                    wrapperObjTitle = objTitle
+                                )
                             }
                             SAVE_AS_FILES -> {
                                 val formattedDateTime = getFormattedDateTime(Locale.getDefault())
@@ -103,9 +107,43 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
                                     getString(R.string.sharing_files_wrapper_object_title, formattedDateTime)
                                 val data = sharedData
                                 if (data is SharingData.Files) {
-                                    vm.onShareMedia(uris = data.uris, wrapperObjTitle = objTitle)
+                                    vm.onShareFiles(uris = data.uris, wrapperObjTitle = objTitle)
                                 } else {
                                     toast("Unexpected data format")
+                                }
+                            }
+                            SAVE_AS_IMAGES, SAVE_AS_IMAGE, SAVE_AS_VIDEOS -> {
+                                val formattedDateTime = getFormattedDateTime(Locale.getDefault())
+                                val objTitle =
+                                    getString(
+                                        R.string.sharing_media_wrapper_object_title,
+                                        formattedDateTime
+                                    )
+                                when (val data = sharedData) {
+                                    is SharingData.Image -> {
+                                        vm.onShareFiles(
+                                            uris = listOf(data.uri),
+                                            wrapperObjTitle = objTitle
+                                        )
+                                    }
+
+                                    is SharingData.Images -> {
+                                        vm.onShareFiles(
+                                            uris = data.uris,
+                                            wrapperObjTitle = objTitle
+                                        )
+                                    }
+
+                                    is SharingData.Videos -> {
+                                        vm.onShareFiles(
+                                            uris = data.uris,
+                                            wrapperObjTitle = objTitle
+                                        )
+                                    }
+
+                                    else -> {
+                                        toast("Unexpected data format")
+                                    }
                                 }
                             }
                         }
@@ -119,7 +157,6 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
                     onSelectSpaceClicked = { vm.onSelectSpaceClicked(it) },
                     progressState = vm.progressState.collectAsStateWithLifecycle().value,
                     onOpenClicked = vm::proceedWithNavigation,
-                    onCancelProcessClicked = { processId -> }
                 )
                 LaunchedEffect(Unit) {
                     vm.navigation.collect { nav ->
@@ -175,6 +212,9 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
             is SharingData.Url -> {
                 vm.onSharedTextData(data.url)
             }
+            is SharingData.Videos -> {
+                vm.onSharedMediaData(data.uris)
+            }
         }
     }
 
@@ -204,6 +244,7 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
         private const val SHARING_IMAGE_KEY = "arg.sharing.image-key"
         private const val SHARING_FILE_KEY = "arg.sharing.file-key"
         private const val SHARING_MULTIPLE_IMAGES_KEY = "arg.sharing.multiple-images-key"
+        private const val SHARING_MULTIPLE_VIDEOS_KEY = "arg.sharing.multiple-videos-key"
         private const val SHARING_MULTIPLE_FILES_KEY = "arg.sharing.multiple-files-key"
 
         fun text(data: String) : SharingFragment = SharingFragment().apply {
@@ -216,6 +257,10 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
 
         fun images(uris: List<String>) : SharingFragment = SharingFragment().apply {
             arguments = bundleOf(SHARING_MULTIPLE_IMAGES_KEY to ArrayList(uris))
+        }
+
+        fun videos(uris: List<String>) : SharingFragment = SharingFragment().apply {
+            arguments = bundleOf(SHARING_MULTIPLE_VIDEOS_KEY to ArrayList(uris))
         }
 
         fun files(uris: List<String>) : SharingFragment = SharingFragment().apply {

@@ -203,6 +203,9 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun fileDrop(request: Rpc.File.Drop.Request): Rpc.File.Drop.Response
 
+    @Throws(Exception::class)
+    fun processCancel(request: Rpc.Process.Cancel.Request): Rpc.Process.Cancel.Response
+
     //endregion
 
     //region UNSPLASH commands

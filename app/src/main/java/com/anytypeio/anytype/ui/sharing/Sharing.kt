@@ -85,7 +85,6 @@ fun AddToAnytypeScreenUrlPreview() {
         onOpenClicked = {},
         content = "https://en.wikipedia.org/wiki/Walter_Benjamin",
         progressState = AddToAnytypeViewModel.ProgressState.Done(""),
-        onCancelProcessClicked = {}
         //progressState = AddToAnytypeViewModel.ProgressState.Error(" I understand that contributing to this repository will require me to agree with the CLA  I understand that contributing to this repository will require me to agree with the CLA\n")
         //progressState = AddToAnytypeViewModel.ProgressState.Progress(processId = "dasda", progress = 0.8f)
     )
@@ -113,7 +112,6 @@ fun AddToAnytypeScreenNotePreview() {
             wrapperObjId = ""
         ),
         onOpenClicked = {},
-        onCancelProcessClicked = {}
     )
 }
 
@@ -124,7 +122,6 @@ fun AddToAnytypeScreen(
     data: SharingData,
     progressState: AddToAnytypeViewModel.ProgressState,
     onCancelClicked: () -> Unit,
-    onCancelProcessClicked: (Id) -> Unit,
     onAddClicked: (SaveAsOption) -> Unit,
     onSelectSpaceClicked: (SpaceView) -> Unit,
     onOpenClicked: (Id) -> Unit
@@ -137,6 +134,7 @@ fun AddToAnytypeScreen(
         is SharingData.Images -> listOf(SAVE_AS_IMAGES)
         is SharingData.Files -> listOf(SAVE_AS_FILES)
         is SharingData.Text -> listOf(SAVE_AS_NOTE)
+        is SharingData.Videos -> listOf(SAVE_AS_VIDEOS)
     }
     var selectedIndex by remember {
         mutableStateOf(
@@ -147,6 +145,7 @@ fun AddToAnytypeScreen(
                 is SharingData.Images -> SAVE_AS_IMAGES
                 is SharingData.Files -> SAVE_AS_FILES
                 is SharingData.Text -> SAVE_AS_NOTE
+                is SharingData.Videos -> SAVE_AS_VIDEOS
             }
         )
     }
@@ -181,6 +180,7 @@ fun AddToAnytypeScreen(
                     SAVE_AS_FILE -> stringResource(id = R.string.sharing_menu_save_as_file_option)
                     SAVE_AS_IMAGES -> stringResource(id = R.string.sharing_menu_save_as_images_option)
                     SAVE_AS_FILES -> stringResource(id = R.string.sharing_menu_save_as_files_option)
+                    SAVE_AS_VIDEOS -> stringResource(id = R.string.sharing_menu_save_as_videos_option)
                     else -> stringResource(id = R.string.sharing_menu_save_as_note_option)
                 },
                 modifier = Modifier
@@ -281,10 +281,7 @@ fun AddToAnytypeScreen(
                 )
             }
             is AddToAnytypeViewModel.ProgressState.Progress -> {
-                ButtonsProgress(
-                    onCancelProcessClicked = onCancelProcessClicked,
-                    progressState = progressState,
-                )
+                ButtonsProgress(onCancelClicked = onCancelClicked)
             }
         }
     }
@@ -438,8 +435,7 @@ private fun ButtonsDone(
 
 @Composable
 private fun ButtonsProgress(
-    onCancelProcessClicked: (Id) -> Unit,
-    progressState: AddToAnytypeViewModel.ProgressState.Progress
+    onCancelClicked: () -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -449,7 +445,7 @@ private fun ButtonsProgress(
         verticalAlignment = Alignment.CenterVertically
     ) {
         ButtonSecondary(
-            onClick = { onCancelProcessClicked(progressState.processId) },
+            onClick = onCancelClicked,
             size = ButtonSize.Large,
             text = stringResource(id = R.string.cancel),
             modifier = Modifier.weight(1.0f)
@@ -646,6 +642,7 @@ const val SAVE_AS_IMAGE = 2
 const val SAVE_AS_FILE = 3
 const val SAVE_AS_IMAGES = 4
 const val SAVE_AS_FILES = 5
+const val SAVE_AS_VIDEOS = 6
 typealias SaveAsOption = Int
 
 sealed class SharingData {
@@ -679,6 +676,11 @@ sealed class SharingData {
     data class File(val uri: String) : SharingData() {
         override val data: String
             get() = uri
+    }
+
+    data class Videos(val uris: List<String>) : SharingData() {
+        override val data: String
+            get() = uris.toString()
     }
 }
 

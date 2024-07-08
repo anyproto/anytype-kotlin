@@ -990,4 +990,8 @@ class BlockMiddleware(
     override suspend fun membershipGetTiers(command: Command.Membership.GetTiers): List<MembershipTierData> {
         return middleware.membershipGetTiers(command)
     }
+
+    override suspend fun processCancel(command: Command.ProcessCancel) {
+        middleware.processCancel(command)
+    }
 }

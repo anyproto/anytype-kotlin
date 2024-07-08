@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
@@ -32,15 +33,15 @@ fun TreeWidgetObjectIcon(
     icon: ObjectIcon,
     paddingStart: Dp,
     paddingEnd: Dp,
-    onTaskIconClicked: (Boolean) -> Unit
+    onTaskIconClicked: (Boolean) -> Unit,
+    size: Dp = 18.dp
 ) {
     when (icon) {
         is ObjectIcon.Profile.Avatar -> {
             Box(
                 modifier = modifier
                     .padding(start = paddingStart, end = paddingEnd)
-                    .height(18.dp)
-                    .width(18.dp)
+                    .size(size)
                     .background(
                         shape = CircleShape,
                         color = colorResource(id = R.color.text_tertiary)
@@ -65,25 +66,29 @@ fun TreeWidgetObjectIcon(
         is ObjectIcon.Profile.Image -> {
             UriCircleImage(
                 uri = icon.hash,
-                modifier = modifier.padding(start = paddingStart, end = paddingEnd)
+                modifier = modifier.padding(start = paddingStart, end = paddingEnd),
+                size = size
             )
         }
         is ObjectIcon.Basic.Emoji -> {
             UriImage(
                 uri = Emojifier.safeUri(icon.unicode),
-                modifier = modifier.padding(start = paddingStart, end = paddingEnd)
+                modifier = modifier.padding(start = paddingStart, end = paddingEnd),
+                size = size
             )
         }
         is ObjectIcon.Basic.Image -> {
             UriImage(
                 uri = icon.hash,
-                modifier = Modifier.padding(start = paddingStart, end = paddingEnd)
+                modifier = Modifier.padding(start = paddingStart, end = paddingEnd),
+                size = size
             )
         }
         is ObjectIcon.Bookmark -> {
             UriImage(
                 uri = icon.image,
-                modifier = Modifier.padding(start = paddingStart, end = paddingEnd)
+                modifier = Modifier.padding(start = paddingStart, end = paddingEnd),
+                size = size
             )
         }
         is ObjectIcon.Task -> {
@@ -94,6 +99,7 @@ fun TreeWidgetObjectIcon(
                     painterResource(id = R.drawable.ic_dashboard_task_checkbox_not_checked),
                 contentDescription = "Task icon",
                 modifier = modifier
+                    .size(size)
                     .padding(start = paddingStart, end = paddingEnd)
                     .noRippleClickable { onTaskIconClicked(icon.isChecked) }
             )
@@ -107,28 +113,25 @@ fun TreeWidgetObjectIcon(
 @Composable
 fun UriImage(
     uri: String,
-    modifier: Modifier
+    modifier: Modifier,
+    size: Dp = 18.dp
 ) {
     Image(
         painter = rememberAsyncImagePainter(uri),
         contentDescription = "Icon from URI",
-        modifier = modifier
-            .height(18.dp)
-            .width(18.dp)
+        modifier = modifier.size(size)
     )
 }
 
 @Composable
 fun UriCircleImage(
     uri: String,
-    modifier: Modifier
+    modifier: Modifier,
+    size: Dp = 18.dp
 ) {
     Image(
         painter = rememberAsyncImagePainter(uri),
         contentDescription = "Icon from URI",
-        modifier = modifier
-            .height(18.dp)
-            .width(18.dp)
-            .clip(CircleShape)
+        modifier = modifier.size(size).clip(CircleShape)
     )
 }

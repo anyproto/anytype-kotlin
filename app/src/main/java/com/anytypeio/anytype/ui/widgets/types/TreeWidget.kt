@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.colorResource
@@ -352,7 +353,7 @@ private fun WidgetArrow(
             painterResource(R.drawable.ic_widget_tree_expand),
             contentDescription = "Expand icon",
             modifier = Modifier
-                .rotate(rotation.value)
+                .graphicsLayer { rotationZ = rotation.value }
                 .padding(horizontal = 12.dp)
         )
     }

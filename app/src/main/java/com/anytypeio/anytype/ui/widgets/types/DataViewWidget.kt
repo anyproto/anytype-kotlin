@@ -10,13 +10,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -30,21 +28,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.toColor
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -260,7 +252,7 @@ fun GalleryWidgetCard(
                 )
             }
             if (item.elements.isNotEmpty()) {
-                val isCardSmall = item.elements.none { it.cover != null }
+                val withCover = item.showCover || item.elements.none { it.cover != null }
                 LazyRow(
                     modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -277,7 +269,7 @@ fun GalleryWidgetCard(
                                 onItemClicked = {
                                     onWidgetObjectClicked(element.obj)
                                 },
-                                isCardSmall = isCardSmall
+                                withCover = withCover
                             )
                         }
                         if (idx == item.elements.lastIndex) {
@@ -285,7 +277,7 @@ fun GalleryWidgetCard(
                                 Box(
                                     modifier = Modifier
                                         .width(136.dp)
-                                        .height(if (isCardSmall) 56.dp else 136.dp)
+                                        .height(if (withCover) 56.dp else 136.dp)
                                         .border(
                                             width = 1.dp,
                                             color = colorResource(id = R.color.shape_primary),
@@ -446,12 +438,12 @@ fun ListWidgetElement(
 private fun GalleryWidgetItemCard(
     item: WidgetView.SetOfObjects.Element,
     onItemClicked: () -> Unit,
-    isCardSmall: Boolean = false
+    withCover: Boolean = false
 ) {
     Box(
         modifier = Modifier
             .width(136.dp)
-            .height(if (isCardSmall) 56.dp else 136.dp)
+            .height(if (withCover) 56.dp else 136.dp)
             .clip(RoundedCornerShape(8.dp))
             .clickable {
                 onItemClicked()
@@ -466,46 +458,49 @@ private fun GalleryWidgetItemCard(
                     shape = RoundedCornerShape(8.dp)
                 )
         )
+        if (withCover) {
+            when (val cover = item.cover) {
+                is CoverView.Color -> {
+                    Box(
+                        modifier = Modifier
+                            .width(136.dp)
+                            .height(80.dp)
+                            .background(
+                                color = Color(cover.coverColor.color),
+                                shape = RoundedCornerShape(topEnd = 8.dp, topStart = 8.dp)
+                            )
+                    )
+                }
 
-        when(val cover = item.cover) {
-            is CoverView.Color -> {
-                Box(
-                    modifier = Modifier
-                        .width(136.dp)
-                        .height(80.dp)
-                        .background(
-                            color = Color(cover.coverColor.color),
-                            shape = RoundedCornerShape(topEnd = 8.dp, topStart = 8.dp)
-                        )
-                )
-            }
-            is CoverView.Gradient -> {
-                Box(
-                    modifier = Modifier
-                        .width(136.dp)
-                        .height(80.dp)
-                        .background(
-                            Brush.horizontalGradient(
-                                colors = gradient(cover.gradient)
-                            ),
-                            shape = RoundedCornerShape(topEnd = 8.dp, topStart = 8.dp)
-                        )
-                )
-            }
-            is CoverView.Image -> {
-                Image(
-                    painter = rememberAsyncImagePainter(cover.url),
-                    contentDescription = "Cover image",
-                    modifier = Modifier
-                        .width(136.dp)
-                        .height(80.dp)
-                        .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
-                    ,
-                    contentScale = ContentScale.Crop,
-                )
-            }
-            else -> {
-                // Draw nothing.
+                is CoverView.Gradient -> {
+                    Box(
+                        modifier = Modifier
+                            .width(136.dp)
+                            .height(80.dp)
+                            .background(
+                                Brush.horizontalGradient(
+                                    colors = gradient(cover.gradient)
+                                ),
+                                shape = RoundedCornerShape(topEnd = 8.dp, topStart = 8.dp)
+                            )
+                    )
+                }
+
+                is CoverView.Image -> {
+                    Image(
+                        painter = rememberAsyncImagePainter(cover.url),
+                        contentDescription = "Cover image",
+                        modifier = Modifier
+                            .width(136.dp)
+                            .height(80.dp)
+                            .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)),
+                        contentScale = ContentScale.Crop,
+                    )
+                }
+
+                else -> {
+                    // Draw nothing.
+                }
             }
         }
         Text(

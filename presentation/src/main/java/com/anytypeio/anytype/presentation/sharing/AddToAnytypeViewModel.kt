@@ -228,7 +228,7 @@ class AddToAnytypeViewModel(
         }
     }
 
-    fun onShareMedia(uris: List<String>, wrapperObjTitle: String? = null) {
+    fun onShareFiles(uris: List<String>, wrapperObjTitle: String? = null) {
         viewModelScope.launch(Dispatchers.IO) {
             val targetSpaceView = spaceViews.value.firstOrNull { view ->
                 view.isSelected

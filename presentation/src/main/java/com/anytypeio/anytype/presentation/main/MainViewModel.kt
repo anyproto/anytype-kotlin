@@ -292,6 +292,20 @@ class MainViewModel(
         }
     }
 
+    fun onIntentMultipleVideoShare(uris: List<String>) {
+        Timber.d("onIntentVideoShare: $uris")
+        viewModelScope.launch {
+            checkAuthorizationStatus(Unit).process(
+                failure = { e -> Timber.e(e, "Error while checking auth status") },
+                success = { status ->
+                    if (status == AuthStatus.AUTHORIZED) {
+                        commands.emit(Command.Sharing.Videos(uris))
+                    }
+                }
+            )
+        }
+    }
+
     fun onInterceptNotificationAction(action: NotificationAction) {
         viewModelScope.launch {
             proceedWithNotificationAction(action)
@@ -362,6 +376,7 @@ class MainViewModel(
             data class Text(val data: String) : Sharing()
             data class Image(val uri: String): Sharing()
             data class Images(val uris: List<String>): Sharing()
+            data class Videos(val uris: List<String>): Sharing()
             data class File(val uri: String): Sharing()
             data class Files(val uris: List<String>): Sharing()
         }

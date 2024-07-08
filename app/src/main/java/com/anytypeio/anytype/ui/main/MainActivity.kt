@@ -153,6 +153,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                     SHARE_DIALOG_LABEL
                                 )
                             }
+                            is Command.Sharing.Videos -> {
+                                SharingFragment.videos(command.uris).show(
+                                    supportFragmentManager,
+                                    SHARE_DIALOG_LABEL
+                                )
+                            }
                             is Command.Sharing.Files -> {
                                 SharingFragment.files(command.uris).show(
                                     supportFragmentManager,
@@ -342,6 +348,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
             intent.type?.startsWith(SHARE_IMAGE_INTENT_PATTERN) == true -> {
                 proceedWithImageShareIntent(intent)
             }
+            intent.type?.startsWith(SHARE_VIDEO_INTENT_PATTERN) == true -> {
+                proceedWithVideoShareIntent(intent)
+            }
             intent.type?.startsWith(SHARE_FILE_INTENT_PATTERN) == true -> {
                 proceedWithFileShareIntent(intent)
             }
@@ -372,6 +381,19 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
             val uri = intent.parseActionSendUri()
             if (uri != null) {
                 vm.onIntentMultipleImageShare(listOf(uri))
+            } else {
+                toast("Could not parse URI")
+            }
+        }
+    }
+
+    private fun proceedWithVideoShareIntent(intent: Intent) {
+        if (intent.action == Intent.ACTION_SEND_MULTIPLE) {
+            vm.onIntentMultipleVideoShare(uris = intent.parseActionSendMultipleUris())
+        } else {
+            val uri = intent.parseActionSendUri()
+            if (uri != null) {
+                vm.onIntentMultipleVideoShare(listOf(uri))
             } else {
                 toast("Could not parse URI")
             }
@@ -560,6 +582,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         const val AUTO_UPDATE_URL = "https://fra1.digitaloceanspaces.com/anytype-release/latest-android.json"
         const val SHARE_DIALOG_LABEL = "anytype.dialog.share.label"
         const val SHARE_IMAGE_INTENT_PATTERN = "image/"
+        const val SHARE_VIDEO_INTENT_PATTERN = "video/"
         const val SHARE_FILE_INTENT_PATTERN = "application/"
     }
 }

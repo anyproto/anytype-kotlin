@@ -70,8 +70,7 @@ class AddToAnytypeViewModel(
     private val permissions: Permissions,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val fileDrop: FileDrop,
-    private val eventProcessChannel: EventProcessDropFilesChannel,
-    private val processCancel: ProcessCancel
+    private val eventProcessChannel: EventProcessDropFilesChannel
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val selectedSpaceId = MutableStateFlow(NO_VALUE)
@@ -336,22 +335,6 @@ class AddToAnytypeViewModel(
         }
     }
 
-    fun onCancelProcessClicked(processId: Id) {
-        Timber.d("onCancelProcessClicked: $processId")
-        viewModelScope.launch {
-            processCancel.async(
-                ProcessCancel.Params(processId = processId)
-            ).fold(
-                onSuccess = { Timber.d("Process cancelled") },
-                onFailure = { e ->
-                    Timber.e(e, "Error while cancelling process").also {
-                        sendToast(e.msg())
-                    }
-                }
-            )
-        }
-    }
-
     fun onCreateBookmark(url: String) {
         viewModelScope.launch {
             val targetSpaceView = spaceViews.value.firstOrNull { view ->
@@ -519,8 +502,7 @@ class AddToAnytypeViewModel(
                 permissions = permissions,
                 analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
                 fileDrop = fileDrop,
-                eventProcessChannel = eventProcessChannel,
-                processCancel = processCancel
+                eventProcessChannel = eventProcessChannel
             ) as T
         }
     }

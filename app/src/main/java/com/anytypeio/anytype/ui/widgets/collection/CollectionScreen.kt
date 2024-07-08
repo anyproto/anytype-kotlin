@@ -615,7 +615,15 @@ private fun BlockWidget(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .absolutePadding(16.dp, 0.dp, 16.dp, 0.dp),
+            .absolutePadding(16.dp, 0.dp, 16.dp, 0.dp)
+            .then(
+                if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
+                    Modifier.windowInsetsPadding(WindowInsets.systemBars)
+                } else {
+                    Modifier
+                }
+            )
+        ,
         factory = { context ->
             CollectionActionWidget(context).apply {
                 layoutParams = LinearLayout.LayoutParams(

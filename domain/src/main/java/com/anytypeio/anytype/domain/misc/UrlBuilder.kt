@@ -25,6 +25,11 @@ class UrlBuilder(val gateway: Gateway) {
     fun thumbnail(path: String): Url = gateway.provide() + IMAGE_PATH + path + THUMBNAIL_WIDTH_PARAM
 
     /**
+     * Builds small image url for given [path]
+     */
+    fun medium(path: String): Url = gateway.provide() + IMAGE_PATH + path + MEDIUM_WIDTH_PARAM
+
+    /**
      * Builds file url for given [path]
      */
     fun file(path: String): Url = gateway.provide() + FILE_PATH + path
@@ -38,6 +43,7 @@ class UrlBuilder(val gateway: Gateway) {
         const val IMAGE_PATH = "/image/"
         const val FILE_PATH = "/file/"
         const val DEFAULT_WIDTH_PARAM = "?width=1080"
-        const val THUMBNAIL_WIDTH_PARAM = "?width=540"
+        const val THUMBNAIL_WIDTH_PARAM = "?width=100"
+        const val MEDIUM_WIDTH_PARAM = "?width=300"
     }
 }

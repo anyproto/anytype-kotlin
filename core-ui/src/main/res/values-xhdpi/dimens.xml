@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="relation_value_objects_text_max_width">100dp</dimen>
+</resources>

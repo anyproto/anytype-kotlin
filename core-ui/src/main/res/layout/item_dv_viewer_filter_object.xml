@@ -70,7 +70,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:gravity="bottom"
-        android:maxWidth="150dp"
+        android:maxWidth="@dimen/relation_value_objects_text_max_width"
         app:layout_constraintBottom_toBottomOf="@+id/tvCondition"
         app:layout_constraintStart_toEndOf="@+id/objectIcon"
         app:layout_constraintTop_toTopOf="@+id/tvCondition"

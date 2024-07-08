@@ -182,7 +182,8 @@ class DataViewListWidgetContainer(
                                             cover = if (withCover) {
                                                 obj.cover(
                                                     urlBuilder = urlBuilder,
-                                                    coverImageHashProvider = coverImageHashProvider
+                                                    coverImageHashProvider = coverImageHashProvider,
+                                                    isMedium = true
                                                 )
                                             } else {
                                                 null

@@ -12,7 +12,7 @@ class UrlBuilder(val gateway: Gateway) {
     /**
      * Builds image url for given [path]
      */
-    fun image(path: String): Url = gateway.provide() + IMAGE_PATH + path + LARGE_WIDTH_PARAM
+    fun large(path: String): Url = gateway.provide() + IMAGE_PATH + path + LARGE_WIDTH_PARAM
 
     /**
      * Builds original image url for given [path]

@@ -26,7 +26,7 @@ class UrlBuilderTest {
 
         val expected =
             gateway.provide() + UrlBuilder.IMAGE_PATH + hash + UrlBuilder.LARGE_WIDTH_PARAM
-        val actual = urlBuilder.image(hash)
+        val actual = urlBuilder.large(hash)
         assertEquals(expected, actual)
     }
 
@@ -35,7 +35,7 @@ class UrlBuilderTest {
         val hash = ""
 
         val expected = gateway.provide() + UrlBuilder.IMAGE_PATH + UrlBuilder.LARGE_WIDTH_PARAM
-        val actual = urlBuilder.image(hash)
+        val actual = urlBuilder.large(hash)
         assertEquals(expected, actual)
     }
 

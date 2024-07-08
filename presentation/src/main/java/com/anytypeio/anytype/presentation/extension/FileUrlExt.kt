@@ -39,7 +39,7 @@ private fun UrlBuilder.getUrlBasedOnType(
             when {
                 isOriginalImage -> original(targetObjectId)
                 isThumbnail -> thumbnail(targetObjectId)
-                else -> image(targetObjectId)
+                else -> large(targetObjectId)
             }
         }
 

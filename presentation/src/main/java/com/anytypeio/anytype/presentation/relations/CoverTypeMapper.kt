@@ -24,7 +24,7 @@ fun CoverWrapper.getCover(
         CoverType.UNSPLASH_IMAGE -> {
             val targetObjectId = coverId
             coverImage = if (!targetObjectId.isNullOrBlank()) {
-                urlBuilder.image(targetObjectId)
+                urlBuilder.large(targetObjectId)
             } else {
                 null
             }
@@ -33,7 +33,7 @@ fun CoverWrapper.getCover(
             val hash = coverId?.let { id ->
                 coverImageHashProvider.provide(id)
             }
-            if (!hash.isNullOrBlank()) coverImage = urlBuilder.image(hash)
+            if (!hash.isNullOrBlank()) coverImage = urlBuilder.large(hash)
         }
         CoverType.COLOR -> {
             coverColor = coverId?.let { id ->
@@ -72,7 +72,7 @@ fun ObjectWrapper.Basic.cover(
                 if (isMedium) {
                     urlBuilder.medium(targetObjectId)
                 } else {
-                    urlBuilder.image(targetObjectId)
+                    urlBuilder.large(targetObjectId)
                 }
             } else {
                 null
@@ -85,7 +85,7 @@ fun ObjectWrapper.Basic.cover(
             if (!hash.isNullOrBlank()) coverImage = if(isMedium) {
                 urlBuilder.medium(hash)
             } else {
-                urlBuilder.image(hash)
+                urlBuilder.large(hash)
             }
         }
         CoverType.COLOR -> {

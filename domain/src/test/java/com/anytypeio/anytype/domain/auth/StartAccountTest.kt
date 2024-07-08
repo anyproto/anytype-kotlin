@@ -81,10 +81,7 @@ class StartAccountTest {
         )
 
         val account = Account(
-            id = id,
-            name = MockDataFactory.randomString(),
-            avatar = null,
-            color = null
+            id = id
         )
 
         repo.stub {
@@ -152,10 +149,7 @@ class StartAccountTest {
         )
 
         val account = Account(
-            id = id,
-            name = MockDataFactory.randomString(),
-            avatar = null,
-            color = null
+            id = id
         )
 
         repo.stub {
@@ -199,10 +193,7 @@ class StartAccountTest {
         )
 
         val account = Account(
-            id = id,
-            name = MockDataFactory.randomString(),
-            avatar = null,
-            color = null
+            id = id
         )
 
         repo.stub {
@@ -246,10 +237,7 @@ class StartAccountTest {
         )
 
         val account = Account(
-            id = id,
-            name = MockDataFactory.randomString(),
-            avatar = null,
-            color = null
+            id = id
         )
 
         repo.stub {
@@ -293,10 +281,7 @@ class StartAccountTest {
         )
 
         val account = Account(
-            id = id,
-            name = MockDataFactory.randomString(),
-            avatar = null,
-            color = null
+            id = id
         )
 
         repo.stub {
@@ -340,10 +325,7 @@ class StartAccountTest {
         )
 
         val account = Account(
-            id = id,
-            name = MockDataFactory.randomString(),
-            avatar = null,
-            color = null
+            id = id
         )
 
         val storedFilePath = MockDataFactory.randomString()

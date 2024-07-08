@@ -18,10 +18,7 @@ fun StubAccount(
     avatar: Url? = null,
     color: String? = null
 ) : Account = Account(
-    id = id,
-    name = name,
-    avatar = avatar,
-    color = color
+    id = id
 )
 
 fun StubConfig(

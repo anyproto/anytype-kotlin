@@ -57,10 +57,7 @@ class CheckAuthorizationStatusTest {
     fun `should return authorized status if account list is not empty`() = runBlocking {
 
         val account = Account(
-            name = MockDataFactory.randomString(),
-            id = MockDataFactory.randomString(),
-            avatar = null,
-            color = null
+            id = MockDataFactory.randomString()
         )
 
         repo.stub {

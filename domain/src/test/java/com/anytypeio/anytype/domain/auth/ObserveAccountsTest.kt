@@ -41,10 +41,7 @@ class ObserveAccountsTest {
     fun `should collect one account when stream is called`() = runBlocking {
 
         val account = Account(
-            id = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            avatar = null,
-            color = null
+            id = MockDataFactory.randomUuid()
         )
 
         repo.stub {
@@ -62,16 +59,10 @@ class ObserveAccountsTest {
 
             val accounts = listOf(
                 Account(
-                    id = MockDataFactory.randomUuid(),
-                    name = MockDataFactory.randomString(),
-                    avatar = null,
-                    color = null
+                    id = MockDataFactory.randomUuid()
                 ),
                 Account(
-                    id = MockDataFactory.randomUuid(),
-                    name = MockDataFactory.randomString(),
-                    avatar = null,
-                    color = null
+                    id = MockDataFactory.randomUuid()
                 )
             )
 

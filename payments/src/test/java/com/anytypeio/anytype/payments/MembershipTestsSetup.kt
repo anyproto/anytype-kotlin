@@ -177,10 +177,7 @@ open class MembershipTestsSetup {
         getAccount.stub {
             onBlocking { async(Unit) } doReturn Resultat.success(
                 Account(
-                    id = accountId,
-                    name = MockDataFactory.randomString(),
-                    avatar = null,
-                    color = null
+                    id = accountId
                 )
             )
         }

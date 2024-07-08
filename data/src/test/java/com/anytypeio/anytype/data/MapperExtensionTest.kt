@@ -27,16 +27,11 @@ class MapperExtensionTest {
     fun `should map correctly account from domain to data layer`() {
 
         val account = Account(
-            id = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            color = MockDataFactory.randomString(),
-            avatar = MockDataFactory.randomString()
+            id = MockDataFactory.randomUuid()
         )
 
         account.toEntity().let { result ->
             assertTrue { result.id == account.id }
-            assertTrue { result.name == account.name }
-            assertTrue { result.color == account.color }
         }
     }
 
@@ -44,16 +39,11 @@ class MapperExtensionTest {
     fun `should map correctly account from data to domain layer`() {
 
         val account = AccountEntity(
-            id = MockDataFactory.randomUuid(),
-            name = MockDataFactory.randomString(),
-            color = MockDataFactory.randomString()
+            id = MockDataFactory.randomUuid()
         )
 
         account.toDomain().let { result ->
             assertTrue { result.id == account.id }
-            assertTrue { result.name == account.name }
-            assertTrue { result.avatar == null }
-            assertTrue { result.color == account.color }
         }
     }
 }

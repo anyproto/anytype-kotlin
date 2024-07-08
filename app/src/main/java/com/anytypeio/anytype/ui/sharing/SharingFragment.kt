@@ -119,7 +119,7 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
                     onSelectSpaceClicked = { vm.onSelectSpaceClicked(it) },
                     progressState = vm.progressState.collectAsStateWithLifecycle().value,
                     onOpenClicked = vm::proceedWithNavigation,
-                    onCancelProcessClicked = { processId -> }
+                    onCancelProcessClicked = vm::onCancelProcessClicked
                 )
                 LaunchedEffect(Unit) {
                     vm.navigation.collect { nav ->

@@ -25,6 +25,7 @@ import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.device.FileSharer
+import com.anytypeio.anytype.domain.download.ProcessCancel
 import com.anytypeio.anytype.domain.media.FileDrop
 import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -67,7 +68,8 @@ class AddToAnytypeViewModel(
     private val permissions: Permissions,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val fileDrop: FileDrop,
-    private val eventProcessChannel: EventProcessDropFilesChannel
+    private val eventProcessChannel: EventProcessDropFilesChannel,
+    private val processCancel: ProcessCancel
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val selectedSpaceId = MutableStateFlow(NO_VALUE)
@@ -316,6 +318,22 @@ class AddToAnytypeViewModel(
         }
     }
 
+    fun onCancelProcessClicked(processId: Id) {
+        Timber.d("onCancelProcessClicked: $processId")
+        viewModelScope.launch {
+            processCancel.async(
+                ProcessCancel.Params(processId = processId)
+            ).fold(
+                onSuccess = { Timber.d("Process cancelled") },
+                onFailure = { e ->
+                    Timber.e(e, "Error while cancelling process").also {
+                        sendToast(e.msg())
+                    }
+                }
+            )
+        }
+    }
+
     fun onCreateBookmark(url: String) {
         viewModelScope.launch {
             val targetSpaceView = spaceViews.value.firstOrNull { view ->
@@ -466,7 +484,8 @@ class AddToAnytypeViewModel(
         private val permissions: Permissions,
         private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         private val fileDrop: FileDrop,
-        private val eventProcessChannel: EventProcessDropFilesChannel
+        private val eventProcessChannel: EventProcessDropFilesChannel,
+        private val processCancel: ProcessCancel
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -482,7 +501,8 @@ class AddToAnytypeViewModel(
                 permissions = permissions,
                 analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
                 fileDrop = fileDrop,
-                eventProcessChannel = eventProcessChannel
+                eventProcessChannel = eventProcessChannel,
+                processCancel = processCancel
             ) as T
         }
     }

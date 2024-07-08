@@ -11,7 +11,6 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.CLICK_ONBOARDING_TO
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.props.Props
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.NO_VALUE
@@ -20,16 +19,20 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.Process.Event
+import com.anytypeio.anytype.core_models.Process.State
 import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.device.FileSharer
+import com.anytypeio.anytype.domain.media.FileDrop
 import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.Permissions
 import com.anytypeio.anytype.domain.objects.CreateBookmarkObject
 import com.anytypeio.anytype.domain.objects.CreatePrefilledNote
 import com.anytypeio.anytype.domain.spaces.GetSpaceViews
+import com.anytypeio.anytype.domain.workspace.EventProcessDropFilesChannel
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -40,6 +43,8 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -58,10 +63,11 @@ class AddToAnytypeViewModel(
     private val urlBuilder: UrlBuilder,
     private val awaitAccountStartManager: AwaitAccountStartManager,
     private val analytics: Analytics,
-    private val uploadFile: UploadFile,
     private val fileSharer: FileSharer,
     private val permissions: Permissions,
-    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val fileDrop: FileDrop,
+    private val eventProcessChannel: EventProcessDropFilesChannel
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val selectedSpaceId = MutableStateFlow(NO_VALUE)
@@ -71,8 +77,11 @@ class AddToAnytypeViewModel(
     val navigation = MutableSharedFlow<OpenObjectNavigation>()
     val spaceViews = MutableStateFlow<List<SpaceView>>(emptyList())
     val commands = MutableSharedFlow<Command>()
+    val progressState = MutableStateFlow<ProgressState>(ProgressState.Init)
 
     val state = MutableStateFlow<ViewState>(ViewState.Init)
+
+    private var progressJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -136,7 +145,70 @@ class AddToAnytypeViewModel(
         }
     }
 
-    fun onShareMedia(uris: List<String>) {
+    private fun subscribeToEventProcessChannel(wrapperObjId: Id) {
+        if (progressJob?.isActive == true) {
+            progressJob?.cancel()
+        }
+        progressJob = viewModelScope.launch {
+            eventProcessChannel.observe()
+                .collect { events ->
+                    events.forEach { event ->
+                        when (event) {
+                            is Event.DropFiles.New -> {
+                                val currentProgressState = progressState.value
+                                if (currentProgressState is ProgressState.Init
+                                    && event.process.state == State.RUNNING
+                                ) {
+                                    progressState.value = ProgressState.Progress(
+                                        processId = event.process.id,
+                                        progress = 0f,
+                                        wrapperObjId = wrapperObjId
+                                    )
+                                } else {
+                                    //some process is already running
+                                }
+                            }
+
+                            is Event.DropFiles.Update -> {
+                                val currentProgressState = progressState.value
+                                val newProcess = event.process
+                                if (currentProgressState is ProgressState.Progress
+                                    && currentProgressState.processId == event.process.id
+                                    && newProcess.state == State.RUNNING
+                                ) {
+                                    val progress = newProcess.progress
+                                    val total = progress?.total
+                                    val done = progress?.done
+                                    progressState.value =
+                                        if (total != null && total != 0L && done != null) {
+                                            currentProgressState.copy(progress = done.toFloat() / total)
+                                        } else {
+                                            currentProgressState.copy(progress = 0f)
+                                        }
+                                }
+                            }
+
+                            is Event.DropFiles.Done -> {
+                                val currentProgressState = progressState.value
+                                val newProcess = event.process
+                                if (currentProgressState is ProgressState.Progress
+                                    && event.process.state == State.DONE
+                                    && newProcess.id == currentProgressState.processId
+                                ) {
+                                    progressState.value = currentProgressState.copy(progress = 1f)
+                                    delay(300)
+                                    progressState.value = ProgressState.Done(
+                                        wrapperObjId = currentProgressState.wrapperObjId
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+        }
+    }
+
+    fun onShareMedia(uris: List<String>, wrapperObjTitle: String? = null) {
         viewModelScope.launch(Dispatchers.IO) {
             val targetSpaceView = spaceViews.value.firstOrNull { view ->
                 view.isSelected
@@ -147,89 +219,98 @@ class AddToAnytypeViewModel(
                 val paths = uris.mapNotNull { uri ->
                     fileSharer.getPath(uri)
                 }
-                val files = mutableListOf<Id>()
-                paths.forEach { path ->
-                    uploadFile.async(
-                        UploadFile.Params(
-                            path = path,
-                            space = SpaceId(targetSpaceId),
-                            // Temporary workaround to fix issue on the MW side.
-                            type = Block.Content.File.Type.NONE
-                        )
-                    ).fold(
-                        onSuccess = { obj ->
-                            files.add(obj.id)
-                        },
-                        onFailure = { e ->
-                            Timber.e(e, "Error while uploading file").also {
-                                sendToast(e.msg())
-                            }
-                        }
+
+                when (paths.size) {
+                    0 -> sendToast("Could not get file paths")
+                    else -> proceedWithCreatingWrapperObject(
+                        filePaths = paths,
+                        targetSpaceId = targetSpaceId,
+                        wrapperObjTitle = wrapperObjTitle,
                     )
                 }
-                when (files.size) {
-                    0 -> {
-                        sendToast("Could not upload files")
-                    }
+            }
+        }
+    }
 
-                    1 -> {
-                        // No need to create a wrapper object, opening file object directly instead
-                        if (targetSpaceId == spaceManager.get()) {
-                            navigation.emit(
-                                OpenObjectNavigation.OpenEditor(
-                                    target = files.first(),
-                                    space = targetSpaceId
-                                )
-                            )
-                        } else {
-                            with(commands) {
-                                emit(Command.ObjectAddToSpaceToast(targetSpaceView.obj.name))
-                                emit(Command.Dismiss)
-                            }
-                        }
-                    }
+    private suspend fun proceedWithCreatingWrapperObject(
+        filePaths: List<String>,
+        targetSpaceId: String,
+        wrapperObjTitle: String? = null
+    ) {
+        val startTime = System.currentTimeMillis()
+        createPrefilledNote.async(
+            CreatePrefilledNote.Params(
+                text = wrapperObjTitle ?: EMPTY_STRING_VALUE,
+                space = targetSpaceId,
+                details = mapOf(
+                    Relations.ORIGIN to ObjectOrigin.SHARING_EXTENSION.code.toDouble(),
+                ),
+            )
+        ).fold(
+            onSuccess = { wrapperObjId ->
+                viewModelScope.sendAnalyticsObjectCreateEvent(
+                    analytics = analytics,
+                    objType = MarketplaceObjectTypeIds.PAGE,
+                    route = EventsDictionary.Routes.sharingExtension,
+                    startTime = startTime,
+                    spaceParams = provideParams(spaceManager.get())
+                )
+                proceedWithFilesDrop(
+                    wrapperObjId = wrapperObjId,
+                    filePaths = filePaths,
+                    targetSpaceId = targetSpaceId
+                )
+            },
+            onFailure = {
+                Timber.d(it, "Error while creating page")
+                sendToast("Error while creating page: ${it.msg()}")
+            }
+        )
+    }
 
-                    else -> {
-                        // Creating a wrapper object for file objects
-                        val startTime = System.currentTimeMillis()
-                        createPrefilledNote.async(
-                            CreatePrefilledNote.Params(
-                                text = EMPTY_STRING_VALUE,
-                                space = targetSpaceId,
-                                details = mapOf(
-                                    Relations.ORIGIN to ObjectOrigin.SHARING_EXTENSION.code.toDouble()
-                                ),
-                                attachments = files
-                            )
-                        ).fold(
-                            onSuccess = { result ->
-                                sendAnalyticsObjectCreateEvent(
-                                    analytics = analytics,
-                                    objType = MarketplaceObjectTypeIds.NOTE,
-                                    route = EventsDictionary.Routes.sharingExtension,
-                                    startTime = startTime,
-                                    spaceParams = provideParams(spaceManager.get())
-                                )
-                                if (targetSpaceId == spaceManager.get()) {
-                                    navigation.emit(
-                                        OpenObjectNavigation.OpenEditor(
-                                            target = result,
-                                            space = targetSpaceId
-                                        )
-                                    )
-                                } else {
-                                    with(commands) {
-                                        emit(Command.ObjectAddToSpaceToast(targetSpaceView.obj.name))
-                                        emit(Command.Dismiss)
-                                    }
-                                }
-                            },
-                            onFailure = {
-                                Timber.d(it, "Error while creating note")
-                                sendToast("Error while creating note: ${it.msg()}")
-                            }
-                        )
-                    }
+    private suspend fun proceedWithFilesDrop(
+        wrapperObjId: Id,
+        filePaths: List<String>,
+        targetSpaceId: String,
+    ) {
+        subscribeToEventProcessChannel(wrapperObjId = wrapperObjId)
+        val params = FileDrop.Params(
+            ctx = wrapperObjId,
+            space = SpaceId(targetSpaceId),
+            localFilePaths = filePaths
+        )
+        fileDrop.async(params).fold(
+            onSuccess = { _ -> Timber.d("Files dropped successfully") },
+            onFailure = { e ->
+                Timber.e(e, "Error while dropping files").also {
+                    sendToast(e.msg())
+                }
+            }
+        )
+    }
+
+    fun proceedWithNavigation(wrapperObjId: Id) {
+        val targetSpaceView = spaceViews.value.firstOrNull { view ->
+            view.isSelected
+        }
+        val targetSpaceId = targetSpaceView?.obj?.targetSpaceId
+        viewModelScope.launch {
+            Timber.d("proceedWithNavigation: $wrapperObjId, $targetSpaceId")
+            if (targetSpaceId == spaceManager.get()) {
+                Timber.d("proceedWithNavigation: OpenEditor")
+                delay(300)
+                navigation.emit(
+                    OpenObjectNavigation.OpenEditor(
+                        target = wrapperObjId,
+                        space = targetSpaceId
+                    )
+                )
+            } else {
+                Timber.d("proceedWithNavigation: ObjectAddToSpaceToast")
+                delay(300)
+                with(commands) {
+                    emit(Command.ObjectAddToSpaceToast(targetSpaceView?.obj?.name))
+                    emit(Command.Dismiss)
                 }
             }
         }
@@ -381,10 +462,11 @@ class AddToAnytypeViewModel(
         private val urlBuilder: UrlBuilder,
         private val awaitAccountStartManager: AwaitAccountStartManager,
         private val analytics: Analytics,
-        private val uploadFile: UploadFile,
         private val fileSharer: FileSharer,
         private val permissions: Permissions,
-        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        private val fileDrop: FileDrop,
+        private val eventProcessChannel: EventProcessDropFilesChannel
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -396,10 +478,11 @@ class AddToAnytypeViewModel(
                 urlBuilder = urlBuilder,
                 awaitAccountStartManager = awaitAccountStartManager,
                 analytics = analytics,
-                uploadFile = uploadFile,
                 fileSharer = fileSharer,
                 permissions = permissions,
-                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+                fileDrop = fileDrop,
+                eventProcessChannel = eventProcessChannel
             ) as T
         }
     }
@@ -411,15 +494,24 @@ class AddToAnytypeViewModel(
     )
 
     sealed class Command {
-        object Dismiss : Command()
+        data object Dismiss : Command()
         data class ObjectAddToSpaceToast(
             val spaceName: String?
         ) : Command()
     }
 
     sealed class ViewState {
-        object Init : ViewState()
+        data object Init : ViewState()
         data class Default(val content: String) : ViewState()
+    }
+
+    sealed class ProgressState {
+        data object Init : ProgressState()
+        data class Progress(val wrapperObjId: Id, val processId: Id, val progress: Float) :
+            ProgressState()
+
+        data class Done(val wrapperObjId: Id) : ProgressState()
+        data class Error(val error: String) : ProgressState()
     }
 
     companion object {

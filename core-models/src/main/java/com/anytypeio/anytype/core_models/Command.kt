@@ -30,6 +30,14 @@ sealed class Command {
         val type: Block.Content.File.Type?
     )
 
+    class FileDrop(
+        val space: SpaceId,
+        val ctx: Id,
+        val dropTarget: Id,
+        val blockPosition: Position,
+        val localFilePaths: List<String>
+    )
+
     class DownloadFile(
         val path: String,
         val objectId: Id

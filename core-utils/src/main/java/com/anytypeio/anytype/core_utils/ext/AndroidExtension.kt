@@ -50,6 +50,7 @@ import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import java.io.File
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import timber.log.Timber
@@ -477,4 +478,31 @@ fun BaseBottomSheetComposeFragment.setupBottomSheetBehavior(paddingTop: Int) {
         state = BottomSheetBehavior.STATE_EXPANDED
         skipCollapsed = true
     }
+}
+
+fun getLocalizedDateTimePattern(locale: Locale): String {
+    // Get DateFormat instances for both date and time
+    val dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, locale)
+    val timeFormat = DateFormat.getTimeInstance(DateFormat.SHORT, locale)
+
+    // Convert to SimpleDateFormat to extract the pattern
+    val datePattern = (dateFormat as? SimpleDateFormat)?.toPattern()
+    val timePattern = (timeFormat as? SimpleDateFormat)?.toPattern()
+
+    // Combine date and time patterns
+    return "$datePattern $timePattern"
+}
+
+fun getFormattedDateTime(locale: Locale): String {
+    // Get the current date and time
+    val currentDate = Date()
+
+    // Get the localized pattern
+    val localizedPattern = getLocalizedDateTimePattern(locale)
+
+    // Create a formatter with the localized pattern
+    val simpleDateFormat = SimpleDateFormat(localizedPattern, locale)
+
+    // Format the current date and time
+    return simpleDateFormat.format(currentDate)
 }

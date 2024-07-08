@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
@@ -160,7 +161,7 @@ class DataViewListWidgetContainer(
                             } else {
                                 null
                             }
-                            if (target?.type == Block.Content.DataView.Viewer.Type.GALLERY) {
+                            if (target != null && target.type == DVViewerType.GALLERY) {
                                 WidgetView.Gallery(
                                     id = widget.id,
                                     source = widget.source,
@@ -177,7 +178,9 @@ class DataViewListWidgetContainer(
                                             )
                                         )
                                     },
-                                    isExpanded = true
+                                    isExpanded = true,
+                                    showIcon = !target.hideIcon,
+                                    showCover = !target.coverRelationKey.isNullOrEmpty()
                                 )
                             } else {
                                 WidgetView.SetOfObjects(

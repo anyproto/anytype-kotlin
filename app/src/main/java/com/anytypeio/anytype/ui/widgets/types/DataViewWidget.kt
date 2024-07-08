@@ -10,7 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,6 +21,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -30,21 +32,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.toColor
+import androidx.compose.ui.unit.em
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -260,9 +262,12 @@ fun GalleryWidgetCard(
                 )
             }
             if (item.elements.isNotEmpty()) {
-                val isCardSmall = item.elements.none { it.cover != null }
+                val withCover = item.showCover || item.elements.none { it.cover != null }
+                val withIcon = item.showIcon
                 LazyRow(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     item.elements.forEachIndexed { idx, element ->
@@ -277,7 +282,8 @@ fun GalleryWidgetCard(
                                 onItemClicked = {
                                     onWidgetObjectClicked(element.obj)
                                 },
-                                isCardSmall = isCardSmall
+                                withCover = withCover,
+                                withIcon = withIcon
                             )
                         }
                         if (idx == item.elements.lastIndex) {
@@ -285,7 +291,7 @@ fun GalleryWidgetCard(
                                 Box(
                                     modifier = Modifier
                                         .width(136.dp)
-                                        .height(if (isCardSmall) 56.dp else 136.dp)
+                                        .height(if (withCover) 56.dp else 136.dp)
                                         .border(
                                             width = 1.dp,
                                             color = colorResource(id = R.color.shape_primary),
@@ -446,12 +452,13 @@ fun ListWidgetElement(
 private fun GalleryWidgetItemCard(
     item: WidgetView.SetOfObjects.Element,
     onItemClicked: () -> Unit,
-    isCardSmall: Boolean = false
+    withCover: Boolean = false,
+    withIcon: Boolean = false
 ) {
     Box(
         modifier = Modifier
             .width(136.dp)
-            .height(if (isCardSmall) 56.dp else 136.dp)
+            .height(if (withCover) 56.dp else 136.dp)
             .clip(RoundedCornerShape(8.dp))
             .clickable {
                 onItemClicked()
@@ -466,69 +473,105 @@ private fun GalleryWidgetItemCard(
                     shape = RoundedCornerShape(8.dp)
                 )
         )
+        if (withCover) {
+            when (val cover = item.cover) {
+                is CoverView.Color -> {
+                    Box(
+                        modifier = Modifier
+                            .width(136.dp)
+                            .height(80.dp)
+                            .background(
+                                color = Color(cover.coverColor.color),
+                                shape = RoundedCornerShape(topEnd = 8.dp, topStart = 8.dp)
+                            )
+                    )
+                }
 
-        when(val cover = item.cover) {
-            is CoverView.Color -> {
-                Box(
-                    modifier = Modifier
-                        .width(136.dp)
-                        .height(80.dp)
-                        .background(
-                            color = Color(cover.coverColor.color),
-                            shape = RoundedCornerShape(topEnd = 8.dp, topStart = 8.dp)
-                        )
-                )
-            }
-            is CoverView.Gradient -> {
-                Box(
-                    modifier = Modifier
-                        .width(136.dp)
-                        .height(80.dp)
-                        .background(
-                            Brush.horizontalGradient(
-                                colors = gradient(cover.gradient)
-                            ),
-                            shape = RoundedCornerShape(topEnd = 8.dp, topStart = 8.dp)
-                        )
-                )
-            }
-            is CoverView.Image -> {
-                Image(
-                    painter = rememberAsyncImagePainter(cover.url),
-                    contentDescription = "Cover image",
-                    modifier = Modifier
-                        .width(136.dp)
-                        .height(80.dp)
-                        .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
-                    ,
-                    contentScale = ContentScale.Crop,
-                )
-            }
-            else -> {
-                // Draw nothing.
+                is CoverView.Gradient -> {
+                    Box(
+                        modifier = Modifier
+                            .width(136.dp)
+                            .height(80.dp)
+                            .background(
+                                Brush.horizontalGradient(
+                                    colors = gradient(cover.gradient)
+                                ),
+                                shape = RoundedCornerShape(topEnd = 8.dp, topStart = 8.dp)
+                            )
+                    )
+                }
+
+                is CoverView.Image -> {
+                    Image(
+                        painter = rememberAsyncImagePainter(cover.url),
+                        contentDescription = "Cover image",
+                        modifier = Modifier
+                            .width(136.dp)
+                            .height(80.dp)
+                            .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)),
+                        contentScale = ContentScale.Crop,
+                    )
+                }
+
+                else -> {
+                    // Draw nothing.
+                }
             }
         }
-        Text(
-            text = item.obj.getProperName().ifEmpty { stringResource(id = R.string.untitled) },
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            style = Caption1Medium,
-            color = colorResource(id = R.color.text_primary),
-            modifier = Modifier
-                .padding(
-                    start = 12.dp,
-                    end = 10.dp,
-                    top = 9.dp,
-                    bottom = 11.dp
-                )
-                .align(
+        if (withIcon && item.objectIcon != ObjectIcon.None) {
+            Row(
+                modifier = Modifier.align(
                     if (item.cover != null) {
                         Alignment.BottomStart
                     } else {
                         Alignment.TopStart
                     }
                 )
-        )
+            ) {
+                TreeWidgetObjectIcon(
+                    icon = item.objectIcon,
+                    paddingStart = 0.dp,
+                    paddingEnd = 0.dp,
+                    onTaskIconClicked = {},
+                    modifier = Modifier
+                        .padding(
+                            start = 12.dp,
+                            top = 9.dp
+                        ),
+                    size = 16.dp
+                )
+                Text(
+                    text = item.obj.getProperName()
+                        .ifEmpty { stringResource(id = R.string.untitled) },
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    style = Caption1Medium,
+                    color = colorResource(id = R.color.text_primary),
+                    modifier = Modifier
+                        .padding(
+                            start = 6.dp,
+                            end = 10.dp,
+                            top = 9.dp,
+                            bottom = 11.dp
+                        )
+                )
+            }
+        } else {
+            Text(
+                text = item.obj.getProperName().ifEmpty { stringResource(id = R.string.untitled) },
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                style = Caption1Medium,
+                color = colorResource(id = R.color.text_primary),
+                modifier = Modifier
+                    .padding(
+                        start = 12.dp,
+                        end = 10.dp,
+                        top = 9.dp,
+                        bottom = 11.dp
+                    )
+            )
+        }
     }
 }
 

@@ -262,7 +262,7 @@ fun GalleryWidgetCard(
                 )
             }
             if (item.elements.isNotEmpty()) {
-                val withCover = item.showCover || item.elements.none { it.cover != null }
+                val withCover = item.showCover && item.elements.any { it.cover != null }
                 val withIcon = item.showIcon
                 LazyRow(
                     modifier = Modifier
@@ -458,7 +458,7 @@ private fun GalleryWidgetItemCard(
     Box(
         modifier = Modifier
             .width(136.dp)
-            .height(if (withCover) 56.dp else 136.dp)
+            .height(if (withCover) 136.dp else 56.dp)
             .clip(RoundedCornerShape(8.dp))
             .clickable {
                 onItemClicked()

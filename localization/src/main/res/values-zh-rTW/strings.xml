@@ -1044,6 +1044,7 @@
     <string name="sharing_menu_save_as_file_option">檔案</string>
     <string name="sharing_menu_save_as_images_option">圖像</string>
     <string name="sharing_menu_save_as_files_option">檔案</string>
+    <string name="sharing_menu_save_as_videos_option">Videos</string>
     <string name="sharing_menu_data">資料</string>
     <string name="sharing_menu_add_to_anytype_header_title">添加到 Anytype</string>
     <string name="sharing_menu_add_to_anytype_error">Anytype file upload error: %1$s</string>

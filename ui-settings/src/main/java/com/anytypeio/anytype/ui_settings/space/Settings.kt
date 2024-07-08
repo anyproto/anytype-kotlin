@@ -139,7 +139,7 @@ fun SpaceSettingsScreen(
         item {
             Section(title = stringResource(id = R.string.settings))
         }
-        when(state) {
+        when (state) {
             is ViewState.Success -> {
                 if (state.data.permissions.isOwner()) {
                     item {
@@ -152,17 +152,19 @@ fun SpaceSettingsScreen(
                     item {
                         Divider(paddingStart = 60.dp)
                     }
-                    item {
-                        Option(image = R.drawable.ic_personalization,
-                            text = stringResource(R.string.personalization),
-                            onClick = throttledClick(onPersonalizationClicked)
-                        )
-                    }
-                    item {
-                        Divider(paddingStart = 60.dp)
-                    }
+                }
+                item {
+                    Option(
+                        image = R.drawable.ic_personalization,
+                        text = stringResource(R.string.personalization),
+                        onClick = throttledClick(onPersonalizationClicked)
+                    )
+                }
+                item {
+                    Divider(paddingStart = 60.dp)
                 }
             }
+
             else -> {
                 // Do nothing.
             }

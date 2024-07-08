@@ -306,6 +306,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
             Intent.ACTION_VIEW -> {
                 val data = intent.dataString
                 if (data != null && DefaultDeepLinkResolver.isDeepLink(data)) {
+                    // Clearing intent to only handle it once:
+                    with(intent) {
+                        setAction(null)
+                        setData(null)
+                        putExtras(Bundle())
+                    }
                     vm.onNewDeepLink(DefaultDeepLinkResolver.resolve(data))
                 } else {
                     intent.extras?.getString(DefaultAppActionManager.ACTION_CREATE_NEW_TYPE_KEY)?.let {

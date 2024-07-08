@@ -4,8 +4,10 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.core.os.BundleCompat
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Notification
@@ -237,9 +239,10 @@ class AnytypeNotificationService @Inject constructor(
             context,
             AndroidApplication.NOTIFICATION_CHANNEL_ID
         )
-
+        val icon = BitmapFactory.decodeResource(context.resources, R.drawable.ic_app_notification)
         val notification = with(builder) {
-            setSmallIcon(R.drawable.ic_launcher_foreground)
+            setSmallIcon(R.drawable.ic_app_notification)
+            setLargeIcon(icon)
             if (!title.isNullOrEmpty()) {
                 setContentTitle(title)
             }

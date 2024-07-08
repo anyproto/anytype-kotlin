@@ -106,6 +106,8 @@ message Event {
             Membership.Update membershipUpdate = 117;
 
             Space.SyncStatus.Update spaceSyncStatusUpdate = 119;
+
+            P2PStatus.Update p2pStatusUpdate = 120;
         }
     }
 
@@ -1095,6 +1097,19 @@ message Event {
             StorageLimitExceed = 1;
             IncompatibleVersion = 2;
             NetworkError = 3;
+        }
+    }
+    message P2PStatus {
+        message Update {
+            string spaceId = 1;
+            Status status = 2;
+            int64 devicesCounter = 3;
+        }
+
+        enum Status {
+            NotConnected = 0;
+            NotPossible = 1;
+            Connected = 2;
         }
     }
 }

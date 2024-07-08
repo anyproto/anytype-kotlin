@@ -7,18 +7,13 @@ import com.anytypeio.anytype.domain.auth.model.Wallet
 
 fun AccountEntity.toDomain(): Account {
     return Account(
-        id = id,
-        name = name,
-        color = color,
-        avatar = null
+        id = id
     )
 }
 
 fun Account.toEntity(): AccountEntity {
     return AccountEntity(
-        id = id,
-        name = name,
-        color = color
+        id = id
     )
 }
 

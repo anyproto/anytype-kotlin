@@ -1046,6 +1046,7 @@
     <string name="sharing_menu_save_as_file_option">Arquivo</string>
     <string name="sharing_menu_save_as_images_option">Imagem</string>
     <string name="sharing_menu_save_as_files_option">Arquivos</string>
+    <string name="sharing_menu_save_as_videos_option">Videos</string>
     <string name="sharing_menu_data">Dados</string>
     <string name="sharing_menu_add_to_anytype_header_title">Adicionar ao Anytype</string>
     <string name="sharing_menu_add_to_anytype_error">Anytype file upload error: %1$s</string>

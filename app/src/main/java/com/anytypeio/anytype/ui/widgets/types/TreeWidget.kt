@@ -295,26 +295,12 @@ fun WidgetHeader(
                 )
         )
 
-        val rotation = getAnimatableRotation(isExpanded)
-
-        Box(
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .then(
-                    if (isInEditMode)
-                        Modifier
-                    else
-                        Modifier.noRippleClickable { onExpandElement() }
-                )
-        ) {
-            Image(
-                painterResource(R.drawable.ic_widget_tree_expand),
-                contentDescription = "Expand icon",
-                modifier = Modifier
-                    .rotate(rotation.value)
-                    .padding(horizontal = 12.dp)
-            )
-        }
+        WidgetArrow(
+            modifier = Modifier.align(Alignment.CenterEnd),
+            isInEditMode = isInEditMode,
+            onExpandElement = onExpandElement,
+            isExpanded = isExpanded
+        )
 
         AnimatedVisibility(
             visible = isInEditMode,
@@ -346,7 +332,34 @@ fun WidgetHeader(
 }
 
 @Composable
-fun getAnimatableRotation(isExpanded: Boolean): Animatable<Float, AnimationVector1D> {
+private fun WidgetArrow(
+    modifier: Modifier,
+    isInEditMode: Boolean,
+    onExpandElement: () -> Unit,
+    isExpanded: Boolean
+) {
+    val rotation = getAnimatedRotation(isExpanded)
+    Box(
+        modifier = modifier
+            .then(
+                if (isInEditMode)
+                    Modifier
+                else
+                    Modifier.noRippleClickable { onExpandElement() }
+            )
+    ) {
+        Image(
+            painterResource(R.drawable.ic_widget_tree_expand),
+            contentDescription = "Expand icon",
+            modifier = Modifier
+                .rotate(rotation.value)
+                .padding(horizontal = 12.dp)
+        )
+    }
+}
+
+@Composable
+fun getAnimatedRotation(isExpanded: Boolean): Animatable<Float, AnimationVector1D> {
     val currentRotation = remember {
         mutableStateOf(
             if (isExpanded) ArrowIconDefaults.Expanded else ArrowIconDefaults.Collapsed

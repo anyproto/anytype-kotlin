@@ -7,8 +7,6 @@ fun Event.Account.Show.toAccountEntity(): AccountEntity {
     val acc = account
     checkNotNull(acc)
     return AccountEntity(
-        id = acc.id,
-        name = acc.name,
-        color = acc.avatar?.color
+        id = acc.id
     )
 }

@@ -1046,6 +1046,7 @@
     <string name="sharing_menu_save_as_file_option">Fil</string>
     <string name="sharing_menu_save_as_images_option">Images</string>
     <string name="sharing_menu_save_as_files_option">Files</string>
+    <string name="sharing_menu_save_as_videos_option">Videos</string>
     <string name="sharing_menu_data">Data</string>
     <string name="sharing_menu_add_to_anytype_header_title">Legg til Anytype</string>
     <string name="sharing_menu_add_to_anytype_error">Anytype file upload error: %1$s</string>

@@ -826,7 +826,8 @@ class CollectionViewModel(
     fun onSearchClicked() {
         viewModelScope.sendEvent(
             analytics = analytics,
-            eventName = EventsDictionary.searchScreenShow
+            eventName = EventsDictionary.searchScreenShow,
+            props = Props(mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.navigation))
         )
         launch {
             commands.emit(Command.ToSearch)

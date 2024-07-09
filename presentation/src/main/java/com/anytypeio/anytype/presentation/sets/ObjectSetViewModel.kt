@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.Props.Companion.OBJ_TYPE_CUSTOM
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerCardSize
@@ -1658,7 +1660,8 @@ class ObjectSetViewModel(
     fun onSearchButtonClicked() {
         viewModelScope.sendEvent(
             analytics = analytics,
-            eventName = EventsDictionary.searchScreenShow
+            eventName = EventsDictionary.searchScreenShow,
+            props = Props(mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.navigation))
         )
         viewModelScope.launch {
             closeBlock.async(context).fold(

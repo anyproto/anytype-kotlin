@@ -7,7 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.EventsDictionary.searchScreenShow
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Block.Content
 import com.anytypeio.anytype.core_models.Block.Prototype
@@ -4313,7 +4315,8 @@ class EditorViewModel(
 
         viewModelScope.sendEvent(
             analytics = analytics,
-            eventName = searchScreenShow
+            eventName = searchScreenShow,
+            props = Props(mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.navigation))
         )
         navigation.postValue(EventWrapper(AppNavigation.Command.OpenPageSearch))
     }

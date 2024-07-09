@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.mapper
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVFilterOperator
+import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -619,6 +620,28 @@ fun List<Block.Content.DataView.Viewer.ViewerRelation>.toViewerColumns(
                 }
         }
     return columns
+}
+
+fun List<ObjectWrapper.Relation>.mapToSimpleRelationView(
+    viewerRelations: List<DVViewerRelation>
+): ArrayList<SimpleRelationView> {
+    val result = arrayListOf<SimpleRelationView>()
+    this.forEach { dataViewRelation ->
+        val isVisible =
+            viewerRelations.firstOrNull { it.key == dataViewRelation.key }?.isVisible ?: false
+        result.add(
+            SimpleRelationView(
+                key = dataViewRelation.key,
+                title = dataViewRelation.name.orEmpty(),
+                format = dataViewRelation.format.toView(),
+                isVisible = isVisible,
+                isHidden = dataViewRelation.isHidden ?: false,
+                isReadonly = dataViewRelation.isReadonlyValue,
+                isDefault = Relations.systemRelationKeys.contains(dataViewRelation.key)
+            )
+        )
+    }
+    return result
 }
 
 fun List<Block.Content.DataView.Viewer.ViewerRelation>.toSimpleRelationView(

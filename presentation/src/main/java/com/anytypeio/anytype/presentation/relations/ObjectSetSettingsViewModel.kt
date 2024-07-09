@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.base.fold
@@ -12,7 +13,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationDeleteEvent
-import com.anytypeio.anytype.presentation.mapper.toSimpleRelationView
+import com.anytypeio.anytype.presentation.mapper.mapToSimpleRelationView
 import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.filterHiddenRelations
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
@@ -52,8 +53,9 @@ class ObjectSetSettingsViewModel(
 
                 Timber.d("Found in store: ${inStore.size}, available in index: ${state.dataViewContent.relationLinks.size}")
 
-                val relations = viewer.viewerRelations.toSimpleRelationView(inStore)
-                    .filterHiddenRelations()
+                val relations = inStore.mapToSimpleRelationView(
+                    viewer.viewerRelations
+                ).filterHiddenRelations()
                     .map { view -> ViewerRelationListView.Relation(view) }
 
                 result.addAll(relations)
@@ -177,17 +179,28 @@ class ObjectSetSettingsViewModel(
     private fun proceedWithVisibilityUpdate(ctx: Id, viewerId: Id, item: SimpleRelationView) {
         val state = objectState.value.dataViewState() ?: return
         val viewer = state.viewerById(viewerId) ?: return
-        val viewerRelation = viewer.viewerRelations
-            .find { it.key == item.key }
-            ?.copy(isVisible = item.isVisible)
-            ?: return
-        val params = UpdateDataViewViewer.Params.ViewerRelation.Replace(
-            ctx = ctx,
-            dv = state.dataViewBlock.id,
-            view = viewer.id,
-            key = item.key,
-            relation = viewerRelation
-        )
+
+        val viewerRelation = viewer.viewerRelations.find { it.key == item.key }
+        val params = if (viewerRelation == null) {
+            UpdateDataViewViewer.Params.ViewerRelation.Add(
+                ctx = ctx,
+                dv = state.dataViewBlock.id,
+                view = viewer.id,
+                relation = DVViewerRelation(
+                    key = item.key,
+                    isVisible = true
+                )
+            )
+        } else {
+            UpdateDataViewViewer.Params.ViewerRelation.Replace(
+                ctx = ctx,
+                dv = state.dataViewBlock.id,
+                view = viewer.id,
+                key = item.key,
+                relation = viewerRelation.copy(isVisible = item.isVisible)
+            )
+        }
+
         viewModelScope.launch {
             updateDataViewViewer.async(params).fold(
                 onSuccess = { dispatcher.send(it) },

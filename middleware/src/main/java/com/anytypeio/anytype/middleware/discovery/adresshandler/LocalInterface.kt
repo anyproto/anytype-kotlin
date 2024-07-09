@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.middleware.discovery.adresshandler
 
 import java.net.NetworkInterface
+import java.net.SocketException
 import service.InterfaceAddrIterator
 import service.NetInterface
 
@@ -23,10 +24,14 @@ class LocalInterface(private val netInterface: NetworkInterface) : NetInterface 
     }
 
     override fun hardwareAddr(): ByteArray {
-        if (netInterface.hardwareAddress == null) {
+        try {
+            if (netInterface.hardwareAddress == null) {
+                return ByteArray(0)
+            }
+            return netInterface.hardwareAddress
+        } catch (e: SocketException) {
             return ByteArray(0)
         }
-        return netInterface.hardwareAddress
     }
 
     override fun index(): Long {

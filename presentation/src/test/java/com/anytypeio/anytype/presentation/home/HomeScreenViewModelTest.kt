@@ -108,6 +108,7 @@ import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.verifyNoMoreInteractions
 
 class HomeScreenViewModelTest {
@@ -2497,6 +2498,36 @@ class HomeScreenViewModelTest {
                 secondTimeParams
             )
             verifyNoMoreInteractions(storelessSubscriptionContainer)
+        }
+    }
+
+    @Test
+    fun `should save widget session onStop`() = runTest {
+
+        // SETUP
+
+        stubCollapsedWidgetState(id = anyString())
+        stubGetWidgetSession()
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        verifyNoInteractions(saveWidgetSession)
+
+        vm.onStop()
+
+        advanceUntilIdle()
+
+        verifyBlocking(saveWidgetSession, times(1)) {
+            saveWidgetSession.async(
+                SaveWidgetSession.Params(
+                    WidgetSession(
+                        collapsed = emptyList(),
+                        widgetsToActiveViews = emptyMap()
+                    )
+                )
+            )
         }
     }
 

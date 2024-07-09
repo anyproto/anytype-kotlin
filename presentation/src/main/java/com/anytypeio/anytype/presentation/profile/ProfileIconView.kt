@@ -14,7 +14,7 @@ sealed class ProfileIconView {
 fun ObjectWrapper.Basic.profileIcon(builder: UrlBuilder): ProfileIconView = when {
     !iconImage.isNullOrEmpty() -> {
         val hash = checkNotNull(iconImage)
-        ProfileIconView.Image(builder.thumbnail(hash))
+        ProfileIconView.Image(builder.medium(hash))
     }
     else -> ProfileIconView.Placeholder(
         name = name?.trim()?.ifEmpty { null }

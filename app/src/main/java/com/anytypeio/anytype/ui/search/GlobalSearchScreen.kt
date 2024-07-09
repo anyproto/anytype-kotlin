@@ -365,12 +365,14 @@ fun GlobalSearchScreen(
                                 Spacer(modifier = Modifier.height(12.dp))
                                 Text(
                                     text = stringResource(id = R.string.nothing_found),
-                                    style = BodyCalloutMedium
+                                    style = BodyCalloutMedium,
+                                    color = colorResource(id = R.color.text_primary),
                                 )
                                 Text(
                                     text = stringResource(id = R.string.try_different_search_query),
                                     style = BodyCalloutRegular,
-                                    modifier = Modifier.padding(horizontal = 12.dp)
+                                    modifier = Modifier.padding(horizontal = 12.dp),
+                                    color = colorResource(id = R.color.text_primary),
                                 )
                             }
                         }

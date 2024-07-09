@@ -10,7 +10,7 @@ import com.anytypeio.anytype.domain.config.Gateway
 class UrlBuilder(val gateway: Gateway) {
 
     /**
-     * Builds image url for given [path]
+     * Builds large image url for given [path]
      */
     fun large(path: String): Url = gateway.provide() + IMAGE_PATH + path + LARGE_WIDTH_PARAM
 
@@ -25,7 +25,7 @@ class UrlBuilder(val gateway: Gateway) {
     fun thumbnail(path: String): Url = gateway.provide() + IMAGE_PATH + path + THUMBNAIL_WIDTH_PARAM
 
     /**
-     * Builds small image url for given [path]
+     * Builds medium image url for given [path]
      */
     fun medium(path: String): Url = gateway.provide() + IMAGE_PATH + path + MEDIUM_WIDTH_PARAM
 

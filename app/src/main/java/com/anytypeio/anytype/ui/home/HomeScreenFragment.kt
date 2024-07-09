@@ -85,6 +85,7 @@ class HomeScreenFragment : BaseComposeFragment() {
                     onChangeWidgetView = vm::onChangeCurrentWidgetView,
                     onToggleExpandedWidgetState = vm::onToggleCollapsedWidgetState,
                     onSearchClicked = {
+                        vm.onSearchIconClicked()
                         runCatching { navigation().openPageSearch() }
                     },
                     onLibraryClicked = {

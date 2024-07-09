@@ -262,6 +262,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         override val icon: View = binding.docEmojiIconContainer
         override val image: ImageView = binding.imageIcon
         private val emoji: ImageView = binding.emojiIcon
+        private val emojiFallback: TextView = binding.emojiIconFallback
         override val selectionView: View = itemView
 
         override val root: View = itemView
@@ -351,13 +352,24 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
         private fun setEmoji(item: BlockView.Title.Basic) {
             try {
-                if (item.emoji != null) {
+                if (!item.emoji.isNullOrEmpty()) {
                     try {
-                        Glide
-                            .with(emoji)
-                            .load(Emojifier.uri(item.emoji!!))
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(emoji)
+                        val adapted = Emojifier.safeUri(item.emoji!!)
+                        if (adapted != Emojifier.Config.EMPTY_URI) {
+                            emojiFallback.text = ""
+                            emojiFallback.gone()
+                            Glide
+                                .with(emoji)
+                                .load(adapted)
+                                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                .into(emoji)
+                            emoji.visible()
+                        } else {
+                            emoji.setImageDrawable(null)
+                            emoji.gone()
+                            emojiFallback.text = item.emoji
+                            emojiFallback.visible()
+                        }
                     } catch (e: Throwable) {
                         Timber.w(e, "Error while setting emoji icon for: ${item.emoji}")
                     }

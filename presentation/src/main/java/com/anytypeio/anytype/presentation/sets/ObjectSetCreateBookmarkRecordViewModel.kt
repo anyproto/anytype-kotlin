@@ -80,8 +80,15 @@ class ObjectSetCreateBookmarkRecordViewModel(
                             ) { isCompleted.value = true }
                         }
                     } else {
+                        val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
+                        val prefilled = viewer.prefillNewObjectDetails(
+                            dateProvider = dateProvider,
+                            storeOfRelations = storeOfRelations,
+                            dataViewRelationLinks = state.objectRelationLinks
+                        )
                         createBookmark(
-                            input = input
+                            input = input,
+                            details = prefilled
                         ) { isCompleted.value = true }
                     }
                 }

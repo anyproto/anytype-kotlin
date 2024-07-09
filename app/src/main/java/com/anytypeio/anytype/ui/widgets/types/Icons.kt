@@ -109,8 +109,8 @@ fun TreeWidgetObjectIcon(
                     painterResource(id = R.drawable.ic_dashboard_task_checkbox_not_checked),
                 contentDescription = "Task icon",
                 modifier = modifier
-                    .size(size)
                     .padding(start = paddingStart, end = paddingEnd)
+                    .size(size)
                     .noRippleClickable { onTaskIconClicked(icon.isChecked) }
             )
         }

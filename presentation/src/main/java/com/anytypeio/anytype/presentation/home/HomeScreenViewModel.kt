@@ -1245,6 +1245,16 @@ class HomeScreenViewModel(
 
     fun onStop() {
         Timber.d("onStop")
+        viewModelScope.launch {
+            saveWidgetSession.async(
+                SaveWidgetSession.Params(
+                    WidgetSession(
+                        collapsed = collapsedWidgetStateHolder.get(),
+                        widgetsToActiveViews = emptyMap()
+                    )
+                )
+            )
+        }
     }
 
     private fun proceedWithExitingEditMode() {

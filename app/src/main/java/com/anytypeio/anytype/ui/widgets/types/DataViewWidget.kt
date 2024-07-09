@@ -541,8 +541,7 @@ private fun GalleryWidgetItemCard(
                     size = 16.dp
                 )
                 Text(
-                    text = item.obj.getProperName()
-                        .ifEmpty { stringResource(id = R.string.untitled) },
+                    text = item.obj.getProperName().ifEmpty { stringResource(id = R.string.untitled) },
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     style = Caption1Medium,

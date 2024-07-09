@@ -34,7 +34,7 @@ fun ObjectWrapper.SpaceView.spaceIcon(
 ) = when {
     !iconImage.isNullOrEmpty() -> {
         val hash = checkNotNull(iconImage)
-        SpaceIconView.Image(builder.thumbnail(hash))
+        SpaceIconView.Image(builder.medium(hash))
     }
     iconOption != null -> {
         iconOption?.let {

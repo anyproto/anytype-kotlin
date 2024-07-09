@@ -397,7 +397,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         override val content: TextInputWidget = binding.title
         override val selectionView: View = itemView
 
-        val gradientView : ComposeView get() = binding
+        private val gradientView : ComposeView get() = binding
             .docProfileIconContainer
             .findViewById(R.id.gradient)
 

@@ -158,7 +158,7 @@ class DataViewListWidgetContainer(
                             )
                             val dv = obj.blocks.find { it.content is DV }?.content
                             val target = if (dv is DV) {
-                                dv.viewers.find { it.id == view }
+                                dv.viewers.find { it.id == view } ?: dv.viewers.firstOrNull()
                             } else {
                                 null
                             }

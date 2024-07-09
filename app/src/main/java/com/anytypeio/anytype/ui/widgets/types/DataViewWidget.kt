@@ -291,7 +291,7 @@ fun GalleryWidgetCard(
                                 Box(
                                     modifier = Modifier
                                         .width(136.dp)
-                                        .height(if (withCover) 56.dp else 136.dp)
+                                        .height(if (withCover) 136.dp else 56.dp)
                                         .border(
                                             width = 1.dp,
                                             color = colorResource(id = R.color.shape_primary),

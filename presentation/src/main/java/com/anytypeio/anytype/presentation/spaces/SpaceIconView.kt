@@ -30,11 +30,11 @@ fun ObjectWrapper.Basic.spaceIcon(
 
 fun ObjectWrapper.SpaceView.spaceIcon(
     builder: UrlBuilder,
-    spaceGradientProvider: SpaceGradientProvider
+    spaceGradientProvider: SpaceGradientProvider,
 ) = when {
     !iconImage.isNullOrEmpty() -> {
         val hash = checkNotNull(iconImage)
-        SpaceIconView.Image(builder.thumbnail(hash))
+        SpaceIconView.Image(builder.medium(hash))
     }
     iconOption != null -> {
         iconOption?.let {

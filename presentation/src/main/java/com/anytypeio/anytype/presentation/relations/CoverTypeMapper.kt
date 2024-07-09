@@ -37,7 +37,7 @@ fun CoverWrapper.getCover(
         }
         CoverType.COLOR -> {
             coverColor = coverId?.let { id ->
-                CoverColor.values().find { it.code == id }
+                CoverColor.entries.find { it.code == id }
             }
         }
         CoverType.GRADIENT -> {
@@ -109,7 +109,7 @@ fun ObjectWrapper.Basic.cover(
     }
 }
 
-class CoverContainer(
+data class CoverContainer(
     val coverColor: CoverColor? = null,
     val coverImage: Url? = null,
     val coverGradient: String? = null

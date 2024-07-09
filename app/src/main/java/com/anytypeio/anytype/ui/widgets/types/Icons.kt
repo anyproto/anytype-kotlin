@@ -71,11 +71,21 @@ fun TreeWidgetObjectIcon(
             )
         }
         is ObjectIcon.Basic.Emoji -> {
-            UriImage(
-                uri = Emojifier.safeUri(icon.unicode),
-                modifier = modifier.padding(start = paddingStart, end = paddingEnd),
-                size = size
-            )
+            val emoji = Emojifier.safeUri(icon.unicode)
+            if (emoji != Emojifier.Config.EMPTY_URI) {
+                UriImage(
+                    uri = Emojifier.safeUri(icon.unicode),
+                    modifier = modifier.padding(start = paddingStart, end = paddingEnd),
+                    size = size
+                )
+            } else {
+                Text(
+                    text = icon.unicode,
+                    modifier = modifier.padding(start = paddingStart, end = paddingEnd),
+                    fontSize = 16.sp,
+                    maxLines = 1
+                )
+            }
         }
         is ObjectIcon.Basic.Image -> {
             UriImage(
@@ -132,6 +142,8 @@ fun UriCircleImage(
     Image(
         painter = rememberAsyncImagePainter(uri),
         contentDescription = "Icon from URI",
-        modifier = modifier.size(size).clip(CircleShape)
+        modifier = modifier
+            .size(size)
+            .clip(CircleShape)
     )
 }

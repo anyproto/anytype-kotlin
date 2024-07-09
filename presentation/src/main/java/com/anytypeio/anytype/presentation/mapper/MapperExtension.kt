@@ -624,24 +624,18 @@ fun List<Block.Content.DataView.Viewer.ViewerRelation>.toViewerColumns(
 
 fun List<ObjectWrapper.Relation>.mapToSimpleRelationView(
     viewerRelations: List<DVViewerRelation>
-): ArrayList<SimpleRelationView> {
-    val result = arrayListOf<SimpleRelationView>()
-    this.forEach { dataViewRelation ->
-        val isVisible =
-            viewerRelations.firstOrNull { it.key == dataViewRelation.key }?.isVisible ?: false
-        result.add(
-            SimpleRelationView(
-                key = dataViewRelation.key,
-                title = dataViewRelation.name.orEmpty(),
-                format = dataViewRelation.format.toView(),
-                isVisible = isVisible,
-                isHidden = dataViewRelation.isHidden ?: false,
-                isReadonly = dataViewRelation.isReadonlyValue,
-                isDefault = Relations.systemRelationKeys.contains(dataViewRelation.key)
-            )
-        )
-    }
-    return result
+): List<SimpleRelationView> = this.map { dataViewRelation ->
+    val isVisible =
+        viewerRelations.firstOrNull { it.key == dataViewRelation.key }?.isVisible ?: false
+    SimpleRelationView(
+        key = dataViewRelation.key,
+        title = dataViewRelation.name.orEmpty(),
+        format = dataViewRelation.format.toView(),
+        isVisible = isVisible,
+        isHidden = dataViewRelation.isHidden ?: false,
+        isReadonly = dataViewRelation.isReadonlyValue,
+        isDefault = Relations.systemRelationKeys.contains(dataViewRelation.key)
+    )
 }
 
 fun List<Block.Content.DataView.Viewer.ViewerRelation>.toSimpleRelationView(

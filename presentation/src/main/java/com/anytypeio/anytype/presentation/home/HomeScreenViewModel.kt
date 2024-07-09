@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.DVFilter
@@ -1621,6 +1622,13 @@ class HomeScreenViewModel(
                 Timber.w("Space is missing: ${space}")
             }
         }
+    }
+
+    fun onSearchIconClicked() {
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.searchScreenShow
+        )
     }
 
     sealed class Navigation {

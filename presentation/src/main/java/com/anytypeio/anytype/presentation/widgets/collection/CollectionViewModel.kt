@@ -824,6 +824,10 @@ class CollectionViewModel(
     }
 
     fun onSearchClicked() {
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.searchScreenShow
+        )
         launch {
             commands.emit(Command.ToSearch)
         }
@@ -976,10 +980,10 @@ class CollectionViewModel(
         data class OpenCollection(val subscription: Subscription, val space: Id) : Command()
         data class LaunchObjectSet(val target: Id, val space: Id) : Command()
 
-        object ToDesktop : Command()
-        object ToSearch : Command()
-        object SelectSpace : Command()
-        object Exit : Command()
+        data object ToDesktop : Command()
+        data object ToSearch : Command()
+        data object SelectSpace : Command()
+        data object Exit : Command()
     }
 }
 

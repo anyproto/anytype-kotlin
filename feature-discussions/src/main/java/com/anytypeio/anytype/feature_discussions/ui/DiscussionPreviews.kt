@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.feature_discussions.ui
 
 import android.content.res.Configuration
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,7 +34,8 @@ fun DiscussionPreview() {
                 author = "Gilbert",
                 timestamp = System.currentTimeMillis()
             )
-        )
+        ),
+        scrollState = LazyListState()
     )
 }
 
@@ -57,7 +59,7 @@ fun DiscussionScreenPreview() {
                     )
                 )
             }
-        }
+        }.reversed()
     )
 }
 

@@ -13,6 +13,7 @@ class GetMnemonic(
 
     override suspend fun run(params: Unit) = try {
         repository.getMnemonic().let { mnemonic ->
+            if (mnemonic.isNullOrBlank()) throw IllegalStateException("Mnemonic is empty")
             Either.Right(mnemonic)
         }
     } catch (e: Throwable) {

@@ -16,8 +16,10 @@ class LaunchWallet(
 
     override suspend fun run(params: None) = try {
         withTimeout(TIMEOUT_DURATION) {
+            val mnemonic = repository.getMnemonic()
+            if (mnemonic.isNullOrBlank()) throw IllegalStateException("Mnemonic is empty")
             repository.recoverWallet(
-                mnemonic = repository.getMnemonic(),
+                mnemonic = mnemonic,
                 path = pathProvider.providePath()
             ).let {
                 Either.Right(it)

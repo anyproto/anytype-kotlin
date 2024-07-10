@@ -43,7 +43,7 @@ interface AuthRepository {
 
     suspend fun saveMnemonic(mnemonic: String)
 
-    suspend fun getMnemonic(): String
+    suspend fun getMnemonic(): String?
 
     suspend fun logout(clearLocalRepositoryData: Boolean)
 

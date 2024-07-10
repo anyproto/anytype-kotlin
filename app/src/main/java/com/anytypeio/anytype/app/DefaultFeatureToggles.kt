@@ -32,5 +32,5 @@ class DefaultFeatureToggles @Inject constructor(
 
     override val enableSpaces: Boolean = true
 
-    override val enableDiscussionDemo: Boolean = true
+    override val enableDiscussionDemo: Boolean = false
 }

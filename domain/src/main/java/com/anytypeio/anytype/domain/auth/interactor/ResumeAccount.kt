@@ -32,9 +32,11 @@ class ResumeAccount @Inject constructor(
             version = metricsProvider.getVersion(),
             platform = metricsProvider.getPlatform()
         )
+        val mnemonic = repository.getMnemonic()
+        if (mnemonic.isNullOrBlank()) throw IllegalStateException("Mnemonic is empty")
         repository.recoverWallet(
             path = pathProvider.providePath(),
-            mnemonic = repository.getMnemonic()
+            mnemonic = mnemonic
         )
 
         val networkMode = repository.getNetworkMode()

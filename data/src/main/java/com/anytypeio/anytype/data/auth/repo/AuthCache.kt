@@ -9,7 +9,7 @@ interface AuthCache {
     suspend fun updateAccount(account: AccountEntity)
 
     suspend fun saveMnemonic(mnemonic: String)
-    suspend fun getMnemonic(): String
+    suspend fun getMnemonic(): String?
 
     suspend fun getCurrentAccount(): AccountEntity
     suspend fun getCurrentAccountId(): String

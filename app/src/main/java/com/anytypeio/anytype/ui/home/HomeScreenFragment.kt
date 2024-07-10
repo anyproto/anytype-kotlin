@@ -332,7 +332,9 @@ class HomeScreenFragment : BaseComposeFragment() {
     }
 
     override fun onApplyWindowRootInsets(view: View) {
-//        super.onApplyWindowRootInsets(view)
+        if (!featureToggles.enableDiscussionDemo) {
+            super.onApplyWindowRootInsets(view)
+        }
     }
 
     companion object {

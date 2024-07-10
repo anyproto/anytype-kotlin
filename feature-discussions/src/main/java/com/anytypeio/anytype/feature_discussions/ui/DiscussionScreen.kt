@@ -132,7 +132,6 @@ fun DiscussionScreen(
                     painter = painterResource(id = R.drawable.ic_plus_32),
                     contentDescription = "Plus button",
                     modifier = Modifier
-                        .padding(horizontal = 4.dp, vertical = 4.dp)
                         .align(Alignment.Center)
                         .clickable {
                             // TODO
@@ -152,8 +151,8 @@ fun DiscussionScreen(
                     .imePadding()
                     .weight(1f)
                     .padding(
-                        start = 8.dp,
-                        end = 8.dp
+                        start = 4.dp,
+                        end = 4.dp
                     )
                     .align(Alignment.CenterVertically)
                 ,

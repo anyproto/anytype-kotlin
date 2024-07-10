@@ -3,22 +3,28 @@ package com.anytypeio.anytype.feature_discussions.ui
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,12 +33,16 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
@@ -47,6 +57,26 @@ import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 
+@Composable
+fun DiscussionScreenWrapper() {
+    NavHost(
+        navController = rememberNavController(),
+        startDestination = "discussions"
+    ) {
+        composable(
+            route = "discussions"
+        ) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = colorResource(id = R.color.background_primary))
+            ) {
+                DiscussionScreenPreview()
+            }
+        }
+    }
+}
+
 /**
  * TODO: do date formating before rendering?
  */
@@ -55,7 +85,11 @@ fun DiscussionScreen(
     title: String,
     messages: List<DiscussionView.Message>
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .windowInsetsPadding(WindowInsets.systemBars)
+    ) {
         Text(
             style = HeadlineTitle,
             text = title,
@@ -86,6 +120,7 @@ fun DiscussionScreen(
         )
         Row(
             modifier = Modifier
+                .imePadding()
                 .fillMaxWidth()
                 .height(56.dp)
         ) {
@@ -95,6 +130,9 @@ fun DiscussionScreen(
                 modifier = Modifier
                     .padding(start = 8.dp)
                     .align(Alignment.CenterVertically)
+                    .clickable {
+                        // TODO
+                    }
             )
 
             var textField by rememberSaveable { mutableStateOf("") }
@@ -106,6 +144,7 @@ fun DiscussionScreen(
                     color = colorResource(id = R.color.text_primary)
                 ),
                 modifier = Modifier
+                    .imePadding()
                     .weight(1f)
                     .padding(
                         start = 8.dp,
@@ -115,14 +154,23 @@ fun DiscussionScreen(
                 ,
                 cursorBrush = SolidColor(colorResource(id = R.color.palette_system_blue))
             )
-
-            Image(
-                painter = painterResource(id = R.drawable.ic_send_message),
-                contentDescription = "Plus button",
+            Box(
                 modifier = Modifier
-                    .padding(end = 8.dp)
+                    .padding(horizontal = 4.dp)
+                    .clip(CircleShape)
                     .align(Alignment.CenterVertically)
-            )
+                    .clickable {
+                        // TODO
+                    }
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_send_message),
+                    contentDescription = "Plus button",
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp, vertical = 4.dp)
+                        .align(Alignment.Center)
+                )
+            }
         }
     }
 }
@@ -146,7 +194,6 @@ fun Messages(
             Row(
                 modifier = Modifier.padding(horizontal = 48.dp)
             ) {
-
                 Box(
                     modifier = Modifier
                         .size(32.dp)

@@ -97,6 +97,9 @@ message Block {
         Content.TableColumn tableColumn = 27;
         Content.TableRow tableRow = 28;
         Content.Widget widget = 29;
+        Content.Chat chat = 30;
+        Content.ChatMessage chatMessage = 31;
+
     }
 
     message Restrictions {
@@ -572,6 +575,77 @@ message Block {
                 View = 4;
             }
         }
+
+        message Chat {
+
+        }
+
+        // text stored per part
+        // single mark covers only one part
+        // client doesn't need to calculate ranges for parts. For example just convert some html blocks(quote, ul, etc) to Part
+        // in case mark covers multiple parts, client put it them separately
+        message ChatMessage {
+            string creator = 1;
+            int64 createdDate = 2;
+
+            Parts parts = 3;
+
+            message Attachment {
+                string id = 1;
+                oneof content {
+                    Block.Content.Text text = 14;
+                    Block.Content.File file = 15;
+                    Block.Content.Bookmark bookmark = 18;
+                    Block.Content.Link link = 20;
+                    Block.Content.Latex latex = 24;
+                }
+            }
+            repeated Attachment attachments = 4;
+
+            message Parts {
+                repeated Part parts = 1;
+            }
+
+            message Part {
+                string text = 1;
+                PartStyle style = 2;
+                Marks marks = 3; // list of marks to apply to the text
+            }
+
+            message Marks {
+                repeated Mark marks = 1;
+            }
+            message Mark {
+                Range range = 1; // range of symbols to apply this mark. From(symbol) To(symbol)
+                Type type = 2;
+                string param = 3; // link, color, etc
+
+                enum Type {
+                    Strikethrough = 0;
+                    Keyboard = 1;
+                    Italic = 2;
+                    Bold = 3;
+                    Underscored = 4;
+                    Link = 5;
+                    TextColor = 6;
+                    BackgroundColor = 7;
+                    Mention = 8;
+                    Emoji = 9;
+                    Object = 10;
+                }
+            }
+
+            enum PartStyle {
+                Paragraph = 0;
+                Quote = 5;
+                Code = 6;
+                Marked = 9;
+                Numbered = 10;
+                Callout = 13;
+            }
+
+        }
+
     }
 }
 
@@ -749,6 +823,7 @@ message ObjectType {
         participant = 19;
 
         pdf = 20;
+        chat = 21;
     }
 }
 

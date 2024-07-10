@@ -90,7 +90,7 @@ class TierActivePurchasedOniOSTests : MembershipTestsSetup() {
     }
 
     @Test
-    fun `when payed plan is active, show proper valid and enabled manage button`() = runTest {
+    fun `when payed plan is active, show proper valid and show ios text`() = runTest {
         turbineScope {
             val (features, tiers) = commonTestSetup()
 
@@ -134,7 +134,7 @@ class TierActivePurchasedOniOSTests : MembershipTestsSetup() {
                         period = TierPeriod.Year(1),
                     ),
                     expectedAnyName = TierAnyName.Hidden,
-                    expectedButtonState = TierButton.Manage.External.Enabled(iosManageUrl),
+                    expectedButtonState = TierButton.HiddenWithText.ManageOnIOS,
                     expectedId = MembershipConstants.BUILDER_ID,
                     expectedActive = true,
                     expectedEmailState = TierEmail.Hidden
@@ -144,7 +144,7 @@ class TierActivePurchasedOniOSTests : MembershipTestsSetup() {
     }
 
     @Test
-    fun `when payed plan is active from crypto, show proper valid and hide manage button`() =
+    fun `when payed plan is active from crypto, show proper valid and desktop support text`() =
         runTest {
             turbineScope {
                 val (features, tiers) = commonTestSetup()
@@ -199,7 +199,7 @@ class TierActivePurchasedOniOSTests : MembershipTestsSetup() {
                             period = TierPeriod.Year(1),
                         ),
                         expectedAnyName = TierAnyName.Hidden,
-                        expectedButtonState = TierButton.Hidden,
+                        expectedButtonState = TierButton.HiddenWithText.ManageOnDesktop,
                         expectedId = MembershipConstants.BUILDER_ID,
                         expectedActive = true,
                         expectedEmailState = TierEmail.Hidden

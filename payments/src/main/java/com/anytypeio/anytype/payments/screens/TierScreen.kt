@@ -263,6 +263,14 @@ private fun MainButton(
             val text = stringResource(id = R.string.membership_support_more_then_one_subscription)
             SupportText(text = text)
         }
+        TierButton.HiddenWithText.ManageOnDesktop -> {
+            val text = stringResource(id = R.string.membership_manage_tier_desktop)
+            SupportText(text = text)
+        }
+        TierButton.HiddenWithText.ManageOnIOS -> {
+            val text = stringResource(id = R.string.membership_manage_tier_ios)
+            SupportText(text = text)
+        }
         else -> {
             val (stringRes, enabled) = getButtonText(buttonState)
             ButtonPrimary(
@@ -345,26 +353,53 @@ private fun SecondaryButton(
     buttonState: TierButton,
     actionTier: (TierAction) -> Unit
 ) {
-    if (buttonState !is TierButton.Hidden) {
-        val (stringRes, enabled) = getButtonText(buttonState)
-        ButtonSecondary(
-            enabled = enabled,
-            text = stringResource(id = stringRes),
-            onClick = {
-                when (buttonState) {
-                    is TierButton.Pay.Enabled -> actionTier(TierAction.PayClicked(tierId))
-                    is TierButton.Manage.Android.Enabled -> actionTier(TierAction.ManagePayment(tierId))
-                    TierButton.Submit.Enabled -> actionTier(TierAction.SubmitClicked)
-                    TierButton.ChangeEmail -> actionTier(TierAction.ChangeEmail)
-                    else -> {}
-                }
+    when (buttonState) {
+        TierButton.Hidden -> {}
+        TierButton.HiddenWithText.DifferentPurchaseAccountId -> {
+            val text = stringResource(id = R.string.membership_support_already_acquired)
+            SupportText(text = text)
+        }
 
-            },
-            size = ButtonSize.Large,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp)
-        )
+        TierButton.HiddenWithText.DifferentPurchaseProductId -> {
+            val text = stringResource(id = R.string.membership_support_different_subscription)
+            SupportText(text = text)
+        }
+
+        TierButton.HiddenWithText.MoreThenOnePurchase -> {
+            val text = stringResource(id = R.string.membership_support_more_then_one_subscription)
+            SupportText(text = text)
+        }
+
+        TierButton.HiddenWithText.ManageOnDesktop -> {
+            val text = stringResource(id = R.string.membership_manage_tier_desktop)
+            SupportText(text = text)
+        }
+
+        TierButton.HiddenWithText.ManageOnIOS -> {
+            val text = stringResource(id = R.string.membership_manage_tier_ios)
+            SupportText(text = text)
+        }
+        else -> {
+            val (stringRes, enabled) = getButtonText(buttonState)
+            ButtonSecondary(
+                enabled = enabled,
+                text = stringResource(id = stringRes),
+                onClick = {
+                    when (buttonState) {
+                        is TierButton.Pay.Enabled -> actionTier(TierAction.PayClicked(tierId))
+                        is TierButton.Manage.Android.Enabled -> actionTier(TierAction.ManagePayment(tierId))
+                        TierButton.Submit.Enabled -> actionTier(TierAction.SubmitClicked)
+                        TierButton.ChangeEmail -> actionTier(TierAction.ChangeEmail)
+                        else -> {}
+                    }
+
+                },
+                size = ButtonSize.Large,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+            )
+        }
     }
 }
 
@@ -376,8 +411,6 @@ private fun getButtonText(buttonState: TierButton): Pair<Int, Boolean> {
         is TierButton.Info.Enabled -> Pair(R.string.payments_button_info, true)
         TierButton.Manage.Android.Disabled -> Pair(R.string.payments_button_manage, false)
         is TierButton.Manage.Android.Enabled -> Pair(R.string.payments_button_manage, true)
-        TierButton.Manage.External.Disabled -> Pair(R.string.payments_button_manage, false)
-        is TierButton.Manage.External.Enabled -> Pair(R.string.payments_button_manage, true)
         TierButton.Submit.Disabled -> Pair(R.string.payments_button_submit, false)
         TierButton.Submit.Enabled -> Pair(R.string.payments_button_submit, true)
         TierButton.Pay.Disabled -> Pair(R.string.payments_button_pay, false)
@@ -386,6 +419,8 @@ private fun getButtonText(buttonState: TierButton): Pair<Int, Boolean> {
         TierButton.HiddenWithText.DifferentPurchaseAccountId -> Pair(0, false)
         TierButton.HiddenWithText.DifferentPurchaseProductId -> Pair(0, false)
         TierButton.HiddenWithText.MoreThenOnePurchase -> Pair(0, false)
+        TierButton.HiddenWithText.ManageOnDesktop -> Pair(0, false)
+        TierButton.HiddenWithText.ManageOnIOS -> Pair(0, false)
     }
 }
 
@@ -425,7 +460,7 @@ fun TierViewScreenPreview() {
                     period = TierPeriod.Year(1),
                     payedBy = MembershipPaymentMethod.METHOD_INAPP_GOOGLE
                 ),
-                buttonState = TierButton.Pay.Enabled,
+                buttonState = TierButton.HiddenWithText.ManageOnIOS,
                 id = TierId(value = EXPLORER_ID),
                 membershipAnyName = TierAnyName.Visible.Purchased("someanyname111"),
                 email = TierEmail.Visible.Enter,
@@ -434,7 +469,7 @@ fun TierViewScreenPreview() {
                 iosManageUrl = "",
                 androidManageUrl = "",
                 androidProductId = "",
-                paymentMethod = MembershipPaymentMethod.METHOD_INAPP_GOOGLE
+                paymentMethod = MembershipPaymentMethod.METHOD_STRIPE
             )
         ),
         actionTier = {},

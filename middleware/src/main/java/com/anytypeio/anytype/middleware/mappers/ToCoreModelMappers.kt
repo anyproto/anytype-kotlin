@@ -55,7 +55,6 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
-import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.middleware.interactor.toCoreModels
 import com.google.gson.GsonBuilder
 
@@ -686,6 +685,7 @@ fun MOTypeLayout.toCoreModels(): ObjectType.Layout = when (this) {
     MOTypeLayout.relationOptionsList -> ObjectType.Layout.RELATION_OPTION_LIST
     MOTypeLayout.spaceView -> ObjectType.Layout.SPACE_VIEW
     MOTypeLayout.pdf -> ObjectType.Layout.PDF
+    MOTypeLayout.chat -> ObjectType.Layout.CHAT
 }
 
 fun MRelationDataSource.source(): Relation.Source = when (this) {

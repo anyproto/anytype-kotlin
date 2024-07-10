@@ -50,7 +50,8 @@ data class ObjectType(
         DATE(17),
         SPACE_VIEW(18),
         PARTICIPANT(19),
-        PDF(20);
+        PDF(20),
+        CHAT(21);
 
         fun isProfileOrParticipant() = this == PROFILE || this == PARTICIPANT
     }

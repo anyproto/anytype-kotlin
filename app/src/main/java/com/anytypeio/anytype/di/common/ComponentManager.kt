@@ -60,6 +60,7 @@ import com.anytypeio.anytype.di.feature.ViewerFilterModule
 import com.anytypeio.anytype.di.feature.ViewerSortModule
 import com.anytypeio.anytype.di.feature.auth.DaggerDeletedAccountComponent
 import com.anytypeio.anytype.di.feature.cover.UnsplashModule
+import com.anytypeio.anytype.di.feature.discussions.DaggerDiscussionComponent
 import com.anytypeio.anytype.di.feature.gallery.DaggerGalleryInstallationComponent
 import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
 import com.anytypeio.anytype.di.feature.library.DaggerLibraryComponent
@@ -1155,6 +1156,12 @@ class ComponentManager(
                 .withParams(params)
                 .build()
         }
+
+    val discussionComponent = Component {
+        DaggerDiscussionComponent
+            .factory()
+            .create(findComponentDependencies())
+    }
 
     class Component<T>(private val builder: () -> T) {
 

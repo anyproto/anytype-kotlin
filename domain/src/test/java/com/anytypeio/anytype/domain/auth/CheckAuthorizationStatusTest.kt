@@ -45,16 +45,81 @@ class CheckAuthorizationStatusTest {
             onBlocking { getAccounts() } doReturn emptyList()
         }
 
+        repo.stub {
+            onBlocking { getMnemonic() } doReturn "mnemonic"
+        }
+
         val result = checkAuthorizationStatus.run(params = Unit)
 
         assertTrue { result == Either.Right(AuthStatus.UNAUTHORIZED) }
 
         verify(repo, times(1)).getAccounts()
+        verify(repo, times(1)).getMnemonic()
         verifyNoMoreInteractions(repo)
     }
 
     @Test
-    fun `should return authorized status if account list is not empty`() = runBlocking {
+    fun `should return unauthorized status if phrase is null`() = runBlocking {
+
+        repo.stub {
+            onBlocking { getAccounts() } doReturn emptyList()
+        }
+
+        repo.stub {
+            onBlocking { getMnemonic() } doReturn null
+        }
+
+        val result = checkAuthorizationStatus.run(params = Unit)
+
+        assertTrue { result == Either.Right(AuthStatus.UNAUTHORIZED) }
+
+        verify(repo, times(1)).getAccounts()
+        verify(repo, times(1)).getMnemonic()
+        verifyNoMoreInteractions(repo)
+    }
+
+    @Test
+    fun `should return unauthorized status if phrase is empty`() = runBlocking {
+
+        repo.stub {
+            onBlocking { getAccounts() } doReturn emptyList()
+        }
+
+        repo.stub {
+            onBlocking { getMnemonic() } doReturn ""
+        }
+
+        val result = checkAuthorizationStatus.run(params = Unit)
+
+        assertTrue { result == Either.Right(AuthStatus.UNAUTHORIZED) }
+
+        verify(repo, times(1)).getAccounts()
+        verify(repo, times(1)).getMnemonic()
+        verifyNoMoreInteractions(repo)
+    }
+
+    @Test
+    fun `should return unauthorized status if phrase is blank`() = runBlocking {
+
+        repo.stub {
+            onBlocking { getAccounts() } doReturn emptyList()
+        }
+
+        repo.stub {
+            onBlocking { getMnemonic() } doReturn " "
+        }
+
+        val result = checkAuthorizationStatus.run(params = Unit)
+
+        assertTrue { result == Either.Right(AuthStatus.UNAUTHORIZED) }
+
+        verify(repo, times(1)).getAccounts()
+        verify(repo, times(1)).getMnemonic()
+        verifyNoMoreInteractions(repo)
+    }
+
+    @Test
+    fun `should return authorized status if account list is not empty and phrase is not empty`() = runBlocking {
 
         val account = Account(
             id = MockDataFactory.randomString()
@@ -63,12 +128,16 @@ class CheckAuthorizationStatusTest {
         repo.stub {
             onBlocking { getAccounts() } doReturn listOf(account)
         }
+        repo.stub {
+            onBlocking { getMnemonic() } doReturn "1"
+        }
 
         val result = checkAuthorizationStatus.run(params = Unit)
 
         assertTrue { result == Either.Right(AuthStatus.AUTHORIZED) }
 
         verify(repo, times(1)).getAccounts()
+        verify(repo, times(1)).getMnemonic()
         verifyNoMoreInteractions(repo)
     }
 

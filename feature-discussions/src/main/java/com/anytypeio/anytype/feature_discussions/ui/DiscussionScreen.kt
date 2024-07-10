@@ -140,7 +140,7 @@ fun DiscussionScreen(
             onMessageSent = onMessageSent,
             resetScroll = {
                 scope.launch {
-                    scrollState.scrollToItem(0)
+                    scrollState.animateScrollToItem(index = 0)
                 }
             }
         )
@@ -252,7 +252,8 @@ fun Messages(
             if (idx == 0)
                 Spacer(modifier = Modifier.height(36.dp))
             Row(
-                modifier = Modifier.padding(horizontal = 48.dp)
+                modifier = Modifier
+                    .padding(horizontal = 48.dp)
             ) {
                 Box(
                     modifier = Modifier

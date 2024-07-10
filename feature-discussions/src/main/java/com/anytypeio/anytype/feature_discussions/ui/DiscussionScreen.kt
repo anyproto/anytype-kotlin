@@ -30,6 +30,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -41,9 +42,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -57,12 +61,14 @@ import com.anytypeio.anytype.core_utils.const.DateConst.DEFAULT_DATE_FORMAT
 import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
 import com.anytypeio.anytype.feature_discussions.R
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionView
+import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 
 @Composable
-fun DiscussionScreenWrapper() {
+fun DiscussionScreenWrapper(
+    vm: DiscussionViewModel
+) {
     NavHost(
         navController = rememberNavController(),
         startDestination = "discussions"
@@ -75,7 +81,11 @@ fun DiscussionScreenWrapper() {
                     .fillMaxSize()
                     .background(color = colorResource(id = R.color.background_primary))
             ) {
-                DiscussionScreenPreview()
+                DiscussionScreen(
+                    title = "Conversations with friends",
+                    messages = vm.messages.collectAsState().value,
+                    onMessageSent = vm::onMessageSent
+                )
             }
         }
     }
@@ -87,7 +97,8 @@ fun DiscussionScreenWrapper() {
 @Composable
 fun DiscussionScreen(
     title: String,
-    messages: List<DiscussionView.Message>
+    messages: List<DiscussionView.Message>,
+    onMessageSent: (String) -> Unit
 ) {
     val scrollState = rememberLazyListState()
     val scope = rememberCoroutineScope()
@@ -126,9 +137,7 @@ fun DiscussionScreen(
             paddingEnd = 0.dp
         )
         ChatBox(
-            onMessageSent = {
-                Timber.d("DROID-2635: onMessageSent: $it")
-            },
+            onMessageSent = onMessageSent,
             resetScroll = {
                 scope.launch {
                     scrollState.scrollToItem(0)
@@ -228,7 +237,7 @@ private fun ChatBox(
 fun Messages(
     modifier: Modifier = Modifier,
     messages: List<DiscussionView.Message>,
-    scrollState: LazyListState,
+    scrollState: LazyListState
 ) {
     LazyColumn(
         modifier = modifier,
@@ -253,7 +262,17 @@ fun Messages(
                             shape = CircleShape
                         )
                         .align(Alignment.Bottom)
-                )
+                ) {
+                    Text(
+                        text = "U",
+                        modifier = Modifier.align(Alignment.Center),
+                        style = TextStyle(
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = colorResource(id = R.color.text_white)
+                        )
+                    )
+                }
                 Spacer(modifier = Modifier.width(8.dp))
                 Bubble(
                     name = msg.author,

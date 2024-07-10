@@ -3,6 +3,7 @@ package com.anytypeio.anytype.di.feature.discussions
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -49,4 +50,5 @@ interface DiscussionComponentDependencies : ComponentDependencies {
     fun urlBuilder(): UrlBuilder
     fun userPermissionProvider(): UserPermissionProvider
     fun eventProxy(): EventProxy
+    fun featureToggles(): FeatureToggles
 }

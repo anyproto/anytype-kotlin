@@ -25,6 +25,7 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
 import com.anytypeio.anytype.feature_discussions.ui.DiscussionScreenWrapper
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.home.Command
@@ -52,11 +53,16 @@ class HomeScreenFragment : BaseComposeFragment() {
         get() = argOrNull<Boolean>(SHOW_MNEMONIC_KEY) ?: false
         set(value) { arguments?.putBoolean(SHOW_MNEMONIC_KEY, value) }
 
-    @Inject
-    lateinit var factory: HomeScreenViewModel.Factory
 
     @Inject
     lateinit var featureToggles: FeatureToggles
+
+    @Inject
+    lateinit var factory: HomeScreenViewModel.Factory
+
+    private val fakeDiscussionViewModel by lazy {
+        DiscussionViewModel()
+    }
 
     private val vm by viewModels<HomeScreenViewModel> { factory }
 
@@ -119,7 +125,7 @@ class HomeScreenFragment : BaseComposeFragment() {
                 )
 
                 if (featureToggles.enableDiscussionDemo) {
-                    DiscussionScreenWrapper()
+                    DiscussionScreenWrapper(fakeDiscussionViewModel)
                 }
             }
         }

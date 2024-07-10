@@ -59,7 +59,8 @@ fun DiscussionScreenPreview() {
                     )
                 )
             }
-        }.reversed()
+        }.reversed(),
+        onMessageSent = {}
     )
 }
 

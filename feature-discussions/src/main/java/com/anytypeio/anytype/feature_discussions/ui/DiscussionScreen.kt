@@ -119,16 +119,26 @@ fun DiscussionScreen(
                 .fillMaxWidth()
                 .height(56.dp)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_plus_32),
-                contentDescription = "Plus button",
+            Box(
                 modifier = Modifier
-                    .padding(start = 8.dp)
+                    .padding(horizontal = 4.dp)
+                    .clip(CircleShape)
                     .align(Alignment.CenterVertically)
                     .clickable {
                         // TODO
                     }
-            )
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_plus_32),
+                    contentDescription = "Plus button",
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp, vertical = 4.dp)
+                        .align(Alignment.Center)
+                        .clickable {
+                            // TODO
+                        }
+                )
+            }
 
             var textField by rememberSaveable { mutableStateOf("") }
 
@@ -204,6 +214,9 @@ fun Messages(
                     msg = msg.msg,
                     timestamp = msg.timestamp
                 )
+            }
+            if (idx == messages.lastIndex) {
+                Spacer(modifier = Modifier.height(36.dp))
             }
         }
     }

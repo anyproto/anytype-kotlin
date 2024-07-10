@@ -160,7 +160,7 @@ fun DiscussionScreen(
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_send_message),
-                    contentDescription = "Plus button",
+                    contentDescription = "Send message button",
                     modifier = Modifier
                         .padding(horizontal = 4.dp, vertical = 4.dp)
                         .align(Alignment.Center)

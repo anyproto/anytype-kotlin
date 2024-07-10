@@ -27,7 +27,7 @@ interface DiscussionComponent {
 
     @Component.Factory
     interface Factory {
-        fun create(dependencies: DiscussionComponentDependencies): HomeScreenComponent
+        fun create(dependencies: DiscussionComponentDependencies): DiscussionComponent
     }
 
 //    fun inject(fragment: DiscussionFragment)

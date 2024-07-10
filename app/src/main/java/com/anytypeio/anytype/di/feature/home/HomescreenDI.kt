@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceSubcomponent
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeSubcomponent
@@ -287,4 +288,5 @@ interface HomeScreenDependencies : ComponentDependencies {
     fun notificationChannel(): NotificationsChannel
     fun activeSpaceMembers() : ActiveSpaceMemberSubscriptionContainer
     fun analyticSpaceHelperDelegate(): AnalyticSpaceHelperDelegate
+    fun featureToggles(): FeatureToggles
 }

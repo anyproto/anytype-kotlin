@@ -35,7 +35,9 @@ fun DiscussionPreview() {
                 timestamp = System.currentTimeMillis()
             )
         ),
-        scrollState = LazyListState()
+        scrollState = LazyListState(),
+        title = "Conversations with friends",
+        onTitleChanged = {}
     )
 }
 

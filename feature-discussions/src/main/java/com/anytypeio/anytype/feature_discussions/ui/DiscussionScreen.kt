@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.feature_discussions.ui
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -39,13 +41,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
@@ -56,6 +62,7 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
+import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_utils.const.DateConst.DEFAULT_DATE_FORMAT
 import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
@@ -110,23 +117,13 @@ fun DiscussionScreen(
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.systemBars)
     ) {
-        DiscussionTitle(
-            title = title,
-            onTitleChanged = onTitleChanged
-        )
-        Text(
-            style = Relations2,
-            text = "Discussion",
-            color = colorResource(id = R.color.text_secondary),
-            modifier = Modifier.padding(
-                bottom = 8.dp,
-                start = 20.dp
-            )
-        )
+        TopDiscussionToolbar(title = title)
         Messages(
             modifier = Modifier.weight(1.0f),
             messages = messages,
-            scrollState = scrollState
+            scrollState = scrollState,
+            onTitleChanged = onTitleChanged,
+            title = title
         )
         Divider(
             paddingStart = 0.dp,
@@ -158,7 +155,7 @@ private fun DiscussionTitle(
             onTitleChanged(it)
         },
         modifier = Modifier.padding(
-            top = 20.dp,
+            top = 24.dp,
             start = 20.dp,
             end = 20.dp,
             bottom = 8.dp
@@ -276,6 +273,8 @@ private fun ChatBoxUserInput(
 
 @Composable
 fun Messages(
+    title: String?,
+    onTitleChanged: (String) -> Unit,
     modifier: Modifier = Modifier,
     messages: List<DiscussionView.Message>,
     scrollState: LazyListState
@@ -324,6 +323,22 @@ fun Messages(
             }
             if (idx == messages.lastIndex) {
                 Spacer(modifier = Modifier.height(36.dp))
+            }
+        }
+        item(key = "Header") {
+            Column {
+                DiscussionTitle(
+                    title = title,
+                    onTitleChanged = onTitleChanged
+                )
+                Text(
+                    style = Relations2,
+                    text = "Discussion",
+                    color = colorResource(id = R.color.text_secondary),
+                    modifier = Modifier.padding(
+                        start = 20.dp
+                    )
+                )
             }
         }
     }
@@ -378,4 +393,55 @@ fun Bubble(
             color = colorResource(id = R.color.text_primary)
         )
     }
+}
+
+@Composable
+fun TopDiscussionToolbar(
+    title: String? = null
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxHeight()
+                .width(48.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(10.dp)
+                    .align(Alignment.Center)
+                    .background(color = Color.Green, shape = CircleShape)
+            )
+        }
+        Text(
+            text = title ?: stringResource(id = R.string.untitled),
+            style = PreviewTitle2Regular,
+            color = colorResource(id = R.color.text_primary),
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .weight(1f)
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxHeight()
+                .width(48.dp)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_toolbar_three_dots),
+                contentDescription = "Three dots menu",
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
+@Composable
+fun TopDiscussionToolbarPreview() {
+    TopDiscussionToolbar()
 }

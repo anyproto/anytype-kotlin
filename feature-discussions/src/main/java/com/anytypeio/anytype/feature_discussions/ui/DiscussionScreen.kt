@@ -147,10 +147,18 @@ private fun DiscussionTitle(
     title: String,
     onTitleChanged: (String) -> Unit
 ) {
-    Text(
-        style = HeadlineTitle,
-        text = title,
-        color = colorResource(id = R.color.text_primary),
+    var textState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(TextFieldValue(title))
+    }
+    BasicTextField(
+        textStyle = HeadlineTitle.copy(
+            color = colorResource(id = R.color.text_primary)
+        ),
+        value = textState,
+        onValueChange = {
+            textState = it
+            onTitleChanged(it.text)
+        },
         modifier = Modifier.padding(
             top = 20.dp,
             start = 20.dp,

@@ -63,6 +63,7 @@ import com.anytypeio.anytype.feature_discussions.R
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionView
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 
 @Composable
@@ -97,7 +98,7 @@ fun DiscussionScreenWrapper(
  */
 @Composable
 fun DiscussionScreen(
-    title: String,
+    title: String?,
     messages: List<DiscussionView.Message>,
     onMessageSent: (String) -> Unit,
     onTitleChanged: (String) -> Unit
@@ -144,26 +145,26 @@ fun DiscussionScreen(
 
 @Composable
 private fun DiscussionTitle(
-    title: String,
+    title: String?,
     onTitleChanged: (String) -> Unit
 ) {
-    var textState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-        mutableStateOf(TextFieldValue(title))
-    }
+    Timber.d("DROID-2635: Rendering title: $title")
     BasicTextField(
         textStyle = HeadlineTitle.copy(
             color = colorResource(id = R.color.text_primary)
         ),
-        value = textState,
+        value = title.orEmpty(),
         onValueChange = {
-            textState = it
-            onTitleChanged(it.text)
+            onTitleChanged(it)
         },
         modifier = Modifier.padding(
             top = 20.dp,
             start = 20.dp,
             end = 20.dp,
             bottom = 8.dp
+        ),
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Done
         )
     )
 }
@@ -197,37 +198,26 @@ private fun ChatBox(
                 contentDescription = "Plus button",
                 modifier = Modifier
                     .align(Alignment.Center)
+                    .padding(horizontal = 4.dp, vertical = 4.dp)
                     .clickable {
                         // TODO
                     }
             )
         }
-
-        BasicTextField(
-            value = textState,
-            onValueChange = { textState = it },
-            textStyle = BodyRegular.copy(
-                color = colorResource(id = R.color.text_primary)
-            ),
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Send
-            ),
-            keyboardActions = KeyboardActions {
-                if (textState.text.isNotBlank()) {
-                    onMessageSent(textState.text)
-                    textState = TextFieldValue()
-                    resetScroll()
-                }
+        ChatBoxUserInput(
+            textState = textState,
+            onMessageSent = {
+                onMessageSent(it)
+                textState = TextFieldValue()
+                resetScroll()
+            },
+            onTextChanged = { value ->
+                textState = value
             },
             modifier = Modifier
                 .imePadding()
                 .weight(1f)
-                .padding(
-                    start = 4.dp,
-                    end = 4.dp
-                )
-                .align(Alignment.CenterVertically),
-            cursorBrush = SolidColor(colorResource(id = R.color.palette_system_blue))
+                .align(Alignment.CenterVertically)
         )
         Box(
             modifier = Modifier
@@ -251,6 +241,36 @@ private fun ChatBox(
             )
         }
     }
+}
+
+@Composable
+private fun ChatBoxUserInput(
+    modifier: Modifier,
+    textState: TextFieldValue,
+    onMessageSent: (String) -> Unit,
+    onTextChanged: (TextFieldValue) -> Unit,
+) {
+    BasicTextField(
+        value = textState,
+        onValueChange = { onTextChanged(it) },
+        textStyle = BodyRegular.copy(
+            color = colorResource(id = R.color.text_primary)
+        ),
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Send
+        ),
+        keyboardActions = KeyboardActions {
+            if (textState.text.isNotBlank()) {
+                onMessageSent(textState.text)
+            }
+        },
+        modifier = modifier
+            .padding(
+                start = 4.dp,
+                end = 4.dp
+            ),
+        cursorBrush = SolidColor(colorResource(id = R.color.palette_system_blue))
+    )
 }
 
 

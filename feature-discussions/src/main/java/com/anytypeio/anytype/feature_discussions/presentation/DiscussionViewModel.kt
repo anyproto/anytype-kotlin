@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class DiscussionViewModel(
     private val params: DefaultParams,
@@ -16,7 +17,7 @@ class DiscussionViewModel(
     private val openObject: OpenObject
 ) : BaseViewModel() {
 
-    val name = MutableStateFlow("")
+    val name = MutableStateFlow<String?>(null)
 
     val messages = MutableStateFlow<List<DiscussionView.Message>>(emptyList())
 
@@ -31,15 +32,15 @@ class DiscussionViewModel(
             ).fold(
                 onSuccess = { obj ->
                     val root = ObjectWrapper.Basic(obj.details[params.ctx].orEmpty())
-                    name.value = root.name.orEmpty()
+                    Timber.d("DROID-2635 Opened object: $root")
+                    name.value = root.name
                 }
             )
         }
     }
 
-    fun onMessageSent(
-        msg: String
-    ) {
+    fun onMessageSent(msg: String) {
+        Timber.d("DROID-2635 OnMessageSent: $msg")
         messages.value = buildList {
             add(
                 DiscussionView.Message(
@@ -53,13 +54,15 @@ class DiscussionViewModel(
         }
     }
 
-    fun onTitleChanged(name: String) {
+    fun onTitleChanged(input: String) {
+        Timber.d("DROID-2635 OnTitleChanged: $input")
         viewModelScope.launch {
+            name.value = input
             setObjectDetails.async(
                 params = SetObjectDetails.Params(
                     ctx = params.ctx,
                     details = mapOf(
-                        Relations.NAME to name
+                        Relations.NAME to input
                     )
                 )
             )

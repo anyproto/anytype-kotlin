@@ -60,7 +60,8 @@ fun DiscussionScreenPreview() {
                 )
             }
         }.reversed(),
-        onMessageSent = {}
+        onMessageSent = {},
+        onTitleChanged = {}
     )
 }
 

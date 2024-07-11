@@ -82,9 +82,10 @@ fun DiscussionScreenWrapper(
                     .background(color = colorResource(id = R.color.background_primary))
             ) {
                 DiscussionScreen(
-                    title = "Conversations with friends",
+                    title = vm.name.collectAsState().value,
                     messages = vm.messages.collectAsState().value,
-                    onMessageSent = vm::onMessageSent
+                    onMessageSent = vm::onMessageSent,
+                    onTitleChanged = vm::onTitleChanged
                 )
             }
         }
@@ -98,7 +99,8 @@ fun DiscussionScreenWrapper(
 fun DiscussionScreen(
     title: String,
     messages: List<DiscussionView.Message>,
-    onMessageSent: (String) -> Unit
+    onMessageSent: (String) -> Unit,
+    onTitleChanged: (String) -> Unit
 ) {
     val scrollState = rememberLazyListState()
     val scope = rememberCoroutineScope()
@@ -107,16 +109,9 @@ fun DiscussionScreen(
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.systemBars)
     ) {
-        Text(
-            style = HeadlineTitle,
-            text = title,
-            color = colorResource(id = R.color.text_primary),
-            modifier = Modifier.padding(
-                top = 20.dp,
-                start = 20.dp,
-                end = 20.dp,
-                bottom = 8.dp
-            )
+        DiscussionTitle(
+            title = title,
+            onTitleChanged = onTitleChanged
         )
         Text(
             style = Relations2,
@@ -145,6 +140,24 @@ fun DiscussionScreen(
             }
         )
     }
+}
+
+@Composable
+private fun DiscussionTitle(
+    title: String,
+    onTitleChanged: (String) -> Unit
+) {
+    Text(
+        style = HeadlineTitle,
+        text = title,
+        color = colorResource(id = R.color.text_primary),
+        modifier = Modifier.padding(
+            top = 20.dp,
+            start = 20.dp,
+            end = 20.dp,
+            bottom = 8.dp
+        )
+    )
 }
 
 @Composable

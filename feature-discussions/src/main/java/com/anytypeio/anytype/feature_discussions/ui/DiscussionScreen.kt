@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -219,7 +220,7 @@ private fun ChatBox(
                     Modifier.imePadding()
             )
             .fillMaxWidth()
-            .height(56.dp)
+            .defaultMinSize(minHeight = 56.dp)
     ) {
         Box(
             modifier = Modifier
@@ -287,7 +288,6 @@ private fun ChatBoxUserInput(
     onMessageSent: (String) -> Unit,
     onTextChanged: (TextFieldValue) -> Unit,
 ) {
-    var lastFocusState by remember { mutableStateOf(false) }
     BasicTextField(
         value = textState,
         onValueChange = { onTextChanged(it) },
@@ -305,16 +305,13 @@ private fun ChatBoxUserInput(
         modifier = modifier
             .padding(
                 start = 4.dp,
-                end = 4.dp
+                end = 4.dp,
+                top = 16.dp,
+                bottom = 16.dp
             )
-            .onFocusChanged { state ->
-                if (lastFocusState != state.isFocused) {
-//                    onTextFieldFocused(state.isFocused)
-                }
-                lastFocusState = state.isFocused
-            }
         ,
-        cursorBrush = SolidColor(colorResource(id = R.color.palette_system_blue))
+        cursorBrush = SolidColor(colorResource(id = R.color.palette_system_blue)),
+        maxLines = 5
     )
 }
 

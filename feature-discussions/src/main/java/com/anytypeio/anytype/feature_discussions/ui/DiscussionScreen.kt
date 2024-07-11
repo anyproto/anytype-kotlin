@@ -4,9 +4,11 @@ import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -30,6 +32,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -55,6 +59,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -77,7 +82,6 @@ import com.anytypeio.anytype.feature_discussions.R
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionView
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 
 @Composable
@@ -172,7 +176,6 @@ private fun DiscussionTitle(
     onTitleChanged: (String) -> Unit = {},
     onFocusChanged: (Boolean) -> Unit = {}
 ) {
-    Timber.d("DROID-2635: Rendering title: $title")
     var lastFocusState by remember { mutableStateOf(false) }
     BasicTextField(
         textStyle = HeadlineTitle.copy(
@@ -182,21 +185,31 @@ private fun DiscussionTitle(
         onValueChange = {
             onTitleChanged(it)
         },
-        modifier = Modifier.padding(
-            top = 24.dp,
-            start = 20.dp,
-            end = 20.dp,
-            bottom = 8.dp
-        ).onFocusChanged { state ->
-            if (lastFocusState != state.isFocused) {
-                onFocusChanged(state.isFocused)
+        modifier = Modifier
+            .padding(
+                top = 24.dp,
+                start = 20.dp,
+                end = 20.dp,
+                bottom = 8.dp
+            )
+            .onFocusChanged { state ->
+                if (lastFocusState != state.isFocused) {
+                    onFocusChanged(state.isFocused)
+                }
+                lastFocusState = state.isFocused
             }
-            lastFocusState = state.isFocused
-        }
         ,
         keyboardOptions = KeyboardOptions(
             imeAction = ImeAction.Done
         ),
+        decorationBox = @Composable { innerTextField ->
+            DefaultHintDecorationBox(
+                hint = stringResource(id = R.string.untitled),
+                text = title.orEmpty(),
+                innerTextField = innerTextField,
+                textStyle = HeadlineTitle
+            )
+        }
     )
 }
 
@@ -253,7 +266,6 @@ private fun ChatBox(
                 textState = value
             },
             modifier = Modifier
-                .imePadding()
                 .weight(1f)
                 .align(Alignment.CenterVertically)
         )
@@ -311,7 +323,47 @@ private fun ChatBoxUserInput(
             )
         ,
         cursorBrush = SolidColor(colorResource(id = R.color.palette_system_blue)),
-        maxLines = 5
+        maxLines = 5,
+        decorationBox = @Composable { innerTextField ->
+            DefaultHintDecorationBox(
+                text = textState.text,
+                hint = "Write a message",
+                innerTextField = innerTextField,
+                textStyle = BodyRegular
+            )
+        }
+    )
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun DefaultHintDecorationBox(
+    text: String,
+    hint: String,
+    innerTextField: @Composable () -> Unit,
+    textStyle: TextStyle
+) {
+    OutlinedTextFieldDefaults.DecorationBox(
+        value = text,
+        visualTransformation = VisualTransformation.None,
+        innerTextField = innerTextField,
+        singleLine = true,
+        enabled = true,
+        placeholder = {
+            Text(
+                text = hint,
+                color = colorResource(id = R.color.text_tertiary),
+                style = textStyle
+            )
+        },
+        interactionSource = remember { MutableInteractionSource() },
+        colors = OutlinedTextFieldDefaults.colors(
+            disabledBorderColor = Color.Transparent,
+            errorBorderColor = Color.Transparent,
+            focusedBorderColor = Color.Transparent,
+            unfocusedBorderColor = Color.Transparent
+        ),
+        contentPadding = PaddingValues()
     )
 }
 

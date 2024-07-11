@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Marketplace
 import com.anytypeio.anytype.core_models.ObjectOrigin
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
@@ -89,7 +90,11 @@ class SelectObjectTypeViewModel(
                                     add(Marketplace.MARKETPLACE_SPACE_ID)
                                 }
                             },
-                            recommendedLayouts = SupportedLayouts.createObjectLayouts,
+                            recommendedLayouts = buildList {
+                                addAll(SupportedLayouts.createObjectLayouts)
+                                // TODO DROID-2635 Remove when not needed
+                                add(ObjectType.Layout.CHAT)
+                            },
                             excludedTypeKeys = vmParams.excludedTypeKeys
                         ),
                         keys = ObjectSearchConstants.defaultKeysObjectType,
@@ -500,10 +505,10 @@ sealed class ClipboardToolbarViewState {
 
 sealed class SelectTypeView {
     sealed class Section : SelectTypeView() {
-        object Pinned : Section()
-        object Objects : Section()
-        object Groups : Section()
-        object Library : Section()
+        data object Pinned : Section()
+        data object Objects : Section()
+        data object Groups : Section()
+        data object Library : Section()
     }
 
     data class Type(

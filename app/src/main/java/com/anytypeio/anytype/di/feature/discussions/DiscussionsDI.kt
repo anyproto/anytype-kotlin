@@ -5,13 +5,16 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.di.feature.EditorSubComponent.Builder
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModelFactory
 import com.anytypeio.anytype.middleware.EventProxy
+import com.anytypeio.anytype.presentation.common.BaseViewModel
 import dagger.Binds
+import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 
@@ -24,10 +27,14 @@ import dagger.Module
 )
 @PerScreen
 interface DiscussionComponent {
-    @Component.Factory
-    interface Factory {
-        fun create(dependencies: DiscussionComponentDependencies): DiscussionComponent
+    @Component.Builder
+    interface Builder {
+        @BindsInstance
+        fun withParams(params: BaseViewModel.DefaultParams): Builder
+        fun withDependencies(dependencies: DiscussionComponentDependencies): Builder
+        fun build(): DiscussionComponent
     }
+    fun inject(fragment: DiscussionFragment)
 }
 
 @Module

@@ -3,7 +3,9 @@ package com.anytypeio.anytype.feature_discussions.presentation
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class DiscussionViewModel : BaseViewModel() {
+class DiscussionViewModel(
+    private val params: BaseViewModel.DefaultParams
+) : BaseViewModel() {
 
     val messages = MutableStateFlow<List<DiscussionView.Message>>(emptyList())
 

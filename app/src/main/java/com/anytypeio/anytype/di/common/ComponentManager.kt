@@ -111,6 +111,7 @@ import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeModule
 import com.anytypeio.anytype.di.main.MainComponent
 import com.anytypeio.anytype.gallery_experience.viewmodel.GalleryInstallationViewModel
+import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.library.LibraryViewModel
 import com.anytypeio.anytype.presentation.multiplayer.RequestJoinSpaceViewModel
@@ -1157,10 +1158,12 @@ class ComponentManager(
                 .build()
         }
 
-    val discussionComponent = Component {
+    val discussionComponent = ComponentMapWithParam { params: BaseViewModel.DefaultParams ->
         DaggerDiscussionComponent
-            .factory()
-            .create(findComponentDependencies())
+            .builder()
+            .withDependencies(findComponentDependencies())
+            .withParams(params)
+            .build()
     }
 
     class Component<T>(private val builder: () -> T) {

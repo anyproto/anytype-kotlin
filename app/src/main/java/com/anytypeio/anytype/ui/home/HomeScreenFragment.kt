@@ -25,8 +25,6 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
-import com.anytypeio.anytype.feature_discussions.ui.DiscussionScreenWrapper
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
@@ -59,10 +57,6 @@ class HomeScreenFragment : BaseComposeFragment() {
 
     @Inject
     lateinit var factory: HomeScreenViewModel.Factory
-
-    private val fakeDiscussionViewModel by lazy {
-        DiscussionViewModel()
-    }
 
     private val vm by viewModels<HomeScreenViewModel> { factory }
 
@@ -123,10 +117,6 @@ class HomeScreenFragment : BaseComposeFragment() {
                     onObjectCheckboxClicked = vm::onObjectCheckboxClicked,
                     onSpaceShareIconClicked = vm::onSpaceShareIconClicked
                 )
-
-                if (featureToggles.enableDiscussionDemo) {
-                    DiscussionScreenWrapper(fakeDiscussionViewModel)
-                }
             }
         }
     }
@@ -299,6 +289,12 @@ class HomeScreenFragment : BaseComposeFragment() {
                     space = destination.space
                 )
             }
+            is Navigation.OpenDiscussion -> runCatching {
+                navigation().openDiscussion(
+                    target = destination.ctx,
+                    space = destination.space
+                )
+            }
             is Navigation.ExpandWidget -> runCatching {
                 navigation().launchCollections(
                     subscription = destination.subscription,
@@ -322,12 +318,6 @@ class HomeScreenFragment : BaseComposeFragment() {
 
     override fun releaseDependencies() {
         componentManager().homeScreenComponent.release()
-    }
-
-    override fun onApplyWindowRootInsets(view: View) {
-        if (!featureToggles.enableDiscussionDemo) {
-            super.onApplyWindowRootInsets(view)
-        }
     }
 
     companion object {

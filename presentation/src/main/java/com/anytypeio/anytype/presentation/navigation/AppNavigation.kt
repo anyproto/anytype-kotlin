@@ -16,6 +16,7 @@ interface AppNavigation {
         isPopUpToDashboard: Boolean = false
     )
     fun openDocument(target: Id, space: Id)
+    fun openDiscussion(target: Id, space: Id)
     fun openModalTemplateSelect(
         template: Id,
         templateTypeId: Id,

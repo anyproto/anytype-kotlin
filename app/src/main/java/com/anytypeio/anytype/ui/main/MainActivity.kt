@@ -223,6 +223,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                     is OpenObjectNavigation.UnexpectedLayoutError -> {
                                         toast(getString(R.string.error_unexpected_layout))
                                     }
+                                    is OpenObjectNavigation.OpenDiscussion -> {
+                                        toast("not implemented")
+                                    }
                                 }
                             }
                             is Command.Deeplink.DeepLinkToObjectNotWorking -> {

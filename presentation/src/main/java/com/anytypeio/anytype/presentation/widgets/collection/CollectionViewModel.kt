@@ -16,7 +16,6 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.process
-import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -884,6 +883,9 @@ class CollectionViewModel(
                         space = navigation.space
                     )
                 )
+            }
+            is OpenObjectNavigation.OpenDiscussion -> {
+                toasts.emit("not implemented")
             }
             is OpenObjectNavigation.UnexpectedLayoutError -> {
                 toasts.emit("Unexpected layout: ${navigation.layout}")

@@ -33,8 +33,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -51,6 +53,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -110,18 +113,32 @@ fun DiscussionScreen(
     onMessageSent: (String) -> Unit,
     onTitleChanged: (String) -> Unit
 ) {
-    val scrollState = rememberLazyListState()
+    val lazyListState = rememberLazyListState()
+    val isHeaderVisible by remember {
+        derivedStateOf {
+            val layoutInfo = lazyListState.layoutInfo
+            val visibleItems = layoutInfo.visibleItemsInfo
+            if (visibleItems.isEmpty()) {
+                false
+            } else {
+                visibleItems.last().key == HEADER_KEY
+            }
+        }
+    }
     val scope = rememberCoroutineScope()
     Column(
         modifier = Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.systemBars)
     ) {
-        TopDiscussionToolbar(title = title)
+        TopDiscussionToolbar(
+            title = title,
+            isHeaderVisible = isHeaderVisible
+        )
         Messages(
             modifier = Modifier.weight(1.0f),
             messages = messages,
-            scrollState = scrollState,
+            scrollState = lazyListState,
             onTitleChanged = onTitleChanged,
             title = title
         )
@@ -133,7 +150,7 @@ fun DiscussionScreen(
             onMessageSent = onMessageSent,
             resetScroll = {
                 scope.launch {
-                    scrollState.animateScrollToItem(index = 0)
+                    lazyListState.animateScrollToItem(index = 0)
                 }
             }
         )
@@ -162,7 +179,7 @@ private fun DiscussionTitle(
         ),
         keyboardOptions = KeyboardOptions(
             imeAction = ImeAction.Done
-        )
+        ),
     )
 }
 
@@ -325,7 +342,7 @@ fun Messages(
                 Spacer(modifier = Modifier.height(36.dp))
             }
         }
-        item(key = "Header") {
+        item(key = HEADER_KEY) {
             Column {
                 DiscussionTitle(
                     title = title,
@@ -397,7 +414,8 @@ fun Bubble(
 
 @Composable
 fun TopDiscussionToolbar(
-    title: String? = null
+    title: String? = null,
+    isHeaderVisible: Boolean = false
 ) {
     Row(
         modifier = Modifier
@@ -417,13 +435,15 @@ fun TopDiscussionToolbar(
             )
         }
         Text(
-            text = title ?: stringResource(id = R.string.untitled),
+            text = if (isHeaderVisible) "" else title ?: stringResource(id = R.string.untitled),
             style = PreviewTitle2Regular,
             color = colorResource(id = R.color.text_primary),
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .align(Alignment.CenterVertically)
-                .weight(1f)
+                .weight(1f),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
         Box(
             modifier = Modifier
@@ -445,3 +465,5 @@ fun TopDiscussionToolbar(
 fun TopDiscussionToolbarPreview() {
     TopDiscussionToolbar()
 }
+
+private const val HEADER_KEY = "key.discussions.item.header"

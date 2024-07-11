@@ -37,7 +37,8 @@ fun DiscussionPreview() {
         ),
         scrollState = LazyListState(),
         title = "Conversations with friends",
-        onTitleChanged = {}
+        onTitleChanged = {},
+        onTitleFocusChanged = {}
     )
 }
 

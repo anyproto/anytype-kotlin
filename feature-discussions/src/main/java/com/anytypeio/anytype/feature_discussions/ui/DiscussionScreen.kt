@@ -43,8 +43,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -69,6 +71,7 @@ import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_utils.const.DateConst.DEFAULT_DATE_FORMAT
 import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.feature_discussions.R
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionView
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
@@ -114,6 +117,7 @@ fun DiscussionScreen(
     onTitleChanged: (String) -> Unit
 ) {
     val lazyListState = rememberLazyListState()
+    var isTitleFocused by remember { mutableStateOf(false) }
     val isHeaderVisible by remember {
         derivedStateOf {
             val layoutInfo = lazyListState.layoutInfo
@@ -140,7 +144,10 @@ fun DiscussionScreen(
             messages = messages,
             scrollState = lazyListState,
             onTitleChanged = onTitleChanged,
-            title = title
+            title = title,
+            onTitleFocusChanged = {
+                isTitleFocused = it
+            }
         )
         Divider(
             paddingStart = 0.dp,
@@ -152,7 +159,8 @@ fun DiscussionScreen(
                 scope.launch {
                     lazyListState.animateScrollToItem(index = 0)
                 }
-            }
+            },
+            isTitleFocused = isTitleFocused
         )
     }
 }
@@ -160,9 +168,11 @@ fun DiscussionScreen(
 @Composable
 private fun DiscussionTitle(
     title: String?,
-    onTitleChanged: (String) -> Unit
+    onTitleChanged: (String) -> Unit = {},
+    onFocusChanged: (Boolean) -> Unit = {}
 ) {
     Timber.d("DROID-2635: Rendering title: $title")
+    var lastFocusState by remember { mutableStateOf(false) }
     BasicTextField(
         textStyle = HeadlineTitle.copy(
             color = colorResource(id = R.color.text_primary)
@@ -176,7 +186,13 @@ private fun DiscussionTitle(
             start = 20.dp,
             end = 20.dp,
             bottom = 8.dp
-        ),
+        ).onFocusChanged { state ->
+            if (lastFocusState != state.isFocused) {
+                onFocusChanged(state.isFocused)
+            }
+            lastFocusState = state.isFocused
+        }
+        ,
         keyboardOptions = KeyboardOptions(
             imeAction = ImeAction.Done
         ),
@@ -187,14 +203,21 @@ private fun DiscussionTitle(
 private fun ChatBox(
     onMessageSent: (String) -> Unit = {},
     resetScroll: () -> Unit = {},
+    isTitleFocused: Boolean
 ) {
+    val context = LocalContext.current
     var textState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue())
     }
 
     Row(
         modifier = Modifier
-            .imePadding()
+            .then(
+                if (isTitleFocused)
+                    Modifier
+                else
+                    Modifier.imePadding()
+            )
             .fillMaxWidth()
             .height(56.dp)
     ) {
@@ -204,7 +227,7 @@ private fun ChatBox(
                 .clip(CircleShape)
                 .align(Alignment.CenterVertically)
                 .clickable {
-                    // TODO
+                    context.toast("Coming soon!")
                 }
         ) {
             Image(
@@ -214,7 +237,7 @@ private fun ChatBox(
                     .align(Alignment.Center)
                     .padding(horizontal = 4.dp, vertical = 4.dp)
                     .clickable {
-                        // TODO
+                        context.toast("Coming soon!")
                     }
             )
         }
@@ -264,6 +287,7 @@ private fun ChatBoxUserInput(
     onMessageSent: (String) -> Unit,
     onTextChanged: (TextFieldValue) -> Unit,
 ) {
+    var lastFocusState by remember { mutableStateOf(false) }
     BasicTextField(
         value = textState,
         onValueChange = { onTextChanged(it) },
@@ -282,7 +306,14 @@ private fun ChatBoxUserInput(
             .padding(
                 start = 4.dp,
                 end = 4.dp
-            ),
+            )
+            .onFocusChanged { state ->
+                if (lastFocusState != state.isFocused) {
+//                    onTextFieldFocused(state.isFocused)
+                }
+                lastFocusState = state.isFocused
+            }
+        ,
         cursorBrush = SolidColor(colorResource(id = R.color.palette_system_blue))
     )
 }
@@ -294,7 +325,8 @@ fun Messages(
     onTitleChanged: (String) -> Unit,
     modifier: Modifier = Modifier,
     messages: List<DiscussionView.Message>,
-    scrollState: LazyListState
+    scrollState: LazyListState,
+    onTitleFocusChanged: (Boolean) -> Unit
 ) {
     LazyColumn(
         modifier = modifier,
@@ -346,7 +378,8 @@ fun Messages(
             Column {
                 DiscussionTitle(
                     title = title,
-                    onTitleChanged = onTitleChanged
+                    onTitleChanged = onTitleChanged,
+                    onFocusChanged = onTitleFocusChanged
                 )
                 Text(
                     style = Relations2,

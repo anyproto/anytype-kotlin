@@ -1540,6 +1540,7 @@
 
     <string name="membership_manage_tier_desktop">You can manage tier on Desktop platform</string>
     <string name="membership_manage_tier_ios">You can manage tier on iOS platform</string>
+    <string name="membership_manage_tier_another_account">You can manage tier on another Google account</string>
 
     <string name="payments_tier_current_change_email_button">Change e-mail</string>
 

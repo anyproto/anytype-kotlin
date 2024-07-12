@@ -219,13 +219,13 @@ private fun MembershipTierData.mapActiveTierButtonAndNameStates(
                 ) {
                     TierButton.Manage.Android.Enabled(androidProductId) to TierAnyName.Hidden
                 } else {
-                    TierButton.Manage.Android.Disabled to TierAnyName.Hidden
+                    TierButton.HiddenWithText.ManageOnAnotherAccount to TierAnyName.Hidden
                 }
             }
-            else -> TierButton.Manage.Android.Disabled to TierAnyName.Hidden
+            else -> TierButton.HiddenWithText.ManageOnAnotherAccount to TierAnyName.Hidden
         }
     } else {
-        TierButton.Manage.Android.Disabled to TierAnyName.Hidden
+        TierButton.HiddenWithText.ManageOnAnotherAccount to TierAnyName.Hidden
     }
 }
 

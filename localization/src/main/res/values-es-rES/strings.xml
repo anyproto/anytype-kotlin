@@ -1313,11 +1313,14 @@
     <string name="payments_tier_current_title">Tu estado actual:</string>
     <string name="payments_tier_current_valid">Válido hasta</string>
     <string name="payments_tier_current_paid_by">Pagado mediante</string>
-    <string name="payments_tier_current_paid_by_card">Tarjeta</string>
+    <string name="payments_tier_current_paid_by_card">Stripe</string>
     <string name="payments_tier_current_paid_by_crypto">Cripto</string>
     <string name="payments_tier_current_paid_by_apple">Suscripción de Apple</string>
     <string name="payments_tier_current_paid_by_google">Suscripción de Google</string>
     <string name="payments_tier_current_button">Gestionar el pago</string>
+    <string name="membership_manage_tier_desktop">You can manage tier on Desktop platform</string>
+    <string name="membership_manage_tier_ios">You can manage tier on iOS platform</string>
+    <string name="membership_manage_tier_another_account">You can manage tier on another Google account</string>
     <string name="payments_tier_current_change_email_button">Cambiar correo electrónico</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Introduce el código enviado a tu buzón de correo electrónico</string>

@@ -1,15 +1,16 @@
 package com.anytypeio.anytype.middleware.interactor
 
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.multiplayer.P2PStatusUpdate
-import com.anytypeio.anytype.data.auth.status.SpaceP2PStatusRemoteChannel
+import com.anytypeio.anytype.data.auth.status.P2PStatusRemoteChannel
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.mappers.toCoreModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
 
-class SpaceP2PStatusChannel(private val events: EventProxy) : SpaceP2PStatusRemoteChannel {
+class P2PStatusRemoteChannelImpl(private val events: EventProxy) : P2PStatusRemoteChannel {
 
-    override fun observe(activeSpaceId: String): Flow<List<P2PStatusUpdate>> {
+    override fun observe(activeSpaceId: Id): Flow<List<P2PStatusUpdate>> {
         return events.flow().mapNotNull { emission ->
             emission.messages.mapNotNull { message ->
                 when {

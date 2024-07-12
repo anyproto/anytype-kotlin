@@ -1307,11 +1307,14 @@
     <string name="payments_tier_current_title">您當前的狀態：</string>
     <string name="payments_tier_current_valid">有效期限至</string>
     <string name="payments_tier_current_paid_by">付款者</string>
-    <string name="payments_tier_current_paid_by_card">卡片</string>
+    <string name="payments_tier_current_paid_by_card">Stripe</string>
     <string name="payments_tier_current_paid_by_crypto">加密貨幣</string>
     <string name="payments_tier_current_paid_by_apple">Apple 訂閱</string>
     <string name="payments_tier_current_paid_by_google">Google 訂閱</string>
     <string name="payments_tier_current_button">管理付款方式</string>
+    <string name="membership_manage_tier_desktop">You can manage tier on Desktop platform</string>
+    <string name="membership_manage_tier_ios">You can manage tier on iOS platform</string>
+    <string name="membership_manage_tier_another_account">You can manage tier on another Google account</string>
     <string name="payments_tier_current_change_email_button">變更 e-mail</string>
     <!-- Payments Code -->
     <string name="payments_code_title">請輸入發送到您 email 的兌換代碼</string>

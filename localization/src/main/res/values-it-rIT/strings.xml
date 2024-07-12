@@ -1046,14 +1046,14 @@
     <string name="sharing_menu_save_as_file_option">File</string>
     <string name="sharing_menu_save_as_images_option">Immagini</string>
     <string name="sharing_menu_save_as_files_option">File</string>
-    <string name="sharing_menu_save_as_videos_option">Videos</string>
+    <string name="sharing_menu_save_as_videos_option">Video</string>
     <string name="sharing_menu_data">Dati</string>
     <string name="sharing_menu_add_to_anytype_header_title">Aggiungi a Anytype</string>
-    <string name="sharing_menu_add_to_anytype_error">Anytype file upload error: %1$s</string>
-    <string name="sharing_menu_add_to_anytype_success">All files have been successfully uploaded</string>
+    <string name="sharing_menu_add_to_anytype_error">Errore di caricamento file di Anytype: %1$s</string>
+    <string name="sharing_menu_add_to_anytype_success">Tutti i file sono stati caricati con successo</string>
     <string name="sharing_menu_toast_object_added">Nuovo oggetto aggiunto allo spazio \'%1$s\'</string>
-    <string name="sharing_media_wrapper_object_title">Shared Media, %1$s, this object is auxiliary and can be deleted; all media or files will remain in Space.</string>
-    <string name="sharing_files_wrapper_object_title">Shared Files, %1$s, this object is auxiliary and can be deleted; all media or files will remain in Space.</string>
+    <string name="sharing_media_wrapper_object_title">Media Condiviso, %1$s, questo oggetto è ausiliario e può essere eliminato; tutti i media o i file rimarranno nello Spazio.</string>
+    <string name="sharing_files_wrapper_object_title">File Condiviso, %1$s, questo oggetto è ausiliario e può essere eliminato; tutti i media o i file rimarranno nello Spazio.</string>
     <string name="sharing_menu_btn_add">Aggiungi</string>
     <string name="sharing_menu_btn_open">Apri</string>
     <!--endregion-->
@@ -1320,8 +1320,8 @@
     <string name="payments_tier_current_paid_by_google">Abbonamento Google</string>
     <string name="payments_tier_current_button">Gestisci pagamento</string>
     <string name="membership_manage_tier_desktop">È possibile gestire il livello sulla piattaforma Desktop</string>
-    <string name="membership_manage_tier_ios">You can manage tier on iOS platform</string>
-    <string name="membership_manage_tier_another_account">You can manage tier on another Google account</string>
+    <string name="membership_manage_tier_ios">È possibile gestire il livello sulla piattaforma iOS</string>
+    <string name="membership_manage_tier_another_account">È possibile gestire il livello su un altro account Google</string>
     <string name="payments_tier_current_change_email_button">Cambia email</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Inserisci il codice inviato alla tua email</string>

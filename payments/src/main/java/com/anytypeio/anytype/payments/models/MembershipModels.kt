@@ -64,6 +64,7 @@ sealed class TierButton {
         data object MoreThenOnePurchase : HiddenWithText()
         data object ManageOnDesktop : HiddenWithText()
         data object ManageOnIOS : HiddenWithText()
+        data object ManageOnAnotherAccount : HiddenWithText()
     }
     sealed class Submit : TierButton() {
         data object Enabled : Submit()

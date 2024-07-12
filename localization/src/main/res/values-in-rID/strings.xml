@@ -1307,11 +1307,14 @@
     <string name="payments_tier_current_title">Statusmu saat ini:</string>
     <string name="payments_tier_current_valid">Berlaku hingga</string>
     <string name="payments_tier_current_paid_by">Dibayar oleh</string>
-    <string name="payments_tier_current_paid_by_card">Kartu</string>
+    <string name="payments_tier_current_paid_by_card">Stripe</string>
     <string name="payments_tier_current_paid_by_crypto">Kripto</string>
     <string name="payments_tier_current_paid_by_apple">Langganan Apple</string>
     <string name="payments_tier_current_paid_by_google">Langganan Google</string>
     <string name="payments_tier_current_button">Manage payment</string>
+    <string name="membership_manage_tier_desktop">You can manage tier on Desktop platform</string>
+    <string name="membership_manage_tier_ios">You can manage tier on iOS platform</string>
+    <string name="membership_manage_tier_another_account">You can manage tier on another Google account</string>
     <string name="payments_tier_current_change_email_button">Ganti surel</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Masukkan kode yang dikirim ke surelmu</string>

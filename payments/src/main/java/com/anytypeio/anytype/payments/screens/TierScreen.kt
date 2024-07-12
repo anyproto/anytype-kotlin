@@ -379,6 +379,10 @@ private fun SecondaryButton(
             val text = stringResource(id = R.string.membership_manage_tier_ios)
             SupportText(text = text)
         }
+        TierButton.HiddenWithText.ManageOnAnotherAccount -> {
+            val text = stringResource(id = R.string.membership_manage_tier_another_account)
+            SupportText(text = text)
+        }
         else -> {
             val (stringRes, enabled) = getButtonText(buttonState)
             ButtonSecondary(
@@ -421,6 +425,7 @@ private fun getButtonText(buttonState: TierButton): Pair<Int, Boolean> {
         TierButton.HiddenWithText.MoreThenOnePurchase -> Pair(0, false)
         TierButton.HiddenWithText.ManageOnDesktop -> Pair(0, false)
         TierButton.HiddenWithText.ManageOnIOS -> Pair(0, false)
+        TierButton.HiddenWithText.ManageOnAnotherAccount -> Pair(0, false)
     }
 }
 

@@ -1313,11 +1313,14 @@
     <string name="payments_tier_current_title">Je huidige status:</string>
     <string name="payments_tier_current_valid">Geldig tot</string>
     <string name="payments_tier_current_paid_by">Betaald door</string>
-    <string name="payments_tier_current_paid_by_card">Kaart</string>
+    <string name="payments_tier_current_paid_by_card">Stripe</string>
     <string name="payments_tier_current_paid_by_crypto">Crypto</string>
     <string name="payments_tier_current_paid_by_apple">Apple abonnement</string>
     <string name="payments_tier_current_paid_by_google">Google abonnement</string>
     <string name="payments_tier_current_button">Beheer betaling</string>
+    <string name="membership_manage_tier_desktop">Je kunt het abonnement op het desktopplatform beheren</string>
+    <string name="membership_manage_tier_ios">You can manage tier on iOS platform</string>
+    <string name="membership_manage_tier_another_account">You can manage tier on another Google account</string>
     <string name="payments_tier_current_change_email_button">Wijzig e-mailadres</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Voer de code in die naar jouw e-mailadres is verstuurd</string>

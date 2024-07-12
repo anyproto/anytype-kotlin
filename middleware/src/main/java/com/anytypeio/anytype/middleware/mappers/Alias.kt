@@ -90,3 +90,9 @@ typealias MMembershipTierDataPeriodType = anytype.model.MembershipTierData.Perio
 typealias MNameServiceNameType = anytype.model.NameserviceNameType
 typealias MEmailVerificationStatus = anytype.model.Membership.EmailVerificationStatus
 typealias MDetail = anytype.model.Detail
+
+typealias MSpaceSyncStatus = anytype.Event.Space.Status
+typealias MSpaceSyncNetwork = anytype.Event.Space.Network
+typealias MSpaceSyncError = anytype.Event.Space.SyncError
+
+typealias MP2PStatus = anytype.Event.P2PStatus.Status

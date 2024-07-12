@@ -1325,11 +1325,14 @@
     <string name="payments_tier_current_title">Ваш текущий статус:</string>
     <string name="payments_tier_current_valid">Действительно до</string>
     <string name="payments_tier_current_paid_by">Paid by</string>
-    <string name="payments_tier_current_paid_by_card">Карточка</string>
+    <string name="payments_tier_current_paid_by_card">Stripe</string>
     <string name="payments_tier_current_paid_by_crypto">Криптовалюта</string>
     <string name="payments_tier_current_paid_by_apple">Apple subscription</string>
     <string name="payments_tier_current_paid_by_google">Google subscription</string>
     <string name="payments_tier_current_button">Управление платежами</string>
+    <string name="membership_manage_tier_desktop">You can manage tier on Desktop platform</string>
+    <string name="membership_manage_tier_ios">You can manage tier on iOS platform</string>
+    <string name="membership_manage_tier_another_account">You can manage tier on another Google account</string>
     <string name="payments_tier_current_change_email_button">Изменить E-mail</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Введите код, отправленный на вашу электронную почту</string>

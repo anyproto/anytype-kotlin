@@ -5,9 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
-import android.os.Build
 import androidx.core.app.NotificationCompat
-import androidx.core.os.BundleCompat
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Notification
@@ -257,10 +255,7 @@ class AnytypeNotificationService @Inject constructor(
     }
 
     private fun getDefaultFlags(): Int {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-            PendingIntent.FLAG_IMMUTABLE
-        else
-            0
+        return PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
     }
 
     companion object {

@@ -110,7 +110,8 @@ class HomeScreenFragment : BaseComposeFragment() {
                     onBundledWidgetClicked = vm::onBundledWidgetClicked,
                     onMove = vm::onMove,
                     onObjectCheckboxClicked = vm::onObjectCheckboxClicked,
-                    onSpaceShareIconClicked = vm::onSpaceShareIconClicked
+                    onSpaceShareIconClicked = vm::onSpaceShareIconClicked,
+                    onSeeAllObjectsClicked = vm::onSeeAllObjectsClicked
                 )
             }
         }
@@ -281,7 +282,8 @@ class HomeScreenFragment : BaseComposeFragment() {
             is Navigation.OpenSet -> runCatching {
                 navigation().openObjectSet(
                     target = destination.ctx,
-                    space = destination.space
+                    space = destination.space,
+                    view = destination.view
                 )
             }
             is Navigation.ExpandWidget -> runCatching {

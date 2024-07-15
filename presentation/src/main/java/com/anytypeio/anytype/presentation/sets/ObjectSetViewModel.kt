@@ -448,9 +448,12 @@ class ObjectSetViewModel(
         )
     }
 
-    fun onStart(ctx: Id, space: Id) {
-        Timber.d("onStart, ctx:[$ctx]")
+    fun onStart(ctx: Id, space: Id, view: Id? = null) {
+        Timber.d("onStart, ctx:[$ctx], view:[$view]")
         this.context = ctx
+        if (view != null) {
+            session.currentViewerId.value = view
+        }
         subscribeToEvents(ctx = ctx)
         subscribeToThreadStatus(ctx = ctx)
         proceedWithOpeningCurrentObject(ctx = ctx)

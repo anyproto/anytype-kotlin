@@ -1275,7 +1275,8 @@ class HomeScreenViewModel(
                 navigate(
                     Navigation.OpenSet(
                         ctx = navigation.target,
-                        space = navigation.space
+                        space = navigation.space,
+                        view = null
                     )
                 )
             }
@@ -1644,9 +1645,28 @@ class HomeScreenViewModel(
         )
     }
 
+    fun onSeeAllObjectsClicked(gallery: WidgetView.Gallery) {
+        val source = gallery.source
+        val view = gallery.view
+        if (view != null && source is Widget.Source.Default) {
+            val space = source.obj.spaceId
+            if (space != null) {
+                navigate(
+                    Navigation.OpenSet(
+                        ctx = gallery.source.id,
+                        space = space,
+                        view = view
+                    )
+                )
+            } else {
+                Timber.e("Missing space ID")
+            }
+        }
+    }
+
     sealed class Navigation {
         data class OpenObject(val ctx: Id, val space: Id) : Navigation()
-        data class OpenSet(val ctx: Id, val space: Id) : Navigation()
+        data class OpenSet(val ctx: Id, val space: Id, val view: Id?) : Navigation()
         data class ExpandWidget(val subscription: Subscription, val space: Id) : Navigation()
         data class OpenLibrary(val space: Id) : Navigation()
     }

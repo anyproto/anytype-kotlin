@@ -3,10 +3,8 @@ package com.anytypeio.anytype.ui.widgets.types
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -90,7 +88,7 @@ fun TreeWidgetObjectIcon(
         is ObjectIcon.Basic.Image -> {
             UriImage(
                 uri = icon.hash,
-                modifier = Modifier.padding(start = paddingStart, end = paddingEnd),
+                modifier = modifier.padding(start = paddingStart, end = paddingEnd),
                 size = size
             )
         }

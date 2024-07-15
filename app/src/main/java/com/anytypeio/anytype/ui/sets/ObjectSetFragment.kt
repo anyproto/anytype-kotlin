@@ -69,6 +69,7 @@ import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_ui.widgets.toolbar.DataViewInfo
 import com.anytypeio.anytype.core_utils.OnSwipeListener
 import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.drawable
@@ -226,6 +227,7 @@ open class ObjectSetFragment :
 
     private val ctx: Id get() = argString(CONTEXT_ID_KEY)
     private val space: Id get() = arg<String>(SPACE_ID_KEY)
+    private val view: Id? get() = argOrNull<Id>(INITIAL_VIEW_ID_KEY)
 
     @Inject
     lateinit var factory: ObjectSetViewModelFactory
@@ -1321,7 +1323,7 @@ open class ObjectSetFragment :
             binding.bottomToolbar.bind(icon)
         }
 
-        vm.onStart(ctx = ctx, space = space)
+        vm.onStart(ctx = ctx, space = space, view = view)
     }
 
     override fun onStop() {
@@ -1460,15 +1462,21 @@ open class ObjectSetFragment :
     companion object {
         const val CONTEXT_ID_KEY = "arg.object_set.context"
         const val SPACE_ID_KEY = "arg.object_set.space-id"
+        private const val INITIAL_VIEW_ID_KEY = "arg.object_set.initial-view"
         val EMPTY_TAG = null
         const val BOTTOM_PANEL_ANIM_DURATION = 150L
         const val DEFAULT_ANIM_DURATION = 300L
         const val DRAWABLE_ALPHA_FULL = 255
         const val DRAWABLE_ALPHA_ZERO = 0
 
-        fun args(ctx: Id, space: Id) = bundleOf(
+        fun args(
+            ctx: Id,
+            space: Id,
+            view: Id? = null
+        ) = bundleOf(
             CONTEXT_ID_KEY to ctx,
-            SPACE_ID_KEY to space
+            SPACE_ID_KEY to space,
+            INITIAL_VIEW_ID_KEY to view
         )
     }
 }

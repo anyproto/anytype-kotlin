@@ -120,7 +120,7 @@ class AnytypeNotificationService @Inject constructor(
 
                 val activity = PendingIntent.getActivity(
                     context,
-                    0,
+                    notification.hashCode(),
                     intent,
                     getDefaultFlags()
                 )
@@ -169,7 +169,7 @@ class AnytypeNotificationService @Inject constructor(
 
                 val activity = PendingIntent.getActivity(
                     context,
-                    0,
+                    notification.hashCode(),
                     intent,
                     getDefaultFlags()
                 )
@@ -202,7 +202,7 @@ class AnytypeNotificationService @Inject constructor(
                 }
                 val activity = PendingIntent.getActivity(
                     context,
-                    0,
+                    notification.hashCode(),
                     intent,
                     getDefaultFlags()
                 )
@@ -255,7 +255,7 @@ class AnytypeNotificationService @Inject constructor(
     }
 
     private fun getDefaultFlags(): Int {
-        return PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        return PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
     }
 
     companion object {

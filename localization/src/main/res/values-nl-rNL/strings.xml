@@ -933,7 +933,7 @@
     <string name="widget_type_compact_list_description">Widget met lijstweergave van geselecteerde object</string>
     <string name="widget_type_list">Lijst</string>
     <string name="widget_type_view">Weergave</string>
-    <string name="widget_type_view_description">Widget met een weergave van het geselecteerde object</string>
+    <string name="widget_type_view_description">Widget view of Set or Collection</string>
     <string name="widget_type_compact_list">Compacte lijst</string>
     <string name="widget_change_source">Wijzig bron</string>
     <string name="widget_change_type">Wijzig type</string>
@@ -1046,6 +1046,7 @@
     <string name="sharing_menu_save_as_file_option">Bestand</string>
     <string name="sharing_menu_save_as_images_option">Afbeeldingen</string>
     <string name="sharing_menu_save_as_files_option">Bestanden</string>
+    <string name="sharing_menu_save_as_videos_option">Videos</string>
     <string name="sharing_menu_data">Gegevens</string>
     <string name="sharing_menu_add_to_anytype_header_title">Voeg toe aan Anytype</string>
     <string name="sharing_menu_add_to_anytype_error">Anytype file upload error: %1$s</string>
@@ -1312,11 +1313,14 @@
     <string name="payments_tier_current_title">Je huidige status:</string>
     <string name="payments_tier_current_valid">Geldig tot</string>
     <string name="payments_tier_current_paid_by">Betaald door</string>
-    <string name="payments_tier_current_paid_by_card">Kaart</string>
+    <string name="payments_tier_current_paid_by_card">Stripe</string>
     <string name="payments_tier_current_paid_by_crypto">Crypto</string>
     <string name="payments_tier_current_paid_by_apple">Apple abonnement</string>
     <string name="payments_tier_current_paid_by_google">Google abonnement</string>
     <string name="payments_tier_current_button">Beheer betaling</string>
+    <string name="membership_manage_tier_desktop">Je kunt het abonnement op het desktopplatform beheren</string>
+    <string name="membership_manage_tier_ios">You can manage tier on iOS platform</string>
+    <string name="membership_manage_tier_another_account">You can manage tier on another Google account</string>
     <string name="payments_tier_current_change_email_button">Wijzig e-mailadres</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Voer de code in die naar jouw e-mailadres is verstuurd</string>

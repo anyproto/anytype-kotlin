@@ -933,7 +933,7 @@
     <string name="widget_type_compact_list_description">Widget con vista elenco dell\'oggetto impostato</string>
     <string name="widget_type_list">Lista</string>
     <string name="widget_type_view">Vista</string>
-    <string name="widget_type_view_description">Widget con vista elenco dell\'oggetto impostato</string>
+    <string name="widget_type_view_description">Widget view of Set or Collection</string>
     <string name="widget_type_compact_list">Compact list</string>
     <string name="widget_change_source">Cambia fonte</string>
     <string name="widget_change_type">Change Type</string>
@@ -1046,13 +1046,14 @@
     <string name="sharing_menu_save_as_file_option">File</string>
     <string name="sharing_menu_save_as_images_option">Immagini</string>
     <string name="sharing_menu_save_as_files_option">File</string>
+    <string name="sharing_menu_save_as_videos_option">Video</string>
     <string name="sharing_menu_data">Dati</string>
     <string name="sharing_menu_add_to_anytype_header_title">Aggiungi a Anytype</string>
-    <string name="sharing_menu_add_to_anytype_error">Anytype file upload error: %1$s</string>
-    <string name="sharing_menu_add_to_anytype_success">All files have been successfully uploaded</string>
+    <string name="sharing_menu_add_to_anytype_error">Errore di caricamento file di Anytype: %1$s</string>
+    <string name="sharing_menu_add_to_anytype_success">Tutti i file sono stati caricati con successo</string>
     <string name="sharing_menu_toast_object_added">Nuovo oggetto aggiunto allo spazio \'%1$s\'</string>
-    <string name="sharing_media_wrapper_object_title">Shared Media, %1$s, this object is auxiliary and can be deleted; all media or files will remain in Space.</string>
-    <string name="sharing_files_wrapper_object_title">Shared Files, %1$s, this object is auxiliary and can be deleted; all media or files will remain in Space.</string>
+    <string name="sharing_media_wrapper_object_title">Media Condiviso, %1$s, questo oggetto è ausiliario e può essere eliminato; tutti i media o i file rimarranno nello Spazio.</string>
+    <string name="sharing_files_wrapper_object_title">File Condiviso, %1$s, questo oggetto è ausiliario e può essere eliminato; tutti i media o i file rimarranno nello Spazio.</string>
     <string name="sharing_menu_btn_add">Aggiungi</string>
     <string name="sharing_menu_btn_open">Apri</string>
     <!--endregion-->
@@ -1313,11 +1314,14 @@
     <string name="payments_tier_current_title">Il tuo stato attuale:</string>
     <string name="payments_tier_current_valid">Valido fino al</string>
     <string name="payments_tier_current_paid_by">Pagato da</string>
-    <string name="payments_tier_current_paid_by_card">Scheda</string>
+    <string name="payments_tier_current_paid_by_card">Stripe</string>
     <string name="payments_tier_current_paid_by_crypto">Cripto</string>
     <string name="payments_tier_current_paid_by_apple">Abbonamento Apple</string>
     <string name="payments_tier_current_paid_by_google">Abbonamento Google</string>
     <string name="payments_tier_current_button">Gestisci pagamento</string>
+    <string name="membership_manage_tier_desktop">È possibile gestire il livello sulla piattaforma Desktop</string>
+    <string name="membership_manage_tier_ios">È possibile gestire il livello sulla piattaforma iOS</string>
+    <string name="membership_manage_tier_another_account">È possibile gestire il livello su un altro account Google</string>
     <string name="payments_tier_current_change_email_button">Cambia email</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Inserisci il codice inviato alla tua email</string>

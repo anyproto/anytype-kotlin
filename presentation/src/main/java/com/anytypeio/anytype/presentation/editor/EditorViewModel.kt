@@ -456,6 +456,7 @@ class EditorViewModel(
         viewModelScope.launch {
             permissions
                 .observe(space = vmParams.space)
+                .onEach { Timber.d("Object permission: $it") }
                 .collect {
                     permission.value = it
                 }

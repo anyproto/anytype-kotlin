@@ -89,7 +89,7 @@ class RelationDateValueViewModel(
     fun onDateSelected(selectedDate: TimeInMillis?) {
         if (selectedDate != null) {
             val properDate = dateProvider.adjustFromStartOfDayInUserTimeZoneToUTC(
-                timestamp = selectedDate,
+                timestamp = (selectedDate / 1000),
                 zoneId = ZoneId.systemDefault()
             )
             viewModelScope.launch {

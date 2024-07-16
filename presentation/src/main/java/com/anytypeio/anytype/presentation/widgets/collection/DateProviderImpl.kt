@@ -114,12 +114,20 @@ class DateProviderImpl @Inject constructor() : DateProvider {
         val startOfDay = localDate.atStartOfDay(zoneId)
 
         // Проверяем, если UTC timestamp находится на границе дня в локальной временной зоне
-        if (utcDateTime.toLocalDate() != startOfDay.toLocalDate()) {
-            // Если разница в днях есть, возвращаем начало следующего дня
-            return startOfDay.plusDays(1).toEpochSecond()
+        return when {
+            utcDateTime.toLocalDate().isAfter(startOfDay.toLocalDate()) -> {
+                // Если UTC timestamp позже начала дня в локальной временной зоне, возвращаем начало следующего дня
+                startOfDay.plusDays(1).toEpochSecond()
+            }
+            utcDateTime.toLocalDate().isBefore(startOfDay.toLocalDate()) -> {
+                // Если UTC timestamp раньше начала дня в локальной временной зоне, возвращаем начало предыдущего дня
+                startOfDay.minusDays(1).toEpochSecond()
+            }
+            else -> {
+                // В противном случае, возвращаем начало дня
+                startOfDay.toEpochSecond()
+            }
         }
-
-        return startOfDay.toEpochSecond()
     }
 
     override fun formatToDateString(timestamp: Long, pattern: String, locale: Locale): String {

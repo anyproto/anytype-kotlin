@@ -28,6 +28,7 @@ import com.anytypeio.anytype.presentation.sets.DateValueCommand
 import com.anytypeio.anytype.presentation.sets.RelationDateValueViewModel
 import com.anytypeio.anytype.ui.sets.modals.DatePickerFragment
 import javax.inject.Inject
+import timber.log.Timber
 
 open class RelationDateValueFragment : BaseBottomSheetComposeFragment() {
 
@@ -77,6 +78,7 @@ open class RelationDateValueFragment : BaseBottomSheetComposeFragment() {
     private fun observeCommands(command: DateValueCommand) {
         when (command) {
             is DateValueCommand.DispatchResult -> {
+                Timber.d("DROID-2501, Dispatching result: ${command.timeInSeconds}")
                 dispatchResultAndDismiss(command.timeInSeconds)
                 if (command.dismiss) dismiss()
             }

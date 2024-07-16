@@ -599,7 +599,11 @@ private fun SpaceMemberRequest(
                     text = member.name.orEmpty().ifEmpty { stringResource(id = R.string.untitled) },
                     style = PreviewTitle2Medium,
                     color = colorResource(id = R.color.text_primary),
-                    modifier = Modifier.weight(1f, fill = false)
+                    modifier = Modifier
+                        .weight(1f, fill = false)
+                        .padding(end = 12.dp),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 if (isUser) {
                     Spacer(modifier = Modifier.width(4.dp))
@@ -675,6 +679,25 @@ fun SpaceJoinRequestPreview() {
             mapOf(
                 Relations.ID to "1",
                 Relations.NAME to "Konstantin",
+                Relations.PARTICIPANT_STATUS to ParticipantStatus.JOINING.code.toDouble()
+            )
+        ),
+        icon = SpaceMemberIconView.Placeholder(name = "Konstantin"),
+        request = ShareSpaceMemberView.Config.Request.Join,
+        onApproveLeaveRequestClicked = {},
+        onViewRequestClicked = {},
+        isUser = false
+    )
+}
+
+@Composable
+@Preview
+fun SpaceJoinLongTitleRequestPreview() {
+    SpaceMemberRequest(
+        member = ObjectWrapper.SpaceMember(
+            mapOf(
+                Relations.ID to "1",
+                Relations.NAME to stringResource(id = R.string.default_text_placeholder),
                 Relations.PARTICIPANT_STATUS to ParticipantStatus.JOINING.code.toDouble()
             )
         ),

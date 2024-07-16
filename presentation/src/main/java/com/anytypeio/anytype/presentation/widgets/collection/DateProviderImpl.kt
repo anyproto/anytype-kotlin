@@ -99,23 +99,35 @@ class DateProviderImpl @Inject constructor() : DateProvider {
         return (startOfDay.toEpochSecond(ZoneOffset.UTC) * 1000)
     }
 
-    override fun adjustFromStartOfDayInUserTimeZoneToUTC(timestamp: TimeInMillis): TimeInSeconds {
-        // Create a Calendar instance for UTC with the given timestamp
-        val calendarUTC = Calendar.getInstance(TimeZone.getTimeZone("UTC")).apply {
-            timeInMillis = timestamp
-        }
+    override fun adjustFromStartOfDayInUserTimeZoneToUTC(timestamp: TimeInMillis, zoneId: ZoneId): TimeInSeconds {
+        // Convert the timestamp to an Instan
+        val instant = Instant.ofEpochSecond(timestamp)
 
-        // Create a Calendar instance for the local time zone, setting the time to the UTC calendar's time
-        val calendarLocal = Calendar.getInstance().apply {
-            timeInMillis = calendarUTC.timeInMillis
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }
+        // Convert the Instant to a ZonedDateTime in UTC
+        val utcDateTime = instant.atZone(ZoneOffset.UTC)
 
-        // Convert the local start of the day back to seconds
-        return calendarLocal.timeInMillis / 1000
+        // Convert the UTC ZonedDateTime to the local time zone
+        val localDateTime = utcDateTime.withZoneSameInstant(zoneId)
+
+        // Get the local date and the start of the day in the local time zone
+        val localDate = localDateTime.toLocalDate()
+        val startOfDay = localDate.atStartOfDay(zoneId)
+
+        // Check if the UTC timestamp is at the boundary of the day in the local time zone
+        return when {
+            utcDateTime.toLocalDate().isAfter(startOfDay.toLocalDate()) -> {
+                // If the UTC timestamp is after the start of the day in the local time zone, return the start of the next day
+                startOfDay.plusDays(1).toEpochSecond()
+            }
+            utcDateTime.toLocalDate().isBefore(startOfDay.toLocalDate()) -> {
+                // If the UTC timestamp is before the start of the day in the local time zone, return the start of the previous day
+                startOfDay.minusDays(1).toEpochSecond()
+            }
+            else -> {
+                // Otherwise, return the start of the day
+                startOfDay.toEpochSecond()
+            }
+        }
     }
 
     override fun formatToDateString(timestamp: Long, pattern: String, locale: Locale): String {

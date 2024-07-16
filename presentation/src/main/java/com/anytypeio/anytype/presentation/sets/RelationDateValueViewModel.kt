@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
+import java.time.ZoneId
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -87,7 +88,10 @@ class RelationDateValueViewModel(
 
     fun onDateSelected(selectedDate: TimeInMillis?) {
         if (selectedDate != null) {
-            val properDate = dateProvider.adjustFromStartOfDayInUserTimeZoneToUTC(timestamp = selectedDate)
+            val properDate = dateProvider.adjustFromStartOfDayInUserTimeZoneToUTC(
+                timestamp = (selectedDate / 1000),
+                zoneId = ZoneId.systemDefault()
+            )
             viewModelScope.launch {
                 commands.emit(
                     DateValueCommand.DispatchResult(timeInSeconds = properDate.toDouble())

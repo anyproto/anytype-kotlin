@@ -933,7 +933,7 @@
     <string name="widget_type_compact_list_description">Widget mit Listenansicht für ein bestimmtes Objekt</string>
     <string name="widget_type_list">Liste</string>
     <string name="widget_type_view">Ansicht</string>
-    <string name="widget_type_view_description">Widget with a view of set object</string>
+    <string name="widget_type_view_description">Widget view of Set or Collection</string>
     <string name="widget_type_compact_list">Kompakte Liste</string>
     <string name="widget_change_source">Quelle ändern</string>
     <string name="widget_change_type">Typ ändern</string>

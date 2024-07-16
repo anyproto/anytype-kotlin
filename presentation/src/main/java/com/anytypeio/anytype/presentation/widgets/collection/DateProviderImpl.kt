@@ -100,31 +100,31 @@ class DateProviderImpl @Inject constructor() : DateProvider {
     }
 
     override fun adjustFromStartOfDayInUserTimeZoneToUTC(timestamp: TimeInMillis, zoneId: ZoneId): TimeInSeconds {
-        // Преобразуем timestamp в Instant
+        // Convert the timestamp to an Instan
         val instant = Instant.ofEpochSecond(timestamp)
 
-        // Преобразуем Instant в ZonedDateTime в UTC
+        // Convert the Instant to a ZonedDateTime in UTC
         val utcDateTime = instant.atZone(ZoneOffset.UTC)
 
-        // Преобразуем UTC ZonedDateTime в локальную временную зону
+        // Convert the UTC ZonedDateTime to the local time zone
         val localDateTime = utcDateTime.withZoneSameInstant(zoneId)
 
-        // Получаем локальную дату и начало дня в локальной временной зоне
+        // Get the local date and the start of the day in the local time zone
         val localDate = localDateTime.toLocalDate()
         val startOfDay = localDate.atStartOfDay(zoneId)
 
-        // Проверяем, если UTC timestamp находится на границе дня в локальной временной зоне
+        // Check if the UTC timestamp is at the boundary of the day in the local time zone
         return when {
             utcDateTime.toLocalDate().isAfter(startOfDay.toLocalDate()) -> {
-                // Если UTC timestamp позже начала дня в локальной временной зоне, возвращаем начало следующего дня
+                // If the UTC timestamp is after the start of the day in the local time zone, return the start of the next day
                 startOfDay.plusDays(1).toEpochSecond()
             }
             utcDateTime.toLocalDate().isBefore(startOfDay.toLocalDate()) -> {
-                // Если UTC timestamp раньше начала дня в локальной временной зоне, возвращаем начало предыдущего дня
+                // If the UTC timestamp is before the start of the day in the local time zone, return the start of the previous day
                 startOfDay.minusDays(1).toEpochSecond()
             }
             else -> {
-                // В противном случае, возвращаем начало дня
+                // Otherwise, return the start of the day
                 startOfDay.toEpochSecond()
             }
         }

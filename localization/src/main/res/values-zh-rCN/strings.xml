@@ -931,7 +931,7 @@
     <string name="widget_type_compact_list_description">具有集合对象列表视图的小部件</string>
     <string name="widget_type_list">列表</string>
     <string name="widget_type_view">视图</string>
-    <string name="widget_type_view_description">Widget with a view of set object</string>
+    <string name="widget_type_view_description">Widget view of Set or Collection</string>
     <string name="widget_type_compact_list">紧凑列表</string>
     <string name="widget_change_source">更改来源</string>
     <string name="widget_change_type">更改类型</string>

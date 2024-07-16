@@ -365,12 +365,14 @@ fun GlobalSearchScreen(
                                 Spacer(modifier = Modifier.height(12.dp))
                                 Text(
                                     text = stringResource(id = R.string.nothing_found),
-                                    style = BodyCalloutMedium
+                                    style = BodyCalloutMedium,
+                                    color = colorResource(id = R.color.text_primary),
                                 )
                                 Text(
                                     text = stringResource(id = R.string.try_different_search_query),
                                     style = BodyCalloutRegular,
-                                    modifier = Modifier.padding(horizontal = 12.dp)
+                                    modifier = Modifier.padding(horizontal = 12.dp),
+                                    color = colorResource(id = R.color.text_primary),
                                 )
                             }
                         }
@@ -511,6 +513,11 @@ private fun GlobalSearchItem(
                 color = colorResource(id = R.color.text_secondary)
             )
         }
+        if (globalSearchItemView.links.isNotEmpty() || globalSearchItemView.backlinks.isNotEmpty()) {
+            SmallRectangle(
+                modifier = Modifier.align(Alignment.CenterEnd)
+            )
+        }
         MaterialTheme(
             typography = typography,
             shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp)),
@@ -535,6 +542,18 @@ private fun GlobalSearchItem(
             }
         }
     }
+}
+
+@Composable
+fun SmallRectangle(modifier: Modifier) {
+    Box(
+        modifier = modifier
+            .size(6.dp, 28.dp)
+            .background(
+                shape = RoundedCornerShape(topStart = 4.dp, bottomStart = 4.dp),
+                color = colorResource(id = R.color.glyph_active)
+            )
+    )
 }
 
 @Composable

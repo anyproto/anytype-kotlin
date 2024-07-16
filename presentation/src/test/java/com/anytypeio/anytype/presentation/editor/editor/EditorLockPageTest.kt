@@ -756,7 +756,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                 mime = mimeType,
                 name = fileName,
                 size = fileSize.toLong(),
-                url = builder.image(targetObjectId),
+                url = builder.large(targetObjectId),
                 indent = 0,
                 decorations = listOf(
                     BlockView.Decoration(

@@ -34,7 +34,7 @@ class FilterObjectViewHolder(val binding: ItemDvViewerFilterObjectBinding) :
             format = item.format
         )
 
-        if (item.condition.hasValue()) {
+        if (item.condition.hasValue() && item.filterValue.value.isNotEmpty()) {
             item.filterValue.value.forEachIndexed { index, objectView ->
                 if (objectView is ObjectView.Default) {
                     if (index == 0) {

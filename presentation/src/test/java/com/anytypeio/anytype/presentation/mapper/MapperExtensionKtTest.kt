@@ -2,7 +2,6 @@ package com.anytypeio.anytype.presentation.mapper
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -191,7 +190,7 @@ class MapperExtensionKtTest {
             size = size.toLong(),
             mime = mime,
             targetObjectId = targetObjectId,
-            url = urlBuilder.image(hash),
+            url = urlBuilder.large(hash),
             indent = indent,
             decorations = emptyList()
         )

@@ -16,7 +16,8 @@ class CheckAuthorizationStatus @Inject constructor(
 
     override suspend fun run(params: Unit) = safe {
         repository.getAccounts().let { accounts ->
-            if (accounts.isNotEmpty())
+            val mnemonic= repository.getMnemonic()
+            if (accounts.isNotEmpty() && !mnemonic.isNullOrBlank())
                 AuthStatus.AUTHORIZED
             else
                 AuthStatus.UNAUTHORIZED

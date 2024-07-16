@@ -136,7 +136,7 @@ class TierAndroidActiveTests : MembershipTestsSetup() {
                         period = validPeriod
                     ),
                     expectedAnyName = TierAnyName.Hidden,
-                    expectedButtonState = TierButton.Manage.Android.Disabled,
+                    expectedButtonState = TierButton.HiddenWithText.ManageOnAnotherAccount,
                     tier = result.tier,
                     expectedEmailState = TierEmail.Hidden
                 )
@@ -193,7 +193,7 @@ class TierAndroidActiveTests : MembershipTestsSetup() {
                         period = validPeriod
                     ),
                     expectedAnyName = TierAnyName.Hidden,
-                    expectedButtonState = TierButton.Manage.Android.Disabled,
+                    expectedButtonState = TierButton.HiddenWithText.ManageOnAnotherAccount,
                     tier = result.tier,
                     expectedEmailState = TierEmail.Hidden
                 )

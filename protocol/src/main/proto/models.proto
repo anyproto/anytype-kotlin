@@ -50,6 +50,7 @@ enum SmartBlockType {
     FileObject = 0x215;
 
     NotificationObject = 0x217;
+    DevicesObject = 0x218;
 }
 
 message Search {
@@ -595,21 +596,10 @@ message Range {
 */
 message Account {
     string id = 1; // User's thread id
-    string name = 2; // User name, that associated with this account
-    Avatar avatar = 3; // Avatar of a user's account
     Config config = 4;
     Status status = 5;
     Info info = 6;
 
-    /**
-    * Avatar of a user's account. It could be an image or color
-    */
-    message Avatar {
-        oneof avatar {
-            Block.Content.File image = 1; // Image of the avatar. Contains the hash to retrieve the image.
-            string color = 2; // Color of the avatar, used if image not set.
-        }
-    }
     message Config {
         bool enableDataview = 1;
         bool enableDebug = 2;
@@ -1200,7 +1190,7 @@ enum NameserviceNameType {
 }
 
 
-message Membership {    
+message Membership {
     enum Status {
         StatusUnknown = 0;
         // please wait a bit more, we are still processing your request
@@ -1217,7 +1207,7 @@ message Membership {
         // in this case please call Finalize to finish the process
         StatusPendingRequiresFinalization = 3;
     }
-    
+
     enum PaymentMethod {
         MethodNone = 0;
         MethodStripe = 1;
@@ -1259,7 +1249,7 @@ message MembershipTierData {
         PeriodTypeDays = 2;
         PeriodTypeWeeks = 3;
         PeriodTypeMonths = 4;
-        PeriodTypeYears = 5;  
+        PeriodTypeYears = 5;
     }
 
     // this is a unique Payment Node ID of the tier
@@ -1270,14 +1260,14 @@ message MembershipTierData {
     // just a short technical description
     string description = 3;
     // is this tier for testing and debugging only?
-    bool isTest = 4;    
+    bool isTest = 4;
     // how long is the period of the subscription
     PeriodType periodType = 5;
     // i.e. "5 days" or "3 years"
     uint32 periodValue = 6;
     // this one is a price we use ONLY on Stripe platform
     uint32 priceStripeUsdCents = 7;
-    // number of ANY NS names that this tier includes 
+    // number of ANY NS names that this tier includes
     // also in the "features" list (see below)
     uint32 anyNamesCountIncluded = 8;
     // somename.any - is of len 8
@@ -1299,8 +1289,21 @@ message MembershipTierData {
     string androidProductId = 17;
     string androidManageUrl = 18;
 }
+enum DeviceNetworkType {
+    WIFI = 0;
+    CELLULAR = 1;
+    NOT_CONNECTED = 2;
+}
 
 message Detail {
     string key = 1;
     google.protobuf.Value value = 2; // NUll - removes key
+}
+
+message DeviceInfo {
+    string id = 1;
+    string name = 2;
+    int64 addDate = 3;
+    bool archived = 4;
+    bool isConnected = 5;
 }

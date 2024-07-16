@@ -3,10 +3,8 @@ package com.anytypeio.anytype.ui.widgets.types
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -71,16 +69,26 @@ fun TreeWidgetObjectIcon(
             )
         }
         is ObjectIcon.Basic.Emoji -> {
-            UriImage(
-                uri = Emojifier.safeUri(icon.unicode),
-                modifier = modifier.padding(start = paddingStart, end = paddingEnd),
-                size = size
-            )
+            val emoji = Emojifier.safeUri(icon.unicode)
+            if (emoji != Emojifier.Config.EMPTY_URI) {
+                UriImage(
+                    uri = Emojifier.safeUri(icon.unicode),
+                    modifier = modifier.padding(start = paddingStart, end = paddingEnd),
+                    size = size
+                )
+            } else {
+                Text(
+                    text = icon.unicode,
+                    modifier = modifier.padding(start = paddingStart, end = paddingEnd),
+                    fontSize = 16.sp,
+                    maxLines = 1
+                )
+            }
         }
         is ObjectIcon.Basic.Image -> {
             UriImage(
                 uri = icon.hash,
-                modifier = Modifier.padding(start = paddingStart, end = paddingEnd),
+                modifier = modifier.padding(start = paddingStart, end = paddingEnd),
                 size = size
             )
         }
@@ -99,8 +107,8 @@ fun TreeWidgetObjectIcon(
                     painterResource(id = R.drawable.ic_dashboard_task_checkbox_not_checked),
                 contentDescription = "Task icon",
                 modifier = modifier
-                    .size(size)
                     .padding(start = paddingStart, end = paddingEnd)
+                    .size(size)
                     .noRippleClickable { onTaskIconClicked(icon.isChecked) }
             )
         }
@@ -132,6 +140,8 @@ fun UriCircleImage(
     Image(
         painter = rememberAsyncImagePainter(uri),
         contentDescription = "Icon from URI",
-        modifier = modifier.size(size).clip(CircleShape)
+        modifier = modifier
+            .size(size)
+            .clip(CircleShape)
     )
 }

@@ -38,7 +38,7 @@ class ObjectWrapperExtensionsKtTest {
 
         stubUrlBuilder(imageHash)
 
-        val result = urlBuilder.image(obj.iconImage!!)
+        val result = urlBuilder.large(obj.iconImage!!)
 
         val expected = URL + imageHash
 
@@ -57,7 +57,7 @@ class ObjectWrapperExtensionsKtTest {
             mapOf("iconEmoji" to emojiHash)
         )
 
-        val result = urlBuilder.image(obj.iconEmoji!!)
+        val result = urlBuilder.large(obj.iconEmoji!!)
 
         assertNull(result)
     }
@@ -71,7 +71,7 @@ class ObjectWrapperExtensionsKtTest {
             mapOf("iconEmoji" to emojiHash)
         )
 
-        val result = urlBuilder.image(obj.iconEmoji!!)
+        val result = urlBuilder.large(obj.iconEmoji!!)
 
         assertNull(result)
     }
@@ -151,7 +151,7 @@ class ObjectWrapperExtensionsKtTest {
 
     fun stubUrlBuilder(targetObjectId: String) {
         urlBuilder.stub {
-            on { image(targetObjectId) } doReturn URL + targetObjectId
+            on { large(targetObjectId) } doReturn URL + targetObjectId
         }
     }
 }

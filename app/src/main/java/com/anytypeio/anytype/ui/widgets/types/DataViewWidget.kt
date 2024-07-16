@@ -16,13 +16,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.InlineTextContent
-import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -32,20 +29,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.Placeholder
-import androidx.compose.ui.text.PlaceholderVerticalAlign
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
@@ -199,7 +190,8 @@ fun GalleryWidgetCard(
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
-    onObjectCheckboxClicked: (Id, Boolean) -> Unit
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit,
+    onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit
 ) {
     val isCardMenuExpanded = remember {
         mutableStateOf(false)
@@ -262,7 +254,7 @@ fun GalleryWidgetCard(
                 )
             }
             if (item.elements.isNotEmpty()) {
-                val withCover = item.showCover || item.elements.none { it.cover != null }
+                val withCover = item.showCover && item.elements.any { it.cover != null }
                 val withIcon = item.showIcon
                 LazyRow(
                     modifier = Modifier
@@ -291,7 +283,7 @@ fun GalleryWidgetCard(
                                 Box(
                                     modifier = Modifier
                                         .width(136.dp)
-                                        .height(if (withCover) 56.dp else 136.dp)
+                                        .height(if (withCover) 136.dp else 56.dp)
                                         .border(
                                             width = 1.dp,
                                             color = colorResource(id = R.color.shape_primary),
@@ -299,7 +291,7 @@ fun GalleryWidgetCard(
                                         )
                                         .clip(RoundedCornerShape(8.dp))
                                         .clickable {
-                                            onWidgetSourceClicked(item.source)
+                                            onSeeAllObjectsClicked(item)
                                         }
                                 ) {
                                     Text(
@@ -458,7 +450,7 @@ private fun GalleryWidgetItemCard(
     Box(
         modifier = Modifier
             .width(136.dp)
-            .height(if (withCover) 56.dp else 136.dp)
+            .height(if (withCover) 136.dp else 56.dp)
             .clip(RoundedCornerShape(8.dp))
             .clickable {
                 onItemClicked()
@@ -541,8 +533,7 @@ private fun GalleryWidgetItemCard(
                     size = 16.dp
                 )
                 Text(
-                    text = item.obj.getProperName()
-                        .ifEmpty { stringResource(id = R.string.untitled) },
+                    text = item.obj.getProperName().ifEmpty { stringResource(id = R.string.untitled) },
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     style = Caption1Medium,

@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.widgets
 
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVFilter
@@ -22,7 +21,6 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.cover
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
-import java.lang.UnsupportedOperationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
@@ -133,6 +131,12 @@ class DataViewListWidgetContainer(
                     }
                 } else {
                     val obj = getObject.run(widget.source.id)
+                    val dv = obj.blocks.find { it.content is DV }?.content
+                    val target = if (dv is DV) {
+                        dv.viewers.find { it.id == view } ?: dv.viewers.firstOrNull()
+                    } else {
+                        null
+                    }
                     val params = obj.parseDataViewStoreSearchParams(
                         subscription = widget.id,
                         viewer = view,
@@ -140,6 +144,7 @@ class DataViewListWidgetContainer(
                         config = widget.config,
                         limit = WidgetConfig.resolveListWidgetLimit(
                             isCompact = isCompact,
+                            isGallery = target?.type == DVViewerType.GALLERY,
                             limit = when(widget) {
                                 is Widget.List -> widget.limit
                                 is Widget.View -> widget.limit
@@ -156,18 +161,13 @@ class DataViewListWidgetContainer(
                                 obj = obj,
                                 activeView = view
                             )
-                            val dv = obj.blocks.find { it.content is DV }?.content
-                            val target = if (dv is DV) {
-                                dv.viewers.find { it.id == view }
-                            } else {
-                                null
-                            }
                             if (target != null && target.type == DVViewerType.GALLERY) {
                                 val withCover = !target.coverRelationKey.isNullOrEmpty()
                                 val withIcon = !target.hideIcon
                                 WidgetView.Gallery(
                                     id = widget.id,
                                     source = widget.source,
+                                    view = target.id,
                                     tabs = obj.tabs(viewer = view),
                                     elements = objects.map { obj ->
                                         WidgetView.SetOfObjects.Element(
@@ -182,7 +182,8 @@ class DataViewListWidgetContainer(
                                             cover = if (withCover) {
                                                 obj.cover(
                                                     urlBuilder = urlBuilder,
-                                                    coverImageHashProvider = coverImageHashProvider
+                                                    coverImageHashProvider = coverImageHashProvider,
+                                                    isMedium = true
                                                 )
                                             } else {
                                                 null
@@ -244,7 +245,8 @@ class DataViewListWidgetContainer(
                 source = widget.source,
                 tabs = emptyList(),
                 elements = emptyList(),
-                isExpanded = true
+                isExpanded = true,
+                view = null
             )
             is Widget.Link, is Widget.Tree -> {
                 throw IllegalStateException("Incompatible widget type.")

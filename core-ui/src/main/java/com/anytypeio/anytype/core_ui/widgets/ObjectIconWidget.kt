@@ -217,11 +217,19 @@ class ObjectIconWidget @JvmOverloads constructor(
                 composeView.gone()
             }
             try {
-                Glide
-                    .with(this)
-                    .load(Emojifier.uri(emoji))
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(binding.ivEmoji)
+                val adapted = Emojifier.safeUri(emoji)
+                if (adapted != Emojifier.Config.EMPTY_URI) {
+                    binding.tvEmojiFallback.gone()
+                    Glide
+                        .with(this)
+                        .load(Emojifier.uri(emoji))
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(binding.ivEmoji)
+                } else {
+                    binding.ivEmoji.setImageDrawable(null)
+                    binding.tvEmojiFallback.text = emoji
+                    binding.tvEmojiFallback.visible()
+                }
             } catch (e: Throwable) {
                 Timber.w(e, "Error while setting emoji icon for: $emoji")
             }

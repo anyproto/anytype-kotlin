@@ -190,17 +190,14 @@ private fun MembershipTierData.mapActiveTierButtonAndNameStates(
             id == MembershipConstants.EXPLORER_ID -> {
                 TierButton.ChangeEmail to TierAnyName.Hidden
             }
-            paymentMethod == METHOD_NONE || paymentMethod == METHOD_CRYPTO -> {
+            paymentMethod == METHOD_NONE -> {
                 TierButton.Hidden to TierAnyName.Hidden
             }
-            paymentMethod == METHOD_STRIPE && !stripeManageUrl.isNullOrBlank() -> {
-                TierButton.Manage.External.Enabled(stripeManageUrl) to TierAnyName.Hidden
+            paymentMethod == METHOD_STRIPE || paymentMethod == METHOD_CRYPTO -> {
+                TierButton.HiddenWithText.ManageOnDesktop to TierAnyName.Hidden
             }
-            paymentMethod == METHOD_INAPP_APPLE && !iosManageUrl.isNullOrBlank() -> {
-                TierButton.Manage.External.Enabled(iosManageUrl) to TierAnyName.Hidden
-            }
-            paymentMethod == METHOD_INAPP_GOOGLE -> {
-                TierButton.Manage.External.Enabled(androidManageUrl) to TierAnyName.Hidden
+            paymentMethod == METHOD_INAPP_APPLE -> {
+                TierButton.HiddenWithText.ManageOnIOS to TierAnyName.Hidden
             }
             else -> {
                 TierButton.Hidden to TierAnyName.Hidden
@@ -222,13 +219,13 @@ private fun MembershipTierData.mapActiveTierButtonAndNameStates(
                 ) {
                     TierButton.Manage.Android.Enabled(androidProductId) to TierAnyName.Hidden
                 } else {
-                    TierButton.Manage.Android.Disabled to TierAnyName.Hidden
+                    TierButton.HiddenWithText.ManageOnAnotherAccount to TierAnyName.Hidden
                 }
             }
-            else -> TierButton.Manage.Android.Disabled to TierAnyName.Hidden
+            else -> TierButton.HiddenWithText.ManageOnAnotherAccount to TierAnyName.Hidden
         }
     } else {
-        TierButton.Manage.Android.Disabled to TierAnyName.Hidden
+        TierButton.HiddenWithText.ManageOnAnotherAccount to TierAnyName.Hidden
     }
 }
 

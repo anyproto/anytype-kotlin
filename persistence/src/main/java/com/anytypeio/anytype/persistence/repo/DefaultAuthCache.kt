@@ -55,7 +55,7 @@ class DefaultAuthCache(
     /**
      * N.B. Migrating sensitive data from default to encrypted prefs.
      */
-    override suspend fun getMnemonic(): String {
+    override suspend fun getMnemonic(): String? {
         val nonEncryptedMnemonic = defaultPrefs.getString(MNEMONIC_KEY, null)
         return if (nonEncryptedMnemonic != null) {
             encryptedPrefs.edit().putString(MNEMONIC_KEY, nonEncryptedMnemonic).apply()
@@ -63,7 +63,7 @@ class DefaultAuthCache(
             nonEncryptedMnemonic
         } else {
             val encryptedMnemonic = encryptedPrefs.getString(MNEMONIC_KEY, null)
-            encryptedMnemonic ?: throw IllegalStateException("Recovery phrase is missing")
+            encryptedMnemonic
         }
     }
 

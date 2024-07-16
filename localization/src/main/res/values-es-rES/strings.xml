@@ -933,7 +933,7 @@
     <string name="widget_type_compact_list_description">Widget con lista de objetos del conjunto</string>
     <string name="widget_type_list">Lista</string>
     <string name="widget_type_view">Vista</string>
-    <string name="widget_type_view_description">Widget with a view of set object</string>
+    <string name="widget_type_view_description">Widget view of Set or Collection</string>
     <string name="widget_type_compact_list">Lista compacta</string>
     <string name="widget_change_source">Cambiar de origen</string>
     <string name="widget_change_type">Cambiar tipo</string>
@@ -1046,6 +1046,7 @@
     <string name="sharing_menu_save_as_file_option">Archivo</string>
     <string name="sharing_menu_save_as_images_option">Imágenes</string>
     <string name="sharing_menu_save_as_files_option">Archivos</string>
+    <string name="sharing_menu_save_as_videos_option">Videos</string>
     <string name="sharing_menu_data">Datos</string>
     <string name="sharing_menu_add_to_anytype_header_title">Añadir a Anytype</string>
     <string name="sharing_menu_add_to_anytype_error">Anytype file upload error: %1$s</string>
@@ -1312,11 +1313,14 @@
     <string name="payments_tier_current_title">Tu estado actual:</string>
     <string name="payments_tier_current_valid">Válido hasta</string>
     <string name="payments_tier_current_paid_by">Pagado mediante</string>
-    <string name="payments_tier_current_paid_by_card">Tarjeta</string>
+    <string name="payments_tier_current_paid_by_card">Stripe</string>
     <string name="payments_tier_current_paid_by_crypto">Cripto</string>
     <string name="payments_tier_current_paid_by_apple">Suscripción de Apple</string>
     <string name="payments_tier_current_paid_by_google">Suscripción de Google</string>
     <string name="payments_tier_current_button">Gestionar el pago</string>
+    <string name="membership_manage_tier_desktop">You can manage tier on Desktop platform</string>
+    <string name="membership_manage_tier_ios">You can manage tier on iOS platform</string>
+    <string name="membership_manage_tier_another_account">You can manage tier on another Google account</string>
     <string name="payments_tier_current_change_email_button">Cambiar correo electrónico</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Introduce el código enviado a tu buzón de correo electrónico</string>

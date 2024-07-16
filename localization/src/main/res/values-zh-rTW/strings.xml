@@ -931,7 +931,7 @@
     <string name="widget_type_compact_list_description">具有物件集合列表視圖的小工具</string>
     <string name="widget_type_list">列表</string>
     <string name="widget_type_view">檢視</string>
-    <string name="widget_type_view_description">Widget with a view of set object</string>
+    <string name="widget_type_view_description">Widget view of Set or Collection</string>
     <string name="widget_type_compact_list">緊湊型列表</string>
     <string name="widget_change_source">變更來源</string>
     <string name="widget_change_type">更改類型</string>
@@ -1044,6 +1044,7 @@
     <string name="sharing_menu_save_as_file_option">檔案</string>
     <string name="sharing_menu_save_as_images_option">圖像</string>
     <string name="sharing_menu_save_as_files_option">檔案</string>
+    <string name="sharing_menu_save_as_videos_option">Videos</string>
     <string name="sharing_menu_data">資料</string>
     <string name="sharing_menu_add_to_anytype_header_title">添加到 Anytype</string>
     <string name="sharing_menu_add_to_anytype_error">Anytype file upload error: %1$s</string>
@@ -1306,11 +1307,14 @@
     <string name="payments_tier_current_title">您當前的狀態：</string>
     <string name="payments_tier_current_valid">有效期限至</string>
     <string name="payments_tier_current_paid_by">付款者</string>
-    <string name="payments_tier_current_paid_by_card">卡片</string>
+    <string name="payments_tier_current_paid_by_card">Stripe</string>
     <string name="payments_tier_current_paid_by_crypto">加密貨幣</string>
     <string name="payments_tier_current_paid_by_apple">Apple 訂閱</string>
     <string name="payments_tier_current_paid_by_google">Google 訂閱</string>
     <string name="payments_tier_current_button">管理付款方式</string>
+    <string name="membership_manage_tier_desktop">You can manage tier on Desktop platform</string>
+    <string name="membership_manage_tier_ios">You can manage tier on iOS platform</string>
+    <string name="membership_manage_tier_another_account">You can manage tier on another Google account</string>
     <string name="payments_tier_current_change_email_button">變更 e-mail</string>
     <!-- Payments Code -->
     <string name="payments_code_title">請輸入發送到您 email 的兌換代碼</string>

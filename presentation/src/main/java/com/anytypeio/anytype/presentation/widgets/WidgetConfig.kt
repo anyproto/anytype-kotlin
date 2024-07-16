@@ -25,8 +25,12 @@ object WidgetConfig {
                 && SupportedLayouts.isSupported(obj.layout)
     }
 
-    fun resolveListWidgetLimit(isCompact: Boolean, limit: Int) : Int {
-        return if (isCompact) {
+    fun resolveListWidgetLimit(
+        isCompact: Boolean,
+        isGallery: Boolean = false,
+        limit: Int
+    ) : Int {
+        return if (isCompact || isGallery) {
             if (compactListLimitOptions.contains(limit)) {
                 limit
             } else {

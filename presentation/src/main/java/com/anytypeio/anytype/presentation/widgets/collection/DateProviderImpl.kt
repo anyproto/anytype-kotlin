@@ -99,23 +99,27 @@ class DateProviderImpl @Inject constructor() : DateProvider {
         return (startOfDay.toEpochSecond(ZoneOffset.UTC) * 1000)
     }
 
-    override fun adjustFromStartOfDayInUserTimeZoneToUTC(timestamp: TimeInMillis): TimeInSeconds {
-        // Create a Calendar instance for UTC with the given timestamp
-        val calendarUTC = Calendar.getInstance(TimeZone.getTimeZone("UTC")).apply {
-            timeInMillis = timestamp
+    override fun adjustFromStartOfDayInUserTimeZoneToUTC(timestamp: TimeInMillis, zoneId: ZoneId): TimeInSeconds {
+        // Преобразуем timestamp в Instant
+        val instant = Instant.ofEpochSecond(timestamp)
+
+        // Преобразуем Instant в ZonedDateTime в UTC
+        val utcDateTime = instant.atZone(ZoneOffset.UTC)
+
+        // Преобразуем UTC ZonedDateTime в локальную временную зону
+        val localDateTime = utcDateTime.withZoneSameInstant(zoneId)
+
+        // Получаем локальную дату и начало дня в локальной временной зоне
+        val localDate = localDateTime.toLocalDate()
+        val startOfDay = localDate.atStartOfDay(zoneId)
+
+        // Проверяем, если UTC timestamp находится на границе дня в локальной временной зоне
+        if (utcDateTime.toLocalDate() != startOfDay.toLocalDate()) {
+            // Если разница в днях есть, возвращаем начало следующего дня
+            return startOfDay.plusDays(1).toEpochSecond()
         }
 
-        // Create a Calendar instance for the local time zone, setting the time to the UTC calendar's time
-        val calendarLocal = Calendar.getInstance().apply {
-            timeInMillis = calendarUTC.timeInMillis
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }
-
-        // Convert the local start of the day back to seconds
-        return calendarLocal.timeInMillis / 1000
+        return startOfDay.toEpochSecond()
     }
 
     override fun formatToDateString(timestamp: Long, pattern: String, locale: Locale): String {

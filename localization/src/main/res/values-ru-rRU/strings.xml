@@ -937,7 +937,7 @@
     <string name="widget_type_compact_list_description">Виджет со списком объектов из набора</string>
     <string name="widget_type_list">Список</string>
     <string name="widget_type_view">Вид</string>
-    <string name="widget_type_view_description">Widget with a view of set object</string>
+    <string name="widget_type_view_description">Widget view of Set or Collection</string>
     <string name="widget_type_compact_list">Компактный список</string>
     <string name="widget_change_source">Изменить источник</string>
     <string name="widget_change_type">Изменить тип</string>

@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Notification
 import com.anytypeio.anytype.core_models.NotificationPayload
+import com.anytypeio.anytype.core_models.NotificationStatus
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.core_utils.ext.cancel
@@ -133,7 +134,7 @@ class MainViewModel(
                 // TODO migrate to system notifications
                 delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
                 commands.emit(Command.Notifications)
-            } else {
+            } else if (notification.status == NotificationStatus.CREATED) {
                 if (notificator.areNotificationsEnabled) {
                     notificator.notify(notification)
                 } else {

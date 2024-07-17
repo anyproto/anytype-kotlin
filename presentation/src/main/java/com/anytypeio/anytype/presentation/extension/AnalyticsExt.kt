@@ -343,6 +343,22 @@ fun CoroutineScope.sendAnalyticsSearchWordsEvent(
     )
 }
 
+fun CoroutineScope.sendAnalyticsSearchBacklinksEvent(
+    analytics: Analytics,
+    spaceParams: AnalyticSpaceHelperDelegate.Params
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.searchBacklink,
+        props = Props(
+            mapOf(
+                EventsPropertiesKey.permissions to spaceParams.permission,
+                EventsPropertiesKey.spaceType to spaceParams.spaceType
+            )
+        )
+    )
+}
+
 fun CoroutineScope.sendAnalyticsSetCoverEvent(
     analytics: Analytics
 ) {

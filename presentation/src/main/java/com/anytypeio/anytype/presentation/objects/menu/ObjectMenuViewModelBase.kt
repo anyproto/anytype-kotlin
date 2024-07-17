@@ -26,6 +26,7 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.common.Delegator
+import com.anytypeio.anytype.presentation.common.PayloadDelegator
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddToCollectionEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddToFavoritesEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBackLinkAddEvent
@@ -60,7 +61,8 @@ abstract class ObjectMenuViewModelBase(
     private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader,
     private val createWidget: CreateWidget,
     private val spaceManager: SpaceManager,
-    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val payloadDelegator: PayloadDelegator
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     protected val jobs = mutableListOf<Job>()
@@ -392,15 +394,15 @@ abstract class ObjectMenuViewModelBase(
                         ctx = config.widgets,
                         source = obj.id,
                         type = if (obj.layout.isDataView()) {
-                            WidgetLayout.COMPACT_LIST
+                            WidgetLayout.VIEW
                         } else {
                             WidgetLayout.TREE
                         }
                     )
                 ).collect { result ->
                     result.fold(
-                        onSuccess = {
-                            sendToast("Widget created")
+                        onSuccess = { payload ->
+                            payloadDelegator.dispatch(payload)
                             isDismissed.value = true
                         },
                         onFailure = {

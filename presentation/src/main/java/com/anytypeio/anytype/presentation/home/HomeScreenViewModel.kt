@@ -63,6 +63,7 @@ import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
+import com.anytypeio.anytype.presentation.common.PayloadDelegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.extension.sendAddWidgetEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
@@ -174,7 +175,8 @@ class HomeScreenViewModel(
     private val userPermissionProvider: UserPermissionProvider,
     private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val coverImageHashProvider: CoverImageHashProvider
+    private val coverImageHashProvider: CoverImageHashProvider,
+    private val payloadDelegator: PayloadDelegator
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -488,14 +490,18 @@ class HomeScreenViewModel(
 
     private fun proceedWithObjectViewStatePipeline() {
         val externalChannelEvents = spaceManager.observe().flatMapLatest {  config ->
-            interceptEvents.build(
-                InterceptEvents.Params(config.widgets)
-            ).map { events ->
-                Payload(
-                    context = config.widgets,
-                    events = events
-                )
-            }
+            merge(
+                interceptEvents.build(
+                    InterceptEvents.Params(config.widgets)
+                ).map { events ->
+                    Payload(
+                        context = config.widgets,
+                        events = events
+                    )
+                },
+                payloadDelegator.intercept(ctx = config.widgets)
+            )
+
         }
 
         val internalChannelEvents = objectPayloadDispatcher.flow()
@@ -1709,7 +1715,8 @@ class HomeScreenViewModel(
         private val userPermissionProvider: UserPermissionProvider,
         private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
         private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-        private val coverImageHashProvider: CoverImageHashProvider
+        private val coverImageHashProvider: CoverImageHashProvider,
+        private val payloadDelegator: PayloadDelegator
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -1750,7 +1757,8 @@ class HomeScreenViewModel(
             userPermissionProvider = userPermissionProvider,
             deepLinkToObjectDelegate = deepLinkToObjectDelegate,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-            coverImageHashProvider = coverImageHashProvider
+            coverImageHashProvider = coverImageHashProvider,
+            payloadDelegator = payloadDelegator
         ) as T
     }
 

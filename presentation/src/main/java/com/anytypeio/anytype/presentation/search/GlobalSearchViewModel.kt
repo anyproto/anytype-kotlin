@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.search
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
@@ -34,7 +35,10 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.search.SearchWithMeta
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchBacklinksEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -51,7 +55,6 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.take
@@ -62,8 +65,10 @@ class GlobalSearchViewModel(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val storeOfRelations: StoreOfRelations,
     private val spaceManager: SpaceManager,
-    private val urlBuilder: UrlBuilder
-) : BaseViewModel() {
+    private val urlBuilder: UrlBuilder,
+    private val analytics: Analytics,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val userInput = MutableStateFlow(EMPTY_STRING_VALUE)
     private val searchQuery = userInput
@@ -236,6 +241,12 @@ class GlobalSearchViewModel(
                 )
             )
         }
+        viewModelScope.launch {
+            sendAnalyticsSearchResultEvent(
+                analytics = analytics,
+                spaceParams = provideParams(spaceManager.get())
+            )
+        }
     }
 
     fun onClearRelatedObjectClicked() {
@@ -250,6 +261,12 @@ class GlobalSearchViewModel(
             userInput.value = EMPTY_STRING_VALUE
             mode.value = Mode.Related(globalSearchItemView)
         }
+        viewModelScope.launch {
+            sendAnalyticsSearchBacklinksEvent(
+                analytics = analytics,
+                spaceParams = provideParams(spaceManager.get())
+            )
+        }
     }
 
     class Factory @Inject constructor(
@@ -257,7 +274,9 @@ class GlobalSearchViewModel(
         private val storeOfObjectTypes: StoreOfObjectTypes,
         private val storeOfRelations: StoreOfRelations,
         private val spaceManager: SpaceManager,
-        private val urlBuilder: UrlBuilder
+        private val urlBuilder: UrlBuilder,
+        private val analytics: Analytics,
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -266,7 +285,9 @@ class GlobalSearchViewModel(
                 storeOfObjectTypes = storeOfObjectTypes,
                 storeOfRelations = storeOfRelations,
                 spaceManager = spaceManager,
-                urlBuilder = urlBuilder
+                urlBuilder = urlBuilder,
+                analytics = analytics,
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
             ) as T
         }
     }

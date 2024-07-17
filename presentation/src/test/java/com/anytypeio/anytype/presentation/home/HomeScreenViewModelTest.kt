@@ -2569,11 +2569,18 @@ class HomeScreenViewModelTest {
         interceptEvents.stub {
             on { build(InterceptEvents.Params(WIDGET_OBJECT_ID)) } doReturn events
         }
+
+        payloadDelegator.stub {
+            on { intercept(ctx = WIDGET_OBJECT_ID) } doReturn emptyFlow()
+        }
     }
 
     private fun stubSecondWidgetObjectInterceptEvents(events: Flow<List<Event>>) {
         interceptEvents.stub {
             on { build(InterceptEvents.Params(SECOND_WIDGET_OBJECT_ID)) } doReturn events
+        }
+        payloadDelegator.stub {
+            on { intercept(ctx = SECOND_WIDGET_OBJECT_ID) } doReturn emptyFlow()
         }
     }
 

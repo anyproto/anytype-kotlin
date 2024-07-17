@@ -786,10 +786,13 @@ class EditorViewModel(
                     }
                 }
                 if (permission?.isOwnerOrEditor() == true) {
-                    // TODO
+                    if (mode == EditorMode.Read) {
+                        mode = EditorMode.Edit
+                    }
                 } else {
-                    if (mode == EditorMode.Edit)
+                    if (mode == EditorMode.Edit) {
                         mode = EditorMode.Read
+                    }
                 }
 
                 footers.value = getFooterState(root, details)

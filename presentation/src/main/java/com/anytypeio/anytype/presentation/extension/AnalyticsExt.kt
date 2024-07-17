@@ -35,11 +35,13 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.features.WidgetAnalytics
 import com.anytypeio.anytype.analytics.props.Props
+import com.anytypeio.anytype.analytics.props.Props.Companion.OBJ_RELATION_CUSTOM
 import com.anytypeio.anytype.analytics.props.Props.Companion.OBJ_TYPE_CUSTOM
 import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.TextStyle
@@ -49,8 +51,10 @@ import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.editor.Markup
+import com.anytypeio.anytype.presentation.relations.values
 import com.anytypeio.anytype.presentation.sets.isChangingDefaultTypeAvailable
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.viewerByIdOrFirst
@@ -726,26 +730,6 @@ fun CoroutineScope.sendAnalyticsCreateRelationEvent(
     )
 }
 
-fun CoroutineScope.sendAnalyticsAddRelationEvent(
-    analytics: Analytics,
-    format: String,
-    type: String,
-    spaceParams: AnalyticSpaceHelperDelegate.Params
-) {
-    sendEvent(
-        analytics = analytics,
-        eventName = EventsDictionary.relationAdd,
-        props = Props(
-            mapOf(
-                EventsPropertiesKey.format to format,
-                EventsPropertiesKey.type to type,
-                EventsPropertiesKey.permissions to spaceParams.permission,
-                EventsPropertiesKey.spaceType to spaceParams.spaceType
-            )
-        )
-    )
-}
-
 fun CoroutineScope.sendAnalyticsRelationValueEvent(
     analytics: Analytics,
     type: String = ""
@@ -761,12 +745,30 @@ fun CoroutineScope.sendAnalyticsRelationValueEvent(
     )
 }
 
-fun CoroutineScope.sendAnalyticsRelationDeleteEvent(
-    analytics: Analytics
+suspend fun Analytics.sendAnalyticsRelationEvent(
+    eventName: String,
+    relationKey: Key,
+    type: String? = null,
+    storeOfRelations: StoreOfRelations,
+    spaceParams: AnalyticSpaceHelperDelegate.Params
 ) {
+    val relation = storeOfRelations.getByKey(relationKey)
+    val sourceObject = relation?.sourceObject ?: OBJ_RELATION_CUSTOM
     sendEvent(
-        analytics = analytics,
-        eventName = EventsDictionary.relationDelete
+        eventName = eventName,
+        props = Props(
+            buildMap {
+                put(EventsPropertiesKey.relationKey, sourceObject)
+                if (relation != null) {
+                    put(EventsPropertiesKey.format, relation.format.getPropName())
+                }
+                if (type != null) {
+                    put(EventsPropertiesKey.type, type)
+                }
+                put(EventsPropertiesKey.permissions, spaceParams.permission)
+                put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
+            }
+        )
     )
 }
 

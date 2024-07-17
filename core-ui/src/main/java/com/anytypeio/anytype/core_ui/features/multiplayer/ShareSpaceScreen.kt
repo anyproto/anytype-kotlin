@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -209,7 +210,7 @@ fun ShareSpaceScreen(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight()
+                    .fillMaxHeight()
             ) {
                 members.forEachIndexed { index, member ->
                     item {
@@ -258,7 +259,7 @@ fun ShareSpaceScreen(
                 if (members.size > 2) {
                     // Workaround adding footer to prevent content invisible behind link card
                     item {
-                        Spacer(modifier = Modifier.height(324.dp))
+                        Spacer(modifier = Modifier.height(150.dp))
                     }
                 }
             }

@@ -114,7 +114,7 @@ fun DataViewListWidgetCard(
                 isCardMenuExpanded = isCardMenuExpanded,
                 isHeaderMenuExpanded = isHeaderMenuExpanded,
                 onWidgetHeaderClicked = {
-                    if (mode is InteractionMode.Default) {
+                    if (mode !is InteractionMode.Edit) {
                         onWidgetSourceClicked(item.source)
                     }
                 },
@@ -235,7 +235,7 @@ fun GalleryWidgetCard(
                 isCardMenuExpanded = isCardMenuExpanded,
                 isHeaderMenuExpanded = isHeaderMenuExpanded,
                 onWidgetHeaderClicked = {
-                    if (mode is InteractionMode.Default) {
+                    if (mode !is InteractionMode.Edit) {
                         onWidgetSourceClicked(item.source)
                     }
                 },

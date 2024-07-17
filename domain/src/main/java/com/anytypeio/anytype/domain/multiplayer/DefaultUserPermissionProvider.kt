@@ -76,6 +76,7 @@ class DefaultUserPermissionProvider @Inject constructor(
     }
 
     override fun start() {
+        logger.logInfo("Starting DefaultUserPermissionProvider")
         clear()
         jobs += scope.launch(dispatchers.io) {
             val account = repo.getCurrentAccountId()

@@ -12,4 +12,8 @@ class BasicLogger @Inject constructor() : Logger {
     override fun logException(e: Throwable) {
         Timber.e(e)
     }
+
+    override fun logInfo(msg: String) {
+        Timber.i(msg)
+    }
 }

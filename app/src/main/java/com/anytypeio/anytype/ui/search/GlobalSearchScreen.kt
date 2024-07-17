@@ -406,7 +406,7 @@ private fun GlobalSearchItem(
                     onObjectClicked(globalSearchItemView)
                 },
                 onLongClick = {
-                    if (globalSearchItemView.links.isNotEmpty()) {
+                    if (globalSearchItemView.links.isNotEmpty() || globalSearchItemView.backlinks.isNotEmpty()) {
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         focusManager.clearFocus(true)
                         scope.launch {

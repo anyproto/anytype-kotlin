@@ -37,6 +37,7 @@ import com.anytypeio.anytype.domain.workspace.NotificationsChannel
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
+import com.anytypeio.anytype.presentation.common.PayloadDelegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.Unsubscriber
@@ -287,4 +288,5 @@ interface HomeScreenDependencies : ComponentDependencies {
     fun notificationChannel(): NotificationsChannel
     fun activeSpaceMembers() : ActiveSpaceMemberSubscriptionContainer
     fun analyticSpaceHelperDelegate(): AnalyticSpaceHelperDelegate
+    fun payloadDelegator(): PayloadDelegator
 }

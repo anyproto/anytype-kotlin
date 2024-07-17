@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
+import com.anytypeio.anytype.presentation.common.PayloadDelegator
 import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -43,6 +44,7 @@ class ObjectSetMenuViewModel(
     menuOptionsProvider: ObjectMenuOptionsProvider,
     createWidget: CreateWidget,
     spaceManager: SpaceManager,
+    payloadDelegator: PayloadDelegator,
     private val objectState: StateFlow<ObjectState>,
     private val analytics: Analytics,
     private val addObjectToCollection: AddObjectToCollection,
@@ -64,7 +66,8 @@ class ObjectSetMenuViewModel(
     debugGoroutinesShareDownloader = debugGoroutinesShareDownloader,
     createWidget = createWidget,
     spaceManager = spaceManager,
-    analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+    analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+    payloadDelegator = payloadDelegator
 ) {
 
     @Suppress("UNCHECKED_CAST")
@@ -85,7 +88,8 @@ class ObjectSetMenuViewModel(
         private val createWidget: CreateWidget,
         private val spaceManager: SpaceManager,
         private val deepLinkResolver: DeepLinkResolver,
-        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        private val payloadDelegator: PayloadDelegator
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectSetMenuViewModel(
@@ -105,7 +109,8 @@ class ObjectSetMenuViewModel(
                 createWidget = createWidget,
                 spaceManager = spaceManager,
                 deepLinkResolver = deepLinkResolver,
-                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+                payloadDelegator = payloadDelegator
             ) as T
         }
     }

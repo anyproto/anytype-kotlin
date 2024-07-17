@@ -62,6 +62,7 @@ import com.anytypeio.anytype.domain.widgets.SetWidgetActiveView
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
+import com.anytypeio.anytype.presentation.common.PayloadDelegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -218,6 +219,9 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var coverImageHashProvider: CoverImageHashProvider
+
+    @Mock
+    lateinit var payloadDelegator: PayloadDelegator
 
     lateinit var userPermissionProvider: UserPermissionProvider
 
@@ -2889,7 +2893,8 @@ class HomeScreenViewModelTest {
         userPermissionProvider = userPermissionProvider,
         deepLinkToObjectDelegate = deepLinkToObjectDelegate,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-        coverImageHashProvider = coverImageHashProvider
+        coverImageHashProvider = coverImageHashProvider,
+        payloadDelegator = payloadDelegator
     )
 
     companion object {

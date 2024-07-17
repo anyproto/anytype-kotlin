@@ -357,7 +357,9 @@ private fun DataViewTabs(
                             end = if (index == tabs.lastIndex) 16.dp else 0.dp
                         )
                         .noRippleClickable {
-                            onChangeWidgetView(tab.id)
+                            if (!tab.isSelected) {
+                                onChangeWidgetView(tab.id)
+                            }
                         },
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,

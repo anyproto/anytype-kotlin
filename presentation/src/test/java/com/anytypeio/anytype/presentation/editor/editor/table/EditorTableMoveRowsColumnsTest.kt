@@ -1402,6 +1402,7 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubOpenDocument(document)
         stubAnalyticSpaceHelperDelegate()
+        stubUserPermission()
 
         val row0 = rows[0].id
         val columnToMoveId = columns[0].id

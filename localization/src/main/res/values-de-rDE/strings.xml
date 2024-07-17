@@ -1455,5 +1455,5 @@ Please provide specific details of your needs here.</string>
     <string name="sort_empty_values_desc">Leere Werte anzeigen</string>
     <string name="sort_empty_values_bottom">Ganz unten</string>
     <string name="sort_empty_values_top">Ganz oben</string>
-    <string name="widget_view_see_all_objects">See all objects</string>
+    <string name="widget_view_see_all_objects">Alle Objekte ansehen</string>
 </resources>

@@ -38,6 +38,7 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchBacklinksEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -238,6 +239,12 @@ class GlobalSearchViewModel(
                     target = globalSearchItemView.id,
                     space = globalSearchItemView.space.id
                 )
+            )
+        }
+        viewModelScope.launch {
+            sendAnalyticsSearchResultEvent(
+                analytics = analytics,
+                spaceParams = provideParams(spaceManager.get())
             )
         }
     }

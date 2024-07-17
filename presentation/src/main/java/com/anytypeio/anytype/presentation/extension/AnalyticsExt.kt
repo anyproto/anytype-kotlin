@@ -328,6 +328,22 @@ fun CoroutineScope.sendAnalyticsSearchResultEvent(
     )
 }
 
+fun CoroutineScope.sendAnalyticsSearchResultEvent(
+    analytics: Analytics,
+    spaceParams: AnalyticSpaceHelperDelegate.Params
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.searchResult,
+        props = Props(
+            mapOf(
+                EventsPropertiesKey.permissions to spaceParams.permission,
+                EventsPropertiesKey.spaceType to spaceParams.spaceType
+            )
+        )
+    )
+}
+
 fun CoroutineScope.sendAnalyticsSearchWordsEvent(
     analytics: Analytics,
     length: Int

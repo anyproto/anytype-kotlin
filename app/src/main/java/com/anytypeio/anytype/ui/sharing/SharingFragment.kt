@@ -90,57 +90,21 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
                             SAVE_AS_BOOKMARK -> vm.onCreateBookmark(url = sharedData.data)
                             SAVE_AS_NOTE -> vm.onCreateNote(sharedData.data)
                             SAVE_AS_FILE -> {
-                                val formattedDateTime = getFormattedDateTime(Locale.getDefault())
-                                val objTitle =
-                                    getString(
-                                        R.string.sharing_files_wrapper_object_title,
-                                        formattedDateTime
-                                    )
-                                vm.onShareFiles(
-                                    uris = listOf(sharedData.data),
-                                    wrapperObjTitle = objTitle
-                                )
+                                vm.onShareFiles(uris = listOf(sharedData.data),)
                             }
                             SAVE_AS_FILES -> {
-                                val formattedDateTime = getFormattedDateTime(Locale.getDefault())
-                                val objTitle =
-                                    getString(R.string.sharing_files_wrapper_object_title, formattedDateTime)
                                 val data = sharedData
                                 if (data is SharingData.Files) {
-                                    vm.onShareFiles(uris = data.uris, wrapperObjTitle = objTitle)
+                                    vm.onShareFiles(uris = data.uris)
                                 } else {
                                     toast("Unexpected data format")
                                 }
                             }
                             SAVE_AS_IMAGES, SAVE_AS_IMAGE, SAVE_AS_VIDEOS -> {
-                                val formattedDateTime = getFormattedDateTime(Locale.getDefault())
-                                val objTitle =
-                                    getString(
-                                        R.string.sharing_media_wrapper_object_title,
-                                        formattedDateTime
-                                    )
                                 when (val data = sharedData) {
-                                    is SharingData.Image -> {
-                                        vm.onShareFiles(
-                                            uris = listOf(data.uri),
-                                            wrapperObjTitle = objTitle
-                                        )
-                                    }
-
-                                    is SharingData.Images -> {
-                                        vm.onShareFiles(
-                                            uris = data.uris,
-                                            wrapperObjTitle = objTitle
-                                        )
-                                    }
-
-                                    is SharingData.Videos -> {
-                                        vm.onShareFiles(
-                                            uris = data.uris,
-                                            wrapperObjTitle = objTitle
-                                        )
-                                    }
-
+                                    is SharingData.Image -> vm.onShareFiles(uris = listOf(data.uri))
+                                    is SharingData.Images -> vm.onShareFiles(uris = data.uris)
+                                    is SharingData.Videos -> vm.onShareFiles(uris = data.uris)
                                     else -> {
                                         toast("Unexpected data format")
                                     }

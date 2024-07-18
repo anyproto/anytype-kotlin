@@ -32,10 +32,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -63,6 +66,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
@@ -72,6 +76,7 @@ import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.AlertIcon
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_BLUE
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
@@ -340,8 +345,9 @@ private fun ChatBoxUserInput(
     )
 }
 
-@Composable
 @OptIn(ExperimentalMaterial3Api::class)
+@Composable
+
 private fun DefaultHintDecorationBox(
     text: String,
     hint: String,
@@ -448,11 +454,13 @@ fun Messages(
                         style = Caption1Regular,
                         color = colorResource(id = R.color.text_secondary),
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth().padding(
-                            start = 20.dp,
-                            end = 20.dp,
-                            top = 12.dp
-                        )
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                start = 20.dp,
+                                end = 20.dp,
+                                top = 12.dp
+                            )
                     )
                 }
             }
@@ -483,6 +491,7 @@ fun Bubble(
     msg: String,
     timestamp: Long
 ) {
+    var showDropdownMenu by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -490,6 +499,10 @@ fun Bubble(
                 color = colorResource(id = R.color.palette_very_light_grey),
                 shape = RoundedCornerShape(24.dp)
             )
+            .clip(RoundedCornerShape(24.dp))
+            .clickable {
+                showDropdownMenu = !showDropdownMenu
+            }
     ) {
         Row(
             modifier = Modifier.padding(
@@ -525,6 +538,66 @@ fun Bubble(
             style = BodyRegular,
             color = colorResource(id = R.color.text_primary)
         )
+        MaterialTheme(
+            shapes = MaterialTheme.shapes.copy(
+                medium = RoundedCornerShape(
+                    16.dp
+                )
+            ),
+            colors = MaterialTheme.colors.copy(
+                surface = colorResource(id = R.color.background_secondary)
+            )
+        ) {
+            DropdownMenu(
+                offset = DpOffset(0.dp, 8.dp),
+                expanded = showDropdownMenu,
+                onDismissRequest = {
+                    showDropdownMenu = false
+                }
+            ) {
+                DropdownMenuItem(
+                    text = {
+                        Row {
+                            Text(
+                                text = "\uD83D\uDC4D",
+                                modifier = Modifier.noRippleClickable {
+                                    showDropdownMenu = false
+                                }
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                text = "❤\uFE0F",
+                                modifier = Modifier.noRippleClickable {
+                                    showDropdownMenu = false
+                                }
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                text = "\uD83D\uDE02",
+                                modifier = Modifier.noRippleClickable {
+                                    showDropdownMenu = false
+                                }
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                text = "\uD83D\uDE2E",
+                                modifier = Modifier.noRippleClickable {
+                                    showDropdownMenu = false
+                                }
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                text = "\uD83D\uDE22",
+                                modifier = Modifier.noRippleClickable {
+                                    showDropdownMenu = false
+                                }
+                            )
+                        }
+                    },
+                    onClick = { /*TODO*/ }
+                )
+            }
+        }
     }
 }
 

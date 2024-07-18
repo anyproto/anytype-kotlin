@@ -163,6 +163,7 @@ class Navigator : AppNavigation {
     override fun openObjectSet(
         target: Id,
         space: Id,
+        view: Id?,
         isPopUpToDashboard: Boolean
     ) {
         if (isPopUpToDashboard) {
@@ -170,7 +171,8 @@ class Navigator : AppNavigation {
                 R.id.dataViewNavigation,
                 ObjectSetFragment.args(
                     ctx = target,
-                    space = space
+                    space = space,
+                    view = view
                 ),
                 navOptions {
                     popUpTo(R.id.main_navigation) { inclusive = true }
@@ -181,7 +183,8 @@ class Navigator : AppNavigation {
                 R.id.dataViewNavigation,
                 ObjectSetFragment.args(
                     ctx = target,
-                    space = space
+                    space = space,
+                    view = view
                 )
             )
         }

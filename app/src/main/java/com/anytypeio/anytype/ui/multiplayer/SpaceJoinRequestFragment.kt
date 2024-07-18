@@ -82,19 +82,21 @@ class SpaceJoinRequestFragment : BaseBottomSheetComposeFragment() {
         }
     }
 
-
     override fun injectDependencies() {
         componentManager().spaceJoinRequestComponent.get(
-            SpaceJoinRequestViewModel.VmParams(
+            param = SpaceJoinRequestViewModel.VmParams(
                 space = SpaceId(space),
                 member = member,
                 route = analyticsRoute
-            )
+            ),
+            key = space+member
         ).inject(fragment = this)
     }
 
     override fun releaseDependencies() {
-        componentManager().spaceJoinRequestComponent.release()
+        componentManager().spaceJoinRequestComponent.release(
+            id = space+member
+        )
     }
 
     companion object {

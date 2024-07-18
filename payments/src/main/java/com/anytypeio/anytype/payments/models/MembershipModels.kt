@@ -62,6 +62,9 @@ sealed class TierButton {
         data object DifferentPurchaseAccountId : HiddenWithText()
         data object DifferentPurchaseProductId : HiddenWithText()
         data object MoreThenOnePurchase : HiddenWithText()
+        data object ManageOnDesktop : HiddenWithText()
+        data object ManageOnIOS : HiddenWithText()
+        data object ManageOnAnotherAccount : HiddenWithText()
     }
     sealed class Submit : TierButton() {
         data object Enabled : Submit()
@@ -84,10 +87,6 @@ sealed class TierButton {
         sealed class Android : Manage() {
             data class Enabled(val productId: String?) : Android()
             data object Disabled : Android()
-        }
-        sealed class External : Manage() {
-            data class Enabled(val manageUrl: String?) : External()
-            data object Disabled : External()
         }
     }
 }

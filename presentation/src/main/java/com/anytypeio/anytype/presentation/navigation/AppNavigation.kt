@@ -13,6 +13,7 @@ interface AppNavigation {
     fun openObjectSet(
         target: Id,
         space: Id,
+        view: Id? = null,
         isPopUpToDashboard: Boolean = false
     )
     fun openDocument(target: Id, space: Id)

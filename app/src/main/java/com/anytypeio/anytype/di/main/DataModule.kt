@@ -56,6 +56,7 @@ import com.anytypeio.anytype.persistence.repo.DefaultUserSettingsCache
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
+import java.security.GeneralSecurityException
 import javax.inject.Named
 import javax.inject.Singleton
 import timber.log.Timber
@@ -168,16 +169,25 @@ object DataModule {
         context: Context
     ): SharedPreferences = try {
         initializeEncryptedPrefs(context)
+    } catch (e: GeneralSecurityException) {
+        // https://issuetracker.google.com/issues/164901843
+        Timber.e(e, "Security error while initializing encrypted prefs")
+        // Clearing pre-existing prefs
+        retryInstantiatingEncryptedPrefs(context)
     } catch (e: Exception) {
         // https://issuetracker.google.com/issues/164901843
-        Timber.e(e, "Error while initializing encrypted prefs")
+        Timber.e(e, "Unknown error while initializing encrypted prefs")
         // Clearing pre-existing prefs
+        retryInstantiatingEncryptedPrefs(context)
+    }
+
+    private fun retryInstantiatingEncryptedPrefs(context: Context): SharedPreferences {
         context
             .getSharedPreferences(ENCRYPTED_PREFS_NAME, Context.MODE_PRIVATE)
             .edit()
             .clear()
             .commit()
-        initializeEncryptedPrefs(context)
+        return initializeEncryptedPrefs(context)
     }
 
     private fun initializeEncryptedPrefs(context: Context) = EncryptedSharedPreferences.create(

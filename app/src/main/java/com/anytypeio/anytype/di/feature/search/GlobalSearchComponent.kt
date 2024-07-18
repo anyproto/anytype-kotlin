@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.di.feature.search
 
 import androidx.lifecycle.ViewModelProvider
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -9,6 +10,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.ui.search.GlobalSearchFragment
 import dagger.Binds
@@ -48,4 +50,6 @@ interface GlobalSearchDependencies : ComponentDependencies {
     fun storeOfObjectTypes(): StoreOfObjectTypes
     fun storeOfRelations(): StoreOfRelations
     fun spaceManager(): SpaceManager
+    fun analytics(): Analytics
+    fun analyticsHelper() : AnalyticSpaceHelperDelegate
 }

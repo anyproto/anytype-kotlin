@@ -7,7 +7,7 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.core_models.Relation.Format.*
+import com.anytypeio.anytype.core_models.Relation.Format.FILE
 import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
@@ -24,6 +24,7 @@ import com.anytypeio.anytype.domain.workspace.getSpaceWithTechSpace
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
+import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.toView
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
@@ -347,13 +348,15 @@ class ObjectValueViewModel(
                         space = item.view.space
                     )
                 )
-            } else {
+            } else if (SupportedLayouts.editorLayouts.contains(layout)) {
                 commands.emit(
                     Command.OpenObject(
                         id = item.view.id,
                         space = item.view.space
                     )
                 )
+            } else {
+                Timber.w("This layout is not supported: $layout")
             }
         }
     }

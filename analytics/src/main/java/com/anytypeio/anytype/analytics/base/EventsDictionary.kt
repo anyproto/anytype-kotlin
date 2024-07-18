@@ -205,6 +205,8 @@ object EventsDictionary {
     const val leaveSpace = "LeaveSpace"
     const val approveLeaveRequest = "ApproveLeaveRequest"
 
+    const val searchBacklink = "SearchBacklink"
+
     object SharingSpacesTypes {
         const val shareTypeQR = "Qr"
         const val shareTypeMoreInfo = "MoreInfo"

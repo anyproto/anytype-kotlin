@@ -50,7 +50,11 @@ import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_models.membership.NameServiceNameType
+import com.anytypeio.anytype.core_models.multiplayer.P2PStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncError
+import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncNetwork
+import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncStatus
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
@@ -1067,3 +1071,30 @@ fun MNameServiceNameType.toCoreModel(): NameServiceNameType = when (this) {
     NameserviceNameType.AnyName -> NameServiceNameType.ANY_NAME
 }
 //endregion
+
+//region SYNC STATUS
+fun MSpaceSyncStatus.toCoreModel(): SpaceSyncStatus = when (this) {
+    MSpaceSyncStatus.Synced -> SpaceSyncStatus.SYNCED
+    MSpaceSyncStatus.Syncing -> SpaceSyncStatus.SYNCING
+    MSpaceSyncStatus.Error -> SpaceSyncStatus.ERROR
+    MSpaceSyncStatus.Offline -> SpaceSyncStatus.OFFLINE
+}
+
+fun MSpaceSyncNetwork.toCoreModel(): SpaceSyncNetwork = when (this) {
+    anytype.Event.Space.Network.Anytype -> SpaceSyncNetwork.ANYTYPE
+    anytype.Event.Space.Network.SelfHost -> SpaceSyncNetwork.SELF_HOST
+    anytype.Event.Space.Network.LocalOnly -> SpaceSyncNetwork.LOCAL_ONLY
+}
+
+fun MSpaceSyncError.toCoreModel(): SpaceSyncError = when (this) {
+    MSpaceSyncError.Null -> SpaceSyncError.NULL
+    MSpaceSyncError.StorageLimitExceed -> SpaceSyncError.STORAGE_LIMIT_EXCEED
+    MSpaceSyncError.IncompatibleVersion -> SpaceSyncError.INCOMPATIBLE_VERSION
+    MSpaceSyncError.NetworkError -> SpaceSyncError.NETWORK_ERROR
+}
+
+fun MP2PStatus.toCoreModel(): P2PStatus = when (this) {
+    MP2PStatus.NotConnected -> P2PStatus.NOT_CONNECTED
+    MP2PStatus.NotPossible -> P2PStatus.NOT_POSSIBLE
+    MP2PStatus.Connected -> P2PStatus.CONNECTED
+}

@@ -304,7 +304,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        Timber.d("onNewIntent")
+        if (BuildConfig.DEBUG) {
+            Timber.d("on NewIntent: $intent")
+        }
         when(intent.action) {
             Intent.ACTION_VIEW -> {
                 val data = intent.dataString
@@ -331,9 +333,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
             AnytypeNotificationService.NOTIFICATION_INTENT_ACTION -> {
                 proceedWithNotificationIntent(intent)
             }
-        }
-        if (BuildConfig.DEBUG) {
-            Timber.d("on NewIntent: $intent")
         }
     }
 

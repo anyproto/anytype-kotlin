@@ -15,6 +15,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -104,7 +105,8 @@ fun HomeScreen(
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onSpaceWidgetClicked: () -> Unit,
     onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
-    onSpaceShareIconClicked: (ObjectWrapper.SpaceView) -> Unit
+    onSpaceShareIconClicked: (ObjectWrapper.SpaceView) -> Unit,
+    onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit
 ) {
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -123,7 +125,8 @@ fun HomeScreen(
             onSpaceWidgetClicked = onSpaceWidgetClicked,
             onMove = onMove,
             onObjectCheckboxClicked = onObjectCheckboxClicked,
-            onSpaceShareIconClicked = onSpaceShareIconClicked
+            onSpaceShareIconClicked = onSpaceShareIconClicked,
+            onSeeAllObjectsClicked = onSeeAllObjectsClicked
         )
         AnimatedVisibility(
             visible = mode is InteractionMode.Edit,
@@ -191,7 +194,8 @@ private fun WidgetList(
     onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onSpaceWidgetClicked: () -> Unit,
-    onSpaceShareIconClicked: (ObjectWrapper.SpaceView) -> Unit
+    onSpaceShareIconClicked: (ObjectWrapper.SpaceView) -> Unit,
+    onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit
 ) {
     val views = remember { mutableStateOf(widgets) }
     views.value = widgets
@@ -347,7 +351,8 @@ private fun WidgetList(
                                 onWidgetMenuAction = onWidgetMenuAction,
                                 onChangeWidgetView = onChangeWidgetView,
                                 onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-                                onObjectCheckboxClicked = onObjectCheckboxClicked
+                                onObjectCheckboxClicked = onObjectCheckboxClicked,
+                                onSeeAllObjectsClicked = onSeeAllObjectsClicked
                             )
                         }
                     } else {
@@ -362,7 +367,8 @@ private fun WidgetList(
                             onWidgetMenuAction = onWidgetMenuAction,
                             onChangeWidgetView = onChangeWidgetView,
                             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-                            onObjectCheckboxClicked = onObjectCheckboxClicked
+                            onObjectCheckboxClicked = onObjectCheckboxClicked,
+                            onSeeAllObjectsClicked = onSeeAllObjectsClicked
                         )
                     }
                 }
@@ -586,7 +592,8 @@ private fun GalleryWidgetItem(
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
-    onObjectCheckboxClicked: (Id, Boolean) -> Unit
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit,
+    onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -611,7 +618,8 @@ private fun GalleryWidgetItem(
             onChangeWidgetView = onChangeWidgetView,
             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
             mode = mode,
-            onObjectCheckboxClicked = onObjectCheckboxClicked
+            onObjectCheckboxClicked = onObjectCheckboxClicked,
+            onSeeAllObjectsClicked = onSeeAllObjectsClicked
         )
         AnimatedVisibility(
             visible = mode is InteractionMode.Edit,
@@ -818,7 +826,9 @@ fun HomeScreenBottomToolbar(
                 .fillMaxSize()
                 .then(
                     if (isReadOnlyAccess)
-                        Modifier
+                        Modifier.clickable {
+                            // Do nothing.
+                        }
                     else
                         Modifier.noRippleCombinedClickable(
                             onLongClicked = {

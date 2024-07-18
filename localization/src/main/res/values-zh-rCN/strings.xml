@@ -267,10 +267,10 @@
     <string name="sync_status_toast_unknown">初始化同步中</string>
     <string name="sync_status_toast_offline">Anytype 节点未连接</string>
     <string name="sync_status_toast_syncing">向某个节点下载或上传数据</string>
-    <string name="sync_status_toast_synced">备份到 Anytype 网络</string>
-    <string name="sync_status_toast_synced_staging">备份到 Anytype Staging</string>
+    <string name="sync_status_toast_synced">已备份到 Anytype 网络</string>
+    <string name="sync_status_toast_synced_staging">已备份到 Anytype Staging</string>
     <string name="sync_status_toast_synced_local">仅本地</string>
-    <string name="sync_status_toast_synced_self_hosted">备份到自托管网络</string>
+    <string name="sync_status_toast_synced_self_hosted">已备份到自托管网络</string>
     <string name="sync_status_toast_failed">同步失败，正在重试...</string>
     <string name="sync_status_toast_incompatible">版本已过时。请更新 Anytype</string>
     <string name="relation_format_description">描述</string>
@@ -931,7 +931,7 @@
     <string name="widget_type_compact_list_description">具有集合对象列表视图的小部件</string>
     <string name="widget_type_list">列表</string>
     <string name="widget_type_view">视图</string>
-    <string name="widget_type_view_description">Widget with a view of set object</string>
+    <string name="widget_type_view_description">Widget view of Set or Collection</string>
     <string name="widget_type_compact_list">紧凑列表</string>
     <string name="widget_change_source">更改来源</string>
     <string name="widget_change_type">更改类型</string>
@@ -1044,6 +1044,7 @@
     <string name="sharing_menu_save_as_file_option">文件</string>
     <string name="sharing_menu_save_as_images_option">图片</string>
     <string name="sharing_menu_save_as_files_option">文件</string>
+    <string name="sharing_menu_save_as_videos_option">Videos</string>
     <string name="sharing_menu_data">数据</string>
     <string name="sharing_menu_add_to_anytype_header_title">添加至 Anytype</string>
     <string name="sharing_menu_add_to_anytype_error">Anytype file upload error: %1$s</string>
@@ -1306,11 +1307,14 @@
     <string name="payments_tier_current_title">您目前的状态：</string>
     <string name="payments_tier_current_valid">有效期至</string>
     <string name="payments_tier_current_paid_by">支付方式：</string>
-    <string name="payments_tier_current_paid_by_card">卡片</string>
+    <string name="payments_tier_current_paid_by_card">Stripe</string>
     <string name="payments_tier_current_paid_by_crypto">加密货币</string>
     <string name="payments_tier_current_paid_by_apple">Apple 订阅</string>
     <string name="payments_tier_current_paid_by_google">Google 订阅</string>
     <string name="payments_tier_current_button">管理付款</string>
+    <string name="membership_manage_tier_desktop">You can manage tier on Desktop platform</string>
+    <string name="membership_manage_tier_ios">You can manage tier on iOS platform</string>
+    <string name="membership_manage_tier_another_account">You can manage tier on another Google account</string>
     <string name="payments_tier_current_change_email_button">更改电子邮件</string>
     <!-- Payments Code -->
     <string name="payments_code_title">输入发送到您邮箱的代码</string>

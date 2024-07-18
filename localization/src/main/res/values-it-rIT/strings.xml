@@ -1052,8 +1052,6 @@
     <string name="sharing_menu_add_to_anytype_error">Errore di caricamento file di Anytype: %1$s</string>
     <string name="sharing_menu_add_to_anytype_success">Tutti i file sono stati caricati con successo</string>
     <string name="sharing_menu_toast_object_added">Nuovo oggetto aggiunto allo spazio \'%1$s\'</string>
-    <string name="sharing_media_wrapper_object_title">Media Condiviso, %1$s, questo oggetto è ausiliario e può essere eliminato; tutti i media o i file rimarranno nello Spazio.</string>
-    <string name="sharing_files_wrapper_object_title">File Condiviso, %1$s, questo oggetto è ausiliario e può essere eliminato; tutti i media o i file rimarranno nello Spazio.</string>
     <string name="sharing_menu_btn_add">Aggiungi</string>
     <string name="sharing_menu_btn_open">Apri</string>
     <!--endregion-->

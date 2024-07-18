@@ -282,13 +282,15 @@ private fun ChatBox(
                     }
                 }
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_send_message),
-                contentDescription = "Send message button",
-                modifier = Modifier
-                    .padding(horizontal = 4.dp, vertical = 4.dp)
-                    .align(Alignment.Center)
-            )
+            if (textState.text.isNotBlank()) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_send_message),
+                    contentDescription = "Send message button",
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp, vertical = 4.dp)
+                        .align(Alignment.Center)
+                )
+            }
         }
     }
 }

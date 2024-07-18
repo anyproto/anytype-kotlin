@@ -51,6 +51,7 @@ enum SmartBlockType {
 
     NotificationObject = 0x217;
     DevicesObject = 0x218;
+    ChatObject = 0x219;
 }
 
 message Search {

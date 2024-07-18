@@ -68,7 +68,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.anytypeio.anytype.core_ui.foundation.AlertConfig
+import com.anytypeio.anytype.core_ui.foundation.AlertIcon
 import com.anytypeio.anytype.core_ui.foundation.Divider
+import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_BLUE
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
@@ -423,6 +426,35 @@ fun Messages(
             }
             if (idx == messages.lastIndex) {
                 Spacer(modifier = Modifier.height(36.dp))
+            }
+        }
+        if (messages.isEmpty()) {
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 170.dp)
+                ) {
+                    AlertIcon(
+                        icon = AlertConfig.Icon(
+                            gradient = GRADIENT_TYPE_BLUE,
+                            icon = R.drawable.ic_alert_message
+                        )
+                    )
+                    Text(
+                        text = "There is no messages yet. \n" +
+                                "Be the first to start a discussion."
+                        ,
+                        style = Caption1Regular,
+                        color = colorResource(id = R.color.text_secondary),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth().padding(
+                            start = 20.dp,
+                            end = 20.dp,
+                            top = 12.dp
+                        )
+                    )
+                }
             }
         }
         item(key = HEADER_KEY) {

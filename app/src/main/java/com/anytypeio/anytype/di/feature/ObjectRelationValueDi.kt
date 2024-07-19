@@ -16,9 +16,6 @@ import com.anytypeio.anytype.presentation.sets.RelationValueDVViewModel
 import com.anytypeio.anytype.presentation.sets.RelationValueViewModel
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.ui.relations.RelationStatusValueFragment
-import com.anytypeio.anytype.ui.relations.RelationValueDVFragment
-import com.anytypeio.anytype.ui.relations.RelationValueFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
@@ -32,8 +29,6 @@ interface DataViewObjectRelationValueSubComponent {
         fun module(module: DataViewRelationValueModule): Builder
         fun build(): DataViewObjectRelationValueSubComponent
     }
-
-    fun inject(fragment: RelationValueDVFragment)
 
     fun addObjectRelationValueComponent(): AddObjectRelationValueSubComponent.Builder
     fun addObjectRelationObjectValueComponent(): AddObjectRelationSubComponent.Builder
@@ -52,8 +47,6 @@ interface SetOrCollectionRelationValueSubComponent {
         fun build(): SetOrCollectionRelationValueSubComponent
     }
 
-    fun inject(fragment: RelationValueDVFragment)
-
     fun addObjectRelationValueComponent(): AddObjectRelationValueSubComponent.Builder
     fun addObjectRelationObjectValueComponent(): AddObjectRelationSubComponent.Builder
     fun addRelationFileValueAddComponent() : AddFileRelationSubComponent.Builder
@@ -67,9 +60,6 @@ interface ObjectObjectRelationValueSubComponent {
         fun module(module: ObjectObjectRelationValueModule): Builder
         fun build(): ObjectObjectRelationValueSubComponent
     }
-
-    fun inject(fragment: RelationValueFragment)
-    fun inject(fragment: RelationStatusValueFragment)
 
     fun addObjectRelationValueComponent(): AddObjectRelationValueSubComponent.Builder
     fun addObjectRelationObjectValueComponent(): AddObjectRelationSubComponent.Builder

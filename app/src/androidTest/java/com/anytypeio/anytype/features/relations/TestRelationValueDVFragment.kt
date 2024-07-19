@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.features.relations
 
 import com.anytypeio.anytype.presentation.sets.RelationValueDVViewModel
-import com.anytypeio.anytype.ui.relations.RelationValueDVFragment
 
 class TestRelationValueDVFragment : RelationValueDVFragment() {
     init {

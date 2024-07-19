@@ -1310,7 +1310,7 @@
     <string name="payments_tier_current_paid_by_apple">Apple 訂閱</string>
     <string name="payments_tier_current_paid_by_google">Google 訂閱</string>
     <string name="payments_tier_current_button">管理付款方式</string>
-    <string name="membership_manage_tier_desktop">You can manage tier on Desktop platform</string>
+    <string name="membership_manage_tier_desktop">您可以在桌面平臺上管理層級</string>
     <string name="membership_manage_tier_ios">You can manage tier on iOS platform</string>
     <string name="membership_manage_tier_another_account">You can manage tier on another Google account</string>
     <string name="payments_tier_current_change_email_button">變更 e-mail</string>
@@ -1443,5 +1443,5 @@ Please provide specific details of your needs here.</string>
     <string name="sort_empty_values_desc">顯示空值</string>
     <string name="sort_empty_values_bottom">在底部</string>
     <string name="sort_empty_values_top">在頂部</string>
-    <string name="widget_view_see_all_objects">See all objects</string>
+    <string name="widget_view_see_all_objects">檢視所有物件</string>
 </resources>

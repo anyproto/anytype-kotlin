@@ -271,6 +271,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
@@ -454,6 +455,7 @@ class EditorViewModel(
         viewModelScope.launch {
             permissions
                 .observe(space = vmParams.space)
+                .onEach { Timber.d("Object permission: $it") }
                 .collect {
                     permission.value = it
                 }
@@ -757,8 +759,11 @@ class EditorViewModel(
 
         // renderize, in order to send to UI
 
-        renderizePipeline
-            .stream()
+        val pipeline =  combine(renderizePipeline.stream(), permission) { doc, _ ->
+            doc
+        }
+
+        pipeline
             .filter { it.isNotEmpty() }
             .onEach { document -> refreshStyleToolbar(document) }
             .withLatestFrom(
@@ -779,10 +784,13 @@ class EditorViewModel(
                     }
                 }
                 if (permission?.isOwnerOrEditor() == true) {
-                    // TODO
+                    if (mode == EditorMode.Read) {
+                        mode = EditorMode.Edit
+                    }
                 } else {
-                    if (mode == EditorMode.Edit)
+                    if (mode == EditorMode.Edit) {
                         mode = EditorMode.Read
+                    }
                 }
 
                 footers.value = getFooterState(root, details)

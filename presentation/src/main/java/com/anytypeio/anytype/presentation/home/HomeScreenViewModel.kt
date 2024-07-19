@@ -63,6 +63,7 @@ import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
+import com.anytypeio.anytype.presentation.common.PayloadDelegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.extension.sendAddWidgetEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
@@ -174,7 +175,8 @@ class HomeScreenViewModel(
     private val userPermissionProvider: UserPermissionProvider,
     private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val coverImageHashProvider: CoverImageHashProvider
+    private val coverImageHashProvider: CoverImageHashProvider,
+    private val payloadDelegator: PayloadDelegator
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -488,14 +490,18 @@ class HomeScreenViewModel(
 
     private fun proceedWithObjectViewStatePipeline() {
         val externalChannelEvents = spaceManager.observe().flatMapLatest {  config ->
-            interceptEvents.build(
-                InterceptEvents.Params(config.widgets)
-            ).map { events ->
-                Payload(
-                    context = config.widgets,
-                    events = events
-                )
-            }
+            merge(
+                interceptEvents.build(
+                    InterceptEvents.Params(config.widgets)
+                ).map { events ->
+                    Payload(
+                        context = config.widgets,
+                        events = events
+                    )
+                },
+                payloadDelegator.intercept(ctx = config.widgets)
+            )
+
         }
 
         val internalChannelEvents = objectPayloadDispatcher.flow()
@@ -1275,7 +1281,8 @@ class HomeScreenViewModel(
                 navigate(
                     Navigation.OpenSet(
                         ctx = navigation.target,
-                        space = navigation.space
+                        space = navigation.space,
+                        view = null
                     )
                 )
             }
@@ -1644,9 +1651,28 @@ class HomeScreenViewModel(
         )
     }
 
+    fun onSeeAllObjectsClicked(gallery: WidgetView.Gallery) {
+        val source = gallery.source
+        val view = gallery.view
+        if (view != null && source is Widget.Source.Default) {
+            val space = source.obj.spaceId
+            if (space != null) {
+                navigate(
+                    Navigation.OpenSet(
+                        ctx = gallery.source.id,
+                        space = space,
+                        view = view
+                    )
+                )
+            } else {
+                Timber.e("Missing space ID")
+            }
+        }
+    }
+
     sealed class Navigation {
         data class OpenObject(val ctx: Id, val space: Id) : Navigation()
-        data class OpenSet(val ctx: Id, val space: Id) : Navigation()
+        data class OpenSet(val ctx: Id, val space: Id, val view: Id?) : Navigation()
         data class ExpandWidget(val subscription: Subscription, val space: Id) : Navigation()
         data class OpenLibrary(val space: Id) : Navigation()
     }
@@ -1689,7 +1715,8 @@ class HomeScreenViewModel(
         private val userPermissionProvider: UserPermissionProvider,
         private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
         private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-        private val coverImageHashProvider: CoverImageHashProvider
+        private val coverImageHashProvider: CoverImageHashProvider,
+        private val payloadDelegator: PayloadDelegator
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -1730,7 +1757,8 @@ class HomeScreenViewModel(
             userPermissionProvider = userPermissionProvider,
             deepLinkToObjectDelegate = deepLinkToObjectDelegate,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-            coverImageHashProvider = coverImageHashProvider
+            coverImageHashProvider = coverImageHashProvider,
+            payloadDelegator = payloadDelegator
         ) as T
     }
 

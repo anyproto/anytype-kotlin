@@ -933,7 +933,7 @@
     <string name="widget_type_compact_list_description">Widget mit Listenansicht für ein bestimmtes Objekt</string>
     <string name="widget_type_list">Liste</string>
     <string name="widget_type_view">Ansicht</string>
-    <string name="widget_type_view_description">Widget with a view of set object</string>
+    <string name="widget_type_view_description">Widget view of Set or Collection</string>
     <string name="widget_type_compact_list">Kompakte Liste</string>
     <string name="widget_change_source">Quelle ändern</string>
     <string name="widget_change_type">Typ ändern</string>
@@ -1046,10 +1046,11 @@
     <string name="sharing_menu_save_as_file_option">Datei</string>
     <string name="sharing_menu_save_as_images_option">Bilder</string>
     <string name="sharing_menu_save_as_files_option">Dateien</string>
+    <string name="sharing_menu_save_as_videos_option">Videos</string>
     <string name="sharing_menu_data">Daten</string>
     <string name="sharing_menu_add_to_anytype_header_title">Zu Anytype hinzufügen</string>
     <string name="sharing_menu_add_to_anytype_error">Anytype file upload error: %1$s</string>
-    <string name="sharing_menu_add_to_anytype_success">All files have been successfully uploaded</string>
+    <string name="sharing_menu_add_to_anytype_success">Alle Dateien wurden erfolgreich hochgeladen</string>
     <string name="sharing_menu_toast_object_added">Neues Objekt wird dem Space ‚%1$s‘ hinzugefügt</string>
     <string name="sharing_media_wrapper_object_title">Shared Media, %1$s, this object is auxiliary and can be deleted; all media or files will remain in Space.</string>
     <string name="sharing_files_wrapper_object_title">Shared Files, %1$s, this object is auxiliary and can be deleted; all media or files will remain in Space.</string>
@@ -1312,11 +1313,14 @@
     <string name="payments_tier_current_title">Dein aktueller Status:</string>
     <string name="payments_tier_current_valid">Gültig bis</string>
     <string name="payments_tier_current_paid_by">Bezahlt von</string>
-    <string name="payments_tier_current_paid_by_card">Karte</string>
+    <string name="payments_tier_current_paid_by_card">Stripe</string>
     <string name="payments_tier_current_paid_by_crypto">Kryptowährung</string>
     <string name="payments_tier_current_paid_by_apple">Apple-Abonnement</string>
     <string name="payments_tier_current_paid_by_google">Google-Abonnement</string>
     <string name="payments_tier_current_button">Zahlung verwalten</string>
+    <string name="membership_manage_tier_desktop">You can manage tier on Desktop platform</string>
+    <string name="membership_manage_tier_ios">You can manage tier on iOS platform</string>
+    <string name="membership_manage_tier_another_account">You can manage tier on another Google account</string>
     <string name="payments_tier_current_change_email_button">E-Mail-Adresse ändern</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Gib den an deine E-Mail-Adresse gesendeten Code ein</string>
@@ -1451,5 +1455,5 @@ Please provide specific details of your needs here.</string>
     <string name="sort_empty_values_desc">Leere Werte anzeigen</string>
     <string name="sort_empty_values_bottom">Ganz unten</string>
     <string name="sort_empty_values_top">Ganz oben</string>
-    <string name="widget_view_see_all_objects">See all objects</string>
+    <string name="widget_view_see_all_objects">Alle Objekte ansehen</string>
 </resources>

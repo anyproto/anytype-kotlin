@@ -223,7 +223,9 @@ private fun TreeWidgetTreeItems(
             }
             Text(
                 text = element.obj.getWidgetObjectName() ?: stringResource(id = R.string.untitled),
-                modifier = Modifier.padding(start = 8.dp).fillMaxWidth(),
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .fillMaxWidth(),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 style = PreviewTitle2Medium,
@@ -261,8 +263,7 @@ fun WidgetHeader(
         Modifier
             .fillMaxWidth()
             .height(40.dp)
-    )
-    {
+    ) {
         Text(
             text = title.ifEmpty { stringResource(id = R.string.untitled) },
             style = HeadlineSubheading,
@@ -320,7 +321,7 @@ fun WidgetHeader(
                             isHeaderMenuExpanded.value = !isHeaderMenuExpanded.value
                         }
                 )
-                if (hasReadOnlyAccess) {
+                if (!hasReadOnlyAccess) {
                     WidgetMenu(
                         isExpanded = isHeaderMenuExpanded,
                         onDropDownMenuAction = onDropDownMenuAction,

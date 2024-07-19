@@ -10,8 +10,6 @@ interface FeatureToggles {
 
     val isConciseLogging: Boolean
 
-    val excludeThreadStatusLogging: Boolean
-
     val isLogEditorViewModelEvents: Boolean
 
     val isLogEditorControlPanelMachine: Boolean

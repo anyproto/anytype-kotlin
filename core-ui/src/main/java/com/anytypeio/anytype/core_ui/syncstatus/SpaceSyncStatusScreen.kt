@@ -1,30 +1,42 @@
 package com.anytypeio.anytype.core_ui.syncstatus
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.Text
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material.rememberSwipeableState
+import androidx.compose.material.swipeable
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.multiplayer.P2PStatus
 import com.anytypeio.anytype.core_models.multiplayer.P2PStatusUpdate
@@ -37,52 +49,84 @@ import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.Title2
-import com.anytypeio.anytype.presentation.main.MainViewModel
-import com.anytypeio.anytype.presentation.sync.SpaceSyncStatusViewModel
+import com.anytypeio.anytype.core_ui.widgets.DragStates
+import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
+import kotlin.math.roundToInt
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun StatusContainerScreen(
-    viewModel: MainViewModel,
-    modifier: Modifier
+fun SpaceSyncStatusScreen(
+    uiState: SyncStatusWidgetState,
+    onDismiss: () -> Unit,
+    scope: CoroutineScope
 ) {
-    val uiState =
-        viewModel.spaceSyncStatusState.collectAsState(
-            initial = SpaceSyncStatusViewModel.SpaceSyncStatusState.Loading
-        )
-    SpaceSyncStatusScreen(uiState.value, modifier)
-}
+    val isVisible = uiState is SyncStatusWidgetState.Success || uiState is SyncStatusWidgetState.Error
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun SpaceSyncStatusScreen(
-    uiState: SpaceSyncStatusViewModel.SpaceSyncStatusState,
-    modifier: Modifier
-) {
-    ModalBottomSheet(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(168.dp)
-            .padding(start = 8.dp, end = 8.dp),
-        onDismissRequest = { /*TODO*/ },
-        shape = RoundedCornerShape(16.dp),
-        windowInsets = WindowInsets(bottom = 40.dp),
+    val swappableState = rememberSwipeableState(DragStates.VISIBLE)
+    if (swappableState.isAnimationRunning && swappableState.targetValue == DragStates.DISMISSED) {
+        DisposableEffect(Unit) {
+            onDispose {
+                onDismiss()
+            }
+        }
+    }
+
+    if (!isVisible) {
+        DisposableEffect(Unit) {
+            onDispose {
+                scope.launch { swappableState.snapTo(DragStates.VISIBLE) }
+            }
+        }
+    }
+
+    val sizePx = with(LocalDensity.current) { LocalConfiguration.current.screenHeightDp.dp.toPx() }
+
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = slideInVertically { it },
+        exit = slideOutVertically { it },
+        modifier = Modifier
+            .swipeable(
+                state = swappableState,
+                orientation = Orientation.Vertical,
+                anchors = mapOf(0f to DragStates.VISIBLE, sizePx to DragStates.DISMISSED),
+                thresholds = { _, _ -> FractionalThreshold(0.3f) })
+            .offset { IntOffset(0, swappableState.offset.value.roundToInt()) }
     ) {
-        when (uiState) {
-            is SpaceSyncStatusViewModel.SpaceSyncStatusState.Error -> ErrorState()
-            SpaceSyncStatusViewModel.SpaceSyncStatusState.Loading -> LoadingState()
-            is SpaceSyncStatusViewModel.SpaceSyncStatusState.Success -> SuccessState(
-                spaceSyncUpdate = uiState.spaceSyncUpdate,
-                p2pStatus = uiState.p2PStatusUpdate
+        ElevatedCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(start = 8.dp, end = 8.dp, bottom = 10.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = colorResource(id = R.color.background_secondary)
+            ),
+            elevation = CardDefaults.elevatedCardElevation(
+                defaultElevation = 16.dp
             )
+        ) {
+            when (uiState) {
+                is SyncStatusWidgetState.Error -> ErrorState()
+                SyncStatusWidgetState.Hidden -> LoadingState()
+                is SyncStatusWidgetState.Success -> SuccessState(
+                    spaceSyncUpdate = uiState.spaceSyncUpdate,
+                    p2pStatus = uiState.p2PStatusUpdate
+                )
+            }
         }
     }
 }
+
+enum class MenuVisibilityState(val fraction: Float) { Hidden(0f), Visible(1f) }
 
 @Composable
 private fun ColumnScope.LoadingState() {
     CircularProgressIndicator(
         modifier = Modifier
             .size(24.dp)
+            .padding(bottom = 16.dp)
             .align(Alignment.CenterHorizontally),
         color = colorResource(R.color.shape_secondary)
     )
@@ -102,14 +146,19 @@ private fun ColumnScope.ErrorState() {
 
 @Composable
 private fun SuccessState(spaceSyncUpdate: SpaceSyncUpdate, p2pStatus: P2PStatusUpdate) {
-    SpaceSyncStatusItem(spaceSyncUpdate)
+    if (spaceSyncUpdate is SpaceSyncUpdate.Update) {
+        SpaceSyncStatusItem(spaceSyncUpdate)
+    }
     Divider()
-    P2PStatusItem(p2pStatus)
+    if (p2pStatus is P2PStatusUpdate.Update) {
+        P2PStatusItem(p2pStatus)
+    }
+    Spacer(modifier = Modifier.height(8.dp))
 }
 
 @Composable
 private fun P2PStatusItem(
-    p2pStatus: P2PStatusUpdate
+    p2pStatus: P2PStatusUpdate.Update
 ) {
     val networkCardSettings = getP2PCardSettings(p2pStatus = p2pStatus)
     Row(
@@ -148,7 +197,7 @@ private fun P2PStatusItem(
 
 @Composable
 private fun SpaceSyncStatusItem(
-    spaceSyncUpdate: SpaceSyncUpdate
+    spaceSyncUpdate: SpaceSyncUpdate.Update
 ) {
     val networkCardSettings = getNetworkCardSettings(
         syncStatus = spaceSyncUpdate.status,
@@ -192,7 +241,7 @@ private fun SpaceSyncStatusItem(
 
 @Composable
 private fun getP2PCardSettings(
-    p2pStatus: P2PStatusUpdate
+    p2pStatus: P2PStatusUpdate.Update
 ): CardSettings {
     return when (p2pStatus.status) {
         P2PStatus.NOT_CONNECTED -> {
@@ -346,7 +395,7 @@ private data class CardSettings(
 @Preview(name = "AnytypeNetworkSynced", showBackground = true)
 @Composable
 fun SpaceSyncStatusPreview1() {
-    val spaceSyncUpdate = SpaceSyncUpdate(
+    val spaceSyncUpdate = SpaceSyncUpdate.Update(
         id = "1",
         status = SpaceSyncStatus.SYNCED,
         network = SpaceSyncNetwork.ANYTYPE,
@@ -359,7 +408,7 @@ fun SpaceSyncStatusPreview1() {
 @Preview(name = "AnytypeNetworkSyncing", showBackground = true)
 @Composable
 fun SpaceSyncStatusPreview2() {
-    val spaceSyncUpdate = SpaceSyncUpdate(
+    val spaceSyncUpdate = SpaceSyncUpdate.Update(
         id = "1",
         status = SpaceSyncStatus.SYNCING,
         network = SpaceSyncNetwork.ANYTYPE,
@@ -372,7 +421,7 @@ fun SpaceSyncStatusPreview2() {
 @Preview(name = "AnytypeNetworkError", showBackground = true)
 @Composable
 fun SpaceSyncStatusPreview3() {
-    val spaceSyncUpdate = SpaceSyncUpdate(
+    val spaceSyncUpdate = SpaceSyncUpdate.Update(
         id = "1",
         status = SpaceSyncStatus.ERROR,
         network = SpaceSyncNetwork.ANYTYPE,
@@ -385,7 +434,7 @@ fun SpaceSyncStatusPreview3() {
 @Preview(name = "AnytypeNetworkOffline", showBackground = true)
 @Composable
 fun SpaceSyncStatusPreview4() {
-    val spaceSyncUpdate = SpaceSyncUpdate(
+    val spaceSyncUpdate = SpaceSyncUpdate.Update(
         id = "1",
         status = SpaceSyncStatus.OFFLINE,
         network = SpaceSyncNetwork.ANYTYPE,
@@ -398,7 +447,7 @@ fun SpaceSyncStatusPreview4() {
 @Preview(name = "SelfHostSynced", showBackground = true)
 @Composable
 fun SpaceSyncStatusPreview5() {
-    val spaceSyncUpdate = SpaceSyncUpdate(
+    val spaceSyncUpdate = SpaceSyncUpdate.Update(
         id = "1",
         status = SpaceSyncStatus.SYNCED,
         network = SpaceSyncNetwork.SELF_HOST,
@@ -411,7 +460,7 @@ fun SpaceSyncStatusPreview5() {
 @Preview(name = "SelfHostSyncing", showBackground = true)
 @Composable
 fun SpaceSyncStatusPreview6() {
-    val spaceSyncUpdate = SpaceSyncUpdate(
+    val spaceSyncUpdate = SpaceSyncUpdate.Update(
         id = "1",
         status = SpaceSyncStatus.SYNCING,
         network = SpaceSyncNetwork.SELF_HOST,
@@ -424,7 +473,7 @@ fun SpaceSyncStatusPreview6() {
 @Preview(name = "SelfHostError", showBackground = true)
 @Composable
 fun SpaceSyncStatusPreview7() {
-    val spaceSyncUpdate = SpaceSyncUpdate(
+    val spaceSyncUpdate = SpaceSyncUpdate.Update(
         id = "1",
         status = SpaceSyncStatus.ERROR,
         network = SpaceSyncNetwork.SELF_HOST,
@@ -437,7 +486,7 @@ fun SpaceSyncStatusPreview7() {
 @Preview(name = "SelfHostOffline", showBackground = true)
 @Composable
 fun SpaceSyncStatusPreview8() {
-    val spaceSyncUpdate = SpaceSyncUpdate(
+    val spaceSyncUpdate = SpaceSyncUpdate.Update(
         id = "1",
         status = SpaceSyncStatus.OFFLINE,
         network = SpaceSyncNetwork.SELF_HOST,
@@ -450,7 +499,7 @@ fun SpaceSyncStatusPreview8() {
 @Preview(name = "LocalOnly", showBackground = true)
 @Composable
 fun SpaceSyncStatusPreview9() {
-    val spaceSyncUpdate = SpaceSyncUpdate(
+    val spaceSyncUpdate = SpaceSyncUpdate.Update(
         id = "1",
         status = SpaceSyncStatus.SYNCING,
         network = SpaceSyncNetwork.LOCAL_ONLY,
@@ -463,7 +512,7 @@ fun SpaceSyncStatusPreview9() {
 @Preview(name = "P2PNotConnected", showBackground = true)
 @Composable
 fun SpaceSyncStatusPreview10() {
-    val p2pStatus = P2PStatusUpdate(
+    val p2pStatus = P2PStatusUpdate.Update(
         status = P2PStatus.NOT_CONNECTED,
         devicesCounter = 0,
         spaceId = "1"
@@ -474,7 +523,7 @@ fun SpaceSyncStatusPreview10() {
 @Preview(name = "P2PNotPossible", showBackground = true)
 @Composable
 fun SpaceSyncStatusPreview11() {
-    val p2pStatus = P2PStatusUpdate(
+    val p2pStatus = P2PStatusUpdate.Update(
         status = P2PStatus.NOT_POSSIBLE,
         devicesCounter = 0,
         spaceId = "1"
@@ -485,7 +534,7 @@ fun SpaceSyncStatusPreview11() {
 @Preview(name = "P2PConnected", showBackground = true)
 @Composable
 fun SpaceSyncStatusPreview12() {
-    val p2pStatus = P2PStatusUpdate(
+    val p2pStatus = P2PStatusUpdate.Update(
         status = P2PStatus.CONNECTED,
         devicesCounter = 3,
         spaceId = "1"

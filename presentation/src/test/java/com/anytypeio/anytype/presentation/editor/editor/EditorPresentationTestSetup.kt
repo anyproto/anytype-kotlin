@@ -111,6 +111,7 @@ import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.home.UserPermissionProviderStub
+import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -349,9 +350,6 @@ open class EditorPresentationTestSetup {
     lateinit var getObjectTypes: GetObjectTypes
 
     @Mock
-    lateinit var fileLimitsEventChannel: FileLimitsEventChannel
-
-    @Mock
     lateinit var interceptFileLimitEvents: InterceptFileLimitEvents
 
     @Mock
@@ -368,6 +366,9 @@ open class EditorPresentationTestSetup {
 
     @Mock
     lateinit var getNetworkMode: GetNetworkMode
+
+    @Mock
+    lateinit var spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
 
     var permissions: UserPermissionProvider = UserPermissionProviderStub()
 
@@ -492,7 +493,8 @@ open class EditorPresentationTestSetup {
                 space = SpaceId(defaultSpace)
             ),
             permissions = permissions,
-            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider
         )
     }
 
@@ -563,8 +565,8 @@ open class EditorPresentationTestSetup {
     }
 
     fun stubInterceptThreadStatus() {
-        interceptThreadStatus.stub {
-            onBlocking { build(any()) } doReturn emptyFlow()
+        spaceSyncAndP2PStatusProvider.stub {
+            onBlocking { observe() } doReturn emptyFlow()
         }
     }
 

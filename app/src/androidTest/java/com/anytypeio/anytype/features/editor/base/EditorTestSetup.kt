@@ -61,10 +61,8 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
-import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
-import com.anytypeio.anytype.domain.`object`.SetObjectInternalFlags
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
@@ -109,6 +107,7 @@ import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -204,7 +203,6 @@ open class EditorTestSetup {
     lateinit var applyTemplate: ApplyTemplate
 
     lateinit var createObjectAsMentionOrLink: CreateObjectAsMentionOrLink
-    lateinit var interceptThreadStatus: InterceptThreadStatus
 
     lateinit var setDocCoverImage: SetDocCoverImage
     lateinit var setDocImageIcon: SetDocumentImageIcon
@@ -259,9 +257,6 @@ open class EditorTestSetup {
     lateinit var analytics: Analytics
 
     @Mock
-    lateinit var threadStatusChannel: ThreadStatusChannel
-
-    @Mock
     lateinit var createTable: CreateTable
 
     @Mock
@@ -277,9 +272,6 @@ open class EditorTestSetup {
     lateinit var fileLimitsEventChannel: FileLimitsEventChannel
 
     @Mock
-    lateinit var setObjectInternalFlags: SetObjectInternalFlags
-
-    @Mock
     lateinit var spaceManager: SpaceManager
 
     @Mock
@@ -289,13 +281,13 @@ open class EditorTestSetup {
     lateinit var templatesContainer: ObjectTypeTemplatesContainer
 
     @Mock
-    lateinit var getNetworkMode: GetNetworkMode
-
-    @Mock
     lateinit var permissions: UserPermissionProvider
 
     @Mock
     lateinit var analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+
+    @Mock
+    lateinit var spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
 
     lateinit var interceptFileLimitEvents: InterceptFileLimitEvents
 
@@ -349,7 +341,6 @@ open class EditorTestSetup {
             spaceManager = spaceManager
         )
         getSearchObjects = SearchObjects(repo)
-        interceptThreadStatus = InterceptThreadStatus(channel = threadStatusChannel)
         downloadUnsplashImage = DownloadUnsplashImage(unsplashRepository)
         clearBlockContent = ClearBlockContent(repo)
         clearBlockStyle = ClearBlockStyle(repo)
@@ -471,7 +462,6 @@ open class EditorTestSetup {
                 spaceManager = spaceManager
             ),
             createObjectAsMentionOrLink = createObjectAsMentionOrLink,
-            interceptThreadStatus = interceptThreadStatus,
             analytics = analytics,
             dispatcher = Dispatcher.Default(),
             updateDetail = updateDetail,
@@ -500,13 +490,13 @@ open class EditorTestSetup {
             templatesContainer = templatesContainer,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             dispatchers = appCoroutineDispatchers,
-            getNetworkMode = getNetworkMode,
             params = EditorViewModel.Params(
                 ctx = root,
                 space = SpaceId(defaultSpace)
             ),
             permissions = permissions,
-            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            syncStatusProvider = spaceSyncAndP2PStatusProvider
         )
     }
 
@@ -520,11 +510,9 @@ open class EditorTestSetup {
         }
     }
 
-    fun stubInterceptThreadStatus(
-        params: InterceptThreadStatus.Params = InterceptThreadStatus.Params(ctx = root)
-    ) {
-        interceptThreadStatus.stub {
-            onBlocking { build(params) } doReturn emptyFlow()
+    fun stubInterceptThreadStatus() {
+        spaceSyncAndP2PStatusProvider.stub {
+            onBlocking { observe() } doReturn emptyFlow()
         }
     }
 

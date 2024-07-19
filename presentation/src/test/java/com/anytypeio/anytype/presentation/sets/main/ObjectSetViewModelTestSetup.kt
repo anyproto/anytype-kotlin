@@ -81,6 +81,7 @@ import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
 import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
 import com.anytypeio.anytype.presentation.sets.updateFormatForSubscription
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerDelegate
+import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -129,9 +130,6 @@ open class ObjectSetViewModelTestSetup {
 
     @Mock
     lateinit var interceptEvents: InterceptEvents
-
-    @Mock
-    lateinit var interceptThreadStatus: InterceptThreadStatus
 
     @Mock
     lateinit var gateway: Gateway
@@ -209,6 +207,9 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
 
+    @Mock
+    lateinit var spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
+
     var permissions: UserPermissionProvider = UserPermissionProviderStub()
 
     lateinit var spaceConfig: Config
@@ -261,7 +262,6 @@ open class ObjectSetViewModelTestSetup {
             closeBlock = closeBlock,
             updateText = updateText,
             interceptEvents = interceptEvents,
-            interceptThreadStatus = interceptThreadStatus,
             createDataViewObject = createDataViewObject,
             dispatcher = dispatcher,
             delegator = delegator,
@@ -274,7 +274,6 @@ open class ObjectSetViewModelTestSetup {
             createObject = createObject,
             setObjectDetails = setObjectDetails,
             paginator = paginator,
-            cancelSearchSubscription = cancelSearchSubscription,
             database = database,
             dataViewSubscriptionContainer = dataViewSubscriptionContainer,
             storeOfRelations = storeOfRelations,
@@ -294,14 +293,14 @@ open class ObjectSetViewModelTestSetup {
             getObjectTypes = getObjectTypes,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             dispatchers = dispatchers,
-            getNetworkMode = getNetworkMode,
             dateProvider = DateProviderImpl(),
             vmParams = ObjectSetViewModel.Params(
                 ctx = root,
                 space = SpaceId(defaultSpace)
             ),
             permissions = permissions,
-            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider
         )
     }
 
@@ -314,11 +313,9 @@ open class ObjectSetViewModelTestSetup {
         }
     }
 
-    fun stubInterceptThreadStatus(
-        params: InterceptThreadStatus.Params = InterceptThreadStatus.Params(ctx = root)
-    ) {
-        interceptThreadStatus.stub {
-            onBlocking { build(params) } doReturn emptyFlow()
+    fun stubInterceptThreadStatus() {
+        spaceSyncAndP2PStatusProvider.stub {
+            onBlocking { observe() } doReturn emptyFlow()
         }
     }
 

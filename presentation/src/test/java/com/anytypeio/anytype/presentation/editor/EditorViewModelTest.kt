@@ -119,6 +119,7 @@ import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColo
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
+import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
@@ -183,9 +184,6 @@ open class EditorViewModelTest {
 
     @Mock
     lateinit var interceptEvents: InterceptEvents
-
-    @Mock
-    lateinit var interceptThreadStatus: InterceptThreadStatus
 
     @Mock
     lateinit var createBlock: CreateBlock
@@ -320,9 +318,6 @@ open class EditorViewModelTest {
     lateinit var copyFileToCacheDirectory: CopyFileToCacheDirectory
 
     @Mock
-    lateinit var getTemplates: GetTemplates
-
-    @Mock
     lateinit var applyTemplate: ApplyTemplate
 
     @Mock
@@ -362,6 +357,9 @@ open class EditorViewModelTest {
 
     @Mock
     lateinit var permissions: UserPermissionProvider
+
+    @Mock
+    lateinit var spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
 
     lateinit var vm: EditorViewModel
 
@@ -3738,8 +3736,8 @@ open class EditorViewModelTest {
     }
 
     fun stubInterceptThreadStatus() {
-        interceptThreadStatus.stub {
-            onBlocking { build(any()) } doReturn emptyFlow()
+        spaceSyncAndP2PStatusProvider.stub {
+            onBlocking { observe() } doReturn emptyFlow()
         }
     }
 
@@ -3867,7 +3865,6 @@ open class EditorViewModelTest {
             createBlockLinkWithObject = createBlockLinkWithObject,
             createObjectAsMentionOrLink = createObjectAsMentionOrLink,
             interceptEvents = interceptEvents,
-            interceptThreadStatus = interceptThreadStatus,
             updateLinkMarks = updateLinkMark,
             removeLinkMark = removeLinkMark,
             reducer = DocumentExternalEventReducer(),
@@ -3952,13 +3949,13 @@ open class EditorViewModelTest {
             templatesContainer = templatesContainer,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             dispatchers = dispatchers,
-            getNetworkMode = getNetworkMode,
             vmParams = EditorViewModel.Params(
                 ctx = root,
                 space = spaceId
             ),
             permissions = permissions,
-            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider
         )
     }
 

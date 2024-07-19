@@ -67,6 +67,7 @@ import com.anytypeio.anytype.presentation.sets.ObjectSetViewModelFactory
 import com.anytypeio.anytype.presentation.sets.state.DefaultObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerDelegate
+import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.collection.DateProviderImpl
@@ -88,7 +89,6 @@ abstract class TestObjectSetSetup {
     private lateinit var updateText: UpdateText
     private lateinit var createDataViewObject: CreateDataViewObject
     private lateinit var closeBlock: CloseBlock
-    private lateinit var interceptThreadStatus: InterceptThreadStatus
     private lateinit var setDocCoverImage: SetDocCoverImage
     private lateinit var downloadUnsplashImage: DownloadUnsplashImage
     private lateinit var setDataViewQuery: SetDataViewQuery
@@ -123,7 +123,7 @@ abstract class TestObjectSetSetup {
     @Mock
     lateinit var interceptEvents: InterceptEvents
     @Mock
-    lateinit var threadStatusChannel: ThreadStatusChannel
+    lateinit var spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
     @Mock
     lateinit var subscriptionEventChannel: SubscriptionEventChannel
     @Mock
@@ -247,7 +247,6 @@ abstract class TestObjectSetSetup {
         )
         setObjectDetails = UpdateDetail(repo)
         updateDataViewViewer = UpdateDataViewViewer(repo, dispatchers)
-        interceptThreadStatus = InterceptThreadStatus(channel = threadStatusChannel)
         closeBlock = CloseBlock(repo, dispatchers)
         urlBuilder = UrlBuilder(gateway)
         downloadUnsplashImage = DownloadUnsplashImage(unsplashRepo)
@@ -268,7 +267,6 @@ abstract class TestObjectSetSetup {
             openObjectSet = openObjectSet,
             closeBlock = closeBlock,
             interceptEvents = interceptEvents,
-            interceptThreadStatus = interceptThreadStatus,
             createDataViewObject = createDataViewObject,
             setObjectDetails = setObjectDetails,
             updateText = updateText,
@@ -281,7 +279,6 @@ abstract class TestObjectSetSetup {
             setDocCoverImage = setDocCoverImage,
             delegator = delegator,
             createObject = createObject,
-            cancelSearchSubscription = cancelSearchSubscription,
             paginator = paginator,
             database = database,
             dataViewSubscriptionContainer = dataViewSubscriptionContainer,
@@ -302,14 +299,14 @@ abstract class TestObjectSetSetup {
             getObjectTypes = getObjectTypes,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             dispatchers = appCoroutineDispatchers,
-            getNetworkMode = getNetworkMode,
             dateProvider = dateProvider,
             params = ObjectSetViewModel.Params(
                 ctx = ctx,
                 space = SpaceId(defaultSpace)
             ),
             permissions = permissions,
-            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
         )
     }
 
@@ -320,8 +317,8 @@ abstract class TestObjectSetSetup {
     }
 
     fun stubInterceptThreadStatus() {
-        threadStatusChannel.stub {
-            onBlocking { observe(any()) } doReturn emptyFlow()
+        spaceSyncAndP2PStatusProvider.stub {
+            onBlocking { observe() } doReturn emptyFlow()
         }
     }
 

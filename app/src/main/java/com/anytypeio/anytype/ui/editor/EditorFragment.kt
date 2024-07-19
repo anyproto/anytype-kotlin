@@ -57,8 +57,6 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.addTextFromSelectedStart
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
-import com.anytypeio.anytype.core_ui.extensions.getLabelText
-import com.anytypeio.anytype.core_ui.extensions.getToastMsg
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
 import com.anytypeio.anytype.core_ui.features.editor.DragAndDropAdapterDelegate
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.DefaultScrollAndMoveTargetDescriptor
@@ -67,6 +65,7 @@ import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.ScrollAndMove
 import com.anytypeio.anytype.core_ui.menu.ObjectTypePopupMenu
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.longClicks
+import com.anytypeio.anytype.core_ui.syncstatus.SpaceSyncStatusScreen
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_ui.tools.EditorHeaderOverlayDetector
 import com.anytypeio.anytype.core_ui.tools.LastItemBottomOffsetDecorator
@@ -126,6 +125,7 @@ import com.anytypeio.anytype.presentation.editor.model.EditorFooter
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateViewState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
+import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.presentation.sync.SyncStatusView
 import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
@@ -394,9 +394,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         ) { isHeaderOverlaid ->
             if (isHeaderOverlaid) {
                 binding.topToolbar.setBackgroundColor(0)
-                binding.topToolbar.statusText.animate().alpha(1f)
-                    .setDuration(DEFAULT_TOOLBAR_ANIM_DURATION)
-                    .start()
                 binding.topToolbar.container.animate().alpha(0f)
                     .setDuration(DEFAULT_TOOLBAR_ANIM_DURATION)
                     .start()
@@ -410,9 +407,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
             } else {
                 binding.topToolbar.setBackgroundColor(requireContext().color(R.color.defaultCanvasColor))
-                binding.topToolbar.statusText.animate().alpha(0f)
-                    .setDuration(DEFAULT_TOOLBAR_ANIM_DURATION)
-                    .start()
                 binding.topToolbar.container.animate().alpha(1f)
                     .setDuration(DEFAULT_TOOLBAR_ANIM_DURATION)
                     .start()
@@ -747,6 +741,17 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             }
         }
 
+        binding.syncStatusWidget.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                SpaceSyncStatusScreen(
+                    uiState = vm.syncStatusWidget.collectAsStateWithLifecycle().value,
+                    onDismiss = vm::onSyncWidgetDismiss,
+                    scope = lifecycleScope
+                )
+            }
+        }
+
         BottomSheetBehavior.from(binding.styleToolbarMain).state = BottomSheetBehavior.STATE_HIDDEN
         BottomSheetBehavior.from(binding.styleToolbarOther).state = BottomSheetBehavior.STATE_HIDDEN
         BottomSheetBehavior.from(binding.styleToolbarColors).state =
@@ -811,13 +816,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             }
             .launchIn(lifecycleScope)
 
-        vm.syncStatus.onEach { status -> bindSyncStatus(status) }.launchIn(lifecycleScope)
-        vm.isSyncStatusVisible.onEach { isSyncStatusVisible ->
-            if (isSyncStatusVisible)
-                binding.topToolbar.findViewById<ViewGroup>(R.id.statusContainer).visible()
-            else
-                binding.topToolbar.findViewById<ViewGroup>(R.id.statusContainer).invisible()
-        }.launchIn(lifecycleScope)
+        vm.spaceSyncStatus.onEach { status -> bindSyncStatus(status) }.launchIn(lifecycleScope)
 
         vm.isUndoEnabled.onEach {
             // TODO
@@ -867,18 +866,16 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
     }
 
-    private fun bindSyncStatus(status: SyncStatusView?) {
+    private fun bindSyncStatus(status: SpaceSyncAndP2PStatusState) {
         binding.topToolbar.status.bind(status)
-        if (status == null) {
+        if (status is SpaceSyncAndP2PStatusState.Initial) {
             binding.topToolbar.hideStatusContainer()
         } else {
             binding.topToolbar.showStatusContainer()
         }
-        val tvStatus = binding.topToolbar.statusText
-        binding.topToolbar.statusContainer.setOnClickListener {
-            toast(status.getToastMsg(requireContext()))
+        binding.topToolbar.status.setOnClickListener {
+            vm.onSyncStatusBadgeClicked()
         }
-        tvStatus.text = status?.getLabelText(requireContext())
     }
 
     override fun onDestroyView() {

@@ -1,58 +1,31 @@
 package com.anytypeio.anytype.presentation.sync
 
-import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.NetworkMode
-import com.anytypeio.anytype.core_models.SyncStatus
-import com.anytypeio.anytype.core_models.NetworkModeConst.NODE_STAGING_ID
+import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncError
+import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncStatus
+import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncUpdate
 
+@Deprecated("to delete")
 sealed class SyncStatusView {
-    object Unknown : SyncStatusView()
-    object Offline : SyncStatusView()
-    object Syncing : SyncStatusView()
-    sealed class Synced : SyncStatusView() {
-        object AnyNetwork : Synced()
-        object StagingNetwork : Synced()
-        object LocalOnly : Synced()
-        object SelfHostedNetwork : Synced()
-    }
-    object Failed : SyncStatusView()
-    object IncompatibleVersion : SyncStatusView()
+    data object Init : SyncStatusView()
+    data object Offline : SyncStatusView()
+    data object Syncing : SyncStatusView()
+    data object Synced : SyncStatusView()
+    data object Failed : SyncStatusView()
+    data object ConnectToPeers : SyncStatusView()
 }
 
-fun SyncStatus.toView(networkId: Id?, networkMode: NetworkMode): SyncStatusView {
-    return when (this) {
-        SyncStatus.UNKNOWN -> {
-            when (networkMode) {
-                NetworkMode.LOCAL -> SyncStatusView.Synced.LocalOnly
-                else -> SyncStatusView.Unknown
-            }
-        }
-        SyncStatus.OFFLINE -> SyncStatusView.Offline
-        SyncStatus.SYNCING -> SyncStatusView.Syncing
-        SyncStatus.SYNCED -> {
-            networkMode.syncedStatusToView(networkId)
-        }
-        SyncStatus.FAILED -> SyncStatusView.Failed
-        SyncStatus.INCOMPATIBLE_VERSION -> SyncStatusView.IncompatibleVersion
-    }
-}
-
-fun NetworkMode.syncedStatusToView(networkId: String?): SyncStatusView {
-    when (this) {
-        NetworkMode.DEFAULT -> return SyncStatusView.Synced.AnyNetwork
-        NetworkMode.LOCAL -> {
-            return if (networkId.isNullOrEmpty()) {
-                SyncStatusView.Synced.LocalOnly
-            } else {
-                SyncStatusView.Unknown
-            }
-        }
-        NetworkMode.CUSTOM -> {
-            return if (networkId == NODE_STAGING_ID) {
-                SyncStatusView.Synced.StagingNetwork
-            } else {
-                SyncStatusView.Synced.SelfHostedNetwork
-            }
+@Deprecated("to delete")
+fun SpaceSyncUpdate.Update.toView(): SyncStatusView {
+    val error = this.error
+    if (error != SpaceSyncError.NULL) {
+        return SyncStatusView.Failed
+    } else {
+        val status = this.status
+        return when (status) {
+            SpaceSyncStatus.SYNCED -> SyncStatusView.Synced
+            SpaceSyncStatus.SYNCING -> SyncStatusView.Syncing
+            SpaceSyncStatus.ERROR -> SyncStatusView.Failed
+            SpaceSyncStatus.OFFLINE -> SyncStatusView.Offline
         }
     }
 }

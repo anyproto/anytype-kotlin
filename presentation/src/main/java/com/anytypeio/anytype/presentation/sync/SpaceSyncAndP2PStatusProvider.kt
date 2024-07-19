@@ -86,7 +86,7 @@ fun SyncStatusWidgetState.updateStatus(newState: SpaceSyncAndP2PStatusState): Sy
 fun SpaceSyncAndP2PStatusState.toSyncStatusWidgetState(): SyncStatusWidgetState {
     return when (this) {
         is SpaceSyncAndP2PStatusState.Error -> {
-            SyncStatusWidgetState.Error(message = this.message)
+            SyncStatusWidgetState.Error(message = message)
         }
 
         SpaceSyncAndP2PStatusState.Initial -> {
@@ -95,8 +95,8 @@ fun SpaceSyncAndP2PStatusState.toSyncStatusWidgetState(): SyncStatusWidgetState 
 
         is SpaceSyncAndP2PStatusState.Success -> {
             SyncStatusWidgetState.Success(
-                spaceSyncUpdate = this.spaceSyncUpdate,
-                p2PStatusUpdate = this.p2PStatusUpdate
+                spaceSyncUpdate = spaceSyncUpdate,
+                p2PStatusUpdate = p2PStatusUpdate
             )
         }
     }

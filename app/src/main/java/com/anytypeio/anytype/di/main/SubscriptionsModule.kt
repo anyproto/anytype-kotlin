@@ -23,6 +23,7 @@ import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.domain.workspace.SpaceSyncStatusChannel
 import dagger.Module
 import dagger.Provides
 import javax.inject.Named
@@ -153,12 +154,16 @@ object SubscriptionsModule {
         @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
         container: StorelessSubscriptionContainer,
         spaceManager: SpaceManager,
-        awaitAccountStartManager: AwaitAccountStartManager
+        awaitAccountStartManager: AwaitAccountStartManager,
+        spaceSyncStatusChannel: SpaceSyncStatusChannel,
+        logger: Logger
     ) : ActiveSpaceMemberSubscriptionContainer = ActiveSpaceMemberSubscriptionContainer.Default(
         dispatchers = dispatchers,
         scope = scope,
         container = container,
         manager = spaceManager,
-        awaitAccountStart = awaitAccountStartManager
+        awaitAccountStart = awaitAccountStartManager,
+        spaceSyncStatusChannel = spaceSyncStatusChannel,
+        logger = logger
     )
 }

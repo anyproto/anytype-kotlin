@@ -56,7 +56,6 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
-import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
@@ -80,8 +79,6 @@ import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.SetRelationKey
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
-import com.anytypeio.anytype.domain.status.InterceptThreadStatus
-import com.anytypeio.anytype.domain.status.ThreadStatusChannel
 import com.anytypeio.anytype.domain.table.CreateTable
 import com.anytypeio.anytype.domain.table.CreateTableColumn
 import com.anytypeio.anytype.domain.table.CreateTableRow
@@ -256,7 +253,6 @@ object EditorSessionModule {
         openPage: OpenPage,
         closePage: CloseBlock,
         interceptEvents: InterceptEvents,
-        interceptThreadStatus: InterceptThreadStatus,
         updateLinkMarks: UpdateLinkMarks,
         removeLinkMark: RemoveLinkMark,
         createObjectSet: CreateObjectSet,
@@ -293,7 +289,6 @@ object EditorSessionModule {
         templatesContainer: ObjectTypeTemplatesContainer,
         storelessSubscriptionContainer: StorelessSubscriptionContainer,
         dispatchers: AppCoroutineDispatchers,
-        getNetworkMode: GetNetworkMode,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         syncStatusProvider: SpaceSyncAndP2PStatusProvider
     ): EditorViewModelFactory = EditorViewModelFactory(
@@ -304,7 +299,6 @@ object EditorSessionModule {
         createBlockLinkWithObject = createBlockLinkWithObject,
         createObjectAsMentionOrLink = createObjectAsMentionOrLink,
         interceptEvents = interceptEvents,
-        interceptThreadStatus = interceptThreadStatus,
         updateLinkMarks = updateLinkMarks,
         removeLinkMark = removeLinkMark,
         documentEventReducer = documentExternalEventReducer,
@@ -339,7 +333,6 @@ object EditorSessionModule {
         templatesContainer = templatesContainer,
         dispatchers = dispatchers,
         storelessSubscriptionContainer = storelessSubscriptionContainer,
-        getNetworkMode = getNetworkMode,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         syncStatusProvider = syncStatusProvider
     )
@@ -564,16 +557,6 @@ object EditorUseCaseModule {
     fun provideInterceptEventsUseCase(
         channel: EventChannel
     ): InterceptEvents = InterceptEvents(
-        channel = channel,
-        context = Dispatchers.IO
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun providesInterceptThreadStatusUseCase(
-        channel: ThreadStatusChannel
-    ): InterceptThreadStatus = InterceptThreadStatus(
         channel = channel,
         context = Dispatchers.IO
     )

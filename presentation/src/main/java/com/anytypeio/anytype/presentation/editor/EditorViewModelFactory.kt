@@ -46,6 +46,7 @@ import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
 import com.anytypeio.anytype.presentation.editor.editor.table.EditorTableDelegate
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
+import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -95,7 +96,8 @@ open class EditorViewModelFactory @Inject constructor(
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val dispatchers: AppCoroutineDispatchers,
     private val getNetworkMode: GetNetworkMode,
-    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val syncStatusProvider: SpaceSyncAndP2PStatusProvider
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -144,7 +146,8 @@ open class EditorViewModelFactory @Inject constructor(
             dispatchers = dispatchers,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             getNetworkMode = getNetworkMode,
-            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            spaceSyncAndP2PStatusProvider = syncStatusProvider
         ) as T
     }
 }

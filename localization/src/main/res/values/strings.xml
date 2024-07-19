@@ -1699,7 +1699,9 @@ Please provide specific details of your needs here.</string>
     <string name="sort_empty_values_top">On top</string>
     <string name="widget_view_see_all_objects">See all objects</string>
 
-    <string name="sync_status_local_only">Local Only</string>
+    <string name="sync_status_get_error">Error getting sync status</string>
+
+    <string name="sync_status_local_only_title">Local Only</string>
     <string name="sync_status_data_backup">Data backup is disabled</string>
 
     <string name="sync_status_self_host">Self Host</string>

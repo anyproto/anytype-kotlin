@@ -78,7 +78,6 @@ import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.SetRelationKey
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
-import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.table.CreateTable
 import com.anytypeio.anytype.domain.table.CreateTableColumn
 import com.anytypeio.anytype.domain.table.CreateTableRow
@@ -141,9 +140,6 @@ open class EditorPresentationTestSetup {
 
     @Mock
     lateinit var interceptEvents: InterceptEvents
-
-    @Mock
-    lateinit var interceptThreadStatus: InterceptThreadStatus
 
     @Mock
     lateinit var createBlock: CreateBlock
@@ -451,7 +447,6 @@ open class EditorPresentationTestSetup {
             createBlockLinkWithObject = createBlockLinkWithObject,
             createObjectAsMentionOrLink = createObjectAsMentionOrLink,
             interceptEvents = interceptEvents,
-            interceptThreadStatus = interceptThreadStatus,
             updateLinkMarks = updateLinkMark,
             removeLinkMark = removeLinkMark,
             reducer = DocumentExternalEventReducer(),
@@ -492,7 +487,6 @@ open class EditorPresentationTestSetup {
             templatesContainer = templatesContainer,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             dispatchers = dispatchers,
-            getNetworkMode = getNetworkMode,
             vmParams = EditorViewModel.Params(
                 ctx = root,
                 space = SpaceId(defaultSpace)

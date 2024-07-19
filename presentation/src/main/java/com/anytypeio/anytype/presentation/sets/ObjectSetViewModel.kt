@@ -58,7 +58,6 @@ import com.anytypeio.anytype.domain.search.DataViewState
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
-import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -98,8 +97,13 @@ import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubsc
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerDelegate
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerEvent
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerView
+import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusProvider
+import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.presentation.sync.SyncStatusView
+import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
+import com.anytypeio.anytype.presentation.sync.toSyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.toView
+import com.anytypeio.anytype.presentation.sync.updateStatus
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.templates.TemplateMenuClick
 import com.anytypeio.anytype.presentation.templates.TemplateObjectTypeView
@@ -148,7 +152,6 @@ class ObjectSetViewModel(
     private val setDocCoverImage: SetDocCoverImage,
     private val updateText: UpdateText,
     private val interceptEvents: InterceptEvents,
-    private val interceptThreadStatus: InterceptThreadStatus,
     private val dispatcher: Dispatcher<Payload>,
     private val delegator: Delegator<Action>,
     private val urlBuilder: UrlBuilder,
@@ -158,7 +161,6 @@ class ObjectSetViewModel(
     private val createDataViewObject: CreateDataViewObject,
     private val createObject: CreateObject,
     private val dataViewSubscriptionContainer: DataViewSubscriptionContainer,
-    private val cancelSearchSubscription: CancelSearchSubscription,
     private val setQueryToObjectSet: SetQueryToObjectSet,
     private val paginator: ObjectSetPaginator,
     private val storeOfRelations: StoreOfRelations,
@@ -177,9 +179,9 @@ class ObjectSetViewModel(
     private val createTemplate: CreateTemplate,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val dispatchers: AppCoroutineDispatchers,
-    private val getNetworkMode: GetNetworkMode,
     private val dateProvider: DateProvider,
-    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>,
     ViewerDelegate by viewerDelegate,
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate
@@ -191,7 +193,6 @@ class ObjectSetViewModel(
 
     private val isOwnerOrEditor get() = permission.value?.isOwnerOrEditor() ==  true
 
-    val status = MutableStateFlow<SyncStatusView?>(null)
     val error = MutableStateFlow<String?>(null)
 
     val featured = MutableStateFlow<BlockView.FeaturedRelation?>(null)
@@ -452,9 +453,9 @@ class ObjectSetViewModel(
         Timber.d("onStart, ctx:[$ctx]")
         this.context = ctx
         subscribeToEvents(ctx = ctx)
-        subscribeToThreadStatus(ctx = ctx)
         proceedWithOpeningCurrentObject(ctx = ctx)
         proceedWithObservingProfileIcon()
+        proceedWithCollectingSyncStatus()
     }
 
     private fun subscribeToEvents(ctx: Id) {
@@ -462,21 +463,6 @@ class ObjectSetViewModel(
             interceptEvents
                 .build(InterceptEvents.Params(ctx))
                 .collect { events -> stateReducer.dispatch(events) }
-        }
-    }
-
-    private fun subscribeToThreadStatus(ctx: Id) {
-        jobs += viewModelScope.launch {
-            val networkMode = getNetworkMode.run(Unit).networkMode
-            interceptThreadStatus
-                .build(InterceptThreadStatus.Params(ctx))
-                .collect {
-                    val statusView = it.toView(
-                        networkId = spaceManager.getConfig(vmParams.space)?.network,
-                        networkMode = networkMode
-                    )
-                    status.value = statusView
-                }
         }
     }
 
@@ -2824,6 +2810,31 @@ class ObjectSetViewModel(
                 )
             )
         }
+    }
+    //endregion
+
+    //region SYNC STATUS
+    val spaceSyncStatus = MutableStateFlow<SpaceSyncAndP2PStatusState>(SpaceSyncAndP2PStatusState.Initial)
+    val syncStatusWidget = MutableStateFlow<SyncStatusWidgetState>(SyncStatusWidgetState.Hidden)
+
+    fun onSyncStatusBadgeClicked() {
+        Timber.d("onSyncStatusBadgeClicked, ")
+        syncStatusWidget.value = spaceSyncStatus.value.toSyncStatusWidgetState()
+    }
+
+    private fun proceedWithCollectingSyncStatus() {
+        jobs += viewModelScope.launch {
+            spaceSyncAndP2PStatusProvider
+                .observe()
+                .collect { syncAndP2pState ->
+                    spaceSyncStatus.value = syncAndP2pState
+                    syncStatusWidget.value = syncStatusWidget.value.updateStatus(syncAndP2pState)
+                }
+        }
+    }
+
+    fun onSyncWidgetDismiss() {
+        syncStatusWidget.value = SyncStatusWidgetState.Hidden
     }
     //endregion
 

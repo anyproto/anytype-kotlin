@@ -1028,10 +1028,11 @@
 
     <!--endregion-->
 
-    <!--region LIBRARY -->
+    <!--region WIDGETS -->
 
     <string name="create_widget">Create a widget</string>
     <string name="edit_widgets">Edit widgets</string>
+    <string name="add_widget">Add widget</string>
     <string name="widget_source">Widget source</string>
     <string name="widget_type">Widget type</string>
     <string name="widget_add_below">Add Below</string>

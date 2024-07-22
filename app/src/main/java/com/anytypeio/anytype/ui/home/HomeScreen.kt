@@ -126,7 +126,8 @@ fun HomeScreen(
             onMove = onMove,
             onObjectCheckboxClicked = onObjectCheckboxClicked,
             onSpaceShareIconClicked = onSpaceShareIconClicked,
-            onSeeAllObjectsClicked = onSeeAllObjectsClicked
+            onSeeAllObjectsClicked = onSeeAllObjectsClicked,
+            onCreateWidget = onCreateWidget
         )
         AnimatedVisibility(
             visible = mode is InteractionMode.Edit,
@@ -195,7 +196,8 @@ private fun WidgetList(
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onSpaceWidgetClicked: () -> Unit,
     onSpaceShareIconClicked: (ObjectWrapper.SpaceView) -> Unit,
-    onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit
+    onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit,
+    onCreateWidget: () -> Unit
 ) {
     val views = remember { mutableStateOf(widgets) }
     views.value = widgets
@@ -443,11 +445,23 @@ private fun WidgetList(
                             enter = fadeIn(),
                             exit = fadeOut()
                         ) {
-                            WidgetActionButton(
-                                label = stringResource(R.string.edit_widgets),
-                                onClick = onEditWidgets,
-                                modifier = Modifier
-                            )
+                            Row {
+                                WidgetActionButton(
+                                    label = stringResource(R.string.add_widget),
+                                    onClick = throttledClick(
+                                        onClick = {
+                                            onCreateWidget()
+                                        }
+                                    ),
+                                    modifier = Modifier
+                                )
+                                Spacer(modifier = Modifier.width(12.dp))
+                                WidgetActionButton(
+                                    label = stringResource(R.string.edit_widgets),
+                                    onClick = onEditWidgets,
+                                    modifier = Modifier
+                                )
+                            }
                         }
                     }
                 }

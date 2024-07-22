@@ -33,10 +33,6 @@
             android:name="com.anytypeio.anytype.ui.relations.ObjectRelationListFragment"
             android:label="Object-Relation-List-Screen" />
         <dialog
-            android:id="@+id/objectRelationValueScreen"
-            android:name="com.anytypeio.anytype.ui.relations.RelationValueFragment"
-            android:label="Object-Relation-Value-Screen" />
-        <dialog
             android:id="@+id/objectIconPickerScreen"
             android:name="com.anytypeio.anytype.ui.editor.modals.ObjectIconPickerFragment"
             android:label="Object-Icon-Picker-Screen" />
@@ -105,10 +101,6 @@
             android:id="@+id/objectRelationListScreen"
             android:name="com.anytypeio.anytype.ui.relations.ObjectRelationListFragment"
             android:label="Object-Relation-List-Screen" />
-        <dialog
-            android:id="@+id/dataViewRelationValueScreen"
-            android:name="com.anytypeio.anytype.ui.relations.RelationValueDVFragment"
-            android:label="DV-Relation-Value-Screen" />
         <dialog
             android:id="@+id/objectSetMainMenuScreen"
             android:name="com.anytypeio.anytype.ui.sets.ObjectSetMenuFragment"

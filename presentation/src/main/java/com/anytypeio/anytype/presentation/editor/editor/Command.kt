@@ -91,15 +91,6 @@ sealed class Command {
         data class RelationAdd(val ctx: String, val target: String) : OpenObjectRelationScreen()
         sealed class Value : OpenObjectRelationScreen() {
             abstract val isReadOnlyValue: Boolean
-            data class Default(
-                val ctx: Id,
-                val space: Id,
-                val target: Id,
-                val relationKey: Key,
-                val targetObjectTypes: List<Id>,
-                override val isReadOnlyValue: Boolean = false
-            ) : Value()
-
             data class Text(
                 val ctx: Id,
                 val space: Id,

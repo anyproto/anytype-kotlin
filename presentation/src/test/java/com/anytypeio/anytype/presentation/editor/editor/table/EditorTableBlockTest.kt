@@ -18,11 +18,13 @@ import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelStat
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -37,7 +39,7 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
-    val coroutineTestRule = CoroutinesTestRule()
+    val coroutineTestRule = DefaultCoroutineTestRule()
 
     @Before
     fun setup() {
@@ -206,7 +208,7 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `when click on menu icon - should enter table mode with 1 selected cell`() {
+    fun `when click on menu icon - should enter table mode with 1 selected cell`() = runTest {
 
         //SETUP
         val columns = StubTableColumns(size = 3)
@@ -218,13 +220,22 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
         val title = StubTitle()
         val header = StubHeader(children = listOf(title.id))
         val page = StubSmartBlock(id = root, children = listOf(header.id, table.id))
-        val document =
-            listOf(page, header, title, table, columnLayout, rowLayout) + columns + rows + cells
+        val document = listOf(
+            page,
+            header,
+            title,
+            table,
+            columnLayout,
+            rowLayout
+        ) + columns + rows + cells
+
         stubInterceptEvents()
+        stubUserPermission()
         stubOpenDocument(document)
 
         //TESTING
         val vm = buildViewModel()
+
         vm.apply {
             onStart(id = root, space = defaultSpace)
 
@@ -233,15 +244,24 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
                 hasFocus = true
             )
 
+            advanceUntilIdle()
+
             onBlockToolbarBlockActionsClicked()
+
+            advanceUntilIdle()
 
             onBlockFocusChanged(
                 id = cells[0].id,
                 hasFocus = false
             )
+
+            advanceUntilIdle()
         }
 
+        advanceUntilIdle()
+
         //EXPECTED
+
         val expectedMode = Editor.Mode.Table(
             tableId = table.id,
             initialTargets = setOf(cells[0].id),
@@ -263,7 +283,7 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `when click on multiply cells in table - should be proper select state`() {
+    fun `when click on multiply cells in table - should be proper select state`() = runTest {
 
         //SETUP
         val columns = StubTableColumns(size = 3)
@@ -283,19 +303,28 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
         //TESTING
         val vm = buildViewModel()
         vm.apply {
+
             onStart(id = root, space = defaultSpace)
+
+            advanceUntilIdle()
 
             onBlockFocusChanged(
                 id = cells[0].id,
                 hasFocus = true
             )
 
+            advanceUntilIdle()
+
             onBlockToolbarBlockActionsClicked()
+
+            advanceUntilIdle()
 
             onBlockFocusChanged(
                 id = cells[0].id,
                 hasFocus = false
             )
+
+            advanceUntilIdle()
 
             onClickListener(
                 clicked = ListenerType.TableTextCell(
@@ -360,6 +389,8 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
                 )
             )
         }
+
+        advanceUntilIdle()
 
         //EXPECTED
         val expectedMode = Editor.Mode.Table(
@@ -383,7 +414,7 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `when enter table mode then change tab then click on cell - two columns should be select`() {
+    fun `when enter table mode then change tab then click on cell - two columns should be select`() = runTest {
 
         //SETUP
         val columns = StubTableColumns(size = 3)
@@ -397,29 +428,44 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
         val page = StubSmartBlock(id = root, children = listOf(header.id, table.id))
         val document =
             listOf(page, header, title, table, columnLayout, rowLayout) + columns + rows + cells
+
         stubInterceptEvents()
         stubOpenDocument(document)
+        stubUserPermission()
 
         //TESTING
+
         val vm = buildViewModel()
+
         vm.apply {
+
             onStart(id = root, space = defaultSpace)
+
+            advanceUntilIdle()
 
             onBlockFocusChanged(
                 id = cells[0].id,
                 hasFocus = true
             )
 
+            advanceUntilIdle()
+
             onBlockToolbarBlockActionsClicked()
+
+            advanceUntilIdle()
 
             onBlockFocusChanged(
                 id = cells[0].id,
                 hasFocus = false
             )
 
+            advanceUntilIdle()
+
             onSimpleTableWidgetItemClicked(
                 item = SimpleTableWidgetItem.Tab.Column
             )
+
+            advanceUntilIdle()
 
             onClickListener(
                 clicked = ListenerType.TableTextCell(
@@ -443,7 +489,10 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
             )
         }
 
+        advanceUntilIdle()
+
         //EXPECTED
+
         val expectedMode = Editor.Mode.Table(
             tableId = table.id,
             initialTargets = setOf(cells[0].id),
@@ -472,7 +521,7 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `when enter table mode then change tab then click on cell then unselect cell - one column should be select`() {
+    fun `when enter table mode then change tab then click on cell then unselect cell - one column should be select`() = runTest {
 
         //SETUP
         val columns = StubTableColumns(size = 3)
@@ -490,25 +539,38 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
         stubOpenDocument(document)
 
         //TESTING
+
         val vm = buildViewModel()
+
         vm.apply {
+
             onStart(id = root, space = defaultSpace)
+
+            advanceUntilIdle()
 
             onBlockFocusChanged(
                 id = cells[0].id,
                 hasFocus = true
             )
 
+            advanceUntilIdle()
+
             onBlockToolbarBlockActionsClicked()
+
+            advanceUntilIdle()
 
             onBlockFocusChanged(
                 id = cells[0].id,
                 hasFocus = false
             )
 
+            advanceUntilIdle()
+
             onSimpleTableWidgetItemClicked(
                 item = SimpleTableWidgetItem.Tab.Column
             )
+
+            advanceUntilIdle()
 
             onClickListener(
                 clicked = ListenerType.TableTextCell(
@@ -553,6 +615,8 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
             )
         }
 
+        advanceUntilIdle()
+
         //EXPECTED
         val expectedMode = Editor.Mode.Table(
             tableId = table.id,
@@ -574,7 +638,7 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `when enter table mode then change tab then click on two cells then unselect cell - two rows should be select`() {
+    fun `when enter table mode then change tab then click on two cells then unselect cell - two rows should be select`() = runTest {
 
         //SETUP
         val columns = StubTableColumns(size = 4)
@@ -588,25 +652,38 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
         val page = StubSmartBlock(id = root, children = listOf(header.id, table.id))
         val document =
             listOf(page, header, title, table, columnLayout, rowLayout) + columns + rows + cells
+
         stubInterceptEvents()
         stubOpenDocument(document)
+        stubUserPermission()
 
         //TESTING Focus Cell[0] - Enter Table Mode - Click Cell[13] - Click Cell[11] - Click Tab COLUMN
+
         val vm = buildViewModel()
+
         vm.apply {
+
             onStart(id = root, space = defaultSpace)
+
+            advanceUntilIdle()
 
             onBlockFocusChanged(
                 id = cells[0].id,
                 hasFocus = true
             )
 
+            advanceUntilIdle()
+
             onBlockToolbarBlockActionsClicked()
+
+            advanceUntilIdle()
 
             onBlockFocusChanged(
                 id = cells[0].id,
                 hasFocus = false
             )
+
+            advanceUntilIdle()
 
             onClickListener(
                 clicked = ListenerType.TableTextCell(
@@ -632,12 +709,17 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
                 )
             )
 
+            advanceUntilIdle()
+
             onSimpleTableWidgetItemClicked(
                 item = SimpleTableWidgetItem.Tab.Column
             )
         }
 
+        advanceUntilIdle()
+
         //EXPECTED
+
         val expectedMode = Editor.Mode.Table(
             tableId = table.id,
             initialTargets = setOf(cells[0].id, cells[13].id, cells[11].id),
@@ -706,7 +788,10 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
 
         //TESTING Click Cell[15] - Click Cell[0] - Click Cell[2]
         vm.apply {
+
             onStart(id = root, space = defaultSpace)
+
+            advanceUntilIdle()
 
             onClickListener(
                 clicked = ListenerType.TableTextCell(
@@ -745,7 +830,10 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
             )
         }
 
+        advanceUntilIdle()
+
         //EXPECTED
+
         val expectedMode1 = Editor.Mode.Table(
             tableId = table.id,
             initialTargets = setOf(cells[0].id, cells[13].id, cells[11].id),
@@ -809,6 +897,8 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
             onSimpleTableWidgetItemClicked(
                 item = SimpleTableWidgetItem.Tab.Row
             )
+
+            advanceUntilIdle()
         }
 
         //EXPECTED
@@ -883,6 +973,8 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
         vm.apply {
             onStart(id = root, space = defaultSpace)
 
+            advanceUntilIdle()
+
             onClickListener(
                 clicked = ListenerType.TableTextCell(
                     cell = mapToViewCell(
@@ -906,6 +998,8 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
                     )
                 )
             )
+
+            advanceUntilIdle()
         }
 
         //EXPECTED
@@ -972,6 +1066,8 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
             onSimpleTableWidgetItemClicked(
                 item = SimpleTableWidgetItem.Tab.Cell
             )
+
+            advanceUntilIdle()
         }
 
         //EXPECTED
@@ -1022,8 +1118,10 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
      * Выделена 1 колонка, стоит на позиции 0
      */
     @Test
-    fun `when selected one column and column index is zero - should have proper menu items`() {
+    fun `when selected one column and column index is zero - should have proper menu items`() = runTest {
+
         //SETUP
+
         val columns = StubTableColumns(size = 3)
         val rows = StubTableRows(size = 2)
         val cells = StubTableCells(columns = columns, rows = rows)
@@ -1040,24 +1138,36 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
 
         //TESTING Focus Cell[0] - Enter Table Mode - Click Tab COLUMN
         val vm = buildViewModel()
+
         vm.apply {
+
             onStart(id = root, space = defaultSpace)
+
+            advanceUntilIdle()
 
             onBlockFocusChanged(
                 id = cells[0].id,
                 hasFocus = true
             )
 
+            advanceUntilIdle()
+
             onBlockToolbarBlockActionsClicked()
+
+            advanceUntilIdle()
 
             onBlockFocusChanged(
                 id = cells[0].id,
                 hasFocus = false
             )
 
+            advanceUntilIdle()
+
             onSimpleTableWidgetItemClicked(
                 item = SimpleTableWidgetItem.Tab.Column
             )
+
+            advanceUntilIdle()
         }
 
         //EXPECTED
@@ -1141,6 +1251,8 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
             )
         }
 
+        advanceUntilIdle()
+
         //EXPECTED
         expectedMode = Editor.Mode.Table(
             tableId = table.id,
@@ -1223,6 +1335,8 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
             )
         }
 
+        advanceUntilIdle()
+
         //EXPECTED
         expectedMode = Editor.Mode.Table(
             tableId = table.id,
@@ -1292,6 +1406,8 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
             )
         }
 
+        advanceUntilIdle()
+
         //EXPECTED
         expectedMode = Editor.Mode.Table(
             tableId = table.id,
@@ -1343,7 +1459,7 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `when mention widget is closed with mention stop event , should be main menu for cells is visible`() {
+    fun `when mention widget is closed with mention stop event , should be main menu for cells is visible`() = runTest {
 
         //SETUP
         val columns = StubTableColumns(size = 2)
@@ -1357,9 +1473,12 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
         val page = StubSmartBlock(id = root, children = listOf(header.id, table.id))
         val document =
             listOf(page, header, title, table, columnLayout, rowLayout) + columns + rows + cells
+
         stubInterceptEvents()
         stubOpenDocument(document)
         stubUpdateText()
+        stubUserPermission()
+        stubSearchObjects()
 
         //TESTING Focus Cell[0] - Add @ - Mention widget is visible - delete @
         // - main toolbar for cells is visible
@@ -1367,10 +1486,14 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
         vm.apply {
             onStart(id = root, space = defaultSpace)
 
+            advanceUntilIdle()
+
             onBlockFocusChanged(
                 id = cells[0].id,
                 hasFocus = true
             )
+
+            advanceUntilIdle()
 
             onMentionEvent(
                 mentionEvent = MentionEvent.MentionSuggestStart(
@@ -1379,23 +1502,34 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
                 )
             )
 
+            advanceUntilIdle()
+
             onMentionEvent(
                 mentionEvent = MentionEvent.MentionSuggestText(
                     text = "@"
                 )
             )
 
+            advanceUntilIdle()
+
             val blockView = BlockView.Text.Paragraph(id = cells[0].id, text = "@")
+
             onTextBlockTextChanged(
                 view = blockView
             )
+
+            advanceUntilIdle()
 
             onSelectionChanged(
                 id = blockView.id,
                 selection = IntRange(1, 1)
             )
 
+            advanceUntilIdle()
+
             onMentionEvent(mentionEvent = MentionEvent.MentionSuggestStopCell)
+
+            advanceUntilIdle()
         }
 
         //EXPECTED

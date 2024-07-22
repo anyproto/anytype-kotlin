@@ -153,7 +153,6 @@ import com.anytypeio.anytype.ui.relations.ObjectRelationListFragment
 import com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
-import com.anytypeio.anytype.ui.relations.RelationValueFragment
 import com.anytypeio.anytype.ui.relations.value.ObjectValueFragment
 import com.anytypeio.anytype.ui.relations.value.TagOrStatusValueFragment
 import com.anytypeio.anytype.ui.spaces.SelectSpaceFragment
@@ -1036,18 +1035,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                             ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST,
                         )
                     )
-                }
-                is Command.OpenObjectRelationScreen.Value.Default -> {
-                    hideKeyboard()
-                    val fr = RelationValueFragment.new(
-                        ctx = command.ctx,
-                        target = command.target,
-                        relationKey = command.relationKey,
-                        targetObjectTypes = command.targetObjectTypes,
-                        isLocked = command.isReadOnlyValue,
-                        space = command.space
-                    )
-                    fr.showChildFragment()
                 }
                 is Command.OpenObjectRelationScreen.Value.Text -> {
                     hideKeyboard()

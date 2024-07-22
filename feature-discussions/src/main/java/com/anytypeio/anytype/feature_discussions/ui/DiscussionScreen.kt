@@ -85,7 +85,6 @@ import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_utils.const.DateConst.DEFAULT_DATE_FORMAT
 import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
-import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.feature_discussions.R
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionView
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
@@ -94,7 +93,9 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun DiscussionScreenWrapper(
-    vm: DiscussionViewModel
+    vm: DiscussionViewModel,
+    // TODO move to view model
+    onAttachClicked: () -> Unit
 ) {
     NavHost(
         navController = rememberNavController(),
@@ -112,7 +113,8 @@ fun DiscussionScreenWrapper(
                     title = vm.name.collectAsState().value,
                     messages = vm.messages.collectAsState().value,
                     onMessageSent = vm::onMessageSent,
-                    onTitleChanged = vm::onTitleChanged
+                    onTitleChanged = vm::onTitleChanged,
+                    onAttachClicked = onAttachClicked
                 )
             }
         }
@@ -127,7 +129,8 @@ fun DiscussionScreen(
     title: String?,
     messages: List<DiscussionView.Message>,
     onMessageSent: (String) -> Unit,
-    onTitleChanged: (String) -> Unit
+    onTitleChanged: (String) -> Unit,
+    onAttachClicked: () -> Unit
 ) {
     val lazyListState = rememberLazyListState()
     var isTitleFocused by remember { mutableStateOf(false) }
@@ -168,12 +171,13 @@ fun DiscussionScreen(
         )
         ChatBox(
             onMessageSent = onMessageSent,
+            onAttachClicked = onAttachClicked,
             resetScroll = {
                 scope.launch {
                     lazyListState.animateScrollToItem(index = 0)
                 }
             },
-            isTitleFocused = isTitleFocused
+            isTitleFocused = isTitleFocused,
         )
     }
 }
@@ -224,6 +228,7 @@ private fun DiscussionTitle(
 @Composable
 private fun ChatBox(
     onMessageSent: (String) -> Unit = {},
+    onAttachClicked: () -> Unit = {},
     resetScroll: () -> Unit = {},
     isTitleFocused: Boolean
 ) {
@@ -249,7 +254,7 @@ private fun ChatBox(
                 .clip(CircleShape)
                 .align(Alignment.CenterVertically)
                 .clickable {
-                    context.toast("Coming soon!")
+                    onAttachClicked()
                 }
         ) {
             Image(
@@ -258,9 +263,6 @@ private fun ChatBox(
                 modifier = Modifier
                     .align(Alignment.Center)
                     .padding(horizontal = 4.dp, vertical = 4.dp)
-                    .clickable {
-                        context.toast("Coming soon!")
-                    }
             )
         }
         ChatBoxUserInput(

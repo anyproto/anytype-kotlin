@@ -4,11 +4,23 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -18,6 +30,8 @@ import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewMode
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModelFactory
 import com.anytypeio.anytype.feature_discussions.ui.DiscussionScreenWrapper
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
+import com.anytypeio.anytype.ui.search.GlobalSearchScreen
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 
@@ -33,6 +47,7 @@ class DiscussionFragment : BaseComposeFragment() {
 
     // Rendering
 
+    @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -42,7 +57,45 @@ class DiscussionFragment : BaseComposeFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MaterialTheme(typography = typography) {
-                    DiscussionScreenWrapper(vm = vm)
+                    val sheetState = rememberModalBottomSheetState(
+                        skipPartiallyExpanded = true
+                    )
+
+                    var showBottomSheet by remember { mutableStateOf(false) }
+
+                    DiscussionScreenWrapper(
+                        vm = vm,
+                        onAttachClicked = {
+                            showBottomSheet = true
+                        }
+                    )
+
+                    if (showBottomSheet) {
+                        ModalBottomSheet(
+                            onDismissRequest = {
+                                showBottomSheet = false
+                            },
+                            sheetState = sheetState,
+                            containerColor = colorResource(id = R.color.background_secondary),
+                            shape = RoundedCornerShape(16.dp),
+                            dragHandle = null
+                        ) {
+                            GlobalSearchScreen(
+                                state = GlobalSearchViewModel.ViewState.Init,
+                                onQueryChanged = {
+
+                                },
+                                onObjectClicked = {
+
+                                },
+                                onShowRelatedClicked = {
+
+                                }
+                            ) {
+
+                            }
+                        }
+                    }
                 }
             }
         }

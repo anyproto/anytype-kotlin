@@ -64,7 +64,8 @@ fun DiscussionScreenPreview() {
             }
         }.reversed(),
         onMessageSent = {},
-        onTitleChanged = {}
+        onTitleChanged = {},
+        onAttachClicked = {}
     )
 }
 

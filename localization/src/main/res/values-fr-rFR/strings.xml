@@ -922,7 +922,7 @@
     <!--region WIDGETS -->
     <string name="create_widget">Create a widget</string>
     <string name="edit_widgets">Edit widgets</string>
-    <string name="add_widget">Add widget</string>
+    <string name="add_widget">Ajouter un widget</string>
     <string name="widget_source">Source du widget</string>
     <string name="widget_type">Type de widget</string>
     <string name="widget_add_below">Ajouter en dessous</string>

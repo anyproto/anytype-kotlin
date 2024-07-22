@@ -17,4 +17,6 @@ interface FeatureToggles {
     val isLogEditorControlPanelMachine: Boolean
 
     val enableSpaces: Boolean
+
+    val enableDiscussionDemo: Boolean
 }

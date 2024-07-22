@@ -28,6 +28,7 @@ import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
+import com.anytypeio.anytype.presentation.common.PayloadDelegator
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuOptionsProvider
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuOptionsProviderImpl
@@ -129,7 +130,8 @@ object ObjectMenuModule {
         createWidget: CreateWidget,
         spaceManager: SpaceManager,
         deepLinkResolver: DeepLinkResolver,
-        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        payloadDelegator: PayloadDelegator
     ): ObjectMenuViewModel.Factory = ObjectMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
         duplicateObject = duplicateObject,
@@ -151,7 +153,8 @@ object ObjectMenuModule {
         createWidget = createWidget,
         spaceManager = spaceManager,
         deepLinkResolver = deepLinkResolver,
-        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+        payloadDelegator = payloadDelegator
     )
 
     @JvmStatic
@@ -228,7 +231,8 @@ object ObjectSetMenuModule {
         createWidget: CreateWidget,
         spaceManager: SpaceManager,
         deepLinkResolver: DeepLinkResolver,
-        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        payloadDelegator: PayloadDelegator
     ): ObjectSetMenuViewModel.Factory = ObjectSetMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
         addToFavorite = addToFavorite,
@@ -246,7 +250,8 @@ object ObjectSetMenuModule {
         createWidget = createWidget,
         spaceManager = spaceManager,
         deepLinkResolver = deepLinkResolver,
-        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+        payloadDelegator = payloadDelegator
     )
 
     @JvmStatic

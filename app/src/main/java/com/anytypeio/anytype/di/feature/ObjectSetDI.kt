@@ -129,9 +129,6 @@ interface ObjectSetSubComponent {
     fun objectSetCreateBookmarkRecordComponent(): ObjectSetCreateBookmarkRecordSubComponent.Builder
     fun viewerFilterBySubComponent(): ViewerFilterSubComponent.Builder
 
-    fun dataViewObjectRelationValueComponent(): DataViewObjectRelationValueSubComponent.Builder
-    fun setOrCollectionRelationValueComponent() : SetOrCollectionRelationValueSubComponent.Builder
-
     fun objectSetSettingsComponent(): ObjectSetSettingsSubComponent.Builder
     fun relationAddToDataViewComponent(): RelationAddToDataViewSubComponent.Builder
     fun relationCreateFromScratchForDataViewComponent(): RelationCreateFromScratchForDataViewSubComponent.Builder
@@ -156,10 +153,6 @@ interface ObjectSetSubComponent {
     fun objectRelationListComponent(): ObjectRelationListComponent.Builder
     fun relationAddToObjectComponent(): RelationAddToObjectSubComponent.Builder
     fun relationCreateFromScratchForObjectComponent(): RelationCreateFromScratchForObjectSubComponent.Builder
-
-    fun createDataViewViewerSubComponent(): CreateDataViewViewerSubComponent.Builder
-    fun editDataViewViewerComponent(): EditDataViewViewerSubComponent.Builder
-    fun manageViewerComponent(): ManageViewerSubComponent.Builder
 
     fun tagStatusSetComponent(): TagOrStatusValueSetComponent.Builder
     fun tagStatusDataViewComponent(): TagOrStatusValueDataViewComponent.Builder

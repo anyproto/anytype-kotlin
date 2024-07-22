@@ -513,6 +513,11 @@ private fun GlobalSearchItem(
                 color = colorResource(id = R.color.text_secondary)
             )
         }
+        if (globalSearchItemView.links.isNotEmpty() || globalSearchItemView.backlinks.isNotEmpty()) {
+            SmallRectangle(
+                modifier = Modifier.align(Alignment.CenterEnd)
+            )
+        }
         MaterialTheme(
             typography = typography,
             shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp)),
@@ -537,6 +542,18 @@ private fun GlobalSearchItem(
             }
         }
     }
+}
+
+@Composable
+fun SmallRectangle(modifier: Modifier) {
+    Box(
+        modifier = modifier
+            .size(6.dp, 28.dp)
+            .background(
+                shape = RoundedCornerShape(topStart = 4.dp, bottomStart = 4.dp),
+                color = colorResource(id = R.color.glyph_active)
+            )
+    )
 }
 
 @Composable

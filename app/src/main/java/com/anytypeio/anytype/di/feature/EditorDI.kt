@@ -173,7 +173,6 @@ interface EditorSubComponent {
     fun relationCreateFromScratchForObjectComponent(): RelationCreateFromScratchForObjectSubComponent.Builder
     fun relationCreateFromScratchForObjectBlockComponent(): RelationCreateFromScratchForObjectBlockSubComponent.Builder
     fun relationTextValueComponent(): RelationTextValueSubComponent.Builder
-    fun editDocRelationComponent(): ObjectObjectRelationValueSubComponent.Builder
     fun editRelationDateComponent(): DefaultRelationDataValueSubComponent.Builder
 
     fun objectCoverComponent(): SelectCoverObjectSubComponent.Builder

@@ -4,28 +4,19 @@ import android.content.Context
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.di.feature.AddDataViewRelationObjectValueModule
-import com.anytypeio.anytype.di.feature.AddDataViewRelationOptionValueModule
-import com.anytypeio.anytype.di.feature.AddFileRelationModule
-import com.anytypeio.anytype.di.feature.AddObjectRelationModule
-import com.anytypeio.anytype.di.feature.AddObjectRelationValueModule
 import com.anytypeio.anytype.di.feature.CreateBookmarkModule
-import com.anytypeio.anytype.di.feature.CreateDataViewViewerModule
 import com.anytypeio.anytype.di.feature.CreateObjectModule
 import com.anytypeio.anytype.di.feature.DaggerAppPreferencesComponent
 import com.anytypeio.anytype.di.feature.DaggerBacklinkOrAddToObjectComponent
 import com.anytypeio.anytype.di.feature.DaggerSplashComponent
-import com.anytypeio.anytype.di.feature.DataViewRelationValueModule
 import com.anytypeio.anytype.di.feature.DebugSettingsModule
 import com.anytypeio.anytype.di.feature.DefaultComponentParam
-import com.anytypeio.anytype.di.feature.EditDataViewViewerModule
 import com.anytypeio.anytype.di.feature.EditorSessionModule
 import com.anytypeio.anytype.di.feature.EditorUseCaseModule
 import com.anytypeio.anytype.di.feature.KeychainPhraseModule
 import com.anytypeio.anytype.di.feature.LinkToObjectModule
 import com.anytypeio.anytype.di.feature.LinkToObjectOrWebModule
 import com.anytypeio.anytype.di.feature.MainEntryModule
-import com.anytypeio.anytype.di.feature.ManageViewerModule
 import com.anytypeio.anytype.di.feature.ModifyViewerSortModule
 import com.anytypeio.anytype.di.feature.MoveToModule
 import com.anytypeio.anytype.di.feature.ObjectAppearanceIconModule
@@ -36,7 +27,6 @@ import com.anytypeio.anytype.di.feature.ObjectIconPickerModule
 import com.anytypeio.anytype.di.feature.ObjectLayoutModule
 import com.anytypeio.anytype.di.feature.ObjectMenuModule
 import com.anytypeio.anytype.di.feature.ObjectMenuModuleBase
-import com.anytypeio.anytype.di.feature.ObjectObjectRelationValueModule
 import com.anytypeio.anytype.di.feature.ObjectRelationListModule
 import com.anytypeio.anytype.di.feature.ObjectSearchModule
 import com.anytypeio.anytype.di.feature.ObjectSetCreateBookmarkRecordModule
@@ -54,7 +44,6 @@ import com.anytypeio.anytype.di.feature.RelationTextValueModule
 import com.anytypeio.anytype.di.feature.SelectCoverObjectModule
 import com.anytypeio.anytype.di.feature.SelectCoverObjectSetModule
 import com.anytypeio.anytype.di.feature.SelectSortRelationModule
-import com.anytypeio.anytype.di.feature.SetOrCollectionRelationValueModule
 import com.anytypeio.anytype.di.feature.TextBlockIconPickerModule
 import com.anytypeio.anytype.di.feature.ViewerFilterModule
 import com.anytypeio.anytype.di.feature.ViewerSortModule
@@ -434,118 +423,6 @@ class ComponentManager(
             .get(key = param.ctx, param = param)
             .objectSetCreateBookmarkRecordComponent()
             .module(ObjectSetCreateBookmarkRecordModule)
-            .build()
-    }
-
-    val createDataViewViewerComponent = ComponentWithParams { param: DefaultComponentParam ->
-        objectSetComponent
-            .get(key = param.ctx, param = param)
-            .createDataViewViewerSubComponent()
-            .module(CreateDataViewViewerModule)
-            .build()
-    }
-
-    val editDataViewViewerComponent = ComponentWithParams { param: DefaultComponentParam ->
-        objectSetComponent
-            .get(key = param.ctx, param = param)
-            .editDataViewViewerComponent()
-            .module(EditDataViewViewerModule)
-            .build()
-    }
-
-    val dataViewRelationValueComponent = DependentComponentMap { param: DefaultComponentParam ->
-        objectSetComponent
-            .get(key = param.ctx, param = param)
-            .dataViewObjectRelationValueComponent()
-            .module(DataViewRelationValueModule)
-            .build()
-    }
-
-    val setOrCollectionRelationValueComponent = ComponentWithParams { param: DefaultComponentParam ->
-        objectSetComponent
-            .get(key = param.ctx, param = param)
-            .setOrCollectionRelationValueComponent()
-            .module(SetOrCollectionRelationValueModule)
-            .build()
-    }
-
-    val addObjectSetObjectRelationValueComponent = ComponentWithParams { param: DefaultComponentParam ->
-        dataViewRelationValueComponent
-            .get(key = param.ctx, param = param)
-            .addObjectRelationValueComponent()
-            .module(AddObjectRelationValueModule)
-            .build()
-    }
-
-    val addDataViewObjectRelationValueComponent = ComponentWithParams { param: DefaultComponentParam ->
-        dataViewRelationValueComponent
-            .get(key = param.ctx, param = param)
-            .addDataViewRelationOptionValueComponent()
-            .module(AddDataViewRelationOptionValueModule)
-            .build()
-    }
-
-    val objectObjectRelationValueComponent = DependentComponentMap { param: DefaultComponentParam ->
-        editorComponent
-            .get(key = param.ctx, param = param)
-            .editDocRelationComponent()
-            .module(ObjectObjectRelationValueModule)
-            .build()
-    }
-
-    val addObjectObjectRelationValueComponent = ComponentWithParams { param: DefaultComponentParam ->
-        objectObjectRelationValueComponent
-            .get(key = param.ctx, param = param)
-            .addObjectRelationValueComponent()
-            .module(AddObjectRelationValueModule)
-            .build()
-    }
-
-    val addObjectSetObjectRelationObjectValueComponent = ComponentWithParams { param: DefaultComponentParam ->
-        dataViewRelationValueComponent
-            .get(key = param.ctx, param = param)
-            .addObjectRelationObjectValueComponent()
-            .module(AddObjectRelationModule)
-            .build()
-    }
-
-    val addDataViewRelationObjectValueComponent = ComponentWithParams { param: DefaultComponentParam ->
-        dataViewRelationValueComponent
-            .get(key = param.ctx, param = param)
-            .addDataViewRelationObjectValueComponent()
-            .module(AddDataViewRelationObjectValueModule)
-            .build()
-    }
-
-    val addObjectRelationObjectValueComponent = ComponentWithParams { param: DefaultComponentParam ->
-        objectObjectRelationValueComponent
-            .get(key = param.ctx, param = param)
-            .addObjectRelationObjectValueComponent()
-            .module(AddObjectRelationModule)
-            .build()
-    }
-
-    val relationFileValueComponent = ComponentWithParams { param: DefaultComponentParam ->
-        objectObjectRelationValueComponent
-            .get(key = param.ctx, param = param)
-            .addRelationFileValueAddComponent()
-            .module(AddFileRelationModule)
-            .build()
-    }
-
-    val relationFileValueDVComponent = ComponentWithParams { param: DefaultComponentParam ->
-        dataViewRelationValueComponent
-            .get(key = param.ctx, param = param)
-            .addRelationFileValueAddComponent()
-            .module(AddFileRelationModule)
-            .build()
-    }
-
-    val manageViewerComponent = ComponentWithParams { param: DefaultComponentParam ->
-        objectSetComponent
-            .get(key = param.ctx, param = param)
-            .manageViewerComponent()
-            .module(ManageViewerModule)
             .build()
     }
 

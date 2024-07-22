@@ -2130,4 +2130,56 @@ class MiddlewareServiceImplementation @Inject constructor(
             return response
         }
     }
+
+    override fun getVersions(request: Rpc.History.GetVersions.Request): Rpc.History.GetVersions.Response {
+        val encoded = Service.historyGetVersions(
+            Rpc.History.GetVersions.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.History.GetVersions.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.History.GetVersions.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun showVersion(request: Rpc.History.ShowVersion.Request): Rpc.History.ShowVersion.Response {
+        val encoded = Service.historyShowVersion(
+            Rpc.History.ShowVersion.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.History.ShowVersion.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.History.ShowVersion.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun setVersion(request: Rpc.History.SetVersion.Request): Rpc.History.SetVersion.Response {
+        val encoded = Service.historySetVersion(
+            Rpc.History.SetVersion.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.History.SetVersion.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.History.SetVersion.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun diffVersions(request: Rpc.History.DiffVersions.Request): Rpc.History.DiffVersions.Response {
+        val encoded = Service.historyDiffVersions(
+            Rpc.History.DiffVersions.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.History.DiffVersions.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.History.DiffVersions.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

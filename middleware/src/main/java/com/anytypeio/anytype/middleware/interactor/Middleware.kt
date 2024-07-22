@@ -31,6 +31,9 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.history.DiffVersionResponse
+import com.anytypeio.anytype.core_models.history.ShowVersionResponse
+import com.anytypeio.anytype.core_models.history.Version
 import com.anytypeio.anytype.core_models.membership.EmailVerificationStatus
 import com.anytypeio.anytype.core_models.membership.GetPaymentUrlResponse
 import com.anytypeio.anytype.core_models.membership.Membership
@@ -2699,6 +2702,55 @@ class Middleware @Inject constructor(
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.processCancel(request)
         if (BuildConfig.DEBUG) logResponse(response)
+    }
+
+    @Throws
+    fun getVersions(command: Command.VersionHistory.GetVersions): List<Version> {
+        val request = Rpc.History.GetVersions.Request(
+            lastVersionId = command.lastVersion,
+            objectId = command.objectId,
+            limit = command.limit
+
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.getVersions(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.versions.map { it.toCoreModel() }
+    }
+
+    @Throws
+    fun showVersion(command: Command.VersionHistory.ShowVersion): ShowVersionResponse {
+        val request = Rpc.History.ShowVersion.Request(
+            versionId = command.versionId
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.showVersion(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.toCoreModel()
+    }
+
+    @Throws
+    fun setVersion(command: Command.VersionHistory.SetVersion) {
+        val request = Rpc.History.SetVersion.Request(
+            versionId = command.versionId
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.setVersion(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+    }
+
+    @Throws
+    fun diffVersions(command: Command.VersionHistory.DiffVersions): DiffVersionResponse {
+        val request = Rpc.History.DiffVersions.Request(
+            objectId = command.objectId,
+            spaceId = command.spaceId,
+            currentVersion = command.currentVersion,
+            previousVersion = command.previousVersion
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.diffVersions(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.toCoreModel(context = command.objectId)
     }
 
     private fun logRequest(any: Any) {

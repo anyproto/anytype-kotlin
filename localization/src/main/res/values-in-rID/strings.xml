@@ -1050,8 +1050,6 @@
     <string name="sharing_menu_add_to_anytype_error">Anytype file upload error: %1$s</string>
     <string name="sharing_menu_add_to_anytype_success">All files have been successfully uploaded</string>
     <string name="sharing_menu_toast_object_added">Objek baru ditambahkan ke ruang \'%1$s\'</string>
-    <string name="sharing_media_wrapper_object_title">Shared Media, %1$s, this object is auxiliary and can be deleted; all media or files will remain in Space.</string>
-    <string name="sharing_files_wrapper_object_title">Shared Files, %1$s, this object is auxiliary and can be deleted; all media or files will remain in Space.</string>
     <string name="sharing_menu_btn_add">Tambah</string>
     <string name="sharing_menu_btn_open">Buka</string>
     <!--endregion-->

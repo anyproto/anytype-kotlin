@@ -1035,19 +1035,19 @@ class BlockDataRepository(
         remote.processCancel(command)
     }
 
-    override suspend fun getVersions(command: Command.GetVersions): List<Version> {
+    override suspend fun getVersions(command: Command.VersionHistory.GetVersions): List<Version> {
         return remote.getVersions(command)
     }
 
-    override suspend fun showVersion(command: Command.ShowVersion): ShowVersionResponse {
+    override suspend fun showVersion(command: Command.VersionHistory.ShowVersion): ShowVersionResponse {
         return remote.showVersion(command)
     }
 
-    override suspend fun setVersion(command: Command.SetVersion) {
+    override suspend fun setVersion(command: Command.VersionHistory.SetVersion) {
         remote.setVersion(command)
     }
 
-    override suspend fun diffVersions(command: Command.DiffVersions): DiffVersionResponse {
+    override suspend fun diffVersions(command: Command.VersionHistory.DiffVersions): DiffVersionResponse {
         return remote.diffVersions(command)
     }
 }

@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.middleware.mappers
 
-import android.content.Context
 import anytype.ResponseEvent
 import anytype.Rpc
 import anytype.model.Account
@@ -1108,7 +1107,7 @@ fun Rpc.History.Version.toCoreModel(): Version {
         previousIds = previousIds,
         authorId = authorId,
         authorName = authorName,
-        time = time,
+        timestamp = time,
         groupId = groupId
     )
 }

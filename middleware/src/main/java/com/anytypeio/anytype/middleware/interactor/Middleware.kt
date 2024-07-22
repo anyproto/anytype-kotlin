@@ -64,7 +64,6 @@ import com.anytypeio.anytype.middleware.mappers.toPayload
 import com.anytypeio.anytype.middleware.model.CreateWalletResponse
 import com.anytypeio.anytype.middleware.service.MiddlewareService
 import javax.inject.Inject
-import service.Service
 import timber.log.Timber
 
 class Middleware @Inject constructor(
@@ -2706,7 +2705,7 @@ class Middleware @Inject constructor(
     }
 
     @Throws
-    fun getVersions(command: Command.GetVersions): List<Version> {
+    fun getVersions(command: Command.VersionHistory.GetVersions): List<Version> {
         val request = Rpc.History.GetVersions.Request(
             lastVersionId = command.lastVersion,
             objectId = command.objectId,
@@ -2720,7 +2719,7 @@ class Middleware @Inject constructor(
     }
 
     @Throws
-    fun showVersion(command: Command.ShowVersion): ShowVersionResponse {
+    fun showVersion(command: Command.VersionHistory.ShowVersion): ShowVersionResponse {
         val request = Rpc.History.ShowVersion.Request(
             versionId = command.versionId
         )
@@ -2731,7 +2730,7 @@ class Middleware @Inject constructor(
     }
 
     @Throws
-    fun setVersion(command: Command.SetVersion) {
+    fun setVersion(command: Command.VersionHistory.SetVersion) {
         val request = Rpc.History.SetVersion.Request(
             versionId = command.versionId
         )
@@ -2741,7 +2740,7 @@ class Middleware @Inject constructor(
     }
 
     @Throws
-    fun diffVersions(command: Command.DiffVersions): DiffVersionResponse {
+    fun diffVersions(command: Command.VersionHistory.DiffVersions): DiffVersionResponse {
         val request = Rpc.History.DiffVersions.Request(
             objectId = command.objectId,
             spaceId = command.spaceId,
@@ -2751,7 +2750,7 @@ class Middleware @Inject constructor(
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.diffVersions(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return response.toCoreModel(context = command.ctx)
+        return response.toCoreModel(context = command.objectId)
     }
 
     private fun logRequest(any: Any) {

@@ -14,7 +14,7 @@ class GetVersions @Inject constructor(
 ) : ResultInteractor<GetVersions.Params, List<Version>>(dispatchers.io) {
 
     override suspend fun doWork(params: Params): List<Version> {
-        val command = Command.GetVersions(
+        val command = Command.VersionHistory.GetVersions(
             objectId = params.objectId,
             lastVersion = params.lastVersion,
             limit = params.limit

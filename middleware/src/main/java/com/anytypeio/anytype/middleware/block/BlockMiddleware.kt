@@ -998,19 +998,19 @@ class BlockMiddleware(
         middleware.processCancel(command)
     }
 
-    override suspend fun getVersions(command: Command.GetVersions): List<Version> {
+    override suspend fun getVersions(command: Command.VersionHistory.GetVersions): List<Version> {
         return middleware.getVersions(command)
     }
 
-    override suspend fun showVersion(command: Command.ShowVersion): ShowVersionResponse {
+    override suspend fun showVersion(command: Command.VersionHistory.ShowVersion): ShowVersionResponse {
         return middleware.showVersion(command)
     }
 
-    override suspend fun setVersion(command: Command.SetVersion) {
+    override suspend fun setVersion(command: Command.VersionHistory.SetVersion) {
         middleware.setVersion(command)
     }
 
-    override suspend fun diffVersions(command: Command.DiffVersions): DiffVersionResponse {
+    override suspend fun diffVersions(command: Command.VersionHistory.DiffVersions): DiffVersionResponse {
         return middleware.diffVersions(command)
     }
 }

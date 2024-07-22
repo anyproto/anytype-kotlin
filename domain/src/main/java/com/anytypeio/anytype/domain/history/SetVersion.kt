@@ -13,7 +13,7 @@ class SetVersion @Inject constructor(
 ) : ResultInteractor<SetVersion.Params, Unit>(dispatchers.io) {
 
     override suspend fun doWork(params: Params) {
-        val command = Command.SetVersion(
+        val command = Command.VersionHistory.SetVersion(
             objectId = params.objectId,
             versionId = params.versionId
         )

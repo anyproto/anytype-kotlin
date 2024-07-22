@@ -14,8 +14,7 @@ class DiffVersions @Inject constructor(
 ) : ResultInteractor<DiffVersions.Params, DiffVersionResponse>(dispatchers.io) {
 
     override suspend fun doWork(params: Params): DiffVersionResponse {
-        val command = Command.DiffVersions(
-            ctx = params.ctx,
+        val command = Command.VersionHistory.DiffVersions(
             objectId = params.objectId,
             spaceId = params.spaceId,
             currentVersion = params.currentVersion,
@@ -25,7 +24,6 @@ class DiffVersions @Inject constructor(
     }
 
     data class Params(
-        val ctx: Id,
         val objectId: Id,
         val spaceId: Id,
         val currentVersion: Id,

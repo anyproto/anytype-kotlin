@@ -14,7 +14,7 @@ class ShowVersion @Inject constructor(
 ) : ResultInteractor<ShowVersion.Params, ShowVersionResponse>(dispatchers.io) {
 
     override suspend fun doWork(params: Params): ShowVersionResponse {
-        val command = Command.ShowVersion(
+        val command = Command.VersionHistory.ShowVersion(
             objectId = params.objectId,
             versionId = params.versionId,
             traceId = params.traceId

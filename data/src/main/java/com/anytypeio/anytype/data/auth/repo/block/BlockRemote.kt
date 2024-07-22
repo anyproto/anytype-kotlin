@@ -440,8 +440,8 @@ interface BlockRemote {
 
     suspend fun processCancel(command: Command.ProcessCancel)
 
-    suspend fun getVersions(command: Command.GetVersions): List<Version>
-    suspend fun showVersion(command: Command.ShowVersion): ShowVersionResponse
-    suspend fun setVersion(command: Command.SetVersion)
-    suspend fun diffVersions(command: Command.DiffVersions): DiffVersionResponse
+    suspend fun getVersions(command: Command.VersionHistory.GetVersions): List<Version>
+    suspend fun showVersion(command: Command.VersionHistory.ShowVersion): ShowVersionResponse
+    suspend fun setVersion(command: Command.VersionHistory.SetVersion)
+    suspend fun diffVersions(command: Command.VersionHistory.DiffVersions): DiffVersionResponse
 }

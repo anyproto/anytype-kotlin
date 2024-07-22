@@ -919,9 +919,10 @@
     <string name="slash_widget_lime_color_title">Grün</string>
     <string name="slash_widget_background_item">%1$ser Hintergrund</string>
     <!--endregion-->
-    <!--region LIBRARY -->
+    <!--region WIDGETS -->
     <string name="create_widget">Widget erstellen</string>
     <string name="edit_widgets">Widgets bearbeiten</string>
+    <string name="add_widget">Add widget</string>
     <string name="widget_source">Widget-Quelle</string>
     <string name="widget_type">Widget-Typ</string>
     <string name="widget_add_below">Unten hinzufügen</string>

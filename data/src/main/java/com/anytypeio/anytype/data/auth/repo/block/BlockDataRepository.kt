@@ -24,6 +24,9 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.history.DiffVersionResponse
+import com.anytypeio.anytype.core_models.history.ShowVersionResponse
+import com.anytypeio.anytype.core_models.history.Version
 import com.anytypeio.anytype.core_models.membership.EmailVerificationStatus
 import com.anytypeio.anytype.core_models.membership.GetPaymentUrlResponse
 import com.anytypeio.anytype.core_models.membership.Membership
@@ -1030,5 +1033,21 @@ class BlockDataRepository(
 
     override suspend fun processCancel(command: Command.ProcessCancel) {
         remote.processCancel(command)
+    }
+
+    override suspend fun getVersions(command: Command.GetVersions): List<Version> {
+        return remote.getVersions(command)
+    }
+
+    override suspend fun showVersion(command: Command.ShowVersion): ShowVersionResponse {
+        return remote.showVersion(command)
+    }
+
+    override suspend fun setVersion(command: Command.SetVersion) {
+        remote.setVersion(command)
+    }
+
+    override suspend fun diffVersions(command: Command.DiffVersions): DiffVersionResponse {
+        return remote.diffVersions(command)
     }
 }

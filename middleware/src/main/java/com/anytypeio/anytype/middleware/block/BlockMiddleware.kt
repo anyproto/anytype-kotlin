@@ -25,6 +25,9 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.history.DiffVersionResponse
+import com.anytypeio.anytype.core_models.history.ShowVersionResponse
+import com.anytypeio.anytype.core_models.history.Version
 import com.anytypeio.anytype.core_models.membership.EmailVerificationStatus
 import com.anytypeio.anytype.core_models.membership.GetPaymentUrlResponse
 import com.anytypeio.anytype.core_models.membership.Membership
@@ -993,5 +996,21 @@ class BlockMiddleware(
 
     override suspend fun processCancel(command: Command.ProcessCancel) {
         middleware.processCancel(command)
+    }
+
+    override suspend fun getVersions(command: Command.GetVersions): List<Version> {
+        return middleware.getVersions(command)
+    }
+
+    override suspend fun showVersion(command: Command.ShowVersion): ShowVersionResponse {
+        return middleware.showVersion(command)
+    }
+
+    override suspend fun setVersion(command: Command.SetVersion) {
+        middleware.setVersion(command)
+    }
+
+    override suspend fun diffVersions(command: Command.DiffVersions): DiffVersionResponse {
+        return middleware.diffVersions(command)
     }
 }

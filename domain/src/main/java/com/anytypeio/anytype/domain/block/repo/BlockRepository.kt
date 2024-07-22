@@ -24,6 +24,9 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.history.DiffVersionResponse
+import com.anytypeio.anytype.core_models.history.ShowVersionResponse
+import com.anytypeio.anytype.core_models.history.Version
 import com.anytypeio.anytype.core_models.membership.EmailVerificationStatus
 import com.anytypeio.anytype.core_models.membership.GetPaymentUrlResponse
 import com.anytypeio.anytype.core_models.membership.Membership
@@ -477,4 +480,9 @@ interface BlockRepository {
     suspend fun membershipGetTiers(command: Command.Membership.GetTiers): List<MembershipTierData>
 
     suspend fun processCancel(command: Command.ProcessCancel)
+
+    suspend fun getVersions(command: Command.GetVersions): List<Version>
+    suspend fun showVersion(command: Command.ShowVersion): ShowVersionResponse
+    suspend fun setVersion(command: Command.SetVersion)
+    suspend fun diffVersions(command: Command.DiffVersions): DiffVersionResponse
 }

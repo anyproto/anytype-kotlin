@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.middleware.mappers
 
+import android.content.Context
 import anytype.ResponseEvent
 import anytype.Rpc
 import anytype.model.Account
@@ -44,6 +45,9 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.SpaceUsage
+import com.anytypeio.anytype.core_models.history.DiffVersionResponse
+import com.anytypeio.anytype.core_models.history.ShowVersionResponse
+import com.anytypeio.anytype.core_models.history.Version
 import com.anytypeio.anytype.core_models.membership.EmailVerificationStatus
 import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
@@ -1096,4 +1100,32 @@ fun MP2PStatus.toCoreModel(): P2PStatus = when (this) {
     MP2PStatus.NotConnected -> P2PStatus.NOT_CONNECTED
     MP2PStatus.NotPossible -> P2PStatus.NOT_POSSIBLE
     MP2PStatus.Connected -> P2PStatus.CONNECTED
+}
+
+fun Rpc.History.Version.toCoreModel(): Version {
+    return Version(
+        id = id,
+        previousIds = previousIds,
+        authorId = authorId,
+        authorName = authorName,
+        time = time,
+        groupId = groupId
+    )
+}
+
+fun Rpc.History.ShowVersion.Response.toCoreModel(): ShowVersionResponse {
+    return ShowVersionResponse(
+        objectView = objectView?.toCore(),
+        version = version?.toCoreModel(),
+        traceId = traceId
+    )
+}
+
+fun Rpc.History.DiffVersions.Response.toCoreModel(
+    context: Id
+): DiffVersionResponse {
+    return DiffVersionResponse(
+        historyEvents = historyEvents.mapNotNull { it.toCoreModels(context) },
+        objectView = objectView?.toCore()
+    )
 }

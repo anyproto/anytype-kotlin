@@ -917,9 +917,10 @@
     <string name="slash_widget_lime_color_title">綠色</string>
     <string name="slash_widget_background_item">%1$s 背景</string>
     <!--endregion-->
-    <!--region LIBRARY -->
+    <!--region WIDGETS -->
     <string name="create_widget">建立一個小工具</string>
     <string name="edit_widgets">編輯小工具</string>
+    <string name="add_widget">Add widget</string>
     <string name="widget_source">小工具來源</string>
     <string name="widget_type">小工具類型</string>
     <string name="widget_add_below">在下方添加</string>

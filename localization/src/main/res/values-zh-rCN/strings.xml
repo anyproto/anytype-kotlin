@@ -917,9 +917,10 @@
     <string name="slash_widget_lime_color_title">绿色</string>
     <string name="slash_widget_background_item">%1$s 背景</string>
     <!--endregion-->
-    <!--region LIBRARY -->
+    <!--region WIDGETS -->
     <string name="create_widget">创建一个小部件</string>
     <string name="edit_widgets">编辑小部件</string>
+    <string name="add_widget">Add widget</string>
     <string name="widget_source">小部件来源</string>
     <string name="widget_type">小部件类型</string>
     <string name="widget_add_below">在下面添加</string>

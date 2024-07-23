@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
@@ -14,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
@@ -83,7 +85,11 @@ class DiscussionFragment : BaseComposeFragment() {
                             val component = componentManager().globalSearchComponent
                             val searchViewModel = daggerViewModel { component.get().getViewModel() }
                             GlobalSearchScreen(
-                                state = searchViewModel.state.collectAsStateWithLifecycle().value,
+                                modifier = Modifier.padding(top = 12.dp),
+                                state = searchViewModel.state
+                                    .collectAsStateWithLifecycle()
+                                    .value
+                                ,
                                 onQueryChanged = searchViewModel::onQueryChanged,
                                 onObjectClicked = {
                                     vm.onAttachObject(it)
@@ -91,11 +97,15 @@ class DiscussionFragment : BaseComposeFragment() {
                                 },
                                 onShowRelatedClicked = {
                                     // Do nothing.
-                                }
-                            ) {
+                                },
+                                onClearRelatedClicked = {
 
-                            }
+                                },
+                                focusOnStart = false
+                            )
                         }
+                    } else {
+                        componentManager().globalSearchComponent.release()
                     }
                 }
             }

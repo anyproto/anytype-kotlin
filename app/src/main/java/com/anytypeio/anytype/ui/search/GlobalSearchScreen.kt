@@ -105,11 +105,13 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun GlobalSearchScreen(
+    modifier: Modifier = Modifier,
     state: GlobalSearchViewModel.ViewState,
     onQueryChanged: (String) -> Unit,
     onObjectClicked: (GlobalSearchItemView) -> Unit,
     onShowRelatedClicked: (GlobalSearchItemView) -> Unit,
-    onClearRelatedClicked: () -> Unit
+    onClearRelatedClicked: () -> Unit,
+    focusOnStart: Boolean = true
 ) {
 
     var showLoading by rememberSaveable { mutableStateOf(false) }
@@ -127,7 +129,7 @@ fun GlobalSearchScreen(
     var query by remember { mutableStateOf(TextFieldValue()) }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .nestedScroll(rememberNestedScrollInteropConnection())
     ) {
@@ -381,7 +383,9 @@ fun GlobalSearchScreen(
             }
         }
         LaunchedEffect(Unit) {
-            focusRequester.requestFocus()
+            if (focusOnStart) {
+                focusRequester.requestFocus()
+            }
         }
     }
 }

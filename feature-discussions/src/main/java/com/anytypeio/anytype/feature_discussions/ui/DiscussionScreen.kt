@@ -56,6 +56,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -94,6 +95,7 @@ import com.anytypeio.anytype.feature_discussions.presentation.DiscussionView
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -276,6 +278,10 @@ private fun ChatBox(
         mutableStateOf(TextFieldValue())
     }
 
+    val scope = rememberCoroutineScope()
+
+    val focus = LocalFocusManager.current
+
     Row(
         modifier = Modifier
             .then(
@@ -293,7 +299,10 @@ private fun ChatBox(
                 .clip(CircleShape)
                 .align(Alignment.Bottom)
                 .clickable {
-                    onAttachClicked()
+                    scope.launch {
+                        focus.clearFocus(force = true)
+                        onAttachClicked()
+                    }
                 }
         ) {
             Image(

@@ -65,7 +65,9 @@ fun DiscussionScreenPreview() {
         }.reversed(),
         onMessageSent = {},
         onTitleChanged = {},
-        onAttachClicked = {}
+        onAttachClicked = {},
+        attachments = emptyList(),
+        onClearAttachmentClicked = {}
     )
 }
 

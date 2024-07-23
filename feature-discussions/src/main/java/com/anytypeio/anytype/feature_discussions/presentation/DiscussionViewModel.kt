@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -18,8 +19,8 @@ class DiscussionViewModel(
 ) : BaseViewModel() {
 
     val name = MutableStateFlow<String?>(null)
-
     val messages = MutableStateFlow<List<DiscussionView.Message>>(emptyList())
+    val attachments = MutableStateFlow<List<GlobalSearchItemView>>(emptyList())
 
     init {
         viewModelScope.launch {
@@ -47,10 +48,16 @@ class DiscussionViewModel(
                     id = {size.inc()}.toString(),
                     author = "Me",
                     timestamp = System.currentTimeMillis(),
-                    msg = msg
+                    msg = msg,
+                    attachments = attachments.value.map { a ->
+                        DiscussionView.Message.Attachment(
+                            item = a
+                        )
+                    }
                 )
             )
             addAll(messages.value)
+            attachments.value = emptyList()
         }
     }
 
@@ -67,5 +74,13 @@ class DiscussionViewModel(
                 )
             )
         }
+    }
+
+    fun onAttachObject(obj: GlobalSearchItemView) {
+        attachments.value = listOf(obj)
+    }
+
+    fun onClearAttachmentClicked() {
+        attachments.value = emptyList()
     }
 }

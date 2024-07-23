@@ -60,7 +60,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 
-class GlobalSearchViewModel(
+class GlobalSearchViewModel @Inject constructor(
     private val searchWithMeta: SearchWithMeta,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val storeOfRelations: StoreOfRelations,

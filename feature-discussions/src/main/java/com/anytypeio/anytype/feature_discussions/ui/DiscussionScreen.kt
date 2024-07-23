@@ -3,6 +3,7 @@ package com.anytypeio.anytype.feature_discussions.ui
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -72,6 +73,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.AlertIcon
 import com.anytypeio.anytype.core_ui.foundation.Divider
@@ -83,11 +86,14 @@ import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
+import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_utils.const.DateConst.DEFAULT_DATE_FORMAT
 import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
 import com.anytypeio.anytype.feature_discussions.R
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionView
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import kotlinx.coroutines.launch
 
 
@@ -112,9 +118,11 @@ fun DiscussionScreenWrapper(
                 DiscussionScreen(
                     title = vm.name.collectAsState().value,
                     messages = vm.messages.collectAsState().value,
+                    attachments = vm.attachments.collectAsState().value,
                     onMessageSent = vm::onMessageSent,
                     onTitleChanged = vm::onTitleChanged,
-                    onAttachClicked = onAttachClicked
+                    onAttachClicked = onAttachClicked,
+                    onClearAttachmentClicked = vm::onClearAttachmentClicked
                 )
             }
         }
@@ -128,9 +136,11 @@ fun DiscussionScreenWrapper(
 fun DiscussionScreen(
     title: String?,
     messages: List<DiscussionView.Message>,
+    attachments: List<GlobalSearchItemView>,
     onMessageSent: (String) -> Unit,
     onTitleChanged: (String) -> Unit,
-    onAttachClicked: () -> Unit
+    onAttachClicked: () -> Unit,
+    onClearAttachmentClicked: () -> Unit
 ) {
     val lazyListState = rememberLazyListState()
     var isTitleFocused by remember { mutableStateOf(false) }
@@ -169,6 +179,33 @@ fun DiscussionScreen(
             paddingStart = 0.dp,
             paddingEnd = 0.dp
         )
+        attachments.forEach {
+            Box {
+                Attachment(
+                    modifier = Modifier.padding(
+                        top = 12.dp,
+                        start = 16.dp,
+                        end = 16.dp
+                    ),
+                    globalSearchItemView = it
+                )
+                Image(
+                    painter = painterResource(id = R.drawable.ic_clear_18),
+                    contentDescription = "Close icon",
+                    modifier = Modifier
+                        .align(
+                            Alignment.TopEnd
+                        )
+                        .padding(
+                            top = 6.dp,
+                            end = 10.dp
+                        )
+                        .noRippleClickable {
+                            onClearAttachmentClicked()
+                        }
+                )
+            }
+        }
         ChatBox(
             onMessageSent = onMessageSent,
             onAttachClicked = onAttachClicked,
@@ -178,6 +215,7 @@ fun DiscussionScreen(
                 }
             },
             isTitleFocused = isTitleFocused,
+            attachments = attachments
         )
     }
 }
@@ -230,7 +268,8 @@ private fun ChatBox(
     onMessageSent: (String) -> Unit = {},
     onAttachClicked: () -> Unit = {},
     resetScroll: () -> Unit = {},
-    isTitleFocused: Boolean
+    isTitleFocused: Boolean,
+    attachments: List<GlobalSearchItemView>,
 ) {
     val context = LocalContext.current
     var textState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
@@ -250,9 +289,9 @@ private fun ChatBox(
     ) {
         Box(
             modifier = Modifier
-                .padding(horizontal = 4.dp)
+                .padding(horizontal = 4.dp, vertical = 8.dp)
                 .clip(CircleShape)
-                .align(Alignment.CenterVertically)
+                .align(Alignment.Bottom)
                 .clickable {
                     onAttachClicked()
                 }
@@ -277,13 +316,13 @@ private fun ChatBox(
             },
             modifier = Modifier
                 .weight(1f)
-                .align(Alignment.CenterVertically)
+                .align(Alignment.Bottom)
         )
         Box(
             modifier = Modifier
-                .padding(horizontal = 4.dp)
+                .padding(horizontal = 4.dp, vertical = 8.dp)
                 .clip(CircleShape)
-                .align(Alignment.CenterVertically)
+                .align(Alignment.Bottom)
                 .clickable {
                     if (textState.text.isNotBlank()) {
                         onMessageSent(textState.text)
@@ -429,7 +468,8 @@ fun Messages(
                 Bubble(
                     name = msg.author,
                     msg = msg.msg,
-                    timestamp = msg.timestamp
+                    timestamp = msg.timestamp,
+                    attachments = msg.attachments
                 )
             }
             if (idx == messages.lastIndex) {
@@ -491,10 +531,11 @@ fun Messages(
 fun Bubble(
     name: String,
     msg: String,
-    timestamp: Long
+    timestamp: Long,
+    attachments: List<DiscussionView.Message.Attachment> = emptyList()
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(
@@ -531,15 +572,26 @@ fun Bubble(
         }
         Text(
             modifier = Modifier.padding(
-                top = 32.dp,
+                top = 0.dp,
                 start = 16.dp,
                 end = 16.dp,
-                bottom = 12.dp
+                bottom = 0.dp
             ),
             text = msg,
             style = BodyRegular,
             color = colorResource(id = R.color.text_primary)
         )
+        attachments.forEach {
+            Attachment(
+                modifier = Modifier.padding(
+                    start = 16.dp,
+                    end = 16.dp,
+                    top = 8.dp
+                ),
+                globalSearchItemView = it.item
+            )
+        }
+        Spacer(modifier = Modifier.height(12.dp))
         MaterialTheme(
             shapes = MaterialTheme.shapes.copy(
                 medium = RoundedCornerShape(
@@ -650,11 +702,86 @@ fun TopDiscussionToolbar(
     }
 }
 
+@Composable
+fun Attachment(
+    modifier: Modifier,
+    globalSearchItemView: GlobalSearchItemView
+) {
+    Box(
+        modifier = modifier
+            .height(72.dp)
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .border(
+                width = 1.dp,
+                color = colorResource(id = R.color.shape_tertiary),
+                shape = RoundedCornerShape(12.dp)
+            )
+            .background(color = colorResource(id = R.color.background_secondary))
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(start = 12.dp)
+                .size(48.dp)
+                .align(alignment = Alignment.CenterStart)
+                .background(
+                    shape = RoundedCornerShape(10.dp),
+                    color = Color.Red
+                )
+        )
+        Text(
+            text = globalSearchItemView.title,
+            modifier = Modifier.padding(
+                start = 72.dp,
+                top = 17.5.dp
+            ),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            style = PreviewTitle2Medium,
+            color = colorResource(id = R.color.text_primary)
+        )
+        Text(
+            text = globalSearchItemView.type,
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(
+                    start = 72.dp,
+                    bottom = 17.5.dp
+                ),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            style = Relations3,
+            color = colorResource(id = R.color.text_secondary)
+        )
+    }
+}
+
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
 @Composable
 fun TopDiscussionToolbarPreview() {
     TopDiscussionToolbar()
+}
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
+@Composable
+fun AttachmentPreview() {
+    Attachment(
+        modifier = Modifier,
+        GlobalSearchItemView(
+            id = "id",
+            layout = ObjectType.Layout.BASIC,
+            title = "Travel to Switzerland",
+            type = "Project",
+            meta = GlobalSearchItemView.Meta.None,
+            pinned = false,
+            links = emptyList(),
+            backlinks = emptyList(),
+            space = SpaceId("spaced"),
+            icon = ObjectIcon.None
+        )
+    )
 }
 
 private const val HEADER_KEY = "key.discussions.item.header"

@@ -919,9 +919,10 @@
     <string name="slash_widget_lime_color_title">Verde</string>
     <string name="slash_widget_background_item">Fundo %1$s </string>
     <!--endregion-->
-    <!--region LIBRARY -->
+    <!--region WIDGETS -->
     <string name="create_widget">Criar um componente</string>
     <string name="edit_widgets">Editar componentes</string>
+    <string name="add_widget">Add widget</string>
     <string name="widget_source">Fonte do widget</string>
     <string name="widget_type">Tipo de widget</string>
     <string name="widget_add_below">Adicionar abaixo</string>

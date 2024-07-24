@@ -88,6 +88,7 @@ import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.Relations3
+import com.anytypeio.anytype.core_ui.widgets.GlobalSearchObjectIcon
 import com.anytypeio.anytype.core_utils.const.DateConst.DEFAULT_DATE_FORMAT
 import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
 import com.anytypeio.anytype.feature_discussions.R
@@ -95,7 +96,6 @@ import com.anytypeio.anytype.feature_discussions.presentation.DiscussionView
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -728,15 +728,16 @@ fun Attachment(
             )
             .background(color = colorResource(id = R.color.background_secondary))
     ) {
-        Box(
+        GlobalSearchObjectIcon(
+            icon = globalSearchItemView.icon,
+            iconSize = 48.dp,
             modifier = Modifier
-                .padding(start = 12.dp)
-                .size(48.dp)
-                .align(alignment = Alignment.CenterStart)
-                .background(
-                    shape = RoundedCornerShape(10.dp),
-                    color = Color.Red
-                )
+                .padding(
+                    start = 12.dp
+                ).align(alignment = Alignment.CenterStart),
+            onTaskIconClicked = {
+                // Do nothing
+            }
         )
         Text(
             text = globalSearchItemView.title,

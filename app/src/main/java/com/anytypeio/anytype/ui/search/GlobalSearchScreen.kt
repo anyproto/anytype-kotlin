@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -66,7 +65,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
@@ -87,14 +85,7 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations2
-import com.anytypeio.anytype.core_ui.widgets.DefaultBasicAvatarIcon
-import com.anytypeio.anytype.core_ui.widgets.DefaultEmojiObjectIcon
-import com.anytypeio.anytype.core_ui.widgets.DefaultFileObjectImageIcon
-import com.anytypeio.anytype.core_ui.widgets.DefaultObjectBookmarkIcon
-import com.anytypeio.anytype.core_ui.widgets.DefaultObjectImageIcon
-import com.anytypeio.anytype.core_ui.widgets.DefaultProfileAvatarIcon
-import com.anytypeio.anytype.core_ui.widgets.DefaultTaskObjectIcon
-import com.anytypeio.anytype.core_ui.widgets.defaultProfileIconImage
+import com.anytypeio.anytype.core_ui.widgets.GlobalSearchObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
@@ -663,35 +654,6 @@ private fun DefaultMetaStatusRelation(
         style = Relations2,
         color = colorResource(id = R.color.text_primary)
     )
-}
-
-@Composable
-fun GlobalSearchObjectIcon(
-    icon: ObjectIcon,
-    modifier: Modifier,
-    iconSize: Dp = 48.dp,
-    onTaskIconClicked: (Boolean) -> Unit = {}
-) {
-    when (icon) {
-        is ObjectIcon.Profile.Avatar -> DefaultProfileAvatarIcon(modifier, iconSize, icon)
-        is ObjectIcon.Profile.Image -> defaultProfileIconImage(icon, modifier, iconSize)
-        is ObjectIcon.Basic.Emoji -> DefaultEmojiObjectIcon(modifier, iconSize, icon)
-        is ObjectIcon.Basic.Image -> DefaultObjectImageIcon(icon.hash, modifier, iconSize)
-        is ObjectIcon.Basic.Avatar -> DefaultBasicAvatarIcon(modifier, iconSize, icon)
-        is ObjectIcon.Bookmark -> DefaultObjectBookmarkIcon(icon.image, modifier, iconSize)
-        is ObjectIcon.Task -> DefaultTaskObjectIcon(modifier, iconSize, icon, onTaskIconClicked)
-        is ObjectIcon.File -> {
-            DefaultFileObjectImageIcon(
-                fileName = icon.fileName.orEmpty(),
-                mime = icon.mime.orEmpty(),
-                modifier = modifier,
-                iconSize = iconSize
-            )
-        }
-        else -> {
-            // Draw nothing.
-        }
-    }
 }
 
 @Preview(

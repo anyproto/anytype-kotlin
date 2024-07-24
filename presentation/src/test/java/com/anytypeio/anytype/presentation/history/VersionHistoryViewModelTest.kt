@@ -139,37 +139,30 @@ class VersionHistoryViewModelTest {
     private val versions = listOf(
         StubVersion(
             authorId = user1.id,
-            authorName = user1.name!!,
             timestamp = timestamp0
         ),
         StubVersion(
             authorId = user4.id,
-            authorName = user4.name!!,
             timestamp = timestamp1
         ),
         StubVersion(
             authorId = user3.id,
-            authorName = user3.name!!,
             timestamp = timestamp2
         ),
         StubVersion(
             authorId = user1.id,
-            authorName = user1.name!!,
             timestamp = timestamp3
         ),
         StubVersion(
             authorId = user1.id,
-            authorName = user1.name!!,
             timestamp = timestamp4
         ),
         StubVersion(
             authorId = user1.id,
-            authorName = user1.name!!,
             timestamp = timestamp5
         ),
         StubVersion(
             authorId = user2.id,
-            authorName = user2.name!!,
             timestamp = timestamp6
         )
     )

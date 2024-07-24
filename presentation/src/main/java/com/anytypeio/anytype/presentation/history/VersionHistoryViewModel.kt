@@ -104,7 +104,7 @@ class VersionHistoryViewModel(
             var currentGroup = mutableListOf<Version>()
 
             for (version in versions) {
-                if (currentGroup.isEmpty() || currentGroup.last().authorName == version.authorName) {
+                if (currentGroup.isEmpty() || currentGroup.last().authorId == version.authorId) {
                     currentGroup.add(version)
                 } else {
                     grouped.add(currentGroup)
@@ -129,10 +129,11 @@ class VersionHistoryViewModel(
                 title = date,
                 icons = emptyList(),
                 versions = authorVersions.map { versions ->
+                    val membersObject = members.find { it.id == versions.first().authorId }
                     VersionHistoryItem(
                         id = versions.first().id,
                         authorId = versions.first().authorId,
-                        authorName = versions.first().authorName,
+                        authorName = membersObject?.name.orEmpty(),
                         timeStamp = versions.first().timestamp,
                         icon = null,
                         time = time,
@@ -155,13 +156,12 @@ class VersionHistoryViewModel(
     companion object {
         const val GROUP_BY_DAY_PATTERN = "d MM yyyy"
     }
-
 }
 
 sealed class VersionHistoryState {
     data object Loading : VersionHistoryState()
     data class Success(val groups: List<VersionHistoryGroup>) : VersionHistoryState()
-    sealed class Error() : VersionHistoryState() {
+    sealed class Error : VersionHistoryState() {
         data class SpaceMembers(val message: String) : Error()
         data class GetVersions(val message: String) : Error()
     }

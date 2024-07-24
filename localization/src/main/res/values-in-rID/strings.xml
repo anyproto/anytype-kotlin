@@ -917,21 +917,22 @@
     <string name="slash_widget_lime_color_title">Hijau</string>
     <string name="slash_widget_background_item">Latar belakang %1$s</string>
     <!--endregion-->
-    <!--region LIBRARY -->
+    <!--region WIDGETS -->
     <string name="create_widget">Create a widget</string>
     <string name="edit_widgets">Edit widgets</string>
+    <string name="add_widget">Tambah gawit</string>
     <string name="widget_source">Sumber widget</string>
     <string name="widget_type">Jenis widget</string>
     <string name="widget_add_below">Tambah di bawah</string>
     <string name="widget_type_tree">Pohon</string>
-    <string name="widget_type_tree_description">Hierarchical structure of object</string>
+    <string name="widget_type_tree_description">Gawit dengan struktur hierarkis</string>
     <string name="widget_type_link">Tautan</string>
-    <string name="widget_type_link_description">Compact version of the object</string>
-    <string name="widget_type_list_description">Widget dengan daftar tampilan dari daftar objek</string>
-    <string name="widget_type_compact_list_description">Widget dengan daftar tampilan dari daftar objek</string>
+    <string name="widget_type_link_description">Tampilan gawit ringkas</string>
+    <string name="widget_type_list_description">Gawit dengan tampilan daftar</string>
+    <string name="widget_type_compact_list_description">Gawit dengan tampilan daftar ringkas</string>
     <string name="widget_type_list">Daftar</string>
     <string name="widget_type_view">Tampilan</string>
-    <string name="widget_type_view_description">Widget view of Set or Collection</string>
+    <string name="widget_type_view_description">Gawit dengan tata letak Set atau Koleksi</string>
     <string name="widget_type_compact_list">Compact list</string>
     <string name="widget_change_source">Ubah sumber</string>
     <string name="widget_change_type">Change Type</string>
@@ -1044,11 +1045,11 @@
     <string name="sharing_menu_save_as_file_option">Berkas</string>
     <string name="sharing_menu_save_as_images_option">Gambar</string>
     <string name="sharing_menu_save_as_files_option">Berkas</string>
-    <string name="sharing_menu_save_as_videos_option">Videos</string>
+    <string name="sharing_menu_save_as_videos_option">Video</string>
     <string name="sharing_menu_data">Data</string>
     <string name="sharing_menu_add_to_anytype_header_title">Tambah ke Anytype</string>
-    <string name="sharing_menu_add_to_anytype_error">Anytype file upload error: %1$s</string>
-    <string name="sharing_menu_add_to_anytype_success">All files have been successfully uploaded</string>
+    <string name="sharing_menu_add_to_anytype_error">Galat mengunggah berkas Anytype: %1$s</string>
+    <string name="sharing_menu_add_to_anytype_success">Semua berkas berhasil diunggah</string>
     <string name="sharing_menu_toast_object_added">Objek baru ditambahkan ke ruang \'%1$s\'</string>
     <string name="sharing_menu_btn_add">Tambah</string>
     <string name="sharing_menu_btn_open">Buka</string>

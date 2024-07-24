@@ -115,7 +115,7 @@ fun SelectWidgetTypeScreen(
                     subtitle = stringResource(
                         R.string.widget_type_view_description
                     ),
-                    icon = R.drawable.ic_widget_type_tree,
+                    icon = R.drawable.ic_widget_type_compact_list,
                     isChecked = type.isSelected,
                     onClick = throttledClick(
                         onClick = { onViewClicked(type) }

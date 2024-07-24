@@ -74,6 +74,11 @@ class GlobalSearchViewModel @Inject constructor(
     private val userInput = MutableStateFlow(EMPTY_STRING_VALUE)
     private val searchQuery = userInput
         .take(1)
+        .map {
+            // TODO remove this, only for demo
+            delay(300)
+            it
+        }
         .onCompletion {
             emitAll(userInput.drop(1).debounce(DEFAULT_DEBOUNCE_DURATION).distinctUntilChanged())
         }

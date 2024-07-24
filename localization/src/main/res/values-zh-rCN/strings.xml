@@ -665,8 +665,8 @@
     <string name="reset">重置</string>
     <string name="search_a_relation">搜索关联</string>
     <string name="content_description_check_icon">Check icon</string>
-    <string name="content_desc_empty_values_bottom_check_icon">Sort empty values at the bottom</string>
-    <string name="content_desc_empty_values_top_check_icon">Sort empty values at the top</string>
+    <string name="content_desc_empty_values_bottom_check_icon">空值置底</string>
+    <string name="content_desc_empty_values_top_check_icon">空值置顶</string>
     <string name="filter_condition_is">是</string>
     <string name="today">今天</string>
     <string name="yesterday">昨天</string>
@@ -920,7 +920,7 @@
     <!--region WIDGETS -->
     <string name="create_widget">创建一个小部件</string>
     <string name="edit_widgets">编辑小部件</string>
-    <string name="add_widget">Add widget</string>
+    <string name="add_widget">添加小部件</string>
     <string name="widget_source">小部件来源</string>
     <string name="widget_type">小部件类型</string>
     <string name="widget_add_below">在下面添加</string>
@@ -932,7 +932,7 @@
     <string name="widget_type_compact_list_description">具有集合对象列表视图的小部件</string>
     <string name="widget_type_list">列表</string>
     <string name="widget_type_view">视图</string>
-    <string name="widget_type_view_description">Widget view of Set or Collection</string>
+    <string name="widget_type_view_description">集合的小部件视图</string>
     <string name="widget_type_compact_list">紧凑列表</string>
     <string name="widget_change_source">更改来源</string>
     <string name="widget_change_type">更改类型</string>
@@ -1045,10 +1045,10 @@
     <string name="sharing_menu_save_as_file_option">文件</string>
     <string name="sharing_menu_save_as_images_option">图片</string>
     <string name="sharing_menu_save_as_files_option">文件</string>
-    <string name="sharing_menu_save_as_videos_option">Videos</string>
+    <string name="sharing_menu_save_as_videos_option">视频</string>
     <string name="sharing_menu_data">数据</string>
     <string name="sharing_menu_add_to_anytype_header_title">添加至 Anytype</string>
-    <string name="sharing_menu_add_to_anytype_error">Anytype file upload error: %1$s</string>
+    <string name="sharing_menu_add_to_anytype_error">Anytype 上传文件错误：%1$s</string>
     <string name="sharing_menu_add_to_anytype_success">All files have been successfully uploaded</string>
     <string name="sharing_menu_toast_object_added">新对象已添加到空间 ”%1$s“</string>
     <string name="sharing_menu_btn_add">添加</string>

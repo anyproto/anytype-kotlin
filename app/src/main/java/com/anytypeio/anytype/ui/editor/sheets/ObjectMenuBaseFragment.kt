@@ -166,6 +166,18 @@ abstract class ObjectMenuBaseFragment :
                 }
                 startActivity(Intent.createChooser(intent, null))
             }
+
+            is ObjectMenuViewModelBase.Command.OpenHistoryScreen -> {
+                runCatching {
+                    findNavController().navigate(
+                        R.id.versionHistoryScreen,
+                        VersionHistoryFragment.args(
+                            ctx = ctx,
+                            spaceId = space
+                        )
+                    )
+                }
+            }
         }
     }
 

@@ -734,7 +734,8 @@ fun Attachment(
             modifier = Modifier
                 .padding(
                     start = 12.dp
-                ).align(alignment = Alignment.CenterStart),
+                )
+                .align(alignment = Alignment.CenterStart),
             onTaskIconClicked = {
                 // Do nothing
             }
@@ -762,6 +763,23 @@ fun Attachment(
             overflow = TextOverflow.Ellipsis,
             style = Relations3,
             color = colorResource(id = R.color.text_secondary)
+        )
+    }
+}
+
+@Composable
+fun GoToBottomButton(
+    modifier: Modifier
+) {
+    Box(
+        modifier = modifier
+            .size(48.dp)
+
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_go_to_bottom_arrow),
+            contentDescription = "Arrow icon",
+            modifier = Modifier.align(Alignment.Center)
         )
     }
 }

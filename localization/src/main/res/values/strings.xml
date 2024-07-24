@@ -1698,4 +1698,6 @@ Please provide specific details of your needs here.</string>
     <string name="sort_empty_values_top">On top</string>
     <string name="widget_view_see_all_objects">See all objects</string>
 
+    <string name="version_history_title">Version history</string>
+
 </resources>

@@ -14,7 +14,7 @@ fun StubVersion(
     id: Id = "versionId - ${RandomString.make()}",
     previousIds: List<Id> = emptyList(),
     authorId: Id = "authorId - ${RandomString.make()}",
-    authorName: String = "authorName - ${RandomString.make()}",
+    authorName: String = "",
     timestamp: Long,
     groupId: Long = Random(100).nextLong()
 ): Version {

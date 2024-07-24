@@ -1,6 +1,8 @@
 package com.anytypeio.anytype.feature_discussions.ui
 
 import android.content.res.Configuration
+import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,6 +21,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
@@ -56,6 +59,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -178,15 +182,31 @@ fun DiscussionScreen(
                     isTitleFocused = it
                 }
             )
+            // Jump to bottom button shows up when user scrolls past a threshold.
+            // Convert to pixels:
+            val jumpThreshold = with(LocalDensity.current) {
+                JumpToBottomThreshold.toPx()
+            }
+
+            // Show the button if the first visible item is not the first one or if the offset is
+            // greater than the threshold.
+            val jumpToBottomButtonEnabled by remember {
+                derivedStateOf {
+                    lazyListState.firstVisibleItemIndex != 0 ||
+                            lazyListState.firstVisibleItemScrollOffset > jumpThreshold
+                }
+            }
+
             GoToBottomButton(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(end = 12.dp, bottom = 12.dp),
+                    .padding(end = 12.dp),
                 onGoToBottomClicked = {
                     scope.launch {
                         lazyListState.animateScrollToItem(index = 0)
                     }
-                }
+                },
+                enabled = jumpToBottomButtonEnabled
             )
         }
         Divider(
@@ -781,29 +801,44 @@ fun Attachment(
 
 @Composable
 fun GoToBottomButton(
+    enabled: Boolean,
     modifier: Modifier,
     onGoToBottomClicked: () -> Unit
 ) {
-    Box(
-        modifier = modifier
-            .size(48.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .border(
-                width = 1.dp,
-                color = colorResource(id = R.color.shape_primary),
-                shape = RoundedCornerShape(12.dp)
-            )
-            .background(color = colorResource(id = R.color.background_primary))
-            .clickable {
-                onGoToBottomClicked()
-            }
+    val transition = updateTransition(
+        enabled,
+        label = "JumpToBottom visibility animation"
+    )
+    val bottomOffset by transition.animateDp(label = "JumpToBottom offset animation") {
+        if (it) {
+            (12).dp
+        } else {
+            (-12).dp
+        }
+    }
+    if (bottomOffset > 0.dp) {
+        Box(
+            modifier = modifier
+                .offset(x = 0.dp, y = -bottomOffset)
+                .size(48.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .border(
+                    width = 1.dp,
+                    color = colorResource(id = R.color.shape_primary),
+                    shape = RoundedCornerShape(12.dp)
+                )
+                .background(color = colorResource(id = R.color.background_primary))
+                .clickable {
+                    onGoToBottomClicked()
+                }
 
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.ic_go_to_bottom_arrow),
-            contentDescription = "Arrow icon",
-            modifier = Modifier.align(Alignment.Center)
-        )
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_go_to_bottom_arrow),
+                contentDescription = "Arrow icon",
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
     }
 }
 
@@ -836,3 +871,4 @@ fun AttachmentPreview() {
 }
 
 private const val HEADER_KEY = "key.discussions.item.header"
+private val JumpToBottomThreshold = 56.dp

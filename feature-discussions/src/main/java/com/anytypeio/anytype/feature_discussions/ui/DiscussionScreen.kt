@@ -167,16 +167,28 @@ fun DiscussionScreen(
             title = title,
             isHeaderVisible = isHeaderVisible
         )
-        Messages(
-            modifier = Modifier.weight(1.0f),
-            messages = messages,
-            scrollState = lazyListState,
-            onTitleChanged = onTitleChanged,
-            title = title,
-            onTitleFocusChanged = {
-                isTitleFocused = it
-            }
-        )
+        Box(modifier = Modifier.weight(1.0f)) {
+            Messages(
+                modifier = Modifier.fillMaxSize(),
+                messages = messages,
+                scrollState = lazyListState,
+                onTitleChanged = onTitleChanged,
+                title = title,
+                onTitleFocusChanged = {
+                    isTitleFocused = it
+                }
+            )
+            GoToBottomButton(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(end = 12.dp, bottom = 12.dp),
+                onGoToBottomClicked = {
+                    scope.launch {
+                        lazyListState.animateScrollToItem(index = 0)
+                    }
+                }
+            )
+        }
         Divider(
             paddingStart = 0.dp,
             paddingEnd = 0.dp
@@ -769,11 +781,22 @@ fun Attachment(
 
 @Composable
 fun GoToBottomButton(
-    modifier: Modifier
+    modifier: Modifier,
+    onGoToBottomClicked: () -> Unit
 ) {
     Box(
         modifier = modifier
             .size(48.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .border(
+                width = 1.dp,
+                color = colorResource(id = R.color.shape_primary),
+                shape = RoundedCornerShape(12.dp)
+            )
+            .background(color = colorResource(id = R.color.background_primary))
+            .clickable {
+                onGoToBottomClicked()
+            }
 
     ) {
         Image(

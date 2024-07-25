@@ -43,7 +43,6 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
-import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -53,7 +52,6 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
-import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.DataViewState
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
@@ -456,7 +454,7 @@ class ObjectSetViewModel(
         subscribeToEvents(ctx = ctx)
         proceedWithOpeningCurrentObject(ctx = ctx)
         proceedWithObservingProfileIcon()
-        proceedWithCollectingSyncStatus()
+        proceedWithObservingSyncStatus()
     }
 
     private fun subscribeToEvents(ctx: Id) {
@@ -2823,7 +2821,7 @@ class ObjectSetViewModel(
         syncStatusWidget.value = spaceSyncStatus.value.toSyncStatusWidgetState()
     }
 
-    private fun proceedWithCollectingSyncStatus() {
+    private fun proceedWithObservingSyncStatus() {
         jobs += viewModelScope.launch {
             spaceSyncAndP2PStatusProvider
                 .observe()

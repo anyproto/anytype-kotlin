@@ -31,7 +31,7 @@ interface SpaceSyncAndP2PStatusProvider {
                 .flatMapLatest { activeSpace ->
                     when (activeSpace) {
                         is ActiveSpaceMemberSubscriptionContainer.Store.Data -> {
-                            observeSpace(spaceId = activeSpace.config.space)
+                            observeSpaceSyncStatus(spaceId = activeSpace.config.space)
                         }
 
                         ActiveSpaceMemberSubscriptionContainer.Store.Empty -> {
@@ -41,7 +41,7 @@ interface SpaceSyncAndP2PStatusProvider {
                 }
         }
 
-        private fun observeSpace(spaceId: Id): Flow<SpaceSyncAndP2PStatusState> {
+        private fun observeSpaceSyncStatus(spaceId: Id): Flow<SpaceSyncAndP2PStatusState> {
             val syncFlow =
                 spaceSyncStatusChannel.observe(spaceId).onStart { emit(SpaceSyncUpdate.Initial) }
             val p2pFlow =

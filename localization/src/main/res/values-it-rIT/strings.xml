@@ -1456,4 +1456,33 @@ Please provide specific details of your needs here.</string>
     <string name="sort_empty_values_bottom">In basso</string>
     <string name="sort_empty_values_top">In alto</string>
     <string name="widget_view_see_all_objects">Vedi tutti gli oggetti</string>
+    <string name="sync_status_get_error">Error getting sync status</string>
+    <string name="sync_status_local_only_title">Solo Locale</string>
+    <string name="sync_status_data_backup">Il backup dati è disabilitato</string>
+    <string name="sync_status_self_host">Self Host</string>
+    <string name="sync_status_self_host_synced">Sincronizzato</string>
+    <plurals name="sync_status_self_host_syncing">
+        <item quantity="one">%1$d item syncing</item>
+        <item quantity="other">%1$d items syncing...</item>
+    </plurals>
+    <string name="sync_status_p2p">Connessione P2P</string>
+    <plurals name="sync_status_p2p_devices">
+        <item quantity="one">%1$d device connected</item>
+        <item quantity="other">%1$d devices connected</item>
+    </plurals>
+    <string name="sync_status_p2p_connecting">Connessione P2P...</string>
+    <string name="sync_status_p2p_disabled">Disabled</string>
+    <string name="sync_status_p2p_restricted">Limitato. Controlla le impostazioni del dispositivo.</string>
+    <string name="sync_status_anytype_network">Rete Anytype</string>
+    <string name="sync_status_anytype_end_to_end">Crittografia end-to-end</string>
+    <plurals name="sync_status_network_items">
+        <item quantity="one">%1$d item syncing...</item>
+        <item quantity="other">%1$d items syncing...</item>
+    </plurals>
+    <string name="sync_status_anytype_network_connecting">Network Connecting...</string>
+    <string name="sync_status_anytype_network_no_connecting">Nessuna connessione</string>
+    <string name="sync_status_storage_limit_exceed">Limite di archiviazione raggiunto</string>
+    <string name="sync_status_incompatible_version">Incompatible version</string>
+    <string name="sync_status_network_error">Nessun accesso allo spazio</string>
+    <string name="sync_status_unrecognized">Errore sconosciuto</string>
 </resources>

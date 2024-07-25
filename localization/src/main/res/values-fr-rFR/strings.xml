@@ -80,7 +80,7 @@
     <string name="option_tool_page">Page</string>
     <string name="option_tool_link_to_object">Lien vers un objet</string>
     <string name="option_tool_database">Base de données</string>
-    <string name="option_tool_set">Set</string>
+    <string name="option_tool_set">Ensemble</string>
     <string name="option_tool_contact">Contact</string>
     <string name="option_tool_existing_tool">Outil existant</string>
     <string name="option_media_file">Fichier</string>
@@ -145,7 +145,7 @@
     <string name="add_new">Ajouter un nouveau</string>
     <string name="turn_into">Transformer en</string>
     <string name="modal_reorder">Réorganiser</string>
-    <string name="modal_done">Fait</string>
+    <string name="modal_done">Terminé</string>
     <string name="modal_prop_name">Nom de la propriété</string>
     <string name="modal_property_type">Type de propriété</string>
     <string name="modal_hide">Masquer</string>
@@ -219,7 +219,7 @@
     <string name="action_bar_rename">Renommer</string>
     <string name="action_bar_sam">Défiler &amp; déplacer</string>
     <string name="more">Plus</string>
-    <string name="done">Fait</string>
+    <string name="done">Terminé</string>
     <string name="select_scroll_and_move_blocks">Pour commencer, sélectionnez des blocs</string>
     <string name="block_code_menu_title">Langue</string>
     <string name="undo">Annuler</string>
@@ -373,14 +373,14 @@
     <string name="copy_link">Copier le lien</string>
     <string name="edit_link">Éditer un lien</string>
     <string name="unlink">Délier</string>
-    <string name="choose_layout_type">Choisir une mise en page</string>
+    <string name="choose_layout_type">Choisir la mise en page</string>
     <string name="user_settings_title">Paramètres utilisateur</string>
     <string name="default_object_type_title">Type d\'objet par défaut</string>
     <string name="name_layout_basic">Basique</string>
     <string name="name_layout_profile">Profil</string>
     <string name="name_layout_participant">Participant</string>
     <string name="name_layout_todo">Tâche</string>
-    <string name="name_layout_set">Set</string>
+    <string name="name_layout_set">Ensemble</string>
     <string name="name_layout_collection">Collection</string>
     <string name="name_layout_note">Note</string>
     <string name="name_type_note">Note</string>
@@ -396,7 +396,7 @@
     <string name="open_set">Ouvrir le set</string>
     <string name="deleted">Supprimé</string>
     <string name="paste_link_or_search">Coller le lien ou rechercher des objets</string>
-    <string name="paste_from_clipboard">Coller depuis le presse-papier</string>
+    <string name="paste_from_clipboard">Coller depuis le presse-papiers</string>
     <string name="create_object_with_name">Créer un objet %1$s\"</string>
     <string name="layout_basic_name">Basique</string>
     <string name="layout_basic_description">Disposition standard pour les toiles</string>
@@ -698,7 +698,7 @@
     <string name="find_a_relation">Find a relation</string>
     <string name="inbox">Inbox</string>
     <string name="unknown_type">Type inconnu</string>
-    <string name="set">Set</string>
+    <string name="set">Ensemble</string>
     <string name="collection">Collection</string>
     <string name="layout">Mise en page</string>
     <string name="restore_from_archive">Restore from archive</string>
@@ -828,7 +828,7 @@
     <string name="space_type_shared_space">Espace partagé</string>
     <string name="space_type_unknown">Type inconnu</string>
     <string name="create_space_start_with">Start with</string>
-    <string name="create_object_section_lists">Groups</string>
+    <string name="create_object_section_lists">Groupes</string>
     <string name="create_object_section_objects">Objets</string>
     <string name="edit">Éditer</string>
     <string name="unselect_all">Tout désélectionner</string>
@@ -919,21 +919,22 @@
     <string name="slash_widget_lime_color_title">Vert</string>
     <string name="slash_widget_background_item">%1$s background</string>
     <!--endregion-->
-    <!--region LIBRARY -->
+    <!--region WIDGETS -->
     <string name="create_widget">Create a widget</string>
     <string name="edit_widgets">Edit widgets</string>
+    <string name="add_widget">Ajouter un widget</string>
     <string name="widget_source">Source du widget</string>
     <string name="widget_type">Type de widget</string>
     <string name="widget_add_below">Ajouter en dessous</string>
     <string name="widget_type_tree">Arborescence</string>
-    <string name="widget_type_tree_description">Hierarchical structure of object</string>
+    <string name="widget_type_tree_description">Widget avec une structure hiérarchique</string>
     <string name="widget_type_link">Lien</string>
-    <string name="widget_type_link_description">Compact version of the object</string>
-    <string name="widget_type_list_description">Widget avec vue en liste d\'un set d\'objets</string>
-    <string name="widget_type_compact_list_description">Widget avec vue en liste d\'un set d\'objets</string>
+    <string name="widget_type_link_description">Affichage compact du widget</string>
+    <string name="widget_type_list_description">Widget avec une vue liste</string>
+    <string name="widget_type_compact_list_description">Widget avec une vue de liste compacte</string>
     <string name="widget_type_list">Liste</string>
     <string name="widget_type_view">Vue</string>
-    <string name="widget_type_view_description">Vue Widget de l\'ensemble ou de la collection</string>
+    <string name="widget_type_view_description">Widget avec une mise en page Set ou Collection</string>
     <string name="widget_type_compact_list">Compact list</string>
     <string name="widget_change_source">Changer la Source</string>
     <string name="widget_change_type">Change Type</string>
@@ -962,7 +963,7 @@
     <string name="library_relation_removed">La relation %1$s a été supprimée de votre bibliothèque\"</string>
     <string name="library_something_went_wrong">Une erreur s\'est produite. Merci d\'essayer ultérieurement.</string>
     <string name="type_creation_new_type">New type</string>
-    <string name="type_creation_done">Fait</string>
+    <string name="type_creation_done">Terminé</string>
     <string name="type_creation_placeholder">Type name</string>
     <!--endregion-->
     <!--region ONBOARDING -->
@@ -1000,7 +1001,7 @@
     <string name="onboarding_recovery_phrase_description">La phrase de récupération est une combinaison aléatoire de 12 mots à partir desquels votre compte est généré comme par magie sur cet appareil.</string>
     <string name="onboarding_recovery_phrase_description_2">Quiconque connaît cette séquence de mots possède votre coffre.</string>
     <string name="onboarding_recovery_phrase_description_3">En ce moment, vous êtes la seule personne au monde à la connaître.</string>
-    <string name="onboarding_recovery_phrase_description_4">Toutes les ressources de calcul sur Terre ne suffisent pas à la briser. Si vous la perdez, elle ne peut pas être récupérée. Alors, stockez-la quelque part en sécurité !</string>
+    <string name="onboarding_recovery_phrase_description_4">Toutes les ressources de calcul du monde ne suffiront pas à la briser. Si vous la perdez, elle ne pourra pas être récupérée. Alors, stockez-la dans un endroit sûr !</string>
     <string name="onboarding_how_to_save_my_phrase">Comment sauvegarder ma Clé ?</string>
     <string name="onboarding_how_to_save_my_phrase_2">Le moyen le plus simple de stocker votre Clé est de l’enregistrer dans votre gestionnaire de mots de passe.</string>
     <string name="onboarding_how_to_save_my_phrase_3">Le moyen le plus sûr est de l\'écrire sur papier et de le garder dans un endroit sûr et sécurisé.</string>
@@ -1062,8 +1063,8 @@
     <string name="relation_origin_imported_object">Objet importé</string>
     <string name="relation_origin_web_clipper">Web Clipper</string>
     <string name="relation_origin_mobile_sharing_extension">Extension de partage mobile</string>
-    <string name="relation_origin_use_case">Cas d\'utilisation</string>
-    <string name="relation_origin_library_installed">Bibliothèque installée.</string>
+    <string name="relation_origin_use_case">Cas d\'usage</string>
+    <string name="relation_origin_library_installed">Bibliothèque installée</string>
     <string name="relation_origin_bookmark">Marque-page</string>
     <!--endregion-->
     <plurals name="backlinks_count">
@@ -1142,7 +1143,7 @@
     <string name="multiplayer_share_space">Partager l\'espace</string>
     <string name="multiplayer_members_and_requests">Membres</string>
     <string name="multiplayer_cant_add_members">Vous ne pouvez plus ajouter de membres</string>
-    <string name="multiplayer_cant_add_editors">You can’t add more editors</string>
+    <string name="multiplayer_cant_add_editors">Vous ne pouvez pas ajouter plus d\'éditeurs</string>
     <string name="multiplayer_upgrade_button">✦ Passer à un abonnement supérieur</string>
     <string name="multiplayer_upgrade_button_request">✦ Mettre à niveau pour ajouter plus de membres</string>
     <string name="multiplayer_upgrade_spaces_button">✦ Mettre à niveau pour ajouter plus d’espaces</string>
@@ -1450,5 +1451,5 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="sort_empty_values_desc">Afficher les valeurs vides</string>
     <string name="sort_empty_values_bottom">En bas</string>
     <string name="sort_empty_values_top">En haut</string>
-    <string name="widget_view_see_all_objects">See all objects</string>
+    <string name="widget_view_see_all_objects">Voir tous les objets</string>
 </resources>

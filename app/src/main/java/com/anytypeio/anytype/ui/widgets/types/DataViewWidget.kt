@@ -557,6 +557,13 @@ private fun GalleryWidgetItemCard(
                 style = Caption1Medium,
                 color = colorResource(id = R.color.text_primary),
                 modifier = Modifier
+                    .align(
+                        if (item.cover != null) {
+                            Alignment.BottomStart
+                        } else {
+                            Alignment.TopStart
+                        }
+                    )
                     .padding(
                         start = 12.dp,
                         end = 10.dp,

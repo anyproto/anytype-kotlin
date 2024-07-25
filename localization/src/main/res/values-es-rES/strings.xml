@@ -279,7 +279,7 @@
     <string name="relation_format_number">Número</string>
     <string name="relation_format_date">Fecha</string>
     <string name="relation_format_status">Seleccionar</string>
-    <string name="relation_format_file">File &amp; Media</string>
+    <string name="relation_format_file">Archivos y medios</string>
     <string name="relation_format_checkbox">Casilla</string>
     <string name="relation_format_url">URL</string>
     <string name="relation_format_email">Correo electrónico</string>
@@ -508,9 +508,9 @@
     <string name="menu_change_query">Cambiar consulta</string>
     <string name="collections">Colecciones</string>
     <string name="collection_widget_description">Tus colecciones de objetos</string>
-    <string name="no_type_named">No hay ningún tipo llamado «%1$s«</string>
+    <string name="no_type_named">No hay ningún tipo llamado «%1$s».</string>
     <string name="try_to_create_new_one_or_search_for_something_else">Prueba a crear uno nuevo o busca otro distinto.</string>
-    <string name="try_different_search_query">Try a different search query.</string>
+    <string name="try_different_search_query">Prueba con otro término de búsqueda.</string>
     <string name="change_wallpaper">Cambiar fondo de pantalla</string>
     <string name="change_icon">Cambiar icono</string>
     <string name="random">Aleatorio</string>
@@ -554,7 +554,7 @@
     <string name="sign_up">Suscribirse</string>
     <string name="type_your_recovery_phrase">o escribe tu clave</string>
     <string name="login_with_recovery_phrase">Iniciar sesión con clave</string>
-    <string name="or_scan_qr_code">Scan Qr code</string>
+    <string name="or_scan_qr_code">Escanear código QR</string>
     <string name="choose_pin_code">Elegir código PIN</string>
     <string name="congratulations">¡Enhorabuena!</string>
     <string name="time_to_update_title">Es necesario actualizar</string>
@@ -666,8 +666,8 @@
     <string name="reset">Restablecer</string>
     <string name="search_a_relation">Buscar una relación</string>
     <string name="content_description_check_icon">Icono de marca</string>
-    <string name="content_desc_empty_values_bottom_check_icon">Sort empty values at the bottom</string>
-    <string name="content_desc_empty_values_top_check_icon">Sort empty values at the top</string>
+    <string name="content_desc_empty_values_bottom_check_icon">Colocar valores vacíos abajo</string>
+    <string name="content_desc_empty_values_top_check_icon">Colocar valores vacíos arriba</string>
     <string name="filter_condition_is">Es</string>
     <string name="today">Hoy</string>
     <string name="yesterday">Ayer</string>
@@ -919,21 +919,22 @@
     <string name="slash_widget_lime_color_title">Verde</string>
     <string name="slash_widget_background_item">%1$s de fondo</string>
     <!--endregion-->
-    <!--region LIBRARY -->
+    <!--region WIDGETS -->
     <string name="create_widget">Crear un widget</string>
     <string name="edit_widgets">Editar widgets</string>
+    <string name="add_widget">Añadir widget</string>
     <string name="widget_source">Origen del widget</string>
     <string name="widget_type">Tipo de widget</string>
     <string name="widget_add_below">Añadir debajo</string>
     <string name="widget_type_tree">Árbol</string>
-    <string name="widget_type_tree_description">Estructura jerárquica del objeto</string>
+    <string name="widget_type_tree_description">Widget con estructura jerárquica</string>
     <string name="widget_type_link">Enlace</string>
-    <string name="widget_type_link_description">Versión compacta del objeto</string>
-    <string name="widget_type_list_description">Widget con lista de objetos del conjunto</string>
-    <string name="widget_type_compact_list_description">Widget con lista de objetos del conjunto</string>
+    <string name="widget_type_link_description">Vista de widget compacto</string>
+    <string name="widget_type_list_description">Widget con vista de lista</string>
+    <string name="widget_type_compact_list_description">Widget con vista de lista compacta</string>
     <string name="widget_type_list">Lista</string>
     <string name="widget_type_view">Vista</string>
-    <string name="widget_type_view_description">Widget view of Set or Collection</string>
+    <string name="widget_type_view_description">Widget con diseño de conjunto o colección</string>
     <string name="widget_type_compact_list">Lista compacta</string>
     <string name="widget_change_source">Cambiar de origen</string>
     <string name="widget_change_type">Cambiar tipo</string>
@@ -990,7 +991,7 @@
     <string name="onboarding_soul_creation_description">Solo lo verán las personas con las que compartas algo. No existe un registro central de nombres.</string>
     <string name="onboarding_soul_creation_placeholder">Identidad de Anytype</string>
     <string name="onboarding_soul_creation">Creando tu identidad…</string>
-    <string name="onboarding_type_your_key">Type your recovery phrase</string>
+    <string name="onboarding_type_your_key">Escribe tu frase de recuperación</string>
     <string name="onboarding_login_or">O</string>
     <string name="onboarding_entering_void_title">Entrando a tu arca</string>
     <string name="onboarding_your_key_can_t_be_empty">La clave no puede estar vacía.</string>
@@ -1046,11 +1047,11 @@
     <string name="sharing_menu_save_as_file_option">Archivo</string>
     <string name="sharing_menu_save_as_images_option">Imágenes</string>
     <string name="sharing_menu_save_as_files_option">Archivos</string>
-    <string name="sharing_menu_save_as_videos_option">Videos</string>
+    <string name="sharing_menu_save_as_videos_option">Vídeos</string>
     <string name="sharing_menu_data">Datos</string>
     <string name="sharing_menu_add_to_anytype_header_title">Añadir a Anytype</string>
-    <string name="sharing_menu_add_to_anytype_error">Anytype file upload error: %1$s</string>
-    <string name="sharing_menu_add_to_anytype_success">All files have been successfully uploaded</string>
+    <string name="sharing_menu_add_to_anytype_error">Error al cargar archivo en Anytype: %1$s</string>
+    <string name="sharing_menu_add_to_anytype_success">Todos los archivos se han cargado correctamente.</string>
     <string name="sharing_menu_toast_object_added">Se ha añadido un nuevo objeto al espacio «%1$s»</string>
     <string name="sharing_menu_btn_add">Añadir</string>
     <string name="sharing_menu_btn_open">Abrir</string>
@@ -1143,9 +1144,9 @@
     <string name="multiplayer_members_and_requests">Miembros</string>
     <string name="multiplayer_cant_add_members">No puedes añadir más miembros</string>
     <string name="multiplayer_cant_add_editors">No puedes añadir más editores</string>
-    <string name="multiplayer_upgrade_button">✦ Upgrade</string>
-    <string name="multiplayer_upgrade_button_request">✦ Upgrade to add more members</string>
-    <string name="multiplayer_upgrade_spaces_button">✦ Upgrade to add more spaces</string>
+    <string name="multiplayer_upgrade_button">✦ Ampliar</string>
+    <string name="multiplayer_upgrade_button_request">✦ Ampliar para añadir más miembros</string>
+    <string name="multiplayer_upgrade_spaces_button">✦ Ampliar para añadir más espacios</string>
     <string name="multiplayer_members">Miembros</string>
     <string name="multiplayer_leave_request">Retirar solicitud</string>
     <string name="multiplayer_join_request">Solicitud de acceso</string>
@@ -1155,9 +1156,9 @@
     <string name="multiplayer_can_edit">Puede editar</string>
     <string name="multiplayer_can_view">Puede visualizar</string>
     <string name="multiplayer_space_add_viewer">Añadir visitante</string>
-    <string name="multiplayer_space_add_more_viewer">✦ Add more viewers</string>
+    <string name="multiplayer_space_add_more_viewer">✦ Añadir más visitantes</string>
     <string name="multiplayer_space_add_editor">Añadir editor</string>
-    <string name="multiplayer_space_add_more_editor">✦ Add more editors</string>
+    <string name="multiplayer_space_add_more_editor">✦ Añadir más editores</string>
     <string name="multiplayer_space_request_reject">Rechazar</string>
     <string name="multiplayer_space_join_request_header">%1$s solicita acceder al espacio %2$s</string>
     <string name="multiplayer_remove_member">Eliminar miembro</string>
@@ -1316,9 +1317,9 @@
     <string name="payments_tier_current_paid_by_apple">Suscripción de Apple</string>
     <string name="payments_tier_current_paid_by_google">Suscripción de Google</string>
     <string name="payments_tier_current_button">Gestionar el pago</string>
-    <string name="membership_manage_tier_desktop">You can manage tier on Desktop platform</string>
-    <string name="membership_manage_tier_ios">You can manage tier on iOS platform</string>
-    <string name="membership_manage_tier_another_account">You can manage tier on another Google account</string>
+    <string name="membership_manage_tier_desktop">Puedes gestionar el nivel en la versión de escritorio</string>
+    <string name="membership_manage_tier_ios">Puedes gestionar el nivel en la versión de iOS</string>
+    <string name="membership_manage_tier_another_account">Puedes gestionar el nivel en otra cuenta de Google</string>
     <string name="payments_tier_current_change_email_button">Cambiar correo electrónico</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Introduce el código enviado a tu buzón de correo electrónico</string>
@@ -1420,14 +1421,14 @@ En concreto,
     <string name="membership_support_already_acquired">Ya has adquirido un plan de suscripción con otra cuenta de Anytype.</string>
     <string name="membership_support_different_subscription">Se ha encontrado una suscripción con un ID distinto.</string>
     <string name="membership_support_more_then_one_subscription">Se ha encontrado más de una suscripción.</string>
-    <string name="multiplayer_space_join_request_participants_error">Space participant\'s error</string>
-    <string name="multiplayer_space_join_request_new_member_error">Request\'s member error</string>
-    <string name="multiplayer_space_join_request_current_user_error">Current user status error</string>
-    <string name="multiplayer_space_join_request_membership_status_error">Current membership status error</string>
+    <string name="multiplayer_space_join_request_participants_error">Error de participante en espacio</string>
+    <string name="multiplayer_space_join_request_new_member_error">Error de solicitud de miembro</string>
+    <string name="multiplayer_space_join_request_current_user_error">Error de estado de usuario actual</string>
+    <string name="multiplayer_space_join_request_membership_status_error">Error de estado de suscripción actual</string>
     <string name="membership_upgrade_title">Ampliación de la suscripción</string>
     <string name="membership_upgrade_description">Habla con nosotros si quieres aumentar el almacenamiento, los editores de tus espacios o los espacios compartidos. El equipo de Anytype te ofrecerá detalles y condiciones adaptados a tus necesidades.</string>
     <string name="membership_upgrade_button">Hablar con el equipo de Anytype</string>
-    <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d spaces that can be shared</string>
+    <string name="membership_space_settings_share_limit">Has alcanzado el límite de %1$d espacios compartidos.</string>
     <plurals name="period_years">
         <item quantity="one">año</item>
         <item quantity="other">%d años</item>
@@ -1447,11 +1448,11 @@ En concreto,
     <string name="membership_error_button_text_action">Contacto</string>
     <string name="membership_error_button_text_dismiss">Ok</string>
     <string name="error_login_network_id_mismatch">Se ha detectado un ID de red que no coincide. Comprueba tu configuración de red.</string>
-    <string name="error_login_select_vault_error">Select vault error.</string>
+    <string name="error_login_select_vault_error">Error al seleccionar el arca</string>
     <string name="global_search_related_to">"Relacionado con: "</string>
     <string name="global_search_no_related_objects_found">No se ha encontrado ningún objeto relacionado.</string>
     <string name="sort_empty_values_desc">Mostrar valores vacíos</string>
     <string name="sort_empty_values_bottom">Al final</string>
     <string name="sort_empty_values_top">Al principio</string>
-    <string name="widget_view_see_all_objects">See all objects</string>
+    <string name="widget_view_see_all_objects">Ver todos los objetos</string>
 </resources>

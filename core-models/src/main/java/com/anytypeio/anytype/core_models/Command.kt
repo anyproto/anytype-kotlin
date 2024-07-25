@@ -545,4 +545,30 @@ sealed class Command {
     data class ProcessCancel(
         val processId: Id
     ) : Command()
+
+    sealed class VersionHistory {
+        data class GetVersions(
+            val objectId: Id,
+            val lastVersion: Id,
+            val limit: Int
+        ) : VersionHistory()
+
+        data class ShowVersion(
+            val objectId: Id,
+            val versionId: Id,
+            val traceId: Id
+        ) : VersionHistory()
+
+        data class SetVersion(
+            val objectId: Id,
+            val versionId: Id
+        ) : VersionHistory()
+
+        data class DiffVersions(
+            val objectId: Id,
+            val spaceId: Id,
+            val currentVersion: Id,
+            val previousVersion: Id
+        ) : VersionHistory()
+    }
 }

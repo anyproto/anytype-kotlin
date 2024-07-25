@@ -917,21 +917,22 @@
     <string name="slash_widget_lime_color_title">綠色</string>
     <string name="slash_widget_background_item">%1$s 背景</string>
     <!--endregion-->
-    <!--region LIBRARY -->
+    <!--region WIDGETS -->
     <string name="create_widget">建立一個小工具</string>
     <string name="edit_widgets">編輯小工具</string>
+    <string name="add_widget">Add widget</string>
     <string name="widget_source">小工具來源</string>
     <string name="widget_type">小工具類型</string>
     <string name="widget_add_below">在下方添加</string>
     <string name="widget_type_tree">樹狀圖</string>
-    <string name="widget_type_tree_description">物件的階層結構</string>
+    <string name="widget_type_tree_description">具有分層結構的小工具</string>
     <string name="widget_type_link">連結</string>
-    <string name="widget_type_link_description">緊湊型物件</string>
-    <string name="widget_type_list_description">具有物件集合列表視圖的小工具</string>
-    <string name="widget_type_compact_list_description">具有物件集合列表視圖的小工具</string>
+    <string name="widget_type_link_description">緊湊檢視小工具</string>
+    <string name="widget_type_list_description">帶有列表檢視的小工具</string>
+    <string name="widget_type_compact_list_description">具有緊湊列表檢視的小工具</string>
     <string name="widget_type_list">列表</string>
     <string name="widget_type_view">檢視</string>
-    <string name="widget_type_view_description">Widget view of Set or Collection</string>
+    <string name="widget_type_view_description">帶有集合或集錦的小工具</string>
     <string name="widget_type_compact_list">緊湊型列表</string>
     <string name="widget_change_source">變更來源</string>
     <string name="widget_change_type">更改類型</string>

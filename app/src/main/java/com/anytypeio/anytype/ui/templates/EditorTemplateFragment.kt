@@ -76,7 +76,7 @@ class EditorTemplateFragment : EditorFragment() {
                     topMargin = dimen(R.dimen.default_toolbar_height)
                 }
                 binding.topToolbar.title.text = getString(R.string.templates_menu_edit)
-                binding.topToolbar.statusContainer.hide()
+                binding.topToolbar.status.hide()
             } else {
                 binding.topToolbar.hide()
             }

@@ -576,4 +576,18 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun membershipGetTiers(request: Rpc.Membership.GetTiers.Request): Rpc.Membership.GetTiers.Response
     //endregion
+
+    //region VERSION HISTORY
+    @Throws(Exception::class)
+    fun getVersions(request: Rpc.History.GetVersions.Request): Rpc.History.GetVersions.Response
+
+    @Throws(Exception::class)
+    fun showVersion(request: Rpc.History.ShowVersion.Request): Rpc.History.ShowVersion.Response
+
+    @Throws(Exception::class)
+    fun setVersion(request: Rpc.History.SetVersion.Request): Rpc.History.SetVersion.Response
+
+    @Throws(Exception::class)
+    fun diffVersions(request: Rpc.History.DiffVersions.Request): Rpc.History.DiffVersions.Response
+    //endregion
 }

@@ -13,7 +13,6 @@ import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.core_utils.ui.setOnThrottleClickListener
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.DefaultSearchItem
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchSection
 import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
 
@@ -154,14 +153,24 @@ class BundledWidgetSourceHolder(
                 with(binding) {
                     tvTitle.setText(R.string.favorites)
                     tvSubtitle.text = ""
-                    ivIcon.setIcon(ObjectIcon.Basic.Emoji("⭐️"))
+                    ivIcon.setImageDrawable(
+                        drawable = binding.root.context.resources.getDrawable(
+                            R.drawable.ic_widget_bundled_source_favorites,
+                            null
+                        )
+                    )
                 }
             }
 
             BundledWidgetSourceView.Recent -> {
                 with(binding) {
                     tvTitle.setText(R.string.recent)
-                    ivIcon.setIcon(ObjectIcon.Basic.Emoji("📝"))
+                    ivIcon.setImageDrawable(
+                        drawable = binding.root.context.resources.getDrawable(
+                            R.drawable.ic_widget_bundled_source_recently_edited,
+                            null
+                        )
+                    )
                 }
             }
 
@@ -169,7 +178,12 @@ class BundledWidgetSourceHolder(
                 with(binding) {
                     tvTitle.setText(R.string.recently_opened)
                     tvSubtitle.setText(R.string.on_this_device)
-                    ivIcon.setIcon(ObjectIcon.Basic.Emoji("📅"))
+                    ivIcon.setImageDrawable(
+                        drawable = binding.root.context.resources.getDrawable(
+                            R.drawable.ic_widget_bundled_source_recently_opened,
+                            null
+                        )
+                    )
                 }
             }
 
@@ -177,14 +191,24 @@ class BundledWidgetSourceHolder(
                 with(binding) {
                     tvTitle.setText(R.string.sets)
                     tvSubtitle.text = ""
-                    ivIcon.setIcon(ObjectIcon.Basic.Emoji("📚"))
+                    ivIcon.setImageDrawable(
+                        drawable = binding.root.context.resources.getDrawable(
+                            R.drawable.ic_widget_bundled_source_sets,
+                            null
+                        )
+                    )
                 }
             }
             BundledWidgetSourceView.Collections -> {
                 with(binding) {
                     tvTitle.setText(R.string.collections)
                     tvSubtitle.text = ""
-                    ivIcon.setIcon(ObjectIcon.Basic.Emoji("📂"))
+                    ivIcon.setImageDrawable(
+                        drawable = binding.root.context.resources.getDrawable(
+                            R.drawable.ic_widget_bundled_source_collection,
+                            null
+                        )
+                    )
                 }
             }
         }

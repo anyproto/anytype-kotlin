@@ -919,21 +919,22 @@
     <string name="slash_widget_lime_color_title">Grün</string>
     <string name="slash_widget_background_item">%1$ser Hintergrund</string>
     <!--endregion-->
-    <!--region LIBRARY -->
+    <!--region WIDGETS -->
     <string name="create_widget">Widget erstellen</string>
     <string name="edit_widgets">Widgets bearbeiten</string>
+    <string name="add_widget">Add widget</string>
     <string name="widget_source">Widget-Quelle</string>
     <string name="widget_type">Widget-Typ</string>
     <string name="widget_add_below">Unten hinzufügen</string>
     <string name="widget_type_tree">Strukturbaum</string>
-    <string name="widget_type_tree_description">Hierarchische Struktur des Objekts</string>
+    <string name="widget_type_tree_description">Widget mit einer hierarchischen Struktur</string>
     <string name="widget_type_link">Link</string>
-    <string name="widget_type_link_description">Kompaktversion des Objekts</string>
-    <string name="widget_type_list_description">Widget mit Listenansicht für ein bestimmtes Objekt</string>
-    <string name="widget_type_compact_list_description">Widget mit Listenansicht für ein bestimmtes Objekt</string>
+    <string name="widget_type_link_description">Compact widget view</string>
+    <string name="widget_type_list_description">Widget mit einer Listenansicht</string>
+    <string name="widget_type_compact_list_description">Widget mit einer kompakten Listenansicht</string>
     <string name="widget_type_list">Liste</string>
     <string name="widget_type_view">Ansicht</string>
-    <string name="widget_type_view_description">Widget view of Set or Collection</string>
+    <string name="widget_type_view_description">Widget with a Set or Collection layout</string>
     <string name="widget_type_compact_list">Kompakte Liste</string>
     <string name="widget_change_source">Quelle ändern</string>
     <string name="widget_change_type">Typ ändern</string>

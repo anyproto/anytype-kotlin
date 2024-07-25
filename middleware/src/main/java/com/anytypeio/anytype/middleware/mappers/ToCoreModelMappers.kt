@@ -1105,8 +1105,8 @@ fun Rpc.History.Version.toCoreModel(): Version {
     return Version(
         id = id,
         previousIds = previousIds,
-        authorId = authorId,
-        authorName = authorName,
+        spaceMember = authorId,
+        spaceMemberName = authorName,
         timestamp = time,
         groupId = groupId
     )

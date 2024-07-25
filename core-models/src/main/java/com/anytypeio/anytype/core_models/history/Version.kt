@@ -7,8 +7,8 @@ import com.anytypeio.anytype.core_models.ObjectView
 data class Version(
     val id: Id,
     val previousIds: List<Id>,
-    val authorId: Id,
-    val authorName: String,
+    val spaceMember: Id,
+    val spaceMemberName: String,
     val timestamp: Long,
     val groupId: Long
 )

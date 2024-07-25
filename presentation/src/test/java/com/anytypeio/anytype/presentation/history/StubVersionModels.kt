@@ -6,7 +6,6 @@ import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.history.DiffVersionResponse
 import com.anytypeio.anytype.core_models.history.ShowVersionResponse
 import com.anytypeio.anytype.core_models.history.Version
-import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.random.Random
 import net.bytebuddy.utility.RandomString
 
@@ -21,8 +20,8 @@ fun StubVersion(
     return Version(
         id = id,
         previousIds = previousIds,
-        authorId = authorId,
-        authorName = authorName,
+        spaceMember = authorId,
+        spaceMemberName = authorName,
         timestamp = timestamp,
         groupId = groupId
     )

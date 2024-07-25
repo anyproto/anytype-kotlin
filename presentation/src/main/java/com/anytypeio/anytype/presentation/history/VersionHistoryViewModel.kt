@@ -54,22 +54,27 @@ class VersionHistoryViewModel(
                     _viewState.value = VersionHistoryState.Error.SpaceMembers(it.message.orEmpty())
                 },
                 success = { members ->
-                    Timber.d("Members: $members")
-                    getVersions(vmParams.objectId, members)
+                    if (members.isEmpty()) {
+                        _viewState.value =
+                            VersionHistoryState.Error.SpaceMembers("No members found")
+                    } else {
+                        getHistoryVersions(vmParams.objectId, members)
+                    }
                 }
             )
         }
     }
 
-    private fun getVersions(objectId: String, members: List<ObjectWrapper.Basic>) {
+    private fun getHistoryVersions(objectId: String, members: List<ObjectWrapper.Basic>) {
         viewModelScope.launch {
-            val params = GetVersions.Params(
-                objectId = objectId
-            )
+            val params = GetVersions.Params(objectId = objectId)
             getVersions.async(params).fold(
-                onSuccess = {
-                    Timber.d("Versions: $it")
-                    groupItems(it, members)
+                onSuccess = { versions ->
+                    if (versions.isEmpty()) {
+                        _viewState.value = VersionHistoryState.Error.NoVersions
+                    } else {
+                        handleVersionsSuccess(versions, members)
+                    }
                 },
                 onFailure = {
                     _viewState.value = VersionHistoryState.Error.GetVersions(it.message.orEmpty())
@@ -79,13 +84,24 @@ class VersionHistoryViewModel(
         }
     }
 
-    private fun groupItems(versions: List<Version>, members: List<ObjectWrapper.Basic>) {
+    private fun handleVersionsSuccess(versions: List<Version>, members: List<ObjectWrapper.Basic>) {
+        val groupedItems = groupItems(versions, members)
+        _viewState.value = VersionHistoryState.Success(groups = groupedItems)
+    }
+
+    private fun groupItems(
+        versions: List<Version>,
+        spaceMembers: List<ObjectWrapper.Basic>,
+    ): List<VersionHistoryGroup> {
+
+        val locale = localeProvider.locale()
+
         // Group by day
         val versionsByDay = versions.groupBy { version ->
             val formattedDate = dateProvider.formatToDateString(
                 timestamp = (version.timestamp * 1000),
                 pattern = GROUP_BY_DAY_PATTERN,
-                locale = localeProvider.locale()
+                locale = locale
             )
             formattedDate
         }
@@ -95,16 +111,17 @@ class VersionHistoryViewModel(
 
         // Within each day, sort all versions by timestamp descending
         val sortedVersionsByDay = sortedDays.associateWith { day ->
-            versionsByDay[day]!!.sortedByDescending { it.timestamp }
+            val versionByDay = versionsByDay[day] ?: return@associateWith emptyList()
+            versionByDay.sortedByDescending { it.timestamp }
         }
 
-        // Group by author sequentially within each day
-        val groupedByAuthor = sortedVersionsByDay.mapValues { (_, versions) ->
+        // Group by space member sequentially within each day
+        val groupedBySpaceMember = sortedVersionsByDay.mapValues { (_, versions) ->
             val grouped = mutableListOf<MutableList<Version>>()
             var currentGroup = mutableListOf<Version>()
 
             for (version in versions) {
-                if (currentGroup.isEmpty() || currentGroup.last().authorId == version.authorId) {
+                if (currentGroup.isEmpty() || currentGroup.last().spaceMember == version.spaceMember) {
                     currentGroup.add(version)
                 } else {
                     grouped.add(currentGroup)
@@ -119,33 +136,56 @@ class VersionHistoryViewModel(
             grouped
         }
 
-        val items = groupedByAuthor.map { (day, authorVersions) ->
-            val (date, time) = dateProvider.formatTimestampToDateAndTime(
-                timestamp = authorVersions.first().first().timestamp * 1000,
-                locale = localeProvider.locale()
+        val groups = groupedBySpaceMember.mapNotNull { (_, spaceMemberVersions) ->
+            if (spaceMemberVersions.isEmpty()) {
+                return emptyList()
+            }
+            val spaceMemberLatestVersion =
+                spaceMemberVersions.firstOrNull()?.firstOrNull() ?: return@mapNotNull null
+            val (latestVersionDate, latestVersionTime) = dateProvider.formatTimestampToDateAndTime(
+                timestamp = spaceMemberLatestVersion.timestamp * 1000,
+                locale = locale
             )
             VersionHistoryGroup(
-                id = authorVersions.first().first().id,
-                title = date,
+                id = spaceMemberLatestVersion.id,
+                title = latestVersionDate,
                 icons = emptyList(),
-                versions = authorVersions.map { versions ->
-                    val membersObject = members.find { it.id == versions.first().authorId }
-                    VersionHistoryItem(
+                items = spaceMemberVersions.mapNotNull { versions ->
+                    val membersObject = spaceMembers.find { it.id == versions.first().spaceMember }
+                        ?: return@mapNotNull null
+                    VersionHistoryGroup.Item(
                         id = versions.first().id,
-                        authorId = versions.first().authorId,
+                        authorId = versions.first().spaceMember,
                         authorName = membersObject?.name.orEmpty(),
                         timeStamp = versions.first().timestamp,
                         icon = null,
-                        time = time,
+                        time = latestVersionTime,
                         versions = versions
                     )
                 }
             )
         }
+        return groups
+    }
 
-        _viewState.value = VersionHistoryState.Success(
-            groups = items
-        )
+    private fun List<List<Version>>.toGroupItems(
+        spaceMembers: List<ObjectWrapper.Basic>,
+        time: String
+    ): List<VersionHistoryGroup.Item> {
+        return this.mapNotNull { versions ->
+            val membersObject =
+                spaceMembers.find { it.id == versions.first().spaceMember }
+                    ?: return@mapNotNull null
+            VersionHistoryGroup.Item(
+                id = versions.first().id,
+                authorId = versions.first().spaceMember,
+                authorName = membersObject.name.orEmpty(),
+                timeStamp = versions.first().timestamp,
+                icon = null,
+                time = time,
+                versions = versions
+            )
+        }
     }
 
     data class VmParams(
@@ -164,6 +204,7 @@ sealed class VersionHistoryState {
     sealed class Error : VersionHistoryState() {
         data class SpaceMembers(val message: String) : Error()
         data class GetVersions(val message: String) : Error()
+        data object NoVersions : Error()
     }
 }
 
@@ -171,15 +212,15 @@ data class VersionHistoryGroup(
     val id: String,
     val title: String,
     val icons: List<ObjectIcon>,
-    val versions: List<VersionHistoryItem>
-)
-
-data class VersionHistoryItem(
-    val id: Id,
-    val authorId: Id,
-    val authorName: String,
-    val time: String = "",
-    val timeStamp: Long,
-    val icon: ObjectIcon?,
-    val versions: List<Version>
-)
+    val items: List<Item>
+) {
+    data class Item(
+        val id: Id,
+        val authorId: Id,
+        val authorName: String,
+        val time: String = "",
+        val timeStamp: Long,
+        val icon: ObjectIcon?,
+        val versions: List<Version>
+    )
+}

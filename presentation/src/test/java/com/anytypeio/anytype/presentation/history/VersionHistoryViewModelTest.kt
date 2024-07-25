@@ -224,9 +224,9 @@ class VersionHistoryViewModelTest {
                             id = versions[0].id,
                             title = date0,
                             icons = emptyList(),
-                            versions = buildList {
+                            items = buildList {
                                 add(
-                                    VersionHistoryItem(
+                                    VersionHistoryGroup.Item(
                                         id = versions[0].id,
                                         authorId = user1.id,
                                         authorName = user1.name!!,
@@ -237,7 +237,7 @@ class VersionHistoryViewModelTest {
                                     )
                                 )
                                 add(
-                                    VersionHistoryItem(
+                                    VersionHistoryGroup.Item(
                                         id = versions[1].id,
                                         authorId = user4.id,
                                         authorName = user4.name!!,
@@ -248,7 +248,7 @@ class VersionHistoryViewModelTest {
                                     )
                                 )
                                 add(
-                                    VersionHistoryItem(
+                                    VersionHistoryGroup.Item(
                                         id = versions[2].id,
                                         authorId = user3.id,
                                         authorName = user3.name!!,
@@ -259,7 +259,7 @@ class VersionHistoryViewModelTest {
                                     )
                                 )
                                 add(
-                                    VersionHistoryItem(
+                                    VersionHistoryGroup.Item(
                                         id = versions[3].id,
                                         authorId = user1.id,
                                         authorName = user1.name!!,
@@ -277,9 +277,9 @@ class VersionHistoryViewModelTest {
                             id = versions[4].id,
                             title = date4,
                             icons = emptyList(),
-                            versions = buildList {
+                            items = buildList {
                                 add(
-                                    VersionHistoryItem(
+                                    VersionHistoryGroup.Item(
                                         id = versions[4].id,
                                         authorId = user1.id,
                                         authorName = user1.name!!,
@@ -290,7 +290,7 @@ class VersionHistoryViewModelTest {
                                     )
                                 )
                                 add(
-                                    VersionHistoryItem(
+                                    VersionHistoryGroup.Item(
                                         id = versions[6].id,
                                         authorId = user2.id,
                                         authorName = user2.name!!,

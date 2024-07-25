@@ -26,8 +26,6 @@ class ObjectTopToolbar @JvmOverloads constructor(
     )
 
     val status: StatusBadgeWidget get() = binding.statusBadge
-    val statusText: TextView get() = binding.tvStatus
-    val statusContainer: ViewGroup get() = binding.statusContainer
     val menu: View get() = binding.threeDotsButton
     val container: ViewGroup get() = binding.titleContainer
     val title: TextView get() = binding.tvTopToolbarTitle
@@ -44,22 +42,20 @@ class ObjectTopToolbar @JvmOverloads constructor(
         if (overCover) {
             menu.setBackgroundResource(R.drawable.rect_object_menu_button_default)
             ivThreeDots.imageTintList = ColorStateList.valueOf(Color.WHITE)
-            statusContainer.setBackgroundResource(R.drawable.rect_object_menu_button_default)
-            statusText.setTextColor(Color.WHITE)
+            statusBadge.setBackgroundResource(R.drawable.rect_object_menu_button_default)
         } else {
             menu.background = null
             ivThreeDots.imageTintList = null
-            statusContainer.background = null
-            statusText.setTextColor(context.getColor(R.color.default_status_text_color))
+            statusBadge.background = null
         }
     }
 
     fun hideStatusContainer() {
-        binding.statusContainer.alpha = 0f
+        binding.statusBadge.alpha = 0f
     }
 
     fun showStatusContainer() {
-        binding.statusContainer.animate().alpha(1f).setDuration(300).start()
+        binding.statusBadge.animate().alpha(1f).setDuration(300).start()
     }
 
     fun setIsLocked(isLocked: Boolean) {

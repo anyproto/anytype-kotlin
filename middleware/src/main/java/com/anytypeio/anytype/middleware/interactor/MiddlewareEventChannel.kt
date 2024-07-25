@@ -57,7 +57,7 @@ class MiddlewareEventChannel(
         blockDataviewIsCollectionSet != null -> true
         blockSetWidget != null -> true
         else -> false.also {
-            if (featureToggles.isLogMiddlewareInteraction && threadStatus == null)
+            if (featureToggles.isLogMiddlewareInteraction)
                 Timber.w("Ignored event: $this")
         }
     }

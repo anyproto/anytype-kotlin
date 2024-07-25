@@ -2,46 +2,69 @@ package com.anytypeio.anytype.core_ui.widgets
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View
+import androidx.appcompat.widget.AppCompatImageView
+import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncError
+import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncStatus
+import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncUpdate
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.extensions.color
-import com.anytypeio.anytype.core_ui.extensions.tint
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.presentation.sync.SyncStatusView
+import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusState
 
 class StatusBadgeWidget @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
-) : View(context, attrs) {
+) : AppCompatImageView(context, attrs) {
 
-    init {
-        setBackgroundResource(R.drawable.circle_solid_default)
-        tint(color = context.color(R.color.palette_dark_grey))
-    }
-
-    fun bind(status: SyncStatusView?) {
+    fun bind(status: SpaceSyncAndP2PStatusState?) {
         when (status) {
-            SyncStatusView.Failed,
-            SyncStatusView.IncompatibleVersion -> {
+            is SpaceSyncAndP2PStatusState.Error -> {
                 visible()
-                tint(color = context.color(R.color.palette_system_red))
+                setImageResource(R.drawable.ic_sync_error_10)
             }
-            SyncStatusView.Syncing -> {
-                visible()
-                tint(color = context.color(R.color.palette_system_amber_100))
-            }
-            SyncStatusView.Unknown, SyncStatusView.Offline, null -> {
+            SpaceSyncAndP2PStatusState.Initial -> {
                 gone()
             }
-            SyncStatusView.Synced.LocalOnly -> {
-                gone()
+            is SpaceSyncAndP2PStatusState.Success -> {
+                when (val spaceSyncUpdate = status.spaceSyncUpdate) {
+                    is SpaceSyncUpdate.Update -> {
+                        val error = spaceSyncUpdate.error
+                        if (error != SpaceSyncError.NULL) {
+                            visible()
+                            setImageResource(R.drawable.ic_sync_error_10)
+                        } else {
+                            return when (spaceSyncUpdate.status) {
+                                SpaceSyncStatus.SYNCED -> {
+                                    visible()
+                                    setImageResource(R.drawable.ic_synced_10)
+                                }
+
+                                SpaceSyncStatus.SYNCING -> {
+                                    visible()
+                                    setImageResource(R.drawable.ic_syncing)
+                                }
+
+                                SpaceSyncStatus.ERROR -> {
+                                    visible()
+                                    setImageResource(R.drawable.ic_sync_error_10)
+                                }
+
+                                SpaceSyncStatus.OFFLINE -> {
+                                    visible()
+                                    setImageResource(R.drawable.ic_sync_grey_10)
+                                }
+                            }
+                        }
+                    }
+
+                    SpaceSyncUpdate.Initial -> {
+                        gone()
+                    }
+                }
             }
-            SyncStatusView.Synced.AnyNetwork,
-            SyncStatusView.Synced.SelfHostedNetwork,
-            SyncStatusView.Synced.StagingNetwork -> {
-                visible()
-                tint(color = context.color(R.color.palette_system_green))
+
+            null -> {
+                gone()
             }
         }
     }

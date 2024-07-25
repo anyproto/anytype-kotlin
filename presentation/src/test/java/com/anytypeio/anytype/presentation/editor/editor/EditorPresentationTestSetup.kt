@@ -78,7 +78,6 @@ import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.SetRelationKey
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
-import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.table.CreateTable
 import com.anytypeio.anytype.domain.table.CreateTableColumn
 import com.anytypeio.anytype.domain.table.CreateTableRow
@@ -112,6 +111,7 @@ import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.home.UserPermissionProviderStub
+import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -141,9 +141,6 @@ open class EditorPresentationTestSetup {
 
     @Mock
     lateinit var interceptEvents: InterceptEvents
-
-    @Mock
-    lateinit var interceptThreadStatus: InterceptThreadStatus
 
     @Mock
     lateinit var createBlock: CreateBlock
@@ -353,9 +350,6 @@ open class EditorPresentationTestSetup {
     lateinit var getObjectTypes: GetObjectTypes
 
     @Mock
-    lateinit var fileLimitsEventChannel: FileLimitsEventChannel
-
-    @Mock
     lateinit var interceptFileLimitEvents: InterceptFileLimitEvents
 
     @Mock
@@ -372,6 +366,9 @@ open class EditorPresentationTestSetup {
 
     @Mock
     lateinit var getNetworkMode: GetNetworkMode
+
+    @Mock
+    lateinit var spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
 
     var permissions: UserPermissionProvider = UserPermissionProviderStub()
 
@@ -451,7 +448,6 @@ open class EditorPresentationTestSetup {
             createBlockLinkWithObject = createBlockLinkWithObject,
             createObjectAsMentionOrLink = createObjectAsMentionOrLink,
             interceptEvents = interceptEvents,
-            interceptThreadStatus = interceptThreadStatus,
             updateLinkMarks = updateLinkMark,
             removeLinkMark = removeLinkMark,
             reducer = DocumentExternalEventReducer(),
@@ -492,13 +488,13 @@ open class EditorPresentationTestSetup {
             templatesContainer = templatesContainer,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             dispatchers = dispatchers,
-            getNetworkMode = getNetworkMode,
             vmParams = EditorViewModel.Params(
                 ctx = root,
                 space = SpaceId(defaultSpace)
             ),
             permissions = permissions,
-            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider
         )
     }
 
@@ -569,8 +565,8 @@ open class EditorPresentationTestSetup {
     }
 
     fun stubInterceptThreadStatus() {
-        interceptThreadStatus.stub {
-            onBlocking { build(any()) } doReturn emptyFlow()
+        spaceSyncAndP2PStatusProvider.stub {
+            onBlocking { observe() } doReturn emptyFlow()
         }
     }
 

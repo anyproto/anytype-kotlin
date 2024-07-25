@@ -1,8 +1,6 @@
 package com.anytypeio.anytype.middleware.interactor
 
-import anytype.Event
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
-import com.google.gson.Gson
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -33,16 +31,7 @@ interface MiddlewareProtobufLogger {
 
         override fun logEvent(any: Any) {
             if (featureToggles.isLogMiddlewareInteraction) {
-                if (featureToggles.excludeThreadStatusLogging) {
-                    if (any is Event && containsOnlyThreadStatusEvents(any)) {
-                        // Do nothing.
-                    } else {
-                        Timber.d("event -> ${any.toLogMessage()}")
-                    }
-                } else {
-                    Timber.d("event -> ${any.toLogMessage()}")
-                }
-
+                Timber.d("event -> ${any.toLogMessage()}")
             }
         }
 
@@ -53,12 +42,6 @@ interface MiddlewareProtobufLogger {
                 "${this::class.java.canonicalName}:\n${
                     protobufConverter.provideConverter().toJson(this)
                 }"
-            }
-        }
-
-        private fun containsOnlyThreadStatusEvents(event: Event) : Boolean {
-            return event.messages.all { msg ->
-                msg.threadStatus != null
             }
         }
     }

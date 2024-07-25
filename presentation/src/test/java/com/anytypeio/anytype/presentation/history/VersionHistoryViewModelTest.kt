@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.StubSpaceMember
 import com.anytypeio.anytype.core_models.history.Version
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.primitives.TimeInSeconds
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Resultat
@@ -128,13 +129,13 @@ class VersionHistoryViewModelTest {
      *         Fri Dec 31 2021 23:59:57 GMT+0100 1640991597 User2
      */
 
-    private val timestamp0 = 1640991603L
-    private val timestamp1 = 1640991602L
-    private val timestamp2 = 1640991601L
-    private val timestamp3 = 1640991600L
-    private val timestamp4 = 1640991599L
-    private val timestamp5 = 1640991598L
-    private val timestamp6 = 1640991597L
+    private val timestamp0 = TimeInSeconds(1640991603L)
+    private val timestamp1 = TimeInSeconds(1640991602L)
+    private val timestamp2 = TimeInSeconds(1640991601L)
+    private val timestamp3 = TimeInSeconds(1640991600L)
+    private val timestamp4 = TimeInSeconds(1640991599L)
+    private val timestamp5 = TimeInSeconds(1640991598L)
+    private val timestamp6 = TimeInSeconds(1640991597L)
 
     private val versions = listOf(
         StubVersion(
@@ -185,31 +186,31 @@ class VersionHistoryViewModelTest {
             val locale = localeProvider.locale()
 
             val (date0, time0) = dateProvider.formatTimestampToDateAndTime(
-                timestamp = versions[0].timestamp * 1000,
+                timestamp = versions[0].timestamp.time * 1000,
                 locale = locale
             )
             val (date1, time1) = dateProvider.formatTimestampToDateAndTime(
-                timestamp = versions[1].timestamp * 1000,
+                timestamp = versions[1].timestamp.time * 1000,
                 locale = locale
             )
             val (date2, time2) = dateProvider.formatTimestampToDateAndTime(
-                timestamp = versions[2].timestamp * 1000,
+                timestamp = versions[2].timestamp.time * 1000,
                 locale = locale
             )
             val (date3, time3) = dateProvider.formatTimestampToDateAndTime(
-                timestamp = versions[3].timestamp * 1000,
+                timestamp = versions[3].timestamp.time * 1000,
                 locale = locale
             )
             val (date4, time4) = dateProvider.formatTimestampToDateAndTime(
-                timestamp = versions[4].timestamp * 1000,
+                timestamp = versions[4].timestamp.time * 1000,
                 locale = locale
             )
             val (date5, time5) = dateProvider.formatTimestampToDateAndTime(
-                timestamp = versions[5].timestamp * 1000,
+                timestamp = versions[5].timestamp.time * 1000,
                 locale = locale
             )
             val (date6, time6) = dateProvider.formatTimestampToDateAndTime(
-                timestamp = versions[6].timestamp * 1000,
+                timestamp = versions[6].timestamp.time * 1000,
                 locale = locale
             )
 
@@ -228,45 +229,45 @@ class VersionHistoryViewModelTest {
                                 add(
                                     VersionHistoryGroup.Item(
                                         id = versions[0].id,
-                                        authorId = user1.id,
-                                        authorName = user1.name!!,
+                                        spaceMember = user1.id,
+                                        spaceMemberName = user1.name!!,
                                         timeStamp = versions[0].timestamp,
                                         icon = null,
                                         versions = listOf(versions[0]),
-                                        time = time0
+                                        timeFormatted = time0
                                     )
                                 )
                                 add(
                                     VersionHistoryGroup.Item(
                                         id = versions[1].id,
-                                        authorId = user4.id,
-                                        authorName = user4.name!!,
+                                        spaceMember = user4.id,
+                                        spaceMemberName = user4.name!!,
                                         timeStamp = versions[1].timestamp,
                                         icon = null,
                                         versions = listOf(versions[1]),
-                                        time = time1
+                                        timeFormatted = time1
                                     )
                                 )
                                 add(
                                     VersionHistoryGroup.Item(
                                         id = versions[2].id,
-                                        authorId = user3.id,
-                                        authorName = user3.name!!,
+                                        spaceMember = user3.id,
+                                        spaceMemberName = user3.name!!,
                                         timeStamp = versions[2].timestamp,
                                         icon = null,
                                         versions = listOf(versions[2]),
-                                        time = time2
+                                        timeFormatted = time2
                                     )
                                 )
                                 add(
                                     VersionHistoryGroup.Item(
                                         id = versions[3].id,
-                                        authorId = user1.id,
-                                        authorName = user1.name!!,
+                                        spaceMember = user1.id,
+                                        spaceMemberName = user1.name!!,
                                         timeStamp = versions[3].timestamp,
                                         icon = null,
                                         versions = listOf(versions[3]),
-                                        time = time3
+                                        timeFormatted = time3
                                     )
                                 )
                             }
@@ -281,23 +282,23 @@ class VersionHistoryViewModelTest {
                                 add(
                                     VersionHistoryGroup.Item(
                                         id = versions[4].id,
-                                        authorId = user1.id,
-                                        authorName = user1.name!!,
+                                        spaceMember = user1.id,
+                                        spaceMemberName = user1.name!!,
                                         timeStamp = versions[4].timestamp,
                                         icon = null,
                                         versions = listOf(versions[4], versions[5]),
-                                        time = time4
+                                        timeFormatted = time4
                                     )
                                 )
                                 add(
                                     VersionHistoryGroup.Item(
                                         id = versions[6].id,
-                                        authorId = user2.id,
-                                        authorName = user2.name!!,
+                                        spaceMember = user2.id,
+                                        spaceMemberName = user2.name!!,
                                         timeStamp = versions[6].timestamp,
                                         icon = null,
                                         versions = listOf(versions[6]),
-                                        time = time6
+                                        timeFormatted = time6
                                     )
                                 )
                             }

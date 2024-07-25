@@ -59,6 +59,7 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncError
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncNetwork
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncStatus
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.primitives.TimeInSeconds
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
@@ -1107,7 +1108,7 @@ fun Rpc.History.Version.toCoreModel(): Version {
         previousIds = previousIds,
         spaceMember = authorId,
         spaceMemberName = authorName,
-        timestamp = time,
+        timestamp = TimeInSeconds(time),
         groupId = groupId
     )
 }

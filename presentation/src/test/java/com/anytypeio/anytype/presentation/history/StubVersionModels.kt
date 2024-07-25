@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.history.DiffVersionResponse
 import com.anytypeio.anytype.core_models.history.ShowVersionResponse
 import com.anytypeio.anytype.core_models.history.Version
+import com.anytypeio.anytype.core_models.primitives.TimeInSeconds
 import kotlin.random.Random
 import net.bytebuddy.utility.RandomString
 
@@ -14,7 +15,7 @@ fun StubVersion(
     previousIds: List<Id> = emptyList(),
     authorId: Id = "authorId - ${RandomString.make()}",
     authorName: String = "",
-    timestamp: Long,
+    timestamp: TimeInSeconds,
     groupId: Long = Random(100).nextLong()
 ): Version {
     return Version(

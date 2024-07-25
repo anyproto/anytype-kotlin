@@ -23,7 +23,7 @@ interface DateProvider {
     fun adjustFromStartOfDayInUserTimeZoneToUTC(timestamp: TimeInMillis, zoneId: ZoneId): TimeInSeconds
     fun formatToDateString(timestamp: Long, pattern: String, locale: Locale): String
     fun formatTimestampToDateAndTime(
-        timestamp: Long,
+        timestamp: TimeInMillis,
         locale: Locale,
         dateStyle: Int = DateFormat.MEDIUM,
         timeStyle: Int = DateFormat.SHORT

@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.widgets.collection
 import android.text.format.DateUtils
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.TimeInSeconds
+import com.anytypeio.anytype.core_utils.date.Milliseconds
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DateType
 import java.text.DateFormat
@@ -139,7 +140,7 @@ class DateProviderImpl @Inject constructor() : DateProvider {
     }
 
     override fun formatTimestampToDateAndTime(
-        timestamp: Long,
+        timestamp: TimeInMillis,
         locale: Locale,
         dateStyle: Int,
         timeStyle: Int

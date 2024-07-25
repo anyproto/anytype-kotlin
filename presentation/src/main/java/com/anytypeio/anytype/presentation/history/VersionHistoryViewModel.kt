@@ -6,6 +6,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.history.Version
+import com.anytypeio.anytype.core_models.primitives.TimeInSeconds
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.history.GetVersions
 import com.anytypeio.anytype.domain.misc.DateProvider
@@ -99,7 +100,7 @@ class VersionHistoryViewModel(
         // Group by day
         val versionsByDay = versions.groupBy { version ->
             val formattedDate = dateProvider.formatToDateString(
-                timestamp = (version.timestamp * 1000),
+                timestamp = (version.timestamp.time * 1000),
                 pattern = GROUP_BY_DAY_PATTERN,
                 locale = locale
             )
@@ -112,7 +113,7 @@ class VersionHistoryViewModel(
         // Within each day, sort all versions by timestamp descending
         val sortedVersionsByDay = sortedDays.associateWith { day ->
             val versionByDay = versionsByDay[day] ?: return@associateWith emptyList()
-            versionByDay.sortedByDescending { it.timestamp }
+            versionByDay.sortedByDescending { it.timestamp.time }
         }
 
         // Group by space member sequentially within each day
@@ -143,26 +144,18 @@ class VersionHistoryViewModel(
             val spaceMemberLatestVersion =
                 spaceMemberVersions.firstOrNull()?.firstOrNull() ?: return@mapNotNull null
             val (latestVersionDate, latestVersionTime) = dateProvider.formatTimestampToDateAndTime(
-                timestamp = spaceMemberLatestVersion.timestamp * 1000,
+                timestamp = spaceMemberLatestVersion.timestamp.time * 1000,
                 locale = locale
+            )
+            val groupItems = spaceMemberVersions.toGroupItems(
+                spaceMembers = spaceMembers,
+                time = latestVersionTime
             )
             VersionHistoryGroup(
                 id = spaceMemberLatestVersion.id,
                 title = latestVersionDate,
                 icons = emptyList(),
-                items = spaceMemberVersions.mapNotNull { versions ->
-                    val membersObject = spaceMembers.find { it.id == versions.first().spaceMember }
-                        ?: return@mapNotNull null
-                    VersionHistoryGroup.Item(
-                        id = versions.first().id,
-                        authorId = versions.first().spaceMember,
-                        authorName = membersObject?.name.orEmpty(),
-                        timeStamp = versions.first().timestamp,
-                        icon = null,
-                        time = latestVersionTime,
-                        versions = versions
-                    )
-                }
+                items = groupItems
             )
         }
         return groups
@@ -178,11 +171,11 @@ class VersionHistoryViewModel(
                     ?: return@mapNotNull null
             VersionHistoryGroup.Item(
                 id = versions.first().id,
-                authorId = versions.first().spaceMember,
-                authorName = membersObject.name.orEmpty(),
+                spaceMember = versions.first().spaceMember,
+                spaceMemberName = membersObject.name.orEmpty(),
                 timeStamp = versions.first().timestamp,
                 icon = null,
-                time = time,
+                timeFormatted = time,
                 versions = versions
             )
         }
@@ -216,10 +209,10 @@ data class VersionHistoryGroup(
 ) {
     data class Item(
         val id: Id,
-        val authorId: Id,
-        val authorName: String,
-        val time: String = "",
-        val timeStamp: Long,
+        val spaceMember: Id,
+        val spaceMemberName: String,
+        val timeFormatted: String,
+        val timeStamp: TimeInSeconds,
         val icon: ObjectIcon?,
         val versions: List<Version>
     )

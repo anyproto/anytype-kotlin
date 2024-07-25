@@ -208,7 +208,9 @@ fun ListView(
                 add(to.index, removeAt(from.index))
             }
         },
-        onDragEnd = { from, to -> vm.onMove(views.value, from, to) },
+        onDragEnd = { from, to ->
+            vm.onMove(views.value, from, to)
+        },
     )
 
     uiState.views.fold(
@@ -217,58 +219,87 @@ fun ListView(
             LazyColumn(
                 state = lazyListState.listState,
                 modifier = Modifier
-                    .reorderable(lazyListState)
+                    .then(
+                        if (uiState.inDragMode)
+                            Modifier.reorderable(lazyListState)
+                        else
+                            Modifier
+                    )
                     .fillMaxHeight()
                     .fillMaxWidth(),
                 contentPadding = PaddingValues(bottom = 180.dp)
             ) {
-                items(items = views.value, key = {
-                    when (it) {
-                        is ObjectView -> it.obj.id
-                        is CollectionView.FavoritesView -> it.obj.id
-                        is SectionView -> it.name
-                        is EmptySearch -> it.query
+                items(
+                    items = views.value,
+                    key = {
+                        when (it) {
+                            is ObjectView -> it.obj.id
+                            is CollectionView.FavoritesView -> it.obj.id
+                            is SectionView -> it.name
+                            is EmptySearch -> it.query
+                        }
                     }
-                }) { item ->
+                ) { item ->
                     when (item) {
                         is CollectionObjectView -> {
-                            ReorderableItem(
-                                lazyListState,
-                                key = item.obj.id,
-                            ) { isDragging ->
-                                val alpha = animateFloatAsState(if (isDragging) 0.8f else 1.0f)
+                            if (uiState.inDragMode) {
+                                ReorderableItem(
+                                    lazyListState,
+                                    key = item.obj.id,
+                                ) { isDragging ->
+                                    val alpha = animateFloatAsState(if (isDragging) 0.8f else 1.0f)
+                                    Column(
+                                        modifier = Modifier
+                                            .then(
+                                                if (uiState.inDragMode) {
+                                                    Modifier.detectReorderAfterLongPress(
+                                                        lazyListState
+                                                    )
+                                                } else {
+                                                    Modifier
+                                                }
+                                            )
+                                            .background(itemBackground)
+                                            .alpha(alpha.value)
+                                    ) {
+                                        CollectionItem(
+                                            view = item,
+                                            inEditMode = uiState.showEditMode,
+                                            inDragMode = uiState.inDragMode,
+                                            displayType = uiState.displayType,
+                                            onClick = { vm.onObjectClicked(item) },
+                                            onLongClick = { vm.onObjectLongClicked(item) })
+                                    }
+                                }
+                            } else {
                                 Column(
                                     modifier = Modifier
-                                        .then(
-                                            if (uiState.inDragMode) {
-                                                Modifier.detectReorderAfterLongPress(
-                                                    lazyListState
-                                                )
-                                            } else {
-                                                Modifier
-                                            }
-                                        )
                                         .background(itemBackground)
-                                        .alpha(alpha.value)
                                 ) {
                                     CollectionItem(
                                         view = item,
                                         inEditMode = uiState.showEditMode,
-                                        inDragMode = uiState.inDragMode,
+                                        inDragMode = false,
                                         displayType = uiState.displayType,
                                         onClick = { vm.onObjectClicked(item) },
                                         onLongClick = { vm.onObjectLongClicked(item) })
                                 }
                             }
                         }
+
                         is SectionView -> {
-                            ReorderableItem(
-                                lazyListState,
-                                key = item.name,
-                            ) { isDragging ->
+                            if (uiState.inDragMode) {
+                                ReorderableItem(
+                                    lazyListState,
+                                    key = item.name,
+                                ) {
+                                    SectionItem(item)
+                                }
+                            } else {
                                 SectionItem(item)
                             }
                         }
+
                         is EmptySearch -> {
                             Box(
                                 modifier = Modifier.fillParentMaxHeight()

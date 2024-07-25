@@ -126,7 +126,6 @@ import com.anytypeio.anytype.presentation.editor.template.SelectTemplateViewStat
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
 import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusState
-import com.anytypeio.anytype.presentation.sync.SyncStatusView
 import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.base.navigation

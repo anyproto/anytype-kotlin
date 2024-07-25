@@ -101,7 +101,6 @@ import com.anytypeio.anytype.presentation.sets.ViewersWidgetUi
 import com.anytypeio.anytype.presentation.sets.isVisible
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusState
-import com.anytypeio.anytype.presentation.sync.SyncStatusView
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase

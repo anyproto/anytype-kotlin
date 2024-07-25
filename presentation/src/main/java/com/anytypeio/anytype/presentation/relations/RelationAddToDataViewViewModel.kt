@@ -121,7 +121,8 @@ class RelationAddToDataViewViewModel(
         private val getRelations: GetRelations,
         private val addObjectToWorkspace: AddObjectToWorkspace,
         private val spaceManager: SpaceManager,
-        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        private val storeOfRelations: StoreOfRelations
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -136,7 +137,8 @@ class RelationAddToDataViewViewModel(
                 getRelations = getRelations,
                 addObjectToWorkspace = addObjectToWorkspace,
                 spaceManager = spaceManager,
-                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+                storeOfRelations = storeOfRelations
             ) as T
         }
     }

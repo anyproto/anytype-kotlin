@@ -119,7 +119,8 @@ object RelationAddToDataViewModule {
         getRelations: GetRelations,
         addObjectToWorkspace: AddObjectToWorkspace,
         spaceManager: SpaceManager,
-        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        storeOfRelations: StoreOfRelations
     ): RelationAddToDataViewViewModel.Factory = RelationAddToDataViewViewModel.Factory(
         addRelationToDataView = addRelationToDataView,
         dispatcher = dispatcher,
@@ -131,7 +132,8 @@ object RelationAddToDataViewModule {
         getRelations = getRelations,
         addObjectToWorkspace = addObjectToWorkspace,
         spaceManager = spaceManager,
-        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+        storeOfRelations = storeOfRelations
     )
 
     @JvmStatic

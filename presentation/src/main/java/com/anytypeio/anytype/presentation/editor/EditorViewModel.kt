@@ -7358,7 +7358,6 @@ class EditorViewModel(
     }
 
     fun onSyncWidgetDismiss() {
-        Timber.d("DROID-2643 onSyncWidgetDismiss, ")
         syncStatusWidget.value = SyncStatusWidgetState.Hidden
     }
     //endregion

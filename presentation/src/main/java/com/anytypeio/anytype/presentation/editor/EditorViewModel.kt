@@ -97,7 +97,6 @@ import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
-import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
@@ -251,8 +250,11 @@ import com.anytypeio.anytype.presentation.relations.getObjectRelations
 import com.anytypeio.anytype.presentation.relations.views
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
-import com.anytypeio.anytype.presentation.sync.SyncStatusView
-import com.anytypeio.anytype.presentation.sync.toView
+import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusProvider
+import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusState
+import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
+import com.anytypeio.anytype.presentation.sync.toSyncStatusWidgetState
+import com.anytypeio.anytype.presentation.sync.updateStatus
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileStatus
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
@@ -291,7 +293,6 @@ class EditorViewModel(
     private val createBlockLinkWithObject: CreateBlockLinkWithObject,
     private val createObjectAsMentionOrLink: CreateObjectAsMentionOrLink,
     private val interceptEvents: InterceptEvents,
-    private val interceptThreadStatus: InterceptThreadStatus,
     private val updateLinkMarks: UpdateLinkMarks,
     private val removeLinkMark: RemoveLinkMark,
     private val reducer: StateReducer<List<Block>, Event>,
@@ -326,8 +327,8 @@ class EditorViewModel(
     private val templatesContainer: ObjectTypeTemplatesContainer,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val dispatchers: AppCoroutineDispatchers,
-    private val getNetworkMode: GetNetworkMode,
-    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -340,9 +341,6 @@ class EditorViewModel(
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val actions = MutableStateFlow(ActionItemType.defaultSorting)
-
-    val isSyncStatusVisible = MutableStateFlow(true)
-    val syncStatus = MutableStateFlow<SyncStatusView?>(null)
 
     val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
 
@@ -1054,18 +1052,7 @@ class EditorViewModel(
                 }
         }
 
-        jobs += viewModelScope.launch {
-            val networkMode = getNetworkMode.run(Unit).networkMode
-            interceptThreadStatus
-                .build(InterceptThreadStatus.Params(context))
-                .collect { status ->
-                    val statusView = status.toView(
-                        networkId = spaceManager.getConfig(space = vmParams.space)?.network,
-                        networkMode = networkMode
-                    )
-                    syncStatus.value = statusView
-                }
-        }
+        proceedWithCollectingSyncStatus()
 
         jobs += viewModelScope.launch {
             dispatcher
@@ -1092,9 +1079,6 @@ class EditorViewModel(
                             orchestrator.proxies.payloads.send(result.data)
                             result.data.events.forEach { event ->
                                 if (event is Event.Command.ShowObject) {
-                                    if (event.details.details[context]?.type?.contains(ObjectTypeIds.FILE) == true) {
-                                        isSyncStatusVisible.value = false
-                                    }
                                     sendAnalyticsObjectShowEvent(
                                         analytics = analytics,
                                         startTime = startTime,
@@ -7355,6 +7339,31 @@ class EditorViewModel(
     private fun isReadOnlyValue(objRestrictions: List<ObjectRestriction>): Boolean {
         return mode == EditorMode.Locked || objRestrictions.contains(ObjectRestriction.DETAILS)
     }
+
+    //region SYNC STATUS
+    val spaceSyncStatus = MutableStateFlow<SpaceSyncAndP2PStatusState>(SpaceSyncAndP2PStatusState.Initial)
+    val syncStatusWidget = MutableStateFlow<SyncStatusWidgetState>(SyncStatusWidgetState.Hidden)
+
+    fun onSyncStatusBadgeClicked() {
+        Timber.d("onSyncStatusBadgeClicked, ")
+        syncStatusWidget.value = spaceSyncStatus.value.toSyncStatusWidgetState()
+    }
+
+    private fun proceedWithCollectingSyncStatus() {
+        jobs += viewModelScope.launch {
+            spaceSyncAndP2PStatusProvider
+                .observe()
+                .collect { syncAndP2pState ->
+                    spaceSyncStatus.value = syncAndP2pState
+                    syncStatusWidget.value = syncStatusWidget.value.updateStatus(syncAndP2pState)
+                }
+        }
+    }
+
+    fun onSyncWidgetDismiss() {
+        syncStatusWidget.value = SyncStatusWidgetState.Hidden
+    }
+    //endregion
 
     data class Params(
         val ctx: Id,

@@ -6,14 +6,14 @@ import com.anytypeio.anytype.domain.workspace.P2PStatusChannel
 import kotlinx.coroutines.flow.Flow
 
 interface P2PStatusRemoteChannel {
-    fun observe(activeSpaceId: Id): Flow<List<P2PStatusUpdate>>
+    fun observe(activeSpaceId: Id): Flow<P2PStatusUpdate>
 }
 
 class P2PStatusDataChannel(
     private val channel: P2PStatusRemoteChannel
 ) : P2PStatusChannel {
 
-    override fun observe(activeSpaceId: Id): Flow<List<P2PStatusUpdate>> {
+    override fun observe(activeSpaceId: Id): Flow<P2PStatusUpdate> {
         return channel.observe(activeSpaceId)
     }
 }

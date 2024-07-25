@@ -45,8 +45,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_ui.extensions.getLabelText
-import com.anytypeio.anytype.core_ui.extensions.getToastMsg
 import com.anytypeio.anytype.core_ui.extensions.setEmojiOrNull
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridAdapter
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridHeaderAdapter
@@ -56,6 +54,7 @@ import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.editorActionEvents
 import com.anytypeio.anytype.core_ui.reactive.longClicks
 import com.anytypeio.anytype.core_ui.reactive.touches
+import com.anytypeio.anytype.core_ui.syncstatus.SpaceSyncStatusScreen
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.views.ButtonPrimarySmallIcon
 import com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
@@ -101,7 +100,7 @@ import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi
 import com.anytypeio.anytype.presentation.sets.ViewersWidgetUi
 import com.anytypeio.anytype.presentation.sets.isVisible
 import com.anytypeio.anytype.presentation.sets.model.Viewer
-import com.anytypeio.anytype.presentation.sync.SyncStatusView
+import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
@@ -446,6 +445,17 @@ open class ObjectSetFragment :
                 )
             }
         }
+
+        binding.syncStatusWidget.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                SpaceSyncStatusScreen(
+                    uiState = vm.syncStatusWidget.collectAsStateWithLifecycle().value,
+                    onDismiss = vm::onSyncWidgetDismiss,
+                    scope = lifecycleScope
+                )
+            }
+        }
     }
 
     private fun setupWindowInsetAnimation() {
@@ -524,7 +534,6 @@ open class ObjectSetFragment :
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         vm.navigation.observe(viewLifecycleOwner, navObserver)
-        lifecycleScope.subscribe(vm.status) { setStatus(it) }
         lifecycleScope.subscribe(vm.isCustomizeViewPanelVisible) { isCustomizeViewPanelVisible ->
             if (isCustomizeViewPanelVisible) showBottomPanel() else hideBottomPanel()
         }
@@ -539,12 +548,10 @@ open class ObjectSetFragment :
         }
     }
 
-    private fun setStatus(status: SyncStatusView?) {
+    private fun setStatus(status: SpaceSyncAndP2PStatusState?) {
         binding.topToolbar.root.findViewById<StatusBadgeWidget>(R.id.statusBadge).bind(status)
-        val tvStatus = binding.topToolbar.root.findViewById<TextView>(R.id.tvStatus)
-        tvStatus.text = status?.getLabelText(requireContext())
         topToolbarStatusContainer.setOnClickListener {
-            toast(status.getToastMsg(requireContext()))
+            vm.onSyncStatusBadgeClicked()
         }
     }
 
@@ -1318,6 +1325,8 @@ open class ObjectSetFragment :
             }
         }
         jobs += lifecycleScope.subscribe(vm.toasts) { toast(it) }
+
+        jobs += lifecycleScope.subscribe(vm.spaceSyncStatus) { setStatus(it) }
 
         subscribe(vm.icon) { icon ->
             binding.bottomToolbar.bind(icon)

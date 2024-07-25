@@ -15,7 +15,6 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
-import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -25,11 +24,9 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
-import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
-import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -40,6 +37,7 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerDelegate
+import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.Dispatcher
 
@@ -54,7 +52,6 @@ class ObjectSetViewModelFactory(
     private val setDocCoverImage: SetDocCoverImage,
     private val updateText: UpdateText,
     private val interceptEvents: InterceptEvents,
-    private val interceptThreadStatus: InterceptThreadStatus,
     private val dispatcher: Dispatcher<Payload>,
     private val delegator: Delegator<Action>,
     private val coverImageHashProvider: CoverImageHashProvider,
@@ -63,7 +60,6 @@ class ObjectSetViewModelFactory(
     private val analytics: Analytics,
     private val createObject: CreateObject,
     private val dataViewSubscriptionContainer: DataViewSubscriptionContainer,
-    private val cancelSearchSubscription: CancelSearchSubscription,
     private val setQueryToObjectSet: SetQueryToObjectSet,
     private val database: ObjectSetDatabase,
     private val paginator: ObjectSetPaginator,
@@ -83,9 +79,9 @@ class ObjectSetViewModelFactory(
     private val spaceManager: SpaceManager,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val dispatchers: AppCoroutineDispatchers,
-    private val getNetworkMode: GetNetworkMode,
     private val dateProvider: DateProvider,
-    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -100,7 +96,6 @@ class ObjectSetViewModelFactory(
             downloadUnsplashImage = downloadUnsplashImage,
             updateText = updateText,
             interceptEvents = interceptEvents,
-            interceptThreadStatus = interceptThreadStatus,
             dispatcher = dispatcher,
             delegator = delegator,
             coverImageHashProvider = coverImageHashProvider,
@@ -109,7 +104,6 @@ class ObjectSetViewModelFactory(
             analytics = analytics,
             createObject = createObject,
             dataViewSubscriptionContainer = dataViewSubscriptionContainer,
-            cancelSearchSubscription = cancelSearchSubscription,
             setQueryToObjectSet = setQueryToObjectSet,
             database = database,
             paginator = paginator,
@@ -129,9 +123,9 @@ class ObjectSetViewModelFactory(
             createTemplate = createTemplate,
             dispatchers = dispatchers,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
-            getNetworkMode = getNetworkMode,
             dateProvider = dateProvider,
-            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
         ) as T
     }
 }

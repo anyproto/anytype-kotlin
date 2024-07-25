@@ -81,7 +81,6 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
             closeBlock = closeBlock,
             updateText = updateText,
             interceptEvents = interceptEvents,
-            interceptThreadStatus = interceptThreadStatus,
             createDataViewObject = CreateDataViewObject(
                 repo = repo,
                 spaceManager = spaceManager,
@@ -98,7 +97,6 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
             createObject = createObject,
             setObjectDetails = setObjectDetails,
             paginator = paginator,
-            cancelSearchSubscription = cancelSearchSubscription,
             database = database,
             dataViewSubscriptionContainer = dataViewSubscriptionContainer,
             storeOfRelations = storeOfRelations,
@@ -118,14 +116,14 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
             getObjectTypes = getObjectTypes,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             dispatchers = dispatchers,
-            getNetworkMode = getNetworkMode,
             dateProvider = dateProvider,
             vmParams = ObjectSetViewModel.Params(
                 ctx = root,
                 space = SpaceId(defaultSpace)
             ),
             permissions = permissions,
-            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider
         )
         stubNetworkMode()
         stubObservePermissions()

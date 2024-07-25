@@ -101,7 +101,7 @@ class VersionHistoryViewModel(
         val versionsByDay = versions.groupBy { version ->
             val formattedDate = dateProvider.formatToDateString(
                 timestamp = (version.timestamp.inMillis),
-                pattern = GROUP_BY_DAY_PATTERN,
+                pattern = GROUP_BY_DAY_FORMAT,
                 locale = locale
             )
             formattedDate
@@ -189,7 +189,7 @@ class VersionHistoryViewModel(
     )
 
     companion object {
-        const val GROUP_BY_DAY_PATTERN = "d MM yyyy"
+        const val GROUP_BY_DAY_FORMAT = "d MM yyyy"
     }
 }
 

@@ -919,21 +919,22 @@
     <string name="slash_widget_lime_color_title">Verde</string>
     <string name="slash_widget_background_item">%1$s background</string>
     <!--endregion-->
-    <!--region LIBRARY -->
+    <!--region WIDGETS -->
     <string name="create_widget">Create a widget</string>
     <string name="edit_widgets">Edit widgets</string>
+    <string name="add_widget">Add widget</string>
     <string name="widget_source">Fonte del widget</string>
     <string name="widget_type">Tipo di widget</string>
     <string name="widget_add_below">Aggiungi sotto</string>
     <string name="widget_type_tree">Albero</string>
-    <string name="widget_type_tree_description">Hierarchical structure of object</string>
+    <string name="widget_type_tree_description">Widget con una struttura gerarchica</string>
     <string name="widget_type_link">Collegamento</string>
-    <string name="widget_type_link_description">Compact version of the object</string>
-    <string name="widget_type_list_description">Widget con vista elenco dell\'oggetto impostato</string>
-    <string name="widget_type_compact_list_description">Widget con vista elenco dell\'oggetto impostato</string>
+    <string name="widget_type_link_description">Vista widget compatta</string>
+    <string name="widget_type_list_description">Widget con una vista a elenco</string>
+    <string name="widget_type_compact_list_description">Widget con una vista a elenco compatta</string>
     <string name="widget_type_list">Lista</string>
     <string name="widget_type_view">Vista</string>
-    <string name="widget_type_view_description">Vista widget di Insieme o Collezione</string>
+    <string name="widget_type_view_description">Widget con layout Insieme o Collezione</string>
     <string name="widget_type_compact_list">Compact list</string>
     <string name="widget_change_source">Cambia fonte</string>
     <string name="widget_change_type">Change Type</string>

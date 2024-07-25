@@ -919,21 +919,22 @@
     <string name="slash_widget_lime_color_title">Groen</string>
     <string name="slash_widget_background_item">%1$s achtergrond</string>
     <!--endregion-->
-    <!--region LIBRARY -->
+    <!--region WIDGETS -->
     <string name="create_widget">Maak een widget aan</string>
     <string name="edit_widgets">Bewerk widgets</string>
+    <string name="add_widget">Add widget</string>
     <string name="widget_source">Widget bron</string>
     <string name="widget_type">Widget type</string>
     <string name="widget_add_below">Voeg onder toe</string>
     <string name="widget_type_tree">Boomstructuur</string>
-    <string name="widget_type_tree_description">Hiërarchische structuur van object</string>
+    <string name="widget_type_tree_description">Widget with a hierarchical structure</string>
     <string name="widget_type_link">Link</string>
-    <string name="widget_type_link_description">Compacte versie van het object</string>
-    <string name="widget_type_list_description">Widget met lijstweergave van geselecteerde object</string>
-    <string name="widget_type_compact_list_description">Widget met lijstweergave van geselecteerde object</string>
+    <string name="widget_type_link_description">Compact widget view</string>
+    <string name="widget_type_list_description">Widget with a list view</string>
+    <string name="widget_type_compact_list_description">Widget with a compact list view</string>
     <string name="widget_type_list">Lijst</string>
     <string name="widget_type_view">Weergave</string>
-    <string name="widget_type_view_description">Widget view of Set or Collection</string>
+    <string name="widget_type_view_description">Widget with a Set or Collection layout</string>
     <string name="widget_type_compact_list">Compacte lijst</string>
     <string name="widget_change_source">Wijzig bron</string>
     <string name="widget_change_type">Wijzig type</string>

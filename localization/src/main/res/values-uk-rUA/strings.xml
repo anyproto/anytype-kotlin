@@ -923,21 +923,22 @@
     <string name="slash_widget_lime_color_title">Зелений</string>
     <string name="slash_widget_background_item">%1$s background</string>
     <!--endregion-->
-    <!--region LIBRARY -->
+    <!--region WIDGETS -->
     <string name="create_widget">Create a widget</string>
     <string name="edit_widgets">Edit widgets</string>
+    <string name="add_widget">Add widget</string>
     <string name="widget_source">Джерело віджета</string>
     <string name="widget_type">Тип віджета</string>
     <string name="widget_add_below">Додати знизу</string>
     <string name="widget_type_tree">Дерево</string>
-    <string name="widget_type_tree_description">Hierarchical structure of object</string>
+    <string name="widget_type_tree_description">Widget with a hierarchical structure</string>
     <string name="widget_type_link">Посилання</string>
-    <string name="widget_type_link_description">Compact version of the object</string>
-    <string name="widget_type_list_description">Віджет зі списком об’єктів набору</string>
-    <string name="widget_type_compact_list_description">Віджет зі списком об’єктів набору</string>
+    <string name="widget_type_link_description">Compact widget view</string>
+    <string name="widget_type_list_description">Widget with a list view</string>
+    <string name="widget_type_compact_list_description">Widget with a compact list view</string>
     <string name="widget_type_list">Список</string>
     <string name="widget_type_view">Подання</string>
-    <string name="widget_type_view_description">Widget view of Set or Collection</string>
+    <string name="widget_type_view_description">Widget with a Set or Collection layout</string>
     <string name="widget_type_compact_list">Compact list</string>
     <string name="widget_change_source">Змінити джерело</string>
     <string name="widget_change_type">Change Type</string>

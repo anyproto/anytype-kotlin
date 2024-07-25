@@ -186,31 +186,31 @@ class VersionHistoryViewModelTest {
             val locale = localeProvider.locale()
 
             val (date0, time0) = dateProvider.formatTimestampToDateAndTime(
-                timestamp = versions[0].timestamp.time * 1000,
+                timestamp = versions[0].timestamp.inMillis,
                 locale = locale
             )
             val (date1, time1) = dateProvider.formatTimestampToDateAndTime(
-                timestamp = versions[1].timestamp.time * 1000,
+                timestamp = versions[1].timestamp.inMillis,
                 locale = locale
             )
             val (date2, time2) = dateProvider.formatTimestampToDateAndTime(
-                timestamp = versions[2].timestamp.time * 1000,
+                timestamp = versions[2].timestamp.inMillis,
                 locale = locale
             )
             val (date3, time3) = dateProvider.formatTimestampToDateAndTime(
-                timestamp = versions[3].timestamp.time * 1000,
+                timestamp = versions[3].timestamp.inMillis,
                 locale = locale
             )
             val (date4, time4) = dateProvider.formatTimestampToDateAndTime(
-                timestamp = versions[4].timestamp.time * 1000,
+                timestamp = versions[4].timestamp.inMillis,
                 locale = locale
             )
             val (date5, time5) = dateProvider.formatTimestampToDateAndTime(
-                timestamp = versions[5].timestamp.time * 1000,
+                timestamp = versions[5].timestamp.inMillis,
                 locale = locale
             )
             val (date6, time6) = dateProvider.formatTimestampToDateAndTime(
-                timestamp = versions[6].timestamp.time * 1000,
+                timestamp = versions[6].timestamp.inMillis,
                 locale = locale
             )
 

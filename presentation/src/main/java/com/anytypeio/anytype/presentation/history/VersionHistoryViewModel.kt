@@ -100,7 +100,7 @@ class VersionHistoryViewModel(
         // Group by day
         val versionsByDay = versions.groupBy { version ->
             val formattedDate = dateProvider.formatToDateString(
-                timestamp = (version.timestamp.time * 1000),
+                timestamp = (version.timestamp.inMillis),
                 pattern = GROUP_BY_DAY_PATTERN,
                 locale = locale
             )
@@ -144,12 +144,12 @@ class VersionHistoryViewModel(
             val spaceMemberLatestVersion =
                 spaceMemberVersions.firstOrNull()?.firstOrNull() ?: return@mapNotNull null
             val (latestVersionDate, latestVersionTime) = dateProvider.formatTimestampToDateAndTime(
-                timestamp = spaceMemberLatestVersion.timestamp.time * 1000,
+                timestamp = spaceMemberLatestVersion.timestamp.inMillis,
                 locale = locale
             )
             val groupItems = spaceMemberVersions.toGroupItems(
                 spaceMembers = spaceMembers,
-                time = latestVersionTime
+                latestVersionTime = latestVersionTime
             )
             VersionHistoryGroup(
                 id = spaceMemberLatestVersion.id,
@@ -163,19 +163,21 @@ class VersionHistoryViewModel(
 
     private fun List<List<Version>>.toGroupItems(
         spaceMembers: List<ObjectWrapper.Basic>,
-        time: String
+        latestVersionTime: String
     ): List<VersionHistoryGroup.Item> {
-        return this.mapNotNull { versions ->
-            val membersObject =
-                spaceMembers.find { it.id == versions.first().spaceMember }
-                    ?: return@mapNotNull null
+        return mapNotNull { versions ->
+            val latestVersion = versions.firstOrNull() ?: return@mapNotNull null
+            val spaceMemberId = latestVersion.spaceMember
+            val spaceMember = spaceMembers.find { it.id == spaceMemberId }
+                ?: return@mapNotNull null
+
             VersionHistoryGroup.Item(
-                id = versions.first().id,
-                spaceMember = versions.first().spaceMember,
-                spaceMemberName = membersObject.name.orEmpty(),
-                timeStamp = versions.first().timestamp,
+                id = latestVersion.id,
+                spaceMember = spaceMemberId,
+                spaceMemberName = spaceMember.name.orEmpty(),
+                timeStamp = latestVersion.timestamp,
                 icon = null,
-                timeFormatted = time,
+                timeFormatted = latestVersionTime,
                 versions = versions
             )
         }

@@ -22,6 +22,8 @@ value class RelationId(val id: String)
 value class RelationKey(val key: String)
 
 @JvmInline
-value class TimeInSeconds(val time: Long)
+value class TimeInSeconds(val time: Long) {
+    val inMillis get() = time * 1000
+}
 
 typealias Space = SpaceId

@@ -60,13 +60,16 @@ sealed class SpaceInviteError : Exception() {
     class InvalidInvite : SpaceInviteError()
 }
 
-data class SpaceSyncUpdate(
-    val id: String,
-    val status: SpaceSyncStatus,
-    val network: SpaceSyncNetwork,
-    val error: SpaceSyncError?,
-    val syncingObjectsCounter: Long
-)
+sealed class SpaceSyncUpdate {
+    data object Initial : SpaceSyncUpdate()
+    data class Update(
+        val id: String,
+        val status: SpaceSyncStatus,
+        val network: SpaceSyncNetwork,
+        val error: SpaceSyncError,
+        val syncingObjectsCounter: Long
+    ) : SpaceSyncUpdate()
+}
 
 enum class SpaceSyncStatus {
     SYNCED,
@@ -88,11 +91,14 @@ enum class SpaceSyncError {
     NETWORK_ERROR
 }
 
-data class P2PStatusUpdate(
-    val spaceId: String,
-    val status: P2PStatus,
-    val devicesCounter: Long
-)
+sealed class P2PStatusUpdate {
+    data object Initial : P2PStatusUpdate()
+    data class Update(
+        val spaceId: String,
+        val status: P2PStatus,
+        val devicesCounter: Long
+    ) : P2PStatusUpdate()
+}
 
 enum class P2PStatus {
     NOT_CONNECTED,

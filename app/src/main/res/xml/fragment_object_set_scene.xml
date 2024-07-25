@@ -97,6 +97,12 @@
                 app:applyMotionScene="false"
                 app:visibilityMode="ignore"/>
         </Constraint>
+        <Constraint
+            android:id="@id/syncStatusWidget">
+            <PropertySet
+                app:applyMotionScene="false"
+                app:visibilityMode="ignore"/>
+        </Constraint>
     </ConstraintSet>
 
     <ConstraintSet android:id="@+id/end">
@@ -181,6 +187,12 @@
 
         <Constraint
             android:id="@id/templatesWidget">
+            <PropertySet
+                app:applyMotionScene="false"
+                app:visibilityMode="ignore"/>
+        </Constraint>
+        <Constraint
+            android:id="@id/syncStatusWidget">
             <PropertySet
                 app:applyMotionScene="false"
                 app:visibilityMode="ignore"/>

@@ -36,8 +36,8 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
-import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
@@ -60,13 +60,13 @@ import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
-import com.anytypeio.anytype.domain.status.InterceptThreadStatus
-import com.anytypeio.anytype.domain.status.ThreadStatusChannel
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
+import com.anytypeio.anytype.domain.workspace.P2PStatusChannel
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.domain.workspace.SpaceSyncStatusChannel
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -94,6 +94,7 @@ import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
 import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
 import com.anytypeio.anytype.presentation.sets.viewer.DefaultViewerDelegate
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerDelegate
+import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory
@@ -212,7 +213,6 @@ object ObjectSetModule {
         setObjectDetails: UpdateDetail,
         updateText: UpdateText,
         interceptEvents: InterceptEvents,
-        interceptThreadStatus: InterceptThreadStatus,
         createDataViewObject: CreateDataViewObject,
         createObject: CreateObject,
         dispatcher: Dispatcher<Payload>,
@@ -224,7 +224,6 @@ object ObjectSetModule {
         downloadUnsplashImage: DownloadUnsplashImage,
         setDocCoverImage: SetDocCoverImage,
         dataViewSubscriptionContainer: DataViewSubscriptionContainer,
-        cancelSearchSubscription: CancelSearchSubscription,
         setQueryToObjectSet: SetQueryToObjectSet,
         database: ObjectSetDatabase,
         paginator: ObjectSetPaginator,
@@ -244,10 +243,10 @@ object ObjectSetModule {
         spaceManager: SpaceManager,
         storelessSubscriptionContainer: StorelessSubscriptionContainer,
         dispatchers: AppCoroutineDispatchers,
-        getNetworkMode: GetNetworkMode,
         dateProvider: DateProvider,
         permissions: UserPermissionProvider,
-        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         params = params,
         openObjectSet = openObjectSet,
@@ -256,7 +255,6 @@ object ObjectSetModule {
         createDataViewObject = createDataViewObject,
         updateText = updateText,
         interceptEvents = interceptEvents,
-        interceptThreadStatus = interceptThreadStatus,
         dispatcher = dispatcher,
         delegator = delegator,
         coverImageHashProvider = coverImageHashProvider,
@@ -267,7 +265,6 @@ object ObjectSetModule {
         setDocCoverImage = setDocCoverImage,
         createObject = createObject,
         dataViewSubscriptionContainer = dataViewSubscriptionContainer,
-        cancelSearchSubscription = cancelSearchSubscription,
         setQueryToObjectSet = setQueryToObjectSet,
         database = database,
         paginator = paginator,
@@ -287,10 +284,10 @@ object ObjectSetModule {
         createTemplate = createTemplate,
         storelessSubscriptionContainer = storelessSubscriptionContainer,
         dispatchers = dispatchers,
-        getNetworkMode = getNetworkMode,
         dateProvider = dateProvider,
         permissions = permissions,
-        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+        spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider
     )
 
     @JvmStatic
@@ -370,15 +367,6 @@ object ObjectSetModule {
     ): InterceptEvents = InterceptEvents(
         channel = channel,
         context = Dispatchers.IO
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideInterceptThreadStatus(
-        channel: ThreadStatusChannel
-    ): InterceptThreadStatus = InterceptThreadStatus(
-        channel = channel
     )
 
     @JvmStatic
@@ -722,6 +710,18 @@ object ObjectSetModule {
         setDataViewViewerPosition = setDataViewViewerPosition,
         analytics = analytics,
         dispatcher = dispatcher
+    )
+
+    @Provides
+    @PerScreen
+    fun provideSpaceSyncStatusProvider(
+        activeSpace: ActiveSpaceMemberSubscriptionContainer,
+        syncChannel: SpaceSyncStatusChannel,
+        p2PStatusChannel: P2PStatusChannel
+    ): SpaceSyncAndP2PStatusProvider = SpaceSyncAndP2PStatusProvider.Impl(
+        activeSpace = activeSpace,
+        spaceSyncStatusChannel = syncChannel,
+        p2PStatusChannel = p2PStatusChannel
     )
 }
 

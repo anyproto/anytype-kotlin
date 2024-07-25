@@ -5,5 +5,5 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncUpdate
 import kotlinx.coroutines.flow.Flow
 
 interface SpaceSyncStatusChannel {
-    fun observe(activeSpaceId: Id): Flow<List<SpaceSyncUpdate>>
+    fun observe(activeSpaceId: Id): Flow<SpaceSyncUpdate>
 }

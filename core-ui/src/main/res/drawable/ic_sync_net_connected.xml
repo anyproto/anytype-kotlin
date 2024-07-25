@@ -1,0 +1,19 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+  <path
+      android:pathData="M24,0L24,0A24,24 0,0 1,48 24L48,24A24,24 0,0 1,24 48L24,48A24,24 0,0 1,0 24L0,24A24,24 0,0 1,24 0z"
+      android:fillColor="@color/palette_light_lime"/>
+  <path
+      android:pathData="M20.5,16L20.5,16A0.5,0.5 0,0 1,21 16.5L21,19.5A0.5,0.5 0,0 1,20.5 20L20.5,20A0.5,0.5 0,0 1,20 19.5L20,16.5A0.5,0.5 0,0 1,20.5 16z"
+      android:fillColor="@color/palette_dark_lime"/>
+  <path
+      android:pathData="M27.5,16L27.5,16A0.5,0.5 0,0 1,28 16.5L28,19.5A0.5,0.5 0,0 1,27.5 20L27.5,20A0.5,0.5 0,0 1,27 19.5L27,16.5A0.5,0.5 0,0 1,27.5 16z"
+      android:fillColor="@color/palette_dark_lime"/>
+  <path
+      android:pathData="M16.667,25C17.035,25 17.329,25.3 17.376,25.665C17.753,28.574 20.575,30.833 24,30.833C27.425,30.833 30.247,28.574 30.624,25.665C30.671,25.3 30.965,25 31.333,25C31.701,25 32.004,25.3 31.964,25.666C31.581,29.219 28.162,32 24,32C19.838,32 16.419,29.219 16.036,25.666C15.996,25.3 16.299,25 16.667,25Z"
+      android:fillColor="@color/palette_dark_lime"
+      android:fillType="evenOdd"/>
+</vector>

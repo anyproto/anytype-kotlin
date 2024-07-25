@@ -54,8 +54,8 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
-import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
@@ -79,8 +79,6 @@ import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.SetRelationKey
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
-import com.anytypeio.anytype.domain.status.InterceptThreadStatus
-import com.anytypeio.anytype.domain.status.ThreadStatusChannel
 import com.anytypeio.anytype.domain.table.CreateTable
 import com.anytypeio.anytype.domain.table.CreateTableColumn
 import com.anytypeio.anytype.domain.table.CreateTableRow
@@ -99,7 +97,9 @@ import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
+import com.anytypeio.anytype.domain.workspace.P2PStatusChannel
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.domain.workspace.SpaceSyncStatusChannel
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -124,6 +124,7 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProv
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.INTRINSIC_PROVIDER_TYPE
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.providers.RelationListProvider
+import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory
@@ -251,7 +252,6 @@ object EditorSessionModule {
         openPage: OpenPage,
         closePage: CloseBlock,
         interceptEvents: InterceptEvents,
-        interceptThreadStatus: InterceptThreadStatus,
         updateLinkMarks: UpdateLinkMarks,
         removeLinkMark: RemoveLinkMark,
         createObjectSet: CreateObjectSet,
@@ -288,8 +288,8 @@ object EditorSessionModule {
         templatesContainer: ObjectTypeTemplatesContainer,
         storelessSubscriptionContainer: StorelessSubscriptionContainer,
         dispatchers: AppCoroutineDispatchers,
-        getNetworkMode: GetNetworkMode,
-        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        syncStatusProvider: SpaceSyncAndP2PStatusProvider
     ): EditorViewModelFactory = EditorViewModelFactory(
         params = params,
         permissions = permissions,
@@ -298,7 +298,6 @@ object EditorSessionModule {
         createBlockLinkWithObject = createBlockLinkWithObject,
         createObjectAsMentionOrLink = createObjectAsMentionOrLink,
         interceptEvents = interceptEvents,
-        interceptThreadStatus = interceptThreadStatus,
         updateLinkMarks = updateLinkMarks,
         removeLinkMark = removeLinkMark,
         documentEventReducer = documentExternalEventReducer,
@@ -333,8 +332,8 @@ object EditorSessionModule {
         templatesContainer = templatesContainer,
         dispatchers = dispatchers,
         storelessSubscriptionContainer = storelessSubscriptionContainer,
-        getNetworkMode = getNetworkMode,
-        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+        syncStatusProvider = syncStatusProvider
     )
 
     @JvmStatic
@@ -557,16 +556,6 @@ object EditorUseCaseModule {
     fun provideInterceptEventsUseCase(
         channel: EventChannel
     ): InterceptEvents = InterceptEvents(
-        channel = channel,
-        context = Dispatchers.IO
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun providesInterceptThreadStatusUseCase(
-        channel: ThreadStatusChannel
-    ): InterceptThreadStatus = InterceptThreadStatus(
         channel = channel,
         context = Dispatchers.IO
     )
@@ -1205,6 +1194,18 @@ object EditorUseCaseModule {
         getDefaultObjectType = getDefaultObjectType,
         dispatchers = dispatchers,
         spaceManager = spaceManager
+    )
+
+    @Provides
+    @PerScreen
+    fun provideSpaceSyncStatusProvider(
+        activeSpace: ActiveSpaceMemberSubscriptionContainer,
+        syncChannel: SpaceSyncStatusChannel,
+        p2PStatusChannel: P2PStatusChannel
+    ): SpaceSyncAndP2PStatusProvider = SpaceSyncAndP2PStatusProvider.Impl(
+        activeSpace = activeSpace,
+        spaceSyncStatusChannel = syncChannel,
+        p2PStatusChannel = p2PStatusChannel
     )
 
     @Module

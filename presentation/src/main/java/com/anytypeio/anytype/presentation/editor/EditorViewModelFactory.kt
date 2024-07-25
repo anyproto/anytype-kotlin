@@ -20,7 +20,6 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
-import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -34,7 +33,6 @@ import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
-import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
@@ -46,6 +44,7 @@ import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
 import com.anytypeio.anytype.presentation.editor.editor.table.EditorTableDelegate
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
+import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -60,7 +59,6 @@ open class EditorViewModelFactory @Inject constructor(
     private val createBlockLinkWithObject: CreateBlockLinkWithObject,
     private val createObjectAsMentionOrLink: CreateObjectAsMentionOrLink,
     private val interceptEvents: InterceptEvents,
-    private val interceptThreadStatus: InterceptThreadStatus,
     private val updateLinkMarks: UpdateLinkMarks,
     private val removeLinkMark: RemoveLinkMark,
     private val documentEventReducer: StateReducer<List<Block>, Event>,
@@ -94,8 +92,8 @@ open class EditorViewModelFactory @Inject constructor(
     private val templatesContainer: ObjectTypeTemplatesContainer,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val dispatchers: AppCoroutineDispatchers,
-    private val getNetworkMode: GetNetworkMode,
-    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val syncStatusProvider: SpaceSyncAndP2PStatusProvider
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -108,7 +106,6 @@ open class EditorViewModelFactory @Inject constructor(
             createBlockLinkWithObject = createBlockLinkWithObject,
             createObjectAsMentionOrLink = createObjectAsMentionOrLink,
             interceptEvents = interceptEvents,
-            interceptThreadStatus = interceptThreadStatus,
             updateLinkMarks = updateLinkMarks,
             removeLinkMark = removeLinkMark,
             reducer = documentEventReducer,
@@ -143,8 +140,8 @@ open class EditorViewModelFactory @Inject constructor(
             templatesContainer = templatesContainer,
             dispatchers = dispatchers,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
-            getNetworkMode = getNetworkMode,
-            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            spaceSyncAndP2PStatusProvider = syncStatusProvider
         ) as T
     }
 }

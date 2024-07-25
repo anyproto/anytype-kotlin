@@ -9,12 +9,9 @@ import com.anytypeio.anytype.data.auth.event.FileLimitsDataChannel
 import com.anytypeio.anytype.data.auth.event.FileLimitsRemoteChannel
 import com.anytypeio.anytype.data.auth.event.SubscriptionDataChannel
 import com.anytypeio.anytype.data.auth.event.SubscriptionEventRemoteChannel
-import com.anytypeio.anytype.data.auth.status.ThreadStatusDataChannel
-import com.anytypeio.anytype.data.auth.status.ThreadStatusRemoteChannel
 import com.anytypeio.anytype.domain.account.AccountStatusChannel
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
-import com.anytypeio.anytype.domain.status.ThreadStatusChannel
 import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.interactor.AccountStatusMiddlewareChannel
@@ -22,7 +19,6 @@ import com.anytypeio.anytype.middleware.interactor.EventHandler
 import com.anytypeio.anytype.middleware.interactor.FileLimitsMiddlewareChannel
 import com.anytypeio.anytype.middleware.interactor.MiddlewareEventChannel
 import com.anytypeio.anytype.middleware.interactor.MiddlewareSubscriptionEventChannel
-import com.anytypeio.anytype.middleware.interactor.ThreadStatusMiddlewareChannel
 import com.anytypeio.anytype.presentation.common.PayloadDelegator
 import dagger.Binds
 import dagger.Module
@@ -53,27 +49,6 @@ object EventModule {
         proxy: EventProxy,
         featureToggles: FeatureToggles
     ): EventRemoteChannel = MiddlewareEventChannel(events = proxy, featureToggles = featureToggles)
-
-    @JvmStatic
-    @Provides
-    @Singleton
-    fun provideThreadStatusChannel(
-        channel: ThreadStatusDataChannel
-    ): ThreadStatusChannel = channel
-
-    @JvmStatic
-    @Provides
-    @Singleton
-    fun provideThreadStatusDataChannel(
-        remote: ThreadStatusRemoteChannel
-    ): ThreadStatusDataChannel = ThreadStatusDataChannel(remote)
-
-    @JvmStatic
-    @Provides
-    @Singleton
-    fun provideThreadStatusRemoteChannel(
-        proxy: EventProxy
-    ): ThreadStatusRemoteChannel = ThreadStatusMiddlewareChannel(events = proxy)
 
     @JvmStatic
     @Provides

@@ -281,9 +281,11 @@ class RelationListViewModel(
                         failure = { Timber.e(it, "Error while removing from featured relations") },
                         success = {
                             dispatcher.send(it)
-                            sendEvent(
-                                analytics = analytics,
-                                eventName = objectRelationUnfeature
+                            analytics.sendAnalyticsRelationEvent(
+                                eventName = objectRelationUnfeature,
+                                storeOfRelations = storeOfRelations,
+                                relationKey = relationKey,
+                                spaceParams = provideParams(spaceManager.get())
                             )
                         }
                     )
@@ -299,9 +301,11 @@ class RelationListViewModel(
                         failure = { Timber.e(it, "Error while adding to featured relations") },
                         success = {
                             dispatcher.send(it)
-                            sendEvent(
-                                analytics = analytics,
-                                eventName = objectRelationFeature
+                            analytics.sendAnalyticsRelationEvent(
+                                eventName = objectRelationFeature,
+                                storeOfRelations = storeOfRelations,
+                                relationKey = relationKey,
+                                spaceParams = provideParams(spaceManager.get())
                             )
                         }
                     )

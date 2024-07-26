@@ -54,7 +54,6 @@ class RelationAddToDataViewViewModel(
         ctx: Id,
         viewerId: Id,
         relation: Key,
-        format: RelationFormat,
         dv: Id,
         screenType: String
     ) {

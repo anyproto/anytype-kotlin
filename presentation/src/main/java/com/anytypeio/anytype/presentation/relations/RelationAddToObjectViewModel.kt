@@ -48,7 +48,6 @@ class RelationAddToObjectViewModel(
     fun onRelationSelected(
         ctx: Id,
         relation: Key,
-        format: RelationFormat,
         screenType: String
     ) {
         viewModelScope.launch {

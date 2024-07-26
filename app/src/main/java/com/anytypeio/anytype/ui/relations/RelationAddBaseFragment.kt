@@ -109,7 +109,6 @@ abstract class RelationAddBaseFragment :
                         onRelationSelected(
                             ctx = command.ctx,
                             relation = command.relation,
-                            format = command.format
                         )
                     }
                 }
@@ -128,7 +127,7 @@ abstract class RelationAddBaseFragment :
         BottomSheetBehavior.from(root.parent as View).state = BottomSheetBehavior.STATE_EXPANDED
     }
 
-    abstract fun onRelationSelected(ctx: Id, relation: Key, format: RelationFormat)
+    abstract fun onRelationSelected(ctx: Id, relation: Key)
     abstract fun onCreateFromScratchClicked()
 
     override fun inflateBinding(
@@ -154,11 +153,10 @@ class RelationAddToObjectFragment : RelationAddBaseFragment() {
     lateinit var factory: RelationAddToObjectViewModel.Factory
     override val vm: RelationAddToObjectViewModel by viewModels { factory }
 
-    override fun onRelationSelected(ctx: Id, relation: Key, format: RelationFormat) {
+    override fun onRelationSelected(ctx: Id, relation: Key) {
         vm.onRelationSelected(
             ctx = ctx,
             relation = relation,
-            format = format,
             screenType = EventsDictionary.Type.menu
         )
     }
@@ -222,12 +220,11 @@ class RelationAddToDataViewFragment : RelationAddBaseFragment() {
     lateinit var factory: RelationAddToDataViewViewModel.Factory
     override val vm: RelationAddToDataViewViewModel by viewModels { factory }
 
-    override fun onRelationSelected(ctx: Id, relation: Key, format: RelationFormat) {
+    override fun onRelationSelected(ctx: Id, relation: Key) {
         vm.onRelationSelected(
             ctx = ctx,
             viewerId = viewer,
             relation = relation,
-            format = format,
             dv = dv,
             screenType = EventsDictionary.Type.dataView
         )
@@ -294,11 +291,10 @@ class RelationAddToObjectBlockFragment : RelationAddBaseFragment(),
         super.onStart()
     }
 
-    override fun onRelationSelected(ctx: Id, relation: Key, format: RelationFormat) {
+    override fun onRelationSelected(ctx: Id, relation: Key) {
         vm.onRelationSelected(
             ctx = ctx,
             relation = relation,
-            format = format,
             screenType = EventsDictionary.Type.block
         )
     }

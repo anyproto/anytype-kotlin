@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.CreateRelationOption
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.relations.option.CreateOrEditOptionViewModel
 import com.anytypeio.anytype.presentation.relations.option.CreateOrEditOptionViewModelFactory
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
@@ -58,7 +59,8 @@ object CreateOrEditOptionObjectModule {
         spaceManager: SpaceManager,
         analytics: Analytics,
         createOption: CreateRelationOption,
-        storeOfRelations: StoreOfRelations
+        storeOfRelations: StoreOfRelations,
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ): CreateOrEditOptionViewModelFactory = CreateOrEditOptionViewModelFactory(
         params = params,
         values = values,
@@ -67,7 +69,8 @@ object CreateOrEditOptionObjectModule {
         dispatcher = dispatcher,
         spaceManager = spaceManager,
         analytics = analytics,
-        storeOfRelations = storeOfRelations
+        storeOfRelations = storeOfRelations,
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
     )
 }
 //endregion
@@ -110,7 +113,8 @@ object CreateOrEditOptionSetModule {
         spaceManager: SpaceManager,
         analytics: Analytics,
         createOption: CreateRelationOption,
-        storeOfRelations: StoreOfRelations
+        storeOfRelations: StoreOfRelations,
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ): CreateOrEditOptionViewModelFactory = CreateOrEditOptionViewModelFactory(
         params = params,
         values = values,
@@ -119,7 +123,8 @@ object CreateOrEditOptionSetModule {
         dispatcher = dispatcher,
         spaceManager = spaceManager,
         analytics = analytics,
-        storeOfRelations = storeOfRelations
+        storeOfRelations = storeOfRelations,
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
     )
 }
 //endregion
@@ -162,7 +167,8 @@ object CreateOrEditOptionDataViewModule {
         spaceManager: SpaceManager,
         analytics: Analytics,
         createOption: CreateRelationOption,
-        storeOfRelations: StoreOfRelations
+        storeOfRelations: StoreOfRelations,
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ): CreateOrEditOptionViewModelFactory = CreateOrEditOptionViewModelFactory(
         params = params,
         values = values,
@@ -171,7 +177,8 @@ object CreateOrEditOptionDataViewModule {
         dispatcher = dispatcher,
         spaceManager = spaceManager,
         analytics = analytics,
-        storeOfRelations = storeOfRelations
+        storeOfRelations = storeOfRelations,
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
     )
 }
 //endregion

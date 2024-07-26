@@ -28,7 +28,6 @@ import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
 import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.relations.model.RelationOperationError
@@ -462,7 +461,12 @@ class RelationListViewModel(
             ).process(
                 success = {
                     dispatcher.send(it)
-                    sendAnalyticsRelationValueEvent(analytics)
+                    analytics.sendAnalyticsRelationEvent(
+                        eventName = EventsDictionary.relationChangeValue,
+                        storeOfRelations = storeOfRelations,
+                        relationKey = view.key,
+                        spaceParams = provideParams(spaceManager.get())
+                    )
                 },
                 failure = { Timber.e(it, "Error while updating checkbox relation") }
             )
@@ -486,7 +490,8 @@ class RelationListViewModel(
     fun onRelationTextValueChanged(
         ctx: Id,
         value: Any?,
-        relationKey: Key
+        relationKey: Key,
+        isValueEmpty: Boolean
     ) {
         viewModelScope.launch {
             updateDetail(
@@ -498,7 +503,13 @@ class RelationListViewModel(
             ).process(
                 success = { payload ->
                     if (payload.events.isNotEmpty()) dispatcher.send(payload)
-                    sendAnalyticsRelationValueEvent(analytics)
+                    analytics.sendAnalyticsRelationEvent(
+                        eventName = if (isValueEmpty) EventsDictionary.relationDeleteValue
+                        else EventsDictionary.relationChangeValue,
+                        storeOfRelations = storeOfRelations,
+                        relationKey = relationKey,
+                        spaceParams = provideParams(spaceManager.get())
+                    )
                 },
                 failure = { Timber.e(it, "Error while updating relation values") }
             )

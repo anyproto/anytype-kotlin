@@ -2043,7 +2043,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         vm.onRelationTextValueChanged(
             ctx = ctx,
             value = text,
-            relationKey = relationKey
+            relationKey = relationKey,
+            isValueEmpty = text.isEmpty()
         )
     }
 
@@ -2051,7 +2052,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         vm.onRelationTextValueChanged(
             ctx = ctx,
             value = number,
-            relationKey = relationKey
+            relationKey = relationKey,
+            isValueEmpty = number == null
         )
     }
 
@@ -2064,7 +2066,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         vm.onRelationTextValueChanged(
             ctx = ctx,
             relationKey = relationKey,
-            value = timeInSeconds
+            value = timeInSeconds,
+            isValueEmpty = timeInSeconds == null
         )
     }
 

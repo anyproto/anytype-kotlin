@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.relations.option
 
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -17,8 +18,9 @@ import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.CreateRelationOption
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -34,8 +36,9 @@ class CreateOrEditOptionViewModel(
     private val dispatcher: Dispatcher<Payload>,
     private val spaceManager: SpaceManager,
     private val analytics: Analytics,
-    private val storeOfRelations: StoreOfRelations
-) : BaseViewModel() {
+    private val storeOfRelations: StoreOfRelations,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val command = MutableSharedFlow<Command>(replay = 0)
     val viewState: MutableStateFlow<CreateOrEditOptionScreenViewState> =
@@ -120,7 +123,6 @@ class CreateOrEditOptionViewModel(
                 onFailure = { Timber.e(it, "Error while updating option") },
                 onSuccess = {
                     dispatcher.send(it)
-                    viewModelScope.sendAnalyticsRelationValueEvent(analytics)
                     command.emit(Command.Dismiss)
                 }
             )
@@ -145,7 +147,13 @@ class CreateOrEditOptionViewModel(
             onFailure = { Timber.e(it, "Error while adding tag to object") },
             onSuccess = {
                 dispatcher.send(it)
-                viewModelScope.sendAnalyticsRelationValueEvent(analytics)
+                analytics.sendAnalyticsRelationEvent(
+                    eventName = if (result.isEmpty()) EventsDictionary.relationDeleteValue
+                    else EventsDictionary.relationChangeValue,
+                    storeOfRelations = storeOfRelations,
+                    relationKey = relationKey,
+                    spaceParams = provideParams(spaceManager.get())
+                )
                 command.emit(Command.Dismiss)
             }
         )

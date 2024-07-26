@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.relations.DeleteRelationOptions
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
@@ -41,8 +42,9 @@ class TagOrStatusValueViewModel(
     private val analytics: Analytics,
     private val spaceManager: SpaceManager,
     private val subscription: StorelessSubscriptionContainer,
-    private val deleteRelationOptions: DeleteRelationOptions
-) : BaseViewModel() {
+    private val deleteRelationOptions: DeleteRelationOptions,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val viewState = MutableStateFlow<TagStatusViewState>(TagStatusViewState.Loading)
     private val query = MutableSharedFlow<String>(replay = 0)

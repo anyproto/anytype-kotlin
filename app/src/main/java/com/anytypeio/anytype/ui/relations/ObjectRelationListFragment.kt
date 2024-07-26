@@ -239,7 +239,8 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
         vm.onRelationTextValueChanged(
             ctx = ctx,
             relationKey = relationKey,
-            value = text
+            value = text,
+            isValueEmpty = text.isEmpty()
         )
     }
 
@@ -247,7 +248,8 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
         vm.onRelationTextValueChanged(
             ctx = ctx,
             relationKey = relationKey,
-            value = number
+            value = number,
+            isValueEmpty = number == null
         )
     }
 
@@ -260,7 +262,8 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
         vm.onRelationTextValueChanged(
             ctx = ctx,
             relationKey = relationKey,
-            value = timeInSeconds
+            value = timeInSeconds,
+            isValueEmpty = timeInSeconds == null
         )
     }
 

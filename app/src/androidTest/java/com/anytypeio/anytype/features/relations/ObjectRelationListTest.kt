@@ -28,6 +28,8 @@ import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
+import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
 import com.anytypeio.anytype.presentation.relations.ObjectRelationListViewModelFactory
@@ -87,6 +89,12 @@ class ObjectRelationListTest {
     @Mock
     lateinit var lockedStateProvider: LockedStateProvider
 
+    @Mock
+    lateinit var spaceManager: SpaceManager
+
+    @Mock
+    lateinit var analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+
     private lateinit var updateDetail: UpdateDetail
     private lateinit var addToFeaturedRelations: AddToFeaturedRelations
     private lateinit var removeFromFeaturedRelations: RemoveFromFeaturedRelations
@@ -116,7 +124,9 @@ class ObjectRelationListTest {
             deleteRelationFromObject = deleteRelationFromObject,
             analytics = analytics,
             storeOfRelations = storeOfRelations,
-            addRelationToObject = addRelationToObject
+            addRelationToObject = addRelationToObject,
+            spaceManager = spaceManager,
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
         )
     }
 

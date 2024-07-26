@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.CreateRelationOption
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import javax.inject.Inject
@@ -20,7 +21,8 @@ class CreateOrEditOptionViewModelFactory  @Inject constructor(
     private val dispatcher: Dispatcher<Payload>,
     private val spaceManager: SpaceManager,
     private val analytics: Analytics,
-    private val storeOfRelations: StoreOfRelations
+    private val storeOfRelations: StoreOfRelations,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -33,6 +35,7 @@ class CreateOrEditOptionViewModelFactory  @Inject constructor(
         dispatcher = dispatcher,
         spaceManager = spaceManager,
         analytics = analytics,
-        storeOfRelations = storeOfRelations
+        storeOfRelations = storeOfRelations,
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
     ) as T
 }

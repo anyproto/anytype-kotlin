@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_SPACE_ID
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.relations.GetRelations
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
@@ -226,8 +227,7 @@ abstract class RelationAddViewModelBase(
         command.emit(
             Command.DispatchSelectedRelation(
                 ctx = ctx,
-                relation = relation.key,
-                format = relation.format
+                relation = relation.key
             )
         )
     }
@@ -235,8 +235,7 @@ abstract class RelationAddViewModelBase(
     sealed class Command {
         data class DispatchSelectedRelation(
             val ctx: Id,
-            val relation: Key,
-            val format: RelationFormat
+            val relation: Key
         ) : Command()
     }
 

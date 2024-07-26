@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.relations.value.tagstatus
 
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -14,10 +15,12 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationOptions
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -41,8 +44,10 @@ class TagOrStatusValueViewModel(
     private val analytics: Analytics,
     private val spaceManager: SpaceManager,
     private val subscription: StorelessSubscriptionContainer,
-    private val deleteRelationOptions: DeleteRelationOptions
-) : BaseViewModel() {
+    private val deleteRelationOptions: DeleteRelationOptions,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val storeOfRelations: StoreOfRelations
+) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val viewState = MutableStateFlow<TagStatusViewState>(TagStatusViewState.Loading)
     private val query = MutableSharedFlow<String>(replay = 0)
@@ -317,7 +322,13 @@ class TagOrStatusValueViewModel(
                 failure = { Timber.e(it, "Error while adding tag") },
                 success = {
                     dispatcher.send(it)
-                    sendAnalyticsRelationValueEvent(analytics)
+                    analytics.sendAnalyticsRelationEvent(
+                        eventName = if (result.isEmpty()) EventsDictionary.relationDeleteValue
+                        else EventsDictionary.relationChangeValue,
+                        storeOfRelations = storeOfRelations,
+                        relationKey = viewModelParams.relationKey,
+                        spaceParams = provideParams(spaceManager.get())
+                    )
                 }
             )
         }
@@ -337,7 +348,13 @@ class TagOrStatusValueViewModel(
                 failure = { Timber.e(it, "Error while adding tag") },
                 success = {
                     dispatcher.send(it)
-                    sendAnalyticsRelationValueEvent(analytics)
+                    analytics.sendAnalyticsRelationEvent(
+                        eventName = if (remaining.isEmpty()) EventsDictionary.relationDeleteValue
+                        else EventsDictionary.relationChangeValue,
+                        storeOfRelations = storeOfRelations,
+                        relationKey = viewModelParams.relationKey,
+                        spaceParams = provideParams(spaceManager.get())
+                    )
                 })
         }
     }
@@ -354,7 +371,12 @@ class TagOrStatusValueViewModel(
                 failure = { Timber.e(it, "Error while adding tag") },
                 success = {
                     dispatcher.send(it)
-                    sendAnalyticsRelationValueEvent(analytics)
+                    analytics.sendAnalyticsRelationEvent(
+                        eventName = EventsDictionary.relationChangeValue,
+                        storeOfRelations = storeOfRelations,
+                        relationKey = viewModelParams.relationKey,
+                        spaceParams = provideParams(spaceManager.get())
+                    )
                     emitCommand(command = Command.Dismiss, delay = DELAY_UNTIL_CLOSE)
                 }
             )
@@ -373,7 +395,12 @@ class TagOrStatusValueViewModel(
                 failure = { Timber.e(it, "Error while clearing tags or select") },
                 success = {
                     dispatcher.send(it)
-                    sendAnalyticsRelationValueEvent(analytics)
+                    analytics.sendAnalyticsRelationEvent(
+                        eventName = EventsDictionary.relationDeleteValue,
+                        storeOfRelations = storeOfRelations,
+                        relationKey = viewModelParams.relationKey,
+                        spaceParams = provideParams(spaceManager.get())
+                    )
                 }
             )
         }

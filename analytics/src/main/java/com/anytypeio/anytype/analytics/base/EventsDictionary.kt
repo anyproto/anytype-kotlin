@@ -101,6 +101,7 @@ object EventsDictionary {
     const val relationAdd = "AddExistingRelation"
     const val relationCreate = "CreateRelation"
     const val relationChangeValue = "ChangeRelationValue"
+    const val relationDeleteValue = "DeleteRelationValue"
     const val relationDelete = "DeleteRelation"
     const val relationUrlOpen = "RelationUrlOpen"
     const val relationUrlCopy = "RelationUrlCopy"

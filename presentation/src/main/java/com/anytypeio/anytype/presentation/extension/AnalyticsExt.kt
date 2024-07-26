@@ -730,21 +730,6 @@ fun CoroutineScope.sendAnalyticsCreateRelationEvent(
     )
 }
 
-fun CoroutineScope.sendAnalyticsRelationValueEvent(
-    analytics: Analytics,
-    type: String = ""
-) {
-    sendEvent(
-        analytics = analytics,
-        eventName = EventsDictionary.relationChangeValue,
-        props = Props(
-            mapOf(
-                EventsPropertiesKey.type to type
-            )
-        )
-    )
-}
-
 suspend fun Analytics.sendAnalyticsRelationEvent(
     eventName: String,
     relationKey: Key,

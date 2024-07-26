@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationOptions
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -85,7 +86,8 @@ object TagOrStatusValueObjectModule {
         params: TagOrStatusValueViewModel.ViewModelParams,
         @Named(SUB_MY_OPTIONS) subscription: StorelessSubscriptionContainer,
         deleteRelationOptions: DeleteRelationOptions,
-        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        storeOfRelations: StoreOfRelations
     ): TagOrStatusValueViewModelFactory = TagOrStatusValueViewModelFactory(
         params = params,
         values = values,
@@ -96,7 +98,8 @@ object TagOrStatusValueObjectModule {
         spaceManager = spaceManager,
         subscription = subscription,
         deleteRelationOptions = deleteRelationOptions,
-        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+        storeOfRelations = storeOfRelations
     )
 }
 //endregion
@@ -161,7 +164,8 @@ object TagOrStatusValueSetModule {
         params: TagOrStatusValueViewModel.ViewModelParams,
         @Named(SUB_MY_OPTIONS) subscription: StorelessSubscriptionContainer,
         deleteRelationOptions: DeleteRelationOptions,
-        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        storeOfRelations: StoreOfRelations
     ): TagOrStatusValueViewModelFactory = TagOrStatusValueViewModelFactory(
         params = params,
         values = values,
@@ -172,7 +176,8 @@ object TagOrStatusValueSetModule {
         spaceManager = spaceManager,
         subscription = subscription,
         deleteRelationOptions = deleteRelationOptions,
-        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+        storeOfRelations = storeOfRelations
     )
 }
 //endregion
@@ -237,7 +242,8 @@ object TagOrStatusValueDataViewModule {
         params: TagOrStatusValueViewModel.ViewModelParams,
         @Named(SUB_MY_OPTIONS) subscription: StorelessSubscriptionContainer,
         deleteRelationOptions: DeleteRelationOptions,
-        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        storeOfRelations: StoreOfRelations
     ): TagOrStatusValueViewModelFactory = TagOrStatusValueViewModelFactory(
         params = params,
         values = values,
@@ -248,7 +254,8 @@ object TagOrStatusValueDataViewModule {
         spaceManager = spaceManager,
         subscription = subscription,
         deleteRelationOptions = deleteRelationOptions,
-        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+        storeOfRelations = storeOfRelations
     )
 }
 //endregion

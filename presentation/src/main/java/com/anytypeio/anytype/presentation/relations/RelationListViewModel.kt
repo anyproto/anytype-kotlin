@@ -254,6 +254,12 @@ class RelationListViewModel(
             failure = { Timber.e(it, "Error while adding relation to object") },
             success = {
                 dispatcher.send(it)
+                analytics.sendAnalyticsRelationEvent(
+                    eventName = EventsDictionary.relationAdd,
+                    storeOfRelations = storeOfRelations,
+                    relationKey = view.key,
+                    spaceParams = provideParams(spaceManager.get())
+                )
                 success.invoke()
             }
         )

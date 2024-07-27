@@ -6,6 +6,8 @@ import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
+import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.relations.ObjectSetSettingsViewModel
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -40,12 +42,16 @@ object ObjectSetSettingsModule {
         store: StoreOfRelations,
         analytics: Analytics,
         deleteRelationFromDataView: DeleteRelationFromDataView,
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        spaceManager: SpaceManager
     ): ObjectSetSettingsViewModel.Factory = ObjectSetSettingsViewModel.Factory(
         objectState = state,
         dispatcher = dispatcher,
         updateDataViewViewer = updateDataViewViewer,
         analytics = analytics,
         store = store,
-        deleteRelationFromDataView = deleteRelationFromDataView
+        deleteRelationFromDataView = deleteRelationFromDataView,
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+        spaceManager = spaceManager
     )
 }

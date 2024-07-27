@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Payload
@@ -16,8 +17,7 @@ import com.anytypeio.anytype.domain.relations.GetRelations
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
-import com.anytypeio.anytype.presentation.extension.getPropName
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddRelationEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -48,7 +48,6 @@ class RelationAddToObjectViewModel(
     fun onRelationSelected(
         ctx: Id,
         relation: Key,
-        format: RelationFormat,
         screenType: String
     ) {
         viewModelScope.launch {
@@ -61,10 +60,11 @@ class RelationAddToObjectViewModel(
                 success = {
                     dispatcher.send(it).also {
                         commands.emit(Command.OnRelationAdd(relation = relation))
-                        sendAnalyticsAddRelationEvent(
-                            analytics = analytics,
+                        analytics.sendAnalyticsRelationEvent(
+                            eventName = EventsDictionary.relationAdd,
+                            storeOfRelations = storeOfRelations,
+                            relationKey = relation,
                             type = screenType,
-                            format = format.getPropName(),
                             spaceParams = provideParams(spaceManager.get())
                         )
                         isDismissed.value = true

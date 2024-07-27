@@ -214,7 +214,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEve
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectShowEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectTypeSelectOrChangeEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOpenAsObject
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchWordsEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSelectTemplateEvent
@@ -247,6 +247,7 @@ import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.getNotIncludedRecommendedRelations
 import com.anytypeio.anytype.presentation.relations.getObjectRelations
+import com.anytypeio.anytype.presentation.relations.values
 import com.anytypeio.anytype.presentation.relations.views
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
@@ -3875,7 +3876,8 @@ class EditorViewModel(
                             proceedWithSetObjectDetails(
                                 ctx = content.target,
                                 key = Relations.DONE,
-                                value = !clicked.isChecked
+                                value = !clicked.isChecked,
+                                isValueEmpty = false
                             )
                         }
                     }
@@ -4120,17 +4122,6 @@ class EditorViewModel(
         } else {
             sendToast("Your object is locked. To change its type, simply unlock it.")
         }
-    }
-
-    private fun proceedWithTogglingBlockRelationCheckbox(
-        view: ObjectRelationView.Checkbox,
-        relation: Id
-    ) {
-        proceedWithSetObjectDetails(
-            ctx = context,
-            key = relation,
-            value = !view.isChecked
-        )
     }
 
     override fun onProceedWithFilePath(filePath: String?) {
@@ -4421,7 +4412,12 @@ class EditorViewModel(
         }
     }
 
-    private fun proceedWithSetObjectDetails(ctx: Id, key: String, value: Any?) {
+    private fun proceedWithSetObjectDetails(
+        ctx: Id,
+        key: String,
+        value: Any?,
+        isValueEmpty: Boolean
+    ) {
         viewModelScope.launch {
             updateDetail(
                 UpdateDetail.Params(
@@ -4432,8 +4428,12 @@ class EditorViewModel(
             ).process(
                 success = {
                     dispatcher.send(it)
-                    sendAnalyticsRelationValueEvent(
-                        analytics = analytics
+                    analytics.sendAnalyticsRelationEvent(
+                        eventName = if (isValueEmpty) EventsDictionary.relationDeleteValue
+                        else EventsDictionary.relationChangeValue,
+                        storeOfRelations = storeOfRelations,
+                        relationKey = key,
+                        spaceParams = provideParams(spaceManager.get())
                     )
                 },
                 failure = {
@@ -4500,13 +4500,15 @@ class EditorViewModel(
     fun onRelationTextValueChanged(
         ctx: Id,
         value: Any?,
-        relationKey: Key
+        relationKey: Key,
+        isValueEmpty: Boolean
     ) {
         Timber.d("onRelationTextValueChanged, ctx:[$ctx] value:[$value] relationId:[$relationKey]")
         proceedWithSetObjectDetails(
             ctx = ctx,
             key = relationKey,
-            value = value
+            value = value,
+            isValueEmpty = isValueEmpty
         )
     }
 
@@ -7195,6 +7197,12 @@ class EditorViewModel(
             failure = { Timber.e(it, "Error while adding relation to object") },
             success = {
                 dispatcher.send(it)
+                analytics.sendAnalyticsRelationEvent(
+                    eventName = EventsDictionary.relationAdd,
+                    storeOfRelations = storeOfRelations,
+                    relationKey = view.key,
+                    spaceParams = provideParams(spaceManager.get())
+                )
                 action.invoke()
             }
         )
@@ -7232,7 +7240,8 @@ class EditorViewModel(
                 proceedWithSetObjectDetails(
                     ctx = context,
                     key = relation.key,
-                    value = !relationView.isChecked
+                    value = !relationView.isChecked,
+                    isValueEmpty = false
                 )
             }
             RelationFormat.DATE -> {

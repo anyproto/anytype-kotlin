@@ -4,15 +4,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
+import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationDeleteEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
 import com.anytypeio.anytype.presentation.mapper.mapToSimpleRelationView
 import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.filterHiddenRelations
@@ -33,8 +37,10 @@ class ObjectSetSettingsViewModel(
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val storeOfRelations: StoreOfRelations,
     private val analytics: Analytics,
-    private val deleteRelationFromDataView: DeleteRelationFromDataView
-) : BaseListViewModel<ViewerRelationListView>() {
+    private val deleteRelationFromDataView: DeleteRelationFromDataView,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val spaceManager: SpaceManager
+) : BaseListViewModel<ViewerRelationListView>(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val screenState = MutableStateFlow(ScreenState.LIST)
 
@@ -80,10 +86,10 @@ class ObjectSetSettingsViewModel(
     }
 
     fun onDeleteClicked(ctx: Id, viewerId: Id, item: SimpleRelationView) {
-        proceedWithDeletingRelationFromViewer(ctx = ctx, viewerId = viewerId, relation = item.key)
+        proceedWithDeletingRelationFromViewer(ctx = ctx, viewerId = viewerId, relationKey = item.key)
     }
 
-    private fun proceedWithDeletingRelationFromViewer(ctx: Id, viewerId: Id, relation: Id) {
+    private fun proceedWithDeletingRelationFromViewer(ctx: Id, viewerId: Id, relationKey: Key) {
         val state = objectState.value.dataViewState() ?: return
         val viewer = state.viewerById(viewerId) ?: return
         viewModelScope.launch {
@@ -91,7 +97,7 @@ class ObjectSetSettingsViewModel(
                 ctx = ctx,
                 dv = state.dataViewBlock.id,
                 view = viewer.id,
-                keys = listOf(relation)
+                keys = listOf(relationKey)
             )
             updateDataViewViewer.async(params).fold(
                 onFailure = { e -> Timber.e(e, "Error while deleting relation from dv") },
@@ -99,11 +105,16 @@ class ObjectSetSettingsViewModel(
                     dispatcher.send(payload)
                     proceedWithUpdatingCurrentViewAfterRelationDeletion(
                         ctx = ctx,
-                        relation = relation,
+                        relation = relationKey,
                         viewerId = viewerId
                     )
-                    proceedWithDeletingRelationFromDataView(ctx = ctx, relation = relation)
-                    sendAnalyticsRelationDeleteEvent(analytics)
+                    proceedWithDeletingRelationFromDataView(ctx = ctx, relation = relationKey)
+                    analytics.sendAnalyticsRelationEvent(
+                        eventName = EventsDictionary.relationDelete,
+                        storeOfRelations = storeOfRelations,
+                        relationKey = relationKey,
+                        spaceParams = provideParams(spaceManager.get())
+                    )
                 }
             )
         }
@@ -215,7 +226,9 @@ class ObjectSetSettingsViewModel(
         private val updateDataViewViewer: UpdateDataViewViewer,
         private val store: StoreOfRelations,
         private val analytics: Analytics,
-        private val deleteRelationFromDataView: DeleteRelationFromDataView
+        private val deleteRelationFromDataView: DeleteRelationFromDataView,
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -225,7 +238,9 @@ class ObjectSetSettingsViewModel(
                 updateDataViewViewer = updateDataViewViewer,
                 storeOfRelations = store,
                 analytics = analytics,
-                deleteRelationFromDataView = deleteRelationFromDataView
+                deleteRelationFromDataView = deleteRelationFromDataView,
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+                spaceManager = spaceManager
             ) as T
         }
     }

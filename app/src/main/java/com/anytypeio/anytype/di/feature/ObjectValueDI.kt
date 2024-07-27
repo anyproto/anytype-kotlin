@@ -10,8 +10,10 @@ import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueViewModel
@@ -67,7 +69,9 @@ object ObjectValueObjectModule {
         urlBuilder: UrlBuilder,
         storeOfObjectTypes: StoreOfObjectTypes,
         objectListIsArchived: SetObjectListIsArchived,
-        duplicateObject: DuplicateObject
+        duplicateObject: DuplicateObject,
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        storeOfRelations: StoreOfRelations
     ): ObjectValueViewModelFactory = ObjectValueViewModelFactory(
         params = params,
         values = values,
@@ -80,7 +84,9 @@ object ObjectValueObjectModule {
         urlBuilder = urlBuilder,
         storeOfObjectTypes = storeOfObjectTypes,
         objectListIsArchived = objectListIsArchived,
-        duplicateObject = duplicateObject
+        duplicateObject = duplicateObject,
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+        storeOfRelations = storeOfRelations
     )
 }
 //endregion
@@ -120,7 +126,9 @@ object ObjectValueSetModule {
         urlBuilder: UrlBuilder,
         storeOfObjectTypes: StoreOfObjectTypes,
         objectListIsArchived: SetObjectListIsArchived,
-        duplicateObject: DuplicateObject
+        duplicateObject: DuplicateObject,
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        storeOfRelations: StoreOfRelations
     ): ObjectValueViewModelFactory = ObjectValueViewModelFactory(
         params = params,
         values = values,
@@ -133,7 +141,9 @@ object ObjectValueSetModule {
         urlBuilder = urlBuilder,
         storeOfObjectTypes = storeOfObjectTypes,
         objectListIsArchived = objectListIsArchived,
-        duplicateObject = duplicateObject
+        duplicateObject = duplicateObject,
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+        storeOfRelations = storeOfRelations
     )
 }
 //endregion
@@ -173,7 +183,9 @@ object ObjectValueDataViewModule {
         urlBuilder: UrlBuilder,
         storeOfObjectTypes: StoreOfObjectTypes,
         objectListIsArchived: SetObjectListIsArchived,
-        duplicateObject: DuplicateObject
+        duplicateObject: DuplicateObject,
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        storeOfRelations: StoreOfRelations
     ): ObjectValueViewModelFactory = ObjectValueViewModelFactory(
         params = params,
         values = values,
@@ -186,7 +198,9 @@ object ObjectValueDataViewModule {
         urlBuilder = urlBuilder,
         storeOfObjectTypes = storeOfObjectTypes,
         objectListIsArchived = objectListIsArchived,
-        duplicateObject = duplicateObject
+        duplicateObject = duplicateObject,
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+        storeOfRelations = storeOfRelations
     )
 }
 //endregion

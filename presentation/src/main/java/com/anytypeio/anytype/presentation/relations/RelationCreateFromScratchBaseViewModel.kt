@@ -10,12 +10,14 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.AddRelationToDataView
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.CreateRelation
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsCreateRelationEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
 import com.anytypeio.anytype.presentation.relations.model.CreateFromScratchState
 import com.anytypeio.anytype.presentation.relations.model.LimitObjectTypeValueView
 import com.anytypeio.anytype.presentation.relations.model.RelationView
@@ -90,7 +92,8 @@ class RelationCreateFromScratchForObjectViewModel(
     private val dispatcher: Dispatcher<Payload>,
     private val analytics: Analytics,
     private val spaceManager: SpaceManager,
-    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val storeOfRelations: StoreOfRelations
 ) : RelationCreateFromScratchBaseViewModel(),
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
@@ -143,6 +146,12 @@ class RelationCreateFromScratchForObjectViewModel(
             ).process(
                 success = { payload ->
                     dispatcher.send(payload).also { isDismissed.value = true }
+                    analytics.sendAnalyticsRelationEvent(
+                        eventName = EventsDictionary.relationAdd,
+                        storeOfRelations = storeOfRelations,
+                        relationKey = relation,
+                        spaceParams = provideParams(spaceManager.get())
+                    )
                 },
                 failure = {
                     Timber.e(it, ACTION_FAILED_ERROR).also { _toasts.emit(ACTION_FAILED_ERROR) }
@@ -158,7 +167,8 @@ class RelationCreateFromScratchForObjectViewModel(
         private val dispatcher: Dispatcher<Payload>,
         private val analytics: Analytics,
         private val spaceManager: SpaceManager,
-        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        private val storeOfRelations: StoreOfRelations
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -169,7 +179,8 @@ class RelationCreateFromScratchForObjectViewModel(
                 createRelation = createRelation,
                 addRelationToObject = addRelationToObject,
                 spaceManager = spaceManager,
-                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+                storeOfRelations = storeOfRelations
             ) as T
         }
     }
@@ -182,7 +193,8 @@ class RelationCreateFromScratchForObjectBlockViewModel(
     private val createFromScratchState: StateHolder<CreateFromScratchState>,
     private val createRelation: CreateRelation,
     private val spaceManager: SpaceManager,
-    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val storeOfRelations: StoreOfRelations
 ) : RelationCreateFromScratchBaseViewModel(),
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
@@ -240,6 +252,12 @@ class RelationCreateFromScratchForObjectBlockViewModel(
             ).process(
                 success = { payload ->
                     dispatcher.send(payload).also { commands.emit(Command.OnSuccess(relationKey)) }
+                    analytics.sendAnalyticsRelationEvent(
+                        eventName = EventsDictionary.relationAdd,
+                        storeOfRelations = storeOfRelations,
+                        relationKey = relationKey,
+                        spaceParams = provideParams(spaceManager.get())
+                    )
                 },
                 failure = {
                     Timber.e(it, ACTION_FAILED_ERROR).also { _toasts.emit(ACTION_FAILED_ERROR) }
@@ -255,7 +273,8 @@ class RelationCreateFromScratchForObjectBlockViewModel(
         private val createFromScratchState: StateHolder<CreateFromScratchState>,
         private val createRelation: CreateRelation,
         private val spaceManager: SpaceManager,
-        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        private val storeOfRelations: StoreOfRelations
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -266,7 +285,8 @@ class RelationCreateFromScratchForObjectBlockViewModel(
                 createFromScratchState = createFromScratchState,
                 createRelation = createRelation,
                 spaceManager = spaceManager,
-                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+                storeOfRelations = storeOfRelations
             ) as T
         }
     }
@@ -285,7 +305,8 @@ class RelationCreateFromScratchForDataViewViewModel(
     private val createFromScratchState: StateHolder<CreateFromScratchState>,
     private val createRelation: CreateRelation,
     private val spaceManager: SpaceManager,
-    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val storeOfRelations: StoreOfRelations
 ) : RelationCreateFromScratchBaseViewModel(),
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
@@ -347,6 +368,12 @@ class RelationCreateFromScratchForDataViewViewModel(
                             relationKey = relationKey
                         )
                     }
+                    analytics.sendAnalyticsRelationEvent(
+                        eventName = EventsDictionary.relationAdd,
+                        storeOfRelations = storeOfRelations,
+                        relationKey = relationKey,
+                        spaceParams = provideParams(spaceManager.get())
+                    )
                 },
                 failure = {
                     Timber.d(it, "Error while adding relation with key: $relationKey to data view: $dv")
@@ -383,7 +410,8 @@ class RelationCreateFromScratchForDataViewViewModel(
         private val dispatcher: Dispatcher<Payload>,
         private val analytics: Analytics,
         private val spaceManager: SpaceManager,
-        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        private val storeOfRelations: StoreOfRelations
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -396,7 +424,8 @@ class RelationCreateFromScratchForDataViewViewModel(
                 createFromScratchState = createFromScratchState,
                 createRelation = createRelation,
                 addRelationToDataView = addRelationToDataView,
-                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+                storeOfRelations = storeOfRelations
             ) as T
         }
     }

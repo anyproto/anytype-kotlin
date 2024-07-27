@@ -3,8 +3,10 @@ package com.anytypeio.anytype.presentation.widgets.collection
 import android.text.format.DateUtils
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.TimeInSeconds
+import com.anytypeio.anytype.core_utils.date.Milliseconds
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DateType
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
@@ -134,6 +136,27 @@ class DateProviderImpl @Inject constructor() : DateProvider {
         } catch (e: Exception) {
             Timber.e(e,"Error formatting timestamp to date string")
             return ""
+        }
+    }
+
+    override fun formatTimestampToDateAndTime(
+        timestamp: TimeInMillis,
+        locale: Locale,
+        dateStyle: Int,
+        timeStyle: Int
+    ): Pair<String, String> {
+        return try {
+            val datePattern = (DateFormat.getDateInstance(dateStyle, locale) as SimpleDateFormat).toPattern()
+            val timePattern = (DateFormat.getTimeInstance(timeStyle, locale) as SimpleDateFormat).toPattern()
+            val dateFormatter = SimpleDateFormat(datePattern, locale)
+            val timeFormatter = SimpleDateFormat(timePattern, locale)
+            val date = Date(timestamp)
+            val dateString = dateFormatter.format(date)
+            val timeString = timeFormatter.format(date)
+            Pair(dateString, timeString)
+        } catch (e: Exception) {
+            Timber.e(e, "Error formatting timestamp to date and time string")
+            Pair("", "")
         }
     }
 }

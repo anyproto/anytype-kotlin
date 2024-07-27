@@ -207,7 +207,8 @@ data class VersionHistoryGroup(
     val id: String,
     val title: String,
     val icons: List<ObjectIcon>,
-    val items: List<Item>
+    val items: List<Item>,
+    val isExpanded: Boolean = false
 ) {
     data class Item(
         val id: Id,

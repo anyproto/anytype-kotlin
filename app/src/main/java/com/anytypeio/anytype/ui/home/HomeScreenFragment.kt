@@ -4,16 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
@@ -23,9 +16,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
@@ -35,9 +25,6 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.feature_discussions.ui.DiscussionPreview
-import com.anytypeio.anytype.feature_discussions.ui.DiscussionScreenPreview
-import com.anytypeio.anytype.feature_discussions.ui.DiscussionScreenWrapper
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
@@ -52,7 +39,6 @@ import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment
 import com.anytypeio.anytype.ui.widgets.SelectWidgetTypeFragment
-import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -65,11 +51,12 @@ class HomeScreenFragment : BaseComposeFragment() {
         get() = argOrNull<Boolean>(SHOW_MNEMONIC_KEY) ?: false
         set(value) { arguments?.putBoolean(SHOW_MNEMONIC_KEY, value) }
 
-    @Inject
-    lateinit var factory: HomeScreenViewModel.Factory
 
     @Inject
     lateinit var featureToggles: FeatureToggles
+
+    @Inject
+    lateinit var factory: HomeScreenViewModel.Factory
 
     private val vm by viewModels<HomeScreenViewModel> { factory }
 
@@ -131,10 +118,6 @@ class HomeScreenFragment : BaseComposeFragment() {
                     onSpaceShareIconClicked = vm::onSpaceShareIconClicked,
                     onSeeAllObjectsClicked = vm::onSeeAllObjectsClicked
                 )
-
-                if (featureToggles.enableDiscussionDemo) {
-                    DiscussionScreenWrapper()
-                }
             }
         }
     }
@@ -308,6 +291,12 @@ class HomeScreenFragment : BaseComposeFragment() {
                     view = destination.view
                 )
             }
+            is Navigation.OpenDiscussion -> runCatching {
+                navigation().openDiscussion(
+                    target = destination.ctx,
+                    space = destination.space
+                )
+            }
             is Navigation.ExpandWidget -> runCatching {
                 navigation().launchCollections(
                     subscription = destination.subscription,
@@ -331,12 +320,6 @@ class HomeScreenFragment : BaseComposeFragment() {
 
     override fun releaseDependencies() {
         componentManager().homeScreenComponent.release()
-    }
-
-    override fun onApplyWindowRootInsets(view: View) {
-        if (!featureToggles.enableDiscussionDemo) {
-            super.onApplyWindowRootInsets(view)
-        }
     }
 
     companion object {

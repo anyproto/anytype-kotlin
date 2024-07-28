@@ -3,7 +3,6 @@ package com.anytypeio.anytype.core_ui.widgets
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,6 +27,35 @@ import com.anytypeio.anytype.core_ui.extensions.getMimeIcon
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+
+@Composable
+fun GlobalSearchObjectIcon(
+    icon: ObjectIcon,
+    modifier: Modifier,
+    iconSize: Dp = 48.dp,
+    onTaskIconClicked: (Boolean) -> Unit = {}
+) {
+    when (icon) {
+        is ObjectIcon.Profile.Avatar -> DefaultProfileAvatarIcon(modifier, iconSize, icon)
+        is ObjectIcon.Profile.Image -> defaultProfileIconImage(icon, modifier, iconSize)
+        is ObjectIcon.Basic.Emoji -> DefaultEmojiObjectIcon(modifier, iconSize, icon)
+        is ObjectIcon.Basic.Image -> DefaultObjectImageIcon(icon.hash, modifier, iconSize)
+        is ObjectIcon.Basic.Avatar -> DefaultBasicAvatarIcon(modifier, iconSize, icon)
+        is ObjectIcon.Bookmark -> DefaultObjectBookmarkIcon(icon.image, modifier, iconSize)
+        is ObjectIcon.Task -> DefaultTaskObjectIcon(modifier, iconSize, icon, onTaskIconClicked)
+        is ObjectIcon.File -> {
+            DefaultFileObjectImageIcon(
+                fileName = icon.fileName.orEmpty(),
+                mime = icon.mime.orEmpty(),
+                modifier = modifier,
+                iconSize = iconSize
+            )
+        }
+        else -> {
+            // Draw nothing.
+        }
+    }
+}
 
 @Composable
 fun ListWidgetObjectIcon(

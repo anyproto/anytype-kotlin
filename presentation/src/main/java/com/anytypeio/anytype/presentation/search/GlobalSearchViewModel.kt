@@ -44,6 +44,7 @@ import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
 import javax.inject.Inject
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -60,7 +61,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 
-class GlobalSearchViewModel(
+class GlobalSearchViewModel @Inject constructor(
     private val searchWithMeta: SearchWithMeta,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val storeOfRelations: StoreOfRelations,
@@ -73,6 +74,11 @@ class GlobalSearchViewModel(
     private val userInput = MutableStateFlow(EMPTY_STRING_VALUE)
     private val searchQuery = userInput
         .take(1)
+        .map {
+            // TODO remove this, only for demo
+            delay(300)
+            it
+        }
         .onCompletion {
             emitAll(userInput.drop(1).debounce(DEFAULT_DEBOUNCE_DURATION).distinctUntilChanged())
         }

@@ -16,7 +16,8 @@ object SupportedLayouts {
         ObjectType.Layout.NOTE,
         ObjectType.Layout.BOOKMARK,
         ObjectType.Layout.AUDIO,
-        ObjectType.Layout.PDF
+        ObjectType.Layout.PDF,
+        ObjectType.Layout.CHAT
     )
     val editorLayouts = listOf(
         ObjectType.Layout.BASIC,
@@ -51,7 +52,8 @@ object SupportedLayouts {
         ObjectType.Layout.COLLECTION,
         ObjectType.Layout.TODO,
         ObjectType.Layout.NOTE,
-        ObjectType.Layout.BOOKMARK
+        ObjectType.Layout.BOOKMARK,
+        ObjectType.Layout.CHAT
     )
 
     val addAsLinkToLayouts = editorLayouts + listOf(

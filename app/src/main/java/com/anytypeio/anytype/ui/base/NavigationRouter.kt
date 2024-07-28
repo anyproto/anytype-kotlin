@@ -17,6 +17,7 @@ class NavigationRouter(
                     target = command.target,
                     space = command.space
                 )
+
                 is AppNavigation.Command.OpenModalTemplateSelect -> navigation.openModalTemplateSelect(
                     template = command.template,
                     templateTypeId = command.templateTypeId,

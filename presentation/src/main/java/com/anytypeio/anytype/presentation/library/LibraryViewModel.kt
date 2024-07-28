@@ -230,6 +230,9 @@ class LibraryViewModel(
             is OpenObjectNavigation.OpenEditor -> {
                 navigate(Navigation.OpenEditor(navigation.target))
             }
+            is OpenObjectNavigation.OpenDiscussion -> {
+                sendToast("not implemented")
+            }
             is OpenObjectNavigation.UnexpectedLayoutError -> {
                 sendToast("Unexpected layout: ${navigation.layout}")
             }

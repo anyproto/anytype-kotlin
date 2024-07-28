@@ -496,6 +496,7 @@ fun ObjectType.Layout.toMiddlewareModel(): MOTypeLayout = when (this) {
     ObjectType.Layout.SPACE_VIEW -> MOTypeLayout.spaceView
     ObjectType.Layout.PARTICIPANT -> MOTypeLayout.participant
     ObjectType.Layout.PDF -> MOTypeLayout.pdf
+    ObjectType.Layout.CHAT -> MOTypeLayout.chat
 }
 
 fun Relation.Format.toMiddlewareModel(): MRelationFormat = when (this) {

@@ -59,7 +59,7 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
                         }
                     },
                     onShowRelatedClicked = vm::onShowRelatedClicked,
-                    onClearRelatedClicked = vm::onClearRelatedObjectClicked
+                    onClearRelatedClicked = vm::onClearRelatedObjectClicked,
                 )
             }
             LaunchedEffect(Unit) {

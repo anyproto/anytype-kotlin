@@ -692,7 +692,7 @@
     <string name="btn_upload_gallery">Aus Galerie hochladen</string>
     <string name="btn_upload_storage">Von externem Speicher hochladen</string>
     <string name="btn_upload">Hochladen</string>
-    <string name="alert_qr_camera">Go to Settings – Key on Desktop in order to find the QR code for login.</string>
+    <string name="alert_qr_camera">Gehen Sie auf \"Einstellungen – Schlüssel\", um den QR-Code für die Anmeldung zu finden</string>
     <string name="alert_qr_camera_ok">OK</string>
     <string name="choose_option">Option auswählen</string>
     <string name="find_a_relation">Finde Beziehung</string>

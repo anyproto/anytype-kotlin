@@ -1050,7 +1050,7 @@
     <string name="sharing_menu_save_as_videos_option">Videos</string>
     <string name="sharing_menu_data">Daten</string>
     <string name="sharing_menu_add_to_anytype_header_title">Zu Anytype hinzufügen</string>
-    <string name="sharing_menu_add_to_anytype_error">Anytype file upload error: %1$s</string>
+    <string name="sharing_menu_add_to_anytype_error">Fehler beim Hochladen der Datei: %1$s</string>
     <string name="sharing_menu_add_to_anytype_success">Alle Dateien wurden erfolgreich hochgeladen</string>
     <string name="sharing_menu_toast_object_added">Neues Objekt wird dem Space ‚%1$s‘ hinzugefügt</string>
     <string name="sharing_menu_btn_add">Hinzufügen</string>
@@ -1068,8 +1068,8 @@
     <string name="relation_origin_bookmark">Lesezeichen</string>
     <!--endregion-->
     <plurals name="backlinks_count">
-        <item quantity="one">%d backlink</item>
-        <item quantity="other">%d backlinks</item>
+        <item quantity="one">%d eingehender Link</item>
+        <item quantity="other">%d eingehende Links</item>
     </plurals>
     <plurals name="links_from_count">
         <item quantity="one">%d Link</item>
@@ -1144,9 +1144,9 @@
     <string name="multiplayer_members_and_requests">Mitglieder</string>
     <string name="multiplayer_cant_add_members">Du kannst keine weiteren Mitglieder hinzufügen</string>
     <string name="multiplayer_cant_add_editors">Du kannst keine weiteren Editoren hinzufügen</string>
-    <string name="multiplayer_upgrade_button">✦ Upgrade</string>
-    <string name="multiplayer_upgrade_button_request">✦ Upgrade to add more members</string>
-    <string name="multiplayer_upgrade_spaces_button">✦ Upgrade to add more spaces</string>
+    <string name="multiplayer_upgrade_button">✦ Plan upgraden</string>
+    <string name="multiplayer_upgrade_button_request">✦ Plan upgraden, um weitere Mitglieder hinzuzufügen</string>
+    <string name="multiplayer_upgrade_spaces_button">✦ Plan upgraden, um weitere Spaces zu erstellen</string>
     <string name="multiplayer_members">Mitglieder</string>
     <string name="multiplayer_leave_request">Anfrage abgeben</string>
     <string name="multiplayer_join_request">Beitrittsanfrage</string>
@@ -1156,7 +1156,7 @@
     <string name="multiplayer_can_edit">Darf bearbeiten</string>
     <string name="multiplayer_can_view">Darf ansehen</string>
     <string name="multiplayer_space_add_viewer">Viewer hinzufügen</string>
-    <string name="multiplayer_space_add_more_viewer">✦ Add more viewers</string>
+    <string name="multiplayer_space_add_more_viewer">✦ Weitere Betrachter hinzufügen</string>
     <string name="multiplayer_space_add_editor">Editor hinzufügen</string>
     <string name="multiplayer_space_add_more_editor">✦ Weitere Editoren hinzufügen</string>
     <string name="multiplayer_space_request_reject">Ablehnen</string>
@@ -1214,9 +1214,9 @@
     <string name="multiplayer_deeplink_to_your_object">Deeplink to your object</string>
     <string name="multiplayer_deeplink_to_your_object_error">This deeplink is not working. Object might be deleted or there might be issues with space access.</string>
     <string name="multiplayer_collaborate_on_spaces">Collaborate on spaces</string>
-    <string name="multiplayer_collaborate_step_1">1.  Tap the Space widget to access settings</string>
+    <string name="multiplayer_collaborate_step_1">1. Tippe auf das Widget des aktiven Space, um die Einstellungen für den Space anzupassen</string>
     <string name="multiplayer_collaborate_step_2">2. Teilen-Bereich öffnen</string>
-    <string name="multiplayer_collaborate_step_3">3.  Generate an invite link and share it</string>
+    <string name="multiplayer_collaborate_step_3">3. Generiere einen Einladungslink und teile ihn mit anderen</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="one">%1$d Mitglied</item>
         <item quantity="other">%1$d Mitglieder</item>
@@ -1278,7 +1278,7 @@
     <string name="payments_tier_details_name_min">Mindestens 7 Zeichen</string>
     <string name="payments_tier_details_name_error">Dieser Name ist bereits vergeben!</string>
     <string name="payments_tier_details_name_validated">Dieser Name [%1$s] ist noch zu vergeben!</string>
-    <string name="payments_tier_details_name_validating">Validating name</string>
+    <string name="payments_tier_details_name_validating">Name wird überprüft</string>
     <string name="payments_tier_details_free_forever">Für immer</string>
     <string name="payments_tier_details_valid_until">Gültig bis %1$s</string>
     <string name="payments_tier_details_info_explorer">Tauche in das Netzwerk ein und genieße den Nervenkitzel der persönlichen Zusammenarbeit</string>
@@ -1318,8 +1318,8 @@
     <string name="payments_tier_current_paid_by_google">Google-Abonnement</string>
     <string name="payments_tier_current_button">Zahlung verwalten</string>
     <string name="membership_manage_tier_desktop">You can manage tier on Desktop platform</string>
-    <string name="membership_manage_tier_ios">You can manage tier on iOS platform</string>
-    <string name="membership_manage_tier_another_account">You can manage tier on another Google account</string>
+    <string name="membership_manage_tier_ios">Du kannst deine Mitgliedschaft in der iOS App verwalten</string>
+    <string name="membership_manage_tier_another_account">Du kannst deine Mitgliedschaft über ein anderes Google-Konto verwalten</string>
     <string name="payments_tier_current_change_email_button">E-Mail-Adresse ändern</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Gib den an deine E-Mail-Adresse gesendeten Code ein</string>
@@ -1331,7 +1331,7 @@
     <string name="payments_welcome_button">Fortfahren</string>
     <!-- Membership Email -->
     <string name="membership_support_email">support@anytype.io</string>
-    <string name="membership_support_subject">Membership Screen Error Report - %1$s</string>
+    <string name="membership_support_subject">Fehlerbericht für den Mitgliedschaftsbereich - %1$s</string>
     <string name="membership_support_body">        Hi Anytype Support Team,\n\n
 
         I encountered an error on the Membership Screen in the app. Below are the details:\n
@@ -1371,7 +1371,7 @@ Please provide specific details of your needs here.</string>
     <string name="membership_any_name_not_reserved">Dieser Name kann nicht reserviert werden</string>
     <string name="membership_any_name_null_error">Leerer Fehler</string>
     <string name="membership_any_name_unknown">Unbekannter Fehler</string>
-    <string name="membership_email_wrong_format">Email has wrong format</string>
+    <string name="membership_email_wrong_format">Ungültige E-Mail-Adresse</string>
     <string name="membership_email_already_verified">E-Mail-Adresse bereits bestätigt</string>
     <string name="membership_email_already_sent">E-Mail ist bereits gesendet, versuchen Sie es nach 1 Minute erneut</string>
     <string name="membership_email_failed_to_send">E-Mail konnte nicht gesendet werden</string>

@@ -68,7 +68,9 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ThemeColor
@@ -666,10 +668,11 @@ fun GlobalSearchObjectIcon(
     icon: ObjectIcon,
     modifier: Modifier,
     iconSize: Dp = 48.dp,
-    onTaskIconClicked: (Boolean) -> Unit = {}
+    onTaskIconClicked: (Boolean) -> Unit = {},
+    fontSize: TextUnit = 28.sp
 ) {
     when (icon) {
-        is ObjectIcon.Profile.Avatar -> DefaultProfileAvatarIcon(modifier, iconSize, icon)
+        is ObjectIcon.Profile.Avatar -> DefaultProfileAvatarIcon(modifier, iconSize, icon, fontSize)
         is ObjectIcon.Profile.Image -> defaultProfileIconImage(icon, modifier, iconSize)
         is ObjectIcon.Basic.Emoji -> DefaultEmojiObjectIcon(modifier, iconSize, icon)
         is ObjectIcon.Basic.Image -> DefaultObjectImageIcon(icon.hash, modifier, iconSize)

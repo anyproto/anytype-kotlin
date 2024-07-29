@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.history.VersionHistoryVMFactory
 import com.anytypeio.anytype.presentation.history.VersionHistoryViewModel
 import com.anytypeio.anytype.ui.history.VersionHistoryFragment
@@ -57,5 +58,6 @@ interface VersionHistoryComponentDependencies : ComponentDependencies {
     fun appCoroutineDispatchers(): AppCoroutineDispatchers
     fun dateProvider(): DateProvider
     fun localeProvider(): LocaleProvider
+    fun provideUrlBuilder(): UrlBuilder
 }
 

@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.history.GetVersions
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -24,7 +25,8 @@ class VersionHistoryViewModel(
     private val getVersions: GetVersions,
     private val objectSearch: SearchObjects,
     private val dateProvider: DateProvider,
-    private val localeProvider: LocaleProvider
+    private val localeProvider: LocaleProvider,
+    private val urlBuilder: UrlBuilder
 
 ) : ViewModel() {
 
@@ -38,6 +40,23 @@ class VersionHistoryViewModel(
 
     fun onStart() {
         Timber.d("VersionHistoryViewModel started")
+    }
+
+    fun onGroupClicked(group: VersionHistoryGroup) {
+        val expanded = group.isExpanded
+        val newGroup = group.copy(isExpanded = !expanded)
+        val newGroups = viewState.value.let { state ->
+            if (state is VersionHistoryState.Success) {
+                state.groups.map { if (it.id == group.id) newGroup else it }
+            } else {
+                emptyList()
+            }
+        }
+        _viewState.value = VersionHistoryState.Success(newGroups)
+    }
+
+    fun onGroupItemClicked(item: VersionHistoryGroup.Item) {
+
     }
 
     private fun getSpaceMembers() {
@@ -151,10 +170,11 @@ class VersionHistoryViewModel(
                 spaceMembers = spaceMembers,
                 latestVersionTime = latestVersionTime
             )
+
             VersionHistoryGroup(
                 id = spaceMemberLatestVersion.id,
                 title = latestVersionDate,
-                icons = emptyList(),
+                icons = groupItems.mapNotNull { it.icon },
                 items = groupItems
             )
         }
@@ -171,12 +191,18 @@ class VersionHistoryViewModel(
             val spaceMember = spaceMembers.find { it.id == spaceMemberId }
                 ?: return@mapNotNull null
 
+            val icon = ObjectIcon.from(
+                obj = spaceMember,
+                layout = spaceMember.layout,
+                builder = urlBuilder
+            )
+
             VersionHistoryGroup.Item(
                 id = latestVersion.id,
                 spaceMember = spaceMemberId,
                 spaceMemberName = spaceMember.name.orEmpty(),
                 timeStamp = latestVersion.timestamp,
-                icon = null,
+                icon = icon,
                 timeFormatted = latestVersionTime,
                 versions = versions
             )
@@ -187,6 +213,10 @@ class VersionHistoryViewModel(
         val objectId: Id,
         val spaceId: Id
     )
+
+    sealed class Command {
+        data class OpenVersion(val versionId: Id) : Command()
+    }
 
     companion object {
         const val GROUP_BY_DAY_FORMAT = "d MM yyyy"
@@ -207,7 +237,8 @@ data class VersionHistoryGroup(
     val id: String,
     val title: String,
     val icons: List<ObjectIcon>,
-    val items: List<Item>
+    val items: List<Item>,
+    val isExpanded: Boolean = false
 ) {
     data class Item(
         val id: Id,

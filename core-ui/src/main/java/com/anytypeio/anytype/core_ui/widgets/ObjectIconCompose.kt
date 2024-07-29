@@ -3,7 +3,6 @@ package com.anytypeio.anytype.core_ui.widgets
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
@@ -34,10 +34,11 @@ fun ListWidgetObjectIcon(
     icon: ObjectIcon,
     modifier: Modifier,
     iconSize: Dp = 48.dp,
-    onTaskIconClicked: (Boolean) -> Unit = {}
+    onTaskIconClicked: (Boolean) -> Unit = {},
+    fontSize: TextUnit = 28.sp
 ) {
     when (icon) {
-        is ObjectIcon.Profile.Avatar -> DefaultProfileAvatarIcon(modifier, iconSize, icon)
+        is ObjectIcon.Profile.Avatar -> DefaultProfileAvatarIcon(modifier, iconSize, icon, fontSize)
         is ObjectIcon.Profile.Image -> defaultProfileIconImage(icon, modifier, iconSize)
         is ObjectIcon.Basic.Emoji -> DefaultEmojiObjectIcon(modifier, iconSize, icon)
         is ObjectIcon.Basic.Image -> DefaultObjectImageIcon(icon.hash, modifier, iconSize)
@@ -119,7 +120,8 @@ fun DefaultObjectBookmarkIcon(
 fun DefaultProfileAvatarIcon(
     modifier: Modifier,
     iconSize: Dp,
-    icon: ObjectIcon.Profile.Avatar
+    icon: ObjectIcon.Profile.Avatar,
+    fontSize: TextUnit
 ) {
     Box(
         modifier = modifier
@@ -137,7 +139,7 @@ fun DefaultProfileAvatarIcon(
                 .uppercase(),
             modifier = Modifier.align(Alignment.Center),
             style = TextStyle(
-                fontSize = 28.sp,
+                fontSize = fontSize,
                 fontWeight = FontWeight.SemiBold,
                 color = colorResource(id = R.color.text_white)
             )

@@ -1487,7 +1487,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     text = content.text,
                     emoji = details.details[root.id]?.iconEmoji?.takeIf { it.isNotBlank() },
                     image = details.details[root.id]?.iconImage?.takeIf { it.isNotBlank() }
-                        ?.let { urlBuilder.thumbnail(it) },
+                        ?.let { urlBuilder.medium(it) },
                     isFocused = resolveIsFocused(focus, block),
                     cursor = cursor,
                     coverColor = coverContainer.coverColor,
@@ -1518,7 +1518,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     id = block.id,
                     text = content.text,
                     image = details.details[root.id]?.iconImage?.takeIf { it.isNotBlank() }?.let {
-                        urlBuilder.thumbnail(it)
+                        urlBuilder.medium(it)
                     },
                     spaceGradient = null,
                     isFocused = resolveIsFocused(focus, block),

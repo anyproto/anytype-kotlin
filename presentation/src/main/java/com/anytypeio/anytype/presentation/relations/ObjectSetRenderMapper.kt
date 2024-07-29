@@ -214,7 +214,7 @@ fun title(
         id = title.id,
         text = wrapper.name.orEmpty(),
         emoji = wrapper.iconEmoji.orNull(),
-        image = wrapper.iconImage?.takeIf { it.isNotBlank() }?.let { urlBuilder.thumbnail(it) },
+        image = wrapper.iconImage?.takeIf { it.isNotBlank() }?.let { urlBuilder.medium(it) },
         coverImage = coverContainer.coverImage,
         coverColor = coverContainer.coverColor,
         coverGradient = coverContainer.coverGradient

@@ -922,7 +922,7 @@
     <!--region WIDGETS -->
     <string name="create_widget">Create a widget</string>
     <string name="edit_widgets">Edit widgets</string>
-    <string name="add_widget">Add widget</string>
+    <string name="add_widget">Aggiungi widget</string>
     <string name="widget_source">Fonte del widget</string>
     <string name="widget_type">Tipo di widget</string>
     <string name="widget_add_below">Aggiungi sotto</string>
@@ -1456,19 +1456,19 @@ Please provide specific details of your needs here.</string>
     <string name="sort_empty_values_bottom">In basso</string>
     <string name="sort_empty_values_top">In alto</string>
     <string name="widget_view_see_all_objects">Vedi tutti gli oggetti</string>
-    <string name="sync_status_get_error">Error getting sync status</string>
+    <string name="sync_status_get_error">Errore nell\'ottenere lo stato della sincronizzazione</string>
     <string name="sync_status_local_only_title">Solo Locale</string>
     <string name="sync_status_data_backup">Il backup dati è disabilitato</string>
     <string name="sync_status_self_host">Self Host</string>
     <string name="sync_status_self_host_synced">Sincronizzato</string>
     <plurals name="sync_status_self_host_syncing">
-        <item quantity="one">%1$d item syncing</item>
-        <item quantity="other">%1$d items syncing...</item>
+        <item quantity="one">%1$d elemento in sincronizzazione</item>
+        <item quantity="other">%1$d elementi in sincronizzazione...</item>
     </plurals>
     <string name="sync_status_p2p">Connessione P2P</string>
     <plurals name="sync_status_p2p_devices">
-        <item quantity="one">%1$d device connected</item>
-        <item quantity="other">%1$d devices connected</item>
+        <item quantity="one">%1$d dispositivo connesso</item>
+        <item quantity="other">%1$d dispositivi connessi</item>
     </plurals>
     <string name="sync_status_p2p_connecting">Connessione P2P...</string>
     <string name="sync_status_p2p_disabled">Disabled</string>

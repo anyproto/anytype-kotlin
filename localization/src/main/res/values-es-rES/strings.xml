@@ -1455,22 +1455,22 @@ En concreto,
     <string name="sort_empty_values_bottom">Al final</string>
     <string name="sort_empty_values_top">Al principio</string>
     <string name="widget_view_see_all_objects">Ver todos los objetos</string>
-    <string name="sync_status_get_error">Error getting sync status</string>
+    <string name="sync_status_get_error">Error obteniendo estado de la sincronización </string>
     <string name="sync_status_local_only_title">Solo local</string>
     <string name="sync_status_data_backup">El respaldo de datos está deshabilitado.</string>
     <string name="sync_status_self_host">Autoalojado</string>
     <string name="sync_status_self_host_synced">Sincronizado</string>
     <plurals name="sync_status_self_host_syncing">
-        <item quantity="one">%1$d item syncing</item>
-        <item quantity="other">%1$d items syncing...</item>
+        <item quantity="one">%1$d ítems sincronizando</item>
+        <item quantity="other">%1$d ítems sincronizando...</item>
     </plurals>
     <string name="sync_status_p2p">Conexión P2P</string>
     <plurals name="sync_status_p2p_devices">
-        <item quantity="one">%1$d device connected</item>
-        <item quantity="other">%1$d devices connected</item>
+        <item quantity="one">%1$d dispositivo conectados </item>
+        <item quantity="other">%1$d dispositivos conectados</item>
     </plurals>
     <string name="sync_status_p2p_connecting">Conectando P2P</string>
-    <string name="sync_status_p2p_disabled">Disabled</string>
+    <string name="sync_status_p2p_disabled">Deshabilitado</string>
     <string name="sync_status_p2p_restricted">Restringido. Comprueba los ajustes del dispositivo.</string>
     <string name="sync_status_anytype_network">Red de Anytype</string>
     <string name="sync_status_anytype_end_to_end">Cifrado de extremo a extremo</string>

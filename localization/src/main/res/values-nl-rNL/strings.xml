@@ -1484,4 +1484,5 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="sync_status_incompatible_version">Niet-compatibele versie</string>
     <string name="sync_status_network_error">No access to the space</string>
     <string name="sync_status_unrecognized">Unrecognized error</string>
+    <string name="version_history_title">Version history</string>
 </resources>

@@ -1471,4 +1471,5 @@ Please provide specific details of your needs here.</string>
     <string name="sync_status_incompatible_version">不相容的版本</string>
     <string name="sync_status_network_error">無法進入這個空間</string>
     <string name="sync_status_unrecognized">無法識別的錯誤</string>
+    <string name="version_history_title">Version history</string>
 </resources>

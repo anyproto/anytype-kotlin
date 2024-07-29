@@ -14,8 +14,10 @@ import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.history.GetVersions
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.widgets.collection.DateProviderImpl
 import java.util.Locale
@@ -69,6 +71,9 @@ class VersionHistoryViewModelTest {
 
     @Mock
     lateinit var getVersions: GetVersions
+
+    @Mock
+    lateinit var urlBuilder: UrlBuilder
 
     @Mock
     lateinit var objectSearch: SearchObjects
@@ -224,7 +229,7 @@ class VersionHistoryViewModelTest {
                         VersionHistoryGroup(
                             id = versions[0].id,
                             title = date0,
-                            icons = emptyList(),
+                            icons = listOf(ObjectIcon.None, ObjectIcon.None, ObjectIcon.None, ObjectIcon.None),
                             items = buildList {
                                 add(
                                     VersionHistoryGroup.Item(
@@ -232,7 +237,7 @@ class VersionHistoryViewModelTest {
                                         spaceMember = user1.id,
                                         spaceMemberName = user1.name!!,
                                         timeStamp = versions[0].timestamp,
-                                        icon = null,
+                                        icon = ObjectIcon.None,
                                         versions = listOf(versions[0]),
                                         timeFormatted = time0
                                     )
@@ -243,7 +248,7 @@ class VersionHistoryViewModelTest {
                                         spaceMember = user4.id,
                                         spaceMemberName = user4.name!!,
                                         timeStamp = versions[1].timestamp,
-                                        icon = null,
+                                        icon = ObjectIcon.None,
                                         versions = listOf(versions[1]),
                                         timeFormatted = time1
                                     )
@@ -254,7 +259,7 @@ class VersionHistoryViewModelTest {
                                         spaceMember = user3.id,
                                         spaceMemberName = user3.name!!,
                                         timeStamp = versions[2].timestamp,
-                                        icon = null,
+                                        icon = ObjectIcon.None,
                                         versions = listOf(versions[2]),
                                         timeFormatted = time2
                                     )
@@ -265,7 +270,7 @@ class VersionHistoryViewModelTest {
                                         spaceMember = user1.id,
                                         spaceMemberName = user1.name!!,
                                         timeStamp = versions[3].timestamp,
-                                        icon = null,
+                                        icon = ObjectIcon.None,
                                         versions = listOf(versions[3]),
                                         timeFormatted = time3
                                     )
@@ -277,7 +282,7 @@ class VersionHistoryViewModelTest {
                         VersionHistoryGroup(
                             id = versions[4].id,
                             title = date4,
-                            icons = emptyList(),
+                            icons = listOf(ObjectIcon.None, ObjectIcon.None),
                             items = buildList {
                                 add(
                                     VersionHistoryGroup.Item(
@@ -285,7 +290,7 @@ class VersionHistoryViewModelTest {
                                         spaceMember = user1.id,
                                         spaceMemberName = user1.name!!,
                                         timeStamp = versions[4].timestamp,
-                                        icon = null,
+                                        icon = ObjectIcon.None,
                                         versions = listOf(versions[4], versions[5]),
                                         timeFormatted = time4
                                     )
@@ -296,7 +301,7 @@ class VersionHistoryViewModelTest {
                                         spaceMember = user2.id,
                                         spaceMemberName = user2.name!!,
                                         timeStamp = versions[6].timestamp,
-                                        icon = null,
+                                        icon = ObjectIcon.None,
                                         versions = listOf(versions[6]),
                                         timeFormatted = time6
                                     )
@@ -349,6 +354,7 @@ class VersionHistoryViewModelTest {
             dateProvider = dateProvider,
             localeProvider = localeProvider,
             vmParams = vmParams,
+            urlBuilder = urlBuilder
         )
     }
 }

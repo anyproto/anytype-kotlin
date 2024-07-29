@@ -9,10 +9,12 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemListObjectBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemSearchNewObjectBinding
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.core_utils.ui.setOnThrottleClickListener
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.DefaultSearchItem
+import com.anytypeio.anytype.presentation.navigation.NewObject
 import com.anytypeio.anytype.presentation.search.ObjectSearchSection
 import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
 
@@ -53,6 +55,11 @@ class DefaultObjectViewAdapter(
             }
         }
         TYPE_SECTION -> SectionViewHolder(inflate(parent, R.layout.item_object_search_section))
+        TYPE_NEW_OBJECT -> NewObjectViewHolder(
+            ItemSearchNewObjectBinding.inflate(
+                LayoutInflater.from(parent.context), parent, false
+            )
+        )
         else -> throw IllegalStateException("Unexpected view type: $viewType")
     }
 
@@ -75,6 +82,9 @@ class DefaultObjectViewAdapter(
                     ObjectSearchSection.SelectWidgetSource.FromMyObjects -> {
                         holder.title.setText(R.string.objects)
                     }
+                    ObjectSearchSection.SelectWidgetSource.DefaultLists -> {
+                        holder.title.setText(R.string.widget_source_default_lists)
+                    }
                 }
             }
             is BundledWidgetSourceHolder -> {
@@ -88,6 +98,7 @@ class DefaultObjectViewAdapter(
         is DefaultObjectView -> TYPE_ITEM
         is ObjectSearchSection -> TYPE_SECTION
         is BundledWidgetSourceView -> TYPE_BUNDLED_WIDGET_SOURCE
+        is NewObject -> TYPE_NEW_OBJECT
         else -> throw IllegalStateException("Unexpected item type: ${item.javaClass.name}")
     }
 
@@ -215,6 +226,11 @@ class BundledWidgetSourceHolder(
     }
 }
 
+class NewObjectViewHolder(
+    private val binding: ItemSearchNewObjectBinding
+) :  DefaultObjectViewAdapter.ObjectViewHolder(binding.root)
+
 private const val TYPE_ITEM = 0
 private const val TYPE_SECTION = 1
 private const val TYPE_BUNDLED_WIDGET_SOURCE = 2
+private const val TYPE_NEW_OBJECT = 3

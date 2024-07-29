@@ -203,7 +203,7 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
             adapter = selectWidgetSourceAdapter
             addItemDecoration(
                 DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
-                    setDrawable(drawable(R.drawable.divider_object_search))
+                    setDrawable(drawable(R.drawable.divider_select_widget_source))
                 }
             )
             addItemDecoration(

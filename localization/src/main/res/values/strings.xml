@@ -549,6 +549,7 @@
 
     <string name="object_search_recently_opened_section_title">Recently opened</string>
     <string name="widget_source_anytype_library">Anytype Library</string>
+    <string name="widget_source_default_lists">Default lists</string>
     <string name="your_favorite_objects">Your favorite objects</string>
     <string name="on_this_device">On this device</string>
     <string name="sets_of_objects">Sets of objects from your workspace</string>
@@ -1734,5 +1735,6 @@ Please provide specific details of your needs here.</string>
     <string name="sync_status_unrecognized">Unrecognized error</string>
 
     <string name="version_history_title">Version history</string>
+    <string name="new_object">New object</string>
 
 </resources>

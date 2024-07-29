@@ -549,7 +549,7 @@ sealed class Command {
     sealed class VersionHistory {
         data class GetVersions(
             val objectId: Id,
-            val lastVersion: Id,
+            val lastVersion: Id?,
             val limit: Int
         ) : VersionHistory()
 

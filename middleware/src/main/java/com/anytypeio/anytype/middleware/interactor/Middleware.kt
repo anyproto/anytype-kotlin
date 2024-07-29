@@ -2707,7 +2707,7 @@ class Middleware @Inject constructor(
     @Throws
     fun getVersions(command: Command.VersionHistory.GetVersions): List<Version> {
         val request = Rpc.History.GetVersions.Request(
-            lastVersionId = command.lastVersion,
+            lastVersionId = command.lastVersion.orEmpty(),
             objectId = command.objectId,
             limit = command.limit
 

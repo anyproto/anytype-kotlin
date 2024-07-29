@@ -276,6 +276,10 @@
         android:id="@+id/galleryInstallationScreen"
         android:name="com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment" />
 
+    <dialog
+        android:id="@+id/versionHistoryScreen"
+        android:name="com.anytypeio.anytype.ui.history.VersionHistoryFragment" />
+
     <fragment
         android:id="@+id/splashScreen"
         android:name="com.anytypeio.anytype.ui.splash.SplashFragment"

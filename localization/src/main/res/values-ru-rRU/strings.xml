@@ -979,7 +979,7 @@
     <string name="onboarding_terms_and_policy_infix">" и "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
     <string name="onboarding_new_vault_button_text">New vault</string>
-    <string name="onboarding_enter_my_vault">Enter my Vault</string>
+    <string name="onboarding_enter_my_vault">Войти в мое хранилище</string>
     <string name="onboarding_have_key_button_text">У меня есть Ключ</string>
     <string name="onboarding_get_my_key_button_text">Получить мой Ключ</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
@@ -992,7 +992,7 @@
     <string name="onboarding_key_skip">Пропустить</string>
     <string name="onboarding_key_copy">Копировать в буфер обмена</string>
     <string name="onboarding_set_your_name_title">Установите ваше имя</string>
-    <string name="onboarding_soul_creation_description">Only seen by people you share something with. There is no central registry of these names.</string>
+    <string name="onboarding_soul_creation_description">Видим только людям, с которыми вы чем-то поделились. Централизованного реестра имен не существует.</string>
     <string name="onboarding_soul_creation_placeholder">Идентификатор Anytype</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
     <string name="onboarding_type_your_key">Type your recovery phrase</string>
@@ -1002,7 +1002,7 @@
     <string name="onboarding_mnemonic_read_more">Подробнее</string>
     <string name="onboarding_key_additional_info">Вы можете найти этот ключ позже в настройках Anytype</string>
     <string name="onboarding_what_is_the_key">Что такое Ключ?</string>
-    <string name="onboarding_recovery_phrase_description">It is represented by a recovery phrase – 12 random words from which your vault is magically generated on this device.</string>
+    <string name="onboarding_recovery_phrase_description">Фраза восстановления - это случайная комбинация из 12 слов. Волшебным образом из этих слов генерируется ваш аккаунт на устройстве.</string>
     <string name="onboarding_recovery_phrase_description_2">Whomever knows the combination of these words owns your vault. </string>
     <string name="onboarding_recovery_phrase_description_3">Right now, you are the only person in the world who knows it.</string>
     <string name="onboarding_recovery_phrase_description_4">Даже всех вычислительных ресурсов на Земле недостаточно для его взлома. Если Вы потеряете его, он не может быть восстановлен. Так что храните его где-нибудь в безопасном месте!</string>
@@ -1470,7 +1470,7 @@ Please provide specific details of your needs here.</string>
     <string name="error_login_network_id_mismatch">Network ID mismatch detected. Please verify your network configuration.</string>
     <string name="error_login_select_vault_error">Select vault error.</string>
     <string name="global_search_related_to">"Related to: "</string>
-    <string name="global_search_no_related_objects_found">No related objects found</string>
+    <string name="global_search_no_related_objects_found">Связанных объектов не найдено</string>
     <string name="sort_empty_values_desc">Показать пустые значения</string>
     <string name="sort_empty_values_bottom">Снизу</string>
     <string name="sort_empty_values_top">Наверху</string>

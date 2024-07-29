@@ -925,14 +925,14 @@
     <string name="widget_type">小部件类型</string>
     <string name="widget_add_below">在下面添加</string>
     <string name="widget_type_tree">树状图</string>
-    <string name="widget_type_tree_description">Widget with a hierarchical structure</string>
+    <string name="widget_type_tree_description">带有层次结构的小部件</string>
     <string name="widget_type_link">链接</string>
-    <string name="widget_type_link_description">Compact widget view</string>
-    <string name="widget_type_list_description">Widget with a list view</string>
-    <string name="widget_type_compact_list_description">Widget with a compact list view</string>
+    <string name="widget_type_link_description">紧凑小部件视图</string>
+    <string name="widget_type_list_description">带有列表视图的小部件</string>
+    <string name="widget_type_compact_list_description">带有紧凑列表视图的小部件</string>
     <string name="widget_type_list">列表</string>
     <string name="widget_type_view">视图</string>
-    <string name="widget_type_view_description">Widget with a Set or Collection layout</string>
+    <string name="widget_type_view_description">带有集合或集锦布局的小部件</string>
     <string name="widget_type_compact_list">紧凑列表</string>
     <string name="widget_change_source">更改来源</string>
     <string name="widget_change_type">更改类型</string>
@@ -1446,30 +1446,30 @@ Please provide specific details of your needs here.</string>
     <string name="sort_empty_values_top">在顶部</string>
     <string name="widget_view_see_all_objects">查看所有对象</string>
     <string name="sync_status_get_error">获取同步状态出错</string>
-    <string name="sync_status_local_only_title">Local Only</string>
-    <string name="sync_status_data_backup">Data backup is disabled</string>
-    <string name="sync_status_self_host">Self Host</string>
+    <string name="sync_status_local_only_title">仅本地</string>
+    <string name="sync_status_data_backup">数据备份已禁用</string>
+    <string name="sync_status_self_host">自托管</string>
     <string name="sync_status_self_host_synced">已同步</string>
     <plurals name="sync_status_self_host_syncing">
         <item quantity="other">%1$d items syncing...</item>
     </plurals>
-    <string name="sync_status_p2p">P2P Connection</string>
+    <string name="sync_status_p2p">P2P 连接</string>
     <plurals name="sync_status_p2p_devices">
-        <item quantity="other">%1$d devices connected</item>
+        <item quantity="other">%1$d 设备已连接</item>
     </plurals>
-    <string name="sync_status_p2p_connecting">P2P Connecting...</string>
-    <string name="sync_status_p2p_disabled">Disabled</string>
-    <string name="sync_status_p2p_restricted">Restricted. Check device settings.</string>
-    <string name="sync_status_anytype_network">Anytype Network</string>
-    <string name="sync_status_anytype_end_to_end">End-to-end encrypted</string>
+    <string name="sync_status_p2p_connecting">P2P 连接中…</string>
+    <string name="sync_status_p2p_disabled">已禁用</string>
+    <string name="sync_status_p2p_restricted">受限制。请检查设备设置。</string>
+    <string name="sync_status_anytype_network">Anytype 网络</string>
+    <string name="sync_status_anytype_end_to_end">端到端加密</string>
     <plurals name="sync_status_network_items">
-        <item quantity="other">%1$d items syncing...</item>
+        <item quantity="other">%1$d 项目同步中…</item>
     </plurals>
-    <string name="sync_status_anytype_network_connecting">Network Connecting...</string>
+    <string name="sync_status_anytype_network_connecting">网络连接中...</string>
     <string name="sync_status_anytype_network_no_connecting">没有连接</string>
-    <string name="sync_status_storage_limit_exceed">Storage limit reached</string>
+    <string name="sync_status_storage_limit_exceed">已达到储存限制</string>
     <string name="sync_status_incompatible_version">不兼容版本</string>
-    <string name="sync_status_network_error">No access to the space</string>
-    <string name="sync_status_unrecognized">Unrecognized error</string>
-    <string name="version_history_title">Version history</string>
+    <string name="sync_status_network_error">没有访问空间的权限</string>
+    <string name="sync_status_unrecognized">未知的错误</string>
+    <string name="version_history_title">历史版本</string>
 </resources>

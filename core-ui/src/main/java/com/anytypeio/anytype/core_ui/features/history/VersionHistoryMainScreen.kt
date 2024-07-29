@@ -2,7 +2,9 @@ package com.anytypeio.anytype.core_ui.features.history
 
 import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -20,6 +22,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -45,7 +48,9 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 @Composable
 fun VersionHistoryScreen(
-    state: VersionHistoryState
+    state: VersionHistoryState,
+    onGroupClick: (VersionHistoryGroup) -> Unit,
+    onItemClick: (VersionHistoryGroup.Item) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -62,9 +67,13 @@ fun VersionHistoryScreen(
             is VersionHistoryState.Error.GetVersions -> TODO()
             VersionHistoryState.Error.NoVersions -> TODO()
             is VersionHistoryState.Error.SpaceMembers -> TODO()
-            VersionHistoryState.Loading -> TODO()
+            VersionHistoryState.Loading -> VersionHistoryLoading()
             is VersionHistoryState.Success -> {
-                VersionHistorySuccessState(state = state)
+                VersionHistorySuccessState(
+                    state = state,
+                    onGroupClick = onGroupClick,
+                    onItemClick = onItemClick
+                )
             }
         }
 
@@ -72,7 +81,23 @@ fun VersionHistoryScreen(
 }
 
 @Composable
-private fun VersionHistorySuccessState(state: VersionHistoryState.Success) {
+private fun VersionHistoryLoading() {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        CircularProgressIndicator(
+            modifier = Modifier
+                .size(24.dp),
+            color = colorResource(R.color.shape_secondary),
+            trackColor = colorResource(R.color.shape_primary)
+        )
+    }
+}
+
+@Composable
+private fun VersionHistorySuccessState(
+    state: VersionHistoryState.Success,
+    onGroupClick: (VersionHistoryGroup) -> Unit,
+    onItemClick: (VersionHistoryGroup.Item) -> Unit
+) {
 
     val lazyListState = rememberLazyListState()
 
@@ -94,9 +119,13 @@ private fun VersionHistorySuccessState(state: VersionHistoryState.Success) {
         ) { idx ->
             val group = state.groups[idx]
             if (group.isExpanded) {
-                GroupItemExpanded(group = group)
+                GroupItemExpanded(
+                    group = group,
+                    onGroupClick = onGroupClick,
+                    onItemClick = onItemClick
+                )
             } else {
-                GroupItemCollapsed(group = group)
+                GroupItemCollapsed(group = group, onGroupClick = onGroupClick)
             }
         }
 
@@ -104,7 +133,11 @@ private fun VersionHistorySuccessState(state: VersionHistoryState.Success) {
 }
 
 @Composable
-private fun GroupItemExpanded(group: VersionHistoryGroup) {
+private fun GroupItemExpanded(
+    group: VersionHistoryGroup,
+    onGroupClick: (VersionHistoryGroup) -> Unit,
+    onItemClick: (VersionHistoryGroup.Item) -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -116,6 +149,7 @@ private fun GroupItemExpanded(group: VersionHistoryGroup) {
         border = BorderStroke(
             width = 0.5.dp, color = colorResource(id = R.color.shape_primary)
         ),
+        onClick = { onGroupClick(group) }
     ) {
         Text(
             modifier = Modifier
@@ -126,18 +160,22 @@ private fun GroupItemExpanded(group: VersionHistoryGroup) {
             color = colorResource(id = R.color.text_secondary)
         )
         group.items.forEach {
-            GroupItem(item = it)
+            GroupItem(item = it, onItemClick = onItemClick)
         }
     }
 }
 
 @Composable
-private fun GroupItem(item: VersionHistoryGroup.Item) {
+private fun GroupItem(
+    item: VersionHistoryGroup.Item,
+    onItemClick: (VersionHistoryGroup.Item) -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp)
-            .padding(start = 16.dp),
+            .padding(horizontal = 16.dp)
+            .clickable { onItemClick(item) },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
@@ -170,7 +208,10 @@ private fun GroupItem(item: VersionHistoryGroup.Item) {
 }
 
 @Composable
-private fun GroupItemCollapsed(group: VersionHistoryGroup) {
+private fun GroupItemCollapsed(
+    group: VersionHistoryGroup,
+    onGroupClick: (VersionHistoryGroup) -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -182,6 +223,7 @@ private fun GroupItemCollapsed(group: VersionHistoryGroup) {
         border = BorderStroke(
             width = 0.5.dp, color = colorResource(id = R.color.shape_primary)
         ),
+        onClick = { onGroupClick(group) }
     ) {
         Row(
             modifier = Modifier
@@ -287,7 +329,29 @@ private fun SpaceListScreenPreview() {
                     icons = listOf(ObjectIcon.Profile.Avatar("C"), ObjectIcon.Profile.Avatar("D"))
                 )
             )
+        ),
+        onGroupClick = {},
+        onItemClick = {}
+    )
+}
 
-        )
+@Preview(
+    showBackground = true,
+    backgroundColor = 0xFFFFFF,
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    name = "Light Mode"
+)
+@Preview(
+    showBackground = true,
+    backgroundColor = 0x000000,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    name = "Dark Mode"
+)
+@Composable
+private fun SpaceListScreenPreviewLoading() {
+    VersionHistoryScreen(
+        state = VersionHistoryState.Loading,
+        onGroupClick = {},
+        onItemClick = {}
     )
 }

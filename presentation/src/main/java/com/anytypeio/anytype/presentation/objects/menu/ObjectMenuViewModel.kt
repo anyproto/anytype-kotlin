@@ -230,7 +230,10 @@ class ObjectMenuViewModel(
             } else {
                 try {
                     if (!isThisObjectLocked(ctx)) {
-                        commands.emit(Command.OpenObjectLayout)
+                        commands.emit(Command.OpenHistoryScreen(
+                            objectId = ctx,
+                            spaceId = space
+                        ))
                     } else {
                         _toasts.emit("Your object is locked.")
                     }

@@ -6,6 +6,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.history.GetVersions
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.history.VersionHistoryViewModel.VmParams
 import javax.inject.Inject
@@ -16,7 +17,8 @@ class VersionHistoryVMFactory @Inject constructor(
     private val objectSearch: SearchObjects,
     private val dateProvider: DateProvider,
     private val localeProvider: LocaleProvider,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val urlBuilder: UrlBuilder
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -27,7 +29,8 @@ class VersionHistoryVMFactory @Inject constructor(
             objectSearch = objectSearch,
             dateProvider = dateProvider,
             localeProvider = localeProvider,
-            analytics = analytics
+            analytics = analytics,
+            urlBuilder = urlBuilder
         ) as T
     }
 }

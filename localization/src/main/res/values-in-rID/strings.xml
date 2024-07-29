@@ -1471,4 +1471,5 @@ Please provide specific details of your needs here.</string>
     <string name="sync_status_incompatible_version">Incompatible version</string>
     <string name="sync_status_network_error">Tidak ada akses ke ruang</string>
     <string name="sync_status_unrecognized">Galat tak dikenali</string>
+    <string name="version_history_title">Version history</string>
 </resources>

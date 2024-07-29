@@ -1036,7 +1036,7 @@ class ComponentManager(
         }
 
     val versionHistoryComponent =
-        ComponentWithParams { vmParams: VersionHistoryViewModel.VmParams ->
+        ComponentMapWithParam { vmParams: VersionHistoryViewModel.VmParams ->
             DaggerVersionHistoryComponent.factory()
                 .create(findComponentDependencies(), vmParams)
         }

@@ -60,11 +60,14 @@ class VersionHistoryFragment : BaseBottomSheetComposeFragment() {
             objectId = ctx,
             spaceId = spaceId
         )
-        componentManager().versionHistoryComponent.get(vmParams).inject(this)
+        componentManager().versionHistoryComponent.get(
+            param = vmParams,
+            key = ctx + spaceId
+        ).inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().versionHistoryComponent.release()
+        componentManager().versionHistoryComponent.release(ctx + spaceId)
     }
 
     companion object {

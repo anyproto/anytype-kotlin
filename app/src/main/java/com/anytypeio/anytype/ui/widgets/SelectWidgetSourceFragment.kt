@@ -63,7 +63,8 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
     private val selectWidgetSourceAdapter by lazy {
         DefaultObjectViewAdapter(
             onDefaultObjectClicked = vm::onObjectClicked,
-            onBundledWidgetSourceClicked = vm::onBundledWidgetSourceClicked
+            onBundledWidgetSourceClicked = vm::onBundledWidgetSourceClicked,
+            onCreateNewObject = vm::onCreateNewObjectClicked
         )
     }
 
@@ -203,7 +204,7 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
             adapter = selectWidgetSourceAdapter
             addItemDecoration(
                 DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
-                    setDrawable(drawable(R.drawable.divider_object_search))
+                    setDrawable(drawable(R.drawable.divider_select_widget_source))
                 }
             )
             addItemDecoration(

@@ -116,7 +116,8 @@ class HomeScreenFragment : BaseComposeFragment() {
                     onMove = vm::onMove,
                     onObjectCheckboxClicked = vm::onObjectCheckboxClicked,
                     onSpaceShareIconClicked = vm::onSpaceShareIconClicked,
-                    onSeeAllObjectsClicked = vm::onSeeAllObjectsClicked
+                    onSeeAllObjectsClicked = vm::onSeeAllObjectsClicked,
+                    onCreateObjectInsideWidget = vm::onCreateObjectInsideWidget
                 )
 
                 if (featureToggles.enableDiscussionDemo) {

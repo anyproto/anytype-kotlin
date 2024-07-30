@@ -1712,6 +1712,10 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onCreateObjectInsideWidget(widget: Id) {
+        TODO("Not yet implemented")
+    }
+
     sealed class Navigation {
         data class OpenObject(val ctx: Id, val space: Id) : Navigation()
         data class OpenSet(val ctx: Id, val space: Id, val view: Id?) : Navigation()

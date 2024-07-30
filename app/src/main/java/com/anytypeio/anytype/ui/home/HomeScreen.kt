@@ -106,7 +106,8 @@ fun HomeScreen(
     onSpaceWidgetClicked: () -> Unit,
     onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
     onSpaceShareIconClicked: (ObjectWrapper.SpaceView) -> Unit,
-    onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit
+    onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit,
+    onCreateObjectInsideWidget: (Id) -> Unit
 ) {
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -127,7 +128,8 @@ fun HomeScreen(
             onObjectCheckboxClicked = onObjectCheckboxClicked,
             onSpaceShareIconClicked = onSpaceShareIconClicked,
             onSeeAllObjectsClicked = onSeeAllObjectsClicked,
-            onCreateWidget = onCreateWidget
+            onCreateWidget = onCreateWidget,
+            onCreateObjectInsideWidget = onCreateObjectInsideWidget
         )
         AnimatedVisibility(
             visible = mode is InteractionMode.Edit,
@@ -197,7 +199,8 @@ private fun WidgetList(
     onSpaceWidgetClicked: () -> Unit,
     onSpaceShareIconClicked: (ObjectWrapper.SpaceView) -> Unit,
     onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit,
-    onCreateWidget: () -> Unit
+    onCreateWidget: () -> Unit,
+    onCreateObjectInsideWidget: (Id) -> Unit
 ) {
     val views = remember { mutableStateOf(widgets) }
     views.value = widgets
@@ -255,7 +258,8 @@ private fun WidgetList(
                                 onWidgetObjectClicked = onWidgetObjectClicked,
                                 onObjectCheckboxClicked = onObjectCheckboxClicked,
                                 onWidgetSourceClicked = onWidgetSourceClicked,
-                                onToggleExpandedWidgetState = onToggleExpandedWidgetState
+                                onToggleExpandedWidgetState = onToggleExpandedWidgetState,
+                                onCreateObjectInsideWidget = onCreateObjectInsideWidget
                             )
                         }
                     } else {
@@ -270,7 +274,8 @@ private fun WidgetList(
                             onWidgetObjectClicked = onWidgetObjectClicked,
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
                             onWidgetSourceClicked = onWidgetSourceClicked,
-                            onToggleExpandedWidgetState = onToggleExpandedWidgetState
+                            onToggleExpandedWidgetState = onToggleExpandedWidgetState,
+                            onCreateObjectInsideWidget = onCreateObjectInsideWidget
                         )
                     }
                 }
@@ -726,7 +731,8 @@ private fun TreeWidgetItem(
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onWidgetSourceClicked: (Widget.Source) -> Unit,
-    onToggleExpandedWidgetState: (WidgetId) -> Unit
+    onToggleExpandedWidgetState: (WidgetId) -> Unit,
+    onCreateObjectInsideWidget: (Id) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -751,7 +757,8 @@ private fun TreeWidgetItem(
             onObjectCheckboxClicked = onObjectCheckboxClicked,
             onWidgetSourceClicked = onWidgetSourceClicked,
             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-            mode = mode
+            mode = mode,
+            onCreateObjectInsideWidget = onCreateObjectInsideWidget
         )
         AnimatedVisibility(
             visible = mode is InteractionMode.Edit,

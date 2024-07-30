@@ -66,7 +66,8 @@ fun TreeWidgetCard(
     onWidgetSourceClicked: (Widget.Source) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
-    onObjectCheckboxClicked: (Id, Boolean) -> Unit
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit,
+    onCreateObjectInsideWidget: (Id) -> Unit
 ) {
     val isCardMenuExpanded = remember {
         mutableStateOf(false)
@@ -128,7 +129,12 @@ fun TreeWidgetCard(
                     if (item.isLoading) {
                         EmptyWidgetPlaceholder(R.string.loading)
                     } else {
-                        EmptyWidgetPlaceholder(R.string.empty_tree_widget)
+                        EmptyWidgetPlaceholderWithCreateButton(
+                            R.string.empty_tree_widget,
+                            onCreateClicked = {
+                                onCreateObjectInsideWidget(item.id)
+                            }
+                        )
                     }
                     Spacer(modifier = Modifier.height(2.dp))
                 }

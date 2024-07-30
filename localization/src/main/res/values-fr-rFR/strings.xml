@@ -490,6 +490,7 @@
     <string name="block_data_view_content_description_no_data">The source of the inline set has no type</string>
     <string name="object_search_recently_opened_section_title">Récemment ouvert</string>
     <string name="widget_source_anytype_library">Bibliothèque Anytype</string>
+    <string name="widget_source_default_lists">Default lists</string>
     <string name="your_favorite_objects">Your favorite objects</string>
     <string name="on_this_device">Sur cet appareil</string>
     <string name="sets_of_objects">Sets of objects from your workspace</string>
@@ -1482,4 +1483,5 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="sync_status_network_error">No access to the space</string>
     <string name="sync_status_unrecognized">Erreur inconnue</string>
     <string name="version_history_title">Historique de version</string>
+    <string name="new_object">Nouvel objet</string>
 </resources>

@@ -116,7 +116,8 @@ class HomeScreenFragment : BaseComposeFragment() {
                     onMove = vm::onMove,
                     onObjectCheckboxClicked = vm::onObjectCheckboxClicked,
                     onSpaceShareIconClicked = vm::onSpaceShareIconClicked,
-                    onSeeAllObjectsClicked = vm::onSeeAllObjectsClicked
+                    onSeeAllObjectsClicked = vm::onSeeAllObjectsClicked,
+                    onCreateObjectInsideWidget = vm::onCreateObjectInsideWidget
                 )
 
                 if (featureToggles.enableDiscussionDemo) {
@@ -264,6 +265,21 @@ class HomeScreenFragment : BaseComposeFragment() {
                             type = type,
                             space = command.space,
                             widgets = command.widgets
+                        )
+                    }
+                }
+                dialog.show(childFragmentManager, null)
+            }
+            is Command.CreateObjectForWidget -> {
+                val dialog = SelectObjectTypeFragment.new(
+                    flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT,
+                    space = command.space.id
+                ).apply {
+                    onTypeSelected = { type ->
+                        vm.onCreateObjectForWidget(
+                            type = type,
+                            widget = command.widget,
+                            source = command.source
                         )
                     }
                 }

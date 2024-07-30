@@ -1692,17 +1692,18 @@ class HomeScreenViewModel(
                     }
                 )
             ).fold(
-                onSuccess = {
+                onSuccess = { response ->
                     proceedWithCreatingWidget(
                         ctx = widgets,
-                        source = it.objectId,
+                        source = response.objectId,
                         target = null,
                         type = if (type.recommendedLayout?.isDataView() == true) {
                             Command.ChangeWidgetType.TYPE_VIEW
                         } else {
-                            Command.ChangeWidgetType.TYPE_COMPACT_LIST
+                            Command.ChangeWidgetType.TYPE_TREE
                         }
                     )
+                    proceedWithNavigation(response.obj.navigation())
                 },
                 onFailure = {
                     Timber.e(it, "Error while creating source for widget")

@@ -489,6 +489,7 @@
     <string name="block_data_view_content_description_no_data">The source of the inline set has no type</string>
     <string name="object_search_recently_opened_section_title">最近打开的文档</string>
     <string name="widget_source_anytype_library">Anytype 文库</string>
+    <string name="widget_source_default_lists">Default lists</string>
     <string name="your_favorite_objects">您最喜欢的对象</string>
     <string name="on_this_device">在此设备上</string>
     <string name="sets_of_objects">工作区中的对象集</string>
@@ -1472,4 +1473,5 @@ Please provide specific details of your needs here.</string>
     <string name="sync_status_network_error">没有访问空间的权限</string>
     <string name="sync_status_unrecognized">未知的错误</string>
     <string name="version_history_title">历史版本</string>
+    <string name="new_object">新对象</string>
 </resources>

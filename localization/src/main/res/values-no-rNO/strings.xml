@@ -490,6 +490,7 @@
     <string name="block_data_view_content_description_no_data">The source of the inline set has no type</string>
     <string name="object_search_recently_opened_section_title">Nylig åpnet</string>
     <string name="widget_source_anytype_library">Anytype bibliotek</string>
+    <string name="widget_source_default_lists">Default lists</string>
     <string name="your_favorite_objects">Dine favorittobjekter</string>
     <string name="on_this_device">På denne enheten</string>
     <string name="sets_of_objects">Sets of objects from your workspace</string>
@@ -1485,4 +1486,5 @@ Please provide specific details of your needs here.</string>
     <string name="sync_status_network_error">No access to the space</string>
     <string name="sync_status_unrecognized">Unrecognized error</string>
     <string name="version_history_title">Version history</string>
+    <string name="new_object">Nytt objekt</string>
 </resources>

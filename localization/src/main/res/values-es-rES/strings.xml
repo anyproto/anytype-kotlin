@@ -490,6 +490,7 @@
     <string name="block_data_view_content_description_no_data">El origen del conjunto insertado no tiene tipo</string>
     <string name="object_search_recently_opened_section_title">Abierto recientemente</string>
     <string name="widget_source_anytype_library">Biblioteca de Anytype</string>
+    <string name="widget_source_default_lists">Default lists</string>
     <string name="your_favorite_objects">Tus objetos favoritos</string>
     <string name="on_this_device">En este dispositivo</string>
     <string name="sets_of_objects">Conjuntos de objetos para tu espacio de trabajo</string>
@@ -1485,4 +1486,5 @@ En concreto,
     <string name="sync_status_network_error">Sin acceso al espacio</string>
     <string name="sync_status_unrecognized">Error desconocido</string>
     <string name="version_history_title">Version history</string>
+    <string name="new_object">Nuevo objeto</string>
 </resources>

@@ -1753,7 +1753,7 @@ class HomeScreenViewModel(
             )
         ).fold(
             onSuccess = {
-
+                Timber.d("Link to new object inside widget's source has been created successfully")
             },
             onFailure = {
                 Timber.e(it, "Error while creating block")

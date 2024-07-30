@@ -1763,9 +1763,6 @@ class HomeScreenViewModel(
 
     fun onCreateObjectInsideWidget(widget: Id) {
         when(val target = widgets.value.orEmpty().find { it.id == widget }) {
-            is Widget.List -> {
-                //
-            }
             is Widget.Tree -> {
                 val source = target.source
                 if (source is Widget.Source.Default) {
@@ -1782,11 +1779,14 @@ class HomeScreenViewModel(
                     }
                 }
             }
+            is Widget.List -> {
+                // TODO
+            }
             is Widget.View -> {
-                //
+                // TODO
             }
             is Widget.Link -> {
-                //
+                // Do nothing.
             }
             else -> {
                 Timber.e("Could not found widget.")

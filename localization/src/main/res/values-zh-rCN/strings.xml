@@ -1049,7 +1049,7 @@
     <string name="sharing_menu_data">数据</string>
     <string name="sharing_menu_add_to_anytype_header_title">添加至 Anytype</string>
     <string name="sharing_menu_add_to_anytype_error">Anytype 上传文件错误：%1$s</string>
-    <string name="sharing_menu_add_to_anytype_success">All files have been successfully uploaded</string>
+    <string name="sharing_menu_add_to_anytype_success">所有文件都已经成功上传</string>
     <string name="sharing_menu_toast_object_added">新对象已添加到空间 ”%1$s“</string>
     <string name="sharing_menu_btn_add">添加</string>
     <string name="sharing_menu_btn_open">打开</string>
@@ -1311,9 +1311,9 @@
     <string name="payments_tier_current_paid_by_apple">Apple 订阅</string>
     <string name="payments_tier_current_paid_by_google">Google 订阅</string>
     <string name="payments_tier_current_button">管理付款</string>
-    <string name="membership_manage_tier_desktop">You can manage tier on Desktop platform</string>
-    <string name="membership_manage_tier_ios">You can manage tier on iOS platform</string>
-    <string name="membership_manage_tier_another_account">You can manage tier on another Google account</string>
+    <string name="membership_manage_tier_desktop">您可以在桌面端上管理等级</string>
+    <string name="membership_manage_tier_ios">您可以在 iOS 平台上管理等级</string>
+    <string name="membership_manage_tier_another_account">您可以在另一个 Google 帐户上管理等级</string>
     <string name="payments_tier_current_change_email_button">更改电子邮件</string>
     <!-- Payments Code -->
     <string name="payments_code_title">输入发送到您邮箱的代码</string>
@@ -1451,7 +1451,7 @@ Please provide specific details of your needs here.</string>
     <string name="sync_status_self_host">自托管</string>
     <string name="sync_status_self_host_synced">已同步</string>
     <plurals name="sync_status_self_host_syncing">
-        <item quantity="other">%1$d items syncing...</item>
+        <item quantity="other">%1$d 项目同步中…</item>
     </plurals>
     <string name="sync_status_p2p">P2P 连接</string>
     <plurals name="sync_status_p2p_devices">

@@ -24,6 +24,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.ext.process
+import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -640,6 +641,14 @@ class HomeScreenViewModel(
                                 source = dispatch.source,
                                 type = dispatch.widgetType,
                                 target = dispatch.target
+                            )
+                        }
+                        is WidgetDispatchEvent.NewWithWidgetWithNewSource -> {
+                            commands.emit(
+                                Command.CreateSourceForNewWidget(
+                                    space = SpaceId(config.space),
+                                    widgets = config.widgets
+                                )
                             )
                         }
                     }
@@ -1670,6 +1679,38 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onNewWidgetSourceTypeSelected(
+        type: ObjectWrapper.Type,
+        space: SpaceId,
+        widgets: Id
+    ) {
+        viewModelScope.launch {
+            createObject.async(
+                params = CreateObject.Param(
+                    type = type.uniqueKey?.let {
+                        TypeKey(it)
+                    }
+                )
+            ).fold(
+                onSuccess = {
+                    proceedWithCreatingWidget(
+                        ctx = widgets,
+                        source = it.objectId,
+                        target = null,
+                        type = if (type.recommendedLayout?.isDataView() == true) {
+                            Command.ChangeWidgetType.TYPE_VIEW
+                        } else {
+                            Command.ChangeWidgetType.TYPE_COMPACT_LIST
+                        }
+                    )
+                },
+                onFailure = {
+                    Timber.e(it, "Error while creating source for widget")
+                }
+            )
+        }
+    }
+
     sealed class Navigation {
         data class OpenObject(val ctx: Id, val space: Id) : Navigation()
         data class OpenSet(val ctx: Id, val space: Id, val view: Id?) : Navigation()
@@ -1834,6 +1875,8 @@ sealed class Command {
             const val UNDEFINED_LAYOUT_CODE = -1
         }
     }
+
+    data class CreateSourceForNewWidget(val space: SpaceId, val widgets: Id) : Command()
 
     data class ShareSpace(val space: SpaceId) : Command()
 

@@ -180,6 +180,13 @@ class SelectWidgetSourceViewModel(
         }
     }
 
+    fun onCreateNewObjectClicked() {
+        viewModelScope.launch {
+            dispatcher.send(WidgetDispatchEvent.NewWithWidgetWithNewSource)
+            isDismissed.value = true
+        }
+    }
+
     override fun onObjectClicked(view: DefaultObjectView) {
         Timber.d("onObjectClicked, view:[$view]")
         when(val curr = config) {

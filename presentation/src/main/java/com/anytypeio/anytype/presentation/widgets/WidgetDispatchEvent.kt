@@ -26,4 +26,6 @@ sealed class WidgetDispatchEvent {
         val source: Id,
         val type: Int
     ) : WidgetDispatchEvent()
+
+    data object NewWithWidgetWithNewSource: WidgetDispatchEvent()
 }

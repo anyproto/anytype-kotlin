@@ -21,7 +21,8 @@ import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
 class DefaultObjectViewAdapter(
     private val onDefaultObjectClicked: (DefaultObjectView) -> Unit,
     private val onBundledWidgetSourceClicked: (BundledWidgetSourceView) -> Unit = {},
-    private val onCurrentListChanged: (Int, Int) -> Unit = { prevSize, newSize -> }
+    private val onCurrentListChanged: (Int, Int) -> Unit = { prevSize, newSize -> },
+    private val onCreateNewObject: () -> Unit = {}
 ) : ListAdapter<DefaultSearchItem, DefaultObjectViewAdapter.ObjectViewHolder>(Differ) {
 
     override fun onCreateViewHolder(
@@ -59,7 +60,11 @@ class DefaultObjectViewAdapter(
             ItemSearchNewObjectBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
             )
-        )
+        ).apply {
+            itemView.setOnThrottleClickListener {
+                onCreateNewObject()
+            }
+        }
         else -> throw IllegalStateException("Unexpected view type: $viewType")
     }
 

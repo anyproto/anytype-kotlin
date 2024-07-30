@@ -33,6 +33,7 @@ import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.bin.EmptyBin
+import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.Gateway
@@ -222,6 +223,9 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var payloadDelegator: PayloadDelegator
+
+    @Mock
+    lateinit var createBlock: CreateBlock
 
     lateinit var userPermissionProvider: UserPermissionProvider
 
@@ -2901,7 +2905,8 @@ class HomeScreenViewModelTest {
         deepLinkToObjectDelegate = deepLinkToObjectDelegate,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         coverImageHashProvider = coverImageHashProvider,
-        payloadDelegator = payloadDelegator
+        payloadDelegator = payloadDelegator,
+        createBlock = createBlock
     )
 
     companion object {

@@ -39,13 +39,6 @@ fun EmptyWidgetPlaceholder(
             ),
             textAlign = TextAlign.Center
         )
-
-        ButtonSecondary(
-            onClick = { /*TODO*/ },
-            size = ButtonSize.XSmall,
-            text = stringResource(id = R.string.create_object),
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
     }
 }
 

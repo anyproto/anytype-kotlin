@@ -270,6 +270,21 @@ class HomeScreenFragment : BaseComposeFragment() {
                 }
                 dialog.show(childFragmentManager, null)
             }
+            is Command.CreateObjectForWidget -> {
+                val dialog = SelectObjectTypeFragment.new(
+                    flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT,
+                    space = command.space.id
+                ).apply {
+                    onTypeSelected = { type ->
+                        vm.onCreateObjectForWidget(
+                            type = type,
+                            widget = command.widget,
+                            source = command.source
+                        )
+                    }
+                }
+                dialog.show(childFragmentManager, null)
+            }
             is Command.OpenSpaceSettings -> {
                 runCatching {
                     findNavController().navigate(

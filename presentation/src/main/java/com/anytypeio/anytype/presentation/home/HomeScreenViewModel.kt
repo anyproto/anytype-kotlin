@@ -35,6 +35,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.bin.EmptyBin
+import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
@@ -177,7 +178,8 @@ class HomeScreenViewModel(
     private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val coverImageHashProvider: CoverImageHashProvider,
-    private val payloadDelegator: PayloadDelegator
+    private val payloadDelegator: PayloadDelegator,
+    private val createBlock: CreateBlock
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -1712,8 +1714,84 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onCreateObjectForWidget(
+        type: ObjectWrapper.Type,
+        widget: Id,
+        source: Id
+    ) {
+        viewModelScope.launch {
+            createObject.async(
+                params = CreateObject.Param(
+                    type = type.uniqueKey?.let {
+                        TypeKey(it)
+                    }
+                )
+            ).fold(
+                onSuccess = { result ->
+                    proceedWithCreatingLinkToNewObject(source, result)
+                    proceedWithNavigation(result.obj.navigation())
+                },
+                onFailure = {
+                    Timber.e(it, "Error while creating object")
+                }
+            )
+        }
+    }
+
+    private suspend fun proceedWithCreatingLinkToNewObject(
+        source: Id,
+        result: CreateObject.Result
+    ) {
+        createBlock.async(
+            params = CreateBlock.Params(
+                context = source,
+                target = "",
+                position = Position.NONE,
+                prototype = Block.Prototype.Link(
+                    target = result.objectId
+                )
+            )
+        ).fold(
+            onSuccess = {
+
+            },
+            onFailure = {
+                Timber.e(it, "Error while creating block")
+            }
+        )
+    }
+
     fun onCreateObjectInsideWidget(widget: Id) {
-        TODO("Not yet implemented")
+        when(val target = widgets.value.orEmpty().find { it.id == widget }) {
+            is Widget.List -> {
+                //
+            }
+            is Widget.Tree -> {
+                val source = target.source
+                if (source is Widget.Source.Default) {
+                    if (!source.obj.layout.isDataView()) {
+                        viewModelScope.launch {
+                            commands.emit(
+                                Command.CreateObjectForWidget(
+                                    space = SpaceId(target.config.space),
+                                    widget = target.id,
+                                    source = target.source.id
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+            is Widget.View -> {
+                //
+            }
+            is Widget.Link -> {
+                //
+            }
+            else -> {
+                Timber.e("Could not found widget.")
+            }
+        }
     }
 
     sealed class Navigation {
@@ -1762,7 +1840,8 @@ class HomeScreenViewModel(
         private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
         private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         private val coverImageHashProvider: CoverImageHashProvider,
-        private val payloadDelegator: PayloadDelegator
+        private val payloadDelegator: PayloadDelegator,
+        private val createBlock: CreateBlock
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -1804,7 +1883,8 @@ class HomeScreenViewModel(
             deepLinkToObjectDelegate = deepLinkToObjectDelegate,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             coverImageHashProvider = coverImageHashProvider,
-            payloadDelegator = payloadDelegator
+            payloadDelegator = payloadDelegator,
+            createBlock = createBlock
         ) as T
     }
 
@@ -1882,6 +1962,11 @@ sealed class Command {
     }
 
     data class CreateSourceForNewWidget(val space: SpaceId, val widgets: Id) : Command()
+    data class CreateObjectForWidget(
+        val space: SpaceId,
+        val widget: Id,
+        val source: Id
+    ) : Command()
 
     data class ShareSpace(val space: SpaceId) : Command()
 

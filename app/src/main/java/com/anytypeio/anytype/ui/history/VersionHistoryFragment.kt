@@ -58,16 +58,13 @@ class VersionHistoryFragment : BaseBottomSheetComposeFragment() {
     override fun injectDependencies() {
         val vmParams = VersionHistoryViewModel.VmParams(
             objectId = ctx,
-            spaceId = spaceId
+            spaceId = SpaceId(spaceId)
         )
-        componentManager().versionHistoryComponent.get(
-            param = vmParams,
-            key = ctx + spaceId
-        ).inject(this)
+        componentManager().versionHistoryComponent.get(vmParams,).inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().versionHistoryComponent.release(ctx + spaceId)
+        componentManager().versionHistoryComponent.release()
     }
 
     companion object {

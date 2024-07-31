@@ -1115,7 +1115,7 @@ fun Rpc.History.Version.toCoreModel(): Version {
 
 fun Rpc.History.ShowVersion.Response.toCoreModel(): ShowVersionResponse {
     return ShowVersionResponse(
-        objectView = objectView?.toCore(),
+        payload = objectView?.toPayload(),
         version = version?.toCoreModel(),
         traceId = traceId
     )

@@ -25,6 +25,6 @@ class ShowVersion @Inject constructor(
     data class Params(
         val objectId: Id,
         val versionId: Id,
-        val traceId: Id
+        val traceId: Id = ""
     )
 }

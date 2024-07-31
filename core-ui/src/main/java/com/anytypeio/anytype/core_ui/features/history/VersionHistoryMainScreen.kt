@@ -148,13 +148,13 @@ private fun GroupItemExpanded(
         ),
         border = BorderStroke(
             width = 0.5.dp, color = colorResource(id = R.color.shape_primary)
-        ),
-        onClick = { onGroupClick(group) }
+        )
     ) {
         Text(
             modifier = Modifier
                 .padding(start = 16.dp, top = 12.dp, bottom = 4.dp)
-                .wrapContentSize(),
+                .wrapContentSize()
+                .clickable { onGroupClick(group) },
             text = group.title,
             style = PreviewTitle2Regular,
             color = colorResource(id = R.color.text_secondary)
@@ -292,7 +292,8 @@ private fun SpaceListScreenPreview() {
                             icon = ObjectIcon.Profile.Avatar("A"),
                             spaceMember = "1",
                             timeStamp = TimeInSeconds(23423423L),
-                            versions = emptyList()
+                            versions = emptyList(),
+                            dateFormatted = "Today",
 
                         ),
                         VersionHistoryGroup.Item(
@@ -302,7 +303,8 @@ private fun SpaceListScreenPreview() {
                             icon = ObjectIcon.Profile.Avatar("B"),
                             spaceMember = "1",
                             timeStamp = TimeInSeconds(23423423L),
-                            versions = emptyList()
+                            versions = emptyList(),
+                            dateFormatted = "Today",
                         ),
                         VersionHistoryGroup.Item(
                             id = "3",
@@ -311,7 +313,8 @@ private fun SpaceListScreenPreview() {
                             icon = ObjectIcon.Profile.Avatar("C"),
                             spaceMember = "1",
                             timeStamp = TimeInSeconds(23423423L),
-                            versions = emptyList()
+                            versions = emptyList(),
+                            dateFormatted = "Today",
                         ),
                     ),
                     icons = listOf(ObjectIcon.Profile.Avatar("A"), ObjectIcon.Profile.Avatar("B"))

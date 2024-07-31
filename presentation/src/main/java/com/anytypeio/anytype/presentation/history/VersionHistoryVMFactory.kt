@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.history.GetVersions
+import com.anytypeio.anytype.domain.history.SetVersion
 import com.anytypeio.anytype.domain.history.ShowVersion
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
@@ -22,6 +23,7 @@ class VersionHistoryVMFactory @Inject constructor(
     private val analytics: Analytics,
     private val urlBuilder: UrlBuilder,
     private val showVersion: ShowVersion,
+    private val setVersion: SetVersion,
     private val renderer: DefaultBlockViewRenderer
 ) : ViewModelProvider.Factory {
 
@@ -36,7 +38,8 @@ class VersionHistoryVMFactory @Inject constructor(
             analytics = analytics,
             urlBuilder = urlBuilder,
             showVersion = showVersion,
-            renderer = renderer
+            renderer = renderer,
+            setVersion = setVersion
         ) as T
     }
 }

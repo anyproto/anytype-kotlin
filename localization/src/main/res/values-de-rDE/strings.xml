@@ -930,7 +930,7 @@
     <string name="widget_type_tree">Strukturbaum</string>
     <string name="widget_type_tree_description">Widget mit einer hierarchischen Struktur</string>
     <string name="widget_type_link">Link</string>
-    <string name="widget_type_link_description">Compact widget view</string>
+    <string name="widget_type_link_description">Kompakte Widget-Ansicht</string>
     <string name="widget_type_list_description">Widget mit einer Listenansicht</string>
     <string name="widget_type_compact_list_description">Widget mit einer kompakten Listenansicht</string>
     <string name="widget_type_list">Liste</string>

@@ -34,12 +34,8 @@ interface AppNavigation {
     fun launchCollections(subscription: Subscription, space: Id)
     fun launchObjectSet(target: Id, space: Id)
 
-    fun openKeychainScreen()
-    fun openUserSettingsScreen()
-
     fun exit()
     fun exitToDesktop()
-    fun openDebugSettings()
     fun openPageSearch()
     fun openUpdateAppScreen()
     fun openRemoteFilesManageScreen(subscription: Id)
@@ -71,9 +67,7 @@ interface AppNavigation {
         ) : Command()
 
         object OpenSettings : Command()
-        object OpenUserSettingsScreen : Command()
         object MigrationErrorScreen: Command()
-        object OpenDebugSettingsScreen : Command()
 
         object OpenPageSearch : Command()
 

@@ -333,7 +333,7 @@ class RelationListViewModel(
     }
 
     private fun isPossibleToRemoveRelation(view: ObjectRelationView): Boolean {
-        return isEditMode.value && !view.system
+        return isEditMode.value && !view.system && !view.readOnly
     }
 
     private suspend fun onRelationClickedAddMode(

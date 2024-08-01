@@ -87,6 +87,9 @@ import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.sets.prefillNewObjectDetails
+import com.anytypeio.anytype.presentation.sets.resolveSetByRelationPrefilledObjectData
+import com.anytypeio.anytype.presentation.sets.resolveTypeAndActiveViewTemplate
+import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_DEFAULT_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.BundledWidgetSourceIds
@@ -1809,52 +1812,115 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             val target = widgets.value.orEmpty().find { it.id == widget }
             if (target != null) {
-                val source = target.source
-                if (source is Widget.Source.Default) {
+                val widgetSource = target.source
+                if (widgetSource is Widget.Source.Default) {
                     val obj = getObject.async(
                         params = target.source.id
                     ).fold(
                         onSuccess = { obj ->
                             val dv = obj.blocks.find { it.content is DV }?.content as? DV
-                            val viewer = if (view.isNullOrEmpty()) dv?.viewers?.firstOrNull() else dv?.viewers?.find { it.id == view }
-                            val dataViewSource = source.obj.setOf.firstOrNull()
-                            if (dataViewSource != null) {
-                                val dvSourceWrapper = ObjectWrapper.Basic(obj.details[dataViewSource].orEmpty())
+                            val viewer = if (view.isNullOrEmpty())
+                                dv?.viewers?.firstOrNull()
+                            else
+                                dv?.viewers?.find { it.id == view }
 
-                                val setOfType = dvSourceWrapper.uniqueKey
+                            val dataViewSource = widgetSource.obj.setOf.firstOrNull()
+
+                            if (dataViewSource != null) {
+                                val dataViewSourceObj = ObjectWrapper.Basic(obj.details[dataViewSource].orEmpty())
                                 if (dv != null && viewer != null) {
-                                    val prefilled = viewer.prefillNewObjectDetails(
-                                        storeOfRelations = storeOfRelations,
-                                        dataViewRelationLinks = dv.relationLinks,
-                                        dateProvider = dateProvider
-                                    )
-                                    createDataViewObject.async(
-                                        params = CreateDataViewObject.Params.SetByType(
-                                            type = TypeKey(setOfType.orEmpty()),
-                                            filters = viewer.filters,
-                                            // TODO apply template
-                                            template = null,
-                                            prefilled = prefilled
-                                        ).also {
-                                            Timber.d("Calling with params: $it")
+                                    when (val layout = dataViewSourceObj.layout) {
+                                        ObjectType.Layout.OBJECT_TYPE -> {
+                                            proceedWithCreatingDataViewObject(dataViewSourceObj, viewer, dv)
                                         }
-                                    ).fold(
-                                        onSuccess = {
-                                            Timber.d("Successfully created object with id: ${it.objectId}")
-                                        },
-                                        onFailure = {
-                                            Timber.e(it, "Error while creating data view object for widget")
+                                        ObjectType.Layout.RELATION -> {
+                                            proceedWithCreatingDataViewObject(viewer, dv, dataViewSourceObj)
                                         }
-                                    )
+                                        else -> {
+                                            Timber.w("Unexpected layout of data view source: $layout")
+                                        }
+                                    }
                                 } else {
                                     Timber.w("Could not found data view or target view inside this data view")
                                 }
+                            } else {
+                                Timber.w("Missing data view source")
                             }
                         }
                     )
                 }
+            } else {
+                Timber.w("onCreateDataViewObject's target not found")
             }
         }
+    }
+
+    private suspend fun proceedWithCreatingDataViewObject(
+        viewer: Block.Content.DataView.Viewer,
+        dv: DV,
+        dataViewSourceObj: ObjectWrapper.Basic
+    ) {
+        val (defaultObjectType, defaultTemplate) = resolveTypeAndActiveViewTemplate(
+            viewer,
+            storeOfObjectTypes
+        )
+        val prefilled = viewer.resolveSetByRelationPrefilledObjectData(
+            storeOfRelations = storeOfRelations,
+            dateProvider = dateProvider,
+            dataViewRelationLinks = dv.relationLinks,
+            objSetByRelation = ObjectWrapper.Relation(dataViewSourceObj.map)
+        )
+        createDataViewObject.async(
+            params = CreateDataViewObject.Params.SetByRelation(
+                filters = viewer.filters,
+                template = defaultTemplate,
+                type = TypeKey(defaultObjectType?.uniqueKey ?: VIEW_DEFAULT_OBJECT_TYPE),
+                prefilled = prefilled
+            ).also {
+                Timber.d("Calling with params: $it")
+            }
+        ).fold(
+            onSuccess = {
+                Timber.d("Successfully created object with id: ${it.objectId}")
+            },
+            onFailure = {
+                Timber.e(it, "Error while creating data view object for widget")
+            }
+        )
+    }
+
+    private suspend fun proceedWithCreatingDataViewObject(
+        dataViewSourceObj: ObjectWrapper.Basic,
+        viewer: Block.Content.DataView.Viewer,
+        dv: DV
+    ) {
+        val dataViewSourceType = dataViewSourceObj.uniqueKey
+        val (defaultObjectType, defaultTemplate) = resolveTypeAndActiveViewTemplate(
+            viewer,
+            storeOfObjectTypes
+        )
+        val prefilled = viewer.prefillNewObjectDetails(
+            storeOfRelations = storeOfRelations,
+            dataViewRelationLinks = dv.relationLinks,
+            dateProvider = dateProvider
+        )
+        createDataViewObject.async(
+            params = CreateDataViewObject.Params.SetByType(
+                type = TypeKey(dataViewSourceType ?: VIEW_DEFAULT_OBJECT_TYPE),
+                filters = viewer.filters,
+                template = defaultTemplate,
+                prefilled = prefilled
+            ).also {
+                Timber.d("Calling with params: $it")
+            }
+        ).fold(
+            onSuccess = {
+                Timber.d("Successfully created object with id: ${it.objectId}")
+            },
+            onFailure = {
+                Timber.e(it, "Error while creating data view object for widget")
+            }
+        )
     }
 
     sealed class Navigation {

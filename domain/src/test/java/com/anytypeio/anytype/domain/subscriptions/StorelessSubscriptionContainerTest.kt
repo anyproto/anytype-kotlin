@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SearchResult
+import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.StubObjectMinim
 import com.anytypeio.anytype.core_models.SubscriptionEvent
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -18,6 +19,7 @@ import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -250,6 +252,84 @@ class StorelessSubscriptionContainerTest {
             assertEquals(
                 expected = resultsAfterEvents,
                 actual = second
+            )
+            awaitComplete()
+        }
+    }
+
+    @Test
+    fun test() = runTest {
+
+        // SET, ADD, COUNTERS
+
+        val subscription = defaultSearchParams.subscription
+
+        val obj = StubObject()
+
+        val firstTimeEvents = buildList {
+            add(
+                SubscriptionEvent.Set(
+                    subscriptions = listOf(subscription),
+                    target = obj.id,
+                    data = obj.map
+                )
+            )
+            add(
+                SubscriptionEvent.Counter(
+                    counter = SearchResult.Counter(
+                        total = 1,
+                        prev = 0,
+                        next = 0
+                    )
+                )
+            )
+            add(
+                SubscriptionEvent.Add(
+                    subscription = subscription,
+                    afterId = null,
+                    target = obj.id
+                )
+            )
+        }
+
+        val secondTimeEvent = buildList {
+            add(
+                SubscriptionEvent.Set(
+                    subscriptions = listOf(subscription),
+                    target = obj.id,
+                    data = obj.map
+                )
+            )
+        }
+
+        stubSearchWithSubscription(
+            results = emptyList(),
+            params = defaultSearchParams
+        )
+
+        stubSubscriptionEventChannel(
+            subscription = defaultSearchParams.subscription,
+            events = flow {
+                emit(firstTimeEvents)
+                emit(secondTimeEvent)
+            }
+        )
+
+        container.subscribe(defaultSearchParams).test {
+            val first = awaitItem()
+            assertEquals(
+                expected = emptyList(),
+                actual = first
+            )
+            val second = awaitItem()
+            assertEquals(
+                expected = listOf(obj),
+                actual = second
+            )
+            val third = awaitItem()
+            assertEquals(
+                expected = listOf(obj),
+                actual = third
             )
             awaitComplete()
         }

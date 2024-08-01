@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.misc.DateProvider
@@ -30,7 +31,9 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
 
@@ -169,19 +172,38 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
-        proceedWithStartingViewModel()
 
         // ASSERT DATA VIEW STATE
         viewModel.currentViewer.test {
+            proceedWithStartingViewModel()
+
             val first = awaitItem()
             assertIs<DataViewViewState.Init>(first)
 
-            cancelAndIgnoreRemainingEvents()
+            //cancelAndIgnoreRemainingEvents()
 
             advanceUntilIdle()
 
             val newObjectTypeKey = MockDataFactory.randomString()
             val newObjectTemplate = MockDataFactory.randomString()
+            createDataViewObject.stub {
+                onBlocking {
+                    async(
+                        CreateDataViewObject.Params.SetByType(
+                            type = TypeKey(newObjectTypeKey),
+                            filters = mockObjectCollection.filters,
+                            template = newObjectTemplate,
+                            prefilled = mapOf(filters[0].relation to filters[0].value, filters[1].relation to filters[1].value),
+                        )
+                    )
+                } doReturn Resultat.success(
+                    CreateDataViewObject.Result(
+                        "",
+                        TypeKey(""),
+                        mapOf("spaceId" to "spaceId")
+                    )
+                )
+            }
             viewModel.proceedWithDataViewObjectCreate(
                 typeChosenBy = TypeKey(newObjectTypeKey),
                 templateId = newObjectTemplate
@@ -200,6 +222,8 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
             verifyBlocking(repo, times(1)) {
                 createObject(command)
             }
+
+            cancelAndIgnoreRemainingEvents()
         }
     }
 

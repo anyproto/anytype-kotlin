@@ -59,12 +59,12 @@ sealed class ObjectState {
         }
     }
 
-    object Init : ObjectState() {
+    data object Init : ObjectState() {
         override val isInitialized: Boolean
             get() = false
     }
 
-    object ErrorLayout : ObjectState() {
+    data object ErrorLayout : ObjectState() {
         override val isInitialized: Boolean
             get() = false
     }

@@ -70,7 +70,8 @@ fun DataViewListWidgetCard(
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
-    onObjectCheckboxClicked: (Id, Boolean) -> Unit
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit,
+    onCreateDataViewObject: (WidgetId, ViewId?) -> Unit
 ) {
     val isCardMenuExpanded = remember {
         mutableStateOf(false)
@@ -165,10 +166,23 @@ fun DataViewListWidgetCard(
                 if (item.isExpanded) {
                     when {
                         item.isLoading -> EmptyWidgetPlaceholder(R.string.loading)
-                        item.tabs.isNotEmpty() -> EmptyWidgetPlaceholder(R.string.empty_list_widget)
-                        else -> EmptyWidgetPlaceholder(text = R.string.empty_list_widget_no_view)
+                        item.tabs.isNotEmpty() -> EmptyWidgetPlaceholderWithCreateButton(
+                            R.string.empty_list_widget,
+                            onCreateClicked = {
+                                onCreateDataViewObject(
+                                    item.id, item.tabs.find { it.isSelected }?.id
+                                )
+                            }
+                        )
+                        else -> EmptyWidgetPlaceholderWithCreateButton(
+                            text = R.string.empty_list_widget_no_view,
+                            onCreateClicked = {
+                                onCreateDataViewObject(
+                                    item.id, item.tabs.find { it.isSelected }?.id
+                                )
+                            }
+                        )
                     }
-
                     Spacer(modifier = Modifier.height(2.dp))
                 }
             }

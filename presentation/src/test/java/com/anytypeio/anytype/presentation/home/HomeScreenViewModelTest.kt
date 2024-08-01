@@ -37,12 +37,14 @@ import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.Gateway
+import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.AppActionManager
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
@@ -50,6 +52,7 @@ import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -195,6 +198,9 @@ class HomeScreenViewModelTest {
     lateinit var storeOfObjectTypes: StoreOfObjectTypes
 
     @Mock
+    lateinit var storeOfRelations: StoreOfRelations
+
+    @Mock
     lateinit var objectWatcher: ObjectWatcher
 
     @Mock
@@ -226,6 +232,12 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var createBlock: CreateBlock
+
+    @Mock
+    lateinit var dateProvider: DateProvider
+
+    @Mock
+    lateinit var createDataViewObject: CreateDataViewObject
 
     lateinit var userPermissionProvider: UserPermissionProvider
 
@@ -2906,7 +2918,10 @@ class HomeScreenViewModelTest {
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         coverImageHashProvider = coverImageHashProvider,
         payloadDelegator = payloadDelegator,
-        createBlock = createBlock
+        createBlock = createBlock,
+        createDataViewObject = createDataViewObject,
+        dateProvider = dateProvider,
+        storeOfRelations = storeOfRelations
     )
 
     companion object {

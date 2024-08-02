@@ -3,7 +3,6 @@ package com.anytypeio.anytype.presentation.sets
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.DVViewer
-import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
@@ -59,7 +58,7 @@ suspend fun DVViewer.buildGalleryViews(
                     urlBuilder = urlBuilder,
                     store = objectStore,
                     filteredRelations = filteredRelations,
-                    isLargeSize = cardSize == DVViewerCardSize.LARGE,
+                    isLargeSize = true,
                     storeOfRelations = storeOfRelations
                 )
             } else {
@@ -156,15 +155,15 @@ private suspend fun getCoverContainer(
     return if (obj.coverType != CoverType.NONE) {
         BasicObjectCoverWrapper(obj).getCover(urlBuilder, coverImageHashProvider)
     } else {
-        getCoverFromRelationOrLayout(obj, dvViewer, urlBuilder, store, storeOfRelations, isLargeSize)
+        getCoverFromRelationOrLayout(obj, dvViewer, urlBuilder, store.getAll(), storeOfRelations, isLargeSize)
     }
 }
 
-private suspend fun getCoverFromRelationOrLayout(
+suspend fun getCoverFromRelationOrLayout(
     obj: ObjectWrapper.Basic,
     dvViewer: DVViewer,
     urlBuilder: UrlBuilder,
-    store: ObjectStore,
+    dependedObjects: List<ObjectWrapper.Basic>,
     storeOfRelations: StoreOfRelations,
     isLargeSize: Boolean
 ): CoverContainer {
@@ -173,24 +172,31 @@ private suspend fun getCoverFromRelationOrLayout(
     if (coverRelationKey != null) {
         val relation = storeOfRelations.getByKey(coverRelationKey)
         coverImage = relation?.let {
-            getCoverImageFromRelation(it, obj, coverRelationKey, store, urlBuilder, isLargeSize)
+            getCoverImageFromRelation(
+                relation = it,
+                obj = obj,
+                coverRelationKey = coverRelationKey,
+                dependedObjects = dependedObjects,
+                urlBuilder = urlBuilder,
+                isLargeSize = isLargeSize
+            )
         }
     }
     if (coverImage == null && obj.layout == ObjectType.Layout.IMAGE) {
         coverImage = if (isLargeSize) {
             urlBuilder.large(obj.id)
         } else {
-            urlBuilder.large(obj.id)
+            urlBuilder.medium(obj.id)
         }
     }
     return CoverContainer(coverImage = coverImage)
 }
 
-private suspend fun getCoverImageFromRelation(
+private fun getCoverImageFromRelation(
     relation: ObjectWrapper.Relation,
     obj: ObjectWrapper.Basic,
     coverRelationKey: String,
-    store: ObjectStore,
+    dependedObjects: List<ObjectWrapper.Basic>,
     urlBuilder: UrlBuilder,
     isLargeSize: Boolean
 ): Url? {
@@ -201,7 +207,7 @@ private suspend fun getCoverImageFromRelation(
             else -> emptyList()
         }
         val previewId = ids.find { id ->
-            val preview = store.get(id)
+            val preview = dependedObjects.firstOrNull { it.id == id }
             preview != null && preview.layout == ObjectType.Layout.IMAGE
         }
         if (!previewId.isNullOrBlank()) {

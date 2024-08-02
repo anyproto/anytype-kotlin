@@ -177,7 +177,6 @@ class HomeScreenViewModel(
     private val saveWidgetSession: SaveWidgetSession,
     private val spaceGradientProvider: SpaceGradientProvider,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val storeOfRelations: StoreOfRelations,
     private val objectWatcher: ObjectWatcher,
     private val spaceManager: SpaceManager,
     private val spaceWidgetContainer: SpaceWidgetContainer,
@@ -189,6 +188,7 @@ class HomeScreenViewModel(
     private val userPermissionProvider: UserPermissionProvider,
     private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val storeOfRelations: StoreOfRelations,
     private val coverImageHashProvider: CoverImageHashProvider,
     private val payloadDelegator: PayloadDelegator,
     private val createBlock: CreateBlock,
@@ -472,7 +472,8 @@ class HomeScreenViewModel(
                                                 && view is WidgetView.SetOfObjects
                                                 && view.source == widget.source
                                     } as? WidgetView.SetOfObjects
-                                }
+                                },
+                                storeOfRelations = storeOfRelations
                             )
                         }
                         is Widget.View -> {
@@ -492,7 +493,8 @@ class HomeScreenViewModel(
                                                 && view is WidgetView.SetOfObjects
                                                 && view.source == widget.source
                                     } as? WidgetView.SetOfObjects
-                                }
+                                },
+                                storeOfRelations = storeOfRelations
                             )
                         }
                     }
@@ -1970,10 +1972,10 @@ class HomeScreenViewModel(
         private val userPermissionProvider: UserPermissionProvider,
         private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
         private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-        private val coverImageHashProvider: CoverImageHashProvider,
         private val payloadDelegator: PayloadDelegator,
         private val createBlock: CreateBlock,
-        private val dateProvider: DateProvider
+        private val dateProvider: DateProvider,
+        private val coverImageHashProvider: CoverImageHashProvider,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(

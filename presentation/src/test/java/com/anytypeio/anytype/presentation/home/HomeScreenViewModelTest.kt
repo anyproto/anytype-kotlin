@@ -49,6 +49,7 @@ import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -218,6 +219,9 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var coverImageHashProvider: CoverImageHashProvider
+
+    @Mock
+    lateinit var storeOfRelations: StoreOfRelations
 
     lateinit var userPermissionProvider: UserPermissionProvider
 
@@ -2889,7 +2893,8 @@ class HomeScreenViewModelTest {
         userPermissionProvider = userPermissionProvider,
         deepLinkToObjectDelegate = deepLinkToObjectDelegate,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-        coverImageHashProvider = coverImageHashProvider
+        coverImageHashProvider = coverImageHashProvider,
+        storeOfRelations = storeOfRelations
     )
 
     companion object {

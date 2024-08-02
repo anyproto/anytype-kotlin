@@ -49,6 +49,7 @@ import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -67,7 +68,6 @@ import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.Subscriptions
-import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -181,9 +181,6 @@ class HomeScreenViewModelTest {
     lateinit var saveWidgetSession: SaveWidgetSession
 
     @Mock
-    lateinit var spaceGradientProvider: SpaceGradientProvider
-
-    @Mock
     lateinit var getWidgetSession: GetWidgetSession
 
     @Mock
@@ -218,6 +215,9 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var coverImageHashProvider: CoverImageHashProvider
+
+    @Mock
+    lateinit var storeOfRelations: StoreOfRelations
 
     lateinit var userPermissionProvider: UserPermissionProvider
 
@@ -2876,7 +2876,6 @@ class HomeScreenViewModelTest {
         analytics = analytics,
         getWidgetSession = getWidgetSession,
         saveWidgetSession = saveWidgetSession,
-        spaceGradientProvider = spaceGradientProvider,
         storeOfObjectTypes = storeOfObjectTypes,
         objectWatcher = objectWatcher,
         setWidgetActiveView = setWidgetActiveView,
@@ -2889,7 +2888,8 @@ class HomeScreenViewModelTest {
         userPermissionProvider = userPermissionProvider,
         deepLinkToObjectDelegate = deepLinkToObjectDelegate,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-        coverImageHashProvider = coverImageHashProvider
+        coverImageHashProvider = coverImageHashProvider,
+        storeOfRelations = storeOfRelations
     )
 
     companion object {

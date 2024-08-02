@@ -29,6 +29,7 @@ import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
@@ -41,7 +42,6 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.Unsubscriber
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
-import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
 import com.anytypeio.anytype.presentation.widgets.DefaultObjectViewReducer
@@ -216,11 +216,6 @@ object HomeScreenModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun gradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Default
-
-    @JvmStatic
-    @Provides
-    @PerScreen
     fun coverHashProvider() : CoverImageHashProvider = DefaultCoverImageHashProvider()
 
     @Module
@@ -287,4 +282,5 @@ interface HomeScreenDependencies : ComponentDependencies {
     fun notificationChannel(): NotificationsChannel
     fun activeSpaceMembers() : ActiveSpaceMemberSubscriptionContainer
     fun analyticSpaceHelperDelegate(): AnalyticSpaceHelperDelegate
+    fun storeOfRelations(): StoreOfRelations
 }

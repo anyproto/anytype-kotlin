@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.widgets
 
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVFilter
@@ -157,63 +158,20 @@ class DataViewListWidgetContainer(
                         )
                     )
                     if (params != null) {
-                        storage.subscribeWithDependencies(params).map { results ->
-                            val objects = resolveObjectOrder(
-                                searchResults = results.results,
+                        if (target?.type == DVViewerType.GALLERY) {
+                            galleryWidgetSubscribe(
                                 obj = obj,
-                                activeView = view
+                                activeView = view,
+                                params = params,
+                                target = target
                             )
-                            if (target != null && target.type == DVViewerType.GALLERY) {
-                                val withCover = !target.coverRelationKey.isNullOrEmpty()
-                                val withIcon = !target.hideIcon
-                                WidgetView.Gallery(
-                                    id = widget.id,
-                                    source = widget.source,
-                                    view = target.id,
-                                    tabs = obj.tabs(viewer = view),
-                                    elements = objects.map { obj ->
-                                        WidgetView.SetOfObjects.Element(
-                                            obj = obj,
-                                            objectIcon = if (withIcon) {
-                                                obj.widgetElementIcon(
-                                                    builder = urlBuilder
-                                                )
-                                            } else {
-                                                ObjectIcon.None
-                                            },
-                                            cover = if (withCover) {
-                                                obj.cover(
-                                                    urlBuilder = urlBuilder,
-                                                    coverImageHashProvider = coverImageHashProvider,
-                                                    storeOfRelations = storeOfRelations,
-                                                    dependedObjects = results.dependencies,
-                                                    dvViewer = target,
-                                                    isMedium = true
-                                                )
-                                            } else {
-                                                null
-                                            }
-                                        )
-                                    },
-                                    isExpanded = true,
-                                    showIcon = withIcon,
-                                    showCover = withCover
-                                )
-                            } else {
-                                WidgetView.SetOfObjects(
-                                    id = widget.id,
-                                    source = widget.source,
-                                    tabs = obj.tabs(viewer = view),
-                                    elements = objects.map { obj ->
-                                        WidgetView.SetOfObjects.Element(
-                                            obj = obj,
-                                            objectIcon = obj.widgetElementIcon(builder = urlBuilder)
-                                        )
-                                    },
-                                    isExpanded = true,
-                                    isCompact = isCompact
-                                )
-                            }
+                        } else {
+                            defaultWidgetSubscribe(
+                                obj = obj,
+                                activeView = view,
+                                params = params,
+                                isCompact = isCompact
+                            )
                         }
                     } else {
                         flowOf(defaultEmptyState())
@@ -232,6 +190,84 @@ class DataViewListWidgetContainer(
             else -> {
                 Timber.e(e, "Error in data view container flow")
             }
+        }
+    }
+
+    private fun galleryWidgetSubscribe(
+        obj: ObjectView,
+        activeView: Id?,
+        target: Block.Content.DataView.Viewer,
+        params: StoreSearchParams
+    ): Flow<WidgetView.Gallery> {
+        return storage.subscribeWithDependencies(params).map { response ->
+            val objects = resolveObjectOrder(
+                searchResults = response.results,
+                obj = obj,
+                activeView = activeView
+            )
+            val withCover = !target.coverRelationKey.isNullOrEmpty()
+            val withIcon = !target.hideIcon
+            WidgetView.Gallery(
+                id = widget.id,
+                source = widget.source,
+                view = target.id,
+                tabs = obj.tabs(viewer = activeView),
+                elements = objects.map { obj ->
+                    WidgetView.SetOfObjects.Element(
+                        obj = obj,
+                        objectIcon = if (withIcon) {
+                            obj.widgetElementIcon(
+                                builder = urlBuilder
+                            )
+                        } else {
+                            ObjectIcon.None
+                        },
+                        cover = if (withCover) {
+                            obj.cover(
+                                urlBuilder = urlBuilder,
+                                coverImageHashProvider = coverImageHashProvider,
+                                storeOfRelations = storeOfRelations,
+                                dependedObjects = response.dependencies,
+                                dvViewer = target,
+                                isMedium = true
+                            )
+                        } else {
+                            null
+                        }
+                    )
+                },
+                isExpanded = true,
+                showIcon = withIcon,
+                showCover = withCover
+            )
+        }
+    }
+
+    private fun defaultWidgetSubscribe(
+        obj: ObjectView,
+        activeView: Id?,
+        params: StoreSearchParams,
+        isCompact: Boolean
+    ): Flow<WidgetView> {
+        return storage.subscribe(params).map { results ->
+            val objects = resolveObjectOrder(
+                searchResults = results,
+                obj = obj,
+                activeView = activeView
+            )
+            WidgetView.SetOfObjects(
+                id = widget.id,
+                source = widget.source,
+                tabs = obj.tabs(viewer = activeView),
+                elements = objects.map { obj ->
+                    WidgetView.SetOfObjects.Element(
+                        obj = obj,
+                        objectIcon = obj.widgetElementIcon(builder = urlBuilder)
+                    )
+                },
+                isExpanded = true,
+                isCompact = isCompact
+            )
         }
     }
 

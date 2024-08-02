@@ -155,9 +155,9 @@ class DataViewListWidgetContainer(
                         )
                     )
                     if (params != null) {
-                        storage.subscribe(params).map { results ->
+                        storage.subscribeWithDependencies(params).map { results ->
                             val objects = resolveObjectOrder(
-                                searchResults = results,
+                                searchResults = results.results,
                                 obj = obj,
                                 activeView = view
                             )

@@ -181,9 +181,8 @@
         android:name="com.anytypeio.anytype.ui.spaces.SelectSpaceFragment">
         <action
             android:id="@+id/switchSpaceAction"
-            app:destination="@+id/homeScreen"
             app:popUpTo="@+id/homeScreen"
-            app:popUpToInclusive="true"
+            app:popUpToInclusive="false"
             app:enterAnim="@anim/anim_switch_space_enter" />
     </dialog>
 
@@ -192,9 +191,8 @@
         android:name="com.anytypeio.anytype.ui.spaces.CreateSpaceFragment">
         <action
             android:id="@+id/switchSpaceAction"
-            app:destination="@+id/homeScreen"
             app:popUpTo="@+id/homeScreen"
-            app:popUpToInclusive="true"
+            app:popUpToInclusive="false"
             app:enterAnim="@anim/anim_switch_space_enter" />
     </dialog>
 
@@ -207,36 +205,6 @@
         android:id="@+id/spaceListScreen"
         android:name="com.anytypeio.anytype.ui.spaces.SpaceListFragment"
         android:label="SpaceListScreen"/>
-
-    <dialog
-        android:id="@+id/settingsScreen"
-        android:name="com.anytypeio.anytype.ui.settings.MainSettingFragment"
-        android:label="SettingScreen">
-        <action android:id="@+id/actionOpenProfileScreen" app:destination="@id/profileScreen"/>
-        <action android:id="@+id/actionOpenFilesStorageScreen" app:destination="@id/filesStorageScreen"/>
-        <action android:id="@+id/actionOpenAboutAppScreen" app:destination="@id/aboutAppScreen"/>
-        <action android:id="@+id/actionOpenPersonalizationScreen" app:destination="@+id/personalizationScreen"/>
-        <action android:id="@+id/actionOpenAppearanceScreen" app:destination="@+id/appearanceScreen"/>
-        <action android:id="@+id/actionOpenImagePickerScreen" app:destination="@+id/objectSetIconPickerScreenForSpace"/>
-        <action
-            android:id="@+id/action_profileScreen_to_splashFragment"
-            app:destination="@+id/main_navigation"
-            app:popUpTo="@+id/main_navigation"
-            app:popUpToInclusive="true" />
-        <action
-            android:id="@+id/action_open_keychain"
-            app:destination="@id/keychainDialog" />
-        <action
-            android:id="@+id/action_profileScreen_to_debugSettingsFragment"
-            app:destination="@id/debugSettingsFragment" />
-        <action
-            android:id="@+id/action_profileScreen_to_userSettingsFragment"
-            app:destination="@id/personalizationScreen"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
-    </dialog>
 
     <dialog
         android:id="@+id/objectSetIconPickerScreenForSpace"

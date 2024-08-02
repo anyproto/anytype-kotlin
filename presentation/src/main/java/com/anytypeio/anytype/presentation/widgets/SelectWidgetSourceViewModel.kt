@@ -173,7 +173,7 @@ class SelectWidgetSourceViewModel(
                 }
             }
             Config.None -> {
-                // Do nothing.
+                Timber.w("Missing config for widget source")
             }
         }
     }

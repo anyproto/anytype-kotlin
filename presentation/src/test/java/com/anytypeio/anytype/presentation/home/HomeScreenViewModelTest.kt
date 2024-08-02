@@ -68,6 +68,7 @@ import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.Subscriptions
+import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -179,6 +180,9 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var saveWidgetSession: SaveWidgetSession
+
+    @Mock
+    lateinit var spaceGradientProvider: SpaceGradientProvider
 
     @Mock
     lateinit var getWidgetSession: GetWidgetSession
@@ -2876,6 +2880,7 @@ class HomeScreenViewModelTest {
         analytics = analytics,
         getWidgetSession = getWidgetSession,
         saveWidgetSession = saveWidgetSession,
+        spaceGradientProvider = spaceGradientProvider,
         storeOfObjectTypes = storeOfObjectTypes,
         objectWatcher = objectWatcher,
         setWidgetActiveView = setWidgetActiveView,

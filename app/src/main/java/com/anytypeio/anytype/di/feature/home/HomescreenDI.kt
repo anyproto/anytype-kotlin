@@ -42,6 +42,7 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.Unsubscriber
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
+import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
 import com.anytypeio.anytype.presentation.widgets.DefaultObjectViewReducer
@@ -212,6 +213,11 @@ object HomeScreenModule {
         context = Dispatchers.IO,
         channel = channel
     )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun gradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Default
 
     @JvmStatic
     @Provides

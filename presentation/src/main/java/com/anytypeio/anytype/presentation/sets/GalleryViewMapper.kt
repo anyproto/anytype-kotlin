@@ -59,7 +59,7 @@ suspend fun DVViewer.buildGalleryViews(
                     urlBuilder = urlBuilder,
                     store = objectStore,
                     filteredRelations = filteredRelations,
-                    isLargeSize = cardSize == DVViewerCardSize.LARGE,
+                    isLargeSize = true,
                     storeOfRelations = storeOfRelations
                 )
             } else {

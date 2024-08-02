@@ -164,7 +164,7 @@ suspend fun getCoverFromRelationOrLayout(
     obj: ObjectWrapper.Basic,
     dvViewer: DVViewer,
     urlBuilder: UrlBuilder,
-    depsObjects: List<ObjectWrapper.Basic>,
+    dependedObjects: List<ObjectWrapper.Basic>,
     storeOfRelations: StoreOfRelations,
     isLargeSize: Boolean
 ): CoverContainer {
@@ -177,7 +177,7 @@ suspend fun getCoverFromRelationOrLayout(
                 relation = it,
                 obj = obj,
                 coverRelationKey = coverRelationKey,
-                depsObjects = depsObjects,
+                dependedObjects = dependedObjects,
                 urlBuilder = urlBuilder,
                 isLargeSize = isLargeSize
             )
@@ -197,7 +197,7 @@ private fun getCoverImageFromRelation(
     relation: ObjectWrapper.Relation,
     obj: ObjectWrapper.Basic,
     coverRelationKey: String,
-    depsObjects: List<ObjectWrapper.Basic>,
+    dependedObjects: List<ObjectWrapper.Basic>,
     urlBuilder: UrlBuilder,
     isLargeSize: Boolean
 ): Url? {
@@ -208,7 +208,7 @@ private fun getCoverImageFromRelation(
             else -> emptyList()
         }
         val previewId = ids.find { id ->
-            val preview = depsObjects.firstOrNull { it.id == id }
+            val preview = dependedObjects.firstOrNull { it.id == id }
             preview != null && preview.layout == ObjectType.Layout.IMAGE
         }
         if (!previewId.isNullOrBlank()) {

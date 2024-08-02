@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -41,8 +42,9 @@ class DataViewListWidgetContainer(
     private val activeView: Flow<Id?>,
     private val isWidgetCollapsed: Flow<Boolean>,
     private val coverImageHashProvider: CoverImageHashProvider,
+    private val storeOfRelations: StoreOfRelations,
     isSessionActive: Flow<Boolean>,
-    onRequestCache: () -> WidgetView.SetOfObjects? = { null }
+    onRequestCache: () -> WidgetView.SetOfObjects? = { null },
 ) : WidgetContainer {
 
     init {
@@ -183,6 +185,9 @@ class DataViewListWidgetContainer(
                                                 obj.cover(
                                                     urlBuilder = urlBuilder,
                                                     coverImageHashProvider = coverImageHashProvider,
+                                                    storeOfRelations = storeOfRelations,
+                                                    dependedObjects = results.dependencies,
+                                                    dvViewer = target,
                                                     isMedium = true
                                                 )
                                             } else {

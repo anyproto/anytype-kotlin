@@ -180,6 +180,7 @@ dependencies {
     implementation libs.constraintLayout
     implementation libs.composeConstraintLayout
     implementation libs.glide
+    implementation libs.glideCompose
     implementation libs.coilCompose
     implementation libs.dagger
     implementation libs.timber

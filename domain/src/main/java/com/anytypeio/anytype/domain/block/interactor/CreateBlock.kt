@@ -6,17 +6,16 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
-import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock.Params
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import kotlinx.coroutines.Dispatchers
+import javax.inject.Inject
 
 /**
  * Use-case for creating a block.
  * @see Params
  */
-open class CreateBlock(
+open class CreateBlock @Inject constructor(
     private val repo: BlockRepository,
     dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<Params, Pair<Id, Payload>>(dispatchers.io) {

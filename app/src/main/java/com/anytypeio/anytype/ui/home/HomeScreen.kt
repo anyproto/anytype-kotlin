@@ -106,7 +106,9 @@ fun HomeScreen(
     onSpaceWidgetClicked: () -> Unit,
     onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
     onSpaceShareIconClicked: (ObjectWrapper.SpaceView) -> Unit,
-    onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit
+    onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit,
+    onCreateObjectInsideWidget: (Id) -> Unit,
+    onCreateDataViewObject: (WidgetId, ViewId?) -> Unit
 ) {
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -127,7 +129,9 @@ fun HomeScreen(
             onObjectCheckboxClicked = onObjectCheckboxClicked,
             onSpaceShareIconClicked = onSpaceShareIconClicked,
             onSeeAllObjectsClicked = onSeeAllObjectsClicked,
-            onCreateWidget = onCreateWidget
+            onCreateWidget = onCreateWidget,
+            onCreateObjectInsideWidget = onCreateObjectInsideWidget,
+            onCreateDataViewObject = onCreateDataViewObject
         )
         AnimatedVisibility(
             visible = mode is InteractionMode.Edit,
@@ -197,7 +201,9 @@ private fun WidgetList(
     onSpaceWidgetClicked: () -> Unit,
     onSpaceShareIconClicked: (ObjectWrapper.SpaceView) -> Unit,
     onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit,
-    onCreateWidget: () -> Unit
+    onCreateWidget: () -> Unit,
+    onCreateObjectInsideWidget: (Id) -> Unit,
+    onCreateDataViewObject: (WidgetId, ViewId?) -> Unit
 ) {
     val views = remember { mutableStateOf(widgets) }
     views.value = widgets
@@ -255,7 +261,8 @@ private fun WidgetList(
                                 onWidgetObjectClicked = onWidgetObjectClicked,
                                 onObjectCheckboxClicked = onObjectCheckboxClicked,
                                 onWidgetSourceClicked = onWidgetSourceClicked,
-                                onToggleExpandedWidgetState = onToggleExpandedWidgetState
+                                onToggleExpandedWidgetState = onToggleExpandedWidgetState,
+                                onCreateObjectInsideWidget = onCreateObjectInsideWidget
                             )
                         }
                     } else {
@@ -270,7 +277,8 @@ private fun WidgetList(
                             onWidgetObjectClicked = onWidgetObjectClicked,
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
                             onWidgetSourceClicked = onWidgetSourceClicked,
-                            onToggleExpandedWidgetState = onToggleExpandedWidgetState
+                            onToggleExpandedWidgetState = onToggleExpandedWidgetState,
+                            onCreateObjectInsideWidget = onCreateObjectInsideWidget
                         )
                     }
                 }
@@ -317,7 +325,8 @@ private fun WidgetList(
                                 onWidgetMenuAction = onWidgetMenuAction,
                                 onChangeWidgetView = onChangeWidgetView,
                                 onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-                                onObjectCheckboxClicked = onObjectCheckboxClicked
+                                onObjectCheckboxClicked = onObjectCheckboxClicked,
+                                onCreateDataViewObject = onCreateDataViewObject
                             )
                         }
                     } else {
@@ -332,7 +341,8 @@ private fun WidgetList(
                             onWidgetMenuAction = onWidgetMenuAction,
                             onChangeWidgetView = onChangeWidgetView,
                             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-                            onObjectCheckboxClicked = onObjectCheckboxClicked
+                            onObjectCheckboxClicked = onObjectCheckboxClicked,
+                            onCreateDataViewObject = onCreateDataViewObject
                         )
                     }
                 }
@@ -543,7 +553,8 @@ private fun SetOfObjectsItem(
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
-    onObjectCheckboxClicked: (Id, Boolean) -> Unit
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit,
+    onCreateDataViewObject: (WidgetId, ViewId?) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -568,7 +579,8 @@ private fun SetOfObjectsItem(
             onChangeWidgetView = onChangeWidgetView,
             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
             mode = mode,
-            onObjectCheckboxClicked = onObjectCheckboxClicked
+            onObjectCheckboxClicked = onObjectCheckboxClicked,
+            onCreateDataViewObject = onCreateDataViewObject
         )
         AnimatedVisibility(
             visible = mode is InteractionMode.Edit,
@@ -726,7 +738,8 @@ private fun TreeWidgetItem(
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onWidgetSourceClicked: (Widget.Source) -> Unit,
-    onToggleExpandedWidgetState: (WidgetId) -> Unit
+    onToggleExpandedWidgetState: (WidgetId) -> Unit,
+    onCreateObjectInsideWidget: (Id) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -751,7 +764,8 @@ private fun TreeWidgetItem(
             onObjectCheckboxClicked = onObjectCheckboxClicked,
             onWidgetSourceClicked = onWidgetSourceClicked,
             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-            mode = mode
+            mode = mode,
+            onCreateObjectInsideWidget = onCreateObjectInsideWidget
         )
         AnimatedVisibility(
             visible = mode is InteractionMode.Edit,

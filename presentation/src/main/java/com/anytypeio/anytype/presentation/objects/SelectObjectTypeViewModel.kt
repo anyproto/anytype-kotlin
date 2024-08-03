@@ -500,10 +500,10 @@ sealed class ClipboardToolbarViewState {
 
 sealed class SelectTypeView {
     sealed class Section : SelectTypeView() {
-        object Pinned : Section()
-        object Objects : Section()
-        object Groups : Section()
-        object Library : Section()
+        data object Pinned : Section()
+        data object Objects : Section()
+        data object Groups : Section()
+        data object Library : Section()
     }
 
     data class Type(

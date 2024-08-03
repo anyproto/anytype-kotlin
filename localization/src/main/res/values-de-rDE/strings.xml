@@ -490,6 +490,7 @@
     <string name="block_data_view_content_description_no_data">The source of the inline set has no type</string>
     <string name="object_search_recently_opened_section_title">Zuletzt geöffnet</string>
     <string name="widget_source_anytype_library">Anytype-Bibliothek</string>
+    <string name="widget_source_default_lists">Default lists</string>
     <string name="your_favorite_objects">Deine Lieblingsobjekte</string>
     <string name="on_this_device">Auf diesem Gerät</string>
     <string name="sets_of_objects">Sets von Objekten aus deinem Arbeitsbereich</string>
@@ -929,7 +930,7 @@
     <string name="widget_type_tree">Strukturbaum</string>
     <string name="widget_type_tree_description">Widget mit einer hierarchischen Struktur</string>
     <string name="widget_type_link">Link</string>
-    <string name="widget_type_link_description">Compact widget view</string>
+    <string name="widget_type_link_description">Kompakte Widget-Ansicht</string>
     <string name="widget_type_list_description">Widget mit einer Listenansicht</string>
     <string name="widget_type_compact_list_description">Widget mit einer kompakten Listenansicht</string>
     <string name="widget_type_list">Liste</string>
@@ -1484,5 +1485,6 @@ Please provide specific details of your needs here.</string>
     <string name="sync_status_incompatible_version">Inkompatible Version</string>
     <string name="sync_status_network_error">No access to the space</string>
     <string name="sync_status_unrecognized">Unerkannter Fehler</string>
-    <string name="version_history_title">Version history</string>
+    <string name="version_history_title">Versionsverlauf</string>
+    <string name="new_object">Neues Objekt</string>
 </resources>

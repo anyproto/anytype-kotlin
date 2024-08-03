@@ -562,7 +562,7 @@ suspend fun ObjectState.DataView.getActiveViewTypeAndTemplate(
     }
 }
 
-private suspend fun resolveTypeAndActiveViewTemplate(
+suspend fun resolveTypeAndActiveViewTemplate(
     activeView: DVViewer,
     storeOfObjectTypes: StoreOfObjectTypes
 ): Pair<ObjectWrapper.Type?, Id?> {

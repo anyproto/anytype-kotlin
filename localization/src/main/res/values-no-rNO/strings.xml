@@ -13,9 +13,9 @@
     <string name="clear_file_cache">Tøm filbuffer</string>
     <string name="debug_sync_report">Feilsøk synkroniseringsrapport</string>
     <string name="debug">Feilsøk</string>
-    <string name="account">Vault</string>
+    <string name="account">Hvelv</string>
     <string name="reset_account">Reset vault</string>
-    <string name="delete_account">Delete vault</string>
+    <string name="delete_account">Slett hvelv</string>
     <string name="space_debug">Feilsøking Rom</string>
     <string name="data">Data</string>
     <string name="mode">Modus</string>
@@ -1457,23 +1457,23 @@ Please provide specific details of your needs here.</string>
     <string name="sort_empty_values_top">On top</string>
     <string name="widget_view_see_all_objects">See all objects</string>
     <string name="sync_status_get_error">Error getting sync status</string>
-    <string name="sync_status_local_only_title">Local Only</string>
+    <string name="sync_status_local_only_title">Kun lokalt</string>
     <string name="sync_status_data_backup">Data backup is disabled</string>
-    <string name="sync_status_self_host">Self Host</string>
+    <string name="sync_status_self_host">Selvhostet</string>
     <string name="sync_status_self_host_synced">Synkronisert</string>
     <plurals name="sync_status_self_host_syncing">
         <item quantity="one">%1$d item syncing</item>
         <item quantity="other">%1$d items syncing...</item>
     </plurals>
-    <string name="sync_status_p2p">P2P Connection</string>
+    <string name="sync_status_p2p">P2P forbindelse</string>
     <plurals name="sync_status_p2p_devices">
         <item quantity="one">%1$d device connected</item>
         <item quantity="other">%1$d devices connected</item>
     </plurals>
-    <string name="sync_status_p2p_connecting">P2P Connecting...</string>
+    <string name="sync_status_p2p_connecting">P2P kobler til...</string>
     <string name="sync_status_p2p_disabled">Disabled</string>
     <string name="sync_status_p2p_restricted">Restricted. Check device settings.</string>
-    <string name="sync_status_anytype_network">Anytype Network</string>
+    <string name="sync_status_anytype_network">Anytypenettverk</string>
     <string name="sync_status_anytype_end_to_end">End-to-end encrypted</string>
     <plurals name="sync_status_network_items">
         <item quantity="one">%1$d item syncing...</item>

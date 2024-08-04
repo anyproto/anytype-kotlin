@@ -340,8 +340,8 @@
     <string name="favourite">Favorito</string>
     <string name="template">Plantilla</string>
     <string name="templates">Plantillas</string>
-    <string name="lock">Bloquear</string>
-    <string name="unlock">Desbloquear</string>
+    <string name="lock">Proteger</string>
+    <string name="unlock">Desproteger</string>
     <string name="restore">Restaurar</string>
     <string name="unfavorite">Quitar de Favoritos</string>
     <string name="delete_view">Eliminar vista</string>
@@ -755,8 +755,8 @@
     <string name="without_template">Sin plantilla</string>
     <string name="unsplash_generic_error">Error al buscar imágenes en Unsplash. Inténtalo de nuevo más tarde.</string>
     <string name="do_not_forget_to_save_recovery_phrase_msg">No olvides copiar y guardar tu clave desde los ajustes</string>
-    <string name="unlock_your_object_to_add_new_relation">Desbloquea el objeto para añadir una nueva relación</string>
-    <string name="unlock_your_object_to_edit_relations">Desbloquea el objeto para editar las relaciones</string>
+    <string name="unlock_your_object_to_add_new_relation">Desprotege el objeto para añadir una nueva relación</string>
+    <string name="unlock_your_object_to_edit_relations">Desprotege el objeto para editar las relaciones</string>
     <string name="fragment_relation_create_from_scratch_title">Seleccionar tipo de relación</string>
     <string name="fragment_dashboard_restore">Restaurar</string>
     <string name="your_account_deleted">Tu arca se ha eliminado.</string>

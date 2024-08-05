@@ -3,7 +3,6 @@ package com.anytypeio.anytype.ui.widgets.types
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.annotation.StringRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -37,7 +36,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -288,7 +286,7 @@ fun GalleryWidgetCard(
                                         .height(if (withCover) 136.dp else 56.dp)
                                         .border(
                                             width = 1.dp,
-                                            color = colorResource(id = R.color.shape_primary),
+                                            color = colorResource(id = R.color.shape_transparent_primary),
                                             shape = RoundedCornerShape(8.dp)
                                         )
                                         .clip(RoundedCornerShape(8.dp))
@@ -466,7 +464,7 @@ private fun GalleryWidgetItemCard(
                 .fillMaxSize()
                 .border(
                     width = 1.dp,
-                    color = colorResource(id = R.color.shape_primary),
+                    color = colorResource(id = R.color.shape_transparent_primary),
                     shape = RoundedCornerShape(8.dp)
                 )
         )

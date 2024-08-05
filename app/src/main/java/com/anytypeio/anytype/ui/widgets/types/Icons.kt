@@ -96,7 +96,7 @@ fun TreeWidgetObjectIcon(
         is ObjectIcon.Bookmark -> {
             UriImage(
                 uri = icon.image,
-                modifier = Modifier.padding(start = paddingStart, end = paddingEnd),
+                modifier = modifier.padding(start = paddingStart, end = paddingEnd),
                 size = size
             )
         }

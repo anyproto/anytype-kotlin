@@ -14,6 +14,7 @@ export_languages:
   - 'it'
   - 'ru'
   - 'nl'
+  - 'be'
   - 'be-BY'
   - 'be-rBY'
 files:

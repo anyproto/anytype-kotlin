@@ -20,6 +20,7 @@
     <color name="shape_secondary">#302F2B</color>
     <color name="shape_tertiary">#1F1E1D</color>
     <color name="shape_transparent">#24DAD7CA</color>
+    <color name="shape_transparent_primary">#47DAD7CA</color>
 
     <color name="glyph_active">#7B7A72</color>
     <color name="glyph_selected">#F3F2EC</color>

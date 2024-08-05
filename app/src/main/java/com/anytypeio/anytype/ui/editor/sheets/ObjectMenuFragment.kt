@@ -47,7 +47,7 @@ class ObjectMenuFragment : ObjectMenuBaseFragment() {
 
     companion object {
 
-        fun new(
+        fun args(
             ctx: Id,
             space: Id,
             isArchived: Boolean,
@@ -55,16 +55,14 @@ class ObjectMenuFragment : ObjectMenuBaseFragment() {
             isLocked: Boolean,
             fromName: String?,
             isTemplate: Boolean
-        ) = ObjectMenuFragment().apply {
-            arguments = bundleOf(
-                CTX_KEY to ctx,
-                SPACE_KEY to space,
-                IS_ARCHIVED_KEY to isArchived,
-                IS_FAVORITE_KEY to isFavorite,
-                IS_LOCKED_KEY to isLocked,
-                FROM_NAME to fromName,
-                IS_TEMPLATE_KEY to isTemplate
-            )
-        }
+        ) = bundleOf(
+            CTX_KEY to ctx,
+            SPACE_KEY to space,
+            IS_ARCHIVED_KEY to isArchived,
+            IS_FAVORITE_KEY to isFavorite,
+            IS_LOCKED_KEY to isLocked,
+            FROM_NAME to fromName,
+            IS_TEMPLATE_KEY to isTemplate
+        )
     }
 }

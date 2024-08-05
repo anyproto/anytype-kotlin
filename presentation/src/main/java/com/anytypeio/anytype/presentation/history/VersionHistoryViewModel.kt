@@ -100,7 +100,7 @@ class VersionHistoryViewModel(
                 onSuccess = {
                     Timber.d("Version restored")
                     _previewViewState.value = VersionHistoryPreviewScreen.Hidden
-                    navigation.emit(VersionGroupNavigation.Dismiss)
+                    navigation.emit(VersionGroupNavigation.ExitToObject)
                 },
                 onFailure = {
                     Timber.e(it, "Error while restoring version")
@@ -377,4 +377,5 @@ sealed class VersionGroupNavigation(val route: String) {
     data object Main : VersionGroupNavigation("main")
     data object VersionPreview : VersionGroupNavigation("version preview")
     data object Dismiss : VersionGroupNavigation("")
+    data object ExitToObject : VersionGroupNavigation("")
 }

@@ -14,6 +14,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.fragment.findNavController
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -46,7 +48,7 @@ class VersionHistoryFragment : BaseBottomSheetComposeFragment() {
     @Inject
     lateinit var factory: VersionHistoryVMFactory
     private val vm by viewModels<VersionHistoryViewModel> { factory }
-    private lateinit var navController: NavHostController
+    private lateinit var navComposeController: NavHostController
 
     private val editorAdapter = BlockAdapter(
         restore = LinkedList(),
@@ -76,8 +78,8 @@ class VersionHistoryFragment : BaseBottomSheetComposeFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 val bottomSheetNavigator = rememberBottomSheetNavigator()
-                navController = rememberNavController(bottomSheetNavigator)
-                SetupNavigation(bottomSheetNavigator, navController)
+                navComposeController = rememberNavController(bottomSheetNavigator)
+                SetupNavigation(bottomSheetNavigator, navComposeController)
             }
         }
     }
@@ -121,13 +123,17 @@ class VersionHistoryFragment : BaseBottomSheetComposeFragment() {
         subscribe(vm.navigation){ navigation ->
             when(navigation){
                 is VersionGroupNavigation.VersionPreview -> {
-                    navController.navigate(VersionGroupNavigation.VersionPreview.route)
+                    navComposeController.navigate(VersionGroupNavigation.VersionPreview.route)
                 }
                 VersionGroupNavigation.Main -> {
-                    navController.popBackStack()
+                    navComposeController.popBackStack()
                 }
-
-                VersionGroupNavigation.Dismiss -> navController.popBackStack()
+                VersionGroupNavigation.Dismiss -> {
+                    findNavController().popBackStack()
+                }
+                VersionGroupNavigation.ExitToObject -> {
+                    findNavController().popBackStack(R.id.objectMenuScreen, true)
+                }
             }
         }
     }

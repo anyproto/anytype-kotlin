@@ -306,7 +306,8 @@ class VersionHistoryViewModel(
                             versionId = item.id,
                             blocks = blocks,
                             dateFormatted = item.dateFormatted,
-                            timeFormatted = item.timeFormatted
+                            timeFormatted = item.timeFormatted,
+                            icon = item.icon
                         )
                     }
                 }
@@ -345,7 +346,8 @@ sealed class VersionHistoryPreviewScreen {
         val versionId: Id,
         val blocks: List<BlockView>,
         val dateFormatted: String,
-        val timeFormatted: String
+        val timeFormatted: String,
+        val icon: ObjectIcon?
     ) :
         VersionHistoryPreviewScreen()
 

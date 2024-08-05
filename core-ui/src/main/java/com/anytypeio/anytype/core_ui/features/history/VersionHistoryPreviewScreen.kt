@@ -17,6 +17,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
+import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.presentation.history.VersionHistoryPreviewScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,6 +56,10 @@ fun VersionHistoryPreviewScreen(
                         editorAdapter.updateWithDiffUtil(state.blocks)
                         it.findViewById<TextView>(R.id.tvVersionDate).apply {
                             text = "${state.dateFormatted}, ${state.timeFormatted}"
+                        }
+                        it.findViewById<ObjectIconWidget>(R.id.icMember).apply {
+                            val icon = state.icon
+                            if (icon != null) setIcon(icon)
                         }
                     }
                 )

@@ -666,8 +666,8 @@
     <string name="reset">重置</string>
     <string name="search_a_relation">搜索关联</string>
     <string name="content_description_check_icon">Check icon</string>
-    <string name="content_desc_empty_values_bottom_check_icon">空值置底</string>
-    <string name="content_desc_empty_values_top_check_icon">空值置顶</string>
+    <string name="content_desc_empty_values_bottom_check_icon">将空值排序到底部</string>
+    <string name="content_desc_empty_values_top_check_icon">将空值排序到顶部</string>
     <string name="filter_condition_is">是</string>
     <string name="today">今天</string>
     <string name="yesterday">昨天</string>

@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
+import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
@@ -61,6 +62,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -230,6 +232,9 @@ open class EditorTestSetup {
     lateinit var updateDivider: UpdateDivider
 
     @Mock
+    lateinit var clearLastOpenedObject: ClearLastOpenedObject
+
+    @Mock
     lateinit var uriMatcher: Clipboard.UriMatcher
 
     @Mock
@@ -237,6 +242,9 @@ open class EditorTestSetup {
 
     @Mock
     lateinit var repo: BlockRepository
+
+    @Mock
+    lateinit var getNetworkMode: GetNetworkMode
 
     @Mock
     lateinit var unsplashRepository: UnsplashRepository
@@ -495,8 +503,10 @@ open class EditorTestSetup {
                 space = SpaceId(defaultSpace)
             ),
             permissions = permissions,
+            syncStatusProvider = spaceSyncAndP2PStatusProvider,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-            syncStatusProvider = spaceSyncAndP2PStatusProvider
+            clearLastOpenedObject = clearLastOpenedObject,
+            getNetworkMode = getNetworkMode
         )
     }
 

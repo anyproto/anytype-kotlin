@@ -23,6 +23,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.Mimetype
+import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.Resultat
@@ -90,7 +91,6 @@ import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.table.CreateTable
 import com.anytypeio.anytype.domain.table.FillTableRow
 import com.anytypeio.anytype.domain.templates.ApplyTemplate
-import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
@@ -357,6 +357,9 @@ open class EditorViewModelTest {
 
     @Mock
     lateinit var permissions: UserPermissionProvider
+
+    @Mock
+    lateinit var clearLastOpenedObject: ClearLastOpenedObject
 
     @Mock
     lateinit var spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
@@ -3955,7 +3958,9 @@ open class EditorViewModelTest {
             ),
             permissions = permissions,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-            spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider
+            spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
+            clearLastOpenedObject = clearLastOpenedObject,
+            getNetworkMode = getNetworkMode
         )
     }
 

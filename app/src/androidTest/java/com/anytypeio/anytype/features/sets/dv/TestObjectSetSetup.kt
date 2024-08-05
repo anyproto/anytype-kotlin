@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.SubscriptionEvent
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Result
@@ -182,6 +183,9 @@ abstract class TestObjectSetSetup {
     @Mock
     lateinit var analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
 
+    @Mock
+    lateinit var clearLastOpenedObject: ClearLastOpenedObject
+
     private lateinit var getTemplates: GetTemplates
     private lateinit var getDefaultObjectType: GetDefaultObjectType
 
@@ -311,7 +315,8 @@ abstract class TestObjectSetSetup {
                 space = SpaceId(defaultSpace)
             ),
             permissions = permissions,
-            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            clearLastOpenedObject = clearLastOpenedObject
         )
     }
 

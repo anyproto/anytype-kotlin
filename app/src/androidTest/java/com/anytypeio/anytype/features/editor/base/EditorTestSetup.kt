@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
+import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
@@ -232,6 +233,9 @@ open class EditorTestSetup {
 
     @Mock
     lateinit var updateDivider: UpdateDivider
+
+    @Mock
+    lateinit var clearLastOpenedObject: ClearLastOpenedObject
 
     @Mock
     lateinit var uriMatcher: Clipboard.UriMatcher
@@ -508,7 +512,8 @@ open class EditorTestSetup {
                 space = SpaceId(defaultSpace)
             ),
             permissions = permissions,
-            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            clearLastOpenedObject = clearLastOpenedObject
         )
     }
 

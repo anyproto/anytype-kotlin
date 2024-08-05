@@ -21,6 +21,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
+import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
@@ -68,7 +69,6 @@ import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Companion.HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION
 import com.anytypeio.anytype.presentation.home.UserPermissionProviderStub
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
@@ -92,10 +92,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.runTest
 import net.bytebuddy.utility.RandomString
 import org.junit.Rule
-import org.mockito.ArgumentMatchers
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.kotlin.any
@@ -133,6 +131,9 @@ open class ObjectSetViewModelTestSetup {
 
     @Mock
     lateinit var interceptThreadStatus: InterceptThreadStatus
+
+    @Mock
+    lateinit var clearLastOpenedObject: ClearLastOpenedObject
 
     @Mock
     lateinit var gateway: Gateway
@@ -302,7 +303,8 @@ open class ObjectSetViewModelTestSetup {
                 space = SpaceId(defaultSpace)
             ),
             permissions = permissions,
-            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            clearLastOpenedObject = clearLastOpenedObject
         )
     }
 

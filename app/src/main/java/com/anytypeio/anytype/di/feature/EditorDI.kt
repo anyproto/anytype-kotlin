@@ -11,6 +11,7 @@ import com.anytypeio.anytype.di.feature.cover.UnsplashSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationAddToObjectSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectBlockSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectSubComponent
+import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.ClearBlockContent
@@ -290,7 +291,8 @@ object EditorSessionModule {
         storelessSubscriptionContainer: StorelessSubscriptionContainer,
         dispatchers: AppCoroutineDispatchers,
         getNetworkMode: GetNetworkMode,
-        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        clearLastOpenedObject: ClearLastOpenedObject
     ): EditorViewModelFactory = EditorViewModelFactory(
         params = params,
         permissions = permissions,
@@ -335,7 +337,8 @@ object EditorSessionModule {
         dispatchers = dispatchers,
         storelessSubscriptionContainer = storelessSubscriptionContainer,
         getNetworkMode = getNetworkMode,
-        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+        clearLastOpenedObject = clearLastOpenedObject
     )
 
     @JvmStatic

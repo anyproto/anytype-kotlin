@@ -28,6 +28,7 @@ import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.cancel
+import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.fold
@@ -179,7 +180,8 @@ class ObjectSetViewModel(
     private val dispatchers: AppCoroutineDispatchers,
     private val getNetworkMode: GetNetworkMode,
     private val dateProvider: DateProvider,
-    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val clearLastOpenedObject: ClearLastOpenedObject
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>,
     ViewerDelegate by viewerDelegate,
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate
@@ -1594,6 +1596,7 @@ class ObjectSetViewModel(
 
     fun onHomeButtonClicked() {
         viewModelScope.launch {
+            clearLastOpenedObject(ClearLastOpenedObject.Params(vmParams.space))
             closeBlock.async(context).fold(
                 onSuccess = { dispatch(AppNavigation.Command.ExitToDesktop) },
                 onFailure = {

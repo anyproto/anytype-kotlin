@@ -54,13 +54,8 @@ class VersionHistoryFragment : BaseBottomSheetComposeFragment() {
         restore = LinkedList(),
         initialBlock = mutableListOf(),
         clipboardInterceptor = object : ClipboardInterceptor {
-            override fun onClipboardAction(action: ClipboardInterceptor.Action) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onBookmarkPasted(url: Url) {
-                TODO("Not yet implemented")
-            }
+            override fun onClipboardAction(action: ClipboardInterceptor.Action) {}
+            override fun onBookmarkPasted(url: Url) {}
         },
         onBackPressedCallback = { false },
         onDragListener = { _, _ -> false },
@@ -98,7 +93,10 @@ class VersionHistoryFragment : BaseBottomSheetComposeFragment() {
     @OptIn(ExperimentalMaterialNavigationApi::class)
     @Composable
     private fun NavigationGraph(navController: NavHostController) {
-        NavHost(navController = navController, startDestination = VersionGroupNavigation.Main.route) {
+        NavHost(
+            navController = navController,
+            startDestination = VersionGroupNavigation.Main.route
+        ) {
             composable(VersionGroupNavigation.Main.route) {
                 VersionHistoryScreen(
                     state = vm.viewState.collectAsStateWithLifecycle().value,
@@ -119,7 +117,7 @@ class VersionHistoryFragment : BaseBottomSheetComposeFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupBottomSheetBehavior(74)
+        setupBottomSheetBehavior(DEFAULT_PADDING_TOP)
         subscribe(vm.navigation){ navigation ->
             when(navigation){
                 is VersionGroupNavigation.VersionPreview -> {
@@ -127,9 +125,6 @@ class VersionHistoryFragment : BaseBottomSheetComposeFragment() {
                 }
                 VersionGroupNavigation.Main -> {
                     navComposeController.popBackStack()
-                }
-                VersionGroupNavigation.Dismiss -> {
-                    findNavController().popBackStack()
                 }
                 VersionGroupNavigation.ExitToObject -> {
                     findNavController().popBackStack(R.id.objectMenuScreen, true)
@@ -156,6 +151,9 @@ class VersionHistoryFragment : BaseBottomSheetComposeFragment() {
     }
 
     companion object {
+
+        const val DEFAULT_PADDING_TOP = 74
+
         const val CTX_ARG = "anytype.ui.history.ctx_arg"
         const val SPACE_ID_ARG = "anytype.ui.history.space_id_arg"
 

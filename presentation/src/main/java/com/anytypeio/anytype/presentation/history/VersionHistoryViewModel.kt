@@ -85,7 +85,7 @@ class VersionHistoryViewModel(
     fun proceedWithHidePreview() {
         _previewViewState.value = VersionHistoryPreviewScreen.Hidden
         viewModelScope.launch {
-            navigation.emit(VersionGroupNavigation.Dismiss)
+            navigation.emit(VersionGroupNavigation.Main)
         }
     }
 
@@ -376,6 +376,5 @@ data class VersionHistoryGroup(
 sealed class VersionGroupNavigation(val route: String) {
     data object Main : VersionGroupNavigation("main")
     data object VersionPreview : VersionGroupNavigation("version preview")
-    data object Dismiss : VersionGroupNavigation("")
     data object ExitToObject : VersionGroupNavigation("")
 }

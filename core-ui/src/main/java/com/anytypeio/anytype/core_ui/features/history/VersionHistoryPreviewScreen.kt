@@ -33,7 +33,7 @@ fun VersionHistoryPreviewScreen(
         ModalBottomSheet(
             modifier = Modifier.fillMaxSize(),
             sheetState = sheetState,
-            onDismissRequest = onDismiss,
+            onDismissRequest = { onDismiss() },
             containerColor = Color.Transparent,
             content = {
                 AndroidView(

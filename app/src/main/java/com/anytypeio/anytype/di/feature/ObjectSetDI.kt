@@ -15,6 +15,7 @@ import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForOb
 import com.anytypeio.anytype.di.feature.sets.CreateFilterSubComponent
 import com.anytypeio.anytype.di.feature.sets.ModifyFilterSubComponent
 import com.anytypeio.anytype.di.feature.sets.SelectFilterRelationSubComponent
+import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
@@ -245,6 +246,7 @@ object ObjectSetModule {
         dispatchers: AppCoroutineDispatchers,
         dateProvider: DateProvider,
         permissions: UserPermissionProvider,
+        clearLastOpenedObject: ClearLastOpenedObject,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
@@ -287,7 +289,8 @@ object ObjectSetModule {
         dateProvider = dateProvider,
         permissions = permissions,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-        spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider
+        spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
+        clearLastOpenedObject = clearLastOpenedObject
     )
 
     @JvmStatic

@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
+import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.SetObjectType
@@ -20,6 +21,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -92,6 +94,8 @@ open class EditorViewModelFactory @Inject constructor(
     private val templatesContainer: ObjectTypeTemplatesContainer,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val dispatchers: AppCoroutineDispatchers,
+    private val getNetworkMode: GetNetworkMode,
+    private val clearLastOpenedObject: ClearLastOpenedObject,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val syncStatusProvider: SpaceSyncAndP2PStatusProvider
 ) : ViewModelProvider.Factory {
@@ -140,8 +144,10 @@ open class EditorViewModelFactory @Inject constructor(
             templatesContainer = templatesContainer,
             dispatchers = dispatchers,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
+            spaceSyncAndP2PStatusProvider = syncStatusProvider,
+            getNetworkMode = getNetworkMode,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-            spaceSyncAndP2PStatusProvider = syncStatusProvider
+            clearLastOpenedObject = clearLastOpenedObject
         ) as T
     }
 }

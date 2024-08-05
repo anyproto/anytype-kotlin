@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
+import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.Resultat
@@ -94,7 +95,6 @@ import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
-import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -162,6 +162,9 @@ open class EditorPresentationTestSetup {
 
     @Mock
     lateinit var updateTextColor: UpdateTextColor
+
+    @Mock
+    lateinit var clearLastOpenedObject: ClearLastOpenedObject
 
     @Mock
     lateinit var updateBlocksMark: UpdateBlocksMark
@@ -494,7 +497,9 @@ open class EditorPresentationTestSetup {
             ),
             permissions = permissions,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-            spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider
+            clearLastOpenedObject = clearLastOpenedObject,
+            spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
+            getNetworkMode = getNetworkMode
         )
     }
 

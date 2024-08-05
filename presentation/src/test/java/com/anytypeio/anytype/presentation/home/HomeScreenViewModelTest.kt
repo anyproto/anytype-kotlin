@@ -2917,11 +2917,11 @@ class HomeScreenViewModelTest {
         deepLinkToObjectDelegate = deepLinkToObjectDelegate,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         coverImageHashProvider = coverImageHashProvider,
+        storeOfRelations = storeOfRelations,
         payloadDelegator = payloadDelegator,
         createBlock = createBlock,
         createDataViewObject = createDataViewObject,
         dateProvider = dateProvider,
-        storeOfRelations = storeOfRelations
     )
 
     companion object {

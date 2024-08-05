@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -127,7 +128,8 @@ fun UriImage(
     Image(
         painter = rememberAsyncImagePainter(uri),
         contentDescription = "Icon from URI",
-        modifier = modifier.size(size)
+        modifier = modifier.size(size),
+        contentScale = ContentScale.Crop
     )
 }
 
@@ -142,6 +144,7 @@ fun UriCircleImage(
         contentDescription = "Icon from URI",
         modifier = modifier
             .size(size)
-            .clip(CircleShape)
+            .clip(CircleShape),
+        contentScale = ContentScale.Crop
     )
 }

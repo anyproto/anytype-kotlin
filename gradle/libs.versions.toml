@@ -1,5 +1,5 @@
 [versions]
-middlewareVersion = "v0.35.0-rc12"
+middlewareVersion = "v0.35.0"
 kotlinVersion = '2.0.0'
 kspVersion = "2.0.0-1.0.22"
 
@@ -21,6 +21,7 @@ fragmentVersion = "1.8.1"
 exoplayerVersion = "2.19.1"
 wireVersion = "4.9.8"
 glideVersion = "4.14.2"
+glideComposeVersion = "1.0.0-beta01"
 mockitoKotlinVersion = "5.3.1"
 junitVersion = '4.13.2'
 androidJunitVersion = "1.2.1"
@@ -102,6 +103,7 @@ wireRuntime = { module = "com.squareup.wire:wire-runtime", version.ref = "wireVe
 gsonWire = { module = "com.squareup.wire:wire-gson-support", version.ref = "wireVersion" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glideVersion" }
 glideCompiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glideVersion" }
+glideCompose = { module = "com.github.bumptech.glide:compose", version.ref = "glideComposeVersion" }
 coilCompose = { module = "io.coil-kt:coil-compose", version.ref = "coilComposeVersion"  }
 mockitoKotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockitoKotlinVersion" }
 junit = { module = "junit:junit", version.ref = "junitVersion" }

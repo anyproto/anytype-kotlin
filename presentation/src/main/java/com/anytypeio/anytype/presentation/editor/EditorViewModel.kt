@@ -63,6 +63,7 @@ import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.tools.toPrettyString
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
+import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.fold
@@ -247,7 +248,6 @@ import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.getNotIncludedRecommendedRelations
 import com.anytypeio.anytype.presentation.relations.getObjectRelations
-import com.anytypeio.anytype.presentation.relations.values
 import com.anytypeio.anytype.presentation.relations.views
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
@@ -328,6 +328,8 @@ class EditorViewModel(
     private val templatesContainer: ObjectTypeTemplatesContainer,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val dispatchers: AppCoroutineDispatchers,
+    private val getNetworkMode: GetNetworkMode,
+    private val clearLastOpenedObject: ClearLastOpenedObject,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
 ) : ViewStateViewModel<ViewState>(),
@@ -1245,6 +1247,7 @@ class EditorViewModel(
 
     private fun exitDashboard() {
         viewModelScope.launch {
+            clearLastOpenedObject(ClearLastOpenedObject.Params(vmParams.space))
             closePage.async(context).fold(
                 onSuccess = { navigateToDesktop() },
                 onFailure = {

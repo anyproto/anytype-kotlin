@@ -2005,10 +2005,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         vm.onSelectProgrammingLanguageClicked(target, key)
     }
 
-    override fun onMoveToBinSuccess() {
-        vm.onMovedToBin()
-    }
-
     override fun onSearchOnPageClicked() {
         vm.onEnterSearchModeClicked()
     }

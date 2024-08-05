@@ -3,10 +3,11 @@ package com.anytypeio.anytype.ui.editor.sheets
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.subscribe
-import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuViewModel
@@ -23,7 +24,7 @@ class ObjectMenuFragment : ObjectMenuBaseFragment() {
         with(lifecycleScope) {
             subscribe(vm.isObjectArchived) { isArchived ->
                 if (isArchived) {
-                    withParent<DocumentMenuActionReceiver> { onMoveToBinSuccess() }
+                    findNavController().popBackStack(R.id.pageScreen, true)
                 }
             }
         }

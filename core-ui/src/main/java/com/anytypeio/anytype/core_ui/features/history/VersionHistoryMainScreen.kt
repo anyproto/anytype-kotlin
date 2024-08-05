@@ -31,6 +31,8 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -41,6 +43,7 @@ import com.anytypeio.anytype.core_ui.foundation.Header
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
+import com.anytypeio.anytype.core_ui.views.fontInterRegular
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.history.VersionHistoryGroup
 import com.anytypeio.anytype.presentation.history.VersionHistoryState
@@ -201,7 +204,9 @@ private fun GroupItem(
                     .align(Alignment.CenterVertically),
                 icon = item.icon!!,
                 iconSize = 24.dp,
-                fontSize = 16.sp
+                avatarFontSize = 16.sp,
+                avatarBackgroundColor = R.color.shape_tertiary,
+                avatarTextStyle = VersionHistoryAvatarTextStyle()
             )
         }
     }
@@ -255,13 +260,23 @@ private fun GroupItemCollapsed(
                         modifier = Modifier.size(24.dp),
                         icon = icon,
                         iconSize = 24.dp,
-                        fontSize = 16.sp
+                        avatarFontSize = 16.sp,
+                        avatarBackgroundColor = R.color.shape_tertiary,
+                        avatarTextStyle = VersionHistoryAvatarTextStyle()
                     )
                 }
             }
         }
     }
 }
+
+@Composable
+fun VersionHistoryAvatarTextStyle() = TextStyle(
+    fontFamily = fontInterRegular,
+    fontWeight = FontWeight.W600,
+    lineHeight = 23.sp,
+    color = colorResource(id = R.color.glyph_active)
+)
 
 @Preview(
     showBackground = true,

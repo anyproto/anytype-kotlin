@@ -35,11 +35,23 @@ fun ListWidgetObjectIcon(
     modifier: Modifier,
     iconSize: Dp = 48.dp,
     onTaskIconClicked: (Boolean) -> Unit = {},
-    fontSize: TextUnit = 28.sp
+    avatarFontSize: TextUnit = 28.sp,
+    avatarTextStyle: TextStyle = TextStyle(
+        fontWeight = FontWeight.SemiBold,
+        color = colorResource(id = R.color.text_white)
+    ),
+    avatarBackgroundColor: Int = R.color.text_tertiary
 ) {
     when (icon) {
-        is ObjectIcon.Profile.Avatar -> DefaultProfileAvatarIcon(modifier, iconSize, icon, fontSize)
-        is ObjectIcon.Profile.Image -> defaultProfileIconImage(icon, modifier, iconSize)
+        is ObjectIcon.Profile.Avatar -> DefaultProfileAvatarIcon(
+            modifier = modifier,
+            iconSize = iconSize,
+            icon = icon,
+            avatarFontSize = avatarFontSize,
+            avatarTextStyle = avatarTextStyle,
+            avatarBackgroundColor = avatarBackgroundColor
+        )
+        is ObjectIcon.Profile.Image -> DefaultProfileIconImage(icon, modifier, iconSize)
         is ObjectIcon.Basic.Emoji -> DefaultEmojiObjectIcon(modifier, iconSize, icon)
         is ObjectIcon.Basic.Image -> DefaultObjectImageIcon(icon.hash, modifier, iconSize)
         is ObjectIcon.Bookmark -> DefaultObjectBookmarkIcon(icon.image, modifier, iconSize)
@@ -121,14 +133,16 @@ fun DefaultProfileAvatarIcon(
     modifier: Modifier,
     iconSize: Dp,
     icon: ObjectIcon.Profile.Avatar,
-    fontSize: TextUnit
+    avatarFontSize: TextUnit,
+    avatarTextStyle: TextStyle,
+    avatarBackgroundColor: Int
 ) {
     Box(
         modifier = modifier
             .size(iconSize)
             .background(
                 shape = CircleShape,
-                color = colorResource(id = R.color.text_tertiary)
+                color = colorResource(id = avatarBackgroundColor)
             )
     ) {
         Text(
@@ -138,11 +152,8 @@ fun DefaultProfileAvatarIcon(
                 .take(1)
                 .uppercase(),
             modifier = Modifier.align(Alignment.Center),
-            style = TextStyle(
-                fontSize = fontSize,
-                fontWeight = FontWeight.SemiBold,
-                color = colorResource(id = R.color.text_white)
-            )
+            style = avatarTextStyle,
+            fontSize = avatarFontSize
         )
     }
 }
@@ -178,7 +189,7 @@ fun DefaultBasicAvatarIcon(
 }
 
 @Composable
-fun defaultProfileIconImage(
+fun DefaultProfileIconImage(
     icon: ObjectIcon.Profile.Image,
     modifier: Modifier,
     iconSize: Dp

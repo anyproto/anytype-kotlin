@@ -1596,7 +1596,7 @@ class ObjectSetViewModel(
 
     fun onHomeButtonClicked() {
         viewModelScope.launch {
-            clearLastOpenedObject.invoke(ClearLastOpenedObject.Params(vmParams.space))
+            clearLastOpenedObject(ClearLastOpenedObject.Params(vmParams.space))
             closeBlock.async(context).fold(
                 onSuccess = { dispatch(AppNavigation.Command.ExitToDesktop) },
                 onFailure = {

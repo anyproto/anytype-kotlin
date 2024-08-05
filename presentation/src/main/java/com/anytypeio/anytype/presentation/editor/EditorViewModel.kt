@@ -1266,9 +1266,7 @@ class EditorViewModel(
 
     private fun exitDashboard() {
         viewModelScope.launch {
-            clearLastOpenedObject(
-                ClearLastOpenedObject.Params(vmParams.space)
-            )
+            clearLastOpenedObject(ClearLastOpenedObject.Params(vmParams.space))
             closePage.async(context).fold(
                 onSuccess = { navigateToDesktop() },
                 onFailure = {

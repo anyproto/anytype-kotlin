@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
+import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
@@ -119,6 +120,7 @@ interface OnboardingSoulCreationDependencies : ComponentDependencies {
     fun localeProvider(): LocaleProvider
     fun userPermissionProvider(): UserPermissionProvider
     fun awaitAccountStartManager(): AwaitAccountStartManager
+    fun globalSubscriptionManager(): GlobalSubscriptionManager
 }
 
 @Scope

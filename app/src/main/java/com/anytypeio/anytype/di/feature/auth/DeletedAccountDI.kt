@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
+import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.ext.DefaultDateHelper
 import com.anytypeio.anytype.presentation.auth.account.DeletedAccountViewModel
@@ -107,4 +108,5 @@ interface DeletedAccountDependencies : ComponentDependencies {
     fun spaceDeletedStatusWatcher(): SpaceDeletedStatusWatcher
     fun awaitAccountStartManager(): AwaitAccountStartManager
     fun userPermissionProvider(): UserPermissionProvider
+    fun globalSubscriptionManager(): GlobalSubscriptionManager
 }

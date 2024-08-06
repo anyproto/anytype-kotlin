@@ -7,16 +7,21 @@ import com.anytypeio.anytype.core_models.StubSpaceMember
 import com.anytypeio.anytype.core_models.history.Version
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TimeInSeconds
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.history.GetVersions
+import com.anytypeio.anytype.domain.history.SetVersion
+import com.anytypeio.anytype.domain.history.ShowVersion
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
+import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.widgets.collection.DateProviderImpl
@@ -46,7 +51,7 @@ class VersionHistoryViewModelTest {
     private val spaceId = "spaceId-${RandomString.make()}"
     private val vmParams = VersionHistoryViewModel.VmParams(
         objectId = objectId,
-        spaceId = "spaceId-${RandomString.make()}"
+        spaceId = SpaceId("spaceId-${RandomString.make()}")
     )
 
     private val dispatcher = StandardTestDispatcher(TestCoroutineScheduler())
@@ -73,6 +78,12 @@ class VersionHistoryViewModelTest {
     lateinit var getVersions: GetVersions
 
     @Mock
+    lateinit var setVersion: SetVersion
+
+    @Mock
+    lateinit var showVersion: ShowVersion
+
+    @Mock
     lateinit var urlBuilder: UrlBuilder
 
     @Mock
@@ -82,6 +93,9 @@ class VersionHistoryViewModelTest {
 
     @Mock
     lateinit var localeProvider: LocaleProvider
+
+    @Mock
+    lateinit var renderer: DefaultBlockViewRenderer
 
     lateinit var spaceManager: SpaceManager
 
@@ -239,7 +253,8 @@ class VersionHistoryViewModelTest {
                                         timeStamp = versions[0].timestamp,
                                         icon = ObjectIcon.None,
                                         versions = listOf(versions[0]),
-                                        timeFormatted = time0
+                                        timeFormatted = time0,
+                                        dateFormatted = date0
                                     )
                                 )
                                 add(
@@ -250,7 +265,8 @@ class VersionHistoryViewModelTest {
                                         timeStamp = versions[1].timestamp,
                                         icon = ObjectIcon.None,
                                         versions = listOf(versions[1]),
-                                        timeFormatted = time1
+                                        timeFormatted = time1,
+                                        dateFormatted = date1
                                     )
                                 )
                                 add(
@@ -261,7 +277,8 @@ class VersionHistoryViewModelTest {
                                         timeStamp = versions[2].timestamp,
                                         icon = ObjectIcon.None,
                                         versions = listOf(versions[2]),
-                                        timeFormatted = time2
+                                        timeFormatted = time2,
+                                        dateFormatted = date2
                                     )
                                 )
                                 add(
@@ -272,7 +289,8 @@ class VersionHistoryViewModelTest {
                                         timeStamp = versions[3].timestamp,
                                         icon = ObjectIcon.None,
                                         versions = listOf(versions[3]),
-                                        timeFormatted = time3
+                                        timeFormatted = time3,
+                                        dateFormatted = date3
                                     )
                                 )
                             }
@@ -292,7 +310,8 @@ class VersionHistoryViewModelTest {
                                         timeStamp = versions[4].timestamp,
                                         icon = ObjectIcon.None,
                                         versions = listOf(versions[4], versions[5]),
-                                        timeFormatted = time4
+                                        timeFormatted = time4,
+                                        dateFormatted = date4
                                     )
                                 )
                                 add(
@@ -303,7 +322,8 @@ class VersionHistoryViewModelTest {
                                         timeStamp = versions[6].timestamp,
                                         icon = ObjectIcon.None,
                                         versions = listOf(versions[6]),
-                                        timeFormatted = time6
+                                        timeFormatted = time6,
+                                        dateFormatted = date6
                                     )
                                 )
                             }
@@ -321,7 +341,7 @@ class VersionHistoryViewModelTest {
 
     private fun stubSpaceMembers() {
         val filters =
-            ObjectSearchConstants.filterParticipants(spaces = listOf(vmParams.spaceId))
+            ObjectSearchConstants.filterParticipants(spaces = listOf(vmParams.spaceId.id))
         val params = SearchObjects.Params(
             filters = filters,
             keys = ObjectSearchConstants.spaceMemberKeys
@@ -354,7 +374,10 @@ class VersionHistoryViewModelTest {
             dateProvider = dateProvider,
             localeProvider = localeProvider,
             vmParams = vmParams,
-            urlBuilder = urlBuilder
+            urlBuilder = urlBuilder,
+            renderer = renderer,
+            setVersion = setVersion,
+            showVersion = showVersion
         )
     }
 }

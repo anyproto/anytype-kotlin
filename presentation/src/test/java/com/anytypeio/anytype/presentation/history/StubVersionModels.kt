@@ -1,10 +1,6 @@
 package com.anytypeio.anytype.presentation.history
 
-import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectView
-import com.anytypeio.anytype.core_models.history.DiffVersionResponse
-import com.anytypeio.anytype.core_models.history.ShowVersionResponse
 import com.anytypeio.anytype.core_models.history.Version
 import com.anytypeio.anytype.core_models.primitives.TimeInSeconds
 import kotlin.random.Random
@@ -25,27 +21,5 @@ fun StubVersion(
         spaceMemberName = authorName,
         timestamp = timestamp,
         groupId = groupId
-    )
-}
-
-fun StubShowVersionResponse(
-    objectView: ObjectView?,
-    version: Version?,
-    traceId: Id
-): ShowVersionResponse {
-    return ShowVersionResponse(
-        objectView = objectView,
-        version = version,
-        traceId = traceId
-    )
-}
-
-fun StubDiffVersionResponse(
-    historyEvents: List<Event.Command>,
-    objectView: ObjectView?
-): DiffVersionResponse {
-    return DiffVersionResponse(
-        historyEvents = historyEvents,
-        objectView = objectView
     )
 }

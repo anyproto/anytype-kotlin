@@ -2,6 +2,7 @@ package com.anytypeio.anytype.core_ui.features.history
 
 import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,6 +32,8 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -41,6 +44,7 @@ import com.anytypeio.anytype.core_ui.foundation.Header
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
+import com.anytypeio.anytype.core_ui.views.fontInterRegular
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.history.VersionHistoryGroup
 import com.anytypeio.anytype.presentation.history.VersionHistoryState
@@ -148,13 +152,13 @@ private fun GroupItemExpanded(
         ),
         border = BorderStroke(
             width = 0.5.dp, color = colorResource(id = R.color.shape_primary)
-        ),
-        onClick = { onGroupClick(group) }
+        )
     ) {
         Text(
             modifier = Modifier
                 .padding(start = 16.dp, top = 12.dp, bottom = 4.dp)
-                .wrapContentSize(),
+                .wrapContentSize()
+                .clickable { onGroupClick(group) },
             text = group.title,
             style = PreviewTitle2Regular,
             color = colorResource(id = R.color.text_secondary)
@@ -201,7 +205,9 @@ private fun GroupItem(
                     .align(Alignment.CenterVertically),
                 icon = item.icon!!,
                 iconSize = 24.dp,
-                fontSize = 16.sp
+                avatarFontSize = 16.sp,
+                avatarBackgroundColor = R.color.shape_tertiary,
+                avatarTextStyle = VersionHistoryAvatarTextStyle()
             )
         }
     }
@@ -245,23 +251,53 @@ private fun GroupItemCollapsed(
                 horizontalArrangement = Arrangement.spacedBy(
                     space = (-4).dp,
                     alignment = Alignment.End
-                )
+                ),
+                reverseLayout = true
             ) {
-                items(
-                    count = group.icons.size,
-                ) { idx ->
-                    val icon = group.icons[idx]
-                    ListWidgetObjectIcon(
-                        modifier = Modifier.size(24.dp),
-                        icon = icon,
-                        iconSize = 24.dp,
-                        fontSize = 16.sp
-                    )
+                items(count = group.icons.size) { idx ->
+                    when (idx) {
+                        in (0 until MEMBERS_ICONS_MAX_SIZE) -> {
+                            val icon = group.icons[idx]
+                            Box(
+                                modifier = Modifier
+                                    .size(28.dp)
+                                    .background(color = colorResource(id = R.color.white)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                ListWidgetObjectIcon(
+                                    modifier = Modifier.size(24.dp),
+                                    icon = icon,
+                                    iconSize = 24.dp,
+                                    avatarFontSize = 16.sp,
+                                    avatarBackgroundColor = R.color.shape_tertiary,
+                                    avatarTextStyle = VersionHistoryAvatarTextStyle()
+                                )
+                            }
+                        }
+                    }
                 }
+            }
+            if (group.icons.size - MEMBERS_ICONS_MAX_SIZE > 0) {
+                Text(
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .padding(start = 4.dp),
+                    text = "+${group.icons.size - MEMBERS_ICONS_MAX_SIZE}",
+                    style = Caption1Regular,
+                    color = colorResource(id = R.color.text_secondary)
+                )
             }
         }
     }
 }
+
+@Composable
+fun VersionHistoryAvatarTextStyle() = TextStyle(
+    fontFamily = fontInterRegular,
+    fontWeight = FontWeight.W600,
+    lineHeight = 23.sp,
+    color = colorResource(id = R.color.glyph_active)
+)
 
 @Preview(
     showBackground = true,
@@ -292,7 +328,8 @@ private fun SpaceListScreenPreview() {
                             icon = ObjectIcon.Profile.Avatar("A"),
                             spaceMember = "1",
                             timeStamp = TimeInSeconds(23423423L),
-                            versions = emptyList()
+                            versions = emptyList(),
+                            dateFormatted = "Today",
 
                         ),
                         VersionHistoryGroup.Item(
@@ -302,7 +339,8 @@ private fun SpaceListScreenPreview() {
                             icon = ObjectIcon.Profile.Avatar("B"),
                             spaceMember = "1",
                             timeStamp = TimeInSeconds(23423423L),
-                            versions = emptyList()
+                            versions = emptyList(),
+                            dateFormatted = "Today",
                         ),
                         VersionHistoryGroup.Item(
                             id = "3",
@@ -311,7 +349,8 @@ private fun SpaceListScreenPreview() {
                             icon = ObjectIcon.Profile.Avatar("C"),
                             spaceMember = "1",
                             timeStamp = TimeInSeconds(23423423L),
-                            versions = emptyList()
+                            versions = emptyList(),
+                            dateFormatted = "Today",
                         ),
                     ),
                     icons = listOf(ObjectIcon.Profile.Avatar("A"), ObjectIcon.Profile.Avatar("B"))
@@ -320,7 +359,7 @@ private fun SpaceListScreenPreview() {
                     id = "2",
                     title = "Yesterday",
                     items = emptyList(),
-                    icons = listOf(ObjectIcon.Profile.Avatar("C"), ObjectIcon.Profile.Avatar("D"))
+                    icons = listOf(ObjectIcon.Profile.Avatar("C"), ObjectIcon.Profile.Avatar("D"), ObjectIcon.Profile.Avatar("E"), ObjectIcon.Profile.Avatar("F"), ObjectIcon.Profile.Avatar("G"), ObjectIcon.Profile.Avatar("H"), ObjectIcon.Profile.Avatar("I"), ObjectIcon.Profile.Avatar("J"), ObjectIcon.Profile.Avatar("K"), ObjectIcon.Profile.Avatar("L"), ObjectIcon.Profile.Avatar("M"), ObjectIcon.Profile.Avatar("N"), ObjectIcon.Profile.Avatar("O"), ObjectIcon.Profile.Avatar("P"), ObjectIcon.Profile.Avatar("Q"), ObjectIcon.Profile.Avatar("R"), ObjectIcon.Profile.Avatar("S"), ObjectIcon.Profile.Avatar("T"), ObjectIcon.Profile.Avatar("U"), ObjectIcon.Profile.Avatar("V"), ObjectIcon.Profile.Avatar("W"), ObjectIcon.Profile.Avatar("X"), ObjectIcon.Profile.Avatar("Y"))
                 ),
                 VersionHistoryGroup(
                     id = "3",
@@ -334,6 +373,8 @@ private fun SpaceListScreenPreview() {
         onItemClick = {}
     )
 }
+
+const val MEMBERS_ICONS_MAX_SIZE = 3
 
 @Preview(
     showBackground = true,

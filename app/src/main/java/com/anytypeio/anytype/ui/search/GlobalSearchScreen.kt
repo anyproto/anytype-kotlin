@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -59,6 +58,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -96,7 +96,7 @@ import com.anytypeio.anytype.core_ui.widgets.DefaultObjectBookmarkIcon
 import com.anytypeio.anytype.core_ui.widgets.DefaultObjectImageIcon
 import com.anytypeio.anytype.core_ui.widgets.DefaultProfileAvatarIcon
 import com.anytypeio.anytype.core_ui.widgets.DefaultTaskObjectIcon
-import com.anytypeio.anytype.core_ui.widgets.defaultProfileIconImage
+import com.anytypeio.anytype.core_ui.widgets.DefaultProfileIconImage
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
@@ -669,11 +669,23 @@ fun GlobalSearchObjectIcon(
     modifier: Modifier,
     iconSize: Dp = 48.dp,
     onTaskIconClicked: (Boolean) -> Unit = {},
-    fontSize: TextUnit = 28.sp
+    avatarBackgroundColor: Int = R.color.text_tertiary,
+    avatarFontSize: TextUnit = 28.sp,
+    avatarTextStyle: TextStyle = TextStyle(
+        fontWeight = FontWeight.SemiBold,
+        color = colorResource(id = R.color.text_white)
+    )
 ) {
     when (icon) {
-        is ObjectIcon.Profile.Avatar -> DefaultProfileAvatarIcon(modifier, iconSize, icon, fontSize)
-        is ObjectIcon.Profile.Image -> defaultProfileIconImage(icon, modifier, iconSize)
+        is ObjectIcon.Profile.Avatar -> DefaultProfileAvatarIcon(
+            modifier = modifier,
+            iconSize = iconSize,
+            icon = icon,
+            avatarTextStyle = avatarTextStyle,
+            avatarFontSize = avatarFontSize,
+            avatarBackgroundColor = avatarBackgroundColor
+        )
+        is ObjectIcon.Profile.Image -> DefaultProfileIconImage(icon, modifier, iconSize)
         is ObjectIcon.Basic.Emoji -> DefaultEmojiObjectIcon(modifier, iconSize, icon)
         is ObjectIcon.Basic.Image -> DefaultObjectImageIcon(icon.hash, modifier, iconSize)
         is ObjectIcon.Basic.Avatar -> DefaultBasicAvatarIcon(modifier, iconSize, icon)

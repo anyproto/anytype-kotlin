@@ -2721,7 +2721,9 @@ class Middleware @Inject constructor(
     @Throws
     fun showVersion(command: Command.VersionHistory.ShowVersion): ShowVersionResponse {
         val request = Rpc.History.ShowVersion.Request(
-            versionId = command.versionId
+            objectId = command.objectId,
+            versionId = command.versionId,
+            traceId = command.traceId
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.showVersion(request)
@@ -2732,6 +2734,7 @@ class Middleware @Inject constructor(
     @Throws
     fun setVersion(command: Command.VersionHistory.SetVersion) {
         val request = Rpc.History.SetVersion.Request(
+            objectId = command.objectId,
             versionId = command.versionId
         )
         if (BuildConfig.DEBUG) logRequest(request)

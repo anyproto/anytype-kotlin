@@ -20,7 +20,6 @@ import com.anytypeio.anytype.di.feature.PersonalizationSettingsSubComponent
 import com.anytypeio.anytype.di.feature.SplashDependencies
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
 import com.anytypeio.anytype.di.feature.gallery.GalleryInstallationComponentDependencies
-import com.anytypeio.anytype.di.feature.history.VersionHistoryComponentDependencies
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.library.LibraryDependencies
 import com.anytypeio.anytype.di.feature.multiplayer.RequestJoinSpaceDependencies
@@ -125,8 +124,7 @@ interface MainComponent :
     GalleryInstallationComponentDependencies,
     NotificationDependencies,
     GlobalSearchDependencies,
-    MembershipUpdateComponentDependencies,
-    VersionHistoryComponentDependencies
+    MembershipUpdateComponentDependencies
 {
 
     fun inject(app: AndroidApplication)
@@ -347,9 +345,4 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(MembershipUpdateComponentDependencies::class)
     abstract fun provideMembershipUpdateComponentDependencies(component: MainComponent): ComponentDependencies
-
-    @Binds
-    @IntoMap
-    @ComponentDependenciesKey(VersionHistoryComponentDependencies::class)
-    abstract fun provideVersionHistoryComponentDependencies(component: MainComponent): ComponentDependencies
 }

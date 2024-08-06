@@ -24,11 +24,8 @@ import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.LocaleProvider
-import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
-import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
-import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
-import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
+import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
@@ -57,19 +54,16 @@ class MainViewModel(
     private val analytics: Analytics,
     private val interceptAccountStatus: InterceptAccountStatus,
     private val logout: Logout,
-    private val relationsSubscriptionManager: RelationsSubscriptionManager,
-    private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
     private val checkAuthorizationStatus: CheckAuthorizationStatus,
     private val configStorage: ConfigStorage,
-    private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
     private val localeProvider: LocaleProvider,
-    private val userPermissionProvider: UserPermissionProvider,
     private val notificationsProvider: NotificationsProvider,
     private val notificator: SystemNotificationService,
     private val notificationActionDelegate: NotificationActionDelegate,
     private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
     private val awaitAccountStartManager: AwaitAccountStartManager,
-    private val membershipProvider: MembershipProvider
+    private val membershipProvider: MembershipProvider,
+    private val globalSubscriptionManager: GlobalSubscriptionManager
 ) : ViewModel(),
     NotificationActionDelegate by notificationActionDelegate,
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
@@ -178,10 +172,7 @@ class MainViewModel(
     }
 
     private fun unsubscribeFromGlobalSubscriptions() {
-        relationsSubscriptionManager.onStop()
-        objectTypesSubscriptionManager.onStop()
-        spaceDeletedStatusWatcher.onStop()
-        userPermissionProvider.stop()
+        globalSubscriptionManager.onStop()
     }
 
     fun onRestore() {
@@ -197,10 +188,7 @@ class MainViewModel(
         runBlocking {
             resumeAccount.run(params = BaseUseCase.None).process(
                 success = {
-                    relationsSubscriptionManager.onStart()
-                    objectTypesSubscriptionManager.onStart()
-                    spaceDeletedStatusWatcher.onStart()
-                    userPermissionProvider.start()
+                    globalSubscriptionManager.onStart()
                     val analyticsID = configStorage.getOrNull()?.analytics
                     if (analyticsID != null) {
                         updateUserProperties(

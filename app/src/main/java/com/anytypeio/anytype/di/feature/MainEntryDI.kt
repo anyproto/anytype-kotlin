@@ -14,12 +14,9 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
-import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import com.anytypeio.anytype.domain.platform.MetricsProvider
-import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
-import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
-import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
+import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.theme.GetTheme
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
@@ -64,19 +61,16 @@ object MainEntryModule {
         restoreWallpaper: RestoreWallpaper,
         interceptAccountStatus: InterceptAccountStatus,
         logout: Logout,
-        relationsSubscriptionManager: RelationsSubscriptionManager,
-        objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
         checkAuthorizationStatus: CheckAuthorizationStatus,
         configStorage: ConfigStorage,
-        spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
         localeProvider: LocaleProvider,
-        userPermissionProvider: UserPermissionProvider,
         notificationsProvider: NotificationsProvider,
         notificator: SystemNotificationService,
         notificationActionDelegate: NotificationActionDelegate,
         deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
         awaitAccountStartManager: AwaitAccountStartManager,
-        membershipProvider: MembershipProvider
+        membershipProvider: MembershipProvider,
+        globalSubscriptionManager: GlobalSubscriptionManager
     ): MainViewModelFactory = MainViewModelFactory(
         resumeAccount = resumeAccount,
         analytics = analytics,
@@ -84,19 +78,16 @@ object MainEntryModule {
         restoreWallpaper = restoreWallpaper,
         interceptAccountStatus = interceptAccountStatus,
         logout = logout,
-        relationsSubscriptionManager = relationsSubscriptionManager,
-        objectTypesSubscriptionManager = objectTypesSubscriptionManager,
         checkAuthorizationStatus = checkAuthorizationStatus,
         configStorage = configStorage,
-        spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
         localeProvider = localeProvider,
-        userPermissionProvider = userPermissionProvider,
         notificationsProvider = notificationsProvider,
         notificator = notificator,
         notificationActionDelegate = notificationActionDelegate,
         deepLinkToObjectDelegate = deepLinkToObjectDelegate,
         awaitAccountStartManager = awaitAccountStartManager,
-        membershipProvider = membershipProvider
+        membershipProvider = membershipProvider,
+        globalSubscriptionManager = globalSubscriptionManager
     )
 
     @JvmStatic

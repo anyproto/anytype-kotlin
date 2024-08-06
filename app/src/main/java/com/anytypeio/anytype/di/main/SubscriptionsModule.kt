@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.search.RelationsSubscriptionContainer
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
+import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import dagger.Module
 import dagger.Provides
@@ -160,5 +161,20 @@ object SubscriptionsModule {
         container = container,
         manager = spaceManager,
         awaitAccountStart = awaitAccountStartManager
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun globalSubscriptionManager(
+        types: ObjectTypesSubscriptionManager,
+        relations: RelationsSubscriptionManager,
+        permissions: UserPermissionProvider,
+        isSpaceDeleted: SpaceDeletedStatusWatcher
+    ) : GlobalSubscriptionManager = GlobalSubscriptionManager.Default(
+        types = types,
+        relations = relations,
+        permissions = permissions,
+        isSpaceDeleted = isSpaceDeleted
     )
 }

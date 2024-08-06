@@ -15,10 +15,7 @@ import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.misc.AppActionManager
-import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
-import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
-import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
-import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
+import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import java.math.RoundingMode
 import javax.inject.Inject
@@ -35,11 +32,8 @@ class DeletedAccountViewModel(
     private val logout: Logout,
     private val dateHelper: DateHelper,
     private val analytics: Analytics,
-    private val relationsSubscriptionManager: RelationsSubscriptionManager,
-    private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
-    private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
     private val appActionManager: AppActionManager,
-    private val userPermissionProvider: UserPermissionProvider
+    private val globalSubscriptionManager: GlobalSubscriptionManager
 ) : BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>(replay = 0)
@@ -149,10 +143,7 @@ class DeletedAccountViewModel(
     }
 
     private fun unsubscribeFromGlobalSubscriptions() {
-        relationsSubscriptionManager.onStop()
-        objectTypesSubscriptionManager.onStop()
-        spaceDeletedStatusWatcher.onStop()
-        userPermissionProvider.stop()
+        globalSubscriptionManager.onStop()
     }
 
     class Factory @Inject constructor(
@@ -160,11 +151,8 @@ class DeletedAccountViewModel(
         private val logout: Logout,
         private val helper: DateHelper,
         private val analytics: Analytics,
-        private val relationsSubscriptionManager: RelationsSubscriptionManager,
-        private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
-        private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
         private val appActionManager: AppActionManager,
-        private val userPermissionProvider: UserPermissionProvider
+        private val globalSubscriptionManager: GlobalSubscriptionManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -173,25 +161,22 @@ class DeletedAccountViewModel(
                 logout = logout,
                 dateHelper = helper,
                 analytics = analytics,
-                relationsSubscriptionManager = relationsSubscriptionManager,
-                objectTypesSubscriptionManager = objectTypesSubscriptionManager,
-                spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
                 appActionManager = appActionManager,
-                userPermissionProvider = userPermissionProvider
+                globalSubscriptionManager = globalSubscriptionManager
             ) as T
         }
     }
 
     sealed class Command {
-        object Resume : Command()
-        object Logout : Command()
+        data object Resume : Command()
+        data object Logout : Command()
     }
 
     sealed class DeletionDate {
-        object Unknown : DeletionDate()
-        object Deleted : DeletionDate()
-        object Today : DeletionDate()
-        object Tomorrow : DeletionDate()
+        data object Unknown : DeletionDate()
+        data object Deleted : DeletionDate()
+        data object Today : DeletionDate()
+        data object Tomorrow : DeletionDate()
         data class Later(val days: Int) : DeletionDate()
     }
 

@@ -11,10 +11,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.misc.AppActionManager
-import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
-import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
-import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
-import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
+import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.auth.account.DeletedAccountViewModel
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
@@ -67,13 +64,7 @@ class DeleteAccountViewModelTest {
     lateinit var spaceManager: SpaceManager
 
     @Mock
-    private lateinit var relationsSubscriptionManager: RelationsSubscriptionManager
-
-    @Mock
-    private lateinit var objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
-
-    @Mock
-    private lateinit var spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher
+    lateinit var globalSubscriptionManager: GlobalSubscriptionManager
 
     @Mock
     lateinit var awaitAccountStartManager: AwaitAccountStartManager
@@ -82,9 +73,6 @@ class DeleteAccountViewModelTest {
     lateinit var logout: Logout
 
     lateinit var vm: DeletedAccountViewModel
-
-    @Mock
-    lateinit var userPermissionProvider: UserPermissionProvider
 
     @Before
     fun setup() {
@@ -106,11 +94,8 @@ class DeleteAccountViewModelTest {
             logout = logout,
             dateHelper = helper,
             analytics = analytics,
-            relationsSubscriptionManager = relationsSubscriptionManager,
-            spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
-            objectTypesSubscriptionManager = objectTypesSubscriptionManager,
             appActionManager = appActionManager,
-            userPermissionProvider = userPermissionProvider
+            globalSubscriptionManager = globalSubscriptionManager
         )
     }
 

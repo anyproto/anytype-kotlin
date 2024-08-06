@@ -17,9 +17,8 @@ import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.platform.MetricsProvider
-import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
-import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
+import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
@@ -88,8 +87,6 @@ interface OnboardingMnemonicLoginDependencies : ComponentDependencies {
     fun crashReporter(): CrashReporter
     fun configStorage(): ConfigStorage
     fun metricsProvider(): MetricsProvider
-    fun objectTypesSubscriptionManager(): ObjectTypesSubscriptionManager
-    fun relationsSubscriptionManager(): RelationsSubscriptionManager
     fun spaceStatusWatcher(): SpaceDeletedStatusWatcher
     fun localeProvider(): LocaleProvider
     fun awaitAccountStartManager(): AwaitAccountStartManager
@@ -99,4 +96,5 @@ interface OnboardingMnemonicLoginDependencies : ComponentDependencies {
     fun provideContext(): Context
     fun userSettings(): UserSettingsRepository
     fun spaceManager(): SpaceManager
+    fun globalSubscriptionManager(): GlobalSubscriptionManager
 }

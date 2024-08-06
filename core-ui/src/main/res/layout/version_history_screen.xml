@@ -21,7 +21,7 @@
         android:layout_gravity="center_horizontal"
         android:textColor="@color/text_primary"
         tools:text="Version Date"
-        style="@style/TextView.ContentStyle.PreviewTitles.2.Regular"
+        style="@style/TextView.ContentStyle.PreviewTitles.2.Medium"
         android:layout_marginTop="30dp"/>
 
     <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget

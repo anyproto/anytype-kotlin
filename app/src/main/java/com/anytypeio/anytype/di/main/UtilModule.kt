@@ -28,6 +28,7 @@ import com.anytypeio.anytype.presentation.widgets.collection.DateProviderImpl
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
+import java.time.ZoneId
 import javax.inject.Singleton
 
 @Module(includes = [UtilModule.Bindings::class])
@@ -54,7 +55,9 @@ object UtilModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideDateProvider(): DateProvider = DateProviderImpl()
+    fun provideDateProvider(): DateProvider =
+        DateProviderImpl(defaultZoneId = ZoneId.systemDefault()
+        )
 
     @Module
     interface Bindings {

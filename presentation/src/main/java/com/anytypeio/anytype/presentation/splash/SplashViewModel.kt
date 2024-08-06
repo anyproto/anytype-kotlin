@@ -19,7 +19,6 @@ import com.anytypeio.anytype.core_models.exceptions.MigrationNeededException
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
-import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
@@ -29,11 +28,8 @@ import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.LocaleProvider
-import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.page.CreateObject
-import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
-import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
-import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
+import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -56,15 +52,11 @@ class SplashViewModel(
     private val launchAccount: LaunchAccount,
     private val getLastOpenedObject: GetLastOpenedObject,
     private val createObject: CreateObject,
-    private val relationsSubscriptionManager: RelationsSubscriptionManager,
-    private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
-    private val featureToggles: FeatureToggles,
     private val crashReporter: CrashReporter,
-    private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
     private val localeProvider: LocaleProvider,
     private val spaceManager: SpaceManager,
-    private val userPermissionProvider: UserPermissionProvider,
-    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val globalSubscriptionManager: GlobalSubscriptionManager
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val state = MutableStateFlow<ViewState<Any>>(ViewState.Init)
@@ -155,10 +147,7 @@ class SplashViewModel(
     }
 
     private fun proceedWithGlobalSubscriptions() {
-        relationsSubscriptionManager.onStart()
-        objectTypesSubscriptionManager.onStart()
-        spaceDeletedStatusWatcher.onStart()
-        userPermissionProvider.start()
+        globalSubscriptionManager.onStart()
     }
 
     fun onIntentCreateNewObject(type: Key) {

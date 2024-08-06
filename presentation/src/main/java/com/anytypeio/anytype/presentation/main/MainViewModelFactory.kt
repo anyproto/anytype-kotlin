@@ -10,11 +10,8 @@ import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.misc.LocaleProvider
-import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
-import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
-import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
-import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
+import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
@@ -30,19 +27,16 @@ class MainViewModelFactory @Inject constructor(
     private val restoreWallpaper: RestoreWallpaper,
     private val interceptAccountStatus: InterceptAccountStatus,
     private val logout: Logout,
-    private val relationsSubscriptionManager: RelationsSubscriptionManager,
-    private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
     private val checkAuthorizationStatus: CheckAuthorizationStatus,
     private val configStorage: ConfigStorage,
-    private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
     private val localeProvider: LocaleProvider,
-    private val userPermissionProvider: UserPermissionProvider,
     private val notificationsProvider: NotificationsProvider,
     private val notificator: SystemNotificationService,
     private val notificationActionDelegate: NotificationActionDelegate,
     private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
     private val awaitAccountStartManager: AwaitAccountStartManager,
-    private val membershipProvider: MembershipProvider
+    private val membershipProvider: MembershipProvider,
+    private val globalSubscriptionManager: GlobalSubscriptionManager
     ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -54,18 +48,15 @@ class MainViewModelFactory @Inject constructor(
         restoreWallpaper = restoreWallpaper,
         interceptAccountStatus = interceptAccountStatus,
         logout = logout,
-        relationsSubscriptionManager = relationsSubscriptionManager,
-        objectTypesSubscriptionManager = objectTypesSubscriptionManager,
         checkAuthorizationStatus = checkAuthorizationStatus,
         configStorage = configStorage,
-        spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
         localeProvider = localeProvider,
-        userPermissionProvider = userPermissionProvider,
         notificationsProvider = notificationsProvider,
         notificator = notificator,
         notificationActionDelegate = notificationActionDelegate,
         deepLinkToObjectDelegate = deepLinkToObjectDelegate,
         awaitAccountStartManager = awaitAccountStartManager,
-        membershipProvider = membershipProvider
+        membershipProvider = membershipProvider,
+        globalSubscriptionManager = globalSubscriptionManager
     ) as T
 }

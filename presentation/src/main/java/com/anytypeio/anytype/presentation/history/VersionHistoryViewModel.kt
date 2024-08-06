@@ -169,21 +169,20 @@ class VersionHistoryViewModel(
 
         val locale = localeProvider.locale()
 
-        // Group by day
-        val versionsByDay = versions.groupBy { version ->
-            val formattedDate = dateProvider.formatToDateString(
-                timestamp = (version.timestamp.inMillis),
-                pattern = GROUP_BY_DAY_FORMAT,
-                locale = locale
-            )
-            formattedDate
-        }
-
-        // Sort days descending
-        val sortedDays = versionsByDay.keys.sortedBy { it }
+        // Sort versions by timestamp (DESC) and group by day
+        val versionsByDay = versions
+            .sortedByDescending { it.timestamp.time }
+            .groupBy { version ->
+                val formattedDate = dateProvider.formatToDateString(
+                    timestamp = (version.timestamp.inMillis),
+                    pattern = GROUP_BY_DAY_FORMAT,
+                    locale = locale
+                )
+                formattedDate
+            }
 
         // Within each day, sort all versions by timestamp descending
-        val sortedVersionsByDay = sortedDays.associateWith { day ->
+        val sortedVersionsByDay = versionsByDay.keys.associateWith { day ->
             val versionByDay = versionsByDay[day] ?: return@associateWith emptyList()
             versionByDay.sortedByDescending { it.timestamp.time }
         }
@@ -215,10 +214,7 @@ class VersionHistoryViewModel(
             }
             val spaceMemberLatestVersion =
                 spaceMemberVersions.firstOrNull()?.firstOrNull() ?: return@mapNotNull null
-            val (latestVersionDate, latestVersionTime) = dateProvider.formatTimestampToDateAndTime(
-                timestamp = spaceMemberLatestVersion.timestamp.inMillis,
-                locale = locale
-            )
+
             val groupItems = spaceMemberVersions.toGroupItems(
                 spaceMembers = spaceMembers,
                 locale = locale

@@ -64,7 +64,7 @@ object MainEntryModule {
         checkAuthorizationStatus: CheckAuthorizationStatus,
         configStorage: ConfigStorage,
         localeProvider: LocaleProvider,
-         notificationsProvider: NotificationsProvider,
+        notificationsProvider: NotificationsProvider,
         notificator: SystemNotificationService,
         notificationActionDelegate: NotificationActionDelegate,
         deepLinkToObjectDelegate: DeepLinkToObjectDelegate,

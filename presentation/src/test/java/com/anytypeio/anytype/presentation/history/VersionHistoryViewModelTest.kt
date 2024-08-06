@@ -325,6 +325,7 @@ class VersionHistoryViewModelTest {
                                 ).first
                             ),
                             icons = listOf(ObjectIcon.None, ObjectIcon.None),
+                            isExpanded = true,
                             items = buildList {
                                 val versionsNew8Format = dateProvider.formatTimestampToDateAndTime(
                                     timestamp = versionsNew[8].timestamp.inMillis,

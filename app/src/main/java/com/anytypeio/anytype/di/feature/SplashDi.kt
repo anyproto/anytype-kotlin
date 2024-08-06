@@ -27,6 +27,7 @@ import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
+import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -196,4 +197,5 @@ interface SplashDependencies : ComponentDependencies {
     fun awaitAccountStartManager(): AwaitAccountStartManager
     fun userPermissionProvider(): UserPermissionProvider
     fun analyticSpaceHelperDelegate(): AnalyticSpaceHelperDelegate
+    fun globalSubscriptionManager(): GlobalSubscriptionManager
 }

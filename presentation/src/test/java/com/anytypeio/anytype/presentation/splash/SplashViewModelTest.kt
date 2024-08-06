@@ -17,9 +17,6 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.page.CreateObject
-import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
-import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
-import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -69,15 +66,6 @@ class SplashViewModelTest {
 
     @Mock
     lateinit var createObject: CreateObject
-
-    @Mock
-    private lateinit var relationsSubscriptionManager: RelationsSubscriptionManager
-
-    @Mock
-    private lateinit var objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
-
-    @Mock
-    private lateinit var spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher
 
     @Mock
     lateinit var globalSubscriptionManager: GlobalSubscriptionManager

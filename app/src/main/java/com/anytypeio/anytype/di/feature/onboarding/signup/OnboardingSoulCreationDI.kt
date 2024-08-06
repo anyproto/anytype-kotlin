@@ -17,7 +17,6 @@ import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.ImportGetStartedUseCase
 import com.anytypeio.anytype.domain.platform.MetricsProvider
-import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
@@ -111,7 +110,6 @@ interface OnboardingSoulCreationDependencies : ComponentDependencies {
     fun authRepository(): AuthRepository
     fun userSettings(): UserSettingsRepository
     fun relationsSubscriptionManager(): RelationsSubscriptionManager
-    fun objectTypesSubscriptionManager(): ObjectTypesSubscriptionManager
     fun pathProvider(): PathProvider
     fun metricsProvider(): MetricsProvider
     fun crashReporter(): CrashReporter

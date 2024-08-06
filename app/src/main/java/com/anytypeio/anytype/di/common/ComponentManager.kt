@@ -50,7 +50,6 @@ import com.anytypeio.anytype.di.feature.ViewerSortModule
 import com.anytypeio.anytype.di.feature.auth.DaggerDeletedAccountComponent
 import com.anytypeio.anytype.di.feature.cover.UnsplashModule
 import com.anytypeio.anytype.di.feature.gallery.DaggerGalleryInstallationComponent
-import com.anytypeio.anytype.di.feature.history.DaggerVersionHistoryComponent
 import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
 import com.anytypeio.anytype.di.feature.library.DaggerLibraryComponent
 import com.anytypeio.anytype.di.feature.membership.DaggerMembershipComponent
@@ -1036,9 +1035,16 @@ class ComponentManager(
         }
 
     val versionHistoryComponent =
-        ComponentMapWithParam { vmParams: VersionHistoryViewModel.VmParams ->
-            DaggerVersionHistoryComponent.factory()
-                .create(findComponentDependencies(), vmParams)
+        ComponentWithParams { vmParams: VersionHistoryViewModel.VmParams ->
+            editorComponent.get(
+                key = vmParams.objectId,
+                param = DefaultComponentParam(
+                    ctx = vmParams.objectId,
+                    space = vmParams.spaceId
+                )
+            ).versionHistoryComponent()
+                .vmParams(vmParams)
+                .build()
         }
 
     class Component<T>(private val builder: () -> T) {

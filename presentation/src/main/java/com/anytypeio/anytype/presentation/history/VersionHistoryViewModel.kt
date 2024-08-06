@@ -3,18 +3,31 @@ package com.anytypeio.anytype.presentation.history
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.core_models.history.Version
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TimeInSeconds
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.history.GetVersions
+import com.anytypeio.anytype.domain.history.SetVersion
+import com.anytypeio.anytype.domain.history.ShowVersion
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.presentation.editor.Editor.Mode
+import com.anytypeio.anytype.presentation.editor.EditorViewModel.Companion.INITIAL_INDENT
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
+import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import java.util.Locale
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -26,12 +39,18 @@ class VersionHistoryViewModel(
     private val objectSearch: SearchObjects,
     private val dateProvider: DateProvider,
     private val localeProvider: LocaleProvider,
-    private val urlBuilder: UrlBuilder
-
-) : ViewModel() {
+    private val urlBuilder: UrlBuilder,
+    private val showVersion: ShowVersion,
+    private val setVersion: SetVersion,
+    private val renderer: DefaultBlockViewRenderer
+) : ViewModel(), BlockViewRenderer by renderer {
 
     private val _viewState = MutableStateFlow<VersionHistoryState>(VersionHistoryState.Loading)
     val viewState = _viewState
+    private val _previewViewState =
+        MutableStateFlow<VersionHistoryPreviewScreen>(VersionHistoryPreviewScreen.Hidden)
+    val previewViewState = _previewViewState
+    val navigation = MutableSharedFlow<VersionGroupNavigation>(0)
 
     init {
         Timber.d("VersionHistoryViewModel created")
@@ -56,13 +75,44 @@ class VersionHistoryViewModel(
     }
 
     fun onGroupItemClicked(item: VersionHistoryGroup.Item) {
+        viewModelScope.launch {
+            _previewViewState.value = VersionHistoryPreviewScreen.Loading
+            navigation.emit(VersionGroupNavigation.VersionPreview)
+            proceedShowVersion(item = item)
+        }
+    }
 
+    fun proceedWithHidePreview() {
+        _previewViewState.value = VersionHistoryPreviewScreen.Hidden
+        viewModelScope.launch {
+            navigation.emit(VersionGroupNavigation.Main)
+        }
+    }
+
+    fun proceedWithRestore() {
+        val currentVersionId = (_previewViewState.value as? VersionHistoryPreviewScreen.Success)?.versionId ?: return
+        viewModelScope.launch {
+            val params = SetVersion.Params(
+                    objectId = vmParams.objectId,
+                    versionId = currentVersionId
+                )
+            setVersion.async(params).fold(
+                onSuccess = {
+                    Timber.d("Version restored")
+                    _previewViewState.value = VersionHistoryPreviewScreen.Hidden
+                    navigation.emit(VersionGroupNavigation.ExitToObject)
+                },
+                onFailure = {
+                    Timber.e(it, "Error while restoring version")
+                }
+            )
+        }
     }
 
     private fun getSpaceMembers() {
         viewModelScope.launch {
             val filters =
-                ObjectSearchConstants.filterParticipants(spaces = listOf(vmParams.spaceId))
+                ObjectSearchConstants.filterParticipants(spaces = listOf(vmParams.spaceId.id))
             objectSearch(
                 SearchObjects.Params(
                     filters = filters,
@@ -168,7 +218,7 @@ class VersionHistoryViewModel(
             )
             val groupItems = spaceMemberVersions.toGroupItems(
                 spaceMembers = spaceMembers,
-                latestVersionTime = latestVersionTime
+                locale = locale
             )
 
             VersionHistoryGroup(
@@ -183,7 +233,7 @@ class VersionHistoryViewModel(
 
     private fun List<List<Version>>.toGroupItems(
         spaceMembers: List<ObjectWrapper.Basic>,
-        latestVersionTime: String
+        locale: Locale
     ): List<VersionHistoryGroup.Item> {
         return mapNotNull { versions ->
             val latestVersion = versions.firstOrNull() ?: return@mapNotNull null
@@ -197,6 +247,11 @@ class VersionHistoryViewModel(
                 builder = urlBuilder
             )
 
+            val (latestVersionDate, latestVersionTime) = dateProvider.formatTimestampToDateAndTime(
+                timestamp = latestVersion.timestamp.inMillis,
+                locale = locale
+            )
+
             VersionHistoryGroup.Item(
                 id = latestVersion.id,
                 spaceMember = spaceMemberId,
@@ -204,14 +259,65 @@ class VersionHistoryViewModel(
                 timeStamp = latestVersion.timestamp,
                 icon = icon,
                 timeFormatted = latestVersionTime,
-                versions = versions
+                versions = versions,
+                dateFormatted = latestVersionDate
             )
         }
     }
 
+    private suspend fun proceedShowVersion(
+        item: VersionHistoryGroup.Item
+    ) {
+        val params = ShowVersion.Params(
+            objectId = vmParams.objectId,
+            versionId = item.id
+        )
+        showVersion.async(params).fold(
+            onFailure = {
+                Timber.e(it, "Error while fetching version")
+                val currentState = _previewViewState.value
+                if (currentState !is VersionHistoryPreviewScreen.Hidden) {
+                    _previewViewState.value =
+                        VersionHistoryPreviewScreen.Error(it.message.orEmpty())
+                }
+            },
+            onSuccess = { response ->
+                Timber.d("Version fetched: $response")
+                val payload = response.payload
+                if (payload != null) {
+                    val event = payload.events
+                        .filterIsInstance<Event.Command.ShowObject>()
+                        .first()
+                    val root = event.blocks.first { it.id == vmParams.objectId }
+                    val blocks = event.blocks.asMap().render(
+                        mode = Mode.Read,
+                        root = root,
+                        focus = Editor.Focus.empty(),
+                        anchor = vmParams.objectId,
+                        indent = INITIAL_INDENT,
+                        details = event.details,
+                        relationLinks = event.relationLinks,
+                        restrictions = event.objectRestrictions,
+                        selection = emptySet()
+                    )
+                    val currentState = _previewViewState.value
+                    if (currentState !is VersionHistoryPreviewScreen.Hidden) {
+                        _previewViewState.value = VersionHistoryPreviewScreen.Success(
+                            versionId = item.id,
+                            blocks = blocks,
+                            dateFormatted = item.dateFormatted,
+                            timeFormatted = item.timeFormatted,
+                            icon = item.icon
+                        )
+                    }
+                }
+            }
+        )
+    }
+
     data class VmParams(
         val objectId: Id,
-        val spaceId: Id
+        val spaceId: SpaceId
     )
 
     sealed class Command {
@@ -233,6 +339,21 @@ sealed class VersionHistoryState {
     }
 }
 
+sealed class VersionHistoryPreviewScreen {
+    data object Hidden : VersionHistoryPreviewScreen()
+    data object Loading : VersionHistoryPreviewScreen()
+    data class Success(
+        val versionId: Id,
+        val blocks: List<BlockView>,
+        val dateFormatted: String,
+        val timeFormatted: String,
+        val icon: ObjectIcon?
+    ) :
+        VersionHistoryPreviewScreen()
+
+    data class Error(val message: String) : VersionHistoryPreviewScreen()
+}
+
 data class VersionHistoryGroup(
     val id: String,
     val title: String,
@@ -244,9 +365,16 @@ data class VersionHistoryGroup(
         val id: Id,
         val spaceMember: Id,
         val spaceMemberName: String,
+        val dateFormatted: String,
         val timeFormatted: String,
         val timeStamp: TimeInSeconds,
         val icon: ObjectIcon?,
         val versions: List<Version>
     )
+}
+
+sealed class VersionGroupNavigation(val route: String) {
+    data object Main : VersionGroupNavigation("main")
+    data object VersionPreview : VersionGroupNavigation("version preview")
+    data object ExitToObject : VersionGroupNavigation("")
 }

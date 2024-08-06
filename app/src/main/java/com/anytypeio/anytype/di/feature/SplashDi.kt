@@ -24,9 +24,9 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.platform.MetricsProvider
-import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
+import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -181,7 +181,6 @@ interface SplashDependencies : ComponentDependencies {
     fun urlBuilder(): UrlBuilder
     fun analytics(): Analytics
     fun relationsSubscriptionManager(): RelationsSubscriptionManager
-    fun objectTypesSubscriptionManager(): ObjectTypesSubscriptionManager
     fun authRepository(): AuthRepository
     fun pathProvider(): PathProvider
     fun featureToggles(): FeatureToggles
@@ -196,4 +195,5 @@ interface SplashDependencies : ComponentDependencies {
     fun awaitAccountStartManager(): AwaitAccountStartManager
     fun userPermissionProvider(): UserPermissionProvider
     fun analyticSpaceHelperDelegate(): AnalyticSpaceHelperDelegate
+    fun globalSubscriptionManager(): GlobalSubscriptionManager
 }

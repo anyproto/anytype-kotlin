@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.di.feature.cover.UnsplashSubComponent
+import com.anytypeio.anytype.di.feature.history.VersionHistoryComponent
 import com.anytypeio.anytype.di.feature.relations.RelationAddToObjectSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectBlockSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectSubComponent
@@ -195,6 +196,7 @@ interface EditorSubComponent {
     fun tagStatusObjectComponent(): TagOrStatusValueObjectComponent.Builder
     fun optionObjectComponent(): CreateOrEditOptionObjectComponent.Builder
     fun objectValueComponent(): ObjectValueObjectComponent.Builder
+    fun versionHistoryComponent() : VersionHistoryComponent.Builder
 }
 
 

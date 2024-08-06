@@ -17,9 +17,7 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.page.CreateObject
-import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
-import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
-import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
+import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
@@ -27,7 +25,6 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.ArgumentMatchers
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
@@ -71,13 +68,7 @@ class SplashViewModelTest {
     lateinit var createObject: CreateObject
 
     @Mock
-    private lateinit var relationsSubscriptionManager: RelationsSubscriptionManager
-
-    @Mock
-    private lateinit var objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
-
-    @Mock
-    private lateinit var spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher
+    lateinit var globalSubscriptionManager: GlobalSubscriptionManager
 
     @Mock lateinit var featureToggles: FeatureToggles
 
@@ -119,15 +110,11 @@ class SplashViewModelTest {
             analytics = analytics,
             getLastOpenedObject = getLastOpenedObject,
             createObject = createObject,
-            relationsSubscriptionManager = relationsSubscriptionManager,
-            objectTypesSubscriptionManager = objectTypesSubscriptionManager,
-            featureToggles = featureToggles,
             crashReporter = crashReporter,
-            spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
             localeProvider = localeProvider,
             spaceManager = spaceManager,
-            userPermissionProvider = userPermissionProvider,
-            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            globalSubscriptionManager = globalSubscriptionManager
         )
     }
 

@@ -645,7 +645,7 @@ class DefaultBlockViewRendererTest {
                 id = title.id,
                 isFocused = false,
                 text = title.content<Block.Content.Text>().text,
-                image = UrlBuilder(gateway).thumbnail(imageName)
+                image = UrlBuilder(gateway).medium(imageName)
             ),
             BlockView.Text.Paragraph(
                 isFocused = true,
@@ -743,7 +743,7 @@ class DefaultBlockViewRendererTest {
                 id = title.id,
                 isFocused = false,
                 text = title.content<Block.Content.Text>().text,
-                image = UrlBuilder(gateway).thumbnail(imageName)
+                image = UrlBuilder(gateway).medium(imageName)
             ),
             BlockView.Text.Paragraph(
                 isFocused = true,

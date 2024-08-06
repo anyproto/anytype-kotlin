@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_models.history
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectView
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.primitives.TimeInSeconds
 
 data class Version(
@@ -15,7 +16,7 @@ data class Version(
 )
 
 data class ShowVersionResponse(
-    val objectView: ObjectView?,
+    val payload: Payload?,
     val version: Version?,
     val traceId: Id
 )

@@ -1223,10 +1223,6 @@ class EditorViewModel(
         exitBack()
     }
 
-    fun onMovedToBin() {
-        navigate(EventWrapper(AppNavigation.Command.Exit))
-    }
-
     private fun exitBack() {
         when (session.value) {
             Session.ERROR -> navigate(EventWrapper(AppNavigation.Command.Exit))

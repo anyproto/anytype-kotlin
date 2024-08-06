@@ -28,6 +28,7 @@ interface DateProvider {
         dateStyle: Int = DateFormat.MEDIUM,
         timeStyle: Int = DateFormat.SHORT
     ): Pair<String, String>
+    fun isSameMinute(timestamp1: Long, timestamp2: Long): Boolean
 }
 
 interface DateTypeNameProvider {

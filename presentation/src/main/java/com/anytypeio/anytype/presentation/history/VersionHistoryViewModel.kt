@@ -64,19 +64,6 @@ class VersionHistoryViewModel(
         Timber.d("VersionHistoryViewModel started")
     }
 
-    fun onGroupClicked(group: VersionHistoryGroup) {
-        val expanded = group.isExpanded
-        val newGroup = group.copy(isExpanded = !expanded)
-        val newGroups = viewState.value.let { state ->
-            if (state is VersionHistoryState.Success) {
-                state.groups.map { if (it.id == group.id) newGroup else it }
-            } else {
-                emptyList()
-            }
-        }
-        _viewState.value = VersionHistoryState.Success(newGroups)
-    }
-
     fun onGroupItemClicked(item: VersionHistoryGroup.Item) {
         viewModelScope.launch {
             _previewViewState.value = VersionHistoryPreviewScreen.Loading
@@ -209,6 +196,8 @@ class VersionHistoryViewModel(
                 icons = groupItems.distinctBy { it.spaceMember }.mapNotNull { it.icon },
                 items = groupItems
             )
+        }.mapIndexed { index, versionHistoryGroup ->
+            if (index == 0) versionHistoryGroup.copy(isExpanded = true) else versionHistoryGroup
         }
         return groups
     }

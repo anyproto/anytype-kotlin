@@ -100,7 +100,6 @@ class VersionHistoryFragment : BaseBottomSheetComposeFragment() {
             composable(VersionGroupNavigation.Main.route) {
                 VersionHistoryScreen(
                     state = vm.viewState.collectAsStateWithLifecycle().value,
-                    onGroupClick = vm::onGroupClicked,
                     onItemClick = vm::onGroupItemClicked
                 )
             }

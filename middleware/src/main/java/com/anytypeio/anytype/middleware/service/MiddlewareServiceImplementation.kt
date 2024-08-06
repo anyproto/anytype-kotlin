@@ -3,7 +3,6 @@ package com.anytypeio.anytype.middleware.service
 import anytype.Rpc
 import com.anytypeio.anytype.core_models.exceptions.AccountIsDeletedException
 import com.anytypeio.anytype.core_models.exceptions.LoginException
-import com.anytypeio.anytype.core_models.exceptions.MigrationNeededException
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.core_models.exceptions.SpaceLimitReachedException
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteError
@@ -1830,7 +1829,7 @@ class MiddlewareServiceImplementation @Inject constructor(
         if (error != null && error.code != Rpc.Space.InviteView.Response.Error.Code.NULL) {
             when(error.code) {
                 Rpc.Space.InviteView.Response.Error.Code.INVITE_NOT_FOUND -> {
-                    throw SpaceInviteError.InvalidInvite()
+                    throw SpaceInviteError.InvalidNotFound()
                 }
                 Rpc.Space.InviteView.Response.Error.Code.INVITE_BAD_CONTENT -> {
                     throw SpaceInviteError.InvalidInvite()

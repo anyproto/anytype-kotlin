@@ -1247,7 +1247,7 @@
     <string name="multiplayer_cancel_join_request_msg">You will have to send join request again</string>
     <string name="multiplayer_do_not_cancel_join_request">Do not cancel</string>
     <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">This link does not seem to work</string>
-    <string name="multiplayer_invite_link_space_deleted">This invite link is no longer valid because the space has been deleted.</string>
+    <string name="multiplayer_error_invite_space_deleted">This invite link is no longer valid because the space has been deleted.</string>
     <string name="multiplayer_invite_link_space_not_found">This invite link is no longer valid because the space was not found.</string>
     <string name="multiplayer_invite_link_request_already_sent">Request sent</string>
     <!--endregion-->

@@ -1235,7 +1235,7 @@
     <string name="multiplayer_cancel_join_request_msg">Du wirst eine neue Beitrittsanfrage senden müssen</string>
     <string name="multiplayer_do_not_cancel_join_request">Nicht verwerfen</string>
     <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">Der Link scheint nicht zu funktionieren</string>
-    <string name="multiplayer_invite_link_space_deleted">Dieser Einladungslink ist nicht mehr gültig, da der Raum gelöscht wurde.</string>
+    <string name="multiplayer_error_invite_space_deleted">Dieser Einladungslink ist nicht mehr gültig, da der Raum gelöscht wurde.</string>
     <string name="multiplayer_invite_link_space_not_found">Dieser Einladungslink ist nicht mehr gültig, da der Raum gelöscht wurde.</string>
     <string name="multiplayer_invite_link_request_already_sent">Anfrage gesendet</string>
     <!--endregion-->

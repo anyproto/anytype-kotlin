@@ -1247,7 +1247,7 @@
     <string name="multiplayer_cancel_join_request_msg">Вам трэба будзе зноў адправіць запыт на далучэнне</string>
     <string name="multiplayer_do_not_cancel_join_request">Не адмяняць</string>
     <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">Здаецца, гэтая спасылка не працуе</string>
-    <string name="multiplayer_invite_link_space_deleted">Гэтая спасылка з запрашэннем больш не дзейнічае, таму што прастора была выдалена.</string>
+    <string name="multiplayer_error_invite_space_deleted">Гэтая спасылка з запрашэннем больш не дзейнічае, таму што прастора была выдалена.</string>
     <string name="multiplayer_invite_link_space_not_found">Гэта спасылка для запрашэння больш не дзейнічае, таму што прастора не знойдзена.</string>
     <string name="multiplayer_invite_link_request_already_sent">Запыт адпраўлены</string>
     <!--endregion-->

@@ -1235,7 +1235,7 @@
     <string name="multiplayer_cancel_join_request_msg">Je zult het deelnameverzoek opnieuw moeten sturen</string>
     <string name="multiplayer_do_not_cancel_join_request">Annuleer niet</string>
     <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">Deze koppeling lijkt niet te werken</string>
-    <string name="multiplayer_invite_link_space_deleted">Deze uitnodigingskoppeling is niet langer geldig omdat de ruimte is verwijderd.</string>
+    <string name="multiplayer_error_invite_space_deleted">Deze uitnodigingskoppeling is niet langer geldig omdat de ruimte is verwijderd.</string>
     <string name="multiplayer_invite_link_space_not_found">Deze uitnodigingskoppeling is niet langer geldig omdat de ruimte niet werd gevonden.</string>
     <string name="multiplayer_invite_link_request_already_sent">Verzoek verzonden</string>
     <!--endregion-->

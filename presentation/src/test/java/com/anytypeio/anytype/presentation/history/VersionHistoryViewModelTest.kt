@@ -20,7 +20,6 @@ import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -242,7 +241,7 @@ class VersionHistoryViewModelTest {
                     add(
                         VersionHistoryGroup(
                             id = versions[0].id,
-                            title = date0,
+                            title = VersionHistoryGroup.GroupTitle.Date(date0),
                             icons = listOf(ObjectIcon.None, ObjectIcon.None, ObjectIcon.None, ObjectIcon.None),
                             items = buildList {
                                 add(
@@ -299,7 +298,7 @@ class VersionHistoryViewModelTest {
                     add(
                         VersionHistoryGroup(
                             id = versions[4].id,
-                            title = date4,
+                            title = VersionHistoryGroup.GroupTitle.Date(date4),
                             icons = listOf(ObjectIcon.None, ObjectIcon.None),
                             items = buildList {
                                 add(

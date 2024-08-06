@@ -159,13 +159,22 @@ private fun GroupItemExpanded(
                 .padding(start = 16.dp, top = 12.dp, bottom = 4.dp)
                 .wrapContentSize()
                 .clickable { onGroupClick(group) },
-            text = group.title,
+            text = setGroupTitle(groupTitle = group.title),
             style = PreviewTitle2Regular,
             color = colorResource(id = R.color.text_secondary)
         )
         group.items.forEach {
             GroupItem(item = it, onItemClick = onItemClick)
         }
+    }
+}
+
+@Composable
+private fun setGroupTitle(groupTitle: VersionHistoryGroup.GroupTitle): String {
+    return when (groupTitle) {
+        is VersionHistoryGroup.GroupTitle.Date -> groupTitle.date
+        VersionHistoryGroup.GroupTitle.Today -> stringResource(id = R.string.today)
+        VersionHistoryGroup.GroupTitle.Yesterday -> stringResource(id = R.string.yesterday)
     }
 }
 
@@ -240,7 +249,7 @@ private fun GroupItemCollapsed(
         ) {
             Text(
                 modifier = Modifier.wrapContentSize(),
-                text = group.title,
+                text = setGroupTitle(groupTitle = group.title),
                 style = PreviewTitle2Regular,
                 color = colorResource(id = R.color.text_secondary)
             )
@@ -318,7 +327,7 @@ private fun SpaceListScreenPreview() {
             groups = listOf(
                 VersionHistoryGroup(
                     id = "1",
-                    title = "Today",
+                    title = VersionHistoryGroup.GroupTitle.Today,
                     isExpanded = true,
                     items = listOf(
                         VersionHistoryGroup.Item(
@@ -357,13 +366,13 @@ private fun SpaceListScreenPreview() {
                 ),
                 VersionHistoryGroup(
                     id = "2",
-                    title = "Yesterday",
+                    title = VersionHistoryGroup.GroupTitle.Yesterday,
                     items = emptyList(),
                     icons = listOf(ObjectIcon.Profile.Avatar("C"), ObjectIcon.Profile.Avatar("D"), ObjectIcon.Profile.Avatar("E"), ObjectIcon.Profile.Avatar("F"), ObjectIcon.Profile.Avatar("G"), ObjectIcon.Profile.Avatar("H"), ObjectIcon.Profile.Avatar("I"), ObjectIcon.Profile.Avatar("J"), ObjectIcon.Profile.Avatar("K"), ObjectIcon.Profile.Avatar("L"), ObjectIcon.Profile.Avatar("M"), ObjectIcon.Profile.Avatar("N"), ObjectIcon.Profile.Avatar("O"), ObjectIcon.Profile.Avatar("P"), ObjectIcon.Profile.Avatar("Q"), ObjectIcon.Profile.Avatar("R"), ObjectIcon.Profile.Avatar("S"), ObjectIcon.Profile.Avatar("T"), ObjectIcon.Profile.Avatar("U"), ObjectIcon.Profile.Avatar("V"), ObjectIcon.Profile.Avatar("W"), ObjectIcon.Profile.Avatar("X"), ObjectIcon.Profile.Avatar("Y"))
                 ),
                 VersionHistoryGroup(
                     id = "3",
-                    title = "Yesterday",
+                    title = VersionHistoryGroup.GroupTitle.Date("2021-10-10"),
                     items = emptyList(),
                     icons = listOf(ObjectIcon.Profile.Avatar("C"), ObjectIcon.Profile.Avatar("D"))
                 )

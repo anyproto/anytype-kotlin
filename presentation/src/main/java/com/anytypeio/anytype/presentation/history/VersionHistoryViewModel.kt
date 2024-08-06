@@ -26,6 +26,9 @@ import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
 import java.util.Locale
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -223,12 +226,34 @@ class VersionHistoryViewModel(
 
             VersionHistoryGroup(
                 id = spaceMemberLatestVersion.id,
-                title = latestVersionDate,
+                title = getGroupTitle(spaceMemberLatestVersion.timestamp, locale),
                 icons = groupItems.mapNotNull { it.icon },
                 items = groupItems
             )
         }
         return groups
+    }
+
+    private fun getGroupTitle(timestamp: TimeInSeconds, locale: Locale): VersionHistoryGroup.GroupTitle {
+        val dateInstant = Instant.ofEpochSecond(timestamp.time)
+        val givenDate = dateInstant.atZone(ZoneId.systemDefault()).toLocalDate()
+        val givenDateWithZeroTime = givenDate.atStartOfDay().toLocalDate()
+        return when (givenDateWithZeroTime) {
+            LocalDate.now() -> {
+                VersionHistoryGroup.GroupTitle.Today
+            }
+            LocalDate.now().minusDays(1) -> {
+                VersionHistoryGroup.GroupTitle.Yesterday
+            }
+            else -> {
+                VersionHistoryGroup.GroupTitle.Date(
+                    dateProvider.formatTimestampToDateAndTime(
+                        timestamp = timestamp.inMillis,
+                        locale = locale
+                    ).first
+                )
+            }
+        }
     }
 
     private fun List<List<Version>>.toGroupItems(
@@ -356,7 +381,7 @@ sealed class VersionHistoryPreviewScreen {
 
 data class VersionHistoryGroup(
     val id: String,
-    val title: String,
+    val title: GroupTitle,
     val icons: List<ObjectIcon>,
     val items: List<Item>,
     val isExpanded: Boolean = false
@@ -371,6 +396,12 @@ data class VersionHistoryGroup(
         val icon: ObjectIcon?,
         val versions: List<Version>
     )
+
+    sealed class GroupTitle {
+        data object Today : GroupTitle()
+        data object Yesterday : GroupTitle()
+        data class Date(val date: String) : GroupTitle()
+    }
 }
 
 sealed class VersionGroupNavigation(val route: String) {

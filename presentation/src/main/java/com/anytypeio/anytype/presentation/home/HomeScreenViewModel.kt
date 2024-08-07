@@ -1816,40 +1816,53 @@ class HomeScreenViewModel(
             if (target != null) {
                 val widgetSource = target.source
                 if (widgetSource is Widget.Source.Default) {
-                    val obj = getObject.async(
-                        params = target.source.id
-                    ).fold(
-                        onSuccess = { obj ->
-                            val dv = obj.blocks.find { it.content is DV }?.content as? DV
-                            val viewer = if (view.isNullOrEmpty())
-                                dv?.viewers?.firstOrNull()
-                            else
-                                dv?.viewers?.find { it.id == view }
+                    if (widgetSource.obj.layout == ObjectType.Layout.COLLECTION) {
+                        // TODO create object in collection
+                    } else if (widgetSource.obj.layout == ObjectType.Layout.SET) {
+                        getObject.async(params = target.source.id).fold(
+                            onSuccess = { obj ->
+                                val dv = obj.blocks.find { it.content is DV }?.content as? DV
+                                val viewer = if (view.isNullOrEmpty())
+                                    dv?.viewers?.firstOrNull()
+                                else
+                                    dv?.viewers?.find { it.id == view }
 
-                            val dataViewSource = widgetSource.obj.setOf.firstOrNull()
+                                val dataViewSource = widgetSource.obj.setOf.firstOrNull()
 
-                            if (dataViewSource != null) {
-                                val dataViewSourceObj = ObjectWrapper.Basic(obj.details[dataViewSource].orEmpty())
-                                if (dv != null && viewer != null) {
-                                    when (val layout = dataViewSourceObj.layout) {
-                                        ObjectType.Layout.OBJECT_TYPE -> {
-                                            proceedWithCreatingDataViewObject(dataViewSourceObj, viewer, dv)
+                                if (dataViewSource != null) {
+                                    val dataViewSourceObj =
+                                        ObjectWrapper.Basic(obj.details[dataViewSource].orEmpty())
+                                    if (dv != null && viewer != null) {
+                                        when (val layout = dataViewSourceObj.layout) {
+                                            ObjectType.Layout.OBJECT_TYPE -> {
+                                                proceedWithCreatingDataViewObject(
+                                                    dataViewSourceObj,
+                                                    viewer,
+                                                    dv
+                                                )
+                                            }
+
+                                            ObjectType.Layout.RELATION -> {
+                                                proceedWithCreatingDataViewObject(
+                                                    viewer,
+                                                    dv,
+                                                    dataViewSourceObj
+                                                )
+                                            }
+
+                                            else -> {
+                                                Timber.w("Unexpected layout of data view source: $layout")
+                                            }
                                         }
-                                        ObjectType.Layout.RELATION -> {
-                                            proceedWithCreatingDataViewObject(viewer, dv, dataViewSourceObj)
-                                        }
-                                        else -> {
-                                            Timber.w("Unexpected layout of data view source: $layout")
-                                        }
+                                    } else {
+                                        Timber.w("Could not found data view or target view inside this data view")
                                     }
                                 } else {
-                                    Timber.w("Could not found data view or target view inside this data view")
+                                    Timber.w("Missing data view source")
                                 }
-                            } else {
-                                Timber.w("Missing data view source")
                             }
-                        }
-                    )
+                        )
+                    }
                 }
             } else {
                 Timber.w("onCreateDataViewObject's target not found")

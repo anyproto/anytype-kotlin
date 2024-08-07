@@ -1229,7 +1229,7 @@
     <string name="multiplayer_cancel_join_request_msg">您將需要再次發送加入請求</string>
     <string name="multiplayer_do_not_cancel_join_request">不要取消</string>
     <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">這個連結似乎不起作用</string>
-    <string name="multiplayer_invite_link_space_deleted">此邀請連結不再生效，因為空間已被刪除。</string>
+    <string name="multiplayer_error_invite_space_deleted">此邀請連結不再生效，因為空間已被刪除。</string>
     <string name="multiplayer_invite_link_space_not_found">此邀請連結無效，找不到此空間。</string>
     <string name="multiplayer_invite_link_request_already_sent">已送出請求</string>
     <!--endregion-->

@@ -24,6 +24,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
+import com.anytypeio.anytype.core_models.multiplayer.MultiplayerError
 import com.anytypeio.anytype.core_ui.features.multiplayer.JoinSpaceScreen
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.Announcement
@@ -153,10 +154,27 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                                         }
                                     )
                                 }
+                                is ErrorView.InviteNotFound -> {
+                                    GenericAlert(
+                                        config = AlertConfig.WithOneButton(
+                                            title = stringResource(R.string.multiplayer_error_invite_not_found),
+                                            firstButtonText = stringResource(id = R.string.button_okay),
+                                            firstButtonType = BUTTON_SECONDARY,
+                                            description = EMPTY_STRING_VALUE,
+                                            icon = AlertConfig.Icon(
+                                                gradient = GRADIENT_TYPE_BLUE,
+                                                icon = R.drawable.ic_alert_message
+                                            )
+                                        ),
+                                        onFirstButtonClicked = {
+                                            dismiss()
+                                        }
+                                    )
+                                }
                                 is ErrorView.InvalidLink -> {
                                     GenericAlert(
                                         config = AlertConfig.WithOneButton(
-                                            title = stringResource(R.string.multiplayer_invite_link_this_link_does_not_seem_to_work),
+                                            title = stringResource(R.string.multiplayer_error_invite_bad_content),
                                             firstButtonText = stringResource(id = R.string.button_okay),
                                             firstButtonType = BUTTON_SECONDARY,
                                             description = EMPTY_STRING_VALUE,
@@ -173,24 +191,7 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                                 is ErrorView.SpaceDeleted -> {
                                     GenericAlert(
                                         config = AlertConfig.WithOneButton(
-                                            title = stringResource(R.string.multiplayer_invite_link_space_deleted),
-                                            firstButtonText = stringResource(id = R.string.button_okay),
-                                            firstButtonType = BUTTON_SECONDARY,
-                                            description = EMPTY_STRING_VALUE,
-                                            icon = AlertConfig.Icon(
-                                                gradient = GRADIENT_TYPE_BLUE,
-                                                icon = R.drawable.ic_alert_message
-                                            )
-                                        ),
-                                        onFirstButtonClicked = {
-                                            dismiss()
-                                        }
-                                    )
-                                }
-                                is ErrorView.SpaceNotFound -> {
-                                    GenericAlert(
-                                        config = AlertConfig.WithOneButton(
-                                            title = stringResource(R.string.multiplayer_invite_link_space_not_found),
+                                            title = stringResource(R.string.multiplayer_error_space_is_deleted),
                                             firstButtonText = stringResource(id = R.string.button_okay),
                                             firstButtonType = BUTTON_SECONDARY,
                                             description = EMPTY_STRING_VALUE,
@@ -239,17 +240,33 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
 
     private fun proceedWithCommand(command: RequestJoinSpaceViewModel.Command) {
         when (command) {
-            RequestJoinSpaceViewModel.Command.Dismiss -> {
+            is RequestJoinSpaceViewModel.Command.Dismiss -> {
                 dismiss()
             }
-            RequestJoinSpaceViewModel.Command.Toast.RequestSent -> {
+            is RequestJoinSpaceViewModel.Command.Toast.RequestSent -> {
                 toast(getString(R.string.multiplayer_request_sent_toast))
             }
-            RequestJoinSpaceViewModel.Command.Toast.SpaceDeleted -> {
+            is RequestJoinSpaceViewModel.Command.Toast.SpaceDeleted -> {
                 toast(getString(R.string.multiplayer_error_space_deleted))
             }
-            RequestJoinSpaceViewModel.Command.Toast.SpaceNotFound -> {
+            is RequestJoinSpaceViewModel.Command.Toast.SpaceNotFound -> {
                 toast(getString(R.string.multiplayer_error_space_not_found))
+            }
+            is RequestJoinSpaceViewModel.Command.ShowGenericMultiplayerError -> {
+                when(command.error) {
+                    is MultiplayerError.Generic.LimitReached -> {
+                        toast(resources.getString(R.string.multiplayer_error_limit_reached))
+                    }
+                    is MultiplayerError.Generic.NotShareable -> {
+                        toast(resources.getString(R.string.multiplayer_error_not_shareable))
+                    }
+                    is MultiplayerError.Generic.RequestFailed -> {
+                        toast(resources.getString(R.string.multiplayer_error_request_failed))
+                    }
+                    is MultiplayerError.Generic.SpaceIsDeleted -> {
+                        toast(resources.getString(R.string.multiplayer_error_space_is_deleted))
+                    }
+                }
             }
         }
     }

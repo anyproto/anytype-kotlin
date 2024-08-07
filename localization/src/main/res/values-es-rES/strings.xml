@@ -1235,7 +1235,7 @@
     <string name="multiplayer_cancel_join_request_msg">Tendrás que volver a solicitar el acceso.</string>
     <string name="multiplayer_do_not_cancel_join_request">No cancelar</string>
     <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">Este enlace no parece funcionar</string>
-    <string name="multiplayer_invite_link_space_deleted">Este enlace de invitación ya no es válido porque el espacio se ha eliminado.</string>
+    <string name="multiplayer_error_invite_space_deleted">Este enlace de invitación ya no es válido porque el espacio se ha eliminado.</string>
     <string name="multiplayer_invite_link_space_not_found">Este enlace de invitación ya no es válido porque el espacio no se encuentra.</string>
     <string name="multiplayer_invite_link_request_already_sent">Solicitud enviada</string>
     <!--endregion-->

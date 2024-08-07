@@ -55,9 +55,18 @@ enum class SpaceAccessType(val code: Int) {
 }
 
 sealed class SpaceInviteError : Exception() {
-    class SpaceNotFound : SpaceInviteError()
     class SpaceDeleted : SpaceInviteError()
     class InvalidInvite : SpaceInviteError()
+    class InvalidNotFound : SpaceInviteError()
+}
+
+sealed class MultiplayerError : Exception() {
+    sealed class Generic : MultiplayerError() {
+        class NotShareable : Generic()
+        class SpaceIsDeleted : Generic()
+        class LimitReached : Generic()
+        class RequestFailed : Generic()
+    }
 }
 
 sealed class SpaceSyncUpdate {

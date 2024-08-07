@@ -205,6 +205,7 @@ class ShareSpaceViewModel(
                     },
                     onFailure = {
                         Timber.e(it, "Error while making space shareable")
+                        proceedWithMultiplayerError(it)
                     }
                 )
             }
@@ -216,11 +217,7 @@ class ShareSpaceViewModel(
                     },
                     onFailure = {
                         Timber.e(it, "Error while generating invite link")
-                        if (it is MultiplayerError.Generic) {
-                            commands.emit(Command.ShowMultiplayerError(it))
-                        } else {
-                            sendToast(it.msg())
-                        }
+                        proceedWithMultiplayerError(it)
                     }
                 )
         }
@@ -284,9 +281,8 @@ class ShareSpaceViewModel(
                 )
             ).fold(
                 onFailure = { e ->
-                    Timber.e(e, "Error while approving unjoin request").also {
-                        sendToast(e.msg())
-                    }
+                    Timber.e(e, "Error while approving leave request")
+                    proceedWithMultiplayerError(e)
                 },
                 onSuccess = {
                     analytics.sendEvent(eventName = EventsDictionary.approveLeaveRequest)
@@ -317,9 +313,8 @@ class ShareSpaceViewModel(
                     )
                 ).fold(
                     onFailure = { e ->
-                        Timber.e(e, "Error while changing member permissions").also {
-                            sendToast(e.msg())
-                        }
+                        Timber.e(e, "Error while changing member permissions")
+                        proceedWithMultiplayerError(e)
                     },
                     onSuccess = {
                         Timber.d("Successfully updated space member permissions")
@@ -356,9 +351,8 @@ class ShareSpaceViewModel(
                     )
                 ).fold(
                     onFailure = { e ->
-                        Timber.e(e, "Error while changing member permissions").also {
-                            sendToast(e.msg())
-                        }
+                        Timber.e(e, "Error while changing member permissions")
+                        proceedWithMultiplayerError(e)
                     },
                     onSuccess = {
                         Timber.d("Successfully updated space member permissions")
@@ -400,9 +394,8 @@ class ShareSpaceViewModel(
                 )
             ).fold(
                 onFailure = { e ->
-                    Timber.e(e, "Error while removing space member").also {
-                        sendToast(e.msg())
-                    }
+                    Timber.e(e, "Error while removing space member")
+                    proceedWithMultiplayerError(e)
                 },
                 onSuccess = {
                     Timber.d("Successfully removed space member")
@@ -437,11 +430,7 @@ class ShareSpaceViewModel(
                     },
                     onFailure = { e ->
                         Timber.e(e, "Error while sharing space")
-                        if (e is MultiplayerError.Generic) {
-                            commands.emit(Command.ShowMultiplayerError(e))
-                        } else {
-                            sendToast(e.msg())
-                        }
+                        proceedWithMultiplayerError(e)
                     }
                 )
             } else {
@@ -495,11 +484,7 @@ class ShareSpaceViewModel(
                     },
                     onFailure = { e ->
                         Timber.e(e, "Error while revoking space invite link")
-                        if (e is MultiplayerError.Generic) {
-                            commands.emit(Command.ShowMultiplayerError(e))
-                        } else {
-                            sendToast(e.msg())
-                        }
+                        proceedWithMultiplayerError(e)
                     }
                 )
             } else {
@@ -521,6 +506,14 @@ class ShareSpaceViewModel(
                     mapOf(EventsPropertiesKey.type to shareTypeMoreInfo)
                 )
             )
+        }
+    }
+
+    private suspend fun proceedWithMultiplayerError(e: Throwable) {
+        if (e is MultiplayerError.Generic) {
+            commands.emit(Command.ShowMultiplayerError(e))
+        } else {
+            sendToast(e.msg())
         }
     }
 

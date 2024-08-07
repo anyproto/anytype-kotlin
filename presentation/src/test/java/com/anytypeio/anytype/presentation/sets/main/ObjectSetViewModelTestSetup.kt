@@ -87,6 +87,7 @@ import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.collection.DateProviderImpl
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import java.time.ZoneId
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -294,7 +295,7 @@ open class ObjectSetViewModelTestSetup {
             getObjectTypes = getObjectTypes,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             dispatchers = dispatchers,
-            dateProvider = DateProviderImpl(),
+            dateProvider = DateProviderImpl(ZoneId.systemDefault()),
             vmParams = ObjectSetViewModel.Params(
                 ctx = root,
                 space = SpaceId(defaultSpace)

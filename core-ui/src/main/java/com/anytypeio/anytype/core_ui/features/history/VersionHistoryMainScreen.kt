@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,6 +28,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -53,7 +59,6 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 @Composable
 fun VersionHistoryScreen(
     state: VersionHistoryState,
-    onGroupClick: (VersionHistoryGroup) -> Unit,
     onItemClick: (VersionHistoryGroup.Item) -> Unit
 ) {
     Column(
@@ -75,7 +80,6 @@ fun VersionHistoryScreen(
             is VersionHistoryState.Success -> {
                 VersionHistorySuccessState(
                     state = state,
-                    onGroupClick = onGroupClick,
                     onItemClick = onItemClick
                 )
             }
@@ -99,9 +103,12 @@ private fun VersionHistoryLoading() {
 @Composable
 private fun VersionHistorySuccessState(
     state: VersionHistoryState.Success,
-    onGroupClick: (VersionHistoryGroup) -> Unit,
     onItemClick: (VersionHistoryGroup.Item) -> Unit
 ) {
+
+    var expandedGroupId by remember {
+        mutableStateOf<String?>(state.groups.firstOrNull { it.isExpanded }?.id)
+    }
 
     val lazyListState = rememberLazyListState()
 
@@ -122,50 +129,57 @@ private fun VersionHistorySuccessState(
             key = { idx -> state.groups[idx].id }
         ) { idx ->
             val group = state.groups[idx]
-            if (group.isExpanded) {
-                GroupItemExpanded(
-                    group = group,
-                    onGroupClick = onGroupClick,
-                    onItemClick = onItemClick
+            val isExpanded = group.id == expandedGroupId
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors().copy(
+                    containerColor = colorResource(id = R.color.background_secondary),
+                ),
+                border = BorderStroke(
+                    width = 0.5.dp, color = colorResource(id = R.color.shape_primary)
                 )
-            } else {
-                GroupItemCollapsed(group = group, onGroupClick = onGroupClick)
+            ) {
+                Spacer(modifier = Modifier.height(if (isExpanded) 12.dp else 18.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                        .padding(horizontal = 16.dp)
+                        .clickable {
+                            expandedGroupId = if (expandedGroupId == group.id) null else group.id
+                        },
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        modifier = Modifier.wrapContentSize(),
+                        text = setGroupTitle(groupTitle = group.title),
+                        style = PreviewTitle2Regular,
+                        color = colorResource(id = R.color.text_secondary)
+                    )
+                    if (!isExpanded) {
+                        HeaderIcons(icons = group.icons)
+                    }
+                }
+                if (isExpanded) {
+                    group.items.forEach {
+                        GroupItem(item = it, onItemClick = onItemClick)
+                    }
+                }
+                Spacer(modifier = Modifier.height(if (isExpanded) 12.dp else 18.dp))
             }
         }
-
     }
 }
 
 @Composable
-private fun GroupItemExpanded(
-    group: VersionHistoryGroup,
-    onGroupClick: (VersionHistoryGroup) -> Unit,
-    onItemClick: (VersionHistoryGroup.Item) -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors().copy(
-            containerColor = colorResource(id = R.color.background_secondary),
-        ),
-        border = BorderStroke(
-            width = 0.5.dp, color = colorResource(id = R.color.shape_primary)
-        )
-    ) {
-        Text(
-            modifier = Modifier
-                .padding(start = 16.dp, top = 12.dp, bottom = 4.dp)
-                .wrapContentSize()
-                .clickable { onGroupClick(group) },
-            text = group.title,
-            style = PreviewTitle2Regular,
-            color = colorResource(id = R.color.text_secondary)
-        )
-        group.items.forEach {
-            GroupItem(item = it, onItemClick = onItemClick)
-        }
+private fun setGroupTitle(groupTitle: VersionHistoryGroup.GroupTitle): String {
+    return when (groupTitle) {
+        is VersionHistoryGroup.GroupTitle.Date -> groupTitle.date
+        VersionHistoryGroup.GroupTitle.Today -> stringResource(id = R.string.today)
+        VersionHistoryGroup.GroupTitle.Yesterday -> stringResource(id = R.string.yesterday)
     }
 }
 
@@ -214,80 +228,54 @@ private fun GroupItem(
 }
 
 @Composable
-private fun GroupItemCollapsed(
-    group: VersionHistoryGroup,
-    onGroupClick: (VersionHistoryGroup) -> Unit
+private fun RowScope.HeaderIcons(
+    icons: List<ObjectIcon>
 ) {
-    Card(
+    LazyRow(
         modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors().copy(
-            containerColor = colorResource(id = R.color.background_secondary),
+            .weight(1f)
+            .padding(start = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(
+            space = (-4).dp,
+            alignment = Alignment.End
         ),
-        border = BorderStroke(
-            width = 0.5.dp, color = colorResource(id = R.color.shape_primary)
-        ),
-        onClick = { onGroupClick(group) }
+        reverseLayout = true
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-                .padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                modifier = Modifier.wrapContentSize(),
-                text = group.title,
-                style = PreviewTitle2Regular,
-                color = colorResource(id = R.color.text_secondary)
-            )
-            LazyRow(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(
-                    space = (-4).dp,
-                    alignment = Alignment.End
-                ),
-                reverseLayout = true
-            ) {
-                items(count = group.icons.size) { idx ->
-                    when (idx) {
-                        in (0 until MEMBERS_ICONS_MAX_SIZE) -> {
-                            val icon = group.icons[idx]
-                            Box(
-                                modifier = Modifier
-                                    .size(28.dp)
-                                    .background(color = colorResource(id = R.color.white)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                ListWidgetObjectIcon(
-                                    modifier = Modifier.size(24.dp),
-                                    icon = icon,
-                                    iconSize = 24.dp,
-                                    avatarFontSize = 16.sp,
-                                    avatarBackgroundColor = R.color.shape_tertiary,
-                                    avatarTextStyle = VersionHistoryAvatarTextStyle()
-                                )
-                            }
-                        }
+        items(
+            count = icons.size,
+            key = { idx -> icons[idx].toString() }
+        ) { idx ->
+            when (idx) {
+                in (0 until MEMBERS_ICONS_MAX_SIZE) -> {
+                    val icon = icons[idx]
+                    Box(
+                        modifier = Modifier
+                            .size(28.dp)
+                            .background(color = colorResource(id = R.color.white)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        ListWidgetObjectIcon(
+                            modifier = Modifier.size(24.dp),
+                            icon = icon,
+                            iconSize = 24.dp,
+                            avatarFontSize = 16.sp,
+                            avatarBackgroundColor = R.color.shape_tertiary,
+                            avatarTextStyle = VersionHistoryAvatarTextStyle()
+                        )
                     }
                 }
             }
-            if (group.icons.size - MEMBERS_ICONS_MAX_SIZE > 0) {
-                Text(
-                    modifier = Modifier
-                        .wrapContentSize()
-                        .padding(start = 4.dp),
-                    text = "+${group.icons.size - MEMBERS_ICONS_MAX_SIZE}",
-                    style = Caption1Regular,
-                    color = colorResource(id = R.color.text_secondary)
-                )
-            }
         }
+    }
+    if (icons.size - MEMBERS_ICONS_MAX_SIZE > 0) {
+        Text(
+            modifier = Modifier
+                .wrapContentSize()
+                .padding(start = 4.dp),
+            text = "+${icons.size - MEMBERS_ICONS_MAX_SIZE}",
+            style = Caption1Regular,
+            color = colorResource(id = R.color.text_secondary)
+        )
     }
 }
 
@@ -318,7 +306,7 @@ private fun SpaceListScreenPreview() {
             groups = listOf(
                 VersionHistoryGroup(
                     id = "1",
-                    title = "Today",
+                    title = VersionHistoryGroup.GroupTitle.Today,
                     isExpanded = true,
                     items = listOf(
                         VersionHistoryGroup.Item(
@@ -331,7 +319,7 @@ private fun SpaceListScreenPreview() {
                             versions = emptyList(),
                             dateFormatted = "Today",
 
-                        ),
+                            ),
                         VersionHistoryGroup.Item(
                             id = "2",
                             timeFormatted = "12:10 PM",
@@ -357,19 +345,42 @@ private fun SpaceListScreenPreview() {
                 ),
                 VersionHistoryGroup(
                     id = "2",
-                    title = "Yesterday",
+                    title = VersionHistoryGroup.GroupTitle.Yesterday,
                     items = emptyList(),
-                    icons = listOf(ObjectIcon.Profile.Avatar("C"), ObjectIcon.Profile.Avatar("D"), ObjectIcon.Profile.Avatar("E"), ObjectIcon.Profile.Avatar("F"), ObjectIcon.Profile.Avatar("G"), ObjectIcon.Profile.Avatar("H"), ObjectIcon.Profile.Avatar("I"), ObjectIcon.Profile.Avatar("J"), ObjectIcon.Profile.Avatar("K"), ObjectIcon.Profile.Avatar("L"), ObjectIcon.Profile.Avatar("M"), ObjectIcon.Profile.Avatar("N"), ObjectIcon.Profile.Avatar("O"), ObjectIcon.Profile.Avatar("P"), ObjectIcon.Profile.Avatar("Q"), ObjectIcon.Profile.Avatar("R"), ObjectIcon.Profile.Avatar("S"), ObjectIcon.Profile.Avatar("T"), ObjectIcon.Profile.Avatar("U"), ObjectIcon.Profile.Avatar("V"), ObjectIcon.Profile.Avatar("W"), ObjectIcon.Profile.Avatar("X"), ObjectIcon.Profile.Avatar("Y"))
+                    icons = listOf(
+                        ObjectIcon.Profile.Avatar("C"),
+                        ObjectIcon.Profile.Avatar("D"),
+                        ObjectIcon.Profile.Avatar("E"),
+                        ObjectIcon.Profile.Avatar("F"),
+                        ObjectIcon.Profile.Avatar("G"),
+                        ObjectIcon.Profile.Avatar("H"),
+                        ObjectIcon.Profile.Avatar("I"),
+                        ObjectIcon.Profile.Avatar("J"),
+                        ObjectIcon.Profile.Avatar("K"),
+                        ObjectIcon.Profile.Avatar("L"),
+                        ObjectIcon.Profile.Avatar("M"),
+                        ObjectIcon.Profile.Avatar("N"),
+                        ObjectIcon.Profile.Avatar("O"),
+                        ObjectIcon.Profile.Avatar("P"),
+                        ObjectIcon.Profile.Avatar("Q"),
+                        ObjectIcon.Profile.Avatar("R"),
+                        ObjectIcon.Profile.Avatar("S"),
+                        ObjectIcon.Profile.Avatar("T"),
+                        ObjectIcon.Profile.Avatar("U"),
+                        ObjectIcon.Profile.Avatar("V"),
+                        ObjectIcon.Profile.Avatar("W"),
+                        ObjectIcon.Profile.Avatar("X"),
+                        ObjectIcon.Profile.Avatar("Y")
+                    )
                 ),
                 VersionHistoryGroup(
                     id = "3",
-                    title = "Yesterday",
+                    title = VersionHistoryGroup.GroupTitle.Date("2021-10-10"),
                     items = emptyList(),
                     icons = listOf(ObjectIcon.Profile.Avatar("C"), ObjectIcon.Profile.Avatar("D"))
                 )
             )
         ),
-        onGroupClick = {},
         onItemClick = {}
     )
 }
@@ -392,7 +403,6 @@ const val MEMBERS_ICONS_MAX_SIZE = 3
 private fun SpaceListScreenPreviewLoading() {
     VersionHistoryScreen(
         state = VersionHistoryState.Loading,
-        onGroupClick = {},
         onItemClick = {}
     )
 }

@@ -26,6 +26,9 @@ import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
 import java.util.Locale
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -59,19 +62,6 @@ class VersionHistoryViewModel(
 
     fun onStart() {
         Timber.d("VersionHistoryViewModel started")
-    }
-
-    fun onGroupClicked(group: VersionHistoryGroup) {
-        val expanded = group.isExpanded
-        val newGroup = group.copy(isExpanded = !expanded)
-        val newGroups = viewState.value.let { state ->
-            if (state is VersionHistoryState.Success) {
-                state.groups.map { if (it.id == group.id) newGroup else it }
-            } else {
-                emptyList()
-            }
-        }
-        _viewState.value = VersionHistoryState.Success(newGroups)
     }
 
     fun onGroupItemClicked(item: VersionHistoryGroup.Item) {
@@ -166,27 +156,82 @@ class VersionHistoryViewModel(
 
         val locale = localeProvider.locale()
 
-        // Group by day
-        val versionsByDay = versions.groupBy { version ->
-            val formattedDate = dateProvider.formatToDateString(
-                timestamp = (version.timestamp.inMillis),
-                pattern = GROUP_BY_DAY_FORMAT,
-                locale = locale
-            )
-            formattedDate
-        }
-
-        // Sort days descending
-        val sortedDays = versionsByDay.keys.sortedBy { it }
+        // Sort versions by timestamp (DESC) and group by day
+        val versionsByDay = versions
+            .sortedByDescending { it.timestamp.time }
+            .groupBy { version ->
+                val formattedDate = dateProvider.formatToDateString(
+                    timestamp = (version.timestamp.inMillis),
+                    pattern = GROUP_BY_DAY_FORMAT,
+                    locale = locale
+                )
+                formattedDate
+            }
 
         // Within each day, sort all versions by timestamp descending
-        val sortedVersionsByDay = sortedDays.associateWith { day ->
+        val sortedVersionsByDay = versionsByDay.keys.associateWith { day ->
             val versionByDay = versionsByDay[day] ?: return@associateWith emptyList()
             versionByDay.sortedByDescending { it.timestamp.time }
         }
 
         // Group by space member sequentially within each day
-        val groupedBySpaceMember = sortedVersionsByDay.mapValues { (_, versions) ->
+        val groupedBySpaceMember = sortedVersionsByDay.groupByMemberAndMinuteWithinADay()
+
+        val groups = groupedBySpaceMember.mapNotNull { (_, spaceMemberVersions) ->
+            if (spaceMemberVersions.isEmpty()) {
+                return emptyList()
+            }
+
+            val spaceMemberLatestVersion =
+                spaceMemberVersions.firstOrNull()?.firstOrNull() ?: return@mapNotNull null
+
+            val groupItems = spaceMemberVersions.toGroupItems(
+                spaceMembers = spaceMembers,
+                locale = locale
+            )
+
+            VersionHistoryGroup(
+                id = spaceMemberLatestVersion.id,
+                title = getGroupTitle(spaceMemberLatestVersion.timestamp, locale),
+                icons = groupItems.distinctBy { it.spaceMember }.mapNotNull { it.icon },
+                items = groupItems
+            )
+        }.mapIndexed { index, versionHistoryGroup ->
+            if (index == 0) versionHistoryGroup.copy(isExpanded = true) else versionHistoryGroup
+        }
+        return groups
+    }
+
+    private fun Map<String, List<Version>>.groupByMemberAndMinuteWithinADay(): Map<String, List<List<Version>>> {
+        val groupedBySpaceMember = mapValues { (_, versions) ->
+            val grouped = mutableListOf<MutableList<Version>>()
+            var currentGroup = mutableListOf<Version>()
+
+            for (version in versions) {
+                if (currentGroup.isEmpty()
+                    || (currentGroup.last().spaceMember == version.spaceMember
+                            && dateProvider.isSameMinute(
+                        currentGroup.first().timestamp.time, version.timestamp.time
+                    ))
+                ) {
+                    currentGroup.add(version)
+                } else {
+                    grouped.add(currentGroup)
+                    currentGroup = mutableListOf(version)
+                }
+            }
+
+            if (currentGroup.isNotEmpty()) {
+                grouped.add(currentGroup)
+            }
+
+            grouped
+        }
+        return groupedBySpaceMember
+    }
+
+    private fun Map<String, List<Version>>.groupByMemberWithinADay(): Map<String, List<List<Version>>> {
+        val groupedBySpaceMember = mapValues { (_, versions) ->
             val grouped = mutableListOf<MutableList<Version>>()
             var currentGroup = mutableListOf<Version>()
 
@@ -205,30 +250,29 @@ class VersionHistoryViewModel(
 
             grouped
         }
+        return groupedBySpaceMember
+    }
 
-        val groups = groupedBySpaceMember.mapNotNull { (_, spaceMemberVersions) ->
-            if (spaceMemberVersions.isEmpty()) {
-                return emptyList()
+    private fun getGroupTitle(timestamp: TimeInSeconds, locale: Locale): VersionHistoryGroup.GroupTitle {
+        val dateInstant = Instant.ofEpochSecond(timestamp.time)
+        val givenDate = dateInstant.atZone(ZoneId.systemDefault()).toLocalDate()
+        val givenDateWithZeroTime = givenDate.atStartOfDay().toLocalDate()
+        return when (givenDateWithZeroTime) {
+            LocalDate.now() -> {
+                VersionHistoryGroup.GroupTitle.Today
             }
-            val spaceMemberLatestVersion =
-                spaceMemberVersions.firstOrNull()?.firstOrNull() ?: return@mapNotNull null
-            val (latestVersionDate, latestVersionTime) = dateProvider.formatTimestampToDateAndTime(
-                timestamp = spaceMemberLatestVersion.timestamp.inMillis,
-                locale = locale
-            )
-            val groupItems = spaceMemberVersions.toGroupItems(
-                spaceMembers = spaceMembers,
-                locale = locale
-            )
-
-            VersionHistoryGroup(
-                id = spaceMemberLatestVersion.id,
-                title = latestVersionDate,
-                icons = groupItems.mapNotNull { it.icon },
-                items = groupItems
-            )
+            LocalDate.now().minusDays(1) -> {
+                VersionHistoryGroup.GroupTitle.Yesterday
+            }
+            else -> {
+                VersionHistoryGroup.GroupTitle.Date(
+                    dateProvider.formatTimestampToDateAndTime(
+                        timestamp = timestamp.inMillis,
+                        locale = locale
+                    ).first
+                )
+            }
         }
-        return groups
     }
 
     private fun List<List<Version>>.toGroupItems(
@@ -356,7 +400,7 @@ sealed class VersionHistoryPreviewScreen {
 
 data class VersionHistoryGroup(
     val id: String,
-    val title: String,
+    val title: GroupTitle,
     val icons: List<ObjectIcon>,
     val items: List<Item>,
     val isExpanded: Boolean = false
@@ -371,6 +415,12 @@ data class VersionHistoryGroup(
         val icon: ObjectIcon?,
         val versions: List<Version>
     )
+
+    sealed class GroupTitle {
+        data object Today : GroupTitle()
+        data object Yesterday : GroupTitle()
+        data class Date(val date: String) : GroupTitle()
+    }
 }
 
 sealed class VersionGroupNavigation(val route: String) {

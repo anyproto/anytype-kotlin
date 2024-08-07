@@ -115,7 +115,7 @@ private fun VersionHistorySuccessState(
     LazyColumn(
         state = lazyListState,
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxSize(),
         contentPadding = PaddingValues(
             start = 20.dp,
             top = 0.dp,

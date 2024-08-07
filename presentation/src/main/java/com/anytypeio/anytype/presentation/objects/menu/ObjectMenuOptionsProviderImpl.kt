@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
+import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuOptionsProvider.Options
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -46,25 +47,42 @@ class ObjectMenuOptionsProviderImpl(
         val hasLayout = !isLocked && !restrictions.contains(ObjectRestriction.LAYOUT_CHANGE)
         val options = if (layout != null) {
             when (layout) {
+                ObjectType.Layout.PARTICIPANT -> Options.ALL.copy(
+                    hasIcon = false,
+                    hasCover = false,
+                    hasLayout = false,
+                    hasDiagnosticsVisibility = true,
+                    hasHistory = false,
+                    hasRelations = false
+                )
+                in SupportedLayouts.systemLayouts -> Options.NONE
+                in SupportedLayouts.fileLayouts -> {
+                    Options.ALL.copy(
+                        hasIcon = false,
+                        hasCover = false,
+                        hasLayout = false,
+                        hasDiagnosticsVisibility = true,
+                        hasHistory = false
+                    )
+                }
+                ObjectType.Layout.SET,
+                ObjectType.Layout.COLLECTION -> {
+                    Options.ALL.copy(
+                        hasIcon = hasIcon,
+                        hasCover = hasCover,
+                        hasLayout = false,
+                        hasDiagnosticsVisibility = true,
+                        hasHistory = !isLocked
+                    )
+                }
                 ObjectType.Layout.BASIC,
                 ObjectType.Layout.PROFILE,
-                ObjectType.Layout.OBJECT_TYPE,
-                ObjectType.Layout.RELATION,
-                ObjectType.Layout.FILE,
-                ObjectType.Layout.DASHBOARD,
-                ObjectType.Layout.IMAGE,
-                ObjectType.Layout.VIDEO,
-                ObjectType.Layout.AUDIO,
-                ObjectType.Layout.PDF,
-                ObjectType.Layout.SPACE,
-                ObjectType.Layout.SET,
-                ObjectType.Layout.COLLECTION,
-                ObjectType.Layout.BOOKMARK,
-                ObjectType.Layout.PARTICIPANT -> Options.ALL.copy(
+                ObjectType.Layout.BOOKMARK -> Options.ALL.copy(
                     hasIcon = hasIcon,
                     hasCover = hasCover,
                     hasLayout = hasLayout,
-                    hasDiagnosticsVisibility = true
+                    hasDiagnosticsVisibility = true,
+                    hasHistory = !isLocked
                 )
                 ObjectType.Layout.TODO -> Options(
                     hasIcon = false,
@@ -72,6 +90,7 @@ class ObjectMenuOptionsProviderImpl(
                     hasLayout = hasLayout,
                     hasRelations = true,
                     hasDiagnosticsVisibility = true,
+                    hasHistory = !isLocked
                 )
 
                 ObjectType.Layout.NOTE -> Options(
@@ -80,16 +99,16 @@ class ObjectMenuOptionsProviderImpl(
                     hasLayout = hasLayout,
                     hasRelations = true,
                     hasDiagnosticsVisibility = true,
+                    hasHistory = !isLocked
                 )
-                else -> Options.NONE
+                else -> Options.NONE.copy(
+                    hasDiagnosticsVisibility = true
+                )
             }
         } else {
-            // unknown layout show all options
-            Options.ALL.copy(
-                hasIcon = hasIcon,
-                hasCover = hasCover,
-                hasLayout = hasLayout,
-                hasDiagnosticsVisibility = true,
+            // unknown layout
+            Options.NONE.copy(
+                hasDiagnosticsVisibility = true
             )
         }
         return options

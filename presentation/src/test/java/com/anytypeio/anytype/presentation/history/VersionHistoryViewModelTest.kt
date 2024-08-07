@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
+import com.anytypeio.anytype.presentation.history.VersionHistoryViewModel.Companion.GROUP_DATE_FORMAT_OTHER_YEAR
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.widgets.collection.DateProviderImpl
@@ -300,10 +301,6 @@ class VersionHistoryViewModelTest {
                 timestamp = versions[4].timestamp.inMillis,
                 locale = locale
             )
-            val (date5, time5) = dateProvider.formatTimestampToDateAndTime(
-                timestamp = versions[5].timestamp.inMillis,
-                locale = locale
-            )
             val (date6, time6) = dateProvider.formatTimestampToDateAndTime(
                 timestamp = versions[6].timestamp.inMillis,
                 locale = locale
@@ -319,10 +316,11 @@ class VersionHistoryViewModelTest {
                         VersionHistoryGroup(
                             id = versionsNew[8].id,
                             title = VersionHistoryGroup.GroupTitle.Date(
-                                dateProvider.formatTimestampToDateAndTime(
+                                dateProvider.formatToDateString(
                                     timestamp = versionsNew[8].timestamp.inMillis,
-                                    locale = locale
-                                ).first
+                                    locale = locale,
+                                    pattern = GROUP_DATE_FORMAT_OTHER_YEAR
+                                )
                             ),
                             icons = listOf(ObjectIcon.None, ObjectIcon.None),
                             isExpanded = true,
@@ -398,7 +396,11 @@ class VersionHistoryViewModelTest {
                     add(
                         VersionHistoryGroup(
                             id = versions[0].id,
-                            title = VersionHistoryGroup.GroupTitle.Date(date0),
+                            title = VersionHistoryGroup.GroupTitle.Date(dateProvider.formatToDateString(
+                                timestamp = versions[0].timestamp.inMillis,
+                                pattern = GROUP_DATE_FORMAT_OTHER_YEAR,
+                                locale = locale
+                            )),
                             icons = listOf(ObjectIcon.None, ObjectIcon.None, ObjectIcon.None),
                             items = buildList {
                                 add(
@@ -455,7 +457,13 @@ class VersionHistoryViewModelTest {
                     add(
                         VersionHistoryGroup(
                             id = versions[4].id,
-                            title = VersionHistoryGroup.GroupTitle.Date(date4),
+                            title = VersionHistoryGroup.GroupTitle.Date(
+                                dateProvider.formatToDateString(
+                                    timestamp = versions[4].timestamp.inMillis,
+                                    locale = locale,
+                                    pattern = GROUP_DATE_FORMAT_OTHER_YEAR
+                                )
+                            ),
                             icons = listOf(ObjectIcon.None, ObjectIcon.None),
                             items = buildList {
                                 add(

@@ -115,7 +115,7 @@ private fun VersionHistorySuccessState(
     LazyColumn(
         state = lazyListState,
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxSize(),
         contentPadding = PaddingValues(
             start = 20.dp,
             top = 0.dp,
@@ -251,7 +251,10 @@ private fun RowScope.HeaderIcons(
                     Box(
                         modifier = Modifier
                             .size(28.dp)
-                            .background(color = colorResource(id = R.color.white)),
+                            .background(
+                                color = colorResource(id = R.color.background_primary),
+                                shape = androidx.compose.foundation.shape.CircleShape
+                            ),
                         contentAlignment = Alignment.Center
                     ) {
                         ListWidgetObjectIcon(

@@ -1,14 +1,14 @@
 package com.anytypeio.anytype.core_ui.features.history
 
-import android.view.LayoutInflater
-import android.view.View
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -27,7 +28,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
@@ -35,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
@@ -63,63 +65,41 @@ fun VersionHistoryPreviewScreen(
     if (state is VersionHistoryPreviewScreen.Success) {
         versionTitle.value = "${state.dateFormatted}, ${state.timeFormatted}"
         versionIcon.value = state.icon
-        Box(modifier = Modifier.fillMaxSize()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(scrollState)
-                    .nestedScroll(nestedScrollInteropConnection),
-            ) {
-                Dragger(
+        ModalBottomSheet(
+            dragHandle = null,
+            sheetState = sheetState,
+            onDismissRequest = onDismiss,
+            modifier = Modifier.fillMaxSize(),
+            scrimColor = Color.Transparent,
+            containerColor = colorResource(id = R.color.background_primary),
+            windowInsets = WindowInsets(top = 60.dp),
+        ) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                Column(
                     modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(vertical = 6.dp)
-                )
-                Header(title = versionTitle.value, icon = versionIcon.value)
-                AndroidView(
-                    factory = { context ->
-                        LayoutInflater.from(context)
-                            .inflate(R.layout.version_history_screen, null).apply {
-                                findViewById<RecyclerView>(R.id.recycler).apply {
-                                    adapter = editorAdapter
-                                }
+                        .fillMaxSize()
+                        .verticalScroll(scrollState)
+                        .nestedScroll(nestedScrollInteropConnection),
+                ) {
+                    Dragger(
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(vertical = 6.dp)
+                    )
+                    Header(title = versionTitle.value, icon = versionIcon.value)
+                    AndroidView(
+                        factory = { context ->
+                            RecyclerView(context).apply {
+                                layoutManager = LinearLayoutManager(context)
+                                adapter = editorAdapter
                             }
-                    },
-                    update = {
-                        editorAdapter.updateWithDiffUtil(state.blocks)
-                    }
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(80.dp)
-                    .border(
-                        border = BorderStroke(
-                            0.5.dp,
-                            color = colorResource(id = R.color.shape_primary)
-                        ),
+                        },
+                        update = {
+                            editorAdapter.updateWithDiffUtil(state.blocks)
+                        }
                     )
-                    .background(
-                        color = colorResource(id = R.color.background_primary),
-                    )
-                    .padding(horizontal = 24.dp)
-                    .align(Alignment.BottomCenter),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                ButtonSecondary(
-                    text = stringResource(id = R.string.cancel),
-                    onClick = onDismiss,
-                    size = ButtonSize.LargeSecondary,
-                    modifier = Modifier.weight(1.0f)
-                )
-                Spacer(modifier = Modifier.width(9.dp))
-                ButtonPrimary(
-                    text = stringResource(id = R.string.restore),
-                    onClick = onRestore,
-                    size = ButtonSize.Large,
-                    modifier = Modifier.weight(1.0f)
-                )
+                }
+                Buttons(onDismiss = onDismiss, onRestore = onRestore)
             }
         }
     }
@@ -153,5 +133,42 @@ private fun Header(title: String, icon: ObjectIcon?) {
                 avatarTextStyle = VersionHistoryAvatarTextStyle()
             )
         }
+    }
+}
+
+@Composable
+private fun BoxScope.Buttons(
+    onDismiss: () -> Unit,
+    onRestore: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .border(
+                border = BorderStroke(
+                    0.5.dp,
+                    color = colorResource(id = R.color.shape_primary)
+                ),
+            )
+            .background(
+                color = colorResource(id = R.color.background_primary),
+            )
+            .padding(horizontal = 24.dp)
+            .align(Alignment.BottomCenter)
+    ) {
+        ButtonSecondary(
+            text = stringResource(id = R.string.cancel),
+            onClick = onDismiss,
+            size = ButtonSize.LargeSecondary,
+            modifier = Modifier.padding(top = 16.dp, bottom = 32.dp).weight(1.0f)
+        )
+        Spacer(modifier = Modifier.width(9.dp))
+        ButtonPrimary(
+            text = stringResource(id = R.string.restore),
+            onClick = onRestore,
+            size = ButtonSize.Large,
+            modifier = Modifier.padding(top = 16.dp, bottom = 32.dp).weight(1.0f)
+        )
     }
 }

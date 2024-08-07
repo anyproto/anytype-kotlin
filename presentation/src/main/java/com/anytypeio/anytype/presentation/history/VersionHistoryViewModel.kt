@@ -24,6 +24,7 @@ import com.anytypeio.anytype.presentation.editor.EditorViewModel.Companion.INITI
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
+import com.anytypeio.anytype.presentation.history.VersionHistoryGroup.GroupTitle
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import java.time.Instant
@@ -253,23 +254,32 @@ class VersionHistoryViewModel(
         return groupedBySpaceMember
     }
 
-    private fun getGroupTitle(timestamp: TimeInSeconds, locale: Locale): VersionHistoryGroup.GroupTitle {
+    private fun getGroupTitle(timestamp: TimeInSeconds, locale: Locale): GroupTitle {
         val dateInstant = Instant.ofEpochSecond(timestamp.time)
         val givenDate = dateInstant.atZone(ZoneId.systemDefault()).toLocalDate()
+        val currentDate = LocalDate.now()
+        val givenYear = givenDate.year
+        val currentYear = currentDate.year
         val givenDateWithZeroTime = givenDate.atStartOfDay().toLocalDate()
         return when (givenDateWithZeroTime) {
-            LocalDate.now() -> {
-                VersionHistoryGroup.GroupTitle.Today
+            currentDate -> {
+                GroupTitle.Today
             }
-            LocalDate.now().minusDays(1) -> {
-                VersionHistoryGroup.GroupTitle.Yesterday
+            currentDate.minusDays(1) -> {
+                GroupTitle.Yesterday
             }
             else -> {
-                VersionHistoryGroup.GroupTitle.Date(
-                    dateProvider.formatTimestampToDateAndTime(
+                val pattern = if (givenYear == currentYear) {
+                    GROUP_DATE_FORMAT_CURRENT_YEAR
+                } else {
+                    GROUP_DATE_FORMAT_OTHER_YEAR
+                }
+                GroupTitle.Date(
+                    dateProvider.formatToDateString(
                         timestamp = timestamp.inMillis,
+                        pattern = pattern,
                         locale = locale
-                    ).first
+                    )
                 )
             }
         }
@@ -370,6 +380,8 @@ class VersionHistoryViewModel(
 
     companion object {
         const val GROUP_BY_DAY_FORMAT = "d MM yyyy"
+        const val GROUP_DATE_FORMAT_CURRENT_YEAR = "MMMM d"
+        const val GROUP_DATE_FORMAT_OTHER_YEAR = "MMMM d, yyyy"
     }
 }
 

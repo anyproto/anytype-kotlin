@@ -974,7 +974,7 @@
     <!--region ONBOARDING -->
     <string name="onboarding_auth_title">універсальная праграма</string>
     <string name="onboarding_auth_subtitle">for those\nwho celebrate\ntrust &amp; autonomy</string>
-    <string name="onboarding_auth_description">Стварайце і супрацоўнічайце ва ўласных прасторах. Зашыфравана, адкрыта і па-за сецівам.</string>
+    <string name="onboarding_auth_description">Стварайце і супрацоўнічайце ва ўласных прасторах. Зашыфравана, адкрыта і па-за сеткай.</string>
     <string name="onboarding_terms_and_policy_prefix">"Працягнуўшы, вы пагаджаецеся з "</string>
     <string name="onboarding_terms_and_policy_terms">Умовамі\u00A0выкарыстання</string>
     <string name="onboarding_terms_and_policy_infix">"і"</string>
@@ -1124,15 +1124,15 @@
     <string name="msg_query_cannot_be_changed">This query can be changed on desktop only</string>
     <!--region ONBOARDING ERRORS -->
     <string name="error_invalid_recovery_phrase">Няправільны ключ</string>
-    <string name="network">Сеціва</string>
-    <string name="network_with_colon">Сеціва:</string>
+    <string name="network">Сетка</string>
+    <string name="network_with_colon">Сетка:</string>
     <string name="network_settings_anytype_network">Сетка Anytype</string>
     <string name="network_settings_anytype_network_description">Рэзервовае капіраванне ў сетку, якая кіруецца Anytype</string>
     <string name="network_settings_local_only">Толькі лакальна</string>
     <string name="network_settings_local_only_description">Не стварайце рэзервовыя копіі; сінхранізуйце ў лакальнай сетцы</string>
     <string name="network_settings_self_host">Уласнае размяшчэнне</string>
     <string name="network_settings_self_host_description">Рэзервовае капіраванне на ўласным хостынгу</string>
-    <string name="network_settings_networks_section">Сеціва</string>
+    <string name="network_settings_networks_section">Сетка</string>
     <string name="network_settings_troubleshooting_section">Выпраўленне непаладак</string>
     <string name="network_settings_provide_config_hint">Націсніце, каб даць канфігурацыю вашай сеткі</string>
     <string name="network_settings_self_host_config">Бягучая канфігурацыя: %1$s</string>

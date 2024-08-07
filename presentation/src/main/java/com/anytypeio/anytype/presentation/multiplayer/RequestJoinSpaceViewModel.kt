@@ -7,6 +7,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary.screenInviteRequest
 import com.anytypeio.anytype.analytics.base.EventsDictionary.screenRequestSent
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.core_models.multiplayer.MultiplayerError
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteError
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -132,7 +133,10 @@ class RequestJoinSpaceViewModel(
                             )
                         ).fold(
                             onFailure = { e ->
-                                Timber.e(e, "Error while sending space join request").also {
+                                Timber.e(e, "Error while sending space join request")
+                                if (e is MultiplayerError.Generic) {
+                                    commands.emit(Command.ShowGenericMultiplayerError(e))
+                                } else {
                                     sendToast(e.msg())
                                 }
                             },
@@ -213,6 +217,7 @@ class RequestJoinSpaceViewModel(
             data object SpaceNotFound : Toast()
             data object SpaceDeleted : Toast()
         }
+        data class ShowGenericMultiplayerError(val error: MultiplayerError.Generic) : Command()
         data object Dismiss: Command()
     }
 

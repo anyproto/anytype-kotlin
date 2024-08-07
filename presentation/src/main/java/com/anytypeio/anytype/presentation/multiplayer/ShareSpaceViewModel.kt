@@ -216,8 +216,8 @@ class ShareSpaceViewModel(
                     },
                     onFailure = {
                         Timber.e(it, "Error while generating invite link")
-                        if (it is MultiplayerError.GenerateInviteLink) {
-                            commands.emit(Command.ShowGenerateInviteLinkError(it))
+                        if (it is MultiplayerError.Generic) {
+                            commands.emit(Command.ShowMultiplayerError(it))
                         }
                     }
                 )
@@ -434,7 +434,10 @@ class ShareSpaceViewModel(
                         analytics.sendEvent(eventName = stopSpaceShare)
                     },
                     onFailure = { e ->
-                        Timber.e(e, "Error while sharing space").also {
+                        Timber.e(e, "Error while sharing space")
+                        if (e is MultiplayerError.Generic) {
+                            commands.emit(Command.ShowMultiplayerError(e))
+                        } else {
                             sendToast(e.msg())
                         }
                     }
@@ -489,7 +492,10 @@ class ShareSpaceViewModel(
                         analytics.sendEvent(eventName = EventsDictionary.revokeShareLink)
                     },
                     onFailure = { e ->
-                        Timber.e(e, "Error while revoking space invite link").also {
+                        Timber.e(e, "Error while revoking space invite link")
+                        if (e is MultiplayerError.Generic) {
+                            commands.emit(Command.ShowMultiplayerError(e))
+                        } else {
                             sendToast(e.msg())
                         }
                     }
@@ -580,7 +586,7 @@ class ShareSpaceViewModel(
         data class ShareQrCode(val link: String) : Command()
         data class ViewJoinRequest(val space: SpaceId, val member: Id) : Command()
         data class ShowRemoveMemberWarning(val identity: Id, val name: String): Command()
-        data class ShowGenerateInviteLinkError(val error: MultiplayerError.GenerateInviteLink) : Command()
+        data class ShowMultiplayerError(val error: MultiplayerError.Generic) : Command()
         data object ShowHowToShareSpace: Command()
         data object ShowStopSharingWarning: Command()
         data object ShowDeleteLinkWarning: Command()

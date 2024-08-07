@@ -198,19 +198,19 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     Timber.e(it, "Error while navigation: $command")
                 }
             }
-            is Command.ShowGenerateInviteLinkError -> {
-                when(val err = command.error) {
-                    is MultiplayerError.GenerateInviteLink.LimitReached -> {
+            is Command.ShowMultiplayerError -> {
+                when(command.error) {
+                    is MultiplayerError.Generic.LimitReached -> {
                         toast(resources.getString(R.string.multiplayer_error_limit_reached))
                     }
-                    is MultiplayerError.GenerateInviteLink.NotShareable -> {
+                    is MultiplayerError.Generic.NotShareable -> {
                         toast(resources.getString(R.string.multiplayer_error_not_shareable))
                     }
-                    is MultiplayerError.GenerateInviteLink.RequestFailed -> {
+                    is MultiplayerError.Generic.RequestFailed -> {
                         toast(resources.getString(R.string.multiplayer_error_request_failed))
                     }
-                    is MultiplayerError.GenerateInviteLink.SpaceIsDeleted -> {
-                        toast(resources.getString(R.string.multiplayer_error_invite_space_deleted))
+                    is MultiplayerError.Generic.SpaceIsDeleted -> {
+                        toast(resources.getString(R.string.multiplayer_error_space_is_deleted))
                     }
                 }
             }

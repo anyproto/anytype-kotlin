@@ -61,11 +61,11 @@ sealed class SpaceInviteError : Exception() {
 }
 
 sealed class MultiplayerError : Exception() {
-    sealed class GenerateInviteLink: MultiplayerError() {
-        class NotShareable : GenerateInviteLink()
-        class SpaceIsDeleted : GenerateInviteLink()
-        class LimitReached : GenerateInviteLink()
-        class RequestFailed : GenerateInviteLink()
+    sealed class Generic : MultiplayerError() {
+        class NotShareable : Generic()
+        class SpaceIsDeleted : Generic()
+        class LimitReached : Generic()
+        class RequestFailed : Generic()
     }
 }
 

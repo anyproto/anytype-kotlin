@@ -73,6 +73,7 @@ import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.collection.DateProviderImpl
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import java.time.ZoneId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -223,7 +224,7 @@ abstract class TestObjectSetSetup {
 
     private val delegator = Delegator.Default<Action>()
 
-    private val dateProvider = DateProviderImpl()
+    private val dateProvider = DateProviderImpl(ZoneId.systemDefault())
 
     open fun setup() {
         MockitoAnnotations.openMocks(this)

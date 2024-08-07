@@ -77,7 +77,8 @@ abstract class ObjectMenuViewModelBase(
             hasCover = false,
             hasLayout = false,
             hasRelations = false,
-            hasDiagnosticsVisibility = false
+            hasDiagnosticsVisibility = false,
+            hasHistory = false
         )
     )
     val options: Flow<ObjectMenuOptionsProvider.Options> = _options

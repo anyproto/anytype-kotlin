@@ -100,7 +100,6 @@ class VersionHistoryFragment : BaseBottomSheetComposeFragment() {
             composable(VersionGroupNavigation.Main.route) {
                 VersionHistoryScreen(
                     state = vm.viewState.collectAsStateWithLifecycle().value,
-                    onGroupClick = vm::onGroupClicked,
                     onItemClick = vm::onGroupItemClicked
                 )
             }
@@ -152,7 +151,7 @@ class VersionHistoryFragment : BaseBottomSheetComposeFragment() {
 
     companion object {
 
-        const val DEFAULT_PADDING_TOP = 74
+        const val DEFAULT_PADDING_TOP = 10
 
         const val CTX_ARG = "anytype.ui.history.ctx_arg"
         const val SPACE_ID_ARG = "anytype.ui.history.space_id_arg"

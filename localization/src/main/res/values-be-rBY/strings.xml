@@ -1110,7 +1110,7 @@
     <string name="option_widget_create">Сварыць опцыю</string>
     <string name="option_widget_edit">Рэдагаваць опцыю</string>
     <string name="options_empty_description">Nothing found. Create first option to start.</string>
-    <string name="options_empty_title">No options</string>
+    <string name="options_empty_title">Няма опцый</string>
     <string name="options_empty_not_editable">The relation is empty</string>
     <string name="options_delete_title">Are you sure?</string>
     <string name="options_delete_description">Параметр будзе назаўсёды выдалены з вашай прасторы</string>

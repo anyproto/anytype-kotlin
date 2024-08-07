@@ -20,11 +20,12 @@ import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
+import com.anytypeio.anytype.presentation.history.VersionHistoryViewModel.Companion.GROUP_DATE_FORMAT_OTHER_YEAR
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.widgets.collection.DateProviderImpl
+import java.time.ZoneId
 import java.util.Locale
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -89,7 +90,7 @@ class VersionHistoryViewModelTest {
     @Mock
     lateinit var objectSearch: SearchObjects
 
-    private val dateProvider: DateProvider = DateProviderImpl()
+    private val dateProvider: DateProvider = DateProviderImpl(ZoneId.systemDefault())
 
     @Mock
     lateinit var localeProvider: LocaleProvider
@@ -139,7 +140,18 @@ class VersionHistoryViewModelTest {
 
     /**
      * Timeline, GMT+0200
-     * Start : Sat Jan 01 2022 00:00:03 GMT+0100 1640991603 User1
+     * Start :
+     *         Sun Jan 02 2022 00:02:00 GMT+0100 1641078120 User2
+     *         Sun Jan 02 2022 00:01:02 GMT+0100 1641078062 User2
+     *         Sun Jan 02 2022 00:01:01 GMT+0100 1641078061 User1
+     *         Sun Jan 02 2022 00:01:00 GMT+0100 1641078060 User1
+     *         Sun Jan 02 2022 00:00:59 GMT+0100 1641078059 User1
+     *         Sun Jan 02 2022 00:00:04 GMT+0100 1641078004 User1
+     *         Sun Jan 02 2022 00:00:03 GMT+0100 1641078003 User1
+     *         Sun Jan 02 2022 00:00:01 GMT+0100 1641078001 User1
+     *         Sun Jan 02 2022 00:00:00 GMT+0100 1641078000 User1
+     *         --------new test ^^^
+     *         Sat Jan 01 2022 00:00:03 GMT+0100 1640991603 User1
      *         Sat Jan 01 2022 00:00:02 GMT+0100 1640991602 User4
      *         Sat Jan 01 2022 00:00:01 GMT+0100 1640991601 User3
      *         Sat Jan 01 2022 00:00:00 GMT+0100 1640991600 User1
@@ -156,34 +168,99 @@ class VersionHistoryViewModelTest {
     private val timestamp5 = TimeInSeconds(1640991598L)
     private val timestamp6 = TimeInSeconds(1640991597L)
 
+    private val timestamp7 = TimeInSeconds(1641078000L)
+    private val timestamp8 = TimeInSeconds(1641078001L)
+    private val timestamp9 = TimeInSeconds(1641078003L)
+    private val timestamp10 = TimeInSeconds(1641078004L)
+    private val timestamp11 = TimeInSeconds(1641078059L)
+    private val timestamp12 = TimeInSeconds(1641078060L)
+    private val timestamp13 = TimeInSeconds(1641078061L)
+    private val timestamp14 = TimeInSeconds(1641078062L)
+    private val timestamp15 = TimeInSeconds(1641078120L)
+
     private val versions = listOf(
         StubVersion(
+            id = "versionId-${timestamp0.time}",
             authorId = user1.id,
             timestamp = timestamp0
         ),
         StubVersion(
+            id = "versionId-${timestamp1.time}",
             authorId = user4.id,
             timestamp = timestamp1
         ),
         StubVersion(
+            id = "versionId-${timestamp2.time}",
             authorId = user3.id,
             timestamp = timestamp2
         ),
         StubVersion(
+            id = "versionId-${timestamp3.time}",
             authorId = user1.id,
             timestamp = timestamp3
         ),
         StubVersion(
+            id = "versionId-${timestamp4.time}",
             authorId = user1.id,
             timestamp = timestamp4
         ),
         StubVersion(
+            id = "versionId-${timestamp5.time}",
             authorId = user1.id,
             timestamp = timestamp5
         ),
         StubVersion(
+            id = "versionId-${timestamp6.time}",
             authorId = user2.id,
             timestamp = timestamp6
+        )
+    )
+
+    private val versionsNew = listOf(
+        StubVersion(
+            id = "versionId-${timestamp7.time}",
+            authorId = user1.id,
+            timestamp = timestamp7
+        ),
+        StubVersion(
+            id = "versionId-${timestamp8.time}",
+            authorId = user1.id,
+            timestamp = timestamp8
+        ),
+        StubVersion(
+            id = "versionId-${timestamp9.time}",
+            authorId = user1.id,
+            timestamp = timestamp9
+        ),
+        StubVersion(
+            id = "versionId-${timestamp10.time}",
+            authorId = user1.id,
+            timestamp = timestamp10
+        ),
+        StubVersion(
+            id = "versionId-${timestamp11.time}",
+            authorId = user1.id,
+            timestamp = timestamp11
+        ),
+        StubVersion(
+            id = "versionId-${timestamp12.time}",
+            authorId = user1.id,
+            timestamp = timestamp12
+        ),
+        StubVersion(
+            id = "versionId-${timestamp13.time}",
+            authorId = user1.id,
+            timestamp = timestamp13
+        ),
+        StubVersion(
+            id = "versionId-${timestamp14.time}",
+            authorId = user2.id,
+            timestamp = timestamp14
+        ),
+        StubVersion(
+            id = "versionId-${timestamp15.time}",
+            authorId = user2.id,
+            timestamp = timestamp15
         )
     )
 
@@ -198,7 +275,7 @@ class VersionHistoryViewModelTest {
     fun `should has proper date`() = runTest {
         turbineScope {
 
-            stubVersions(stubbedVersions = versions)
+            stubVersions(stubbedVersions = versions + versionsNew)
             stubSpaceMembers()
             vm = buildViewModel()
 
@@ -224,10 +301,6 @@ class VersionHistoryViewModelTest {
                 timestamp = versions[4].timestamp.inMillis,
                 locale = locale
             )
-            val (date5, time5) = dateProvider.formatTimestampToDateAndTime(
-                timestamp = versions[5].timestamp.inMillis,
-                locale = locale
-            )
             val (date6, time6) = dateProvider.formatTimestampToDateAndTime(
                 timestamp = versions[6].timestamp.inMillis,
                 locale = locale
@@ -241,9 +314,94 @@ class VersionHistoryViewModelTest {
                 groups = buildList {
                     add(
                         VersionHistoryGroup(
+                            id = versionsNew[8].id,
+                            title = VersionHistoryGroup.GroupTitle.Date(
+                                dateProvider.formatToDateString(
+                                    timestamp = versionsNew[8].timestamp.inMillis,
+                                    locale = locale,
+                                    pattern = GROUP_DATE_FORMAT_OTHER_YEAR
+                                )
+                            ),
+                            icons = listOf(ObjectIcon.None, ObjectIcon.None),
+                            isExpanded = true,
+                            items = buildList {
+                                val versionsNew8Format = dateProvider.formatTimestampToDateAndTime(
+                                    timestamp = versionsNew[8].timestamp.inMillis,
+                                    locale = locale
+                                )
+                                add(
+                                    VersionHistoryGroup.Item(
+                                        id = versionsNew[8].id,
+                                        spaceMember = user2.id,
+                                        spaceMemberName = user2.name!!,
+                                        timeStamp = versionsNew[8].timestamp,
+                                        icon = ObjectIcon.None,
+                                        versions = listOf(versionsNew[8]),
+                                        timeFormatted = versionsNew8Format.second,
+                                        dateFormatted = versionsNew8Format.first
+                                    )
+                                )
+                                val versionsNew7Format = dateProvider.formatTimestampToDateAndTime(
+                                    timestamp = versionsNew[7].timestamp.inMillis,
+                                    locale = locale
+                                )
+                                add(
+                                    VersionHistoryGroup.Item(
+                                        id = versionsNew[7].id,
+                                        spaceMember = user2.id,
+                                        spaceMemberName = user2.name!!,
+                                        timeStamp = versionsNew[7].timestamp,
+                                        icon = ObjectIcon.None,
+                                        versions = listOf(versionsNew[7]),
+                                        timeFormatted = versionsNew7Format.second,
+                                        dateFormatted = versionsNew7Format.first
+                                    )
+                                )
+                                val versionsNew6Format = dateProvider.formatTimestampToDateAndTime(
+                                    timestamp = versionsNew[6].timestamp.inMillis,
+                                    locale = locale
+                                )
+                                add(
+                                    VersionHistoryGroup.Item(
+                                        id = versionsNew[6].id,
+                                        spaceMember = user1.id,
+                                        spaceMemberName = user1.name!!,
+                                        timeStamp = versionsNew[6].timestamp,
+                                        icon = ObjectIcon.None,
+                                        versions = listOf(versionsNew[6], versionsNew[5]),
+                                        timeFormatted = versionsNew6Format.second,
+                                        dateFormatted = versionsNew6Format.first
+                                    )
+                                )
+                                val versionsNew4Format = dateProvider.formatTimestampToDateAndTime(
+                                    timestamp = versionsNew[4].timestamp.inMillis,
+                                    locale = locale
+                                )
+                                add(
+                                    VersionHistoryGroup.Item(
+                                        id = versionsNew[4].id,
+                                        spaceMember = user1.id,
+                                        spaceMemberName = user1.name!!,
+                                        timeStamp = versionsNew[4].timestamp,
+                                        icon = ObjectIcon.None,
+                                        versions = listOf(versionsNew[4], versionsNew[3], versionsNew[2], versionsNew[1], versionsNew[0]),
+                                        timeFormatted = versionsNew4Format.second,
+                                        dateFormatted = versionsNew4Format.first
+                                    )
+                                )
+                            }
+
+                        )
+                    )
+                    add(
+                        VersionHistoryGroup(
                             id = versions[0].id,
-                            title = date0,
-                            icons = listOf(ObjectIcon.None, ObjectIcon.None, ObjectIcon.None, ObjectIcon.None),
+                            title = VersionHistoryGroup.GroupTitle.Date(dateProvider.formatToDateString(
+                                timestamp = versions[0].timestamp.inMillis,
+                                pattern = GROUP_DATE_FORMAT_OTHER_YEAR,
+                                locale = locale
+                            )),
+                            icons = listOf(ObjectIcon.None, ObjectIcon.None, ObjectIcon.None),
                             items = buildList {
                                 add(
                                     VersionHistoryGroup.Item(
@@ -299,7 +457,13 @@ class VersionHistoryViewModelTest {
                     add(
                         VersionHistoryGroup(
                             id = versions[4].id,
-                            title = date4,
+                            title = VersionHistoryGroup.GroupTitle.Date(
+                                dateProvider.formatToDateString(
+                                    timestamp = versions[4].timestamp.inMillis,
+                                    locale = locale,
+                                    pattern = GROUP_DATE_FORMAT_OTHER_YEAR
+                                )
+                            ),
                             icons = listOf(ObjectIcon.None, ObjectIcon.None),
                             items = buildList {
                                 add(

@@ -7,7 +7,7 @@ import org.junit.Test
 
 class DateProviderImplTest {
 
-    val dateProviderImpl = DateProviderImpl()
+    val dateProviderImpl = DateProviderImpl(ZoneId.systemDefault())
 
     @Test
     fun adjustToStartOfDayInUserTimeZoneWithPastStart() {

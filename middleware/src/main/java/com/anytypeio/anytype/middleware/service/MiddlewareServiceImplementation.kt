@@ -1973,7 +1973,21 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Space.RequestApprove.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Space.RequestApprove.Response.Error.Code.NULL) {
-            throw Exception(error.description)
+            when(error.code) {
+                Rpc.Space.RequestApprove.Response.Error.Code.NOT_SHAREABLE -> {
+                    throw MultiplayerError.Generic.NotShareable()
+                }
+                Rpc.Space.RequestApprove.Response.Error.Code.SPACE_IS_DELETED -> {
+                    throw MultiplayerError.Generic.SpaceIsDeleted()
+                }
+                Rpc.Space.RequestApprove.Response.Error.Code.LIMIT_REACHED -> {
+                    throw MultiplayerError.Generic.LimitReached()
+                }
+                Rpc.Space.RequestApprove.Response.Error.Code.REQUEST_FAILED -> {
+                    throw MultiplayerError.Generic.RequestFailed()
+                }
+                else -> throw Exception(error.description)
+            }
         } else {
             return response
         }
@@ -1986,7 +2000,21 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Space.RequestDecline.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Space.RequestDecline.Response.Error.Code.NULL) {
-            throw Exception(error.description)
+            when(error.code) {
+                Rpc.Space.RequestDecline.Response.Error.Code.NOT_SHAREABLE -> {
+                    throw MultiplayerError.Generic.NotShareable()
+                }
+                Rpc.Space.RequestDecline.Response.Error.Code.SPACE_IS_DELETED -> {
+                    throw MultiplayerError.Generic.SpaceIsDeleted()
+                }
+                Rpc.Space.RequestDecline.Response.Error.Code.LIMIT_REACHED -> {
+                    throw MultiplayerError.Generic.LimitReached()
+                }
+                Rpc.Space.RequestDecline.Response.Error.Code.REQUEST_FAILED -> {
+                    throw MultiplayerError.Generic.RequestFailed()
+                }
+                else -> throw Exception(error.description)
+            }
         } else {
             return response
         }

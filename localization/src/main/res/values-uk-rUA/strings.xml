@@ -1246,8 +1246,13 @@
     <string name="multiplayer_cancel_join_request">Cancel join request</string>
     <string name="multiplayer_cancel_join_request_msg">You will have to send join request again</string>
     <string name="multiplayer_do_not_cancel_join_request">Do not cancel</string>
+    <string name="multiplayer_error_invite_not_found">The invitation does not exist. Please ensure that your devices are synchronized.</string>
+    <string name="multiplayer_error_invite_bad_content">The invitation link could not be parsed. It may contain errors in the format or invalid data.</string>
+    <string name="multiplayer_error_space_is_deleted">It looks like the space has been deleted. Please ensure that your devices are synchronized.</string>
+    <string name="multiplayer_error_limit_reached">Limit reached for this space. Please upgrade your membership or contact support for assistance.</string>
+    <string name="multiplayer_error_not_shareable">It looks like the space is no longer shared. Please ensure that your devices are synchronized.</string>
+    <string name="multiplayer_error_request_failed">Oops! The request failed. Please check your Internet connection and try again.</string>
     <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">This link does not seem to work</string>
-    <string name="multiplayer_error_invite_space_deleted">This invite link is no longer valid because the space has been deleted.</string>
     <string name="multiplayer_invite_link_space_not_found">This invite link is no longer valid because the space was not found.</string>
     <string name="multiplayer_invite_link_request_already_sent">Request sent</string>
     <!--endregion-->

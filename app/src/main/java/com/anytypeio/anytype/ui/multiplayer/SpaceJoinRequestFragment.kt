@@ -14,6 +14,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.multiplayer.MultiplayerError
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.multiplayer.SpaceJoinRequestScreen
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -73,11 +74,27 @@ class SpaceJoinRequestFragment : BaseBottomSheetComposeFragment() {
     private fun proceedWithCommand(command: SpaceJoinRequestViewModel.Command) {
         Timber.d("proceedWithCommand: $command")
         when (command) {
-            SpaceJoinRequestViewModel.Command.NavigateToMembership -> {
+            is SpaceJoinRequestViewModel.Command.NavigateToMembership -> {
                 findNavController().navigate(R.id.paymentsScreen)
             }
-            SpaceJoinRequestViewModel.Command.NavigateToMembershipUpdate -> {
+            is SpaceJoinRequestViewModel.Command.NavigateToMembershipUpdate -> {
                 findNavController().navigate(R.id.membershipUpdateScreen)
+            }
+            is SpaceJoinRequestViewModel.Command.ShowGenericMultiplayerError -> {
+                when(command.error) {
+                    is MultiplayerError.Generic.LimitReached -> {
+                        toast(resources.getString(R.string.multiplayer_error_limit_reached))
+                    }
+                    is MultiplayerError.Generic.NotShareable -> {
+                        toast(resources.getString(R.string.multiplayer_error_not_shareable))
+                    }
+                    is MultiplayerError.Generic.RequestFailed -> {
+                        toast(resources.getString(R.string.multiplayer_error_request_failed))
+                    }
+                    is MultiplayerError.Generic.SpaceIsDeleted -> {
+                        toast(resources.getString(R.string.multiplayer_error_space_is_deleted))
+                    }
+                }
             }
         }
     }

@@ -156,7 +156,7 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                                 is ErrorView.InviteNotFound -> {
                                     GenericAlert(
                                         config = AlertConfig.WithOneButton(
-                                            title = stringResource(R.string.multplayer_error_invite_not_found),
+                                            title = stringResource(R.string.multiplayer_error_invite_not_found),
                                             firstButtonText = stringResource(id = R.string.button_okay),
                                             firstButtonType = BUTTON_SECONDARY,
                                             description = EMPTY_STRING_VALUE,
@@ -173,7 +173,7 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                                 is ErrorView.InvalidLink -> {
                                     GenericAlert(
                                         config = AlertConfig.WithOneButton(
-                                            title = stringResource(R.string.multplayer_error_invite_bad_content),
+                                            title = stringResource(R.string.multiplayer_error_invite_bad_content),
                                             firstButtonText = stringResource(id = R.string.button_okay),
                                             firstButtonType = BUTTON_SECONDARY,
                                             description = EMPTY_STRING_VALUE,

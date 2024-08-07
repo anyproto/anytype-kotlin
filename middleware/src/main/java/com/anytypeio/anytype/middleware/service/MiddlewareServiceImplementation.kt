@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.exceptions.AccountIsDeletedException
 import com.anytypeio.anytype.core_models.exceptions.LoginException
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.core_models.exceptions.SpaceLimitReachedException
+import com.anytypeio.anytype.core_models.multiplayer.MultiplayerError
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteError
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.data.auth.exception.AnytypeNeedsUpgradeException
@@ -1790,7 +1791,21 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Space.InviteGenerate.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Space.InviteGenerate.Response.Error.Code.NULL) {
-            throw Exception(error.description)
+            when(error.code) {
+                Rpc.Space.InviteGenerate.Response.Error.Code.NOT_SHAREABLE -> {
+                    throw MultiplayerError.GenerateInviteLink.NotShareable()
+                }
+                Rpc.Space.InviteGenerate.Response.Error.Code.SPACE_IS_DELETED -> {
+                    throw MultiplayerError.GenerateInviteLink.SpaceIsDeleted()
+                }
+                Rpc.Space.InviteGenerate.Response.Error.Code.LIMIT_REACHED -> {
+                    throw MultiplayerError.GenerateInviteLink.LimitReached()
+                }
+                Rpc.Space.InviteGenerate.Response.Error.Code.REQUEST_FAILED -> {
+                    throw MultiplayerError.GenerateInviteLink.RequestFailed()
+                }
+                else -> throw Exception(error.description)
+            }
         } else {
             return response
         }

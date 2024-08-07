@@ -17,6 +17,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.core_models.multiplayer.MultiplayerError
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.multiplayer.ShareSpaceScreen
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -183,11 +184,35 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                 val msg = getString(R.string.multiplayer_toast_permission_not_allowed)
                 toast(msg)
             }
-            Command.ShowMembershipScreen -> {
-                findNavController().navigate(R.id.paymentsScreen)
+            is Command.ShowMembershipScreen -> {
+                runCatching {
+                    findNavController().navigate(R.id.paymentsScreen)
+                }.onFailure {
+                    Timber.e(it, "Error while navigation: $command")
+                }
             }
-            Command.ShowMembershipUpgradeScreen -> {
-                findNavController().navigate(R.id.membershipUpdateScreen)
+            is Command.ShowMembershipUpgradeScreen -> {
+                runCatching {
+                    findNavController().navigate(R.id.membershipUpdateScreen)
+                }.onFailure {
+                    Timber.e(it, "Error while navigation: $command")
+                }
+            }
+            is Command.ShowGenerateInviteLinkError -> {
+                when(val err = command.error) {
+                    is MultiplayerError.GenerateInviteLink.LimitReached -> {
+                        toast(resources.getString(R.string.multiplayer_error_limit_reached))
+                    }
+                    is MultiplayerError.GenerateInviteLink.NotShareable -> {
+                        toast(resources.getString(R.string.multiplayer_error_not_shareable))
+                    }
+                    is MultiplayerError.GenerateInviteLink.RequestFailed -> {
+                        toast(resources.getString(R.string.multiplayer_error_request_failed))
+                    }
+                    is MultiplayerError.GenerateInviteLink.SpaceIsDeleted -> {
+                        toast(resources.getString(R.string.multiplayer_error_invite_space_deleted))
+                    }
+                }
             }
         }
     }

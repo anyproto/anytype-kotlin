@@ -60,6 +60,15 @@ sealed class SpaceInviteError : Exception() {
     class InvalidNotFound : SpaceInviteError()
 }
 
+sealed class MultiplayerError : Exception() {
+    sealed class GenerateInviteLink: MultiplayerError() {
+        class NotShareable : GenerateInviteLink()
+        class SpaceIsDeleted : GenerateInviteLink()
+        class LimitReached : GenerateInviteLink()
+        class RequestFailed : GenerateInviteLink()
+    }
+}
+
 sealed class SpaceSyncUpdate {
     data object Initial : SpaceSyncUpdate()
     data class Update(

@@ -23,6 +23,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.ext.isPossibleToUpgradeNumberOfSpaceMembers
 import com.anytypeio.anytype.core_models.membership.TierId
+import com.anytypeio.anytype.core_models.multiplayer.MultiplayerError
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
@@ -215,6 +216,9 @@ class ShareSpaceViewModel(
                     },
                     onFailure = {
                         Timber.e(it, "Error while generating invite link")
+                        if (it is MultiplayerError.GenerateInviteLink) {
+                            commands.emit(Command.ShowGenerateInviteLinkError(it))
+                        }
                     }
                 )
         }
@@ -576,6 +580,7 @@ class ShareSpaceViewModel(
         data class ShareQrCode(val link: String) : Command()
         data class ViewJoinRequest(val space: SpaceId, val member: Id) : Command()
         data class ShowRemoveMemberWarning(val identity: Id, val name: String): Command()
+        data class ShowGenerateInviteLinkError(val error: MultiplayerError.GenerateInviteLink) : Command()
         data object ShowHowToShareSpace: Command()
         data object ShowStopSharingWarning: Command()
         data object ShowDeleteLinkWarning: Command()

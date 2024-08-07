@@ -1234,8 +1234,13 @@
     <string name="multiplayer_cancel_join_request">Beitrittsanfrage zurückziehen</string>
     <string name="multiplayer_cancel_join_request_msg">Du wirst eine neue Beitrittsanfrage senden müssen</string>
     <string name="multiplayer_do_not_cancel_join_request">Nicht verwerfen</string>
+    <string name="multiplayer_error_invite_not_found">Die Einladung existiert nicht. Bitte stelle sicher, dass deine Geräte synchronisiert sind.</string>
+    <string name="multiplayer_error_invite_bad_content">Der Einladungslink konnte nicht geparst werden. Er kann Fehler im Format oder ungültige Daten enthalten.</string>
+    <string name="multiplayer_error_space_is_deleted">It looks like the space has been deleted. Please ensure that your devices are synchronized.</string>
+    <string name="multiplayer_error_limit_reached">Limit reached for this space. Please upgrade your membership or contact support for assistance.</string>
+    <string name="multiplayer_error_not_shareable">It looks like the space is no longer shared. Please ensure that your devices are synchronized.</string>
+    <string name="multiplayer_error_request_failed">Hoppla! Die Anfrage ist fehlgeschlagen. Bitte überprüfe deine Internetverbindung und versuche es erneut.</string>
     <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">Der Link scheint nicht zu funktionieren</string>
-    <string name="multiplayer_error_invite_space_deleted">Dieser Einladungslink ist nicht mehr gültig, da der Raum gelöscht wurde.</string>
     <string name="multiplayer_invite_link_space_not_found">Dieser Einladungslink ist nicht mehr gültig, da der Raum gelöscht wurde.</string>
     <string name="multiplayer_invite_link_request_already_sent">Anfrage gesendet</string>
     <!--endregion-->

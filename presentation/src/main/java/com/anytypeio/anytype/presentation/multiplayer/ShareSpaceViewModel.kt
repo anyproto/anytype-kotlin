@@ -218,6 +218,8 @@ class ShareSpaceViewModel(
                         Timber.e(it, "Error while generating invite link")
                         if (it is MultiplayerError.Generic) {
                             commands.emit(Command.ShowMultiplayerError(it))
+                        } else {
+                            sendToast(it.msg())
                         }
                     }
                 )

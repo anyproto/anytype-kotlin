@@ -191,7 +191,7 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                                 is ErrorView.SpaceDeleted -> {
                                     GenericAlert(
                                         config = AlertConfig.WithOneButton(
-                                            title = stringResource(R.string.multiplayer_error_invite_space_deleted),
+                                            title = stringResource(R.string.multiplayer_error_space_is_deleted),
                                             firstButtonText = stringResource(id = R.string.button_okay),
                                             firstButtonType = BUTTON_SECONDARY,
                                             description = EMPTY_STRING_VALUE,

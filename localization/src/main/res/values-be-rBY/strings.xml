@@ -55,7 +55,7 @@
     <string name="space_usage">%1$s з %2$s выкарыстоўваецца</string>
     <string name="remote_storage">Аддаленае сховішча</string>
     <string name="contact_us">Звяжыцеся з намі</string>
-    <string name="get_more_space">Get more space</string>
+    <string name="get_more_space">Атрымаць больш месца</string>
     <string name="account_name">Назва</string>
     <string name="space_settings">Налады прасторы</string>
     <string name="data_management">Кіраванне данымі</string>
@@ -123,9 +123,9 @@
     <string name="kanban_view">Выгляд Канбан</string>
     <string name="properties">Уласцівасці</string>
     <string name="sort">Сартаваць</string>
-    <string name="sort_empty_state">No sorts here. You can add some</string>
-    <string name="filter_empty_state">No filters here. You can add some</string>
-    <string name="relation_status_value_empty_state">No related options here. You can add some</string>
+    <string name="sort_empty_state">Тут няма сартавання. Вы можаце дадаць некалькі</string>
+    <string name="filter_empty_state">Тут няма фільтраў. Вы можаце дадаць некалькі</string>
+    <string name="relation_status_value_empty_state">Тут няма фільтраў. Вы можаце дадаць некалькі</string>
     <string name="filter_by">Фільтраваць па</string>
     <string name="filter">Фільтр</string>
     <string name="modal_view">Выгляд</string>
@@ -325,7 +325,7 @@
     <string name="clear">Ачысціць</string>
     <string name="create_option">Стварыць параметр \"%1$s\"</string>
     <string name="featured_relations">Абраныя ўласцівасці</string>
-    <string name="other_relations">Other relations</string>
+    <string name="other_relations">Іншыя ўласцівасці</string>
     <string name="from_type">З тыпу %1$s</string>
     <string name="hint_add_description">Дадаць апісанне</string>
     <string name="dv_filter_checkbox_checked">пазначана</string>
@@ -353,7 +353,7 @@
     <string name="no_value">Няма значэння</string>
     <string name="source">Крыніца</string>
     <string name="query">Запыт</string>
-    <string name="select_query">Select query</string>
+    <string name="select_query">Выберыце запыт</string>
     <string name="objects">Аб\'екты</string>
     <string name="web_pages">Вэб-старонкі</string>
     <string name="select_files">Выбраць файлы</string>
@@ -401,20 +401,20 @@
     <string name="paste_from_clipboard">Уставіць з буфера абмену</string>
     <string name="create_object_with_name">Стварыць аб\'ект \"%1$s\"</string>
     <string name="layout_basic_name">Асноўны</string>
-    <string name="layout_basic_description">Standard layout for canvas blocks</string>
+    <string name="layout_basic_description">Прадвызначаны макет для блокаў палатна</string>
     <string name="layout_note_name">Нататка</string>
-    <string name="layout_note_description">Designed to capture thoughts quickly</string>
+    <string name="layout_note_description">Прызначаны для хуткага запісу думак</string>
     <string name="layout_profile_name">Профіль</string>
     <string name="layout_profile_description">Кампаніі, кантакты, сябры і сям\'я</string>
     <string name="layout_todo_name">Задача</string>
-    <string name="layout_todo_description">Action-focused layout with a checkbox</string>
+    <string name="layout_todo_description">Макет, арыентаваны на дзеянні, з птушкай</string>
     <string name="move_to_bin">У сметніцу</string>
     <string name="undoredo">Скасаваць/Паўтарыць</string>
     <string name="object_removal_process">Працэс выдалення аб\'екта</string>
     <string name="please_wait_your_object_deletion">Пачакайце крыху. Вашы аб\'екты хутка будуць выдалены.</string>
     <string name="large">Вялікі</string>
     <string name="description_none">@string/none</string>
-    <string name="object_description">Object description</string>
+    <string name="object_description">Апісанне аб\'екта</string>
     <string name="description_content">Прадпрагляд змесціва</string>
     <string name="none">Няма</string>
     <string name="small">Маленькі</string>
@@ -502,13 +502,13 @@
     <string name="collection_no_items_button">Стварыць аб\'ект</string>
     <string name="set_no_query_title">Запыт не выбраны</string>
     <string name="set_no_query_description">Дадайце пошукавы запыт, каб згрупаваць аб\'екты з аднолькавымі тыпамі і ўласцівасцямі ў рэжыме рэальнага часу</string>
-    <string name="set_no_query_button">Select query</string>
+    <string name="set_no_query_button">Выберыце запыт</string>
     <string name="set_no_items_title">Няма аб\'ектаў</string>
     <string name="set_no_items_description">Каб працягнуць, стварыце першы аб\'ект</string>
     <string name="set_no_items_button">Стварыць аб\'ект</string>
     <string name="set_collection_view_not_present">Выгляд не прысутнічае ў наборы або калекцыі, калі ласка, перастварыце аб\'ект</string>
     <string name="menu_turn_to_collection">Пераўтварыць набор у калекцыю</string>
-    <string name="menu_change_query">Change query</string>
+    <string name="menu_change_query">Змяніць запыт</string>
     <string name="collections">Калекцыі</string>
     <string name="collection_widget_description">Калекцыі аб\'ектаў</string>
     <string name="no_type_named">Няма тыпаў з назвай \"%1$s\"</string>
@@ -710,7 +710,7 @@
     <string name="cover">Вокладка</string>
     <string name="cover_description">Фонавы відарыс</string>
     <string name="layout_description">Размяшчэнне аб\'ектаў на палатне</string>
-    <string name="relations_description">List of related objects</string>
+    <string name="relations_description">Спіс звязаных аб\'ектаў</string>
     <string name="history_description">Усе версіі аб\'екта</string>
     <string name="history">Гісторыя</string>
     <string name="object_debug">Object Debug</string>
@@ -894,7 +894,7 @@
     <string name="slash_widget_media_code_subtitle">Захапіць кавалак кода</string>
     <string name="slash_widget_other_line">Лінейны раздзяляльнік</string>
     <string name="slash_widget_other_dots">Раздзяляльнік з кропак</string>
-    <string name="slash_widget_other_toc">Table of contents</string>
+    <string name="slash_widget_other_toc">Змест</string>
     <string name="slash_widget_other_simple_table">Табліца 3x3</string>
     <string name="slash_widgth_other_simple_table_rows_columns_count">Табліца %1$dx%2$d</string>
     <string name="slash_widget_other_simple_table_subtitle">Стварыць простую табліцу</string>
@@ -1104,7 +1104,7 @@
     <string name="any_object_creation_menu_set_as_default">Зрабіць прадвызначанай</string>
     <string name="any_object_creation_menu_move_left">Перамясціць улева</string>
     <string name="any_object_creation_menu_move_right">Перамясціць управа</string>
-    <string name="clipboard_panel_create_object_from_clipboard">Create object from clipboard</string>
+    <string name="clipboard_panel_create_object_from_clipboard">Стварыць аб\'ект з буфера абмену</string>
     <string name="block_media_error">Нешта пайшло не так, калі ласка паспрабуйце зноў пазней</string>
     <string name="relation_value_create_new">Стварыць \"%1$s\"</string>
     <string name="option_widget_create">Сварыць опцыю</string>
@@ -1121,7 +1121,7 @@
     <string name="object_values_delete_description">Аб\'ект будзе перамешчаны ў сметніцу.</string>
     <string name="hint_enter_name">Увядзіце назву...</string>
     <string name="create_object">Стварыць аб\'ект</string>
-    <string name="msg_query_cannot_be_changed">This query can be changed on desktop only</string>
+    <string name="msg_query_cannot_be_changed">Гэты запыт можна змяніць толькі на камп\'ютары</string>
     <!--region ONBOARDING ERRORS -->
     <string name="error_invalid_recovery_phrase">Няправільны ключ</string>
     <string name="network">Сетка</string>
@@ -1136,14 +1136,14 @@
     <string name="network_settings_troubleshooting_section">Выпраўленне непаладак</string>
     <string name="network_settings_provide_config_hint">Націсніце, каб даць канфігурацыю вашай сеткі</string>
     <string name="network_settings_self_host_config">Бягучая канфігурацыя: %1$s</string>
-    <string name="widget_types_show">Show types</string>
-    <string name="widget_types_hide">Hide types</string>
+    <string name="widget_types_show">Паказаць тыпы</string>
+    <string name="widget_types_hide">Схаваць тыпы</string>
     <!--endregion-->
     <!--region MULTIPLAYER -->
     <string name="multiplayer_share_invite_link">Абагуліць запрашальную спасылку</string>
-    <string name="multiplayer_share_invite_link_description">Share this invite link so that others can join your Space. Once they click your link and request access, you can set their access rights.</string>
+    <string name="multiplayer_share_invite_link_description">Абагуліце гэту запрашальную спасылку, каб іншыя маглі далучыцца да вашай прасторы. Пасля таго як яны пяройдуць па вашай спасылцы і запытаюць доступ, вы зможаце ўсталяваць іх правы доступу.</string>
     <string name="multiplayer_invite_link">Запрашальная спасылка</string>
-    <string name="multiplayer_join_a_space">Join a space</string>
+    <string name="multiplayer_join_a_space">Далучыцца да прасторы</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Пакіньце прыватны каментарый для ўладальніка прасторы</string>
     <string name="multiplayer_request_to_join_explanation">Як толькі ўладальнік прасторы ўхваліць ваш запыт, вы далучыцеся да прасторы з пэўнымі правамі доступу.</string>
     <string name="multiplayer_space_request_to_join">Адправіць запыт на далучэнне</string>
@@ -1158,7 +1158,7 @@
     <string name="multiplayer_upgrade_spaces_button">✦ Палепшыце, каб дадаць больш прастор</string>
     <string name="multiplayer_members">Удзельнікі</string>
     <string name="multiplayer_leave_request">Запыт на выхад</string>
-    <string name="multiplayer_join_request">Join request</string>
+    <string name="multiplayer_join_request">Запыт на далучэнне</string>
     <string name="multiplayer_approve_request">Зацвердзіць</string>
     <string name="multiplayer_view_request">Паглядзець запыт</string>
     <string name="multiplayer_owner">Уладальнік</string>
@@ -1183,14 +1183,14 @@
     <string name="multiplayer_manage">Кіраванне</string>
     <string name="multiplayer_leave_space">Пакінуць прастору</string>
     <string name="multiplayer_leave_space_warning_subtitle">Гэта прастора будзе выдалена з вашых прылад, і ў вас больш не будзе доступу да яго</string>
-    <string name="multiplayer_generate_invite_link_description">Create invite link to share space and add new members</string>
+    <string name="multiplayer_generate_invite_link_description">Стварыце запрашальную спасылку для сумеснага выкарыстання прасторы і дадання новых удзельнікаў</string>
     <string name="multiplayer_generate_invite_link">Стварыць запрашальную спасылку</string>
     <string name="multiplayer_show_qr_code">Паказаць QR-код</string>
     <string name="multiplayer_how_to_share_space">Як падзяліцца Прасторай?</string>
-    <string name="multiplayer_how_to_share_space_step_1">Please provide the link to the person you\'d like to collaborate with.</string>
+    <string name="multiplayer_how_to_share_space_step_1">Калі ласка, дайце спасылку чалавеку, з якім вы хацелі б супрацоўнічаць.</string>
     <string name="multiplayer_how_to_share_space_qr_code">Пакажыце гэты QR-код чалавеку, з якім вы хочаце супрацоўнічаць.</string>
-    <string name="multiplayer_how_to_share_space_step_2">By clicking the link, a person requests to join the space.</string>
-    <string name="multiplayer_how_to_share_space_step_3">After approving the request, you can choose the access rights for that person.</string>
+    <string name="multiplayer_how_to_share_space_step_2">Перайшоўшы па спасылцы, чалавек запытвае далучэнне да прасторы.</string>
+    <string name="multiplayer_how_to_share_space_step_3">Пасля ўхвалення запыту вы можаце выбраць правы доступу для гэтага чалавека.</string>
     <string name="multiplayer_how_share_one">1.</string>
     <string name="multiplayer_how_share_two">2.</string>
     <string name="multiplayer_how_share_three">3.</string>
@@ -1291,7 +1291,7 @@
     <!-- Tier details -->
     <string name="payments_tier_details_name_title">Выберыце сваё ўнікальнае імя</string>
     <string name="payments_tier_details_name_subtitle">Гэта ваша ўнікальнае імя ў сетцы Anytype, якое пацвярджае ваша членства. Яно дзейнічае як ваш асабісты дамен і не можа быць зменены.</string>
-    <string name="payments_tier_details_name_hint">Myself</string>
+    <string name="payments_tier_details_name_hint">Сябе</string>
     <string name="payments_tier_details_name_domain">.any</string>
     <string name="payments_tier_details_name_min">Мінімум 7 сімвалаў</string>
     <string name="payments_tier_details_name_error">Назва ўжо выкарыстоўваецца!</string>
@@ -1327,13 +1327,13 @@
     <string name="payments_email_subtitle">Ён ніякім чынам не звязаны з вашым уліковым запісам.</string>
     <string name="payments_email_checkbox_text">Я хачу атрымліваць абнаўлення аб прадуктах і карыстацца бясплатнымі перавагамі!</string>
     <string name="payments_email_hint">E-Mail</string>
-    <string name="payments_tier_current_title">Your current status:</string>
+    <string name="payments_tier_current_title">Ваш бягучы статус:</string>
     <string name="payments_tier_current_valid">Сапраўдны да</string>
     <string name="payments_tier_current_paid_by">Аплачана</string>
     <string name="payments_tier_current_paid_by_card">Stripe</string>
     <string name="payments_tier_current_paid_by_crypto">Крыпта</string>
-    <string name="payments_tier_current_paid_by_apple">Apple subscription</string>
-    <string name="payments_tier_current_paid_by_google">Google subscription</string>
+    <string name="payments_tier_current_paid_by_apple">Apple падпіска</string>
+    <string name="payments_tier_current_paid_by_google">Google падпіска</string>
     <string name="payments_tier_current_button">Кіраваць плацяжом</string>
     <string name="membership_manage_tier_desktop">Вы можаце кіраваць узроўнем на камп\'ютары</string>
     <string name="membership_manage_tier_ios">Вы можаце кіраваць узроўнем на платформе iOS</string>
@@ -1376,17 +1376,17 @@
 Канкрэтна,
 Калі ласка, укажыце тут канкрэтныя дэталі вашых патрэбаў.</string>
     <!-- Membership name errors -->
-    <string name="membership_name_bad_input">Something wrong with input, try again</string>
-    <string name="membership_name_cache_error">Error on our side, try again later</string>
-    <string name="membership_name_cant_connect">Can not connect, check your internet connection</string>
-    <string name="membership_name_invalid_chars">Name has invalid characters</string>
-    <string name="membership_name_not_logged">You are not logged in! 😵‍💫</string>
-    <string name="membership_name_payment_node_error">Error on our side, try again later</string>
-    <string name="membership_name_tier_features_no_name">Name is not available for this tier</string>
-    <string name="membership_name_tier_not_found">Tier not found, try again later</string>
+    <string name="membership_name_bad_input">Нешта не так з уводам, паўтарыце спробу</string>
+    <string name="membership_name_cache_error">Памылка з нашага боку, паспрабуйце пазней</string>
+    <string name="membership_name_cant_connect">Немагчыма падключыцца, праверце падключэнне да Інтэрнэту</string>
+    <string name="membership_name_invalid_chars">Імя змяшчае недапушчальныя сімвалы</string>
+    <string name="membership_name_not_logged">Вы не ўвайшлі ў сістэму! 😵‍💫</string>
+    <string name="membership_name_payment_node_error">Памылка з нашага боку, паспрабуйце пазней</string>
+    <string name="membership_name_tier_features_no_name">Імя для гэтага ўзроўню недаступнае</string>
+    <string name="membership_name_tier_not_found">Узровень не знойдзены, паўтарыце спробу пазней</string>
     <string name="membership_name_too_long">Імя занадта доўгае</string>
     <string name="membership_name_too_short">Імя занадта кароткае</string>
-    <string name="membership_any_name_not_reserved">This name cannot be reserved</string>
+    <string name="membership_any_name_not_reserved">Гэта імя нельга зарэзерваваць</string>
     <string name="membership_any_name_null_error">Пустая памылка</string>
     <string name="membership_any_name_unknown">Невядомая памылка</string>
     <string name="membership_email_wrong_format">Электронны ліст мае няправільны фармат</string>
@@ -1411,7 +1411,7 @@
     <!-- Gallery Experience -->
     <string name="gallery_experience_made">Зроблена</string>
     <string name="gallery_experience_install">Усталяваць</string>
-    <string name="gallery_experience_install_new">Install to new space</string>
+    <string name="gallery_experience_install_new">Усталяваць у новую прастору</string>
     <string name="gallery_experience_alert_title_success">Вопыт быў усталяваны</string>
     <string name="gallery_experience_alert_subtitle_success">\"%1$s\" быў усталяваны ў новую прастору. Цяпер вы можаце адкрыць і пачаць выкарыстоўваць яго.</string>
     <string name="gallery_experience_alert_title_error">Упс!</string>
@@ -1484,7 +1484,7 @@
     <string name="sync_status_get_error">Памылка атрымання стану сінхранізацыі</string>
     <string name="sync_status_local_only_title">Толькі Лакальна</string>
     <string name="sync_status_data_backup">Рэзервовае капіраванне даных адключана</string>
-    <string name="sync_status_self_host">Self Host</string>
+    <string name="sync_status_self_host">Уласны хостынг</string>
     <string name="sync_status_self_host_synced">Сінхранізавана</string>
     <plurals name="sync_status_self_host_syncing">
         <item quantity="one">%1$d элемент сінхранізуецца</item>
@@ -1492,17 +1492,17 @@
         <item quantity="many">%1$d элементаў сінхранізуюцца...</item>
         <item quantity="other">%1$d элементаў сінхранізуюцца...</item>
     </plurals>
-    <string name="sync_status_p2p">P2P Connection</string>
+    <string name="sync_status_p2p">P2P-злучэнне</string>
     <plurals name="sync_status_p2p_devices">
         <item quantity="one">%1$d прылада падключана</item>
         <item quantity="few">%1$d прылады падключаны</item>
         <item quantity="many">%1$d прылад падключана</item>
         <item quantity="other">%1$d прылад падключана</item>
     </plurals>
-    <string name="sync_status_p2p_connecting">P2P Connecting...</string>
+    <string name="sync_status_p2p_connecting">P2P-злучэнне...</string>
     <string name="sync_status_p2p_disabled">Адключана</string>
     <string name="sync_status_p2p_restricted">Абмежаваны. Праверце налады прылады.</string>
-    <string name="sync_status_anytype_network">Anytype Network</string>
+    <string name="sync_status_anytype_network">Сетка Anytype</string>
     <string name="sync_status_anytype_end_to_end">Зашыфравана скразным метадам</string>
     <plurals name="sync_status_network_items">
         <item quantity="one">%1$d элемент сінхранізуецца...</item>

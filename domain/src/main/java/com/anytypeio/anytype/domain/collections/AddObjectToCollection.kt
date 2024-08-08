@@ -6,8 +6,9 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import javax.inject.Inject
 
-class AddObjectToCollection(
+class AddObjectToCollection @Inject constructor(
     private val repo: BlockRepository,
     dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<AddObjectToCollection.Params, Payload>(dispatchers.io) {
@@ -23,7 +24,7 @@ class AddObjectToCollection(
 
     class Params(
         val ctx: Id,
-        val after: Id,
-        val targets: List<Id>
+        val targets: List<Id>,
+        val after: Id = ""
     )
 }

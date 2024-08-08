@@ -1228,8 +1228,13 @@
     <string name="multiplayer_cancel_join_request">取消加入请求</string>
     <string name="multiplayer_cancel_join_request_msg">您将需要再次发送加入请求</string>
     <string name="multiplayer_do_not_cancel_join_request">不要取消</string>
+    <string name="multiplayer_error_invite_not_found">邀请不存在。请确保您的设备已同步。</string>
+    <string name="multiplayer_error_invite_bad_content">无法解析邀请链接。它可能包含格式错误或无效数据。</string>
+    <string name="multiplayer_error_space_is_deleted">看起来空间已被删除。请确保您的设备已同步。</string>
+    <string name="multiplayer_error_limit_reached">此空间人数已到达上限。请升级您的会员资格或联系客服以获取帮助。</string>
+    <string name="multiplayer_error_not_shareable">看起来此空间已不再共享。请确保您的设备已经同步。</string>
+    <string name="multiplayer_error_request_failed">哎呀！请求失败。请检查您的互联网连接，然后重试。</string>
     <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">这个链接似乎无法工作</string>
-    <string name="multiplayer_error_invite_space_deleted">这个邀请链接不再有效，因为空间已被删除。</string>
     <string name="multiplayer_invite_link_space_not_found">这个邀请链接不再有效，因为找不到空间。</string>
     <string name="multiplayer_invite_link_request_already_sent">已发送申请</string>
     <!--endregion-->

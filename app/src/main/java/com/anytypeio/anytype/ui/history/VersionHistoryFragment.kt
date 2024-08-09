@@ -25,13 +25,19 @@ import com.anytypeio.anytype.core_ui.features.history.VersionHistoryPreviewScree
 import com.anytypeio.anytype.core_ui.features.history.VersionHistoryScreen
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_utils.ext.argString
+import com.anytypeio.anytype.core_utils.ext.safeNavigate
 import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.history.VersionGroupNavigation
 import com.anytypeio.anytype.presentation.history.VersionHistoryVMFactory
 import com.anytypeio.anytype.presentation.history.VersionHistoryViewModel
+import com.anytypeio.anytype.presentation.history.VersionHistoryViewModel.Command
+import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
+import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
+import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
+import com.anytypeio.anytype.ui.relations.value.ObjectValueFragment
+import com.anytypeio.anytype.ui.relations.value.TagOrStatusValueFragment
 import com.google.accompanist.navigation.material.BottomSheetNavigator
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
@@ -61,6 +67,9 @@ class VersionHistoryFragment : BaseBottomSheetComposeFragment() {
         onDragListener = { _, _ -> false },
         lifecycle = lifecycle,
         dragAndDropSelector = DragAndDropAdapterDelegate(),
+        onClickListener = {
+            vm.proceedWithClick(it)
+        }
     )
 
     @OptIn(ExperimentalMaterialNavigationApi::class)
@@ -95,15 +104,15 @@ class VersionHistoryFragment : BaseBottomSheetComposeFragment() {
     private fun NavigationGraph(navController: NavHostController) {
         NavHost(
             navController = navController,
-            startDestination = VersionGroupNavigation.Main.route
+            startDestination = Command.Main.route
         ) {
-            composable(VersionGroupNavigation.Main.route) {
+            composable(Command.Main.route) {
                 VersionHistoryScreen(
                     state = vm.viewState.collectAsStateWithLifecycle().value,
                     onItemClick = vm::onGroupItemClicked
                 )
             }
-            bottomSheet(VersionGroupNavigation.VersionPreview.route) {
+            bottomSheet(Command.VersionPreview.route) {
                 VersionHistoryPreviewScreen(
                     state = vm.previewViewState.collectAsStateWithLifecycle().value,
                     editorAdapter = editorAdapter,
@@ -118,18 +127,84 @@ class VersionHistoryFragment : BaseBottomSheetComposeFragment() {
         super.onViewCreated(view, savedInstanceState)
         setupBottomSheetBehavior(DEFAULT_PADDING_TOP)
         subscribe(vm.navigation){ navigation ->
-            when(navigation){
-                is VersionGroupNavigation.VersionPreview -> {
-                    navComposeController.navigate(VersionGroupNavigation.VersionPreview.route)
-                }
-                VersionGroupNavigation.Main -> {
-                    navComposeController.popBackStack()
-                }
-                VersionGroupNavigation.ExitToObject -> {
-                    findNavController().popBackStack(R.id.objectMenuScreen, true)
-                }
+            when (navigation) {
+                is Command.VersionPreview -> navigateToVersionPreview()
+                Command.Main -> navComposeController.popBackStack()
+                Command.ExitToObject -> exitToObjectMenu()
+                is Command.RelationMultiSelect -> navigateToRelationMultiSelect(navigation)
+                is Command.RelationDate -> navigateToRelationDate(navigation)
+                is Command.RelationObject -> navigateToRelationObject(navigation)
+                is Command.RelationText -> navigateToRelationText(navigation)
             }
         }
+    }
+
+    private fun navigateToVersionPreview() {
+        navComposeController.navigate(Command.VersionPreview.route)
+    }
+
+    private fun exitToObjectMenu() {
+        findNavController().popBackStack(R.id.objectMenuScreen, true)
+    }
+
+    private fun navigateToRelationMultiSelect(navigation: Command.RelationMultiSelect) {
+        val relationContext = if (navigation.isSet) RelationContext.OBJECT_SET else RelationContext.OBJECT
+        val bundle = TagOrStatusValueFragment.args(
+            ctx = ctx,
+            space = spaceId,
+            obj = ctx,
+            relation = navigation.relationKey.key,
+            isLocked = true,
+            context = relationContext
+        )
+        findNavController().safeNavigate(
+            R.id.versionHistoryScreen,
+            R.id.nav_relations,
+            bundle
+        )
+    }
+
+    private fun navigateToRelationDate(navigation: Command.RelationDate) {
+        val relationContext = if (navigation.isSet) RelationDateValueFragment.FLOW_SET_OR_COLLECTION else RelationDateValueFragment.FLOW_DEFAULT
+        val fr = RelationDateValueFragment.new(
+            ctx = ctx,
+            space = spaceId,
+            relationKey = navigation.relationKey.key,
+            objectId = ctx,
+            flow = relationContext,
+            isLocked = true
+        )
+        fr.showChildFragment()
+    }
+
+    private fun navigateToRelationObject(navigation: Command.RelationObject) {
+        val relationContext = if (navigation.isSet) RelationContext.OBJECT_SET else RelationContext.OBJECT
+        findNavController().safeNavigate(
+            R.id.versionHistoryScreen,
+            R.id.objectValueScreen,
+            ObjectValueFragment.args(
+                ctx = ctx,
+                space = spaceId,
+                obj = ctx,
+                relation = navigation.relationKey.key,
+                isLocked = true,
+                relationContext = relationContext
+            )
+        )
+    }
+
+    private fun navigateToRelationText(navigation: Command.RelationText) {
+        val relationContext =
+            if (navigation.isSet) RelationTextValueFragment.FLOW_SET_OR_COLLECTION else RelationTextValueFragment.FLOW_DEFAULT
+        val fr = RelationTextValueFragment.new(
+            ctx = ctx,
+            space = spaceId,
+            relationKey = navigation.relationKey.key,
+            objectId = ctx,
+            flow = relationContext,
+            isLocked = true
+        )
+        fr.showChildFragment()
     }
 
     override fun onStart() {

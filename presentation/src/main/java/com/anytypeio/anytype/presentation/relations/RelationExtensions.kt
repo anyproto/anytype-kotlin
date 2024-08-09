@@ -282,3 +282,17 @@ suspend fun getNotIncludedRecommendedRelations(
     return storeOfRelations.getById(recommendedRelations)
         .filterNot { recommended -> recommended.key in relationLinkKeys }
 }
+
+fun ObjectRelationView.getRelationFormat(): RelationFormat = when (this) {
+    is ObjectRelationView.Object -> RelationFormat.OBJECT
+    is ObjectRelationView.File -> RelationFormat.FILE
+    is ObjectRelationView.Default -> format
+    is ObjectRelationView.Status -> RelationFormat.STATUS
+    is ObjectRelationView.Tags -> RelationFormat.TAG
+    is ObjectRelationView.Checkbox -> RelationFormat.CHECKBOX
+    is ObjectRelationView.Links.Backlinks -> RelationFormat.OBJECT
+    is ObjectRelationView.Links.From -> RelationFormat.OBJECT
+    is ObjectRelationView.ObjectType.Base -> RelationFormat.OBJECT
+    is ObjectRelationView.ObjectType.Deleted -> RelationFormat.OBJECT
+    is ObjectRelationView.Source -> RelationFormat.OBJECT
+}

@@ -46,7 +46,7 @@ object ObjectSearchConstants {
         DVFilter(
             relation = Relations.LAYOUT,
             condition = DVFilterCondition.IN,
-            value = SupportedLayouts.createObjectLayouts.map { it.code.toDouble() }
+            value = SupportedLayouts.globalSearchLayouts.map { it.code.toDouble() }
         ),
         DVFilter(
             relation = Relations.SPACE_ID,

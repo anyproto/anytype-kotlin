@@ -1228,8 +1228,13 @@
     <string name="multiplayer_cancel_join_request">Batalkan permintaan bergabung</string>
     <string name="multiplayer_cancel_join_request_msg">Kamu akan perlu mengirimkan permintaan bergabung lagi</string>
     <string name="multiplayer_do_not_cancel_join_request">Jangan batalkan</string>
+    <string name="multiplayer_error_invite_not_found">Undangan ini tidak ada. Pastikan perangkatmu tersinkronisasi.</string>
+    <string name="multiplayer_error_invite_bad_content">Tautan undangan tidak dapat digunakan. Mungkin terdapat kesalahan format atau data yang tak valid.</string>
+    <string name="multiplayer_error_space_is_deleted">Kelihatannya ruang ini sudah dihapus. Tolong pastikan bahwa perangkatmu tersinkron dengan baik.</string>
+    <string name="multiplayer_error_limit_reached">Limit reached for this space. Please upgrade your membership or contact support for assistance.</string>
+    <string name="multiplayer_error_not_shareable">Kelihatannya ruang ini tidak dibagikan lagi. Tolong pastikan bahwa perangkatmu tersinkron dengan baik.</string>
+    <string name="multiplayer_error_request_failed">Ups! Permintaan gagal. Tolong periksa koneksi internetmu lalu coba lagi.</string>
     <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">Sepertinya tautan ini tidak bisa digunakan</string>
-    <string name="multiplayer_invite_link_space_deleted">Tautan undangan ini tidak berlaku karena ruangnya telah dihapus.</string>
     <string name="multiplayer_invite_link_space_not_found">Tautan undangan ini tidak berlaku karena ruangnya tidak ditemukan.</string>
     <string name="multiplayer_invite_link_request_already_sent">Permintaan terkirim</string>
     <!--endregion-->

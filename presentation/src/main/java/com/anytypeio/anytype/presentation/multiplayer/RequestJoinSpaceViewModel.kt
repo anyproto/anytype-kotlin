@@ -7,6 +7,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary.screenInviteRequest
 import com.anytypeio.anytype.analytics.base.EventsDictionary.screenRequestSent
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.core_models.multiplayer.MultiplayerError
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteError
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -90,14 +91,14 @@ class RequestJoinSpaceViewModel(
                                         ErrorView.InvalidLink
                                     )
                                 }
+                                is SpaceInviteError.InvalidNotFound -> {
+                                    state.value = TypedViewState.Error(
+                                        ErrorView.InviteNotFound
+                                    )
+                                }
                                 is SpaceInviteError.SpaceDeleted -> {
                                     state.value = TypedViewState.Error(
                                         ErrorView.SpaceDeleted
-                                    )
-                                }
-                                is SpaceInviteError.SpaceNotFound -> {
-                                    state.value = TypedViewState.Error(
-                                        ErrorView.SpaceNotFound
                                     )
                                 }
                             }
@@ -132,7 +133,10 @@ class RequestJoinSpaceViewModel(
                             )
                         ).fold(
                             onFailure = { e ->
-                                Timber.e(e, "Error while sending space join request").also {
+                                Timber.e(e, "Error while sending space join request")
+                                if (e is MultiplayerError.Generic) {
+                                    commands.emit(Command.ShowGenericMultiplayerError(e))
+                                } else {
                                     sendToast(e.msg())
                                 }
                             },
@@ -213,13 +217,14 @@ class RequestJoinSpaceViewModel(
             data object SpaceNotFound : Toast()
             data object SpaceDeleted : Toast()
         }
+        data class ShowGenericMultiplayerError(val error: MultiplayerError.Generic) : Command()
         data object Dismiss: Command()
     }
 
     sealed class ErrorView {
         data object InvalidLink : ErrorView()
+        data object InviteNotFound : ErrorView()
         data object SpaceDeleted : ErrorView()
-        data object SpaceNotFound : ErrorView()
         data class AlreadySpaceMember(val space: SpaceId) : ErrorView()
         data object RequestAlreadySent: ErrorView()
      }

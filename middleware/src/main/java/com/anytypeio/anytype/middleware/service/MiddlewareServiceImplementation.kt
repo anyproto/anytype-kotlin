@@ -3,9 +3,8 @@ package com.anytypeio.anytype.middleware.service
 import anytype.Rpc
 import com.anytypeio.anytype.core_models.exceptions.AccountIsDeletedException
 import com.anytypeio.anytype.core_models.exceptions.LoginException
-import com.anytypeio.anytype.core_models.exceptions.MigrationNeededException
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
-import com.anytypeio.anytype.core_models.exceptions.SpaceLimitReachedException
+import com.anytypeio.anytype.core_models.multiplayer.MultiplayerError
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteError
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.data.auth.exception.AnytypeNeedsUpgradeException
@@ -1791,7 +1790,21 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Space.InviteGenerate.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Space.InviteGenerate.Response.Error.Code.NULL) {
-            throw Exception(error.description)
+            when(error.code) {
+                Rpc.Space.InviteGenerate.Response.Error.Code.NOT_SHAREABLE -> {
+                    throw MultiplayerError.Generic.NotShareable()
+                }
+                Rpc.Space.InviteGenerate.Response.Error.Code.SPACE_IS_DELETED -> {
+                    throw MultiplayerError.Generic.SpaceIsDeleted()
+                }
+                Rpc.Space.InviteGenerate.Response.Error.Code.LIMIT_REACHED -> {
+                    throw MultiplayerError.Generic.LimitReached()
+                }
+                Rpc.Space.InviteGenerate.Response.Error.Code.REQUEST_FAILED -> {
+                    throw MultiplayerError.Generic.RequestFailed()
+                }
+                else -> throw Exception(error.description)
+            }
         } else {
             return response
         }
@@ -1817,7 +1830,21 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Space.InviteRevoke.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Space.InviteRevoke.Response.Error.Code.NULL) {
-            throw Exception(error.description)
+            when(error.code) {
+                Rpc.Space.InviteRevoke.Response.Error.Code.NOT_SHAREABLE -> {
+                    throw MultiplayerError.Generic.NotShareable()
+                }
+                Rpc.Space.InviteRevoke.Response.Error.Code.SPACE_IS_DELETED -> {
+                    throw MultiplayerError.Generic.SpaceIsDeleted()
+                }
+                Rpc.Space.InviteRevoke.Response.Error.Code.LIMIT_REACHED -> {
+                    throw MultiplayerError.Generic.LimitReached()
+                }
+                Rpc.Space.InviteRevoke.Response.Error.Code.REQUEST_FAILED -> {
+                    throw MultiplayerError.Generic.RequestFailed()
+                }
+                else -> throw Exception(error.description)
+            }
         } else {
             return response
         }
@@ -1830,7 +1857,7 @@ class MiddlewareServiceImplementation @Inject constructor(
         if (error != null && error.code != Rpc.Space.InviteView.Response.Error.Code.NULL) {
             when(error.code) {
                 Rpc.Space.InviteView.Response.Error.Code.INVITE_NOT_FOUND -> {
-                    throw SpaceInviteError.InvalidInvite()
+                    throw SpaceInviteError.InvalidNotFound()
                 }
                 Rpc.Space.InviteView.Response.Error.Code.INVITE_BAD_CONTENT -> {
                     throw SpaceInviteError.InvalidInvite()
@@ -1852,7 +1879,21 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Space.Join.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Space.Join.Response.Error.Code.NULL) {
-            throw Exception(error.description)
+            when(error.code) {
+                Rpc.Space.Join.Response.Error.Code.NOT_SHAREABLE -> {
+                    throw MultiplayerError.Generic.NotShareable()
+                }
+                Rpc.Space.Join.Response.Error.Code.SPACE_IS_DELETED -> {
+                    throw MultiplayerError.Generic.SpaceIsDeleted()
+                }
+                Rpc.Space.Join.Response.Error.Code.LIMIT_REACHED -> {
+                    throw MultiplayerError.Generic.LimitReached()
+                }
+                Rpc.Space.Join.Response.Error.Code.REQUEST_FAILED -> {
+                    throw MultiplayerError.Generic.RequestFailed()
+                }
+                else -> throw Exception(error.description)
+            }
         } else {
             return response
         }
@@ -1863,7 +1904,21 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Space.JoinCancel.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Space.JoinCancel.Response.Error.Code.NULL) {
-            throw Exception(error.description)
+            when(error.code) {
+                Rpc.Space.JoinCancel.Response.Error.Code.NOT_SHAREABLE -> {
+                    throw MultiplayerError.Generic.NotShareable()
+                }
+                Rpc.Space.JoinCancel.Response.Error.Code.SPACE_IS_DELETED -> {
+                    throw MultiplayerError.Generic.SpaceIsDeleted()
+                }
+                Rpc.Space.JoinCancel.Response.Error.Code.LIMIT_REACHED -> {
+                    throw MultiplayerError.Generic.LimitReached()
+                }
+                Rpc.Space.JoinCancel.Response.Error.Code.REQUEST_FAILED -> {
+                    throw MultiplayerError.Generic.RequestFailed()
+                }
+                else -> throw Exception(error.description)
+            }
         } else {
             return response
         }
@@ -1874,7 +1929,21 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Space.LeaveApprove.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Space.LeaveApprove.Response.Error.Code.NULL) {
-            throw Exception(error.description)
+            when(error.code) {
+                Rpc.Space.LeaveApprove.Response.Error.Code.NOT_SHAREABLE -> {
+                    throw MultiplayerError.Generic.NotShareable()
+                }
+                Rpc.Space.LeaveApprove.Response.Error.Code.SPACE_IS_DELETED -> {
+                    throw MultiplayerError.Generic.SpaceIsDeleted()
+                }
+                Rpc.Space.LeaveApprove.Response.Error.Code.LIMIT_REACHED -> {
+                    throw MultiplayerError.Generic.LimitReached()
+                }
+                Rpc.Space.LeaveApprove.Response.Error.Code.REQUEST_FAILED -> {
+                    throw MultiplayerError.Generic.RequestFailed()
+                }
+                else -> throw Exception(error.description)
+            }
         } else {
             return response
         }
@@ -1886,12 +1955,16 @@ class MiddlewareServiceImplementation @Inject constructor(
         val error = response.error
         if (error != null && error.code != Rpc.Space.MakeShareable.Response.Error.Code.NULL) {
             when(error.code) {
+                Rpc.Space.MakeShareable.Response.Error.Code.SPACE_IS_DELETED -> {
+                    throw MultiplayerError.Generic.SpaceIsDeleted()
+                }
                 Rpc.Space.MakeShareable.Response.Error.Code.LIMIT_REACHED -> {
-                    throw SpaceLimitReachedException()
+                    throw MultiplayerError.Generic.LimitReached()
                 }
-                else -> {
-                    throw Exception(error.description)
+                Rpc.Space.MakeShareable.Response.Error.Code.REQUEST_FAILED -> {
+                    throw MultiplayerError.Generic.RequestFailed()
                 }
+                else -> throw Exception(error.description)
             }
         } else {
             return response
@@ -1905,7 +1978,21 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Space.ParticipantPermissionsChange.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Space.ParticipantPermissionsChange.Response.Error.Code.NULL) {
-            throw Exception(error.description)
+            when(error.code) {
+                Rpc.Space.ParticipantPermissionsChange.Response.Error.Code.NOT_SHAREABLE -> {
+                    throw MultiplayerError.Generic.NotShareable()
+                }
+                Rpc.Space.ParticipantPermissionsChange.Response.Error.Code.SPACE_IS_DELETED -> {
+                    throw MultiplayerError.Generic.SpaceIsDeleted()
+                }
+                Rpc.Space.ParticipantPermissionsChange.Response.Error.Code.LIMIT_REACHED -> {
+                    throw MultiplayerError.Generic.LimitReached()
+                }
+                Rpc.Space.ParticipantPermissionsChange.Response.Error.Code.REQUEST_FAILED -> {
+                    throw MultiplayerError.Generic.RequestFailed()
+                }
+                else -> throw Exception(error.description)
+            }
         } else {
             return response
         }
@@ -1919,6 +2006,21 @@ class MiddlewareServiceImplementation @Inject constructor(
         val error = response.error
         if (error != null && error.code != Rpc.Space.ParticipantRemove.Response.Error.Code.NULL) {
             throw Exception(error.description)
+            when(error.code) {
+                Rpc.Space.ParticipantRemove.Response.Error.Code.NOT_SHAREABLE -> {
+                    throw MultiplayerError.Generic.NotShareable()
+                }
+                Rpc.Space.ParticipantRemove.Response.Error.Code.SPACE_IS_DELETED -> {
+                    throw MultiplayerError.Generic.SpaceIsDeleted()
+                }
+                Rpc.Space.ParticipantRemove.Response.Error.Code.LIMIT_REACHED -> {
+                    throw MultiplayerError.Generic.LimitReached()
+                }
+                Rpc.Space.ParticipantRemove.Response.Error.Code.REQUEST_FAILED -> {
+                    throw MultiplayerError.Generic.RequestFailed()
+                }
+                else -> throw Exception(error.description)
+            }
         } else {
             return response
         }
@@ -1931,7 +2033,21 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Space.RequestApprove.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Space.RequestApprove.Response.Error.Code.NULL) {
-            throw Exception(error.description)
+            when(error.code) {
+                Rpc.Space.RequestApprove.Response.Error.Code.NOT_SHAREABLE -> {
+                    throw MultiplayerError.Generic.NotShareable()
+                }
+                Rpc.Space.RequestApprove.Response.Error.Code.SPACE_IS_DELETED -> {
+                    throw MultiplayerError.Generic.SpaceIsDeleted()
+                }
+                Rpc.Space.RequestApprove.Response.Error.Code.LIMIT_REACHED -> {
+                    throw MultiplayerError.Generic.LimitReached()
+                }
+                Rpc.Space.RequestApprove.Response.Error.Code.REQUEST_FAILED -> {
+                    throw MultiplayerError.Generic.RequestFailed()
+                }
+                else -> throw Exception(error.description)
+            }
         } else {
             return response
         }
@@ -1944,7 +2060,21 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Space.RequestDecline.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Space.RequestDecline.Response.Error.Code.NULL) {
-            throw Exception(error.description)
+            when(error.code) {
+                Rpc.Space.RequestDecline.Response.Error.Code.NOT_SHAREABLE -> {
+                    throw MultiplayerError.Generic.NotShareable()
+                }
+                Rpc.Space.RequestDecline.Response.Error.Code.SPACE_IS_DELETED -> {
+                    throw MultiplayerError.Generic.SpaceIsDeleted()
+                }
+                Rpc.Space.RequestDecline.Response.Error.Code.LIMIT_REACHED -> {
+                    throw MultiplayerError.Generic.LimitReached()
+                }
+                Rpc.Space.RequestDecline.Response.Error.Code.REQUEST_FAILED -> {
+                    throw MultiplayerError.Generic.RequestFailed()
+                }
+                else -> throw Exception(error.description)
+            }
         } else {
             return response
         }
@@ -1957,7 +2087,18 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Space.StopSharing.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Space.StopSharing.Response.Error.Code.NULL) {
-            throw Exception(error.description)
+            when(error.code) {
+                Rpc.Space.StopSharing.Response.Error.Code.SPACE_IS_DELETED -> {
+                    throw MultiplayerError.Generic.SpaceIsDeleted()
+                }
+                Rpc.Space.StopSharing.Response.Error.Code.LIMIT_REACHED -> {
+                    throw MultiplayerError.Generic.LimitReached()
+                }
+                Rpc.Space.StopSharing.Response.Error.Code.REQUEST_FAILED -> {
+                    throw MultiplayerError.Generic.RequestFailed()
+                }
+                else -> throw Exception(error.description)
+            }
         } else {
             return response
         }

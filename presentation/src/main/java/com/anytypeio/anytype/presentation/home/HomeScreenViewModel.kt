@@ -38,6 +38,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.bin.EmptyBin
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.Move
+import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
@@ -192,7 +193,8 @@ class HomeScreenViewModel(
     private val coverImageHashProvider: CoverImageHashProvider,
     private val payloadDelegator: PayloadDelegator,
     private val createBlock: CreateBlock,
-    private val dateProvider: DateProvider
+    private val dateProvider: DateProvider,
+    private val addObjectToCollection: AddObjectToCollection
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -1816,9 +1818,7 @@ class HomeScreenViewModel(
             if (target != null) {
                 val widgetSource = target.source
                 if (widgetSource is Widget.Source.Default) {
-                    val obj = getObject.async(
-                        params = target.source.id
-                    ).fold(
+                    getObject.async(params = target.source.id).fold(
                         onSuccess = { obj ->
                             val dv = obj.blocks.find { it.content is DV }?.content as? DV
                             val viewer = if (view.isNullOrEmpty())
@@ -1826,27 +1826,48 @@ class HomeScreenViewModel(
                             else
                                 dv?.viewers?.find { it.id == view }
 
-                            val dataViewSource = widgetSource.obj.setOf.firstOrNull()
-
-                            if (dataViewSource != null) {
-                                val dataViewSourceObj = ObjectWrapper.Basic(obj.details[dataViewSource].orEmpty())
+                            if (widgetSource.obj.layout == ObjectType.Layout.COLLECTION) {
                                 if (dv != null && viewer != null) {
-                                    when (val layout = dataViewSourceObj.layout) {
-                                        ObjectType.Layout.OBJECT_TYPE -> {
-                                            proceedWithCreatingDataViewObject(dataViewSourceObj, viewer, dv)
+                                    proceedWithAddingObjectToCollection(
+                                        viewer = viewer,
+                                        dv = dv,
+                                        collection = widgetSource.obj.id
+                                    )
+                                }
+                            } else if (widgetSource.obj.layout == ObjectType.Layout.SET) {
+                                val dataViewSource = widgetSource.obj.setOf.firstOrNull()
+
+                                if (dataViewSource != null) {
+                                    val dataViewSourceObj =
+                                        ObjectWrapper.Basic(obj.details[dataViewSource].orEmpty())
+                                    if (dv != null && viewer != null) {
+                                        when (val layout = dataViewSourceObj.layout) {
+                                            ObjectType.Layout.OBJECT_TYPE -> {
+                                                proceedWithCreatingDataViewObject(
+                                                    dataViewSourceObj,
+                                                    viewer,
+                                                    dv
+                                                )
+                                            }
+
+                                            ObjectType.Layout.RELATION -> {
+                                                proceedWithCreatingDataViewObject(
+                                                    viewer,
+                                                    dv,
+                                                    dataViewSourceObj
+                                                )
+                                            }
+
+                                            else -> {
+                                                Timber.w("Unexpected layout of data view source: $layout")
+                                            }
                                         }
-                                        ObjectType.Layout.RELATION -> {
-                                            proceedWithCreatingDataViewObject(viewer, dv, dataViewSourceObj)
-                                        }
-                                        else -> {
-                                            Timber.w("Unexpected layout of data view source: $layout")
-                                        }
+                                    } else {
+                                        Timber.w("Could not found data view or target view inside this data view")
                                     }
                                 } else {
-                                    Timber.w("Could not found data view or target view inside this data view")
+                                    Timber.w("Missing data view source")
                                 }
-                            } else {
-                                Timber.w("Missing data view source")
                             }
                         }
                     )
@@ -1897,7 +1918,7 @@ class HomeScreenViewModel(
         dv: DV
     ) {
         val dataViewSourceType = dataViewSourceObj.uniqueKey
-        val (defaultObjectType, defaultTemplate) = resolveTypeAndActiveViewTemplate(
+        val (_, defaultTemplate) = resolveTypeAndActiveViewTemplate(
             viewer,
             storeOfObjectTypes
         )
@@ -1921,6 +1942,58 @@ class HomeScreenViewModel(
             },
             onFailure = {
                 Timber.e(it, "Error while creating data view object for widget")
+            }
+        )
+    }
+
+    private suspend fun proceedWithAddingObjectToCollection(
+        viewer: Block.Content.DataView.Viewer,
+        dv: DV,
+        collection: Id
+    ) {
+        val prefilled = viewer.prefillNewObjectDetails(
+            storeOfRelations = storeOfRelations,
+            dateProvider = dateProvider,
+            dataViewRelationLinks = dv.relationLinks
+        )
+
+        val (defaultObjectType, defaultTemplate) = resolveTypeAndActiveViewTemplate(
+            viewer,
+            storeOfObjectTypes
+        )
+
+        val defaultObjectTypeUniqueKey = TypeKey(defaultObjectType?.uniqueKey ?: VIEW_DEFAULT_OBJECT_TYPE)
+
+        val createObjectParams = CreateDataViewObject.Params.Collection(
+            template = defaultTemplate,
+            type = defaultObjectTypeUniqueKey,
+            filters = viewer.filters,
+            prefilled = prefilled
+        )
+
+        createDataViewObject.async(params = createObjectParams).fold(
+            onFailure = {
+                Timber.e("Error creating object for collection")
+            },
+            onSuccess = { result ->
+                Timber.d("Successfully created object with id: ${result.objectId}")
+                addObjectToCollection.async(
+                    AddObjectToCollection.Params(
+                        ctx = collection,
+                        targets = listOf(result.objectId)
+                    )
+                ).fold(
+                    onSuccess = {
+                        Timber.d("Successfully added object to collection")
+                    },
+                    onFailure = {
+                        Timber.e(it, "Error while adding object to collection")
+                    }
+                )
+                val wrapper = ObjectWrapper.Basic(result.struct.orEmpty())
+                if (wrapper.isValid) {
+                    proceedWithNavigation(wrapper.navigation())
+                }
             }
         )
     }
@@ -1976,6 +2049,7 @@ class HomeScreenViewModel(
         private val createBlock: CreateBlock,
         private val dateProvider: DateProvider,
         private val coverImageHashProvider: CoverImageHashProvider,
+        private val addObjectToCollection: AddObjectToCollection
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -2021,7 +2095,8 @@ class HomeScreenViewModel(
             coverImageHashProvider = coverImageHashProvider,
             payloadDelegator = payloadDelegator,
             createBlock = createBlock,
-            dateProvider = dateProvider
+            dateProvider = dateProvider,
+            addObjectToCollection = addObjectToCollection
         ) as T
     }
 

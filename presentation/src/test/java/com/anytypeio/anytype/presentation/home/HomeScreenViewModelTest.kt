@@ -35,6 +35,7 @@ import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.bin.EmptyBin
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.Move
+import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
@@ -238,6 +239,9 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var createDataViewObject: CreateDataViewObject
+
+    @Mock
+    lateinit var addObjectToCollection: AddObjectToCollection
 
     lateinit var userPermissionProvider: UserPermissionProvider
 
@@ -2922,6 +2926,7 @@ class HomeScreenViewModelTest {
         createBlock = createBlock,
         createDataViewObject = createDataViewObject,
         dateProvider = dateProvider,
+        addObjectToCollection = addObjectToCollection
     )
 
     companion object {

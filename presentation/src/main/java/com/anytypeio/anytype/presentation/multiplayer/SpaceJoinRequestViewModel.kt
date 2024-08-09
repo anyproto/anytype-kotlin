@@ -14,6 +14,8 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.ext.isPossibleToUpgradeNumberOfSpaceMembers
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.BUILDER_ID
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.EXPLORER_ID
+import com.anytypeio.anytype.core_models.membership.TierId
+import com.anytypeio.anytype.core_models.multiplayer.MultiplayerError
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.msg
@@ -28,7 +30,6 @@ import com.anytypeio.anytype.domain.`object`.canAddWriters
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsApproveInvite
-import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 import com.anytypeio.anytype.presentation.objects.toSpaceMembers
@@ -346,7 +347,10 @@ class SpaceJoinRequestViewModel(
                     isDismissed.value = true
                 },
                 onFailure = { e ->
-                    Timber.e(e, "Error while rejecting join-space request").also {
+                    Timber.e(e, "Error while rejecting join-space request")
+                    if (e is MultiplayerError.Generic) {
+                        _commands.emit(Command.ShowGenericMultiplayerError(e))
+                    } else {
                         sendToast(e.msg())
                     }
                 }
@@ -369,7 +373,10 @@ class SpaceJoinRequestViewModel(
                     isDismissed.value = true
                 },
                 onFailure = { e ->
-                    Timber.e(e, "Error while approving join-space request").also {
+                    Timber.e(e, "Error while approving join-space request")
+                    if (e is MultiplayerError.Generic) {
+                        _commands.emit(Command.ShowGenericMultiplayerError(e))
+                    } else {
                         sendToast(e.msg())
                     }
                 }
@@ -477,6 +484,7 @@ class SpaceJoinRequestViewModel(
     sealed class Command {
         data object NavigateToMembership : Command()
         data object NavigateToMembershipUpdate : Command()
+        data class ShowGenericMultiplayerError(val error: MultiplayerError.Generic) : Command()
     }
 }
 

@@ -1234,8 +1234,13 @@
     <string name="multiplayer_cancel_join_request">Deelnameverzoek annuleren</string>
     <string name="multiplayer_cancel_join_request_msg">Je zult het deelnameverzoek opnieuw moeten sturen</string>
     <string name="multiplayer_do_not_cancel_join_request">Annuleer niet</string>
+    <string name="multiplayer_error_invite_not_found">De uitnodiging bestaat niet. Zorg er alsjeblieft voor dat jouw apparaten worden gesynchroniseerd.</string>
+    <string name="multiplayer_error_invite_bad_content">De uitnodigingslink kon niet worden doorgezet. Het zou fouten in het formaat of ongeldige gegevens kunnen bevatten.</string>
+    <string name="multiplayer_error_space_is_deleted">Het lijkt erop dat de ruimte is verwijderd. Zorg er alsjeblieft voor dat jouw apparaten worden gesynchroniseerd.</string>
+    <string name="multiplayer_error_limit_reached">Limiet bereikt voor deze ruimte. Upgrade alsjeblieft jouw lidmaatschap of neem contact op met ondersteuning voor hulp.</string>
+    <string name="multiplayer_error_not_shareable">Het lijkt erop dat de ruimte niet meer wordt gedeeld. Zorg er alsjeblieft voor dat jouw apparaten zijn gesynchroniseerd.</string>
+    <string name="multiplayer_error_request_failed">Oeps! De aanvraag is mislukt. Controleer jouw internetverbinding en probeer het opnieuw.</string>
     <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">Deze koppeling lijkt niet te werken</string>
-    <string name="multiplayer_invite_link_space_deleted">Deze uitnodigingskoppeling is niet langer geldig omdat de ruimte is verwijderd.</string>
     <string name="multiplayer_invite_link_space_not_found">Deze uitnodigingskoppeling is niet langer geldig omdat de ruimte niet werd gevonden.</string>
     <string name="multiplayer_invite_link_request_already_sent">Verzoek verzonden</string>
     <!--endregion-->

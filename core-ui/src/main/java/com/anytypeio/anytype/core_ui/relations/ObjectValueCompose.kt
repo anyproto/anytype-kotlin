@@ -89,8 +89,7 @@ fun RelationsViewContent(
     LazyColumn(
         state = lazyListState,
         modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
+            .fillMaxSize()
     ) {
         itemsIndexed(
             items = state.items,

@@ -179,7 +179,7 @@ abstract class ObjectMenuBaseFragment :
                         )
                     )
                 }.onFailure {
-                    Timber.e(it)
+                    Timber.e(it, "Failed to open history screen")
                 }
             }
         }

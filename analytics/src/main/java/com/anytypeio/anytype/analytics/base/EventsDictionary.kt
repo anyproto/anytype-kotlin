@@ -206,6 +206,11 @@ object EventsDictionary {
     const val leaveSpace = "LeaveSpace"
     const val approveLeaveRequest = "ApproveLeaveRequest"
 
+    //Version history
+    const val screenHistory = "ScreenHistory"
+    const val screenHistoryVersion = "ScreenHistoryVersion"
+    const val restoreFromHistory = "RestoreFromHistory"
+
     const val searchBacklink = "SearchBacklink"
 
     object SharingSpacesTypes {

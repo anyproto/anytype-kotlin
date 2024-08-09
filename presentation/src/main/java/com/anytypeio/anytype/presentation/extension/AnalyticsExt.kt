@@ -2093,3 +2093,32 @@ suspend fun Analytics.sendAnalyticsApproveInvite(
         )
     )
 }
+
+//region Version History
+fun CoroutineScope.sendAnalyticsShowVersionHistoryScreen(
+    analytics: Analytics,
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.screenHistory
+    )
+}
+
+fun CoroutineScope.sendAnalyticsScreenVersionPreview(
+    analytics: Analytics
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.screenHistoryVersion
+    )
+}
+
+fun CoroutineScope.sendAnalyticsVersionHistoryRestore(
+    analytics: Analytics
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.restoreFromHistory
+    )
+}
+//endregion

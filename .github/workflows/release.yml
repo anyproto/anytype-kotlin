@@ -62,23 +62,23 @@ jobs:
         if: always()
         run: ./scripts/release/clean-secrets.sh
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@master
-        with:
-          name: APK + BUNDLE
-          path: |
-            app/build/outputs/apk/release/
-            app/build/outputs/bundle/release/
+#      - name: Upload artifacts
+#        uses: actions/upload-artifact@master
+#        with:
+#          name: APK + BUNDLE
+#          path: |
+#            app/build/outputs/apk/release/
+#            app/build/outputs/bundle/release/
 
       - name: Prepare artefacts
         run: ./scripts/release/prepare-release-artefacts.sh
 
-#      - name: Upload to S3
-#        uses: shallwefootball/s3-upload-action@v1.3.3
-#        with:
-#          aws_key_id: ${{ secrets.AWS_KEY_ID }}
-#          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
-#          aws_bucket: ${{ secrets.AWS_BUCKET }}
-#          endpoint: ${{ secrets.AWS_ENDPOINT }}
-#          source_dir: app/build/outputs/apk/release/release-artefacts/
-#          destination_dir: ''
+      - name: Upload to S3
+        uses: shallwefootball/s3-upload-action@v1.3.3
+        with:
+          aws_key_id: ${{ secrets.AWS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
+          aws_bucket: ${{ secrets.AWS_BUCKET }}
+          endpoint: ${{ secrets.AWS_ENDPOINT }}
+          source_dir: app/build/outputs/apk/release/release-artefacts/
+          destination_dir: ''

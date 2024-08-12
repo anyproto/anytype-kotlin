@@ -29,6 +29,9 @@ import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenVersionPreview
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsShowVersionHistoryScreen
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsVersionHistoryRestore
 import com.anytypeio.anytype.presentation.history.VersionHistoryGroup.GroupTitle
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.getRelationFormat
@@ -65,6 +68,9 @@ class VersionHistoryViewModel(
     init {
         Timber.d("VersionHistoryViewModel created")
         getSpaceMembers()
+        viewModelScope.launch {
+            sendAnalyticsShowVersionHistoryScreen(analytics)
+        }
     }
 
     fun onStart() {
@@ -76,6 +82,9 @@ class VersionHistoryViewModel(
             _previewViewState.value = VersionHistoryPreviewScreen.Loading
             navigation.emit(Command.VersionPreview)
             proceedShowVersion(item = item)
+        }
+        viewModelScope.launch {
+            sendAnalyticsScreenVersionPreview(analytics)
         }
     }
 
@@ -150,6 +159,7 @@ class VersionHistoryViewModel(
                     Timber.d("Version restored")
                     _previewViewState.value = VersionHistoryPreviewScreen.Hidden
                     navigation.emit(Command.ExitToObject)
+                    sendAnalyticsVersionHistoryRestore(analytics)
                 },
                 onFailure = {
                     Timber.e(it, "Error while restoring version")

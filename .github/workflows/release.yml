@@ -10,8 +10,8 @@ jobs:
         id: setup-ndk
         with:
           ndk-version: r23c
-          local-cache: true
-          link-to-sdk: true
+#          local-cache: true
+#          link-to-sdk: true
       - uses: actions/setup-java@v3
         with:
           distribution: "zulu"

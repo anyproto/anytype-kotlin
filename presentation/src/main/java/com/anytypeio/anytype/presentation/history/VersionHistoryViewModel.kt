@@ -6,8 +6,12 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.core_models.history.Version
+import com.anytypeio.anytype.core_models.isDataView
+import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TimeInSeconds
 import com.anytypeio.anytype.domain.base.fold
@@ -21,11 +25,16 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.editor.Editor.Mode
 import com.anytypeio.anytype.presentation.editor.EditorViewModel.Companion.INITIAL_INDENT
+import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenVersionPreview
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsShowVersionHistoryScreen
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsVersionHistoryRestore
 import com.anytypeio.anytype.presentation.history.VersionHistoryGroup.GroupTitle
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.relations.getRelationFormat
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import java.time.Instant
 import java.time.LocalDate
@@ -54,11 +63,14 @@ class VersionHistoryViewModel(
     private val _previewViewState =
         MutableStateFlow<VersionHistoryPreviewScreen>(VersionHistoryPreviewScreen.Hidden)
     val previewViewState = _previewViewState
-    val navigation = MutableSharedFlow<VersionGroupNavigation>(0)
+    val navigation = MutableSharedFlow<Command>(0)
 
     init {
         Timber.d("VersionHistoryViewModel created")
         getSpaceMembers()
+        viewModelScope.launch {
+            sendAnalyticsShowVersionHistoryScreen(analytics)
+        }
     }
 
     fun onStart() {
@@ -68,30 +80,86 @@ class VersionHistoryViewModel(
     fun onGroupItemClicked(item: VersionHistoryGroup.Item) {
         viewModelScope.launch {
             _previewViewState.value = VersionHistoryPreviewScreen.Loading
-            navigation.emit(VersionGroupNavigation.VersionPreview)
+            navigation.emit(Command.VersionPreview)
             proceedShowVersion(item = item)
+        }
+        viewModelScope.launch {
+            sendAnalyticsScreenVersionPreview(analytics)
+        }
+    }
+
+    fun proceedWithClick(click: ListenerType) {
+        Timber.d("Click: $click")
+        viewModelScope.launch {
+            when (click) {
+                is ListenerType.Relation.Featured -> {
+                    proceedWithRelationValueNavigation(
+                        relation = RelationKey(click.relation.key),
+                        relationFormat = click.relation.getRelationFormat()
+                    )
+                }
+
+                is ListenerType.Relation.Related -> {
+                    if (click.value is BlockView.Relation.Related) {
+                        proceedWithRelationValueNavigation(
+                            relation = RelationKey(click.value.view.key),
+                            relationFormat = click.value.view.getRelationFormat()
+                        )
+                    }
+                }
+                else -> {}
+            }
+        }
+    }
+
+    private suspend fun proceedWithRelationValueNavigation(
+        relation: RelationKey,
+        relationFormat: Relation.Format
+    ) {
+        val currentState = (_previewViewState.value as? VersionHistoryPreviewScreen.Success) ?: return
+        val isSet = currentState.isSet
+        when (relationFormat) {
+            RelationFormat.SHORT_TEXT,
+            RelationFormat.LONG_TEXT,
+            RelationFormat.URL,
+            RelationFormat.PHONE,
+            RelationFormat.NUMBER,
+            RelationFormat.EMAIL -> navigation.emit(Command.RelationText(relation, isSet))
+
+            RelationFormat.DATE -> navigation.emit(Command.RelationDate(relation, isSet))
+            Relation.Format.TAG,
+            Relation.Format.STATUS -> navigation.emit(Command.RelationMultiSelect(relation, isSet))
+
+            Relation.Format.OBJECT,
+            Relation.Format.FILE -> navigation.emit(Command.RelationObject(relation, isSet))
+
+            else -> {
+                Timber.d("No interaction allowed with this relation with format:$relationFormat")
+            }
         }
     }
 
     fun proceedWithHidePreview() {
         _previewViewState.value = VersionHistoryPreviewScreen.Hidden
         viewModelScope.launch {
-            navigation.emit(VersionGroupNavigation.Main)
+            navigation.emit(Command.Main)
         }
     }
 
     fun proceedWithRestore() {
-        val currentVersionId = (_previewViewState.value as? VersionHistoryPreviewScreen.Success)?.versionId ?: return
+        val currentVersionId =
+            (_previewViewState.value as? VersionHistoryPreviewScreen.Success)?.versionId ?: return
         viewModelScope.launch {
             val params = SetVersion.Params(
-                    objectId = vmParams.objectId,
-                    versionId = currentVersionId
-                )
+                objectId = vmParams.objectId,
+                versionId = currentVersionId
+            )
             setVersion.async(params).fold(
                 onSuccess = {
                     Timber.d("Version restored")
                     _previewViewState.value = VersionHistoryPreviewScreen.Hidden
-                    navigation.emit(VersionGroupNavigation.ExitToObject)
+                    navigation.emit(Command.ExitToObject)
+                    sendAnalyticsVersionHistoryRestore(analytics)
                 },
                 onFailure = {
                     Timber.e(it, "Error while restoring version")
@@ -265,9 +333,11 @@ class VersionHistoryViewModel(
             currentDate -> {
                 GroupTitle.Today
             }
+
             currentDate.minusDays(1) -> {
                 GroupTitle.Yesterday
             }
+
             else -> {
                 val pattern = if (givenYear == currentYear) {
                     GROUP_DATE_FORMAT_CURRENT_YEAR
@@ -342,6 +412,7 @@ class VersionHistoryViewModel(
                     val event = payload.events
                         .filterIsInstance<Event.Command.ShowObject>()
                         .first()
+                    val obj = ObjectWrapper.Basic(event.details.details[vmParams.objectId]?.map.orEmpty())
                     val root = event.blocks.first { it.id == vmParams.objectId }
                     val blocks = event.blocks.asMap().render(
                         mode = Mode.Read,
@@ -361,7 +432,8 @@ class VersionHistoryViewModel(
                             blocks = blocks,
                             dateFormatted = item.dateFormatted,
                             timeFormatted = item.timeFormatted,
-                            icon = item.icon
+                            icon = item.icon,
+                            isSet = obj.layout.isDataView()
                         )
                     }
                 }
@@ -374,8 +446,14 @@ class VersionHistoryViewModel(
         val spaceId: SpaceId
     )
 
-    sealed class Command {
-        data class OpenVersion(val versionId: Id) : Command()
+    sealed class Command(val route: String) {
+        data object Main : Command("main")
+        data object VersionPreview : Command("version preview")
+        data object ExitToObject : Command("")
+        data class RelationMultiSelect(val relationKey: RelationKey, val isSet: Boolean) : Command("relation_select")
+        data class RelationObject(val relationKey: RelationKey, val isSet: Boolean) : Command("relation_object")
+        data class RelationDate(val relationKey: RelationKey, val isSet: Boolean) : Command("relation_date")
+        data class RelationText(val relationKey: RelationKey, val isSet: Boolean) : Command("relation_text")
     }
 
     companion object {
@@ -403,7 +481,8 @@ sealed class VersionHistoryPreviewScreen {
         val blocks: List<BlockView>,
         val dateFormatted: String,
         val timeFormatted: String,
-        val icon: ObjectIcon?
+        val icon: ObjectIcon?,
+        val isSet: Boolean
     ) :
         VersionHistoryPreviewScreen()
 
@@ -433,10 +512,4 @@ data class VersionHistoryGroup(
         data object Yesterday : GroupTitle()
         data class Date(val date: String) : GroupTitle()
     }
-}
-
-sealed class VersionGroupNavigation(val route: String) {
-    data object Main : VersionGroupNavigation("main")
-    data object VersionPreview : VersionGroupNavigation("version preview")
-    data object ExitToObject : VersionGroupNavigation("")
 }

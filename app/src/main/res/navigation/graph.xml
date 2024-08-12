@@ -73,6 +73,11 @@
             android:id="@+id/objectValueScreen"
             android:name="com.anytypeio.anytype.ui.relations.value.ObjectValueFragment"
             android:label="Relation-Object-Value-Screen" />
+
+        <dialog
+            android:id="@+id/versionHistoryScreen"
+            android:name="com.anytypeio.anytype.ui.history.VersionHistoryFragment"
+            android:label="Object-Version_history-Screen"/>
     </navigation>
 
     <include app:graph="@navigation/nav_editor_modal" />
@@ -136,6 +141,10 @@
             android:id="@+id/objectValueScreen"
             android:name="com.anytypeio.anytype.ui.relations.value.ObjectValueFragment"
             android:label="Relation-Object-Value-Screen" />
+        <dialog
+            android:id="@+id/versionHistoryScreen"
+            android:name="com.anytypeio.anytype.ui.history.VersionHistoryFragment"
+            android:label="Set-Version_history-Screen"/>
     </navigation>
 
     <fragment
@@ -247,10 +256,6 @@
     <dialog
         android:id="@+id/galleryInstallationScreen"
         android:name="com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment" />
-
-    <dialog
-        android:id="@+id/versionHistoryScreen"
-        android:name="com.anytypeio.anytype.ui.history.VersionHistoryFragment" />
 
     <fragment
         android:id="@+id/splashScreen"

@@ -869,7 +869,7 @@ class ObjectSetViewModel(
                     )
                 }
             } else {
-                Timber.e("Skipping dispatching title update, because set of objects was not ready.")
+                Timber.w("Skipping dispatching title update, because set of objects was not ready.")
             }
         }
     }

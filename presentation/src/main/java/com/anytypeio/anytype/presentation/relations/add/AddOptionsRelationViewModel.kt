@@ -89,7 +89,7 @@ class AddOptionsRelationViewModel(
                 )
             ).proceed(
                 success = { option ->
-                    when (val format = relations.get(relationKey).format) {
+                    when (val format = relations.getOrNull(relationKey)?.format) {
                         RelationFormat.TAG -> {
                             proceedWithAddingTagToObject(
                                 ctx = ctx,

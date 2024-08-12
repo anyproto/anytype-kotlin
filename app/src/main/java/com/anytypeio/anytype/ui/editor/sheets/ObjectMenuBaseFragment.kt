@@ -39,6 +39,7 @@ import com.anytypeio.anytype.ui.linking.BacklinkOrAddToObjectFragment
 import com.anytypeio.anytype.ui.moving.OnMoveToAction
 import com.anytypeio.anytype.ui.relations.ObjectRelationListFragment
 import com.google.android.material.snackbar.Snackbar
+import timber.log.Timber
 
 abstract class ObjectMenuBaseFragment :
     BaseBottomSheetFragment<FragmentObjectMenuBinding>(),
@@ -177,6 +178,8 @@ abstract class ObjectMenuBaseFragment :
                             spaceId = space
                         )
                     )
+                }.onFailure {
+                    Timber.e(it, "Failed to open history screen")
                 }
             }
         }

@@ -90,6 +90,10 @@ fun VersionHistoryPreviewScreen(
                     AndroidView(
                         factory = { context ->
                             RecyclerView(context).apply {
+                                layoutParams = RecyclerView.LayoutParams(
+                                    RecyclerView.LayoutParams.MATCH_PARENT,
+                                    RecyclerView.LayoutParams.MATCH_PARENT
+                                )
                                 layoutManager = LinearLayoutManager(context)
                                 adapter = editorAdapter
                             }

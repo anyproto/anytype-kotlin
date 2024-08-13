@@ -312,6 +312,7 @@ class HomeScreenViewModel(
         }
 
     init {
+        Timber.i("HomeScreenViewModel, init")
         proceedWithUserPermissions()
         proceedWithObservingProfileIcon()
         proceedWithLaunchingUnsubscriber()

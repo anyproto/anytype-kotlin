@@ -70,6 +70,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     private val _fiveClicks = MutableStateFlow(false)
 
     init {
+        Timber.i("OnboardingMnemonicLoginViewModel, init")
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = EventsDictionary.loginScreenShow

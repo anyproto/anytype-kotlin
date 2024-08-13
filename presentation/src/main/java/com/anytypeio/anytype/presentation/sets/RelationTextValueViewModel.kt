@@ -65,7 +65,7 @@ class RelationTextValueViewModel(
         Timber.d("onStart, ctx:[$ctx], relationKey:[$relationKey], object:[$objectId], isLocked:[$isLocked]")
         viewModelScope.launch {
             val values = values.get(ctx = ctx, target = objectId)
-            val relation = relations.get(relationKey)
+            val relation = relations.getOrNull(relationKey) ?: return@launch
             Timber.d("combine, relation:[$relation], values:[$values]")
             setupIsRelationNotEditable(relation, isLocked)
             val obj = ObjectWrapper.Basic(values)

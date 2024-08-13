@@ -123,6 +123,7 @@ class LibraryViewModel(
     )
 
     init {
+        Timber.i("LibraryViewModel, init")
         proceedWithObservingProfileIcon()
         viewModelScope.launch {
             uiEvents.collect {

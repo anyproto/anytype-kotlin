@@ -70,6 +70,7 @@ class SpaceJoinRequestViewModel(
     val commands: SharedFlow<Command> = _commands
 
     init {
+        Timber.i("SpaceJoinRequestViewModel, init")
         viewModelScope.launch {
             combine(
                 _isCurrentUserOwner,

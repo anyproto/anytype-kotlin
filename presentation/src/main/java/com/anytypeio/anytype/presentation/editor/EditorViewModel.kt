@@ -417,6 +417,7 @@ class EditorViewModel(
     val permission = MutableStateFlow(permissions.get(vmParams.space))
 
     init {
+        Timber.i("EditorViewModel, init")
         proceedWithObservingPermissions()
         proceedWithObservingProfileIcon()
         startHandlingTextChanges()
@@ -1422,7 +1423,7 @@ class EditorViewModel(
         if (!focus.isEmpty && focus.isTarget(target)) {
             proceedWithEnterEvent(focus.requireTarget(), range, text, marks)
         } else {
-            Timber.e("No blocks in focus, emit SplitLineEnter event")
+            Timber.w("No blocks in focus, emit SplitLineEnter event")
         }
     }
 

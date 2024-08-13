@@ -16,7 +16,6 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.process
-import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -116,6 +115,7 @@ class CollectionViewModel(
     val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
 
     init {
+        Timber.i("CollectionViewModel, init")
         proceedWithObservingProfileIcon()
         val externalChannelEvents: Flow<Payload> = spaceManager
             .observe()

@@ -72,6 +72,7 @@ class SelectObjectTypeViewModel(
     private val pinned = MutableStateFlow<List<TypeId>>(emptyList())
 
     init {
+        Timber.i("SelectObjectTypeViewModel, init")
         viewModelScope.launch {
             getPinnedObjectTypes.flow(
                 GetPinnedObjectTypes.Params(vmParams.space)

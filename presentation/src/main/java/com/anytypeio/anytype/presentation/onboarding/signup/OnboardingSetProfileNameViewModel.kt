@@ -54,6 +54,7 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     init {
+        Timber.i("OnboardingSetProfileNameViewModel, init")
         viewModelScope.launch {
             sendAnalyticsOnboardingScreenEvent(analytics,
                 EventsDictionary.ScreenOnboardingStep.VOID

@@ -241,7 +241,7 @@ class ObjectSetViewModel(
     private val selectedTypeFlow: MutableStateFlow<ObjectWrapper.Type?> = MutableStateFlow(null)
 
     init {
-        Timber.d("ObjectSetViewModel, init")
+        Timber.i("ObjectSetViewModel, init")
 
         proceedWIthObservingPermissions()
 

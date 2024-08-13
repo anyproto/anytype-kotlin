@@ -72,6 +72,7 @@ class SplashViewModel(
     val commands = MutableSharedFlow<Command>(replay = 0)
 
     init {
+        Timber.i("SplashViewModel, init")
         checkAuthorizationStatus()
     }
 

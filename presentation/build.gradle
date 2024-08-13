@@ -39,6 +39,7 @@ dependencies {
 
     implementation libs.lifecycleViewModel
     implementation libs.lifecycleLiveData
+    implementation libs.paging
 
     implementation libs.timber
 

@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.cachedIn
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
@@ -42,6 +43,7 @@ import java.time.ZoneId
 import java.util.Locale
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -197,19 +199,25 @@ class VersionHistoryViewModel(
     private fun getHistoryVersions(objectId: String, members: List<ObjectWrapper.Basic>) {
         viewModelScope.launch {
             val params = GetVersions.Params(objectId = objectId)
-            getVersions.async(params).fold(
-                onSuccess = { versions ->
-                    if (versions.isEmpty()) {
-                        _viewState.value = VersionHistoryState.Error.NoVersions
-                    } else {
-                        handleVersionsSuccess(versions, members)
-                    }
-                },
-                onFailure = {
-                    _viewState.value = VersionHistoryState.Error.GetVersions(it.message.orEmpty())
-                },
-                onLoading = {}
-            )
+            getVersions
+                .doWork(params)
+                .collect {
+                    Timber.d("Versions fetched: $it")
+                }
+
+//                .async(params)   .fold(
+//                onSuccess = { versions ->
+//                    if (versions.isEmpty()) {
+//                        _viewState.value = VersionHistoryState.Error.NoVersions
+//                    } else {
+//                        handleVersionsSuccess(versions, members)
+//                    }
+//                },
+//                onFailure = {
+//                    _viewState.value = VersionHistoryState.Error.GetVersions(it.message.orEmpty())
+//                },
+//                onLoading = {}
+//            )
         }
     }
 
@@ -512,4 +520,12 @@ data class VersionHistoryGroup(
         data object Yesterday : GroupTitle()
         data class Date(val date: String) : GroupTitle()
     }
+}
+
+enum class ListState {
+    IDLE,
+    LOADING,
+    PAGINATING,
+    ERROR,
+    PAGINATION_EXHAUST,
 }

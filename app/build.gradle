@@ -102,6 +102,8 @@ android {
                 groups = "anytype-q&a, product-review, nightly"
                 serviceCredentialsFile = "$rootDir/scripts/distribution/anytype-debug-service-account-key.json"
             }
+            buildConfigField "boolean", "LOG_FROM_MW_LIBRARY", localProperties.getProperty("LOG_FROM_MW_LIBRARY", "true")
+            buildConfigField "boolean", "LOG_MW_INTERACTION", localProperties.getProperty("LOG_MW_INTERACTION", "true")
         }
 
         applicationVariants.all {
@@ -190,6 +192,7 @@ dependencies {
     implementation libs.emojiCompat
     implementation libs.navigationCompose
     implementation libs.playBilling
+    implementation libs.paging
 
     implementation libs.lifecycleViewModel
     implementation libs.lifecycleRuntime

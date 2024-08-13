@@ -9,10 +9,11 @@ class DefaultFeatureToggles @Inject constructor(
     buildProvider: BuildProvider
 ) : FeatureToggles {
 
-    override val isLogFromGoProcess =
-        BuildConfig.LOG_FROM_MW_LIBRARY && buildProvider.isDebug()
+    override val isLogFromGoProcess = true
+        //BuildConfig.LOG_FROM_MW_LIBRARY && buildProvider.isDebug()
 
-    override val isLogMiddlewareInteraction = BuildConfig.LOG_MW_INTERACTION && buildProvider.isDebug()
+    override val isLogMiddlewareInteraction = true
+        //BuildConfig.LOG_MW_INTERACTION && buildProvider.isDebug()
 
     override val isLogEditorViewModelEvents =
         BuildConfig.LOG_EDITOR_VIEWMODEL_EVENTS && buildProvider.isDebug()
@@ -22,7 +23,7 @@ class DefaultFeatureToggles @Inject constructor(
 
     override val isAutoUpdateEnabled: Boolean = false
 
-    override val isConciseLogging: Boolean = true
+    override val isConciseLogging: Boolean = false
 
     override val enableSpaces: Boolean = true
 

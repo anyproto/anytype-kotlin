@@ -61,7 +61,7 @@ class AddOptionsRelationDVViewModel(
             ).proceed(
                 success = { option ->
                     Timber.d("Created new option with id: ${option.id}")
-                    when (relations.get(relation = relationKey).format) {
+                    when (relations.getOrNull(relation = relationKey)?.format) {
                         RelationFormat.TAG -> {
                             proceedWithAddingTagToObject(
                                 ctx = ctx,

@@ -88,7 +88,7 @@ class ShareSpaceViewModel(
     val showIncentive = MutableStateFlow<ShareSpaceIncentiveState>(ShareSpaceIncentiveState.Hidden)
 
     init {
-        Timber.d("Share-space init with params: $vmParams")
+        Timber.i("Share-space init with params: $vmParams")
         proceedWithUserPermissions(space = vmParams.space)
         proceedWithSubscriptions()
         proceedWithGettingActiveTier()

@@ -24,6 +24,7 @@ class OnboardingMnemonicViewModel @Inject constructor(
     val state = MutableStateFlow<State>(State.Idle(""))
 
     init {
+        Timber.i("OnboardingMnemonicViewModel, init")
         viewModelScope.sendAnalyticsOnboardingScreenEvent(analytics,
             EventsDictionary.ScreenOnboardingStep.PHRASE
         )

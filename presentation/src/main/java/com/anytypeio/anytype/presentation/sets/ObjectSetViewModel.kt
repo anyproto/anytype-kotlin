@@ -241,7 +241,7 @@ class ObjectSetViewModel(
     private val selectedTypeFlow: MutableStateFlow<ObjectWrapper.Type?> = MutableStateFlow(null)
 
     init {
-        Timber.d("ObjectSetViewModel, init")
+        Timber.i("ObjectSetViewModel, init")
 
         proceedWIthObservingPermissions()
 
@@ -869,7 +869,7 @@ class ObjectSetViewModel(
                     )
                 }
             } else {
-                Timber.e("Skipping dispatching title update, because set of objects was not ready.")
+                Timber.w("Skipping dispatching title update, because set of objects was not ready.")
             }
         }
     }

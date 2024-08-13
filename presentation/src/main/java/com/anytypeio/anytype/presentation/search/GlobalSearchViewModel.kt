@@ -59,6 +59,7 @@ import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class GlobalSearchViewModel(
     private val searchWithMeta: SearchWithMeta,
@@ -227,6 +228,11 @@ class GlobalSearchViewModel(
                 }
             }
         }
+
+
+    init {
+        Timber.i("GlobalSearchViewModel, init")
+    }
 
     fun onQueryChanged(query: String) {
         userInput.value = query

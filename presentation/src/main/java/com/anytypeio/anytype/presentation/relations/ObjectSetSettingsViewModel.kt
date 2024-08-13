@@ -38,6 +38,10 @@ class ObjectSetSettingsViewModel(
 
     val screenState = MutableStateFlow(ScreenState.LIST)
 
+    init {
+        Timber.i("ObjectSetSettingsViewModel, init")
+    }
+
     fun onStart(viewerId: Id) {
         viewModelScope.launch {
             objectState.filterIsInstance<ObjectState.DataView>().collect { state ->

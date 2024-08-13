@@ -51,6 +51,7 @@ class RequestJoinSpaceViewModel(
     val commands = MutableSharedFlow<Command>(0)
 
     init {
+        Timber.i("RequestJoinSpaceViewModel, init")
         proceedWithGettingSpaceInviteView()
     }
 

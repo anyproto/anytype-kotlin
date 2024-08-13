@@ -7,7 +7,6 @@ import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.exceptions.AccountIsDeletedException
 import com.anytypeio.anytype.core_models.exceptions.LoginException
 import com.anytypeio.anytype.core_models.exceptions.MigrationNeededException
@@ -77,6 +76,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     private val _fiveClicks = MutableStateFlow(false)
 
     init {
+        Timber.i("OnboardingMnemonicLoginViewModel, init")
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = EventsDictionary.loginScreenShow

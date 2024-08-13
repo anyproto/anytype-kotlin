@@ -22,6 +22,10 @@ class DataViewObjectRelationProvider(
             ?: throw IllegalStateException("Could not found relation by key: $relation")
     }
 
+    override suspend fun getOrNull(relation: Key): ObjectWrapper.Relation? {
+        return storeOfRelations.getByKey(relation)
+    }
+
     override suspend fun getById(relation: Id): ObjectWrapper.Relation {
         return storeOfRelations.getById(relation)
             ?: throw IllegalStateException("Could not find relation by id: $relation")
@@ -52,6 +56,10 @@ class SetOrCollectionRelationProvider(
     override suspend fun get(relation: Key): ObjectWrapper.Relation {
         return storeOfRelations.getByKey(relation)
             ?: throw IllegalStateException("Could not found relation by key: $relation")
+    }
+
+    override suspend fun getOrNull(relation: Key): ObjectWrapper.Relation? {
+        return storeOfRelations.getByKey(relation)
     }
 
     override suspend fun getById(relation: Id): ObjectWrapper.Relation {

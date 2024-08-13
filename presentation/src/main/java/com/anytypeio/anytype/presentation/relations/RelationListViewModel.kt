@@ -61,6 +61,10 @@ class RelationListViewModel(
     val commands = MutableSharedFlow<Command>(replay = 0)
     val views = MutableStateFlow<List<Model>>(emptyList())
 
+    init {
+        Timber.i("RelationListViewModel, init")
+    }
+
     fun onStartListMode(ctx: Id) {
         Timber.d("onStartListMode, ctx: $ctx")
         isInAddMode.value = false

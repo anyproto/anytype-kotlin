@@ -26,6 +26,10 @@ internal class FakeObjectRelationProvider : ObjectRelationProvider {
         return relations.first { it.key == relation }
     }
 
+    override suspend fun getOrNull(relation: Key): ObjectWrapper.Relation? {
+        return relations.find { it.key == relation }
+    }
+
     override suspend fun getById(relation: Id): ObjectWrapper.Relation {
         return relations.first { it.id == relation }
     }

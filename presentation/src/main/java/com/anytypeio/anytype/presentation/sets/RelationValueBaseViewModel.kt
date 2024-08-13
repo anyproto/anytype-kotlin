@@ -72,6 +72,10 @@ abstract class RelationValueBaseViewModel(
     val commands = MutableSharedFlow<ObjectRelationValueCommand>(replay = 0)
     val isLoading = MutableStateFlow(false)
 
+    init {
+        Timber.i("RelationValueBaseViewModel, init")
+    }
+
     fun onStart(
         ctx: Id,
         objectId: Id,

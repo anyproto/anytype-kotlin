@@ -806,17 +806,21 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         vm.searchResultScrollPosition
             .filter { it != EditorViewModel.NO_SEARCH_RESULT_POSITION }
             .onEach {
-                (binding.recycler.layoutManager as? LinearLayoutManager)
-                    ?.scrollToPositionWithOffset(it, dimen(R.dimen.default_toolbar_height))
+                if (hasBinding) {
+                    (binding.recycler.layoutManager as? LinearLayoutManager)
+                        ?.scrollToPositionWithOffset(it, dimen(R.dimen.default_toolbar_height))
+                }
             }
             .launchIn(lifecycleScope)
 
         vm.syncStatus.onEach { status -> bindSyncStatus(status) }.launchIn(lifecycleScope)
         vm.isSyncStatusVisible.onEach { isSyncStatusVisible ->
-            if (isSyncStatusVisible)
-                binding.topToolbar.findViewById<ViewGroup>(R.id.statusContainer).visible()
-            else
-                binding.topToolbar.findViewById<ViewGroup>(R.id.statusContainer).invisible()
+            if (hasBinding) {
+                if (isSyncStatusVisible)
+                    binding.topToolbar.findViewById<ViewGroup>(R.id.statusContainer).visible()
+                else
+                    binding.topToolbar.findViewById<ViewGroup>(R.id.statusContainer).invisible()
+            }
         }.launchIn(lifecycleScope)
 
         vm.isUndoEnabled.onEach {
@@ -827,24 +831,27 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }.launchIn(lifecycleScope)
 
         vm.permission.onEach { permission ->
-            if (permission?.isOwnerOrEditor() == true) {
-                binding.topToolbar.setIsReadOnly(false)
-                binding.bottomToolbar.setIsReadOnly(false)
-            } else {
-                binding.topToolbar.setIsReadOnly(true)
-                binding.bottomToolbar.setIsReadOnly(true)
+            if (hasBinding) {
+                if (permission?.isOwnerOrEditor() == true) {
+                    binding.topToolbar.setIsReadOnly(false)
+                    binding.bottomToolbar.setIsReadOnly(false)
+                } else {
+                    binding.topToolbar.setIsReadOnly(true)
+                    binding.bottomToolbar.setIsReadOnly(true)
+                }
             }
         }.launchIn(lifecycleScope)
-
 
         with(lifecycleScope) {
             launch {
                 vm.actions.collectLatest {
-                    binding.blockActionToolbar.bind(it)
-                    delay(DEFAULT_DELAY_BLOCK_ACTION_TOOLBAR)
-                    handler.post {
-                        if (hasBinding) {
-                            binding.blockActionToolbar.scrollToPosition(0, smooth = true)
+                    if (hasBinding) {
+                        binding.blockActionToolbar.bind(it)
+                        delay(DEFAULT_DELAY_BLOCK_ACTION_TOOLBAR)
+                        handler.post {
+                            if (hasBinding) {
+                                binding.blockActionToolbar.scrollToPosition(0, smooth = true)
+                            }
                         }
                     }
                 }
@@ -1006,7 +1013,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     }
                 }
                 is Command.ClearSearchInput -> {
-                    binding.searchToolbar.clear()
+                    if (hasBinding) {
+                        binding.searchToolbar.clear()
+                    } else {
+                        Timber.w("Missing binding for command: $command")
+                    }
                 }
                 is Command.Dialog.SelectLanguage -> {
                     SelectProgrammingLanguageFragment.new(command.target)
@@ -1072,17 +1083,23 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     fr.showChildFragment()
                 }
                 Command.AddSlashWidgetTriggerToFocusedBlock -> {
-                    binding.recycler.addTextFromSelectedStart(text = "/")
+                    if (hasBinding) {
+                        binding.recycler.addTextFromSelectedStart(text = "/")
+                    } else {
+                        Timber.w("Missing binding for command: $command")
+                    }
                 }
                 is Command.OpenObjectSelectTypeScreen -> {
-                    hideKeyboard()
-                    val dialog = SelectObjectTypeFragment.newInstance(
-                        excludedTypeKeys = command.excludedTypes,
-                        onTypeSelected = vm::onObjectTypeChanged,
-                        flow = SelectObjectTypeFragment.FLOW_CHANGE_TYPE,
-                        space = space
-                    )
-                    dialog.show(childFragmentManager, null)
+                    runCatching {
+                        hideKeyboard()
+                        val dialog = SelectObjectTypeFragment.newInstance(
+                            excludedTypeKeys = command.excludedTypes,
+                            onTypeSelected = vm::onObjectTypeChanged,
+                            flow = SelectObjectTypeFragment.FLOW_CHANGE_TYPE,
+                            space = space
+                        )
+                        dialog.show(childFragmentManager, null)
+                    }
                 }
                 is Command.OpenMoveToScreen -> {
                     jobs += lifecycleScope.launch {
@@ -1099,20 +1116,24 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     }
                 }
                 is Command.OpenObjectSnackbar -> {
-                    binding.root.showActionableSnackBar(
-                        from = command.fromText,
-                        to = command.toText,
-                        icon = command.icon,
-                        middleString = R.string.snack_move_to
-                    ) {
-                        if (command.isDataView) {
-                            vm.proceedWithOpeningDataViewObject(
-                                target = command.id,
-                                space = SpaceId(command.space)
-                            )
-                        } else {
-                            vm.proceedWithOpeningObject(command.id)
+                    if (hasBinding) {
+                        binding.root.showActionableSnackBar(
+                            from = command.fromText,
+                            to = command.toText,
+                            icon = command.icon,
+                            middleString = R.string.snack_move_to
+                        ) {
+                            if (command.isDataView) {
+                                vm.proceedWithOpeningDataViewObject(
+                                    target = command.id,
+                                    space = SpaceId(command.space)
+                                )
+                            } else {
+                                vm.proceedWithOpeningObject(command.id)
+                            }
                         }
+                    } else {
+                        Timber.w("Missing binding for command")
                     }
                 }
                 is Command.OpenLinkToScreen -> {
@@ -1128,8 +1149,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     }
                 }
                 is Command.AddMentionWidgetTriggerToFocusedBlock -> {
-                    binding.recycler.addTextFromSelectedStart(text = "@")
-                }
+                    if (hasBinding) {
+                        binding.recycler.addTextFromSelectedStart(text = "@")
+                    } else {
+                        Timber.w("Didn't have binding for command: $command")
+                    }                }
                 is Command.OpenAddRelationScreen -> {
                     hideSoftInput()
                     val fr = RelationAddToObjectBlockFragment.newInstance(
@@ -1172,9 +1196,14 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     fr.showChildFragment()
                 }
                 is Command.ScrollToPosition -> {
-                    val lm = binding.recycler.layoutManager as LinearLayoutManager
-                    val margin = resources.getDimensionPixelSize(R.dimen.default_editor_item_offset)
-                    lm.scrollToPositionWithOffset(command.pos, margin)
+                    if (hasBinding) {
+                        val lm = binding.recycler.layoutManager as LinearLayoutManager
+                        val margin =
+                            resources.getDimensionPixelSize(R.dimen.default_editor_item_offset)
+                        lm.scrollToPositionWithOffset(command.pos, margin)
+                    } else {
+                        Timber.w("Missing binding for command")
+                    }
                 }
                 is Command.OpenSetBlockTextValueScreen -> {
                     val fr = SetBlockTextValueFragment.new(

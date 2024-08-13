@@ -54,7 +54,7 @@ class TagOrStatusValueViewModel(
 
     init {
         viewModelScope.launch {
-            val relation = relations.get(relation = viewModelParams.relationKey)
+            val relation = relations.getOrNull(relation = viewModelParams.relationKey) ?: return@launch
             setupIsRelationNotEditable(relation)
             val spaces = listOf(spaceManager.get())
             val searchParams = StoreSearchParams(

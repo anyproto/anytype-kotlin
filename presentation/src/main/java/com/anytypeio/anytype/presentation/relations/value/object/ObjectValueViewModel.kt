@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.relations.value.`object`
 
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectTypeIds
@@ -18,11 +19,13 @@ import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.getSpaceWithTechSpace
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.toView
@@ -54,8 +57,10 @@ class ObjectValueViewModel(
     private val urlBuilder: UrlBuilder,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val objectListIsArchived: SetObjectListIsArchived,
-    private val duplicateObject: DuplicateObject
-) : BaseViewModel() {
+    private val duplicateObject: DuplicateObject,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val storeOfRelations: StoreOfRelations
+) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val viewState = MutableStateFlow<ObjectValueViewState>(ObjectValueViewState.Loading())
     private val query = MutableSharedFlow<String>(replay = 1)
@@ -68,7 +73,7 @@ class ObjectValueViewModel(
     init {
         Timber.d("ObjectValueViewModel init, params: $viewModelParams")
         viewModelScope.launch {
-            val relation = relations.get(relation = viewModelParams.relationKey)
+            val relation = relations.getOrNull(relation = viewModelParams.relationKey) ?: return@launch
             setupIsRelationNotEditable(relation)
             combine(
                 values.subscribe(
@@ -333,7 +338,12 @@ class ObjectValueViewModel(
                 failure = { Timber.e(it, "Error while clearing objects") },
                 success = {
                     dispatcher.send(it)
-                    sendAnalyticsRelationValueEvent(analytics)
+                    analytics.sendAnalyticsRelationEvent(
+                        eventName = EventsDictionary.relationDeleteValue,
+                        storeOfRelations = storeOfRelations,
+                        relationKey = viewModelParams.relationKey,
+                        spaceParams = provideParams(spaceManager.get())
+                    )
                 })
         }
     }
@@ -390,7 +400,13 @@ class ObjectValueViewModel(
                 failure = { Timber.e(it, "Error while adding object") },
                 success = {
                     dispatcher.send(it)
-                    sendAnalyticsRelationValueEvent(analytics)
+                    analytics.sendAnalyticsRelationEvent(
+                        eventName = if (result.isEmpty()) EventsDictionary.relationDeleteValue
+                        else EventsDictionary.relationChangeValue,
+                        storeOfRelations = storeOfRelations,
+                        relationKey = viewModelParams.relationKey,
+                        spaceParams = provideParams(spaceManager.get())
+                    )
                 }
             )
         }
@@ -409,7 +425,13 @@ class ObjectValueViewModel(
             failure = { Timber.e(it, "Error while removing object ${item.view.id}") },
             success = {
                 dispatcher.send(it)
-                viewModelScope.sendAnalyticsRelationValueEvent(analytics)
+                analytics.sendAnalyticsRelationEvent(
+                    eventName = if (value.isEmpty()) EventsDictionary.relationDeleteValue
+                    else EventsDictionary.relationChangeValue,
+                    storeOfRelations = storeOfRelations,
+                    relationKey = viewModelParams.relationKey,
+                    spaceParams = provideParams(spaceManager.get())
+                )
                 action()
             }
         )

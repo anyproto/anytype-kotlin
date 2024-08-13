@@ -7,7 +7,6 @@ import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.exceptions.AccountIsDeletedException
 import com.anytypeio.anytype.core_models.exceptions.LoginException
 import com.anytypeio.anytype.core_models.exceptions.MigrationNeededException
@@ -26,10 +25,7 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.DebugGoroutines
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
-import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
-import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
-import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
-import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
+import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.presentation.extension.proceedWithAccountEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingLoginEvent
 import com.anytypeio.anytype.presentation.splash.SplashViewModel
@@ -51,16 +47,13 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     private val startLoadingAccounts: StartLoadingAccounts,
     private val observeAccounts: ObserveAccounts,
     private val selectAccount: SelectAccount,
-    private val relationsSubscriptionManager: RelationsSubscriptionManager,
-    private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
-    private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
     private val crashReporter: CrashReporter,
     private val configStorage: ConfigStorage,
     private val localeProvider: LocaleProvider,
-    private val userPermissionProvider: UserPermissionProvider,
     private val debugGoroutines: DebugGoroutines,
     private val uriFileProvider: UriFileProvider,
-    private val logout: Logout
+    private val logout: Logout,
+    private val globalSubscriptionManager: GlobalSubscriptionManager
 ) : ViewModel() {
 
     private val jobs = mutableListOf<Job>()
@@ -77,6 +70,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     private val _fiveClicks = MutableStateFlow(false)
 
     init {
+        Timber.i("OnboardingMnemonicLoginViewModel, init")
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = EventsDictionary.loginScreenShow
@@ -306,10 +300,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     }
 
     private fun proceedWithGlobalSubscriptions() {
-        relationsSubscriptionManager.onStart()
-        objectTypesSubscriptionManager.onStart()
-        spaceDeletedStatusWatcher.onStart()
-        userPermissionProvider.start()
+        globalSubscriptionManager.onStart()
     }
 
     private fun navigateToDashboard() {
@@ -387,16 +378,13 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         private val startLoadingAccounts: StartLoadingAccounts,
         private val observeAccounts: ObserveAccounts,
         private val selectAccount: SelectAccount,
-        private val relationsSubscriptionManager: RelationsSubscriptionManager,
-        private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
-        private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
         private val crashReporter: CrashReporter,
         private val configStorage: ConfigStorage,
         private val localeProvider: LocaleProvider,
-        private val userPermissionProvider: UserPermissionProvider,
         private val debugGoroutines: DebugGoroutines,
         private val uriFileProvider: UriFileProvider,
-        private val logout: Logout
+        private val logout: Logout,
+        private val globalSubscriptionManager: GlobalSubscriptionManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -406,19 +394,16 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                 pathProvider = pathProvider,
                 saveMnemonic = saveMnemonic,
                 analytics = analytics,
-                relationsSubscriptionManager = relationsSubscriptionManager,
-                objectTypesSubscriptionManager = objectTypesSubscriptionManager,
                 crashReporter = crashReporter,
                 configStorage = configStorage,
                 startLoadingAccounts = startLoadingAccounts,
                 observeAccounts = observeAccounts,
-                spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
                 selectAccount = selectAccount,
                 localeProvider = localeProvider,
-                userPermissionProvider = userPermissionProvider,
                 debugGoroutines = debugGoroutines,
                 uriFileProvider = uriFileProvider,
-                logout = logout
+                logout = logout,
+                globalSubscriptionManager = globalSubscriptionManager
             ) as T
         }
     }

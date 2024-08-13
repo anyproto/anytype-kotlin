@@ -492,6 +492,7 @@
     <string name="block_data_view_content_description_no_data">The source of the inline set has no type</string>
     <string name="object_search_recently_opened_section_title">Недавно открытые</string>
     <string name="widget_source_anytype_library">Библиотека Anytype</string>
+    <string name="widget_source_default_lists">Default lists</string>
     <string name="your_favorite_objects">Ваши Избранные объекты</string>
     <string name="on_this_device">На этом устройстве</string>
     <string name="sets_of_objects">Набор объектов из вашего пространства</string>
@@ -979,7 +980,7 @@
     <string name="onboarding_terms_and_policy_infix">" и "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
     <string name="onboarding_new_vault_button_text">New vault</string>
-    <string name="onboarding_enter_my_vault">Enter my Vault</string>
+    <string name="onboarding_enter_my_vault">Войти в мое хранилище</string>
     <string name="onboarding_have_key_button_text">У меня есть Ключ</string>
     <string name="onboarding_get_my_key_button_text">Получить мой Ключ</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
@@ -992,7 +993,7 @@
     <string name="onboarding_key_skip">Пропустить</string>
     <string name="onboarding_key_copy">Копировать в буфер обмена</string>
     <string name="onboarding_set_your_name_title">Установите ваше имя</string>
-    <string name="onboarding_soul_creation_description">Only seen by people you share something with. There is no central registry of these names.</string>
+    <string name="onboarding_soul_creation_description">Видим только людям, с которыми вы чем-то поделились. Централизованного реестра имен не существует.</string>
     <string name="onboarding_soul_creation_placeholder">Идентификатор Anytype</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
     <string name="onboarding_type_your_key">Type your recovery phrase</string>
@@ -1002,7 +1003,7 @@
     <string name="onboarding_mnemonic_read_more">Подробнее</string>
     <string name="onboarding_key_additional_info">Вы можете найти этот ключ позже в настройках Anytype</string>
     <string name="onboarding_what_is_the_key">Что такое Ключ?</string>
-    <string name="onboarding_recovery_phrase_description">It is represented by a recovery phrase – 12 random words from which your vault is magically generated on this device.</string>
+    <string name="onboarding_recovery_phrase_description">Фраза восстановления - это случайная комбинация из 12 слов. Волшебным образом из этих слов генерируется ваш аккаунт на устройстве.</string>
     <string name="onboarding_recovery_phrase_description_2">Whomever knows the combination of these words owns your vault. </string>
     <string name="onboarding_recovery_phrase_description_3">Right now, you are the only person in the world who knows it.</string>
     <string name="onboarding_recovery_phrase_description_4">Даже всех вычислительных ресурсов на Земле недостаточно для его взлома. Если Вы потеряете его, он не может быть восстановлен. Так что храните его где-нибудь в безопасном месте!</string>
@@ -1245,8 +1246,13 @@
     <string name="multiplayer_cancel_join_request">Отменить запрос на присоединение</string>
     <string name="multiplayer_cancel_join_request_msg">You will have to send join request again</string>
     <string name="multiplayer_do_not_cancel_join_request">Do not cancel</string>
+    <string name="multiplayer_error_invite_not_found">The invitation does not exist. Please ensure that your devices are synchronized.</string>
+    <string name="multiplayer_error_invite_bad_content">The invitation link could not be parsed. It may contain errors in the format or invalid data.</string>
+    <string name="multiplayer_error_space_is_deleted">It looks like the space has been deleted. Please ensure that your devices are synchronized.</string>
+    <string name="multiplayer_error_limit_reached">Limit reached for this space. Please upgrade your membership or contact support for assistance.</string>
+    <string name="multiplayer_error_not_shareable">It looks like the space is no longer shared. Please ensure that your devices are synchronized.</string>
+    <string name="multiplayer_error_request_failed">Oops! The request failed. Please check your Internet connection and try again.</string>
     <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">This link does not seem to work</string>
-    <string name="multiplayer_invite_link_space_deleted">This invite link is no longer valid because the space has been deleted.</string>
     <string name="multiplayer_invite_link_space_not_found">This invite link is no longer valid because the space was not found.</string>
     <string name="multiplayer_invite_link_request_already_sent">Запрос отправлен</string>
     <!--endregion-->
@@ -1470,9 +1476,46 @@ Please provide specific details of your needs here.</string>
     <string name="error_login_network_id_mismatch">Network ID mismatch detected. Please verify your network configuration.</string>
     <string name="error_login_select_vault_error">Select vault error.</string>
     <string name="global_search_related_to">"Related to: "</string>
-    <string name="global_search_no_related_objects_found">No related objects found</string>
+    <string name="global_search_no_related_objects_found">Связанных объектов не найдено</string>
     <string name="sort_empty_values_desc">Показать пустые значения</string>
     <string name="sort_empty_values_bottom">Снизу</string>
     <string name="sort_empty_values_top">Наверху</string>
     <string name="widget_view_see_all_objects">See all objects</string>
+    <string name="sync_status_get_error">Error getting sync status</string>
+    <string name="sync_status_local_only_title">Local Only</string>
+    <string name="sync_status_data_backup">Data backup is disabled</string>
+    <string name="sync_status_self_host">Self Host</string>
+    <string name="sync_status_self_host_synced">Синхронизировано</string>
+    <plurals name="sync_status_self_host_syncing">
+        <item quantity="one">%1$d item syncing</item>
+        <item quantity="few">%1$d items syncing...</item>
+        <item quantity="many">%1$d items syncing...</item>
+        <item quantity="other">%1$d items syncing...</item>
+    </plurals>
+    <string name="sync_status_p2p">P2P Connection</string>
+    <plurals name="sync_status_p2p_devices">
+        <item quantity="one">%1$d device connected</item>
+        <item quantity="few">%1$d devices connected</item>
+        <item quantity="many">%1$d devices connected</item>
+        <item quantity="other">%1$d devices connected</item>
+    </plurals>
+    <string name="sync_status_p2p_connecting">P2P Connecting...</string>
+    <string name="sync_status_p2p_disabled">Disabled</string>
+    <string name="sync_status_p2p_restricted">Restricted. Check device settings.</string>
+    <string name="sync_status_anytype_network">Anytype Network</string>
+    <string name="sync_status_anytype_end_to_end">End-to-end encrypted</string>
+    <plurals name="sync_status_network_items">
+        <item quantity="one">%1$d item syncing...</item>
+        <item quantity="few">%1$d items syncing...</item>
+        <item quantity="many">%1$d items syncing...</item>
+        <item quantity="other">%1$d items syncing...</item>
+    </plurals>
+    <string name="sync_status_anytype_network_connecting">Network Connecting...</string>
+    <string name="sync_status_anytype_network_no_connecting">Нет соединения</string>
+    <string name="sync_status_storage_limit_exceed">Storage limit reached</string>
+    <string name="sync_status_incompatible_version">Несовместимая версия</string>
+    <string name="sync_status_network_error">No access to the space</string>
+    <string name="sync_status_unrecognized">Unrecognized error</string>
+    <string name="version_history_title">Version history</string>
+    <string name="new_object">Новый объект</string>
 </resources>

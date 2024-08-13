@@ -33,11 +33,13 @@ import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
 import com.anytypeio.anytype.ui.editor.layout.ObjectLayoutFragment
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
+import com.anytypeio.anytype.ui.history.VersionHistoryFragment
 import com.anytypeio.anytype.ui.linking.BacklinkAction
 import com.anytypeio.anytype.ui.linking.BacklinkOrAddToObjectFragment
 import com.anytypeio.anytype.ui.moving.OnMoveToAction
 import com.anytypeio.anytype.ui.relations.ObjectRelationListFragment
 import com.google.android.material.snackbar.Snackbar
+import timber.log.Timber
 
 abstract class ObjectMenuBaseFragment :
     BaseBottomSheetFragment<FragmentObjectMenuBinding>(),
@@ -80,7 +82,7 @@ abstract class ObjectMenuBaseFragment :
 
     override fun onStart() {
         click(binding.objectDiagnostics) { vm.onDiagnosticsClicked(ctx = ctx) }
-        click(binding.optionHistory) { vm.onHistoryClicked() }
+        click(binding.optionHistory) { vm.onHistoryClicked(ctx = ctx, space = space) }
         click(binding.optionLayout) { vm.onLayoutClicked(ctx = ctx, space = space) }
         click(binding.optionIcon) { vm.onIconClicked(ctx = ctx, space = space) }
         click(binding.optionRelations) { vm.onRelationsClicked() }
@@ -165,6 +167,20 @@ abstract class ObjectMenuBaseFragment :
                     type = "text/plain"
                 }
                 startActivity(Intent.createChooser(intent, null))
+            }
+
+            is ObjectMenuViewModelBase.Command.OpenHistoryScreen -> {
+                runCatching {
+                    findNavController().navigate(
+                        R.id.versionHistoryScreen,
+                        VersionHistoryFragment.args(
+                            ctx = ctx,
+                            spaceId = space
+                        )
+                    )
+                }.onFailure {
+                    Timber.e(it, "Failed to open history screen")
+                }
             }
         }
     }
@@ -341,7 +357,6 @@ abstract class ObjectMenuBaseFragment :
     }
 
     interface DocumentMenuActionReceiver {
-        fun onMoveToBinSuccess()
         fun onSearchOnPageClicked()
         fun onDocRelationsClicked()
         fun onAddCoverClicked()

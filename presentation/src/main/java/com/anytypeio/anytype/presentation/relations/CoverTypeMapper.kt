@@ -2,12 +2,15 @@ package com.anytypeio.anytype.presentation.relations
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.CoverType
+import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
+import com.anytypeio.anytype.presentation.sets.getCoverFromRelationOrLayout
 
 fun CoverWrapper.getCover(
     urlBuilder: UrlBuilder,
@@ -52,10 +55,13 @@ fun CoverWrapper.getCover(
     )
 }
 
-fun ObjectWrapper.Basic.cover(
+suspend fun ObjectWrapper.Basic.cover(
     urlBuilder: UrlBuilder,
     coverImageHashProvider: CoverImageHashProvider,
-    isMedium: Boolean = false
+    isMedium: Boolean = false,
+    dvViewer: DVViewer,
+    dependedObjects: List<ObjectWrapper.Basic>,
+    storeOfRelations: StoreOfRelations
 ): CoverView? {
 
     val type = coverType
@@ -97,7 +103,14 @@ fun ObjectWrapper.Basic.cover(
             coverGradient = coverId
         }
         CoverType.NONE -> {
-            // Do nothing.
+            coverImage = getCoverFromRelationOrLayout(
+                obj = this,
+                dvViewer = dvViewer,
+                urlBuilder = urlBuilder,
+                dependedObjects = dependedObjects,
+                storeOfRelations = storeOfRelations,
+                isLargeSize = !isMedium
+            ).coverImage
         }
     }
 

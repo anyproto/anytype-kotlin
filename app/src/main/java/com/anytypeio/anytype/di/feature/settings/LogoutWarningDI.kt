@@ -9,10 +9,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.misc.AppActionManager
-import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
-import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
-import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
-import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
+import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.ui.settings.LogoutWarningFragment
 import com.anytypeio.anytype.ui_settings.account.LogoutWarningViewModel
@@ -42,19 +39,13 @@ object LogoutWarningModule {
     fun provideViewModelFactory(
         logout: Logout,
         analytics: Analytics,
-        relationsSubscriptionManager: RelationsSubscriptionManager,
-        objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
-        spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
         appActionManager: AppActionManager,
-        userPermissionProvider: UserPermissionProvider
+        globalSubscriptionManager: GlobalSubscriptionManager
     ): LogoutWarningViewModel.Factory = LogoutWarningViewModel.Factory(
         logout = logout,
         analytics = analytics,
-        relationsSubscriptionManager = relationsSubscriptionManager,
         appActionManager = appActionManager,
-        spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
-        objectTypesSubscriptionManager = objectTypesSubscriptionManager,
-        userPermissionProvider = userPermissionProvider
+        globalSubscriptionManager = globalSubscriptionManager
     )
 
     @JvmStatic

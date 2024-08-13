@@ -101,6 +101,7 @@ object EventsDictionary {
     const val relationAdd = "AddExistingRelation"
     const val relationCreate = "CreateRelation"
     const val relationChangeValue = "ChangeRelationValue"
+    const val relationDeleteValue = "DeleteRelationValue"
     const val relationDelete = "DeleteRelation"
     const val relationUrlOpen = "RelationUrlOpen"
     const val relationUrlCopy = "RelationUrlCopy"
@@ -204,6 +205,11 @@ object EventsDictionary {
     const val screenLeaveSpace = "ScreenLeaveSpace"
     const val leaveSpace = "LeaveSpace"
     const val approveLeaveRequest = "ApproveLeaveRequest"
+
+    //Version history
+    const val screenHistory = "ScreenHistory"
+    const val screenHistoryVersion = "ScreenHistoryVersion"
+    const val restoreFromHistory = "RestoreFromHistory"
 
     const val searchBacklink = "SearchBacklink"
 

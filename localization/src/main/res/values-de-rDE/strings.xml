@@ -490,6 +490,7 @@
     <string name="block_data_view_content_description_no_data">The source of the inline set has no type</string>
     <string name="object_search_recently_opened_section_title">Zuletzt geöffnet</string>
     <string name="widget_source_anytype_library">Anytype-Bibliothek</string>
+    <string name="widget_source_default_lists">Standardlisten</string>
     <string name="your_favorite_objects">Deine Lieblingsobjekte</string>
     <string name="on_this_device">Auf diesem Gerät</string>
     <string name="sets_of_objects">Sets von Objekten aus deinem Arbeitsbereich</string>
@@ -692,7 +693,7 @@
     <string name="btn_upload_gallery">Aus Galerie hochladen</string>
     <string name="btn_upload_storage">Von externem Speicher hochladen</string>
     <string name="btn_upload">Hochladen</string>
-    <string name="alert_qr_camera">Go to Settings – Key on Desktop in order to find the QR code for login.</string>
+    <string name="alert_qr_camera">Gehen Sie auf \"Einstellungen – Schlüssel\", um den QR-Code für die Anmeldung zu finden</string>
     <string name="alert_qr_camera_ok">OK</string>
     <string name="choose_option">Option auswählen</string>
     <string name="find_a_relation">Finde Beziehung</string>
@@ -922,14 +923,14 @@
     <!--region WIDGETS -->
     <string name="create_widget">Widget erstellen</string>
     <string name="edit_widgets">Widgets bearbeiten</string>
-    <string name="add_widget">Add widget</string>
+    <string name="add_widget">Widget hinzufügen</string>
     <string name="widget_source">Widget-Quelle</string>
     <string name="widget_type">Widget-Typ</string>
     <string name="widget_add_below">Unten hinzufügen</string>
     <string name="widget_type_tree">Strukturbaum</string>
     <string name="widget_type_tree_description">Widget mit einer hierarchischen Struktur</string>
     <string name="widget_type_link">Link</string>
-    <string name="widget_type_link_description">Compact widget view</string>
+    <string name="widget_type_link_description">Kompakte Widget-Ansicht</string>
     <string name="widget_type_list_description">Widget mit einer Listenansicht</string>
     <string name="widget_type_compact_list_description">Widget mit einer kompakten Listenansicht</string>
     <string name="widget_type_list">Liste</string>
@@ -1050,7 +1051,7 @@
     <string name="sharing_menu_save_as_videos_option">Videos</string>
     <string name="sharing_menu_data">Daten</string>
     <string name="sharing_menu_add_to_anytype_header_title">Zu Anytype hinzufügen</string>
-    <string name="sharing_menu_add_to_anytype_error">Anytype file upload error: %1$s</string>
+    <string name="sharing_menu_add_to_anytype_error">Fehler beim Hochladen der Datei: %1$s</string>
     <string name="sharing_menu_add_to_anytype_success">Alle Dateien wurden erfolgreich hochgeladen</string>
     <string name="sharing_menu_toast_object_added">Neues Objekt wird dem Space ‚%1$s‘ hinzugefügt</string>
     <string name="sharing_menu_btn_add">Hinzufügen</string>
@@ -1068,8 +1069,8 @@
     <string name="relation_origin_bookmark">Lesezeichen</string>
     <!--endregion-->
     <plurals name="backlinks_count">
-        <item quantity="one">%d backlink</item>
-        <item quantity="other">%d backlinks</item>
+        <item quantity="one">%d eingehender Link</item>
+        <item quantity="other">%d eingehende Links</item>
     </plurals>
     <plurals name="links_from_count">
         <item quantity="one">%d Link</item>
@@ -1144,9 +1145,9 @@
     <string name="multiplayer_members_and_requests">Mitglieder</string>
     <string name="multiplayer_cant_add_members">Du kannst keine weiteren Mitglieder hinzufügen</string>
     <string name="multiplayer_cant_add_editors">Du kannst keine weiteren Editoren hinzufügen</string>
-    <string name="multiplayer_upgrade_button">✦ Upgrade</string>
-    <string name="multiplayer_upgrade_button_request">✦ Upgrade to add more members</string>
-    <string name="multiplayer_upgrade_spaces_button">✦ Upgrade to add more spaces</string>
+    <string name="multiplayer_upgrade_button">✦ Plan upgraden</string>
+    <string name="multiplayer_upgrade_button_request">✦ Plan upgraden, um weitere Mitglieder hinzuzufügen</string>
+    <string name="multiplayer_upgrade_spaces_button">✦ Plan upgraden, um weitere Spaces zu erstellen</string>
     <string name="multiplayer_members">Mitglieder</string>
     <string name="multiplayer_leave_request">Anfrage abgeben</string>
     <string name="multiplayer_join_request">Beitrittsanfrage</string>
@@ -1156,7 +1157,7 @@
     <string name="multiplayer_can_edit">Darf bearbeiten</string>
     <string name="multiplayer_can_view">Darf ansehen</string>
     <string name="multiplayer_space_add_viewer">Viewer hinzufügen</string>
-    <string name="multiplayer_space_add_more_viewer">✦ Add more viewers</string>
+    <string name="multiplayer_space_add_more_viewer">✦ Weitere Betrachter hinzufügen</string>
     <string name="multiplayer_space_add_editor">Editor hinzufügen</string>
     <string name="multiplayer_space_add_more_editor">✦ Weitere Editoren hinzufügen</string>
     <string name="multiplayer_space_request_reject">Ablehnen</string>
@@ -1214,9 +1215,9 @@
     <string name="multiplayer_deeplink_to_your_object">Deeplink to your object</string>
     <string name="multiplayer_deeplink_to_your_object_error">This deeplink is not working. Object might be deleted or there might be issues with space access.</string>
     <string name="multiplayer_collaborate_on_spaces">Collaborate on spaces</string>
-    <string name="multiplayer_collaborate_step_1">1.  Tap the Space widget to access settings</string>
+    <string name="multiplayer_collaborate_step_1">1. Tippe auf das Widget des aktiven Space, um die Einstellungen für den Space anzupassen</string>
     <string name="multiplayer_collaborate_step_2">2. Teilen-Bereich öffnen</string>
-    <string name="multiplayer_collaborate_step_3">3.  Generate an invite link and share it</string>
+    <string name="multiplayer_collaborate_step_3">3. Generiere einen Einladungslink und teile ihn mit anderen</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="one">%1$d Mitglied</item>
         <item quantity="other">%1$d Mitglieder</item>
@@ -1233,8 +1234,13 @@
     <string name="multiplayer_cancel_join_request">Beitrittsanfrage zurückziehen</string>
     <string name="multiplayer_cancel_join_request_msg">Du wirst eine neue Beitrittsanfrage senden müssen</string>
     <string name="multiplayer_do_not_cancel_join_request">Nicht verwerfen</string>
+    <string name="multiplayer_error_invite_not_found">Die Einladung existiert nicht. Bitte stelle sicher, dass deine Geräte synchronisiert sind.</string>
+    <string name="multiplayer_error_invite_bad_content">Der Einladungslink konnte nicht geparst werden. Er kann Fehler im Format oder ungültige Daten enthalten.</string>
+    <string name="multiplayer_error_space_is_deleted">It looks like the space has been deleted. Please ensure that your devices are synchronized.</string>
+    <string name="multiplayer_error_limit_reached">Limit reached for this space. Please upgrade your membership or contact support for assistance.</string>
+    <string name="multiplayer_error_not_shareable">It looks like the space is no longer shared. Please ensure that your devices are synchronized.</string>
+    <string name="multiplayer_error_request_failed">Hoppla! Die Anfrage ist fehlgeschlagen. Bitte überprüfe deine Internetverbindung und versuche es erneut.</string>
     <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">Der Link scheint nicht zu funktionieren</string>
-    <string name="multiplayer_invite_link_space_deleted">Dieser Einladungslink ist nicht mehr gültig, da der Raum gelöscht wurde.</string>
     <string name="multiplayer_invite_link_space_not_found">Dieser Einladungslink ist nicht mehr gültig, da der Raum gelöscht wurde.</string>
     <string name="multiplayer_invite_link_request_already_sent">Anfrage gesendet</string>
     <!--endregion-->
@@ -1278,7 +1284,7 @@
     <string name="payments_tier_details_name_min">Mindestens 7 Zeichen</string>
     <string name="payments_tier_details_name_error">Dieser Name ist bereits vergeben!</string>
     <string name="payments_tier_details_name_validated">Dieser Name [%1$s] ist noch zu vergeben!</string>
-    <string name="payments_tier_details_name_validating">Validating name</string>
+    <string name="payments_tier_details_name_validating">Name wird überprüft</string>
     <string name="payments_tier_details_free_forever">Für immer</string>
     <string name="payments_tier_details_valid_until">Gültig bis %1$s</string>
     <string name="payments_tier_details_info_explorer">Tauche in das Netzwerk ein und genieße den Nervenkitzel der persönlichen Zusammenarbeit</string>
@@ -1318,8 +1324,8 @@
     <string name="payments_tier_current_paid_by_google">Google-Abonnement</string>
     <string name="payments_tier_current_button">Zahlung verwalten</string>
     <string name="membership_manage_tier_desktop">You can manage tier on Desktop platform</string>
-    <string name="membership_manage_tier_ios">You can manage tier on iOS platform</string>
-    <string name="membership_manage_tier_another_account">You can manage tier on another Google account</string>
+    <string name="membership_manage_tier_ios">Du kannst deine Mitgliedschaft in der iOS App verwalten</string>
+    <string name="membership_manage_tier_another_account">Du kannst deine Mitgliedschaft über ein anderes Google-Konto verwalten</string>
     <string name="payments_tier_current_change_email_button">E-Mail-Adresse ändern</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Gib den an deine E-Mail-Adresse gesendeten Code ein</string>
@@ -1331,7 +1337,7 @@
     <string name="payments_welcome_button">Fortfahren</string>
     <!-- Membership Email -->
     <string name="membership_support_email">support@anytype.io</string>
-    <string name="membership_support_subject">Membership Screen Error Report - %1$s</string>
+    <string name="membership_support_subject">Fehlerbericht für den Mitgliedschaftsbereich - %1$s</string>
     <string name="membership_support_body">        Hi Anytype Support Team,\n\n
 
         I encountered an error on the Membership Screen in the app. Below are the details:\n
@@ -1371,7 +1377,7 @@ Please provide specific details of your needs here.</string>
     <string name="membership_any_name_not_reserved">Dieser Name kann nicht reserviert werden</string>
     <string name="membership_any_name_null_error">Leerer Fehler</string>
     <string name="membership_any_name_unknown">Unbekannter Fehler</string>
-    <string name="membership_email_wrong_format">Email has wrong format</string>
+    <string name="membership_email_wrong_format">Ungültige E-Mail-Adresse</string>
     <string name="membership_email_already_verified">E-Mail-Adresse bereits bestätigt</string>
     <string name="membership_email_already_sent">E-Mail ist bereits gesendet, versuchen Sie es nach 1 Minute erneut</string>
     <string name="membership_email_failed_to_send">E-Mail konnte nicht gesendet werden</string>
@@ -1455,4 +1461,35 @@ Please provide specific details of your needs here.</string>
     <string name="sort_empty_values_bottom">Ganz unten</string>
     <string name="sort_empty_values_top">Ganz oben</string>
     <string name="widget_view_see_all_objects">Alle Objekte ansehen</string>
+    <string name="sync_status_get_error">Fehler beim Abrufen des Synchronisationsstatus</string>
+    <string name="sync_status_local_only_title">Nur lokal</string>
+    <string name="sync_status_data_backup">Datensicherung ist deaktiviert</string>
+    <string name="sync_status_self_host">Self Host</string>
+    <string name="sync_status_self_host_synced">Synchronisiert</string>
+    <plurals name="sync_status_self_host_syncing">
+        <item quantity="one">%1$d Element wird synchronisiert</item>
+        <item quantity="other">%1$d Elemente werden synchronisiert...</item>
+    </plurals>
+    <string name="sync_status_p2p">P2P-Verbindung</string>
+    <plurals name="sync_status_p2p_devices">
+        <item quantity="one">%1$d Gerät getrennt</item>
+        <item quantity="other">%1$d Geräte getrennt</item>
+    </plurals>
+    <string name="sync_status_p2p_connecting">P2P-Verbindungsaufbau...</string>
+    <string name="sync_status_p2p_disabled">Deaktiviert</string>
+    <string name="sync_status_p2p_restricted">Eingeschränkt. Überprüfe die Geräteeinstellungen.</string>
+    <string name="sync_status_anytype_network">Anytype-Netzwerk</string>
+    <string name="sync_status_anytype_end_to_end">Ende-zu-Ende-verschlüsselt</string>
+    <plurals name="sync_status_network_items">
+        <item quantity="one">%1$d Element wird synchronisiert...</item>
+        <item quantity="other">%1$d Elemente werden synchronisiert...</item>
+    </plurals>
+    <string name="sync_status_anytype_network_connecting">Netzwerk wird verbunden...</string>
+    <string name="sync_status_anytype_network_no_connecting">Keine Verbindung</string>
+    <string name="sync_status_storage_limit_exceed">Speicherplatzgrenze erreicht</string>
+    <string name="sync_status_incompatible_version">Inkompatible Version</string>
+    <string name="sync_status_network_error">No access to the space</string>
+    <string name="sync_status_unrecognized">Unerkannter Fehler</string>
+    <string name="version_history_title">Versionsverlauf</string>
+    <string name="new_object">Neues Objekt</string>
 </resources>

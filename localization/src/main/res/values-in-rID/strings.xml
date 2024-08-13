@@ -489,6 +489,7 @@
     <string name="block_data_view_content_description_no_data">The source of the inline set has no type</string>
     <string name="object_search_recently_opened_section_title">Baru saja dibuka</string>
     <string name="widget_source_anytype_library">Pustaka Anytype</string>
+    <string name="widget_source_default_lists">Daftar bawaan</string>
     <string name="your_favorite_objects">Objek-objek favoritmu</string>
     <string name="on_this_device">Di perangkat ini</string>
     <string name="sets_of_objects">Sets of objects from your workspace</string>
@@ -1227,8 +1228,13 @@
     <string name="multiplayer_cancel_join_request">Batalkan permintaan bergabung</string>
     <string name="multiplayer_cancel_join_request_msg">Kamu akan perlu mengirimkan permintaan bergabung lagi</string>
     <string name="multiplayer_do_not_cancel_join_request">Jangan batalkan</string>
+    <string name="multiplayer_error_invite_not_found">Undangan ini tidak ada. Pastikan perangkatmu tersinkronisasi.</string>
+    <string name="multiplayer_error_invite_bad_content">Tautan undangan tidak dapat digunakan. Mungkin terdapat kesalahan format atau data yang tak valid.</string>
+    <string name="multiplayer_error_space_is_deleted">Kelihatannya ruang ini sudah dihapus. Tolong pastikan bahwa perangkatmu tersinkron dengan baik.</string>
+    <string name="multiplayer_error_limit_reached">Limit reached for this space. Please upgrade your membership or contact support for assistance.</string>
+    <string name="multiplayer_error_not_shareable">Kelihatannya ruang ini tidak dibagikan lagi. Tolong pastikan bahwa perangkatmu tersinkron dengan baik.</string>
+    <string name="multiplayer_error_request_failed">Ups! Permintaan gagal. Tolong periksa koneksi internetmu lalu coba lagi.</string>
     <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">Sepertinya tautan ini tidak bisa digunakan</string>
-    <string name="multiplayer_invite_link_space_deleted">Tautan undangan ini tidak berlaku karena ruangnya telah dihapus.</string>
     <string name="multiplayer_invite_link_space_not_found">Tautan undangan ini tidak berlaku karena ruangnya tidak ditemukan.</string>
     <string name="multiplayer_invite_link_request_already_sent">Permintaan terkirim</string>
     <!--endregion-->
@@ -1445,4 +1451,32 @@ Please provide specific details of your needs here.</string>
     <string name="sort_empty_values_bottom">Di bawah</string>
     <string name="sort_empty_values_top">Di atas</string>
     <string name="widget_view_see_all_objects">Lihat semua objek</string>
+    <string name="sync_status_get_error">Galat mengambil status sinkr.</string>
+    <string name="sync_status_local_only_title">Hanya lokal</string>
+    <string name="sync_status_data_backup">Pencadangan data dimatikan</string>
+    <string name="sync_status_self_host">Swaladen</string>
+    <string name="sync_status_self_host_synced">Tersinkron</string>
+    <plurals name="sync_status_self_host_syncing">
+        <item quantity="other">%1$d items syncing...</item>
+    </plurals>
+    <string name="sync_status_p2p">P2P Connection</string>
+    <plurals name="sync_status_p2p_devices">
+        <item quantity="other">%1$d perangkat terhubung</item>
+    </plurals>
+    <string name="sync_status_p2p_connecting">P2P Connecting...</string>
+    <string name="sync_status_p2p_disabled">Nonaktif</string>
+    <string name="sync_status_p2p_restricted">Restricted. Check device settings.</string>
+    <string name="sync_status_anytype_network">Jaringan Anytype</string>
+    <string name="sync_status_anytype_end_to_end">Terenkripsi end-to-end</string>
+    <plurals name="sync_status_network_items">
+        <item quantity="other">%1$d items syncing...</item>
+    </plurals>
+    <string name="sync_status_anytype_network_connecting">Menghubungkan ke Jaringan ...</string>
+    <string name="sync_status_anytype_network_no_connecting">Tak ada koneksi</string>
+    <string name="sync_status_storage_limit_exceed">Batas penyimpanan tercapai</string>
+    <string name="sync_status_incompatible_version">Incompatible version</string>
+    <string name="sync_status_network_error">Tidak ada akses ke ruang</string>
+    <string name="sync_status_unrecognized">Galat tak dikenali</string>
+    <string name="version_history_title">Riwayat versi</string>
+    <string name="new_object">Objek baru</string>
 </resources>

@@ -5,21 +5,26 @@ import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.TimeInSeconds
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DateType
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
+import java.time.temporal.ChronoUnit
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 import timber.log.Timber
 
-class DateProviderImpl @Inject constructor() : DateProvider {
+class DateProviderImpl @Inject constructor(
+    private val defaultZoneId: ZoneId
+) : DateProvider {
 
     override fun calculateDateType(date: TimeInSeconds): DateType {
         val dateInstant = Instant.ofEpochSecond(date)
-        val givenDate = dateInstant.atZone(ZoneId.systemDefault()).toLocalDate()
+        val givenDate = dateInstant.atZone(defaultZoneId).toLocalDate()
         val givenDateWithZeroTime = givenDate.atStartOfDay().toLocalDate()
 
         return when (givenDateWithZeroTime) {
@@ -55,31 +60,31 @@ class DateProviderImpl @Inject constructor() : DateProvider {
     override fun getTimestampForTodayAtStartOfDay(): TimeInSeconds {
         val today = LocalDate.now()
         val todayWithZeroTime = today.atStartOfDay().toLocalDate()
-        return todayWithZeroTime.atStartOfDay(ZoneId.systemDefault()).toEpochSecond()
+        return todayWithZeroTime.atStartOfDay(defaultZoneId).toEpochSecond()
     }
 
     override fun getTimestampForTomorrowAtStartOfDay(): TimeInSeconds {
         val tomorrow = LocalDate.now().plusDays(1)
         val tomorrowWithZeroTime = tomorrow.atStartOfDay().toLocalDate()
-        return tomorrowWithZeroTime.atStartOfDay(ZoneId.systemDefault()).toEpochSecond()
+        return tomorrowWithZeroTime.atStartOfDay(defaultZoneId).toEpochSecond()
     }
 
     override fun getTimestampForYesterdayAtStartOfDay(): TimeInSeconds {
         val yesterday = LocalDate.now().minusDays(1)
         val yesterdayWithZeroTime = yesterday.atStartOfDay().toLocalDate()
-        return yesterdayWithZeroTime.atStartOfDay(ZoneId.systemDefault()).toEpochSecond()
+        return yesterdayWithZeroTime.atStartOfDay(defaultZoneId).toEpochSecond()
     }
 
     override fun getTimestampForWeekAheadAtStartOfDay(): TimeInSeconds {
         val weekAfter = LocalDate.now().plusWeeks(1)
         val weekAfterWithZeroTime = weekAfter.atStartOfDay().toLocalDate()
-        return weekAfterWithZeroTime.atStartOfDay(ZoneId.systemDefault()).toEpochSecond()
+        return weekAfterWithZeroTime.atStartOfDay(defaultZoneId).toEpochSecond()
     }
 
     override fun getTimestampForWeekAgoAtStartOfDay(): TimeInSeconds {
         val weekAgo = LocalDate.now().minusWeeks(1)
         val weekAgoWithZeroTime = weekAgo.atStartOfDay().toLocalDate()
-        return weekAgoWithZeroTime.atStartOfDay(ZoneId.systemDefault()).toEpochSecond()
+        return weekAgoWithZeroTime.atStartOfDay(defaultZoneId).toEpochSecond()
     }
 
     override fun getRelativeTimeSpanString(date: TimeInSeconds): CharSequence = DateUtils.getRelativeTimeSpanString(
@@ -91,7 +96,7 @@ class DateProviderImpl @Inject constructor() : DateProvider {
 
     override fun adjustToStartOfDayInUserTimeZone(timestamp: TimeInSeconds): TimeInMillis {
         val instant = Instant.ofEpochSecond(timestamp)
-        val localDate = instant.atZone(ZoneId.systemDefault()).toLocalDate()
+        val localDate = instant.atZone(defaultZoneId).toLocalDate()
         val startOfDay = localDate.atStartOfDay()
         return (startOfDay.toEpochSecond(ZoneOffset.UTC) * 1000)
     }
@@ -135,6 +140,37 @@ class DateProviderImpl @Inject constructor() : DateProvider {
             Timber.e(e,"Error formatting timestamp to date string")
             return ""
         }
+    }
+
+    override fun formatTimestampToDateAndTime(
+        timestamp: TimeInMillis,
+        locale: Locale,
+        dateStyle: Int,
+        timeStyle: Int
+    ): Pair<String, String> {
+        return try {
+            val datePattern = (DateFormat.getDateInstance(dateStyle, locale) as SimpleDateFormat).toPattern()
+            val timePattern = (DateFormat.getTimeInstance(timeStyle, locale) as SimpleDateFormat).toPattern()
+            val dateFormatter = SimpleDateFormat(datePattern, locale)
+            val timeFormatter = SimpleDateFormat(timePattern, locale)
+            val date = Date(timestamp)
+            val dateString = dateFormatter.format(date)
+            val timeString = timeFormatter.format(date)
+            Pair(dateString, timeString)
+        } catch (e: Exception) {
+            Timber.e(e, "Error formatting timestamp to date and time string")
+            Pair("", "")
+        }
+    }
+
+    override fun isSameMinute(timestamp1: Long, timestamp2: Long): Boolean {
+        val dateTime1 = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp1), defaultZoneId)
+        val dateTime2 = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp2), defaultZoneId)
+
+        val truncatedDateTime1 = dateTime1.truncatedTo(ChronoUnit.MINUTES)
+        val truncatedDateTime2 = dateTime2.truncatedTo(ChronoUnit.MINUTES)
+
+        return truncatedDateTime1 == truncatedDateTime2
     }
 }
 

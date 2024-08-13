@@ -18,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
@@ -62,11 +63,24 @@ fun ListWidgetObjectIcon(
     icon: ObjectIcon,
     modifier: Modifier,
     iconSize: Dp = 48.dp,
-    onTaskIconClicked: (Boolean) -> Unit = {}
+    onTaskIconClicked: (Boolean) -> Unit = {},
+    avatarFontSize: TextUnit = 28.sp,
+    avatarTextStyle: TextStyle = TextStyle(
+        fontWeight = FontWeight.SemiBold,
+        color = colorResource(id = R.color.text_white)
+    ),
+    avatarBackgroundColor: Int = R.color.text_tertiary
 ) {
     when (icon) {
-        is ObjectIcon.Profile.Avatar -> DefaultProfileAvatarIcon(modifier, iconSize, icon)
-        is ObjectIcon.Profile.Image -> defaultProfileIconImage(icon, modifier, iconSize)
+        is ObjectIcon.Profile.Avatar -> DefaultProfileAvatarIcon(
+            modifier = modifier,
+            iconSize = iconSize,
+            icon = icon,
+            avatarFontSize = avatarFontSize,
+            avatarTextStyle = avatarTextStyle,
+            avatarBackgroundColor = avatarBackgroundColor
+        )
+        is ObjectIcon.Profile.Image -> DefaultProfileIconImage(icon, modifier, iconSize)
         is ObjectIcon.Basic.Emoji -> DefaultEmojiObjectIcon(modifier, iconSize, icon)
         is ObjectIcon.Basic.Image -> DefaultObjectImageIcon(icon.hash, modifier, iconSize)
         is ObjectIcon.Bookmark -> DefaultObjectBookmarkIcon(icon.image, modifier, iconSize)
@@ -147,14 +161,17 @@ fun DefaultObjectBookmarkIcon(
 fun DefaultProfileAvatarIcon(
     modifier: Modifier,
     iconSize: Dp,
-    icon: ObjectIcon.Profile.Avatar
+    icon: ObjectIcon.Profile.Avatar,
+    avatarFontSize: TextUnit,
+    avatarTextStyle: TextStyle,
+    avatarBackgroundColor: Int
 ) {
     Box(
         modifier = modifier
             .size(iconSize)
             .background(
                 shape = CircleShape,
-                color = colorResource(id = R.color.text_tertiary)
+                color = colorResource(id = avatarBackgroundColor)
             )
     ) {
         Text(
@@ -164,11 +181,8 @@ fun DefaultProfileAvatarIcon(
                 .take(1)
                 .uppercase(),
             modifier = Modifier.align(Alignment.Center),
-            style = TextStyle(
-                fontSize = 28.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = colorResource(id = R.color.text_white)
-            )
+            style = avatarTextStyle,
+            fontSize = avatarFontSize
         )
     }
 }
@@ -204,7 +218,7 @@ fun DefaultBasicAvatarIcon(
 }
 
 @Composable
-fun defaultProfileIconImage(
+fun DefaultProfileIconImage(
     icon: ObjectIcon.Profile.Image,
     modifier: Modifier,
     iconSize: Dp

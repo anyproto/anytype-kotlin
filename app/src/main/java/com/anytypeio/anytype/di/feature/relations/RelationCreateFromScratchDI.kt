@@ -57,7 +57,8 @@ object RelationCreateFromScratchForObjectModule {
         createFromScratchState: StateHolder<CreateFromScratchState>,
         createRelation: CreateRelation,
         spaceManager: SpaceManager,
-        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        storeOfRelations: StoreOfRelations
     ) = RelationCreateFromScratchForObjectViewModel.Factory(
         addRelationToObject = addRelationToObject,
         createRelation = createRelation,
@@ -65,7 +66,8 @@ object RelationCreateFromScratchForObjectModule {
         analytics = analytics,
         createFromScratchState = createFromScratchState,
         spaceManager = spaceManager,
-        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+        storeOfRelations = storeOfRelations
     )
 
     @JvmStatic
@@ -120,7 +122,8 @@ object RelationCreateFromScratchForDataViewModule {
         createRelation: CreateRelation,
         addRelationToDataView: AddRelationToDataView,
         spaceManager: SpaceManager,
-        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        storeOfRelations: StoreOfRelations
     ) = RelationCreateFromScratchForDataViewViewModel.Factory(
         addRelationToDataView = addRelationToDataView,
         dispatcher = dispatcher,
@@ -130,7 +133,8 @@ object RelationCreateFromScratchForDataViewModule {
         createFromScratchState = createFromScratchState,
         createRelation = createRelation,
         spaceManager = spaceManager,
-        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+        storeOfRelations = storeOfRelations
     )
 
     @JvmStatic
@@ -188,7 +192,8 @@ object RelationCreateFromScratchForObjectBlockModule {
         analytics: Analytics,
         createFromScratchState: StateHolder<CreateFromScratchState>,
         spaceManager: SpaceManager,
-        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        storeOfRelations: StoreOfRelations
     ) = RelationCreateFromScratchForObjectBlockViewModel.Factory(
         addRelationToObject = addRelationToObject,
         createRelation = createRelation,
@@ -196,7 +201,8 @@ object RelationCreateFromScratchForObjectBlockModule {
         analytics = analytics,
         createFromScratchState = createFromScratchState,
         spaceManager = spaceManager,
-        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+        storeOfRelations = storeOfRelations
     )
 
     @JvmStatic

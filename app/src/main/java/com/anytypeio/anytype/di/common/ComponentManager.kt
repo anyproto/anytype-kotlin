@@ -102,6 +102,7 @@ import com.anytypeio.anytype.di.main.MainComponent
 import com.anytypeio.anytype.gallery_experience.viewmodel.GalleryInstallationViewModel
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
+import com.anytypeio.anytype.presentation.history.VersionHistoryViewModel
 import com.anytypeio.anytype.presentation.library.LibraryViewModel
 import com.anytypeio.anytype.presentation.multiplayer.RequestJoinSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
@@ -1032,6 +1033,19 @@ class ComponentManager(
             DaggerGalleryInstallationComponent.builder()
                 .withDependencies(findComponentDependencies())
                 .withParams(params)
+                .build()
+        }
+
+    val versionHistoryComponent =
+        ComponentWithParams { vmParams: VersionHistoryViewModel.VmParams ->
+            editorComponent.get(
+                key = vmParams.objectId,
+                param = DefaultComponentParam(
+                    ctx = vmParams.objectId,
+                    space = vmParams.spaceId
+                )
+            ).versionHistoryComponent()
+                .vmParams(vmParams)
                 .build()
         }
 

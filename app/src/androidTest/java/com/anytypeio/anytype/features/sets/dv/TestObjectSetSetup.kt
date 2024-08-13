@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.SubscriptionEvent
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Result
@@ -72,6 +73,7 @@ import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.collection.DateProviderImpl
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import java.time.ZoneId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -180,6 +182,9 @@ abstract class TestObjectSetSetup {
     @Mock
     lateinit var analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
 
+    @Mock
+    lateinit var clearLastOpenedObject: ClearLastOpenedObject
+
     private lateinit var getTemplates: GetTemplates
     private lateinit var getDefaultObjectType: GetDefaultObjectType
 
@@ -219,7 +224,7 @@ abstract class TestObjectSetSetup {
 
     private val delegator = Delegator.Default<Action>()
 
-    private val dateProvider = DateProviderImpl()
+    private val dateProvider = DateProviderImpl(ZoneId.systemDefault())
 
     open fun setup() {
         MockitoAnnotations.openMocks(this)
@@ -307,6 +312,7 @@ abstract class TestObjectSetSetup {
             permissions = permissions,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
+            clearLastOpenedObject = clearLastOpenedObject
         )
     }
 

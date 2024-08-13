@@ -6,8 +6,10 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationOptions
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -22,7 +24,9 @@ class TagOrStatusValueViewModelFactory @Inject constructor(
     private val analytics: Analytics,
     private val spaceManager: SpaceManager,
     private val subscription: StorelessSubscriptionContainer,
-    private val deleteRelationOptions: DeleteRelationOptions
+    private val deleteRelationOptions: DeleteRelationOptions,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val storeOfRelations: StoreOfRelations
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -36,6 +40,8 @@ class TagOrStatusValueViewModelFactory @Inject constructor(
         analytics = analytics,
         spaceManager = spaceManager,
         subscription = subscription,
-        deleteRelationOptions = deleteRelationOptions
+        deleteRelationOptions = deleteRelationOptions,
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+        storeOfRelations = storeOfRelations
     ) as T
 }

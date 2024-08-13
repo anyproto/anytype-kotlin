@@ -489,6 +489,7 @@
     <string name="block_data_view_content_description_no_data">內嵌集合的來源沒有類型</string>
     <string name="object_search_recently_opened_section_title">最近開啟</string>
     <string name="widget_source_anytype_library">Anytype 資料庫</string>
+    <string name="widget_source_default_lists">Default lists</string>
     <string name="your_favorite_objects">您的最愛物件</string>
     <string name="on_this_device">在此裝置上</string>
     <string name="sets_of_objects">工作區中的物件集合</string>
@@ -1227,8 +1228,13 @@
     <string name="multiplayer_cancel_join_request">取消加入請求</string>
     <string name="multiplayer_cancel_join_request_msg">您將需要再次發送加入請求</string>
     <string name="multiplayer_do_not_cancel_join_request">不要取消</string>
+    <string name="multiplayer_error_invite_not_found">邀請不存在。請確保您的裝置已同步。</string>
+    <string name="multiplayer_error_invite_bad_content">無法辨認邀請連結。可能是格式錯誤或無效的資料。</string>
+    <string name="multiplayer_error_space_is_deleted">此空間似乎已被刪除。請確保您的裝置已同步。</string>
+    <string name="multiplayer_error_limit_reached">此空間容量已達上限。請升級您的會員資格或聯繫支援部門尋求協助。</string>
+    <string name="multiplayer_error_not_shareable">此空間似乎已不再共享。請確保您的裝置已同步。</string>
+    <string name="multiplayer_error_request_failed">哎呀！請求失敗了。請檢查您的網路連線後再試一次。</string>
     <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">這個連結似乎不起作用</string>
-    <string name="multiplayer_invite_link_space_deleted">此邀請連結不再生效，因為空間已被刪除。</string>
     <string name="multiplayer_invite_link_space_not_found">此邀請連結無效，找不到此空間。</string>
     <string name="multiplayer_invite_link_request_already_sent">已送出請求</string>
     <!--endregion-->
@@ -1445,4 +1451,32 @@ Please provide specific details of your needs here.</string>
     <string name="sort_empty_values_bottom">在底部</string>
     <string name="sort_empty_values_top">在頂部</string>
     <string name="widget_view_see_all_objects">檢視所有物件</string>
+    <string name="sync_status_get_error">Error getting sync status</string>
+    <string name="sync_status_local_only_title">僅限本地</string>
+    <string name="sync_status_data_backup">資料備份被禁用</string>
+    <string name="sync_status_self_host">自己主持</string>
+    <string name="sync_status_self_host_synced">已同步</string>
+    <plurals name="sync_status_self_host_syncing">
+        <item quantity="other">%1$d items syncing...</item>
+    </plurals>
+    <string name="sync_status_p2p">P2P 連接</string>
+    <plurals name="sync_status_p2p_devices">
+        <item quantity="other">%1$d devices connected</item>
+    </plurals>
+    <string name="sync_status_p2p_connecting">P2P 連接中…</string>
+    <string name="sync_status_p2p_disabled">Disabled</string>
+    <string name="sync_status_p2p_restricted">限制。請檢查裝置設定。</string>
+    <string name="sync_status_anytype_network">Anytype 網絡</string>
+    <string name="sync_status_anytype_end_to_end">已端到端加密</string>
+    <plurals name="sync_status_network_items">
+        <item quantity="other">%1$d items syncing...</item>
+    </plurals>
+    <string name="sync_status_anytype_network_connecting">Network Connecting...</string>
+    <string name="sync_status_anytype_network_no_connecting">沒有連線</string>
+    <string name="sync_status_storage_limit_exceed">達到儲存限制</string>
+    <string name="sync_status_incompatible_version">不相容的版本</string>
+    <string name="sync_status_network_error">無法進入這個空間</string>
+    <string name="sync_status_unrecognized">無法識別的錯誤</string>
+    <string name="version_history_title">Version history</string>
+    <string name="new_object">新增物件</string>
 </resources>

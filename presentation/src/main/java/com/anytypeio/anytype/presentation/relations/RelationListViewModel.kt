@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.relations
 
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectRelationFeature
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectRelationUnfeature
 import com.anytypeio.anytype.analytics.base.EventsDictionary.relationsScreenShow
@@ -22,10 +23,11 @@ import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationDeleteEvent
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
 import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.relations.model.RelationOperationError
@@ -50,8 +52,10 @@ class RelationListViewModel(
     private val deleteRelationFromObject: DeleteRelationFromObject,
     private val analytics: Analytics,
     private val storeOfRelations: StoreOfRelations,
-    private val addRelationToObject: AddRelationToObject
-) : BaseViewModel() {
+    private val addRelationToObject: AddRelationToObject,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val spaceManager: SpaceManager
+) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val isEditMode = MutableStateFlow(false)
 
@@ -60,6 +64,10 @@ class RelationListViewModel(
     private val isInAddMode = MutableStateFlow(false)
     val commands = MutableSharedFlow<Command>(replay = 0)
     val views = MutableStateFlow<List<Model>>(emptyList())
+
+    init {
+        Timber.i("RelationListViewModel, init")
+    }
 
     fun onStartListMode(ctx: Id) {
         Timber.d("onStartListMode, ctx: $ctx")
@@ -249,6 +257,12 @@ class RelationListViewModel(
             failure = { Timber.e(it, "Error while adding relation to object") },
             success = {
                 dispatcher.send(it)
+                analytics.sendAnalyticsRelationEvent(
+                    eventName = EventsDictionary.relationAdd,
+                    storeOfRelations = storeOfRelations,
+                    relationKey = view.key,
+                    spaceParams = provideParams(spaceManager.get())
+                )
                 success.invoke()
             }
         )
@@ -271,9 +285,11 @@ class RelationListViewModel(
                         failure = { Timber.e(it, "Error while removing from featured relations") },
                         success = {
                             dispatcher.send(it)
-                            sendEvent(
-                                analytics = analytics,
-                                eventName = objectRelationUnfeature
+                            analytics.sendAnalyticsRelationEvent(
+                                eventName = objectRelationUnfeature,
+                                storeOfRelations = storeOfRelations,
+                                relationKey = relationKey,
+                                spaceParams = provideParams(spaceManager.get())
                             )
                         }
                     )
@@ -289,9 +305,11 @@ class RelationListViewModel(
                         failure = { Timber.e(it, "Error while adding to featured relations") },
                         success = {
                             dispatcher.send(it)
-                            sendEvent(
-                                analytics = analytics,
-                                eventName = objectRelationFeature
+                            analytics.sendAnalyticsRelationEvent(
+                                eventName = objectRelationFeature,
+                                storeOfRelations = storeOfRelations,
+                                relationKey = relationKey,
+                                spaceParams = provideParams(spaceManager.get())
                             )
                         }
                     )
@@ -311,7 +329,12 @@ class RelationListViewModel(
                 failure = { Timber.e(it, "Error while deleting relation") },
                 success = {
                     dispatcher.send(it)
-                    sendAnalyticsRelationDeleteEvent(analytics)
+                    analytics.sendAnalyticsRelationEvent(
+                        eventName = EventsDictionary.relationDelete,
+                        storeOfRelations = storeOfRelations,
+                        relationKey = view.key,
+                        spaceParams = provideParams(spaceManager.get())
+                    )
                 }
             )
         }
@@ -446,7 +469,12 @@ class RelationListViewModel(
             ).process(
                 success = {
                     dispatcher.send(it)
-                    sendAnalyticsRelationValueEvent(analytics)
+                    analytics.sendAnalyticsRelationEvent(
+                        eventName = EventsDictionary.relationChangeValue,
+                        storeOfRelations = storeOfRelations,
+                        relationKey = view.key,
+                        spaceParams = provideParams(spaceManager.get())
+                    )
                 },
                 failure = { Timber.e(it, "Error while updating checkbox relation") }
             )
@@ -470,7 +498,8 @@ class RelationListViewModel(
     fun onRelationTextValueChanged(
         ctx: Id,
         value: Any?,
-        relationKey: Key
+        relationKey: Key,
+        isValueEmpty: Boolean
     ) {
         viewModelScope.launch {
             updateDetail(
@@ -482,7 +511,13 @@ class RelationListViewModel(
             ).process(
                 success = { payload ->
                     if (payload.events.isNotEmpty()) dispatcher.send(payload)
-                    sendAnalyticsRelationValueEvent(analytics)
+                    analytics.sendAnalyticsRelationEvent(
+                        eventName = if (isValueEmpty) EventsDictionary.relationDeleteValue
+                        else EventsDictionary.relationChangeValue,
+                        storeOfRelations = storeOfRelations,
+                        relationKey = relationKey,
+                        spaceParams = provideParams(spaceManager.get())
+                    )
                 },
                 failure = { Timber.e(it, "Error while updating relation values") }
             )

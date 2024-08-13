@@ -8,9 +8,11 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.di.feature.cover.UnsplashSubComponent
+import com.anytypeio.anytype.di.feature.history.VersionHistoryComponent
 import com.anytypeio.anytype.di.feature.relations.RelationAddToObjectSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectBlockSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectSubComponent
+import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.ClearBlockContent
@@ -56,6 +58,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
@@ -193,6 +196,7 @@ interface EditorSubComponent {
     fun tagStatusObjectComponent(): TagOrStatusValueObjectComponent.Builder
     fun optionObjectComponent(): CreateOrEditOptionObjectComponent.Builder
     fun objectValueComponent(): ObjectValueObjectComponent.Builder
+    fun versionHistoryComponent() : VersionHistoryComponent.Builder
 }
 
 
@@ -289,7 +293,9 @@ object EditorSessionModule {
         storelessSubscriptionContainer: StorelessSubscriptionContainer,
         dispatchers: AppCoroutineDispatchers,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-        syncStatusProvider: SpaceSyncAndP2PStatusProvider
+        syncStatusProvider: SpaceSyncAndP2PStatusProvider,
+        getNetworkMode: GetNetworkMode,
+        clearLastOpenedObject: ClearLastOpenedObject
     ): EditorViewModelFactory = EditorViewModelFactory(
         params = params,
         permissions = permissions,
@@ -332,7 +338,9 @@ object EditorSessionModule {
         templatesContainer = templatesContainer,
         dispatchers = dispatchers,
         storelessSubscriptionContainer = storelessSubscriptionContainer,
+        getNetworkMode = getNetworkMode,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+        clearLastOpenedObject = clearLastOpenedObject,
         syncStatusProvider = syncStatusProvider
     )
 

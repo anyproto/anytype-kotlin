@@ -28,6 +28,7 @@ import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.cancel
+import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.fold
@@ -70,7 +71,7 @@ import com.anytypeio.anytype.presentation.editor.model.TextUpdate
 import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
 import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Companion.HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION
 import com.anytypeio.anytype.presentation.mapper.toTemplateObjectTypeViewItems
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
@@ -177,7 +178,8 @@ class ObjectSetViewModel(
     private val dispatchers: AppCoroutineDispatchers,
     private val dateProvider: DateProvider,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
+    private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
+    private val clearLastOpenedObject: ClearLastOpenedObject,
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>,
     ViewerDelegate by viewerDelegate,
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate
@@ -236,7 +238,7 @@ class ObjectSetViewModel(
     private val selectedTypeFlow: MutableStateFlow<ObjectWrapper.Type?> = MutableStateFlow(null)
 
     init {
-        Timber.d("ObjectSetViewModel, init")
+        Timber.i("ObjectSetViewModel, init")
 
         proceedWIthObservingPermissions()
 
@@ -849,7 +851,7 @@ class ObjectSetViewModel(
                     )
                 }
             } else {
-                Timber.e("Skipping dispatching title update, because set of objects was not ready.")
+                Timber.w("Skipping dispatching title update, because set of objects was not ready.")
             }
         }
     }
@@ -1576,6 +1578,7 @@ class ObjectSetViewModel(
 
     fun onHomeButtonClicked() {
         viewModelScope.launch {
+            clearLastOpenedObject(ClearLastOpenedObject.Params(vmParams.space))
             closeBlock.async(context).fold(
                 onSuccess = { dispatch(AppNavigation.Command.ExitToDesktop) },
                 onFailure = {
@@ -1736,7 +1739,12 @@ class ObjectSetViewModel(
             ).process(
                 success = {
                     dispatcher.send(it)
-                    sendAnalyticsRelationValueEvent(analytics)
+                    analytics.sendAnalyticsRelationEvent(
+                        eventName = EventsDictionary.relationChangeValue,
+                        storeOfRelations = storeOfRelations,
+                        relationKey = view.key,
+                        spaceParams = provideParams(spaceManager.get())
+                    )
                 },
                 failure = { Timber.e(it, "Error while updating checkbox relation") }
             )

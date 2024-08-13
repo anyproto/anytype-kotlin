@@ -115,6 +115,7 @@ class CollectionViewModel(
     val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
 
     init {
+        Timber.i("CollectionViewModel, init")
         proceedWithObservingProfileIcon()
         val externalChannelEvents: Flow<Payload> = spaceManager
             .observe()

@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.core_models
 
+import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -19,7 +21,8 @@ fun StubObject(
     isReadOnly: Boolean? = null,
     isHidden: Boolean? = null,
     links: List<Id> = emptyList(),
-    targetObjectType: Id? = null
+    targetObjectType: Id? = null,
+    identity: Id? = null
 ): ObjectWrapper.Basic = ObjectWrapper.Basic(
     map = mapOf(
         Relations.ID to id,
@@ -37,6 +40,27 @@ fun StubObject(
         Relations.LINKS to links,
         Relations.TARGET_OBJECT_TYPE to targetObjectType,
         Relations.UNIQUE_KEY to uniqueKey,
+        Relations.IDENTITY to identity
+    )
+)
+
+fun StubSpaceMember(
+    id: String = MockDataFactory.randomUuid(),
+    space: Id = MockDataFactory.randomUuid(),
+    name: String = MockDataFactory.randomString(),
+    iconEmoji: String? = null,
+    identity: Id? = null,
+    memberPermissions: List<SpaceMemberPermissions> = emptyList(),
+    memberStatus: ParticipantStatus = ParticipantStatus.ACTIVE
+    ): ObjectWrapper.Basic = ObjectWrapper.Basic(
+    map = mapOf(
+        Relations.ID to id,
+        Relations.SPACE_ID to space,
+        Relations.NAME to name,
+        Relations.ICON_EMOJI to iconEmoji,
+        Relations.IDENTITY to identity,
+        Relations.PARTICIPANT_PERMISSIONS to memberPermissions,
+        Relations.PARTICIPANT_STATUS to memberStatus.code.toDouble()
     )
 )
 

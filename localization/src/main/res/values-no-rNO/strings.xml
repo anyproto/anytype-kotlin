@@ -9,13 +9,13 @@
     <string name="personalization">Personlig tilpasning</string>
     <string name="appearance">Utseende</string>
     <string name="file_storage">Fillagring</string>
-    <string name="key">Key</string>
+    <string name="key">Nøkkel</string>
     <string name="clear_file_cache">Tøm filbuffer</string>
     <string name="debug_sync_report">Feilsøk synkroniseringsrapport</string>
     <string name="debug">Feilsøk</string>
-    <string name="account">Vault</string>
+    <string name="account">Hvelv</string>
     <string name="reset_account">Reset vault</string>
-    <string name="delete_account">Delete vault</string>
+    <string name="delete_account">Slett hvelv</string>
     <string name="space_debug">Feilsøking Rom</string>
     <string name="data">Data</string>
     <string name="mode">Modus</string>
@@ -29,7 +29,7 @@
     <string name="system">System</string>
     <string name="settings">Innstillinger</string>
     <string name="have_you_back_up_your_recovery_phrase">Have you backed up your Key?</string>
-    <string name="you_will_need_to_sign_in">You will need it to enter your vault. Keep it in a safe place. If you lose it, you can no longer enter your vault.</string>
+    <string name="you_will_need_to_sign_in">Du trenger den for å logge inn i hvelvet. Behold den på et trygt sted. Hvis du mister den, får du ikke lenger tilgang til hvelvet.</string>
     <string name="about_help_and_community">Hjelp &amp; fellesskap</string>
     <string name="about_what_is_new">Hva er nytt</string>
     <string name="about_anytype_community">Anytype Community</string>
@@ -490,6 +490,7 @@
     <string name="block_data_view_content_description_no_data">The source of the inline set has no type</string>
     <string name="object_search_recently_opened_section_title">Nylig åpnet</string>
     <string name="widget_source_anytype_library">Anytype bibliotek</string>
+    <string name="widget_source_default_lists">Default lists</string>
     <string name="your_favorite_objects">Dine favorittobjekter</string>
     <string name="on_this_device">På denne enheten</string>
     <string name="sets_of_objects">Sets of objects from your workspace</string>
@@ -927,14 +928,14 @@
     <string name="widget_type">Widget-type</string>
     <string name="widget_add_below">Legg til under</string>
     <string name="widget_type_tree">Tre</string>
-    <string name="widget_type_tree_description">Widget with a hierarchical structure</string>
+    <string name="widget_type_tree_description">Widget med hierarkisk struktur</string>
     <string name="widget_type_link">Lenke</string>
-    <string name="widget_type_link_description">Compact widget view</string>
-    <string name="widget_type_list_description">Widget with a list view</string>
-    <string name="widget_type_compact_list_description">Widget with a compact list view</string>
+    <string name="widget_type_link_description">Kompakt widgetvisning</string>
+    <string name="widget_type_list_description">Widget med listevisning</string>
+    <string name="widget_type_compact_list_description">Widget med kompakt listevisning</string>
     <string name="widget_type_list">Liste</string>
     <string name="widget_type_view">Visning</string>
-    <string name="widget_type_view_description">Widget with a Set or Collection layout</string>
+    <string name="widget_type_view_description">Widget med sett- eller samlingsoppsett</string>
     <string name="widget_type_compact_list">Compact list</string>
     <string name="widget_change_source">Endre kilde</string>
     <string name="widget_change_type">Change Type</string>
@@ -976,15 +977,15 @@
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
     <string name="onboarding_new_vault_button_text">New vault</string>
     <string name="onboarding_enter_my_vault">Get my Key</string>
-    <string name="onboarding_have_key_button_text">I have a Key</string>
+    <string name="onboarding_have_key_button_text">Jeg har en nøkkel</string>
     <string name="onboarding_get_my_key_button_text">Get my Key</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
-    <string name="onboarding_this_is_your_key_title">This is your Key</string>
+    <string name="onboarding_this_is_your_key_title">Dette er din Nøkkel</string>
     <string name="onboarding_key_description">It gives you full ownership over your vault. It cannot be recovered.</string>
-    <string name="onboarding_show_my_key">Show my Key</string>
+    <string name="onboarding_show_my_key">Vis min Nøkkel</string>
     <string name="onboarding_key_skip">Hopp over</string>
     <string name="onboarding_key_copy">Kopier til utklippstavlen</string>
     <string name="onboarding_set_your_name_title">Set your name</string>
@@ -996,8 +997,8 @@
     <string name="onboarding_entering_void_title">Går inn i Void</string>
     <string name="onboarding_your_key_can_t_be_empty">Your Key can\'t be empty</string>
     <string name="onboarding_mnemonic_read_more">Les mer</string>
-    <string name="onboarding_key_additional_info">You can find this key later in Anytype settings</string>
-    <string name="onboarding_what_is_the_key">What is the Key?</string>
+    <string name="onboarding_key_additional_info">Du kan finne nøkkelen senere i Anytype innstillingene</string>
+    <string name="onboarding_what_is_the_key">Hva er en Nøkkel?</string>
     <string name="onboarding_recovery_phrase_description">It is represented by a recovery phrase – 12 random words from which your vault is magically generated on this device.</string>
     <string name="onboarding_recovery_phrase_description_2">Whomever knows the combination of these words owns your vault. </string>
     <string name="onboarding_recovery_phrase_description_3">Right now, you are the only person in the world who knows it.</string>
@@ -1114,7 +1115,7 @@
     <string name="create_object">Opprett objekt</string>
     <string name="msg_query_cannot_be_changed">Denne spørringen kan bare endres i skrivebordsappen</string>
     <!--region ONBOARDING ERRORS -->
-    <string name="error_invalid_recovery_phrase">Invalid Key</string>
+    <string name="error_invalid_recovery_phrase">Ugyldig nøkkel</string>
     <string name="network">Nettverk</string>
     <string name="network_with_colon">Nettverk:</string>
     <string name="network_settings_anytype_network">Anytype network</string>
@@ -1132,7 +1133,7 @@
     <!--endregion-->
     <!--region MULTIPLAYER -->
     <string name="multiplayer_share_invite_link">Del invitasjonslenke</string>
-    <string name="multiplayer_share_invite_link_description">Share this invite link so that others can join your Space. Once they click your link and request access, you can set their access rights.</string>
+    <string name="multiplayer_share_invite_link_description">Del denne invitasjonslenken slik at andre kan bli med i ditt Rom. Når de har klikket på koblingen din og ber om tilgang, kan du sette deres tilgangsrettigheter.</string>
     <string name="multiplayer_invite_link">Invitasjonslenke</string>
     <string name="multiplayer_join_a_space">Bli med i et rom</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Private comment for a space owner</string>
@@ -1167,7 +1168,7 @@
     <string name="multiplayer_space_stop_sharing">Stopp deling</string>
     <string name="multiplayer_space_stop_sharing_space">Slutt å dele rom</string>
     <string name="multiplayer_space_stop_sharing_space_description">Participants will no longer sync to this space and the share link will be deactivated.</string>
-    <string name="multiplayer_more_info">More info</string>
+    <string name="multiplayer_more_info">Mer info</string>
     <string name="multiplayer_sharing">Deling</string>
     <string name="multiplayer_space_type">Type</string>
     <string name="multiplayer_share">Del</string>
@@ -1233,8 +1234,13 @@
     <string name="multiplayer_cancel_join_request">Cancel join request</string>
     <string name="multiplayer_cancel_join_request_msg">You will have to send join request again</string>
     <string name="multiplayer_do_not_cancel_join_request">Do not cancel</string>
+    <string name="multiplayer_error_invite_not_found">Invitasjonen eksisterer ikke. Vennligst sørg for at enhetene dine er synkronisert.</string>
+    <string name="multiplayer_error_invite_bad_content">Invitasjonslenken kunne ikke behandles. Den kan inneholde feil i formatet eller ugyldige data.</string>
+    <string name="multiplayer_error_space_is_deleted">Det ser ut som om rommet har blitt slettet. Vennligst sørg for at enhetene dine er synkronisert.</string>
+    <string name="multiplayer_error_limit_reached">Grensen er nådd for dette rommet. Vennligst oppgrader medlemskapet ditt eller kontakt support for hjelp.</string>
+    <string name="multiplayer_error_not_shareable">Det ser ut til at rommet ikke lenger er delt. Vennligst sørg for at enhetene dine er synkronisert.</string>
+    <string name="multiplayer_error_request_failed">Oops! Forespørselen mislyktes. Vennligst sjekk internettforbindelsen din og prøv igjen.</string>
     <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">This link does not seem to work</string>
-    <string name="multiplayer_invite_link_space_deleted">This invite link is no longer valid because the space has been deleted.</string>
     <string name="multiplayer_invite_link_space_not_found">This invite link is no longer valid because the space was not found.</string>
     <string name="multiplayer_invite_link_request_already_sent">Forespørsel sendt</string>
     <!--endregion-->
@@ -1260,7 +1266,7 @@
     <string name="payments_button_learn">Lær mer</string>
     <string name="payments_button_manage">Administrer betaling</string>
     <string name="payments_button_contact">Kontakt</string>
-    <string name="payments_button_info">More info</string>
+    <string name="payments_button_info">Mer info</string>
     <string name="payments_button_submit">Send inn</string>
     <string name="payments_button_pay">Pay by card</string>
     <string name="payments_button_change_email">Endre e-post</string>
@@ -1358,17 +1364,17 @@
 Specifically,
 Please provide specific details of your needs here.</string>
     <!-- Membership name errors -->
-    <string name="membership_name_bad_input">Something wrong with input, try again</string>
-    <string name="membership_name_cache_error">Error on our side, try again later</string>
-    <string name="membership_name_cant_connect">Can not connect, check your internet connection</string>
+    <string name="membership_name_bad_input">Noe gikk galt, vennligst prøv på nytt</string>
+    <string name="membership_name_cache_error">Feil på vår side, prøv på nytt senere</string>
+    <string name="membership_name_cant_connect">Kan ikke koble til, sjekk internettforbindelsen din</string>
     <string name="membership_name_invalid_chars">Navnet har ugyldige tegn</string>
-    <string name="membership_name_not_logged">You are not logged in! 😵‍💫</string>
-    <string name="membership_name_payment_node_error">Error on our side, try again later</string>
-    <string name="membership_name_tier_features_no_name">Name is not available for this tier</string>
-    <string name="membership_name_tier_not_found">Tier not found, try again later</string>
+    <string name="membership_name_not_logged">Du er ikke logget inn! 😵‍💫</string>
+    <string name="membership_name_payment_node_error">Feil på vår side, prøv på nytt senere</string>
+    <string name="membership_name_tier_features_no_name">Navnet er ikke tilgjengelig for dette nivået</string>
+    <string name="membership_name_tier_not_found">Fant ikke nivå, prøv på nytt senere</string>
     <string name="membership_name_too_long">Navnet er for langt</string>
     <string name="membership_name_too_short">Navnet er for kort</string>
-    <string name="membership_any_name_not_reserved">This name cannot be reserved</string>
+    <string name="membership_any_name_not_reserved">Dette navnet kan ikke reserveres</string>
     <string name="membership_any_name_null_error">Empty error</string>
     <string name="membership_any_name_unknown">Ukjent feil</string>
     <string name="membership_email_wrong_format">Email has wrong format</string>
@@ -1454,5 +1460,36 @@ Please provide specific details of your needs here.</string>
     <string name="sort_empty_values_desc">Show empty values</string>
     <string name="sort_empty_values_bottom">On bottom</string>
     <string name="sort_empty_values_top">On top</string>
-    <string name="widget_view_see_all_objects">See all objects</string>
+    <string name="widget_view_see_all_objects">Se alle objekter</string>
+    <string name="sync_status_get_error">Error getting sync status</string>
+    <string name="sync_status_local_only_title">Kun lokalt</string>
+    <string name="sync_status_data_backup">Data backup is disabled</string>
+    <string name="sync_status_self_host">Selvhostet</string>
+    <string name="sync_status_self_host_synced">Synkronisert</string>
+    <plurals name="sync_status_self_host_syncing">
+        <item quantity="one">%1$d item syncing</item>
+        <item quantity="other">%1$d items syncing...</item>
+    </plurals>
+    <string name="sync_status_p2p">P2P forbindelse</string>
+    <plurals name="sync_status_p2p_devices">
+        <item quantity="one">%1$d device connected</item>
+        <item quantity="other">%1$d devices connected</item>
+    </plurals>
+    <string name="sync_status_p2p_connecting">P2P kobler til...</string>
+    <string name="sync_status_p2p_disabled">Disabled</string>
+    <string name="sync_status_p2p_restricted">Restricted. Check device settings.</string>
+    <string name="sync_status_anytype_network">Anytypenettverk</string>
+    <string name="sync_status_anytype_end_to_end">End-to-end encrypted</string>
+    <plurals name="sync_status_network_items">
+        <item quantity="one">%1$d item syncing...</item>
+        <item quantity="other">%1$d items syncing...</item>
+    </plurals>
+    <string name="sync_status_anytype_network_connecting">Network Connecting...</string>
+    <string name="sync_status_anytype_network_no_connecting">Ingen tilkobling</string>
+    <string name="sync_status_storage_limit_exceed">Storage limit reached</string>
+    <string name="sync_status_incompatible_version">Ukompatibel versjon</string>
+    <string name="sync_status_network_error">No access to the space</string>
+    <string name="sync_status_unrecognized">Unrecognized error</string>
+    <string name="version_history_title">Version history</string>
+    <string name="new_object">Nytt objekt</string>
 </resources>

@@ -59,6 +59,7 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncError
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncNetwork
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncStatus
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.primitives.TimeInSeconds
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
@@ -1106,16 +1107,16 @@ fun Rpc.History.Version.toCoreModel(): Version {
     return Version(
         id = id,
         previousIds = previousIds,
-        authorId = authorId,
-        authorName = authorName,
-        timestamp = time,
+        spaceMember = authorId,
+        spaceMemberName = authorName,
+        timestamp = TimeInSeconds(time),
         groupId = groupId
     )
 }
 
 fun Rpc.History.ShowVersion.Response.toCoreModel(): ShowVersionResponse {
     return ShowVersionResponse(
-        objectView = objectView?.toCore(),
+        payload = objectView?.toPayload(),
         version = version?.toCoreModel(),
         traceId = traceId
     )

@@ -77,7 +77,8 @@ abstract class ObjectMenuViewModelBase(
             hasCover = false,
             hasLayout = false,
             hasRelations = false,
-            hasDiagnosticsVisibility = false
+            hasDiagnosticsVisibility = false,
+            hasHistory = false
         )
     )
     val options: Flow<ObjectMenuOptionsProvider.Options> = _options
@@ -87,8 +88,10 @@ abstract class ObjectMenuViewModelBase(
     abstract fun onLayoutClicked(ctx: Id, space: Id)
     abstract fun onRelationsClicked()
 
-    fun onHistoryClicked() {
-        throw IllegalStateException("History isn't supported yet")
+    fun onHistoryClicked(ctx: Id, space: Id) {
+        viewModelScope.launch {
+            commands.emit(Command.OpenHistoryScreen(ctx, space))
+        }
     }
 
     fun onStop() {
@@ -435,6 +438,7 @@ abstract class ObjectMenuViewModelBase(
         data class ShareDeeplinkToObject(val link: String): Command()
         data class ShareDebugTree(val uri: Uri) : Command()
         data class ShareDebugGoroutines(val path: String) : Command()
+        data class OpenHistoryScreen(val objectId: Id, val spaceId: Id) : Command()
         data class OpenSnackbar(
             val id: Id,
             val space: Id,

@@ -31,7 +31,8 @@ class ObjectMenuOptionsProviderImplTest {
             hasCover = false,
             hasLayout = true,
             hasRelations = true,
-            hasDiagnosticsVisibility = true
+            hasDiagnosticsVisibility = true,
+            hasHistory = true
         )
 
         assertOptions(
@@ -49,7 +50,8 @@ class ObjectMenuOptionsProviderImplTest {
             hasCover = true,
             hasLayout = true,
             hasRelations = true,
-            hasDiagnosticsVisibility = true
+            hasDiagnosticsVisibility = true,
+            hasHistory = true
         )
 
         assertOptions(
@@ -70,20 +72,20 @@ class ObjectMenuOptionsProviderImplTest {
 
 
     @Test
-    fun `when layout null - all options are visible`() {
+    fun `when layout null - all options are not visible`() {
         details.value = mapOf(
             objectId to Fields(map = mapOf(Relations.LAYOUT to null))
         )
 
         assertOptions(
-            expected = ObjectMenuOptionsProvider.Options.ALL.copy(hasDiagnosticsVisibility = true)
+            expected = ObjectMenuOptionsProvider.Options.NONE.copy(hasDiagnosticsVisibility = true)
         )
     }
 
     @Test
     fun `when restricts layout_change - layout options is invisible`() {
         details.value = mapOf(
-            objectId to Fields(map = mapOf(Relations.LAYOUT to null))
+            objectId to Fields(map = mapOf(Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble()))
         )
         restrictions.value = listOf(ObjectRestriction.LAYOUT_CHANGE)
 
@@ -96,9 +98,9 @@ class ObjectMenuOptionsProviderImplTest {
     }
 
     @Test
-    fun `when object is Locked - show relations and history`() {
+    fun `when object is Locked - show only relations`() {
         details.value = mapOf(
-            objectId to Fields(map = mapOf(Relations.LAYOUT to null))
+            objectId to Fields(map = mapOf(Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble()))
         )
 
         assertOptions(
@@ -108,7 +110,8 @@ class ObjectMenuOptionsProviderImplTest {
                 hasCover = false,
                 hasLayout = false,
                 hasRelations = true,
-                hasDiagnosticsVisibility = true
+                hasDiagnosticsVisibility = true,
+                hasHistory = false
             )
         )
     }

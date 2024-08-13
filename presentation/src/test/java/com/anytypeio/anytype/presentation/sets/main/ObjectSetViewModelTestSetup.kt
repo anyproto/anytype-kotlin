@@ -21,6 +21,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
+import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
@@ -67,7 +68,6 @@ import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Companion.HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION
 import com.anytypeio.anytype.presentation.home.UserPermissionProviderStub
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
@@ -87,15 +87,14 @@ import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.collection.DateProviderImpl
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import java.time.ZoneId
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.runTest
 import net.bytebuddy.utility.RandomString
 import org.junit.Rule
-import org.mockito.ArgumentMatchers
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.kotlin.any
@@ -130,6 +129,9 @@ open class ObjectSetViewModelTestSetup {
 
     @Mock
     lateinit var interceptEvents: InterceptEvents
+
+    @Mock
+    lateinit var clearLastOpenedObject: ClearLastOpenedObject
 
     @Mock
     lateinit var gateway: Gateway
@@ -293,14 +295,15 @@ open class ObjectSetViewModelTestSetup {
             getObjectTypes = getObjectTypes,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             dispatchers = dispatchers,
-            dateProvider = DateProviderImpl(),
+            dateProvider = DateProviderImpl(ZoneId.systemDefault()),
             vmParams = ObjectSetViewModel.Params(
                 ctx = root,
                 space = SpaceId(defaultSpace)
             ),
             permissions = permissions,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-            spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider
+            spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
+            clearLastOpenedObject = clearLastOpenedObject
         )
     }
 

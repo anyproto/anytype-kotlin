@@ -11,10 +11,7 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.misc.AppActionManager
-import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
-import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
-import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
-import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
+import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,11 +21,8 @@ import timber.log.Timber
 class LogoutWarningViewModel(
     private val logout: Logout,
     private val analytics: Analytics,
-    private val relationsSubscriptionManager: RelationsSubscriptionManager,
-    private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
-    private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
     private val appActionManager: AppActionManager,
-    private val userPermissionProvider: UserPermissionProvider
+    private val globalSubscriptionManager: GlobalSubscriptionManager
 ) : ViewModel() {
 
     val commands = MutableSharedFlow<Command>(replay = 0)
@@ -72,10 +66,7 @@ class LogoutWarningViewModel(
     }
 
     private fun unsubscribeFromGlobalSubscriptions() {
-        relationsSubscriptionManager.onStop()
-        objectTypesSubscriptionManager.onStop()
-        spaceDeletedStatusWatcher.onStop()
-        userPermissionProvider.stop()
+        globalSubscriptionManager.onStop()
     }
 
     fun onBackupClicked() {
@@ -91,28 +82,22 @@ class LogoutWarningViewModel(
     class Factory @Inject constructor(
         private val logout: Logout,
         private val analytics: Analytics,
-        private val relationsSubscriptionManager: RelationsSubscriptionManager,
-        private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
-        private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
         private val appActionManager: AppActionManager,
-        private val userPermissionProvider: UserPermissionProvider
+        private val globalSubscriptionManager: GlobalSubscriptionManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return LogoutWarningViewModel(
                 logout = logout,
                 analytics = analytics,
-                relationsSubscriptionManager = relationsSubscriptionManager,
-                objectTypesSubscriptionManager = objectTypesSubscriptionManager,
-                spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
                 appActionManager = appActionManager,
-                userPermissionProvider = userPermissionProvider
+                globalSubscriptionManager = globalSubscriptionManager
             ) as T
         }
     }
 
     sealed class Command {
-        object Logout : Command()
+        data object Logout : Command()
         data class ShowError(val msg: String) : Command()
     }
 }

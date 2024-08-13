@@ -37,10 +37,8 @@ class NavigationRouter(
                     target = command.target,
                     space = command.space
                 )
-                is AppNavigation.Command.OpenUserSettingsScreen -> navigation.openUserSettingsScreen()
                 is AppNavigation.Command.Exit -> navigation.exit()
                 is AppNavigation.Command.ExitToDesktop -> navigation.exitToDesktop()
-                is AppNavigation.Command.OpenDebugSettingsScreen -> navigation.openDebugSettings()
                 is AppNavigation.Command.OpenPageSearch -> navigation.openPageSearch()
                 is AppNavigation.Command.OpenUpdateAppScreen -> navigation.openUpdateAppScreen()
                 is AppNavigation.Command.DeletedAccountScreen -> navigation.deletedAccountScreen(

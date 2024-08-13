@@ -131,10 +131,6 @@ class Navigator : AppNavigation {
         )
     }
 
-    override fun openKeychainScreen() {
-        navController?.navigate(R.id.action_open_keychain)
-    }
-
     override fun exit() {
         val popped = navController?.popBackStack()
         if (popped == false) {
@@ -147,10 +143,6 @@ class Navigator : AppNavigation {
         if (popped == false) {
             navController?.navigate(R.id.homeScreen)
         }
-    }
-
-    override fun openDebugSettings() {
-        navController?.navigate(R.id.action_profileScreen_to_debugSettingsFragment)
     }
 
     override fun openPageSearch() {
@@ -188,10 +180,6 @@ class Navigator : AppNavigation {
                 )
             )
         }
-    }
-
-    override fun openUserSettingsScreen() {
-        navController?.navigate(R.id.action_profileScreen_to_userSettingsFragment)
     }
 
     fun bind(navController: NavController) {

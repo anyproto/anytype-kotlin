@@ -63,6 +63,7 @@ import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.tools.toPrettyString
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
+import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.fold
@@ -214,7 +215,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEve
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectShowEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectTypeSelectOrChangeEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOpenAsObject
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchWordsEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSelectTemplateEvent
@@ -327,6 +328,8 @@ class EditorViewModel(
     private val templatesContainer: ObjectTypeTemplatesContainer,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val dispatchers: AppCoroutineDispatchers,
+    private val getNetworkMode: GetNetworkMode,
+    private val clearLastOpenedObject: ClearLastOpenedObject,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
 ) : ViewStateViewModel<ViewState>(),
@@ -414,6 +417,7 @@ class EditorViewModel(
     val permission = MutableStateFlow(permissions.get(vmParams.space))
 
     init {
+        Timber.i("EditorViewModel, init")
         proceedWithObservingPermissions()
         proceedWithObservingProfileIcon()
         startHandlingTextChanges()
@@ -1220,10 +1224,6 @@ class EditorViewModel(
         exitBack()
     }
 
-    fun onMovedToBin() {
-        navigate(EventWrapper(AppNavigation.Command.Exit))
-    }
-
     private fun exitBack() {
         when (session.value) {
             Session.ERROR -> navigate(EventWrapper(AppNavigation.Command.Exit))
@@ -1248,6 +1248,7 @@ class EditorViewModel(
 
     private fun exitDashboard() {
         viewModelScope.launch {
+            clearLastOpenedObject(ClearLastOpenedObject.Params(vmParams.space))
             closePage.async(context).fold(
                 onSuccess = { navigateToDesktop() },
                 onFailure = {
@@ -1422,7 +1423,7 @@ class EditorViewModel(
         if (!focus.isEmpty && focus.isTarget(target)) {
             proceedWithEnterEvent(focus.requireTarget(), range, text, marks)
         } else {
-            Timber.e("No blocks in focus, emit SplitLineEnter event")
+            Timber.w("No blocks in focus, emit SplitLineEnter event")
         }
     }
 
@@ -3875,7 +3876,8 @@ class EditorViewModel(
                             proceedWithSetObjectDetails(
                                 ctx = content.target,
                                 key = Relations.DONE,
-                                value = !clicked.isChecked
+                                value = !clicked.isChecked,
+                                isValueEmpty = false
                             )
                         }
                     }
@@ -4120,17 +4122,6 @@ class EditorViewModel(
         } else {
             sendToast("Your object is locked. To change its type, simply unlock it.")
         }
-    }
-
-    private fun proceedWithTogglingBlockRelationCheckbox(
-        view: ObjectRelationView.Checkbox,
-        relation: Id
-    ) {
-        proceedWithSetObjectDetails(
-            ctx = context,
-            key = relation,
-            value = !view.isChecked
-        )
     }
 
     override fun onProceedWithFilePath(filePath: String?) {
@@ -4424,7 +4415,12 @@ class EditorViewModel(
         }
     }
 
-    private fun proceedWithSetObjectDetails(ctx: Id, key: String, value: Any?) {
+    private fun proceedWithSetObjectDetails(
+        ctx: Id,
+        key: String,
+        value: Any?,
+        isValueEmpty: Boolean
+    ) {
         viewModelScope.launch {
             updateDetail(
                 UpdateDetail.Params(
@@ -4435,8 +4431,12 @@ class EditorViewModel(
             ).process(
                 success = {
                     dispatcher.send(it)
-                    sendAnalyticsRelationValueEvent(
-                        analytics = analytics
+                    analytics.sendAnalyticsRelationEvent(
+                        eventName = if (isValueEmpty) EventsDictionary.relationDeleteValue
+                        else EventsDictionary.relationChangeValue,
+                        storeOfRelations = storeOfRelations,
+                        relationKey = key,
+                        spaceParams = provideParams(spaceManager.get())
                     )
                 },
                 failure = {
@@ -4503,13 +4503,15 @@ class EditorViewModel(
     fun onRelationTextValueChanged(
         ctx: Id,
         value: Any?,
-        relationKey: Key
+        relationKey: Key,
+        isValueEmpty: Boolean
     ) {
         Timber.d("onRelationTextValueChanged, ctx:[$ctx] value:[$value] relationId:[$relationKey]")
         proceedWithSetObjectDetails(
             ctx = ctx,
             key = relationKey,
-            value = value
+            value = value,
+            isValueEmpty = isValueEmpty
         )
     }
 
@@ -7198,6 +7200,12 @@ class EditorViewModel(
             failure = { Timber.e(it, "Error while adding relation to object") },
             success = {
                 dispatcher.send(it)
+                analytics.sendAnalyticsRelationEvent(
+                    eventName = EventsDictionary.relationAdd,
+                    storeOfRelations = storeOfRelations,
+                    relationKey = view.key,
+                    spaceParams = provideParams(spaceManager.get())
+                )
                 action.invoke()
             }
         )
@@ -7235,7 +7243,8 @@ class EditorViewModel(
                 proceedWithSetObjectDetails(
                     ctx = context,
                     key = relation.key,
-                    value = !relationView.isChecked
+                    value = !relationView.isChecked,
+                    isValueEmpty = false
                 )
             }
             RelationFormat.DATE -> {

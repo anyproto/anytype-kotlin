@@ -3,7 +3,6 @@ package com.anytypeio.anytype.ui.widgets.types
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.annotation.StringRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -37,7 +36,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -60,6 +58,8 @@ import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.getWidgetObjectName
 import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 
 @Composable
 fun DataViewListWidgetCard(
@@ -70,7 +70,8 @@ fun DataViewListWidgetCard(
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
-    onObjectCheckboxClicked: (Id, Boolean) -> Unit
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit,
+    onCreateDataViewObject: (WidgetId, ViewId?) -> Unit
 ) {
     val isCardMenuExpanded = remember {
         mutableStateOf(false)
@@ -165,10 +166,23 @@ fun DataViewListWidgetCard(
                 if (item.isExpanded) {
                     when {
                         item.isLoading -> EmptyWidgetPlaceholder(R.string.loading)
-                        item.tabs.isNotEmpty() -> EmptyWidgetPlaceholder(R.string.empty_list_widget)
-                        else -> EmptyWidgetPlaceholder(text = R.string.empty_list_widget_no_view)
+                        item.tabs.isNotEmpty() -> EmptyWidgetPlaceholderWithCreateButton(
+                            R.string.empty_list_widget,
+                            onCreateClicked = {
+                                onCreateDataViewObject(
+                                    item.id, item.tabs.find { it.isSelected }?.id
+                                )
+                            }
+                        )
+                        else -> EmptyWidgetPlaceholderWithCreateButton(
+                            text = R.string.empty_list_widget_no_view,
+                            onCreateClicked = {
+                                onCreateDataViewObject(
+                                    item.id, item.tabs.find { it.isSelected }?.id
+                                )
+                            }
+                        )
                     }
-
                     Spacer(modifier = Modifier.height(2.dp))
                 }
             }
@@ -286,7 +300,7 @@ fun GalleryWidgetCard(
                                         .height(if (withCover) 136.dp else 56.dp)
                                         .border(
                                             width = 1.dp,
-                                            color = colorResource(id = R.color.shape_primary),
+                                            color = colorResource(id = R.color.shape_transparent_primary),
                                             shape = RoundedCornerShape(8.dp)
                                         )
                                         .clip(RoundedCornerShape(8.dp))
@@ -442,6 +456,7 @@ fun ListWidgetElement(
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun GalleryWidgetItemCard(
     item: WidgetView.SetOfObjects.Element,
@@ -463,7 +478,7 @@ private fun GalleryWidgetItemCard(
                 .fillMaxSize()
                 .border(
                     width = 1.dp,
-                    color = colorResource(id = R.color.shape_primary),
+                    color = colorResource(id = R.color.shape_transparent_primary),
                     shape = RoundedCornerShape(8.dp)
                 )
         )
@@ -496,8 +511,8 @@ private fun GalleryWidgetItemCard(
                 }
 
                 is CoverView.Image -> {
-                    Image(
-                        painter = rememberAsyncImagePainter(cover.url),
+                    GlideImage(
+                        model = cover.url,
                         contentDescription = "Cover image",
                         modifier = Modifier
                             .width(136.dp)

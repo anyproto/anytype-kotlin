@@ -25,6 +25,7 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.feature_discussions.ui.DiscussionScreenWrapper
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
@@ -116,7 +117,9 @@ class HomeScreenFragment : BaseComposeFragment() {
                     onMove = vm::onMove,
                     onObjectCheckboxClicked = vm::onObjectCheckboxClicked,
                     onSpaceShareIconClicked = vm::onSpaceShareIconClicked,
-                    onSeeAllObjectsClicked = vm::onSeeAllObjectsClicked
+                    onSeeAllObjectsClicked = vm::onSeeAllObjectsClicked,
+                    onCreateObjectInsideWidget = vm::onCreateObjectInsideWidget,
+                    onCreateDataViewObject = vm::onCreateDataViewObject
                 )
             }
         }
@@ -249,6 +252,36 @@ class HomeScreenFragment : BaseComposeFragment() {
                     R.id.shareSpaceScreen,
                     args = ShareSpaceFragment.args(command.space)
                 )
+            }
+            is Command.CreateSourceForNewWidget -> {
+                val dialog = SelectObjectTypeFragment.new(
+                    flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT,
+                    space = command.space.id
+                ).apply {
+                    onTypeSelected = { type ->
+                        vm.onNewWidgetSourceTypeSelected(
+                            type = type,
+                            space = command.space,
+                            widgets = command.widgets
+                        )
+                    }
+                }
+                dialog.show(childFragmentManager, null)
+            }
+            is Command.CreateObjectForWidget -> {
+                val dialog = SelectObjectTypeFragment.new(
+                    flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT,
+                    space = command.space.id
+                ).apply {
+                    onTypeSelected = { type ->
+                        vm.onCreateObjectForWidget(
+                            type = type,
+                            widget = command.widget,
+                            source = command.source
+                        )
+                    }
+                }
+                dialog.show(childFragmentManager, null)
             }
             is Command.OpenSpaceSettings -> {
                 runCatching {

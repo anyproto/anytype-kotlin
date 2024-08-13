@@ -17,13 +17,10 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
-import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.ImportGetStartedUseCase
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
-import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
-import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
-import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
+import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.proceedWithAccountEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingScreenEvent
@@ -46,14 +43,12 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     private val pathProvider: PathProvider,
     private val spaceGradientProvider: SpaceGradientProvider,
     private val crashReporter: CrashReporter,
-    private val relationsSubscriptionManager: RelationsSubscriptionManager,
-    private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
-    private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
     private val localeProvider: LocaleProvider,
-    private val userPermissionProvider: UserPermissionProvider
+    private val globalSubscriptionManager: GlobalSubscriptionManager
 ) : BaseViewModel() {
 
     init {
+        Timber.i("OnboardingSetProfileNameViewModel, init")
         viewModelScope.launch {
             sendAnalyticsOnboardingScreenEvent(analytics,
                 EventsDictionary.ScreenOnboardingStep.VOID
@@ -134,10 +129,7 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     }
 
     private fun setupGlobalSubscriptions() {
-        relationsSubscriptionManager.onStart()
-        objectTypesSubscriptionManager.onStart()
-        spaceDeletedStatusWatcher.onStart()
-        userPermissionProvider.start()
+        globalSubscriptionManager.onStart()
     }
 
     private fun proceedWithSettingAccountName(name: String) {
@@ -216,12 +208,9 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         private val createAccount: CreateAccount,
         private val setupWallet: SetupWallet,
         private val importGetStartedUseCase: ImportGetStartedUseCase,
-        private val relationsSubscriptionManager: RelationsSubscriptionManager,
-        private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
         private val crashReporter: CrashReporter,
-        private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
         private val localeProvider: LocaleProvider,
-        private val userPermissionProvider: UserPermissionProvider
+        private val globalSubscriptionManager: GlobalSubscriptionManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -235,12 +224,9 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                 importGetStartedUseCase = importGetStartedUseCase,
                 pathProvider = pathProvider,
                 spaceGradientProvider = spaceGradientProvider,
-                relationsSubscriptionManager = relationsSubscriptionManager,
-                objectTypesSubscriptionManager = objectTypesSubscriptionManager,
                 crashReporter = crashReporter,
-                spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
                 localeProvider = localeProvider,
-                userPermissionProvider = userPermissionProvider
+                globalSubscriptionManager = globalSubscriptionManager
             ) as T
         }
     }
@@ -253,17 +239,17 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     }
 
     sealed class Navigation {
-        object NavigateToMnemonic: Navigation()
-        object GoBack: Navigation()
+        data object NavigateToMnemonic: Navigation()
+        data object GoBack: Navigation()
     }
 
     sealed class ScreenState {
-        object Idle: ScreenState()
-        object Loading: ScreenState()
-        object Success: ScreenState()
+        data object Idle: ScreenState()
+        data object Loading: ScreenState()
+        data object Success: ScreenState()
         sealed class Exiting : ScreenState() {
-            object Status : Exiting()
-            object Logout: Exiting()
+            data object Status : Exiting()
+            data object Logout: Exiting()
         }
     }
 }

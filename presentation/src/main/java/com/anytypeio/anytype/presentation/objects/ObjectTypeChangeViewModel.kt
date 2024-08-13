@@ -92,6 +92,7 @@ class ObjectTypeChangeViewModel(
     ) = libraryTypes.filter { !excludeTypes.contains(it.id) }
 
     init {
+        Timber.i("ObjectTypeChangeViewModel, init")
         viewModelScope.launch {
             // Processing on the io thread, collecting on the main thread.
             pipeline.flowOn(dispatchers.io).collect {

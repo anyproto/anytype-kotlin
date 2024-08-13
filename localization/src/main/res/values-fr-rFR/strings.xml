@@ -490,6 +490,7 @@
     <string name="block_data_view_content_description_no_data">The source of the inline set has no type</string>
     <string name="object_search_recently_opened_section_title">Récemment ouvert</string>
     <string name="widget_source_anytype_library">Bibliothèque Anytype</string>
+    <string name="widget_source_default_lists">Listes par défaut</string>
     <string name="your_favorite_objects">Your favorite objects</string>
     <string name="on_this_device">Sur cet appareil</string>
     <string name="sets_of_objects">Sets of objects from your workspace</string>
@@ -1047,11 +1048,11 @@
     <string name="sharing_menu_save_as_file_option">Fichier</string>
     <string name="sharing_menu_save_as_images_option">Images</string>
     <string name="sharing_menu_save_as_files_option">Fichiers</string>
-    <string name="sharing_menu_save_as_videos_option">Videos</string>
+    <string name="sharing_menu_save_as_videos_option">Vidéos</string>
     <string name="sharing_menu_data">Données</string>
     <string name="sharing_menu_add_to_anytype_header_title">Ajouter à Anytype</string>
-    <string name="sharing_menu_add_to_anytype_error">Anytype file upload error: %1$s</string>
-    <string name="sharing_menu_add_to_anytype_success">All files have been successfully uploaded</string>
+    <string name="sharing_menu_add_to_anytype_error">Erreur de téléchargement du fichier Anytype : %1$s</string>
+    <string name="sharing_menu_add_to_anytype_success">Tous les fichiers ont été téléchargés avec succès</string>
     <string name="sharing_menu_toast_object_added">Un nouvel objet est ajouté à l\'espace \'%1$s\'</string>
     <string name="sharing_menu_btn_add">Ajouter</string>
     <string name="sharing_menu_btn_open">Ouvrir</string>
@@ -1233,8 +1234,13 @@
     <string name="multiplayer_cancel_join_request">Annuler la demande d\'adhésion</string>
     <string name="multiplayer_cancel_join_request_msg">Vous devrez envoyer à nouveau la demande d\'accès</string>
     <string name="multiplayer_do_not_cancel_join_request">Ne pas annuler</string>
+    <string name="multiplayer_error_invite_not_found">L\'invitation n\'existe pas. Veuillez vous assurer que vos appareils sont synchronisés.</string>
+    <string name="multiplayer_error_invite_bad_content">Le lien d\'invitation n\'a pas pu être analysé. Il peut contenir des erreurs dans le format ou des données non valides.</string>
+    <string name="multiplayer_error_space_is_deleted">Il semble que l\'espace ait été supprimé. Veuillez vous assurer que vos appareils sont synchronisés.</string>
+    <string name="multiplayer_error_limit_reached">Limite atteinte pour cet espace. Veuillez mettre à jour votre abonnement ou contacter le support pour obtenir de l\'aide.</string>
+    <string name="multiplayer_error_not_shareable">Il semble que l\'espace n\'est plus partagé. Veuillez vous assurer que vos appareils sont synchronisés.</string>
+    <string name="multiplayer_error_request_failed">Oups ! La demande a échoué. Veuillez vérifier votre connexion Internet et réessayer.</string>
     <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">Ce lien ne semble pas fonctionner</string>
-    <string name="multiplayer_invite_link_space_deleted">Ce lien d\'invitation n\'est plus valide car l\'espace a été supprimé.</string>
     <string name="multiplayer_invite_link_space_not_found">Ce lien d\'invitation n\'est plus valide car l\'espace n\'a pas été trouvé.</string>
     <string name="multiplayer_invite_link_request_already_sent">Demande envoyée</string>
     <!--endregion-->
@@ -1452,4 +1458,35 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="sort_empty_values_bottom">En bas</string>
     <string name="sort_empty_values_top">En haut</string>
     <string name="widget_view_see_all_objects">Voir tous les objets</string>
+    <string name="sync_status_get_error">Erreur lors de l\'obtention de l\'état de synchronisation</string>
+    <string name="sync_status_local_only_title">Local uniquement</string>
+    <string name="sync_status_data_backup">La sauvegarde des données est désactivée</string>
+    <string name="sync_status_self_host">Auto-hébergé</string>
+    <string name="sync_status_self_host_synced">Synchronisé</string>
+    <plurals name="sync_status_self_host_syncing">
+        <item quantity="one">%1$d synchronisation de l\'élément</item>
+        <item quantity="other">%1$d synchronisation des éléments...</item>
+    </plurals>
+    <string name="sync_status_p2p">Connexion P2P</string>
+    <plurals name="sync_status_p2p_devices">
+        <item quantity="one">%1$d appareil connecté</item>
+        <item quantity="other">%1$d appareils connectés</item>
+    </plurals>
+    <string name="sync_status_p2p_connecting">Connexion P2P...</string>
+    <string name="sync_status_p2p_disabled">Désactivé</string>
+    <string name="sync_status_p2p_restricted">Restriction. Vérifiez les paramètres de l\'appareil.</string>
+    <string name="sync_status_anytype_network">Réseau Anytype</string>
+    <string name="sync_status_anytype_end_to_end">Chiffrement de bout en bout</string>
+    <plurals name="sync_status_network_items">
+        <item quantity="one">%1$d synchronisation de l\'élément...</item>
+        <item quantity="other">%1$d synchronisation des éléments...</item>
+    </plurals>
+    <string name="sync_status_anytype_network_connecting">Connexion au réseau...</string>
+    <string name="sync_status_anytype_network_no_connecting">Pas de connexion</string>
+    <string name="sync_status_storage_limit_exceed">Limite de stockage atteinte</string>
+    <string name="sync_status_incompatible_version">Version incompatible</string>
+    <string name="sync_status_network_error">Pas d\'accès à l\'espace</string>
+    <string name="sync_status_unrecognized">Erreur inconnue</string>
+    <string name="version_history_title">Historique de version</string>
+    <string name="new_object">Nouvel objet</string>
 </resources>

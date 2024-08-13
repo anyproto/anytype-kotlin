@@ -11,6 +11,8 @@ import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
+import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
 import com.anytypeio.anytype.presentation.relations.ObjectRelationListViewModelFactory
 import com.anytypeio.anytype.presentation.relations.providers.RelationListProvider
@@ -49,7 +51,9 @@ object ObjectRelationListModule {
         deleteRelationFromObject: DeleteRelationFromObject,
         analytics: Analytics,
         storeOfRelations: StoreOfRelations,
-        addRelationToObject: AddRelationToObject
+        addRelationToObject: AddRelationToObject,
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        spaceManager: SpaceManager
     ): ObjectRelationListViewModelFactory {
         return ObjectRelationListViewModelFactory(
             lockedStateProvider = lockedStateProvider,
@@ -62,7 +66,9 @@ object ObjectRelationListModule {
             deleteRelationFromObject = deleteRelationFromObject,
             analytics = analytics,
             storeOfRelations = storeOfRelations,
-            addRelationToObject = addRelationToObject
+            addRelationToObject = addRelationToObject,
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            spaceManager = spaceManager
         )
     }
 

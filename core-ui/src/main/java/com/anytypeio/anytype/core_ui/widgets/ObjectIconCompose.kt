@@ -38,7 +38,7 @@ fun GlobalSearchObjectIcon(
 ) {
     when (icon) {
         is ObjectIcon.Profile.Avatar -> DefaultProfileAvatarIcon(modifier, iconSize, icon)
-        is ObjectIcon.Profile.Image -> defaultProfileIconImage(icon, modifier, iconSize)
+        is ObjectIcon.Profile.Image -> DefaultProfileIconImage(icon, modifier, iconSize)
         is ObjectIcon.Basic.Emoji -> DefaultEmojiObjectIcon(modifier, iconSize, icon)
         is ObjectIcon.Basic.Image -> DefaultObjectImageIcon(icon.hash, modifier, iconSize)
         is ObjectIcon.Basic.Avatar -> DefaultBasicAvatarIcon(modifier, iconSize, icon)
@@ -162,9 +162,12 @@ fun DefaultProfileAvatarIcon(
     modifier: Modifier,
     iconSize: Dp,
     icon: ObjectIcon.Profile.Avatar,
-    avatarFontSize: TextUnit,
-    avatarTextStyle: TextStyle,
-    avatarBackgroundColor: Int
+    avatarFontSize: TextUnit = 28.sp,
+    avatarTextStyle: TextStyle = TextStyle(
+        fontWeight = FontWeight.SemiBold,
+        color = colorResource(id = R.color.text_white)
+    ),
+    avatarBackgroundColor: Int = R.color.text_tertiary
 ) {
     Box(
         modifier = modifier

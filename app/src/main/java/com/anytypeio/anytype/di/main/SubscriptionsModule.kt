@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.Logger
+import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.DefaultUserPermissionProvider
@@ -23,7 +24,10 @@ import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
+import com.anytypeio.anytype.domain.workspace.P2PStatusChannel
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.domain.workspace.SpaceSyncStatusChannel
+import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusProviderImpl
 import dagger.Module
 import dagger.Provides
 import javax.inject.Named
@@ -166,15 +170,36 @@ object SubscriptionsModule {
     @JvmStatic
     @Provides
     @Singleton
+    fun provideSpaceSyncStatusProvider(
+        activeSpace: ActiveSpaceMemberSubscriptionContainer,
+        syncChannel: SpaceSyncStatusChannel,
+        p2PStatusChannel: P2PStatusChannel,
+        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
+        logger: Logger,
+        dispatchers: AppCoroutineDispatchers
+    ): SpaceSyncAndP2PStatusProvider = SpaceSyncAndP2PStatusProviderImpl(
+        activeSpace = activeSpace,
+        spaceSyncStatusChannel = syncChannel,
+        p2PStatusChannel = p2PStatusChannel,
+        scope = scope,
+        logger = logger,
+        dispatchers = dispatchers
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
     fun globalSubscriptionManager(
         types: ObjectTypesSubscriptionManager,
         relations: RelationsSubscriptionManager,
         permissions: UserPermissionProvider,
-        isSpaceDeleted: SpaceDeletedStatusWatcher
+        isSpaceDeleted: SpaceDeletedStatusWatcher,
+        spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
     ) : GlobalSubscriptionManager = GlobalSubscriptionManager.Default(
         types = types,
         relations = relations,
         permissions = permissions,
-        isSpaceDeleted = isSpaceDeleted
+        isSpaceDeleted = isSpaceDeleted,
+        spaceSyncAndP2PStatusProviderImpl = spaceSyncAndP2PStatusProvider
     )
 }

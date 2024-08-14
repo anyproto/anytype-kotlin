@@ -114,3 +114,12 @@ enum class P2PStatus {
     NOT_POSSIBLE,
     CONNECTED
 }
+
+sealed class SpaceSyncAndP2PStatusState {
+    data object Initial : SpaceSyncAndP2PStatusState()
+    data class Error(val message: String) : SpaceSyncAndP2PStatusState()
+    data class Success(
+        val spaceSyncUpdate: SpaceSyncUpdate,
+        val p2PStatusUpdate: P2PStatusUpdate
+    ) : SpaceSyncAndP2PStatusState()
+}

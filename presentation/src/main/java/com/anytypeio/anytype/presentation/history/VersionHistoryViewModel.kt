@@ -247,13 +247,26 @@ class VersionHistoryViewModel(
                     } else {
                         _list.value += versions
                     }
+                    listState.value = ListState.IDLE
+                    if (canPaginate.value) {
+                        latestVisibleVersionId.value = versions.last().id
+                    }
                 },
                 onFailure = {
                     _viewState.value = VersionHistoryState.Error.GetVersions(it.message.orEmpty())
+                    listState.value =
+                        if (latestVersionId == null) ListState.ERROR else ListState.PAGINATION_EXHAUST
                 },
                 onLoading = {}
             )
         }
+    }
+
+    override fun onCleared() {
+        listState.value = ListState.IDLE
+        canPaginate.value = false
+        latestVisibleVersionId.value = null
+        super.onCleared()
     }
 
     private fun handleVersionsSuccess(versions: List<Version>, members: List<ObjectWrapper.Basic>) {

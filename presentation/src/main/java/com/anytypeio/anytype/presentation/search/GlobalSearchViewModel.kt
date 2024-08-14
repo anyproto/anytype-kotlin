@@ -363,8 +363,14 @@ data class  GlobalSearchItemView(
     val meta: Meta,
     val links: List<Id> = emptyList(),
     val backlinks: List<Id> = emptyList(),
-    val pinned: Boolean = false
+    val pinned: Boolean = false,
+    val nameMeta: NameMeta? = null
 ) {
+    data class NameMeta(
+        val name: String,
+        val highlights: List<IntRange> = emptyList()
+    )
+
     sealed class Meta {
         data object None : Meta()
         data class Default(
@@ -488,6 +494,20 @@ suspend fun Command.SearchWithMeta.Result.view(
             }
         } else {
             GlobalSearchItemView.Meta.None
-        }
+        },
+        nameMeta = metas.getNameMeta()
     )
+}
+
+private fun List<Command.SearchWithMeta.Result.Meta>.getNameMeta(): GlobalSearchItemView.NameMeta? {
+    val meta =
+        firstOrNull { (it.source as? Command.SearchWithMeta.Result.Meta.Source.Relation)?.key == Relations.NAME }
+    return if (meta != null) {
+        GlobalSearchItemView.NameMeta(
+            name = meta.highlight.orEmpty(),
+            highlights = meta.ranges
+        )
+    } else {
+        null
+    }
 }

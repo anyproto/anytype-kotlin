@@ -60,7 +60,6 @@ fun LibraryListTabs(
 }
 
 
-@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun LibraryListTab(
     config: LibraryListConfig,

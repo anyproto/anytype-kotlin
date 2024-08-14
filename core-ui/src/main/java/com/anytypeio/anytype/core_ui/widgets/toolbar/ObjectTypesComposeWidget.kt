@@ -41,7 +41,7 @@ import com.anytypeio.anytype.presentation.editor.EditorViewModel.TypesWidgetItem
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 
 
-@Preview(showBackground = true, apiLevel = 33)
+@Preview(showBackground = true, apiLevel = 34)
 @Composable
 fun MyChooseTypeHorizontalWidget() {
     val state = EditorViewModel.TypesWidgetState(
@@ -63,7 +63,7 @@ fun MyChooseTypeHorizontalWidget() {
     ChooseTypeHorizontalWidget(state = state, onTypeClicked = {})
 }
 
-@Preview(showBackground = true, apiLevel = 33)
+@Preview(showBackground = true, apiLevel = 34)
 @Composable
 fun MyChooseTypeHorizontalWidgetCollapsed() {
     val state = EditorViewModel.TypesWidgetState(

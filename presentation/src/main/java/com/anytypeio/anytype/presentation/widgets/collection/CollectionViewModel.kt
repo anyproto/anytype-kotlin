@@ -245,7 +245,7 @@ class CollectionViewModel(
         subscribeObjects()
     }
 
-    suspend fun buildSearchParams(): StoreSearchParams {
+    private suspend fun buildSearchParams(): StoreSearchParams {
         return StoreSearchParams(
             subscription = subscription.id,
             keys = subscription.keys,
@@ -325,7 +325,7 @@ class CollectionViewModel(
         params: StoreSearchParams
     ) =
         combine(
-            container.subscribe(params),
+            container.subscribe(params).map { results -> results.distinctBy { it.id } },
             queryFlow(),
             objectTypes()
         ) { objs, query, types ->

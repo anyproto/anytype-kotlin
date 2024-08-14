@@ -233,7 +233,8 @@ fun ListView(
                     items = views.value,
                     key = {
                         when (it) {
-                            is ObjectView -> it.obj.id
+                            // TODO remove when DROID-2750 fixed.
+                            is ObjectView -> "fullscreen-widget-item-${it.obj.id}"
                             is CollectionView.FavoritesView -> it.obj.id
                             is SectionView -> it.name
                             is EmptySearch -> it.query

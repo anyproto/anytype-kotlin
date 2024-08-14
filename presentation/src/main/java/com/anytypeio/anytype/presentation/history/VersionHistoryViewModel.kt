@@ -44,6 +44,7 @@ import java.util.Locale
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -67,11 +68,42 @@ class VersionHistoryViewModel(
     val previewViewState = _previewViewState
     val navigation = MutableSharedFlow<Command>(0)
 
+    private val _members = MutableStateFlow<List<ObjectWrapper.Basic>>(emptyList())
+
+    //Paging
+    private val latestVisibleVersionId = MutableStateFlow<String?>(null)
+    val canPaginate = MutableStateFlow(false)
+    val listState = MutableStateFlow(ListState.IDLE)
+    private val _list = MutableStateFlow<List<Version>>(emptyList())
+
     init {
         Timber.d("VersionHistoryViewModel created")
         getSpaceMembers()
         viewModelScope.launch {
             sendAnalyticsShowVersionHistoryScreen(analytics)
+        }
+        viewModelScope.launch {
+            latestVisibleVersionId.collect {
+                if (it == null || (canPaginate.value) && listState.value == ListState.IDLE) {
+                    listState.value = if (it == null) ListState.LOADING else ListState.PAGINATING
+                    getHistoryVersions(
+                        objectId = vmParams.objectId,
+                        latestVersionId = it
+                    )
+                }
+            }
+        }
+        viewModelScope.launch {
+            combine(
+                _members,
+                _list
+            ) { members, versions ->
+                members to versions
+            }.collectLatest { (members, versions) ->
+                if (members.isNotEmpty() && versions.isNotEmpty()) {
+                    handleVersionsSuccess(versions, members)
+                }
+            }
         }
     }
 
@@ -189,35 +221,38 @@ class VersionHistoryViewModel(
                         _viewState.value =
                             VersionHistoryState.Error.SpaceMembers("No members found")
                     } else {
-                        getHistoryVersions(vmParams.objectId, members)
+                        _members.value = members
                     }
                 }
             )
         }
     }
 
-    private fun getHistoryVersions(objectId: String, members: List<ObjectWrapper.Basic>) {
+    private fun getHistoryVersions(objectId: String, latestVersionId: String?) {
         viewModelScope.launch {
-            val params = GetVersions.Params(objectId = objectId)
-            getVersions
-                .doWork(params)
-                .collect {
-                    Timber.d("Versions fetched: $it")
-                }
-
-//                .async(params)   .fold(
-//                onSuccess = { versions ->
-//                    if (versions.isEmpty()) {
-//                        _viewState.value = VersionHistoryState.Error.NoVersions
-//                    } else {
-//                        handleVersionsSuccess(versions, members)
-//                    }
-//                },
-//                onFailure = {
-//                    _viewState.value = VersionHistoryState.Error.GetVersions(it.message.orEmpty())
-//                },
-//                onLoading = {}
-//            )
+            val params = GetVersions.Params(
+                objectId = objectId,
+                lastVersion = latestVersionId,
+                limit = VERSIONS_MAX_LIMIT
+            )
+            getVersions.async(params).fold(
+                onSuccess = { versions ->
+                    canPaginate.value = versions.size == VERSIONS_MAX_LIMIT
+                    if (latestVersionId == null) {
+                        if (versions.isEmpty()) {
+                            _viewState.value = VersionHistoryState.Error.NoVersions
+                        } else {
+                            _list.value = versions
+                        }
+                    } else {
+                        _list.value += versions
+                    }
+                },
+                onFailure = {
+                    _viewState.value = VersionHistoryState.Error.GetVersions(it.message.orEmpty())
+                },
+                onLoading = {}
+            )
         }
     }
 
@@ -468,6 +503,8 @@ class VersionHistoryViewModel(
         const val GROUP_BY_DAY_FORMAT = "d MM yyyy"
         const val GROUP_DATE_FORMAT_CURRENT_YEAR = "MMMM d"
         const val GROUP_DATE_FORMAT_OTHER_YEAR = "MMMM d, yyyy"
+
+        const val VERSIONS_MAX_LIMIT = 10
     }
 }
 

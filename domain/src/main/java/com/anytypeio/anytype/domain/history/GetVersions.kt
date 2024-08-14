@@ -15,37 +15,22 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
 class GetVersions @Inject constructor(
-    private val dispatchers: AppCoroutineDispatchers,
-    private val repo: BlockRepository,
-    private val logger: Logger
-) {
+    dispatchers: AppCoroutineDispatchers,
+    private val repo: BlockRepository
+) : ResultInteractor<GetVersions.Params, List<Version>>(dispatchers.io) {
 
-    suspend fun doWork(params: Params): Flow<PagingData<Version>> =
-        withContext(dispatchers.io) {
-            Pager(
-                config = PagingConfig(
-                    pageSize = 10
-                ),
-                pagingSourceFactory = {
-                    VersionsPagingSource(
-                        repo = repo,
-                        objectId = params.objectId,
-                        logger = logger
-                    )
-                }
-            ).flow
-        }
-
-//        val command = Command.VersionHistory.GetVersions(
-//            objectId = params.objectId,
-//            lastVersion = params.lastVersion,
-//            limit = params.limit
-//        )
-//        return repo.getVersions(command)
+    override suspend fun doWork(params: Params): List<Version> {
+        val command = Command.VersionHistory.GetVersions(
+            objectId = params.objectId,
+            lastVersion = params.lastVersion,
+            limit = params.limit
+        )
+        return repo.getVersions(command)
+    }
 
     data class Params(
         val objectId: Id,
         val lastVersion: Id? = null,
-        val limit: Int = 10
+        val limit: Int = 300
     )
 }

@@ -133,48 +133,52 @@ class DataViewListWidgetContainer(
                         }
                     }
                 } else {
-                    val obj = getObject.run(widget.source.id)
-                    val dv = obj.blocks.find { it.content is DV }?.content
-                    val target = if (dv is DV) {
-                        dv.viewers.find { it.id == view } ?: dv.viewers.firstOrNull()
-                    } else {
-                        null
-                    }
-                    val params = obj.parseDataViewStoreSearchParams(
-                        subscription = widget.id,
-                        viewer = view,
-                        source = source.obj,
-                        config = widget.config,
-                        limit = WidgetConfig.resolveListWidgetLimit(
-                            isCompact = isCompact,
-                            isGallery = target?.type == DVViewerType.GALLERY,
-                            limit = when(widget) {
-                                is Widget.List -> widget.limit
-                                is Widget.View -> widget.limit
-                                is Widget.Tree, is Widget.Link -> {
-                                    throw IllegalStateException("Incompatible widget type.")
-                                }
-                            }
-                        )
-                    )
-                    if (params != null) {
-                        if (target?.type == DVViewerType.GALLERY) {
-                            galleryWidgetSubscribe(
-                                obj = obj,
-                                activeView = view,
-                                params = params,
-                                target = target
-                            )
-                        } else {
-                            defaultWidgetSubscribe(
-                                obj = obj,
-                                activeView = view,
-                                params = params,
-                                isCompact = isCompact
-                            )
-                        }
-                    } else {
+                    if (source.obj.layout == ObjectType.Layout.SET && source.obj.setOf.isEmpty()) {
                         flowOf(defaultEmptyState())
+                    } else {
+                        val obj = getObject.run(widget.source.id)
+                        val dv = obj.blocks.find { it.content is DV }?.content
+                        val target = if (dv is DV) {
+                            dv.viewers.find { it.id == view } ?: dv.viewers.firstOrNull()
+                        } else {
+                            null
+                        }
+                        val params = obj.parseDataViewStoreSearchParams(
+                            subscription = widget.id,
+                            viewer = view,
+                            source = source.obj,
+                            config = widget.config,
+                            limit = WidgetConfig.resolveListWidgetLimit(
+                                isCompact = isCompact,
+                                isGallery = target?.type == DVViewerType.GALLERY,
+                                limit = when (widget) {
+                                    is Widget.List -> widget.limit
+                                    is Widget.View -> widget.limit
+                                    is Widget.Tree, is Widget.Link -> {
+                                        throw IllegalStateException("Incompatible widget type.")
+                                    }
+                                }
+                            )
+                        )
+                        if (params != null) {
+                            if (target?.type == DVViewerType.GALLERY) {
+                                galleryWidgetSubscribe(
+                                    obj = obj,
+                                    activeView = view,
+                                    params = params,
+                                    target = target
+                                )
+                            } else {
+                                defaultWidgetSubscribe(
+                                    obj = obj,
+                                    activeView = view,
+                                    params = params,
+                                    isCompact = isCompact
+                                )
+                            }
+                        } else {
+                            flowOf(defaultEmptyState())
+                        }
                     }
                 }
             }

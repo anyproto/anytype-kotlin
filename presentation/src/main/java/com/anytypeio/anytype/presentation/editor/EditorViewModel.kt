@@ -6221,12 +6221,19 @@ class EditorViewModel(
                     _objectTypes.addAll(objects)
                     val items = buildList {
                         add(TypesWidgetItem.Search)
-                        addAll(objects.getObjectTypeViewsForSBPage(
-                            isWithCollection = true,
-                            isWithBookmark = false,
-                            excludeTypes = excludeTypes
-                        ).filter { !excludeTypes.contains(it.key) }
-                            .map { TypesWidgetItem.Type(it, ) })
+                        addAll(
+                            objects.getObjectTypeViewsForSBPage(
+                                isWithCollection = true,
+                                isWithBookmark = false,
+                                excludeTypes = excludeTypes
+                            ).filter {
+                                !excludeTypes.contains(it.key)
+                            }.map {
+                                TypesWidgetItem.Type(it)
+                            }.distinctBy {
+                                it.item.id
+                            }
+                        )
                     }
                     _typesWidgetState.value = _typesWidgetState.value.copy(items = items)
                 }

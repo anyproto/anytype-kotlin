@@ -100,7 +100,7 @@ fun SpaceListScreen(
                             actions = item.actions
                         )
                     },
-                    key = { _, item -> item.space.id }
+                    key = { _, item -> "space-list-item-${item.space.id}" }
                 )
             }
         }

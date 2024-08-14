@@ -1,15 +1,18 @@
 package com.anytypeio.anytype.middleware.interactor
 
 import anytype.Event
-import com.anytypeio.anytype.middleware.BuildConfig
 import com.anytypeio.anytype.middleware.EventProxy
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import service.Service.setEventHandlerMobile
-import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import service.Service.setEventHandlerMobile
+import timber.log.Timber
 
 class EventHandler @Inject constructor(
     private val logger: MiddlewareProtobufLogger
@@ -33,6 +36,7 @@ class EventHandler @Inject constructor(
     private suspend fun handle(bytes: ByteArray) {
         try {
             val event = withContext(Dispatchers.IO) { Event.ADAPTER.decode(bytes) }.also { logEvent(it) }
+
             channel.emit(event)
         } catch (e: IOException) {
             Timber.e(e, "Error while deserializing message")

@@ -226,7 +226,7 @@ private fun WidgetList(
     ) {
         itemsIndexed(
             items = views.value,
-            key = { _, item -> item.id }
+            key = { _, item -> "home-widget-${item.id}" }
         ) { index, item ->
             when (item) {
                 is WidgetView.SpaceWidget.View -> {

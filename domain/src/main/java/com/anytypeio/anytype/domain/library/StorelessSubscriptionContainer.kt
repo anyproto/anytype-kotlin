@@ -151,6 +151,8 @@ interface StorelessSubscriptionContainer {
                     } else {
                         null
                     }
+                }.distinctBy { wrapper ->
+                    wrapper.id
                 }
             }
             return objectsFlow
@@ -235,6 +237,8 @@ interface StorelessSubscriptionContainer {
                     } else {
                         null
                     }
+                }.distinctBy { wrapper ->
+                    wrapper.id
                 }
                 return@map SubscriptionWithDependencies(
                     results = objects,

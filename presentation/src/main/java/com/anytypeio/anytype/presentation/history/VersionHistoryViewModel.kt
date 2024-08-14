@@ -141,6 +141,7 @@ class VersionHistoryViewModel(
                         )
                     }
                 }
+
                 else -> {}
             }
         }
@@ -150,7 +151,8 @@ class VersionHistoryViewModel(
         relation: RelationKey,
         relationFormat: Relation.Format
     ) {
-        val currentState = (_previewViewState.value as? VersionHistoryPreviewScreen.Success) ?: return
+        val currentState =
+            (_previewViewState.value as? VersionHistoryPreviewScreen.Success) ?: return
         val isSet = currentState.isSet
         when (relationFormat) {
             RelationFormat.SHORT_TEXT,
@@ -271,7 +273,7 @@ class VersionHistoryViewModel(
 
     private fun handleVersionsSuccess(versions: List<Version>, members: List<ObjectWrapper.Basic>) {
         val groupedItems = groupItems(versions, members)
-        _viewState.value = VersionHistoryState.Success(groups = groupedItems)
+        _viewState.value = VersionHistoryState.Success(groups = groupedItems, canPaginate = canPaginate.value)
     }
 
     private fun groupItems(
@@ -468,7 +470,8 @@ class VersionHistoryViewModel(
                     val event = payload.events
                         .filterIsInstance<Event.Command.ShowObject>()
                         .first()
-                    val obj = ObjectWrapper.Basic(event.details.details[vmParams.objectId]?.map.orEmpty())
+                    val obj =
+                        ObjectWrapper.Basic(event.details.details[vmParams.objectId]?.map.orEmpty())
                     val root = event.blocks.first { it.id == vmParams.objectId }
                     val blocks = event.blocks.asMap().render(
                         mode = Mode.Read,
@@ -506,10 +509,17 @@ class VersionHistoryViewModel(
         data object Main : Command("main")
         data object VersionPreview : Command("version preview")
         data object ExitToObject : Command("")
-        data class RelationMultiSelect(val relationKey: RelationKey, val isSet: Boolean) : Command("relation_select")
-        data class RelationObject(val relationKey: RelationKey, val isSet: Boolean) : Command("relation_object")
-        data class RelationDate(val relationKey: RelationKey, val isSet: Boolean) : Command("relation_date")
-        data class RelationText(val relationKey: RelationKey, val isSet: Boolean) : Command("relation_text")
+        data class RelationMultiSelect(val relationKey: RelationKey, val isSet: Boolean) :
+            Command("relation_select")
+
+        data class RelationObject(val relationKey: RelationKey, val isSet: Boolean) :
+            Command("relation_object")
+
+        data class RelationDate(val relationKey: RelationKey, val isSet: Boolean) :
+            Command("relation_date")
+
+        data class RelationText(val relationKey: RelationKey, val isSet: Boolean) :
+            Command("relation_text")
     }
 
     companion object {
@@ -523,7 +533,10 @@ class VersionHistoryViewModel(
 
 sealed class VersionHistoryState {
     data object Loading : VersionHistoryState()
-    data class Success(val groups: List<VersionHistoryGroup>) : VersionHistoryState()
+    data class Success(
+        val groups: List<VersionHistoryGroup>,
+        val canPaginate: Boolean
+    ) : VersionHistoryState()
     sealed class Error : VersionHistoryState() {
         data class SpaceMembers(val message: String) : Error()
         data class GetVersions(val message: String) : Error()

@@ -28,6 +28,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -111,6 +112,13 @@ private fun VersionHistorySuccessState(
     }
 
     val lazyListState = rememberLazyListState()
+
+//    val shouldStartPaging = remember {
+//        derivedStateOf {
+//            state.canPaginate
+//                    && lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+//        }
+//    }
 
     LazyColumn(
         state = lazyListState,
@@ -306,6 +314,7 @@ fun VersionHistoryAvatarTextStyle() = TextStyle(
 private fun SpaceListScreenPreview() {
     VersionHistoryScreen(
         state = VersionHistoryState.Success(
+            canPaginate = false,
             groups = listOf(
                 VersionHistoryGroup(
                     id = "1",

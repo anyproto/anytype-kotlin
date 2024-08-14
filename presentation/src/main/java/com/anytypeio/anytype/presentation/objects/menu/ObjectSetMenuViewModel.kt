@@ -30,6 +30,7 @@ import com.anytypeio.anytype.presentation.util.downloader.DebugGoroutinesShareDo
 import javax.inject.Inject
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class ObjectSetMenuViewModel(
     setObjectIsArchived: SetObjectIsArchived,
@@ -66,6 +67,10 @@ class ObjectSetMenuViewModel(
     spaceManager = spaceManager,
     analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
 ) {
+
+    init {
+        Timber.i("ObjectSetMenuViewModel, init")
+    }
 
     @Suppress("UNCHECKED_CAST")
     class Factory @Inject constructor(

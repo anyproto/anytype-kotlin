@@ -44,7 +44,19 @@ interface StorelessSubscriptionContainer {
         private val amendEventProcessor by lazy { EventAmendProcessor(logger = logger) }
         private val positionEventProcessor by lazy { EventPositionProcessor() }
 
-        private fun subscribe(subscriptions: List<Id>) = channel.subscribe(subscriptions)
+        private fun subscribe(subscriptions: List<Id>) = channel.subscribe(subscriptions).map { payload ->
+            payload.sortedBy { event ->
+                when(event) {
+                    is SubscriptionEvent.Add -> 1
+                    is SubscriptionEvent.Remove -> 2
+                    is SubscriptionEvent.Set -> 3
+                    is SubscriptionEvent.Amend -> 4
+                    is SubscriptionEvent.Unset -> 5
+                    is SubscriptionEvent.Position -> 6
+                    is SubscriptionEvent.Counter -> 7
+                }
+            }
+        }
 
         override fun subscribe(searchParams: StoreSearchParams): Flow<List<ObjectWrapper.Basic>> =
             flow {

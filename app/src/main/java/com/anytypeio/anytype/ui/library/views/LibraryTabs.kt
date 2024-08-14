@@ -95,7 +95,6 @@ fun LibraryTabs(
 
 }
 
-@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun LibraryTab(
     modifier: Modifier,

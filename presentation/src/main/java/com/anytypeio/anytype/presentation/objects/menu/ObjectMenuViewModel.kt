@@ -86,6 +86,10 @@ class ObjectMenuViewModel(
     analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
 ) {
 
+    init {
+        Timber.i("ObjectMenuViewModel, init")
+    }
+
     private val objectRestrictions = storage.objectRestrictions.current()
 
     override fun buildActions(

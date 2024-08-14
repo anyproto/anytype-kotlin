@@ -199,10 +199,9 @@ private fun LibraryList(
         .height(ItemDefaults.ITEM_HEIGHT)
 
     LazyColumn(modifier = Modifier.fillMaxSize(), state = itemsListState) {
-
         items(
             count = data.items.size,
-            key = { index -> data.items[index].id },
+            key = { index -> "library-item-${data.items[index].id}" },
             itemContent = { ix ->
                 when (val item = data.items[ix]) {
                     is LibraryView.LibraryTypeView -> {

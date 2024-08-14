@@ -6177,11 +6177,11 @@ class EditorViewModel(
     )
 
     sealed class TypesWidgetItem {
-        object Search : TypesWidgetItem()
-        object Done : TypesWidgetItem()
+        data object Search : TypesWidgetItem()
+        data object Done : TypesWidgetItem()
         data class Type(val item: ObjectTypeView) : TypesWidgetItem()
-        object Expand : TypesWidgetItem()
-        object Collapse : TypesWidgetItem()
+        data object Expand : TypesWidgetItem()
+        data object Collapse : TypesWidgetItem()
     }
 
     private val _objectTypes = mutableListOf<ObjectWrapper.Type>()

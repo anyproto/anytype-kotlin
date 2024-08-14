@@ -1,72 +1,100 @@
 package com.anytypeio.anytype.presentation.sync
 
+import android.util.Log
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.multiplayer.P2PStatusUpdate
+import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncUpdate
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.debugging.Logger
+import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.workspace.P2PStatusChannel
 import com.anytypeio.anytype.domain.workspace.SpaceSyncStatusChannel
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.launch
+import timber.log.Timber
 
-interface SpaceSyncAndP2PStatusProvider {
+class SpaceSyncAndP2PStatusProviderImpl @Inject constructor(
+    private val activeSpace: ActiveSpaceMemberSubscriptionContainer,
+    private val spaceSyncStatusChannel: SpaceSyncStatusChannel,
+    private val p2PStatusChannel: P2PStatusChannel,
+    private val dispatchers: AppCoroutineDispatchers,
+    private val scope: CoroutineScope,
+    private val logger: Logger
+) : SpaceSyncAndP2PStatusProvider {
 
-    suspend fun observe(): Flow<SpaceSyncAndP2PStatusState>
+    private val members = MutableStateFlow<SpaceSyncAndP2PStatusState>(SpaceSyncAndP2PStatusState.Initial)
+    private val jobs = mutableListOf<Job>()
 
-    class Impl @Inject constructor(
-        private val activeSpace: ActiveSpaceMemberSubscriptionContainer,
-        private val spaceSyncStatusChannel: SpaceSyncStatusChannel,
-        private val p2PStatusChannel: P2PStatusChannel
-    ) : SpaceSyncAndP2PStatusProvider {
+    override fun getState(): Flow<SpaceSyncAndP2PStatusState> {
+        return members
+    }
 
-        @OptIn(ExperimentalCoroutinesApi::class)
-        override suspend fun observe(): Flow<SpaceSyncAndP2PStatusState> {
-            val p2pFlow =
-                p2PStatusChannel.observe().onStart { emit(P2PStatusUpdate.Initial) }
-
-            val syncFlow = activeSpace
-                .observe()
-                .flatMapLatest { activeSpace ->
-                    when (activeSpace) {
-                        is ActiveSpaceMemberSubscriptionContainer.Store.Data -> {
-                            observeSpaceSyncStatus(spaceId = activeSpace.config.space)
-                        }
-
-                        ActiveSpaceMemberSubscriptionContainer.Store.Empty -> {
-                            emptyFlow()
-                        }
-                    }
-                }
-            return combine(syncFlow, p2pFlow) { syncStatus, p2PStatus ->
-                if (syncStatus is SpaceSyncUpdate.Initial && p2PStatus is P2PStatusUpdate.Initial) {
-                    SpaceSyncAndP2PStatusState.Initial
-                } else {
-                    SpaceSyncAndP2PStatusState.Success(
-                        spaceSyncUpdate = syncStatus,
-                        p2PStatusUpdate = p2PStatus
-                    )
-                }
+    override fun onStart() {
+        logger.logInfo("SpaceSyncAndP2PStatusProviderImpl start")
+        clear()
+        jobs += scope.launch(dispatchers.io) {
+            observe().collect { state ->
+                logger.logInfo("SpaceSyncAndP2PStatusProviderImpl state: $state")
+                Log.d("Test1983", "Provider|Sync status: $state")
+                members.value = state
             }
         }
+    }
 
-        private fun observeSpaceSyncStatus(spaceId: Id): Flow<SpaceSyncUpdate> {
-            return spaceSyncStatusChannel.observe(spaceId).onStart { emit(SpaceSyncUpdate.Initial) }
+    override fun onStop() {
+        logger.logInfo("SpaceSyncAndP2PStatusProviderImpl stop")
+        clear()
+    }
+
+    private fun clear() {
+        jobs.forEach { it.cancel() }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private suspend fun observe(): Flow<SpaceSyncAndP2PStatusState> {
+        val p2pFlow =
+            p2PStatusChannel.observe().onStart { emit(P2PStatusUpdate.Initial) }
+
+        val syncFlow = activeSpace
+            .observe()
+            .flatMapLatest { activeSpace ->
+                when (activeSpace) {
+                    is ActiveSpaceMemberSubscriptionContainer.Store.Data -> {
+                        observeSpaceSyncStatus(spaceId = activeSpace.config.space)
+                    }
+
+                    ActiveSpaceMemberSubscriptionContainer.Store.Empty -> {
+                        emptyFlow()
+                    }
+                }
+            }
+        return combine(syncFlow, p2pFlow) { syncStatus, p2PStatus ->
+            Timber.d("SpaceSyncAndP2PStatusState: $syncStatus, $p2PStatus")
+            if (syncStatus is SpaceSyncUpdate.Initial && p2PStatus is P2PStatusUpdate.Initial) {
+                SpaceSyncAndP2PStatusState.Initial
+            } else {
+                SpaceSyncAndP2PStatusState.Success(
+                    spaceSyncUpdate = syncStatus,
+                    p2PStatusUpdate = p2PStatus
+                )
+            }
         }
     }
-}
 
-sealed class SpaceSyncAndP2PStatusState {
-    data object Initial : SpaceSyncAndP2PStatusState()
-    data class Error(val message: String) : SpaceSyncAndP2PStatusState()
-    data class Success(
-        val spaceSyncUpdate: SpaceSyncUpdate,
-        val p2PStatusUpdate: P2PStatusUpdate
-    ) : SpaceSyncAndP2PStatusState()
+    private fun observeSpaceSyncStatus(spaceId: Id): Flow<SpaceSyncUpdate> {
+        return spaceSyncStatusChannel.observe(spaceId).onStart { emit(SpaceSyncUpdate.Initial) }
+    }
 }
 
 fun SyncStatusWidgetState.updateStatus(newState: SpaceSyncAndP2PStatusState): SyncStatusWidgetState {

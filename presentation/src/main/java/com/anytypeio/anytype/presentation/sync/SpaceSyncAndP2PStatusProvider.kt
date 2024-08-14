@@ -26,7 +26,10 @@ interface SpaceSyncAndP2PStatusProvider {
 
         @OptIn(ExperimentalCoroutinesApi::class)
         override suspend fun observe(): Flow<SpaceSyncAndP2PStatusState> {
-            return activeSpace
+            val p2pFlow =
+                p2PStatusChannel.observe().onStart { emit(P2PStatusUpdate.Initial) }
+
+            val syncFlow = activeSpace
                 .observe()
                 .flatMapLatest { activeSpace ->
                     when (activeSpace) {
@@ -39,14 +42,6 @@ interface SpaceSyncAndP2PStatusProvider {
                         }
                     }
                 }
-        }
-
-        private fun observeSpaceSyncStatus(spaceId: Id): Flow<SpaceSyncAndP2PStatusState> {
-            val syncFlow =
-                spaceSyncStatusChannel.observe(spaceId).onStart { emit(SpaceSyncUpdate.Initial) }
-            val p2pFlow =
-                p2PStatusChannel.observe(spaceId).onStart { emit(P2PStatusUpdate.Initial) }
-
             return combine(syncFlow, p2pFlow) { syncStatus, p2PStatus ->
                 if (syncStatus is SpaceSyncUpdate.Initial && p2PStatus is P2PStatusUpdate.Initial) {
                     SpaceSyncAndP2PStatusState.Initial
@@ -57,6 +52,10 @@ interface SpaceSyncAndP2PStatusProvider {
                     )
                 }
             }
+        }
+
+        private fun observeSpaceSyncStatus(spaceId: Id): Flow<SpaceSyncUpdate> {
+            return spaceSyncStatusChannel.observe(spaceId).onStart { emit(SpaceSyncUpdate.Initial) }
         }
     }
 }

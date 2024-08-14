@@ -9,12 +9,14 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class OnboardingStartViewModel @Inject constructor(
     private val analytics: Analytics
 ) : ViewModel() {
 
     init {
+        Timber.i("OnboardingStartViewModel, init")
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = EventsDictionary.authScreenShow

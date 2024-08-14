@@ -19,7 +19,11 @@ class DefaultObjectRelationProvider(
     }
 
     override suspend fun get(relation: Key): ObjectWrapper.Relation {
-        return storeOfRelations.getByKey(relation) ?: throw IllegalStateException("Could not find relation by id: $relation")
+        return storeOfRelations.getByKey(relation) ?: throw IllegalStateException("Could not find relation by key: $relation")
+    }
+
+    override suspend fun getOrNull(relation: Key): ObjectWrapper.Relation? {
+        return storeOfRelations.getByKey(relation)
     }
 
     override fun observeAll(): Flow<List<ObjectWrapper.Relation>> {

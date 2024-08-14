@@ -452,14 +452,9 @@ private fun GlobalSearchItem(
                 )
                 .align(Alignment.CenterStart)
         ) {
-            Text(
-                text = globalSearchItemView.title.ifEmpty {
-                    stringResource(id = R.string.untitled)
-                },
-                style = PreviewTitle2Medium,
-                color = colorResource(id = R.color.text_primary),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+            DefaultTitleWithHighlights(
+                text = globalSearchItemView.title,
+                nameMeta = globalSearchItemView.nameMeta
             )
             when(val meta = globalSearchItemView.meta) {
                 is GlobalSearchItemView.Meta.Block -> {
@@ -578,6 +573,36 @@ private fun DefaultMetaBlockWithHighlights(
         ),
         style = Relations2,
         color = colorResource(id = R.color.text_primary)
+    )
+}
+
+@Composable
+private fun DefaultTitleWithHighlights(
+    text: String,
+    nameMeta: GlobalSearchItemView.NameMeta?
+) {
+    val title = when {
+        text.isEmpty() -> AnnotatedString(stringResource(id = R.string.untitled))
+        nameMeta == null -> AnnotatedString(text)
+        else -> AnnotatedString(
+            text = text,
+            spanStyles = nameMeta.highlights.map { range ->
+                AnnotatedString.Range(
+                    SpanStyle(
+                        background = colorResource(id = R.color.palette_light_ice)
+                    ),
+                    range.first,
+                    range.last
+                )
+            }
+        )
+    }
+    Text(
+        text = title,
+        style = PreviewTitle2Medium,
+        color = colorResource(id = R.color.text_primary),
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis
     )
 }
 

@@ -6,6 +6,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r23c
+          link-to-sdk: true
       - uses: actions/setup-java@v3
         with:
           distribution: "zulu"

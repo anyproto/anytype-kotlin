@@ -2832,7 +2832,7 @@ class ObjectSetViewModel(
     private fun proceedWithObservingSyncStatus() {
         jobs += viewModelScope.launch {
             spaceSyncAndP2PStatusProvider
-                .getState()
+                .state
                 .collect { syncAndP2pState ->
                     spaceSyncStatus.value = syncAndP2pState
                     syncStatusWidget.value = syncStatusWidget.value.updateStatus(syncAndP2pState)

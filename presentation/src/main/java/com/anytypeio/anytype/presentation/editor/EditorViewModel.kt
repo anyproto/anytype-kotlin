@@ -7359,7 +7359,7 @@ class EditorViewModel(
     private fun proceedWithCollectingSyncStatus() {
         jobs += viewModelScope.launch {
             spaceSyncAndP2PStatusProvider
-                .getState()
+                .state
                 .collect { syncAndP2pState ->
                     Log.d("Test1983", "Editor| Sync status: $syncAndP2pState")
                     spaceSyncStatus.value = syncAndP2pState

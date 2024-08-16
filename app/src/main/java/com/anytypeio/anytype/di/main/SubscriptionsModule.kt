@@ -25,7 +25,7 @@ import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.SpaceSyncStatusChannel
+import com.anytypeio.anytype.domain.workspace.SyncAndP2PStatusChannel
 import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusProviderImpl
 import dagger.Module
 import dagger.Provides
@@ -171,7 +171,7 @@ object SubscriptionsModule {
     @Singleton
     fun provideSpaceSyncStatusProvider(
         activeSpace: ActiveSpaceMemberSubscriptionContainer,
-        syncChannel: SpaceSyncStatusChannel,
+        syncChannel: SyncAndP2PStatusChannel,
         @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
         logger: Logger,
         dispatchers: AppCoroutineDispatchers,

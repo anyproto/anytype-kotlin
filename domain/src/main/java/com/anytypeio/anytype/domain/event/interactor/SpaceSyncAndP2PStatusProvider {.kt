@@ -6,5 +6,5 @@ import kotlinx.coroutines.flow.Flow
 interface SpaceSyncAndP2PStatusProvider {
     fun onStart()
     fun onStop()
-    fun getState(): Flow<SpaceSyncAndP2PStatusState>
+    val state: Flow<SpaceSyncAndP2PStatusState>
 }

@@ -184,13 +184,11 @@ object SubscriptionsModule {
         types: ObjectTypesSubscriptionManager,
         relations: RelationsSubscriptionManager,
         permissions: UserPermissionProvider,
-        isSpaceDeleted: SpaceDeletedStatusWatcher,
-        spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
+        isSpaceDeleted: SpaceDeletedStatusWatcher
     ) : GlobalSubscriptionManager = GlobalSubscriptionManager.Default(
         types = types,
         relations = relations,
         permissions = permissions,
-        isSpaceDeleted = isSpaceDeleted,
-        spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider
+        isSpaceDeleted = isSpaceDeleted
     )
 }

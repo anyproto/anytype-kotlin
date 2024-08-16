@@ -73,7 +73,6 @@ class SyncAndP2PStatusEventsStoreImpl(
             currentMap[update.spaceId] = p2pUpdate
             currentMap
         }
-        Timber.d("Processed P2P status update: $update")
     }
 
     private fun processSpaceSyncUpdate(update: MSyncStatusUpdate) {
@@ -89,6 +88,5 @@ class SyncAndP2PStatusEventsStoreImpl(
             currentMap[update.id] = syncUpdate
             currentMap
         }
-        Timber.d("Processed Sync status update: $update")
     }
 }

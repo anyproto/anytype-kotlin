@@ -171,16 +171,10 @@ object SubscriptionsModule {
     @Singleton
     fun provideSpaceSyncStatusProvider(
         activeSpace: ActiveSpaceMemberSubscriptionContainer,
-        syncChannel: SyncAndP2PStatusChannel,
-        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
-        logger: Logger,
-        dispatchers: AppCoroutineDispatchers,
+        syncChannel: SyncAndP2PStatusChannel
     ): SpaceSyncAndP2PStatusProvider = SpaceSyncAndP2PStatusProviderImpl(
         activeSpace = activeSpace,
-        spaceSyncStatusChannel = syncChannel,
-        scope = scope,
-        logger = logger,
-        dispatchers = dispatchers
+        spaceSyncStatusChannel = syncChannel
     )
 
     @JvmStatic
@@ -190,11 +184,13 @@ object SubscriptionsModule {
         types: ObjectTypesSubscriptionManager,
         relations: RelationsSubscriptionManager,
         permissions: UserPermissionProvider,
-        isSpaceDeleted: SpaceDeletedStatusWatcher
+        isSpaceDeleted: SpaceDeletedStatusWatcher,
+        spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
     ) : GlobalSubscriptionManager = GlobalSubscriptionManager.Default(
         types = types,
         relations = relations,
         permissions = permissions,
-        isSpaceDeleted = isSpaceDeleted
+        isSpaceDeleted = isSpaceDeleted,
+        spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider
     )
 }

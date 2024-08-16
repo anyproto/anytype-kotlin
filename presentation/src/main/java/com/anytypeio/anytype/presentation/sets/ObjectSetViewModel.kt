@@ -2832,7 +2832,10 @@ class ObjectSetViewModel(
     private fun proceedWithObservingSyncStatus() {
         jobs += viewModelScope.launch {
             spaceSyncAndP2PStatusProvider
-                .state
+                .observe()
+                .catch {
+                    Timber.e(it, "Error while observing sync status")
+                }
                 .collect { syncAndP2pState ->
                     spaceSyncStatus.value = syncAndP2pState
                     syncStatusWidget.value = syncStatusWidget.value.updateStatus(syncAndP2pState)

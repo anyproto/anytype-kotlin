@@ -1,13 +1,17 @@
 package com.anytypeio.anytype.middleware.interactor
 
 import anytype.Event
+import com.anytypeio.anytype.data.auth.status.SyncAndP2PStatusEventsStore
 import com.anytypeio.anytype.middleware.EventProxy
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.Flow
-import service.Service.setEventHandlerMobile
-import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import service.Service.setEventHandlerMobile
+import timber.log.Timber
 
 class EventHandler @Inject constructor(
     private val logger: MiddlewareProtobufLogger,

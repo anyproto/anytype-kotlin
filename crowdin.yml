@@ -15,8 +15,7 @@ export_languages:
   - 'ru'
   - 'nl'
   - 'be'
-  - 'be-BY'
-  - 'be-rBY'
+  - 'tr'
 files:
   - source: /localization/src/main/res/values/strings.xml
     translation: /localization/src/main/res/values-%android_code%/strings.xml

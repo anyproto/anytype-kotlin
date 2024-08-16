@@ -14,7 +14,7 @@
     <string name="debug_sync_report">Laporan Sinkronisasi Debug</string>
     <string name="debug">Awakutu</string>
     <string name="account">Vault</string>
-    <string name="reset_account">Reset vault</string>
+    <string name="reset_account">Setel ulang brankas</string>
     <string name="delete_account">Delete vault</string>
     <string name="space_debug">Awakutu ruang</string>
     <string name="data">Data</string>
@@ -28,7 +28,7 @@
     <string name="dark">Gelap</string>
     <string name="system">Sistem</string>
     <string name="settings">Setelan</string>
-    <string name="have_you_back_up_your_recovery_phrase">Have you backed up your Key?</string>
+    <string name="have_you_back_up_your_recovery_phrase">Sudahkah kamu mencadangkan Kuncimu?</string>
     <string name="you_will_need_to_sign_in">You will need it to enter your vault. Keep it in a safe place. If you lose it, you can no longer enter your vault.</string>
     <string name="about_help_and_community">Bantuan &amp; Komunitas</string>
     <string name="about_what_is_new">Yang Baru</string>
@@ -42,7 +42,7 @@
     <string name="about_meta_info_for_copy">Perangkat: %1$s\nVersi Android: %2$d\nVersi Aplikasi: %3$s\nPembuatan Nomor: %4$d\nVersi Pustaka: %5$s\nAkun\u00A0ID:\u00A0%6$s\nPerangkat\u00A0ID:\u00A0%7$s\nAnalisis\u00A0ID:\u00A0%8$s</string>
     <string name="space">Ruang</string>
     <string name="space_name">Nama Ruang</string>
-    <string name="default_space">Entry space</string>
+    <string name="default_space">Ruang bawaan</string>
     <string name="space_settings_apply_random_gradient">Terapkan gradasi acak</string>
     <string name="space_settings_apply_upload_image">Upload image</string>
     <string name="delete_space">Hapus ruang</string>
@@ -59,7 +59,7 @@
     <string name="account_name">Nama</string>
     <string name="space_settings">Setelan ruang</string>
     <string name="data_management">Manajemen data</string>
-    <string name="deleted_account_danger_zone_msg">Once you request your vault to be deleted, you have 30 days to cancel this request. After 30 days, your encrypted vault data is permanently removed from the backup node, you won\'t be able to sign into Anytype on new devices.</string>
+    <string name="deleted_account_danger_zone_msg">Begitu kamu meminta brankasmu dihapus, kamu punya waktu 30 hari untuk membatalkan permintaan ini. Setelah 30 hari, data brankas terenkripsimu akan dihapus secara permanen dari simpul cadangan, dan kamu tidak akan bisa masuk ke Anytype di perangkat baru.</string>
     <string name="danger_zone">Hapus akun (Hati-hati!)</string>
     <string name="snackbar_template_add">Templat baru ditambahkan ke tipe ini</string>
     <string name="settings_membership">Langganan</string>
@@ -435,7 +435,7 @@
     <string name="paste_link">Tautan</string>
     <string name="next">Lanjut</string>
     <string name="limit_object_types">Batasi tipe objek</string>
-    <string name="deleted_account_msg">We\'re sorry to see you go. Once you request your vault to be deleted, you have 30 days to cancel this request. After 30 days, your encrypted vault data is permanently removed from the backup node.</string>
+    <string name="deleted_account_msg">Kami sedih melihatmu pergi. Setelah kamu meminta brankasmu dihapus, kamu punya waktu 30 hari untuk membatalkan tindakan ini. Setelah 30 hari, data brankas terenkripsimu akan dihapus secara permanen dari simpul cadangan.</string>
     <string name="swipe_down_to_skip">Swipe down to skip</string>
     <string name="show">Tampilkan</string>
     <string name="this_type_has_templates">This type has %1$d templates</string>
@@ -820,7 +820,7 @@
     <string name="anytype_update_alert_description">Some of your data was managed in a newer version of Anytype. Please update the app to work with all your docs and the latest features.</string>
     <string name="anytype_update_alert_title">Waktunya memperbarui</string>
     <string name="space_type_default">Entry</string>
-    <string name="space_type_default_space">Entry space</string>
+    <string name="space_type_default_space">Ruang bawaan</string>
     <string name="space_type_private">Pribadi</string>
     <string name="space_type_private_space">Ruang pribadi</string>
     <string name="space_type_shared">Berbagi</string>

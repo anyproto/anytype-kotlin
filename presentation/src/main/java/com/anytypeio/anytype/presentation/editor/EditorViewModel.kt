@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.presentation.editor
 
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -7364,7 +7363,6 @@ class EditorViewModel(
                     Timber.e(it, "Error while observing sync status")
                 }
                 .collect { syncAndP2pState ->
-                    Log.d("Test1983", "Editor| Sync status: $syncAndP2pState")
                     spaceSyncStatus.value = syncAndP2pState
                     syncStatusWidget.value = syncStatusWidget.value.updateStatus(syncAndP2pState)
                 }

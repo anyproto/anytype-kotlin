@@ -9,21 +9,29 @@ import com.anytypeio.anytype.data.auth.event.FileLimitsDataChannel
 import com.anytypeio.anytype.data.auth.event.FileLimitsRemoteChannel
 import com.anytypeio.anytype.data.auth.event.SubscriptionDataChannel
 import com.anytypeio.anytype.data.auth.event.SubscriptionEventRemoteChannel
+import com.anytypeio.anytype.data.auth.status.SyncAndP2PStatusEventsStore
+import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
 import com.anytypeio.anytype.domain.account.AccountStatusChannel
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.interactor.AccountStatusMiddlewareChannel
+import com.anytypeio.anytype.middleware.interactor.AppEventChannel
+import com.anytypeio.anytype.middleware.interactor.AppEventChannelImpl
 import com.anytypeio.anytype.middleware.interactor.EventHandler
 import com.anytypeio.anytype.middleware.interactor.FileLimitsMiddlewareChannel
 import com.anytypeio.anytype.middleware.interactor.MiddlewareEventChannel
+import com.anytypeio.anytype.middleware.interactor.MiddlewareProtobufLogger
 import com.anytypeio.anytype.middleware.interactor.MiddlewareSubscriptionEventChannel
+import com.anytypeio.anytype.middleware.interactor.SyncAndP2PStatusEventsStoreImpl
 import com.anytypeio.anytype.presentation.common.PayloadDelegator
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
+import javax.inject.Named
 import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineScope
 
 @Module(includes = [EventModule.Bindings::class])
 object EventModule {
@@ -110,12 +118,39 @@ object EventModule {
         channel: FileLimitsRemoteChannel
     ): FileLimitsEventChannel = FileLimitsDataChannel(channel = channel)
 
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideEventHandler(
+        logger: MiddlewareProtobufLogger,
+        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
+        channel: AppEventChannel,
+        syncP2PStore: SyncAndP2PStatusEventsStore
+    ): EventProxy = EventHandler(
+        scope = scope,
+        logger = logger,
+        channel = channel,
+        syncP2PStore = syncP2PStore
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideSyncAndP2PStatusEventsSubscription(
+        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
+        channel: AppEventChannel
+    ): SyncAndP2PStatusEventsStore = SyncAndP2PStatusEventsStoreImpl(
+        scope = scope,
+        channel = channel
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideDefaultEventChannel(): AppEventChannel = AppEventChannelImpl()
+
     @Module
     interface Bindings {
-
-        @Binds
-        @Singleton
-        fun bindEventProxy(handler: EventHandler): EventProxy
 
         @Binds
         @Singleton

@@ -24,7 +24,6 @@ import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
-import com.anytypeio.anytype.domain.workspace.P2PStatusChannel
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.SpaceSyncStatusChannel
 import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusProviderImpl
@@ -173,14 +172,12 @@ object SubscriptionsModule {
     fun provideSpaceSyncStatusProvider(
         activeSpace: ActiveSpaceMemberSubscriptionContainer,
         syncChannel: SpaceSyncStatusChannel,
-        p2PStatusChannel: P2PStatusChannel,
         @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
         logger: Logger,
-        dispatchers: AppCoroutineDispatchers
+        dispatchers: AppCoroutineDispatchers,
     ): SpaceSyncAndP2PStatusProvider = SpaceSyncAndP2PStatusProviderImpl(
         activeSpace = activeSpace,
         spaceSyncStatusChannel = syncChannel,
-        p2PStatusChannel = p2PStatusChannel,
         scope = scope,
         logger = logger,
         dispatchers = dispatchers
@@ -193,13 +190,11 @@ object SubscriptionsModule {
         types: ObjectTypesSubscriptionManager,
         relations: RelationsSubscriptionManager,
         permissions: UserPermissionProvider,
-        isSpaceDeleted: SpaceDeletedStatusWatcher,
-        spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
+        isSpaceDeleted: SpaceDeletedStatusWatcher
     ) : GlobalSubscriptionManager = GlobalSubscriptionManager.Default(
         types = types,
         relations = relations,
         permissions = permissions,
-        isSpaceDeleted = isSpaceDeleted,
-        spaceSyncAndP2PStatusProviderImpl = spaceSyncAndP2PStatusProvider
+        isSpaceDeleted = isSpaceDeleted
     )
 }

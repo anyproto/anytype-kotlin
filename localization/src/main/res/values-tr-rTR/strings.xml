@@ -2,7 +2,7 @@
 <resources>
     <string name="about">Hakkında</string>
     <string name="app_version">Uygulama sürümü</string>
-    <string name="library">Kütüphane</string>
+    <string name="library">Kitaplık</string>
     <string name="user_id">Kullanıcı kimliği</string>
     <string name="account_and_data"><![CDATA[Hesap & Veri]]></string>
     <string name="profile">Profil</string>
@@ -25,7 +25,7 @@
     <string name="wallpaper">Duvar kağıdı</string>
     <string name="tech_info">Teknik bilgi</string>
     <string name="light">Açık</string>
-    <string name="dark">Koyu</string>
+    <string name="dark">Karanlık</string>
     <string name="system">Sistem</string>
     <string name="settings">Ayarlar</string>
     <string name="have_you_back_up_your_recovery_phrase">Anahtarınızı yedeklediniz mi?</string>
@@ -123,8 +123,8 @@
     <string name="kanban_view">Kanban görünüm</string>
     <string name="properties">Özellikler</string>
     <string name="sort">Sırala</string>
-    <string name="sort_empty_state">Burada sıralama yok. Kendin ekleyebilirsin</string>
-    <string name="filter_empty_state">Burada filtre yok. Kendin ekleyebilirsin</string>
+    <string name="sort_empty_state">Burada sıralama yok. Kendiniz ekleyebilirsiniz.</string>
+    <string name="filter_empty_state">Burada filtre yok. Kendiniz ekleyebilirsiniz.</string>
     <string name="relation_status_value_empty_state">Burada ilgili seçenek yok. Kendin ekleyebilirsin</string>
     <string name="filter_by">Şuna göre filtrele</string>
     <string name="filter">Filtre</string>
@@ -185,7 +185,7 @@
     <string name="archive">Arşiv</string>
     <string name="add_block_option_icon">Blok seçeneği simgesi ekle</string>
     <string name="bookmark_error_menu_button">Yer imi hatası menü düğmesi</string>
-    <string name="bookmark_error">Bir şeyler ters gitti, tekrar deneyin</string>
+    <string name="bookmark_error">Bir şeyler ters gitti tekrar deneyin.</string>
     <string name="deleted_type">Türü sil</string>
     <string name="deleted_type_in_set">Tür: Silinmiş</string>
     <string name="menu_item_bold">Kalın</string>
@@ -244,7 +244,7 @@
     <string name="move_to">Şuraya taşı</string>
     <string name="preview">Önizleme</string>
     <string name="link_to">Şuna bağla</string>
-    <string name="make_template">Şablon Oluştur</string>
+    <string name="make_template">Şablon oluştur</string>
     <string name="linked_to">Şuraya bağlı:</string>
     <string name="remove_link">Bağlantıyı kaldır</string>
     <string name="mention_suggester_new_page">Yeni nesne oluştur</string>
@@ -323,7 +323,7 @@
     <string name="clear">Temizle</string>
     <string name="create_option">\"%1$s\" seçeneğini oluşturun</string>
     <string name="featured_relations">Öne çıkan ilişkiler</string>
-    <string name="other_relations">Diğer bağıntılar</string>
+    <string name="other_relations">Diğer ilişkiler</string>
     <string name="from_type">%1$s türünden</string>
     <string name="hint_add_description">Açıklama ekle</string>
     <string name="dv_filter_checkbox_checked">kontrol edildi</string>
@@ -337,13 +337,13 @@
     <string name="create_from_scratch">Sıfırdan oluşturun</string>
     <string name="create_relation_with_name">\"%1$s\" ilişkisi oluşturun</string>
     <string name="name_is_required">İsim alanı zorunludur</string>
-    <string name="favourite">Favorilere Ekle</string>
+    <string name="favourite">Favorilere ekle</string>
     <string name="template">Şablon</string>
     <string name="templates">Şablonlar</string>
     <string name="lock">Kilitle</string>
     <string name="unlock">Kilidi aç</string>
     <string name="restore">Geri yükle</string>
-    <string name="unfavorite">Favorilerden Çıkar</string>
+    <string name="unfavorite">Favorilerden çıkar</string>
     <string name="delete_view">Görünümü silin</string>
     <string name="select_tags">Etiketleri seçin</string>
     <string name="select_status">Durum seçin</string>
@@ -462,9 +462,9 @@
     <string name="open_object">Nesne aç</string>
     <string name="open_source">Açık kaynak</string>
     <string name="reload_object_content">Nesne içeriğini yeniden yükle</string>
-    <string name="open_link">Bağlantıyı Aç</string>
-    <string name="copy_email">E-postayı Kopyala</string>
-    <string name="copy_phone_number">Copy phone numbler</string>
+    <string name="open_link">Bağlantıyı aç</string>
+    <string name="copy_email">E-postayı kopyala</string>
+    <string name="copy_phone_number">Telefon numarasını kopyala</string>
     <string name="send_email">E-posta gönder</string>
     <string name="call_phone_number">Telefon numarasını arayın</string>
     <string name="bookmark_icon">Yer imi simgesi</string>
@@ -489,7 +489,7 @@
     <string name="block_data_view_content_description_no_source">Satır içi setin kaynağı yok</string>
     <string name="block_data_view_content_description_no_data">Satır içi kümenin kaynağının türü yok</string>
     <string name="object_search_recently_opened_section_title">Yakın zamanda açıldı</string>
-    <string name="widget_source_anytype_library">Anytype Kütüphanesi</string>
+    <string name="widget_source_anytype_library">Anytype Kitaplığı</string>
     <string name="widget_source_default_lists">Varsayılan listeler</string>
     <string name="your_favorite_objects">Favori nesneleriniz</string>
     <string name="on_this_device">Bu cihazda</string>
@@ -646,7 +646,7 @@
     <string name="sort_by">Şuna göre sırala</string>
     <string name="hint_tap_to_type">Yazmak için dokun</string>
     <string name="viewer_gallery">Galeri</string>
-    <string name="viewer_as">Olarak Görüntüle</string>
+    <string name="viewer_as">Olarak görüntüle</string>
     <string name="viewer_kanban">Kanban</string>
     <string name="viewer_table">Izgara</string>
     <string name="viewer_list">Liste</string>
@@ -661,7 +661,7 @@
     <string name="new_view">Yeni görünüm</string>
     <string name="coming_soon">Çok yakında</string>
     <string name="edit_relations_title">İlişkiler</string>
-    <string name="edit_view">Görünümü Düzenle</string>
+    <string name="edit_view">Görünümü düzenle</string>
     <string name="relation_open_edit">Düzenlemek için açın</string>
     <string name="remove_from_set">Bu setten kaldır</string>
     <string name="reset">Sıfırla</string>
@@ -703,7 +703,7 @@
     <string name="collection">Koleksiyon</string>
     <string name="layout">Düzen</string>
     <string name="restore_from_archive">Arşivden geri yükle</string>
-    <string name="icon">İkon</string>
+    <string name="icon">Simge</string>
     <string name="icon_description">Nesne için emoji ya da resim</string>
     <string name="cover">Kapak</string>
     <string name="cover_description">Arka plan resmi</string>
@@ -733,7 +733,7 @@
     <string name="if_you_lose_recovery_phrase_warning">Anahtarı kaybederseniz ve oturumu kapatırsanız verilerinize bir daha asla erişemezsiniz. Verilerinizi kurtarmak için anahtarı Anytype dışında bir yere kaydedin.</string>
     <string name="card_size">Kart boyutu</string>
     <string name="clear_cache">Önbelleği temizle</string>
-    <string name="clear_cache_title">Emin misin?</string>
+    <string name="clear_cache_title">Emin misiniz?</string>
     <string name="download_from_node">Anytype\'da depolanan tüm medya dosyaları mevcut cihazınızdan silinecektir. Bir yedekleme düğümünden veya başka bir cihazdan tekrar indirilebilirler.</string>
     <string name="new_profile">Yeni profil</string>
     <string name="back_up_your_phrase">İfadeyi yedekle</string>
@@ -840,7 +840,7 @@
     <string name="bin">Çöp kutusu</string>
     <string name="synced_files">Senkronize edilmiş dosyalar</string>
     <string name="log_in">Giriş yap</string>
-    <string name="create_object_section_library">Anytype Kütüphanesi</string>
+    <string name="create_object_section_library">Anytype Kitaplığı</string>
     <!--region SLASH WIDGET -->
     <string name="slash_widget_main_style">Stil</string>
     <string name="slash_widget_main_media">Medya</string>
@@ -941,7 +941,7 @@
     <string name="widget_change_type">Türü değiştir</string>
     <string name="widget_remove_widget">Widget\'ı kaldır</string>
     <string name="widget_empty_bin">Çöp kutusu boş</string>
-    <string name="widget_edit_widgets">Widgetları düzenle</string>
+    <string name="widget_edit_widgets">Widget\'ları düzenle</string>
     <!--endregion-->
     <!--region LIBRARY -->
     <string name="library_title_types">Türler</string>
@@ -952,7 +952,7 @@
     <string name="library_button_create_relation">Bir ilişki oluşturun</string>
     <string name="library_subtitle_types">Türlerim</string>
     <string name="library_subtitle_relations">İlişkilerim</string>
-    <string name="library_subtitle_library">Kütüphane</string>
+    <string name="library_subtitle_library">Kitaplık</string>
     <string name="library_create_new_type">Bir \'%1$s\' türü oluşturun</string>
     <string name="library_create_new_relation">Bir \'%1$s\' ilişkisi oluşturun</string>
     <string name="library_objects_empty">\'%2$s\' isminde bir %1$s yok</string>
@@ -976,7 +976,7 @@
     <string name="onboarding_terms_and_policy_infix">" ve "</string>
     <string name="onboarding_terms_and_policy_privacy">Gizlilik\u00A0Politika</string>
     <string name="onboarding_new_vault_button_text">Yeni kasa</string>
-    <string name="onboarding_enter_my_vault">Get my Key</string>
+    <string name="onboarding_enter_my_vault">Kasama gir</string>
     <string name="onboarding_have_key_button_text">Kurtarma anahtarım var</string>
     <string name="onboarding_get_my_key_button_text">Anahtarımı getir</string>
     <string name="onboarding_invite_code_title">Davet kodunuzu girin</string>
@@ -1005,7 +1005,7 @@
     <string name="onboarding_recovery_phrase_description_4">Dünya üzerindeki tüm hesaplama kaynakları içeri girmek için yeterli değildir. Kaybederseniz, kurtarılamaz. Bu yüzden güvenli bir yerde saklayın!</string>
     <string name="onboarding_how_to_save_my_phrase">Anahtarımı nasıl kaydedebilirim?</string>
     <string name="onboarding_how_to_save_my_phrase_2">Anahtarınızı saklamanın en kolay yolu onu şifre yöneticinize kaydetmektir.</string>
-    <string name="onboarding_how_to_save_my_phrase_3">En güvenli yol ise kağıt üstüne yazarak internet üstünde olmayan bir yerde, güvenli ve emin bir yerde saklamaktır.</string>
+    <string name="onboarding_how_to_save_my_phrase_3">En güvenli yol bunu bir kağıda yazmak ve çevrimdışı olarak güvenli bir yerde saklamaktır.</string>
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
     <string name="object_action_duplicate">Çoğalt</string>
@@ -1063,9 +1063,9 @@
     <string name="relation_origin_dnd">Sürükle &amp; Bırak</string>
     <string name="relation_origin_imported_object">İçeri aktarılan nesne</string>
     <string name="relation_origin_web_clipper">Web yakalayıcı</string>
-    <string name="relation_origin_mobile_sharing_extension">Mobil paylaşma uzantısı</string>
-    <string name="relation_origin_use_case">Kullanım Alanları</string>
-    <string name="relation_origin_library_installed">Kütüphane yüklü</string>
+    <string name="relation_origin_mobile_sharing_extension">Mobil paylaşım uzantısı</string>
+    <string name="relation_origin_use_case">Kullanım alanları</string>
+    <string name="relation_origin_library_installed">Kitaplık kuruldu</string>
     <string name="relation_origin_bookmark">Yer imi</string>
     <!--endregion-->
     <plurals name="backlinks_count">
@@ -1104,12 +1104,12 @@
     <string name="options_empty_description">Hiçbir şey bulunamadı. Başlamak için ilk seçeneği oluşturun.</string>
     <string name="options_empty_title">Seçenek yok</string>
     <string name="options_empty_not_editable">İlişki boş</string>
-    <string name="options_delete_title">Emin misin?</string>
+    <string name="options_delete_title">Emin misiniz?</string>
     <string name="options_delete_description">Seçenek alanınızdan kalıcı olarak kaldırılacaktır.</string>
     <string name="object_values_empty_description">Nesneler bulunamadı.</string>
     <string name="object_values_empty_title">Değer yok</string>
     <string name="object_values_empty_not_editable">İlişki boş</string>
-    <string name="object_values_delete_title">Emin misin?</string>
+    <string name="object_values_delete_title">Emin misiniz?</string>
     <string name="object_values_delete_description">Nesne çöp kutusuna taşınacaktır.</string>
     <string name="hint_enter_name">İsim girin...</string>
     <string name="create_object">Nesne oluştur</string>
@@ -1239,7 +1239,7 @@
     <string name="multiplayer_error_space_is_deleted">Alan artık paylaşılmıyor gibi görünüyor. Lütfen cihazlarınızın senkronize olduğundan emin olun.</string>
     <string name="multiplayer_error_limit_reached">Bu alan için sınıra ulaşıldı. Lütfen üyeliğinizi yükseltin veya yardım için destek ekibiyle iletişime geçin.</string>
     <string name="multiplayer_error_not_shareable">Alan artık paylaşılmıyor gibi görünüyor. Lütfen cihazlarınızın senkronize olduğundan emin olun.</string>
-    <string name="multiplayer_error_request_failed">Oops! İstek başarısız oldu. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.</string>
+    <string name="multiplayer_error_request_failed">Hay aksi! İstek başarısız oldu. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.</string>
     <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">Bu bağlantı çalışmıyor gibi görünüyor.</string>
     <string name="multiplayer_invite_link_space_not_found">Alan bulunamadığı için bu davet bağlantısı artık geçerli değil.</string>
     <string name="multiplayer_invite_link_request_already_sent">İstek gönderildi</string>
@@ -1366,7 +1366,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <!-- Membership name errors -->
     <string name="membership_name_bad_input">Girdide bir sorun var, tekrar deneyin</string>
     <string name="membership_name_cache_error">Bizim tarafımızda hata oluştu, daha sonra tekrar deneyin</string>
-    <string name="membership_name_cant_connect">Bağlanılamıyor, internet bağlantınızı kontrol edin</string>
+    <string name="membership_name_cant_connect">Bağlanılamıyor. Lütfen internet bağlantınızı kontrol edin.</string>
     <string name="membership_name_invalid_chars">İsim geçersiz karakterler içeriyor</string>
     <string name="membership_name_not_logged">Giriş yapmadınız! 😵‍💫</string>
     <string name="membership_name_payment_node_error">Bizim tarafımızda hata oluştu, daha sonra tekrar deneyin</string>

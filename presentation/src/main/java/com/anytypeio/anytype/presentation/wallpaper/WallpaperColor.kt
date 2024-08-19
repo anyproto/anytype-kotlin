@@ -38,11 +38,11 @@ enum class WallpaperColor(val code: String, val hex: String) {
         code = "green"
     ),
     LIGHT_GREY(
-        hex = "#DFDDD1",
+        hex = "#E9E9E9",
         code = "lightgrey"
     ),
     DARK_GREY(
-        hex = "#ACA998",
+        hex = "#B5B5B5",
         code = "darkgrey"
     ),
     BLACK(

@@ -4,7 +4,7 @@ import com.anytypeio.anytype.core_models.multiplayer.P2PStatusUpdate
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncUpdate
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
-import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.SyncAndP2PStatusChannel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
@@ -13,37 +13,26 @@ import kotlinx.coroutines.flow.combine
 import timber.log.Timber
 
 class SpaceSyncAndP2PStatusProviderImpl @Inject constructor(
-    private val activeSpace: ActiveSpaceMemberSubscriptionContainer,
     private val spaceSyncStatusChannel: SyncAndP2PStatusChannel,
+    private val spaceManager: SpaceManager
 ) : SpaceSyncAndP2PStatusProvider {
 
     override fun observe(): Flow<SpaceSyncAndP2PStatusState> =
         combine(
-            activeSpace.observe().catch { e ->
-                Timber.e(e, "Error observing active space")
-                emit(ActiveSpaceMemberSubscriptionContainer.Store.Empty)
-            },
+            spaceManager.observe(),
             spaceSyncStatusChannel.p2pStatus(),
             spaceSyncStatusChannel.syncStatus()
         ) { activeSpace, p2pStatus, syncStatus ->
-            when (activeSpace) {
-                is ActiveSpaceMemberSubscriptionContainer.Store.Data -> {
-                    val activeSpaceId = activeSpace.config.space
-                    val p2PStatusUpdate = p2pStatus[activeSpaceId]
-                    val spaceSyncUpdate = syncStatus[activeSpaceId]
+            val p2PStatusUpdate = p2pStatus[activeSpace.space]
+            val spaceSyncUpdate = syncStatus[activeSpace.space]
 
-                    if (p2PStatusUpdate == null && spaceSyncUpdate == null) {
-                        SpaceSyncAndP2PStatusState.Initial
-                    } else {
-                        SpaceSyncAndP2PStatusState.Success(
-                            spaceSyncUpdate = spaceSyncUpdate ?: SpaceSyncUpdate.Initial,
-                            p2PStatusUpdate = p2PStatusUpdate ?: P2PStatusUpdate.Initial
-                        )
-                    }
-                }
-                ActiveSpaceMemberSubscriptionContainer.Store.Empty -> {
-                    SpaceSyncAndP2PStatusState.Initial
-                }
+            if (p2PStatusUpdate == null && spaceSyncUpdate == null) {
+                SpaceSyncAndP2PStatusState.Initial
+            } else {
+                SpaceSyncAndP2PStatusState.Success(
+                    spaceSyncUpdate = spaceSyncUpdate ?: SpaceSyncUpdate.Initial,
+                    p2PStatusUpdate = p2PStatusUpdate ?: P2PStatusUpdate.Initial
+                )
             }
         }.catch { e ->
             Timber.e(e, "Error observing sync and P2P status")

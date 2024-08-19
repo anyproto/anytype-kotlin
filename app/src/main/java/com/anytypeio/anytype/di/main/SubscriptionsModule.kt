@@ -170,10 +170,10 @@ object SubscriptionsModule {
     @Provides
     @Singleton
     fun provideSpaceSyncStatusProvider(
-        activeSpace: ActiveSpaceMemberSubscriptionContainer,
-        syncChannel: SyncAndP2PStatusChannel
+        syncChannel: SyncAndP2PStatusChannel,
+        spaceManager: SpaceManager
     ): SpaceSyncAndP2PStatusProvider = SpaceSyncAndP2PStatusProviderImpl(
-        activeSpace = activeSpace,
+        spaceManager = spaceManager,
         spaceSyncStatusChannel = syncChannel
     )
 

@@ -1,11 +1,11 @@
 package com.anytypeio.anytype.middleware.mappers
 
 import anytype.Event
-import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVFilterUpdate
 import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVSortUpdate
-import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVViewerRelationUpdate
 import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVViewerFields
+import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVViewerRelationUpdate
+import com.anytypeio.anytype.core_models.SearchResult
 
 fun Event.Object.Subscription.Counters.parse(): SearchResult.Counter = SearchResult.Counter(
     total = total.toInt(),

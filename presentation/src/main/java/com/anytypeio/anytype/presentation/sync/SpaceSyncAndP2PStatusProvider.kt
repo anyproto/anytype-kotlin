@@ -27,7 +27,7 @@ class SpaceSyncAndP2PStatusProviderImpl @Inject constructor(
             val spaceSyncUpdate = syncStatus[activeSpace.space]
 
             if (p2PStatusUpdate == null && spaceSyncUpdate == null) {
-                SpaceSyncAndP2PStatusState.Initial
+                SpaceSyncAndP2PStatusState.Init
             } else {
                 SpaceSyncAndP2PStatusState.Success(
                     spaceSyncUpdate = spaceSyncUpdate ?: SpaceSyncUpdate.Initial,
@@ -59,7 +59,7 @@ fun SpaceSyncAndP2PStatusState.toSyncStatusWidgetState(): SyncStatusWidgetState 
             SyncStatusWidgetState.Error(message = message)
         }
 
-        SpaceSyncAndP2PStatusState.Initial -> {
+        SpaceSyncAndP2PStatusState.Init -> {
             SyncStatusWidgetState.Hidden
         }
 

@@ -23,7 +23,7 @@ class StatusBadgeWidget @JvmOverloads constructor(
                 visible()
                 setImageResource(R.drawable.ic_sync_error_10)
             }
-            SpaceSyncAndP2PStatusState.Initial -> {
+            SpaceSyncAndP2PStatusState.Init -> {
                 gone()
             }
             is SpaceSyncAndP2PStatusState.Success -> {

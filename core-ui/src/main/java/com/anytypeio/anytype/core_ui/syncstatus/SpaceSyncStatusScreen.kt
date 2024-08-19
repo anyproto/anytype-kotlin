@@ -148,8 +148,8 @@ private fun ColumnScope.ErrorState() {
 private fun SuccessState(spaceSyncUpdate: SpaceSyncUpdate, p2pStatus: P2PStatusUpdate) {
     if (spaceSyncUpdate is SpaceSyncUpdate.Update) {
         SpaceSyncStatusItem(spaceSyncUpdate)
+        Divider()
     }
-    Divider()
     if (p2pStatus is P2PStatusUpdate.Update) {
         P2PStatusItem(p2pStatus)
     }

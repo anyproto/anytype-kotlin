@@ -1,24 +1,29 @@
 package com.anytypeio.anytype.middleware.interactor
 
 import anytype.Event
-import com.anytypeio.anytype.middleware.BuildConfig
+import com.anytypeio.anytype.data.auth.status.SyncAndP2PStatusEventsStore
 import com.anytypeio.anytype.middleware.EventProxy
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import service.Service.setEventHandlerMobile
-import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import service.Service.setEventHandlerMobile
+import timber.log.Timber
 
 class EventHandler @Inject constructor(
-    private val logger: MiddlewareProtobufLogger
+    private val logger: MiddlewareProtobufLogger,
+    private val scope: CoroutineScope,
+    private val channel: EventHandlerChannel,
+    private val syncP2PStore: SyncAndP2PStatusEventsStore
 ) : EventProxy {
 
-    private val scope: CoroutineScope = GlobalScope
-    private val channel = MutableSharedFlow<Event>(0, 1)
-
     init {
+        scope.launch {
+            syncP2PStore.start()
+        }
         scope.launch {
             setEventHandlerMobile { bytes ->
                 if (bytes != null) {
@@ -43,5 +48,5 @@ class EventHandler @Inject constructor(
         logger.logEvent(event)
     }
 
-    override fun flow(): Flow<Event> = channel
+    override fun flow(): Flow<Event> = channel.flow()
 }

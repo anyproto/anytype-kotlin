@@ -1,5 +1,8 @@
 package com.anytypeio.anytype.middleware.mappers
 
+import anytype.Event.P2PStatus
+import anytype.Event.Space
+
 typealias MAccount = anytype.model.Account
 typealias MAccountStatus = anytype.model.Account.Status
 typealias MAccountStatusType = anytype.model.Account.StatusType
@@ -96,3 +99,5 @@ typealias MSpaceSyncNetwork = anytype.Event.Space.Network
 typealias MSpaceSyncError = anytype.Event.Space.SyncError
 
 typealias MP2PStatus = anytype.Event.P2PStatus.Status
+typealias MP2PStatusUpdate = P2PStatus.Update
+typealias MSyncStatusUpdate = Space.SyncStatus.Update

@@ -1,19 +1,14 @@
 package com.anytypeio.anytype.data.auth.status
 
-import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.multiplayer.P2PStatusUpdate
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncUpdate
-import com.anytypeio.anytype.domain.workspace.SpaceSyncStatusChannel
+import com.anytypeio.anytype.domain.workspace.SyncAndP2PStatusChannel
 import kotlinx.coroutines.flow.Flow
 
-interface SpaceStatusRemoteChannel {
-    fun observe(activeSpaceId: String): Flow<SpaceSyncUpdate>
-}
+class SyncAndP2PStatusDataChannel(
+    private val store: SyncAndP2PStatusEventsStore
+) : SyncAndP2PStatusChannel {
 
-class SpaceStatusDataChannel(
-    private val channel: SpaceStatusRemoteChannel
-) : SpaceSyncStatusChannel {
-
-    override fun observe(activeSpaceId: Id): Flow<SpaceSyncUpdate> {
-        return channel.observe(activeSpaceId)
-    }
+    override fun p2pStatus(): Flow<Map<String, P2PStatusUpdate>> = store.p2pStatus
+    override fun syncStatus(): Flow<Map<String, SpaceSyncUpdate>> = store.syncStatus
 }

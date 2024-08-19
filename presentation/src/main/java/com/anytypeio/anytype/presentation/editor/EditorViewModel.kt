@@ -7347,7 +7347,7 @@ class EditorViewModel(
     }
 
     //region SYNC STATUS
-    val spaceSyncStatus = MutableStateFlow<SpaceSyncAndP2PStatusState>(SpaceSyncAndP2PStatusState.Initial)
+    val spaceSyncStatus = MutableStateFlow<SpaceSyncAndP2PStatusState>(SpaceSyncAndP2PStatusState.Init)
     val syncStatusWidget = MutableStateFlow<SyncStatusWidgetState>(SyncStatusWidgetState.Hidden)
 
     fun onSyncStatusBadgeClicked() {

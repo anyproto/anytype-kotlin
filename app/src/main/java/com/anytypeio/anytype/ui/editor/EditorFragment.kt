@@ -871,7 +871,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
     private fun bindSyncStatus(status: SpaceSyncAndP2PStatusState) {
         binding.topToolbar.status.bind(status)
-        if (status is SpaceSyncAndP2PStatusState.Initial) {
+        if (status is SpaceSyncAndP2PStatusState.Init) {
             binding.topToolbar.hideStatusContainer()
         } else {
             binding.topToolbar.showStatusContainer()

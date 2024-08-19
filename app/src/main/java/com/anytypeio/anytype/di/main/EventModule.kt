@@ -17,8 +17,8 @@ import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.interactor.AccountStatusMiddlewareChannel
-import com.anytypeio.anytype.middleware.interactor.AppEventChannel
-import com.anytypeio.anytype.middleware.interactor.AppEventChannelImpl
+import com.anytypeio.anytype.middleware.interactor.EventHandlerChannel
+import com.anytypeio.anytype.middleware.interactor.EventHandlerChannelImpl
 import com.anytypeio.anytype.middleware.interactor.EventHandler
 import com.anytypeio.anytype.middleware.interactor.FileLimitsMiddlewareChannel
 import com.anytypeio.anytype.middleware.interactor.MiddlewareEventChannel
@@ -124,7 +124,7 @@ object EventModule {
     fun provideEventHandler(
         logger: MiddlewareProtobufLogger,
         @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
-        channel: AppEventChannel,
+        channel: EventHandlerChannel,
         syncP2PStore: SyncAndP2PStatusEventsStore
     ): EventProxy = EventHandler(
         scope = scope,
@@ -138,7 +138,7 @@ object EventModule {
     @Singleton
     fun provideSyncAndP2PStatusEventsSubscription(
         @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
-        channel: AppEventChannel
+        channel: EventHandlerChannel
     ): SyncAndP2PStatusEventsStore = SyncAndP2PStatusEventsStoreImpl(
         scope = scope,
         channel = channel
@@ -147,7 +147,7 @@ object EventModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideDefaultEventChannel(): AppEventChannel = AppEventChannelImpl()
+    fun provideDefaultEventChannel(): EventHandlerChannel = EventHandlerChannelImpl()
 
     @Module
     interface Bindings {

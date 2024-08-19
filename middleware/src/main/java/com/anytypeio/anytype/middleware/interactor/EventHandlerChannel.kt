@@ -5,16 +5,16 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 
-interface AppEventChannel {
+interface EventHandlerChannel {
     fun flow(): Flow<Event>
     suspend fun emit(event: Event)
 }
 
-class AppEventChannelImpl(
+class EventHandlerChannelImpl(
     replay: Int = 0,
     extraBufferCapacity: Int = 1,
     onBufferOverflow: BufferOverflow = BufferOverflow.SUSPEND
-) : AppEventChannel {
+) : EventHandlerChannel {
 
     private val _channel = MutableSharedFlow<Event>(
         replay = replay,

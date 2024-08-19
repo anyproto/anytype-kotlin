@@ -16,7 +16,7 @@ import timber.log.Timber
 class EventHandler @Inject constructor(
     private val logger: MiddlewareProtobufLogger,
     private val scope: CoroutineScope,
-    private val channel: AppEventChannel,
+    private val channel: EventHandlerChannel,
     private val syncP2PStore: SyncAndP2PStatusEventsStore
 ) : EventProxy {
 

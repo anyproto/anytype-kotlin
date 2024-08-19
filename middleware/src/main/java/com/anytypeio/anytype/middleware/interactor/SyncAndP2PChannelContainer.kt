@@ -18,7 +18,7 @@ import timber.log.Timber
 
 class SyncAndP2PStatusEventsStoreImpl(
     private val scope: CoroutineScope,
-    private val channel: AppEventChannel
+    private val channel: EventHandlerChannel
 ) : SyncAndP2PStatusEventsStore {
 
     private val _p2pStatus = MutableStateFlow<MutableMap<String, P2PStatusUpdate>>(mutableMapOf())

@@ -10,16 +10,11 @@ interface EventHandlerChannel {
     suspend fun emit(event: Event)
 }
 
-class EventHandlerChannelImpl(
-    replay: Int = 0,
-    extraBufferCapacity: Int = 1,
-    onBufferOverflow: BufferOverflow = BufferOverflow.SUSPEND
-) : EventHandlerChannel {
+class EventHandlerChannelImpl() : EventHandlerChannel {
 
     private val _channel = MutableSharedFlow<Event>(
-        replay = replay,
-        extraBufferCapacity = extraBufferCapacity,
-        onBufferOverflow = onBufferOverflow
+        replay = 0,
+        extraBufferCapacity = 1
     )
 
     override fun flow(): Flow<Event> = _channel

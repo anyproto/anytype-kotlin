@@ -28,11 +28,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_ui.views.BodyBold
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.vault.VaultViewModel.VaultSpaceView
 
 
@@ -174,5 +177,27 @@ fun VaultSpaceCardPreview() {
         title = "B&O Museum",
         subtitle = "Private space",
         onCardClicked = {}
+    )
+}
+
+@Composable
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
+fun VaultScreenPreview() {
+    VaultScreen(
+        spaces = buildList {
+            add(
+                VaultSpaceView(
+                    space = ObjectWrapper.SpaceView(
+                        mapOf(
+                            Relations.NAME to "B&O Museum",
+                            Relations.SPACE_ACCESS_TYPE to SpaceAccessType.SHARED.code.toDouble()
+                        )
+                    ),
+                    icon = SpaceIconView.Placeholder
+                )
+            )
+        },
+        onSpaceClicked = {}
     )
 }

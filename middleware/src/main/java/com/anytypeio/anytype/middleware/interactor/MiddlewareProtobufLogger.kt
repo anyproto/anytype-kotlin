@@ -31,7 +31,7 @@ interface MiddlewareProtobufLogger {
 
         override fun logEvent(any: Any) {
             if (featureToggles.isLogMiddlewareInteraction) {
-                //Timber.d("event -> ${any.toLogMessage()}")
+                Timber.d("event -> ${any.toLogMessage()}")
             }
         }
 

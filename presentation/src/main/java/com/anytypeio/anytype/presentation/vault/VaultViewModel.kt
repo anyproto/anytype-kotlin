@@ -9,7 +9,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import timber.log.Timber
 
-class VaultViewModel : BaseViewModel() {
+class VaultViewModel() : BaseViewModel() {
 
     val spaces = MutableStateFlow<List<VaultSpaceView>>(emptyList())
 

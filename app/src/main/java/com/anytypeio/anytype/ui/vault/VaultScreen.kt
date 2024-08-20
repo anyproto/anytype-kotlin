@@ -130,7 +130,11 @@ fun VaultSpaceCard(
             .fillMaxWidth()
             .height(96.dp)
             .padding(horizontal = 8.dp)
+            .clickable {
+                onCardClicked()
+            }
     ) {
+        // TODO render space icon
         Box(
             modifier = Modifier
                 .size(64.dp)
@@ -140,9 +144,6 @@ fun VaultSpaceCard(
                 )
                 .align(Alignment.CenterStart)
                 .padding(start = 16.dp)
-                .clickable {
-                    onCardClicked()
-                }
         )
         Column(
             modifier = Modifier

@@ -192,7 +192,6 @@ dependencies {
     implementation libs.emojiCompat
     implementation libs.navigationCompose
     implementation libs.playBilling
-    implementation libs.paging
 
     implementation libs.lifecycleViewModel
     implementation libs.lifecycleRuntime

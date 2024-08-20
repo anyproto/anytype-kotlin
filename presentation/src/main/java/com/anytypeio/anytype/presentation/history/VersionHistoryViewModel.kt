@@ -1,8 +1,10 @@
 package com.anytypeio.anytype.presentation.history
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.cachedIn
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
@@ -43,6 +45,7 @@ import java.time.ZoneId
 import java.util.Locale
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
@@ -62,7 +65,7 @@ class VersionHistoryViewModel(
 ) : ViewModel(), BlockViewRenderer by renderer {
 
     private val _viewState = MutableStateFlow<VersionHistoryState>(VersionHistoryState.Loading)
-    val viewState = _viewState
+    val viewState = _viewState.asStateFlow()
     private val _previewViewState =
         MutableStateFlow<VersionHistoryPreviewScreen>(VersionHistoryPreviewScreen.Hidden)
     val previewViewState = _previewViewState
@@ -71,27 +74,17 @@ class VersionHistoryViewModel(
     private val _members = MutableStateFlow<List<ObjectWrapper.Basic>>(emptyList())
 
     //Paging
-    private val latestVisibleVersionId = MutableStateFlow<String?>(null)
-    val canPaginate = MutableStateFlow(false)
-    val listState = MutableStateFlow(ListState.IDLE)
+    var canPaginate by mutableStateOf(false)
+    var listState by mutableStateOf(ListState.IDLE)
+    var latestVisibleVersionId by mutableStateOf("")
     private val _list = MutableStateFlow<List<Version>>(emptyList())
 
     init {
         Timber.d("VersionHistoryViewModel created")
         getSpaceMembers()
+        getHistoryVersions(objectId = vmParams.objectId, latestVersionId = "")
         viewModelScope.launch {
             sendAnalyticsShowVersionHistoryScreen(analytics)
-        }
-        viewModelScope.launch {
-            latestVisibleVersionId.collect {
-                if (it == null || (canPaginate.value) && listState.value == ListState.IDLE) {
-                    listState.value = if (it == null) ListState.LOADING else ListState.PAGINATING
-                    getHistoryVersions(
-                        objectId = vmParams.objectId,
-                        latestVersionId = it
-                    )
-                }
-            }
         }
         viewModelScope.launch {
             combine(
@@ -109,6 +102,14 @@ class VersionHistoryViewModel(
 
     fun onStart() {
         Timber.d("VersionHistoryViewModel started")
+    }
+
+    fun startPaging(latestVersionId: String) {
+        Timber.d("Start paging, latestVersionId: $latestVersionId")
+        getHistoryVersions(
+            objectId = vmParams.objectId,
+            latestVersionId = latestVersionId
+        )
     }
 
     fun onGroupItemClicked(item: VersionHistoryGroup.Item) {
@@ -230,7 +231,7 @@ class VersionHistoryViewModel(
         }
     }
 
-    private fun getHistoryVersions(objectId: String, latestVersionId: String?) {
+    private fun getHistoryVersions(objectId: String, latestVersionId: String) {
         viewModelScope.launch {
             val params = GetVersions.Params(
                 objectId = objectId,
@@ -239,8 +240,8 @@ class VersionHistoryViewModel(
             )
             getVersions.async(params).fold(
                 onSuccess = { versions ->
-                    canPaginate.value = versions.size == VERSIONS_MAX_LIMIT
-                    if (latestVersionId == null) {
+                    canPaginate = versions.size == VERSIONS_MAX_LIMIT
+                    if (latestVersionId.isEmpty()) {
                         if (versions.isEmpty()) {
                             _viewState.value = VersionHistoryState.Error.NoVersions
                         } else {
@@ -249,15 +250,15 @@ class VersionHistoryViewModel(
                     } else {
                         _list.value += versions
                     }
-                    listState.value = ListState.IDLE
-                    if (canPaginate.value) {
-                        latestVisibleVersionId.value = versions.last().id
+                    listState = ListState.IDLE
+                    if (canPaginate) {
+                        latestVisibleVersionId = versions.lastOrNull()?.id ?: ""
                     }
                 },
                 onFailure = {
                     _viewState.value = VersionHistoryState.Error.GetVersions(it.message.orEmpty())
-                    listState.value =
-                        if (latestVersionId == null) ListState.ERROR else ListState.PAGINATION_EXHAUST
+                    listState =
+                        if (latestVersionId.isEmpty()) ListState.ERROR else ListState.PAGINATION_EXHAUST
                 },
                 onLoading = {}
             )
@@ -265,15 +266,15 @@ class VersionHistoryViewModel(
     }
 
     override fun onCleared() {
-        listState.value = ListState.IDLE
-        canPaginate.value = false
-        latestVisibleVersionId.value = null
+        listState = ListState.IDLE
+        canPaginate = false
+        latestVisibleVersionId = ""
         super.onCleared()
     }
 
     private fun handleVersionsSuccess(versions: List<Version>, members: List<ObjectWrapper.Basic>) {
         val groupedItems = groupItems(versions, members)
-        _viewState.value = VersionHistoryState.Success(groups = groupedItems, canPaginate = canPaginate.value)
+        _viewState.value = VersionHistoryState.Success(groups = groupedItems)
     }
 
     private fun groupItems(
@@ -312,13 +313,16 @@ class VersionHistoryViewModel(
             val spaceMemberLatestVersion =
                 spaceMemberVersions.firstOrNull()?.firstOrNull() ?: return@mapNotNull null
 
+            val spaceMemberOldestVersion =
+                spaceMemberVersions.lastOrNull()?.lastOrNull() ?: return@mapNotNull null
+
             val groupItems = spaceMemberVersions.toGroupItems(
                 spaceMembers = spaceMembers,
                 locale = locale
             )
 
             VersionHistoryGroup(
-                id = spaceMemberLatestVersion.id,
+                id = spaceMemberOldestVersion.id,
                 title = getGroupTitle(spaceMemberLatestVersion.timestamp, locale),
                 icons = groupItems.distinctBy { it.spaceMember }.mapNotNull { it.icon },
                 items = groupItems
@@ -534,8 +538,7 @@ class VersionHistoryViewModel(
 sealed class VersionHistoryState {
     data object Loading : VersionHistoryState()
     data class Success(
-        val groups: List<VersionHistoryGroup>,
-        val canPaginate: Boolean
+        val groups: List<VersionHistoryGroup>
     ) : VersionHistoryState()
     sealed class Error : VersionHistoryState() {
         data class SpaceMembers(val message: String) : Error()

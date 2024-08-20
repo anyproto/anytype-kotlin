@@ -107,10 +107,7 @@ class VersionHistoryFragment : BaseBottomSheetComposeFragment() {
             startDestination = Command.Main.route
         ) {
             composable(Command.Main.route) {
-                VersionHistoryScreen(
-                    state = vm.viewState.collectAsStateWithLifecycle().value,
-                    onItemClick = vm::onGroupItemClicked
-                )
+                VersionHistoryScreen(viewModel = vm)
             }
             bottomSheet(Command.VersionPreview.route) {
                 VersionHistoryPreviewScreen(

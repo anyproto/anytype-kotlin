@@ -9,7 +9,6 @@ dependencies {
 
     implementation libs.kotlin
     implementation libs.coroutines
-    implementation libs.paging
 
     compileOnly libs.javaxInject
 

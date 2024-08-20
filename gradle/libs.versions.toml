@@ -70,7 +70,6 @@ dataStoreVersion = '1.1.1'
 amplitudeVersion = '3.35.1'
 coilComposeVersion = '2.6.0'
 sentryVersion = '7.6.0'
-pagingVersion = '3.3.2'
 
 composeQrCodeVersion = '1.0.1'
 
@@ -172,8 +171,6 @@ navigationCompose = { module = "androidx.navigation:navigation-compose", version
 appUpdater = { module = "com.github.PLPsiSoft:AndroidAppUpdater", version = "9913ce80da7871c84af24b9adc2bf2414ca294f0" }
 composeQrCode = { module = "com.lightspark:compose-qr-code", version.ref = "composeQrCodeVersion" }
 playBilling = { module = "com.android.billingclient:billing", version = "7.0.0" }
-paging = { module = "androidx.paging:paging-common", version.ref = "pagingVersion" }
-pagingCompose = { module = "androidx.paging:paging-compose", version.ref = "pagingVersion" }
 
 [bundles]
 

@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,6 +29,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +47,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.TimeInSeconds
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Dragger
@@ -53,13 +57,40 @@ import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.fontInterRegular
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
+import com.anytypeio.anytype.presentation.history.ListState
 import com.anytypeio.anytype.presentation.history.VersionHistoryGroup
 import com.anytypeio.anytype.presentation.history.VersionHistoryState
+import com.anytypeio.anytype.presentation.history.VersionHistoryViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 @Composable
-fun VersionHistoryScreen(
+fun VersionHistoryScreen(viewModel: VersionHistoryViewModel) {
+    val lazyListState = rememberLazyListState()
+
+    val shouldStartPaging = remember {
+        derivedStateOf {
+            val lastItem = lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()
+            lastItem?.key == viewModel.latestVisibleVersionId && viewModel.canPaginate
+        }
+    }
+
+    LaunchedEffect(key1 = shouldStartPaging.value) {
+        if (shouldStartPaging.value && viewModel.listState == ListState.IDLE) {
+            viewModel.startPaging(viewModel.latestVisibleVersionId)
+        }
+    }
+
+    VersionHistoryMainScreen(
+        state = viewModel.viewState.collectAsState().value,
+        lazyListState = lazyListState,
+        onItemClick = viewModel::onGroupItemClicked
+    )
+}
+
+@Composable
+private fun VersionHistoryMainScreen(
     state: VersionHistoryState,
+    lazyListState: LazyListState,
     onItemClick: (VersionHistoryGroup.Item) -> Unit
 ) {
     Column(
@@ -81,11 +112,11 @@ fun VersionHistoryScreen(
             is VersionHistoryState.Success -> {
                 VersionHistorySuccessState(
                     state = state,
-                    onItemClick = onItemClick
+                    onItemClick = onItemClick,
+                    lazyListState = lazyListState,
                 )
             }
         }
-
     }
 }
 
@@ -104,21 +135,13 @@ private fun VersionHistoryLoading() {
 @Composable
 private fun VersionHistorySuccessState(
     state: VersionHistoryState.Success,
-    onItemClick: (VersionHistoryGroup.Item) -> Unit
+    onItemClick: (VersionHistoryGroup.Item) -> Unit,
+    lazyListState: LazyListState
 ) {
 
     var expandedGroupId by remember {
-        mutableStateOf<String?>(state.groups.firstOrNull { it.isExpanded }?.id)
+        mutableStateOf(state.groups.firstOrNull { it.isExpanded }?.id)
     }
-
-    val lazyListState = rememberLazyListState()
-
-//    val shouldStartPaging = remember {
-//        derivedStateOf {
-//            state.canPaginate
-//                    && lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
-//        }
-//    }
 
     LazyColumn(
         state = lazyListState,
@@ -312,9 +335,8 @@ fun VersionHistoryAvatarTextStyle() = TextStyle(
 )
 @Composable
 private fun SpaceListScreenPreview() {
-    VersionHistoryScreen(
+    VersionHistoryMainScreen(
         state = VersionHistoryState.Success(
-            canPaginate = false,
             groups = listOf(
                 VersionHistoryGroup(
                     id = "1",
@@ -393,7 +415,8 @@ private fun SpaceListScreenPreview() {
                 )
             )
         ),
-        onItemClick = {}
+        onItemClick = {},
+        lazyListState = rememberLazyListState()
     )
 }
 
@@ -413,8 +436,9 @@ const val MEMBERS_ICONS_MAX_SIZE = 3
 )
 @Composable
 private fun SpaceListScreenPreviewLoading() {
-    VersionHistoryScreen(
+    VersionHistoryMainScreen(
         state = VersionHistoryState.Loading,
-        onItemClick = {}
+        onItemClick = {},
+        lazyListState = rememberLazyListState()
     )
 }

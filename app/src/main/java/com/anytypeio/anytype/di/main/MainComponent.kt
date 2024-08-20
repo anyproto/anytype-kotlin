@@ -22,6 +22,8 @@ import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
 import com.anytypeio.anytype.di.feature.gallery.GalleryInstallationComponentDependencies
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.library.LibraryDependencies
+import com.anytypeio.anytype.di.feature.membership.MembershipComponentDependencies
+import com.anytypeio.anytype.di.feature.membership.MembershipUpdateComponentDependencies
 import com.anytypeio.anytype.di.feature.multiplayer.RequestJoinSpaceDependencies
 import com.anytypeio.anytype.di.feature.multiplayer.ShareSpaceDependencies
 import com.anytypeio.anytype.di.feature.multiplayer.SpaceJoinRequestDependencies
@@ -32,8 +34,6 @@ import com.anytypeio.anytype.di.feature.onboarding.OnboardingStartDependencies
 import com.anytypeio.anytype.di.feature.onboarding.login.OnboardingMnemonicLoginDependencies
 import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingMnemonicDependencies
 import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingSoulCreationDependencies
-import com.anytypeio.anytype.di.feature.membership.MembershipComponentDependencies
-import com.anytypeio.anytype.di.feature.membership.MembershipUpdateComponentDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromLibraryDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationEditDependencies
 import com.anytypeio.anytype.di.feature.search.GlobalSearchDependencies
@@ -55,6 +55,7 @@ import com.anytypeio.anytype.di.feature.types.CreateObjectTypeDependencies
 import com.anytypeio.anytype.di.feature.types.TypeEditDependencies
 import com.anytypeio.anytype.di.feature.types.TypeIconPickDependencies
 import com.anytypeio.anytype.di.feature.update.MigrationErrorDependencies
+import com.anytypeio.anytype.di.feature.vault.VaultComponentDependencies
 import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectSubComponent
 import com.anytypeio.anytype.ui.widgets.collection.CollectionDependencies
 import dagger.Binds
@@ -124,7 +125,8 @@ interface MainComponent :
     GalleryInstallationComponentDependencies,
     NotificationDependencies,
     GlobalSearchDependencies,
-    MembershipUpdateComponentDependencies
+    MembershipUpdateComponentDependencies,
+    VaultComponentDependencies
 {
 
     fun inject(app: AndroidApplication)
@@ -345,4 +347,9 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(MembershipUpdateComponentDependencies::class)
     abstract fun provideMembershipUpdateComponentDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(VaultComponentDependencies::class)
+    abstract fun provideVaultComponentDependencies(component: MainComponent): ComponentDependencies
 }

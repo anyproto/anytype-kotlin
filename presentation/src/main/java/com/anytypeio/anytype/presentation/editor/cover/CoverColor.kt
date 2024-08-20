@@ -40,15 +40,15 @@ enum class CoverColor(val code: String, val color: Int) {
         code = "green"
     ),
     LIGHT_GREY(
-        color = Color.parseColor("#DFDDD1"),
+        color = Color.parseColor("#E9E9E9"),
         code = "lightgrey"
     ),
     DARK_GREY(
-        color = Color.parseColor("#ACA998"),
+        color = Color.parseColor("#B5B5B5"),
         code = "darkgrey"
     ),
     BLACK(
         color = Color.parseColor("#2C2B28"),
         code = "black"
-    ),
+    )
 }

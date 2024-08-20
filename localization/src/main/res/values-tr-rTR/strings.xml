@@ -71,7 +71,7 @@
     <string name="option_text_header_one">Başlık 1</string>
     <string name="option_text_header_two">Başlık 2</string>
     <string name="option_text_header_three">Başlık 3</string>
-    <string name="option_text_highlighted">Vurgulanan</string>
+    <string name="option_text_highlighted">Vurgulanmış</string>
     <string name="option_list_checkbox">Onay kutusu</string>
     <string name="option_list_bulleted_list">Noktalı Liste</string>
     <string name="option_list_numbered_list">Numaralı liste</string>
@@ -860,7 +860,7 @@
     <string name="slash_widget_style_heading_subtitle">Düz bir metinle yazmaya başlayın</string>
     <string name="slash_widget_style_subheading">Alt başlık</string>
     <string name="slash_widget_style_subheading_subtitle">Düz bir metinle yazmaya başlayın</string>
-    <string name="slash_widget_style_highlighted">Vurgulanan</string>
+    <string name="slash_widget_style_highlighted">Vurgulanmış</string>
     <string name="slash_widget_style_highlighted_subtitle">Küçük bölüm başlığı</string>
     <string name="slash_widget_style_callout">Belirteç</string>
     <string name="slash_widget_style_callout_subtitle">Simgeli kenarlıklı metin</string>
@@ -1365,11 +1365,11 @@
 Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string>
     <!-- Membership name errors -->
     <string name="membership_name_bad_input">Girdide bir sorun var, tekrar deneyin</string>
-    <string name="membership_name_cache_error">Bizim tarafımızda hata oluştu, daha sonra tekrar deneyin</string>
+    <string name="membership_name_cache_error">Bizden kaynaklı bir hata oluştu. Daha sonra tekrar deneyin.</string>
     <string name="membership_name_cant_connect">Bağlanılamıyor. Lütfen internet bağlantınızı kontrol edin.</string>
     <string name="membership_name_invalid_chars">İsim geçersiz karakterler içeriyor</string>
     <string name="membership_name_not_logged">Giriş yapmadınız! 😵‍💫</string>
-    <string name="membership_name_payment_node_error">Bizim tarafımızda hata oluştu, daha sonra tekrar deneyin</string>
+    <string name="membership_name_payment_node_error">Bizden kaynaklı bir hata oluştu. Daha sonra tekrar deneyin.</string>
     <string name="membership_name_tier_features_no_name">İsim bu kademe için mevcut değil</string>
     <string name="membership_name_tier_not_found">Kademe bulunamadı, daha sonra tekrar deneyin</string>
     <string name="membership_name_too_long">İsim çok uzun</string>

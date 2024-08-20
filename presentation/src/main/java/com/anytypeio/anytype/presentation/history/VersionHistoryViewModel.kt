@@ -82,7 +82,7 @@ class VersionHistoryViewModel(
     init {
         Timber.d("VersionHistoryViewModel created")
         getSpaceMembers()
-        getHistoryVersions(objectId = vmParams.objectId, latestVersionId = "")
+        getHistoryVersions(objectId = vmParams.objectId)
         viewModelScope.launch {
             sendAnalyticsShowVersionHistoryScreen(analytics)
         }
@@ -231,7 +231,7 @@ class VersionHistoryViewModel(
         }
     }
 
-    private fun getHistoryVersions(objectId: String, latestVersionId: String) {
+    private fun getHistoryVersions(objectId: String, latestVersionId: String = "") {
         viewModelScope.launch {
             val params = GetVersions.Params(
                 objectId = objectId,

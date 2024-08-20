@@ -95,8 +95,8 @@ import com.anytypeio.anytype.core_ui.widgets.DefaultFileObjectImageIcon
 import com.anytypeio.anytype.core_ui.widgets.DefaultObjectBookmarkIcon
 import com.anytypeio.anytype.core_ui.widgets.DefaultObjectImageIcon
 import com.anytypeio.anytype.core_ui.widgets.DefaultProfileAvatarIcon
-import com.anytypeio.anytype.core_ui.widgets.DefaultTaskObjectIcon
 import com.anytypeio.anytype.core_ui.widgets.DefaultProfileIconImage
+import com.anytypeio.anytype.core_ui.widgets.DefaultTaskObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
@@ -309,7 +309,7 @@ fun GlobalSearchScreen(
             items(
                 count = state.views.size,
                 key = { idx ->
-                    state.views[idx].id
+                    "global-search-item-${state.views[idx].id}"
                 }
             ) { idx ->
                 val item = state.views[idx]

@@ -94,6 +94,7 @@ import com.anytypeio.anytype.di.feature.types.DaggerCreateObjectTypeComponent
 import com.anytypeio.anytype.di.feature.types.DaggerTypeEditComponent
 import com.anytypeio.anytype.di.feature.types.DaggerTypeIconPickComponent
 import com.anytypeio.anytype.di.feature.update.DaggerMigrationErrorComponent
+import com.anytypeio.anytype.di.feature.vault.DaggerVaultComponent
 import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeModule
@@ -1046,6 +1047,12 @@ class ComponentManager(
                 .vmParams(vmParams)
                 .build()
         }
+
+    val vaultComponent = Component {
+        DaggerVaultComponent
+            .factory()
+            .create(findComponentDependencies())
+    }
 
     class Component<T>(private val builder: () -> T) {
 

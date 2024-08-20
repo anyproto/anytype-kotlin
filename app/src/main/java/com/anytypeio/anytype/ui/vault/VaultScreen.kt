@@ -32,6 +32,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyBold
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.Title1
@@ -42,12 +43,15 @@ import com.anytypeio.anytype.presentation.vault.VaultViewModel.VaultSpaceView
 @Composable
 fun VaultScreen(
     spaces: List<VaultSpaceView>,
-    onSpaceClicked: (VaultSpaceView) -> Unit
+    onSpaceClicked: (VaultSpaceView) -> Unit,
+    onCreateSpaceClicked: () -> Unit
 ) {
     Box(
         Modifier.fillMaxSize()
     ) {
-       VaultScreenToolbar()
+       VaultScreenToolbar(
+           onPlusClicked = onCreateSpaceClicked
+       )
        LazyColumn(
            Modifier
                .fillMaxSize()
@@ -80,7 +84,9 @@ fun VaultScreen(
 
 
 @Composable
-fun VaultScreenToolbar() {
+fun VaultScreenToolbar(
+    onPlusClicked: () -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -106,6 +112,9 @@ fun VaultScreenToolbar() {
             modifier = Modifier
                 .align(Alignment.CenterEnd)
                 .padding(end = 16.dp)
+                .noRippleClickable {
+                    onPlusClicked()
+                }
         )
     }
 }
@@ -166,7 +175,9 @@ fun VaultSpaceCard(
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
 fun VaultScreenToolbarPreview() {
-    VaultScreenToolbar()
+    VaultScreenToolbar(
+        onPlusClicked = {}
+    )
 }
 
 @Composable
@@ -198,6 +209,7 @@ fun VaultScreenPreview() {
                 )
             )
         },
-        onSpaceClicked = {}
+        onSpaceClicked = {},
+        onCreateSpaceClicked = {}
     )
 }

@@ -6,9 +6,12 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableStateFlow
 import timber.log.Timber
 
 class VaultViewModel : BaseViewModel() {
+
+    val spaces = MutableStateFlow<List<VaultSpaceView>>(emptyList())
 
     init {
         Timber.i("VaultViewModel, init")

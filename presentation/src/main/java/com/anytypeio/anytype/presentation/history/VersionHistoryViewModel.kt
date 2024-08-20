@@ -217,12 +217,12 @@ class VersionHistoryViewModel(
             ).process(
                 failure = {
                     Timber.e(it, "Error while fetching new member")
-                    _viewState.value = VersionHistoryState.Error.SpaceMembers(it.message.orEmpty())
+                    _viewState.value = VersionHistoryState.Error.SpaceMembers
                 },
                 success = { members ->
                     if (members.isEmpty()) {
                         _viewState.value =
-                            VersionHistoryState.Error.SpaceMembers("No members found")
+                            VersionHistoryState.Error.SpaceMembers
                     } else {
                         _members.value = members
                     }
@@ -256,7 +256,7 @@ class VersionHistoryViewModel(
                     }
                 },
                 onFailure = {
-                    _viewState.value = VersionHistoryState.Error.GetVersions(it.message.orEmpty())
+                    _viewState.value = VersionHistoryState.Error.GetVersions
                     listState =
                         if (latestVersionId.isEmpty()) ListState.ERROR else ListState.PAGINATION_EXHAUST
                 },
@@ -540,9 +540,10 @@ sealed class VersionHistoryState {
     data class Success(
         val groups: List<VersionHistoryGroup>
     ) : VersionHistoryState()
+
     sealed class Error : VersionHistoryState() {
-        data class SpaceMembers(val message: String) : Error()
-        data class GetVersions(val message: String) : Error()
+        data object SpaceMembers : Error()
+        data object GetVersions : Error()
         data object NoVersions : Error()
     }
 }

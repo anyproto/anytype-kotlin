@@ -44,14 +44,15 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.TimeInSeconds
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Header
+import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
@@ -105,9 +106,20 @@ private fun VersionHistoryMainScreen(
         )
         Header(text = stringResource(id = R.string.version_history_title))
         when (state) {
-            is VersionHistoryState.Error.GetVersions -> TODO()
-            VersionHistoryState.Error.NoVersions -> TODO()
-            is VersionHistoryState.Error.SpaceMembers -> TODO()
+            is VersionHistoryState.Error.GetVersions -> VersionHistoryError(
+                error = stringResource(
+                    id = R.string.version_history_error_get_version
+                )
+            )
+
+            VersionHistoryState.Error.NoVersions -> VersionHistoryError(
+                error = stringResource(id = R.string.version_history_error_no_versions)
+            )
+
+            is VersionHistoryState.Error.SpaceMembers -> VersionHistoryError(
+                error = stringResource(id = R.string.version_history_error_get_members)
+            )
+
             VersionHistoryState.Loading -> VersionHistoryLoading()
             is VersionHistoryState.Success -> {
                 VersionHistorySuccessState(
@@ -128,6 +140,19 @@ private fun VersionHistoryLoading() {
                 .size(24.dp),
             color = colorResource(R.color.shape_secondary),
             trackColor = colorResource(R.color.shape_primary)
+        )
+    }
+}
+
+@Composable
+private fun VersionHistoryError(error: String) {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+        Text(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 20.dp),
+            text = error,
+            style = Caption1Medium,
+            color = colorResource(id = R.color.palette_dark_red),
+            textAlign = TextAlign.Center
         )
     }
 }
@@ -437,7 +462,7 @@ const val MEMBERS_ICONS_MAX_SIZE = 3
 @Composable
 private fun SpaceListScreenPreviewLoading() {
     VersionHistoryMainScreen(
-        state = VersionHistoryState.Loading,
+        state = VersionHistoryState.Error.NoVersions,
         onItemClick = {},
         lazyListState = rememberLazyListState()
     )

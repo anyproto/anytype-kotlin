@@ -25,6 +25,7 @@ import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
+import com.anytypeio.anytype.presentation.objects.SupportedLayouts.isEditorOrFileLayout
 import com.anytypeio.anytype.presentation.objects.toView
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
@@ -348,7 +349,7 @@ class ObjectValueViewModel(
                         space = item.view.space
                     )
                 )
-            } else if (SupportedLayouts.editorLayouts.contains(layout)) {
+            } else if (isEditorOrFileLayout(layout)) {
                 commands.emit(
                     Command.OpenObject(
                         id = item.view.id,

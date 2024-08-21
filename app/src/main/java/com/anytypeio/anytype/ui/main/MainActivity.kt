@@ -256,9 +256,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                 runCatching {
                                     findNavController(R.id.fragment).navigate(
                                         R.id.paymentsScreen,
-                                        MembershipFragment.args(
-                                            tierId = command.tierId
-                                        )
+                                        MembershipFragment.args(tierId = command.tierId),
+                                        NavOptions.Builder().setLaunchSingleTop(true).build()
                                     )
                                 }.onFailure {
                                     Timber.w(it, "Error while navigation for deep link membership tier")

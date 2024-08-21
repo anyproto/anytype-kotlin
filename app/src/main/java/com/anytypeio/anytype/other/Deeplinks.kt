@@ -3,7 +3,6 @@ package com.anytypeio.anytype.other
 import android.net.Uri
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Url
-import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
@@ -72,14 +71,8 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
         }
         deeplink.contains(MEMBERSHIP_PATH) -> {
             val uri = Uri.parse(deeplink)
-            val tierIdParam = uri.getQueryParameter(TIER_ID_PARAM)?.toIntOrNull()
-            val tierId = if (tierIdParam != null) {
-                TierId(tierIdParam)
-            } else {
-                null
-            }
             DeepLinkResolver.Action.DeepLinkToMembership(
-                tierId = tierId
+                tierId = uri.getQueryParameter(TIER_ID_PARAM)
             )
         }
         else -> DeepLinkResolver.Action.Unknown

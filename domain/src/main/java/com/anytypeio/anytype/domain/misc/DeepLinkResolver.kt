@@ -24,7 +24,7 @@ interface DeepLinkResolver {
             val space: SpaceId
         ) : Action()
         data class DeepLinkToMembership(
-            val tierId: TierId?
+            val tierId: String?
         ) : Action()
     }
 }

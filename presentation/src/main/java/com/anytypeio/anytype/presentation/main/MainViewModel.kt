@@ -387,7 +387,7 @@ class MainViewModel(
                 val deepLinkType: String,
                 val deepLinkSource: String
             ) : Deeplink()
-            data class MembershipScreen(val tierId: TierId?) : Deeplink()
+            data class MembershipScreen(val tierId: String?) : Deeplink()
         }
     }
 

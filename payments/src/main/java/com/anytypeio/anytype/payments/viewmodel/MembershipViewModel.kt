@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.payments.SetMembershipEmail
 import com.anytypeio.anytype.domain.payments.VerifyMembershipEmailCode
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.EXPLORER_ID
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.MEMBERSHIP_NAME_MIN_LENGTH
+import com.anytypeio.anytype.core_models.membership.MembershipConstants.NONE_ID
 import com.anytypeio.anytype.payments.mapping.toMainView
 import com.anytypeio.anytype.payments.models.MembershipPurchase
 import com.anytypeio.anytype.payments.models.TierAnyName
@@ -46,6 +47,8 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -71,6 +74,8 @@ class MembershipViewModel(
 
     val navigation = MutableSharedFlow<MembershipNavigation>(0)
 
+    private val _showTierOnStart = MutableStateFlow(NONE_ID)
+
     /**
      * Local billing purchase data.
      */
@@ -93,6 +98,16 @@ class MembershipViewModel(
     val anyEmailState = TextFieldState(initialText = "")
 
     init {
+        viewModelScope.launch {
+            combine(
+                _showTierOnStart.filter { it != NONE_ID },
+                viewState.filterIsInstance<MembershipMainState.Default>()
+            ) { tierId, _ -> tierId }.collect { tierId ->
+                Timber.d("_showTierOnStart, get new value:$tierId")
+                proceedWithShowingTier(TierId(tierId))
+            }
+        }
+
         viewModelScope.launch {
             val account = getAccount.async(Unit)
             val accountId = account.getOrNull()?.id.orEmpty()
@@ -128,6 +143,13 @@ class MembershipViewModel(
             billingPurchases.collectLatest { billingPurchaseState ->
                 checkPurchaseStatus(billingPurchaseState)
             }
+        }
+    }
+
+    fun showTierOnStart(tierId: String?) {
+        val tier = tierId?.toIntOrNull()
+        if (tier != null && tier != NONE_ID) {
+            _showTierOnStart.value = tier
         }
     }
 

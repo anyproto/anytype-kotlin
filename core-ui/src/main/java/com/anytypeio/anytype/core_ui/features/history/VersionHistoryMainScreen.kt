@@ -31,7 +31,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -63,16 +62,17 @@ import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.history.ListState
 import com.anytypeio.anytype.presentation.history.VersionHistoryGroup
 import com.anytypeio.anytype.presentation.history.VersionHistoryState
-import com.anytypeio.anytype.presentation.history.VersionHistoryViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 
 @Composable
 fun VersionHistoryScreen(
+    state: State<VersionHistoryState>,
     listState: State<ListState>,
     latestVisibleVersionId: State<String>,
-    viewModel: VersionHistoryViewModel
+    startPaging: (String) -> Unit,
+    onGroupItemClicked: (VersionHistoryGroup.Item) -> Unit,
 ) {
 
     val lazyListState = rememberLazyListState()
@@ -90,15 +90,15 @@ fun VersionHistoryScreen(
             .filter { it }
             .collect {
                 if (listState.value == ListState.IDLE) {
-                    viewModel.startPaging(latestVisibleVersionId.value)
+                    startPaging(latestVisibleVersionId.value)
                 }
             }
     }
 
     VersionHistoryMainScreen(
-        state = viewModel.viewState.collectAsState().value,
+        state = state.value,
         lazyListState = lazyListState,
-        onItemClick = viewModel::onGroupItemClicked
+        onItemClick = onGroupItemClicked
     )
 }
 

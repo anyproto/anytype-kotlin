@@ -108,9 +108,11 @@ class VersionHistoryFragment : BaseBottomSheetComposeFragment() {
         ) {
             composable(NAVIGATION_MAIN) {
                 VersionHistoryScreen(
+                    state = vm.viewState.collectAsStateWithLifecycle(),
                     listState = vm.listState.collectAsStateWithLifecycle(),
                     latestVisibleVersionId = vm.latestVisibleVersionId.collectAsStateWithLifecycle(),
-                    viewModel = vm
+                    onGroupItemClicked = vm::onGroupItemClicked,
+                    startPaging = vm::startPaging
                 )
             }
             bottomSheet(NAVIGATION_VERSION_PREVIEW) {

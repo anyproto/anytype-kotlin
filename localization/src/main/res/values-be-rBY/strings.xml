@@ -1518,4 +1518,5 @@
     <string name="sync_status_unrecognized">Невядомая памылка</string>
     <string name="version_history_title">Гісторыя версій</string>
     <string name="new_object">Новы аб\'ект</string>
+    <string name="vault_my_spaces">My spaces</string>
 </resources>

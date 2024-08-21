@@ -71,7 +71,7 @@ class VersionHistoryViewModel(
     private val _members = MutableStateFlow<List<ObjectWrapper.Basic>>(emptyList())
 
     //Paging
-    val canPaginate = MutableStateFlow(false)
+    private val canPaginate = MutableStateFlow(false)
     val listState = MutableStateFlow(ListState.IDLE)
     val latestVisibleVersionId = MutableStateFlow("")
     private val _versions = MutableStateFlow<List<Version>>(emptyList())
@@ -102,11 +102,13 @@ class VersionHistoryViewModel(
     }
 
     fun startPaging(latestVersionId: String) {
-        Timber.d("Start paging, latestVersionId: $latestVersionId")
-        getHistoryVersions(
-            objectId = vmParams.objectId,
-            latestVersionId = latestVersionId
-        )
+        Timber.d("Start paging, latestVersionId: $latestVersionId, canPaginate: ${canPaginate.value}")
+        if (canPaginate.value) {
+            getHistoryVersions(
+                objectId = vmParams.objectId,
+                latestVersionId = latestVersionId
+            )
+        }
     }
 
     fun onGroupItemClicked(item: VersionHistoryGroup.Item) {

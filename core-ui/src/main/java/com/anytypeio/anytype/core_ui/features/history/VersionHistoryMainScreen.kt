@@ -30,12 +30,14 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -63,22 +65,34 @@ import com.anytypeio.anytype.presentation.history.VersionHistoryGroup
 import com.anytypeio.anytype.presentation.history.VersionHistoryState
 import com.anytypeio.anytype.presentation.history.VersionHistoryViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 
 @Composable
-fun VersionHistoryScreen(viewModel: VersionHistoryViewModel) {
+fun VersionHistoryScreen(
+    listState: ListState,
+    latestVisibleVersionId: State<String>,
+    viewModel: VersionHistoryViewModel
+) {
+
     val lazyListState = rememberLazyListState()
 
     val shouldStartPaging = remember {
         derivedStateOf {
             val lastItem = lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()
-            lastItem?.key == viewModel.latestVisibleVersionId && viewModel.canPaginate
+            lastItem?.key == latestVisibleVersionId.value
         }
     }
 
-    LaunchedEffect(key1 = shouldStartPaging.value) {
-        if (shouldStartPaging.value && viewModel.listState == ListState.IDLE) {
-            viewModel.startPaging(viewModel.latestVisibleVersionId)
-        }
+    LaunchedEffect(key1 = shouldStartPaging) {
+        snapshotFlow { shouldStartPaging.value }
+            .distinctUntilChanged()
+            .filter { it }
+            .collect {
+                if (listState == ListState.IDLE) {
+                    viewModel.startPaging(latestVisibleVersionId.value)
+                }
+            }
     }
 
     VersionHistoryMainScreen(
@@ -148,7 +162,9 @@ private fun VersionHistoryLoading() {
 private fun VersionHistoryError(error: String) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
         Text(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 20.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 20.dp),
             text = error,
             style = Caption1Medium,
             color = colorResource(id = R.color.palette_dark_red),

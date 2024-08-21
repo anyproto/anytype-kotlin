@@ -70,7 +70,7 @@ import kotlinx.coroutines.flow.filter
 
 @Composable
 fun VersionHistoryScreen(
-    listState: ListState,
+    listState: State<ListState>,
     latestVisibleVersionId: State<String>,
     viewModel: VersionHistoryViewModel
 ) {
@@ -89,7 +89,7 @@ fun VersionHistoryScreen(
             .distinctUntilChanged()
             .filter { it }
             .collect {
-                if (listState == ListState.IDLE) {
+                if (listState.value == ListState.IDLE) {
                     viewModel.startPaging(latestVisibleVersionId.value)
                 }
             }

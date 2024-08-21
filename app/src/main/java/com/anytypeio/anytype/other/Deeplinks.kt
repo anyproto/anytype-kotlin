@@ -3,6 +3,7 @@ package com.anytypeio.anytype.other
 import android.net.Uri
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
@@ -20,12 +21,14 @@ const val MAIN_PATH = "main"
 const val OBJECT_PATH = "object"
 const val IMPORT_PATH = "import"
 const val INVITE_PATH = "invite"
+const val MEMBERSHIP_PATH = "membership"
 
 const val TYPE_PARAM = "type"
 const val OBJECT_ID_PARAM = "objectId"
 const val SPACE_ID_PARAM = "spaceId"
 const val SOURCE_PARAM = "source"
 const val TYPE_VALUE_EXPERIENCE = "experience"
+const val TIER_ID_PARAM = "tier"
 
 const val IMPORT_EXPERIENCE_DEEPLINK = "$DEEP_LINK_PATTERN$MAIN_PATH/$IMPORT_PATH/?$TYPE_PARAM=$TYPE_VALUE_EXPERIENCE"
 
@@ -66,6 +69,18 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
             } else {
                 DeepLinkResolver.Action.Unknown
             }
+        }
+        deeplink.contains(MEMBERSHIP_PATH) -> {
+            val uri = Uri.parse(deeplink)
+            val tierIdParam = uri.getQueryParameter(TIER_ID_PARAM)?.toIntOrNull()
+            val tierId = if (tierIdParam != null) {
+                TierId(tierIdParam)
+            } else {
+                null
+            }
+            DeepLinkResolver.Action.DeepLinkToMembership(
+                tierId = tierId
+            )
         }
         else -> DeepLinkResolver.Action.Unknown
     }

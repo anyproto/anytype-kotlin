@@ -276,6 +276,9 @@ class HomeScreenViewModel(
                         onSessionFailed().also {
                             Timber.e(e, "Error while opening object.")
                         }
+                    },
+                    onLoading = {
+                        widgets.value = emptyList()
                     }
                 )
             }.map { result ->

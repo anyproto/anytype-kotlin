@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
@@ -289,4 +290,5 @@ interface HomeScreenDependencies : ComponentDependencies {
     fun activeSpaceMembers() : ActiveSpaceMemberSubscriptionContainer
     fun analyticSpaceHelperDelegate(): AnalyticSpaceHelperDelegate
     fun storeOfRelations(): StoreOfRelations
+    fun spaceViewSubscriptionContainer(): SpaceViewSubscriptionContainer
 }

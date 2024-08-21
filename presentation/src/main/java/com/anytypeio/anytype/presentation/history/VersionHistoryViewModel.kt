@@ -516,7 +516,7 @@ class VersionHistoryViewModel(
         const val GROUP_DATE_FORMAT_CURRENT_YEAR = "MMMM d"
         const val GROUP_DATE_FORMAT_OTHER_YEAR = "MMMM d, yyyy"
 
-        const val VERSIONS_MAX_LIMIT = 10
+        const val VERSIONS_MAX_LIMIT = 200
     }
 }
 

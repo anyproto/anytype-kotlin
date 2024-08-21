@@ -1,8 +1,5 @@
 package com.anytypeio.anytype.presentation.history
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
@@ -74,10 +71,10 @@ class VersionHistoryViewModel(
     private val _members = MutableStateFlow<List<ObjectWrapper.Basic>>(emptyList())
 
     //Paging
-    var canPaginate by mutableStateOf(false)
-    var listState by mutableStateOf(ListState.IDLE)
-    var latestVisibleVersionId by mutableStateOf("")
-    private val _list = MutableStateFlow<List<Version>>(emptyList())
+    val canPaginate = MutableStateFlow(false)
+    val listState = MutableStateFlow(ListState.IDLE)
+    val latestVisibleVersionId = MutableStateFlow("")
+    private val _versions = MutableStateFlow<List<Version>>(emptyList())
 
     init {
         Timber.d("VersionHistoryViewModel created")
@@ -89,7 +86,7 @@ class VersionHistoryViewModel(
         viewModelScope.launch {
             combine(
                 _members,
-                _list
+                _versions
             ) { members, versions ->
                 members to versions
             }.collectLatest { (members, versions) ->
@@ -240,36 +237,29 @@ class VersionHistoryViewModel(
             )
             getVersions.async(params).fold(
                 onSuccess = { versions ->
-                    canPaginate = versions.size == VERSIONS_MAX_LIMIT
+                    canPaginate.value = versions.size == VERSIONS_MAX_LIMIT
                     if (latestVersionId.isEmpty()) {
                         if (versions.isEmpty()) {
                             _viewState.value = VersionHistoryState.Error.NoVersions
                         } else {
-                            _list.value = versions
+                            _versions.value = versions
                         }
                     } else {
-                        _list.value += versions
+                        _versions.value += versions
                     }
-                    listState = ListState.IDLE
-                    if (canPaginate) {
-                        latestVisibleVersionId = versions.lastOrNull()?.id ?: ""
+                    listState.value = ListState.IDLE
+                    if (canPaginate.value) {
+                        latestVisibleVersionId.value = versions.lastOrNull()?.id ?: ""
                     }
                 },
                 onFailure = {
                     _viewState.value = VersionHistoryState.Error.GetVersions
-                    listState =
+                    listState.value =
                         if (latestVersionId.isEmpty()) ListState.ERROR else ListState.PAGINATION_EXHAUST
                 },
                 onLoading = {}
             )
         }
-    }
-
-    override fun onCleared() {
-        listState = ListState.IDLE
-        canPaginate = false
-        latestVisibleVersionId = ""
-        super.onCleared()
     }
 
     private fun handleVersionsSuccess(versions: List<Version>, members: List<ObjectWrapper.Basic>) {
@@ -509,21 +499,14 @@ class VersionHistoryViewModel(
         val spaceId: SpaceId
     )
 
-    sealed class Command(val route: String) {
-        data object Main : Command("main")
-        data object VersionPreview : Command("version preview")
-        data object ExitToObject : Command("")
-        data class RelationMultiSelect(val relationKey: RelationKey, val isSet: Boolean) :
-            Command("relation_select")
-
-        data class RelationObject(val relationKey: RelationKey, val isSet: Boolean) :
-            Command("relation_object")
-
-        data class RelationDate(val relationKey: RelationKey, val isSet: Boolean) :
-            Command("relation_date")
-
-        data class RelationText(val relationKey: RelationKey, val isSet: Boolean) :
-            Command("relation_text")
+    sealed class Command {
+        data object Main : Command()
+        data object VersionPreview : Command()
+        data object ExitToObject : Command()
+        data class RelationMultiSelect(val relationKey: RelationKey, val isSet: Boolean) : Command()
+        data class RelationObject(val relationKey: RelationKey, val isSet: Boolean) : Command()
+        data class RelationDate(val relationKey: RelationKey, val isSet: Boolean) : Command()
+        data class RelationText(val relationKey: RelationKey, val isSet: Boolean) : Command()
     }
 
     companion object {

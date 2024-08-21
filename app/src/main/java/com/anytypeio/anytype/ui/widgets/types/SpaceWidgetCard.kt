@@ -22,6 +22,7 @@ import com.anytypeio.anytype.core_models.DEFAULT_SPACE_TYPE
 import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SHARED_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SpaceType
+import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
@@ -106,12 +107,17 @@ fun SpaceWidgetCard(
         val spaceTypeText = when(spaceType) {
             DEFAULT_SPACE_TYPE -> stringResource(id = R.string.space_type_default_space)
             PRIVATE_SPACE_TYPE -> stringResource(id = R.string.space_type_private_space)
-            SHARED_SPACE_TYPE -> pluralStringResource(
-                id = R.plurals.multiplayer_number_of_space_members,
-                membersCount,
-                membersCount,
-                membersCount
-            )
+            SHARED_SPACE_TYPE -> {
+                if (membersCount > 0 ) {
+                    pluralStringResource(
+                        id = R.plurals.multiplayer_number_of_space_members,
+                        membersCount,
+                        membersCount,
+                        membersCount
+                    )
+                } else
+                    EMPTY_STRING_VALUE
+            }
             else -> stringResource(id = R.string.space_type_unknown)
         }
         Text(

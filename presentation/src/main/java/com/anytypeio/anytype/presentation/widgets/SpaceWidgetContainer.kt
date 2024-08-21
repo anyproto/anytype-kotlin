@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer.Store
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
@@ -21,13 +22,15 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.onStart
 
 class SpaceWidgetContainer @Inject constructor(
     private val spaceManager: SpaceManager,
     private val container: StorelessSubscriptionContainer,
     private val spaceGradientProvider: SpaceGradientProvider,
     private val urlBuilder: UrlBuilder,
-    private val members: ActiveSpaceMemberSubscriptionContainer
+    private val members: ActiveSpaceMemberSubscriptionContainer,
+    private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer
 ) : WidgetContainer {
 
     override val view: Flow<WidgetView> = buildFlow()
@@ -50,6 +53,11 @@ class SpaceWidgetContainer @Inject constructor(
                           ObjectWrapper.SpaceView(results.first().map)
                     else
                         null
+                }.onStart {
+                    val cached = spaceViewSubscriptionContainer.get(SpaceId(config.space))
+                    if (cached != null) {
+                        emit(cached)
+                    }
                 },
                 members.observe(SpaceId(config.space)).map { store ->
                     when (store) {

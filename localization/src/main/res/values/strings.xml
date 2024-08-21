@@ -1634,7 +1634,7 @@ Please provide specific details of your needs here.</string>
     <string name="gallery_experience_alert_button_error">Close</string>
 
 
-    <string name="three_dots_text_placeholder">...</string>
+    <string name="three_dots_text_placeholder" translatable="false">...</string>
     <string name="membership_btn_join">Join</string>
 
     <string name="notifications_prompt_get_notified">Get notified</string>

@@ -22,7 +22,6 @@ import com.anytypeio.anytype.core_models.DEFAULT_SPACE_TYPE
 import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SHARED_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SpaceType
-import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
@@ -116,7 +115,7 @@ fun SpaceWidgetCard(
                         membersCount
                     )
                 } else
-                    EMPTY_STRING_VALUE
+                    stringResource(id = R.string.three_dots_text_placeholder)
             }
             else -> stringResource(id = R.string.space_type_unknown)
         }

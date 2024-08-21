@@ -1479,4 +1479,5 @@ Please provide specific details of your needs here.</string>
     <string name="sync_status_unrecognized">無法識別的錯誤</string>
     <string name="version_history_title">Version history</string>
     <string name="new_object">新增物件</string>
+    <string name="vault_my_spaces">My spaces</string>
 </resources>

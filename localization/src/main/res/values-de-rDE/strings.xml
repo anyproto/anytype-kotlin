@@ -1492,4 +1492,5 @@ Please provide specific details of your needs here.</string>
     <string name="sync_status_unrecognized">Unerkannter Fehler</string>
     <string name="version_history_title">Versionsverlauf</string>
     <string name="new_object">Neues Objekt</string>
+    <string name="vault_my_spaces">My spaces</string>
 </resources>

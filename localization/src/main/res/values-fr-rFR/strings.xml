@@ -1489,4 +1489,5 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="sync_status_unrecognized">Erreur inconnue</string>
     <string name="version_history_title">Historique de version</string>
     <string name="new_object">Nouvel objet</string>
+    <string name="vault_my_spaces">My spaces</string>
 </resources>

@@ -1742,5 +1742,6 @@ Please provide specific details of your needs here.</string>
 
     <string name="version_history_title">Version history</string>
     <string name="new_object">New object</string>
+    <string name="vault_my_spaces">My spaces</string>
 
 </resources>

@@ -81,6 +81,7 @@ import com.anytypeio.anytype.presentation.onboarding.OnboardingStartViewModel
 import com.anytypeio.anytype.presentation.onboarding.OnboardingStartViewModel.SideEffect
 import com.anytypeio.anytype.presentation.onboarding.OnboardingViewModel
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel
+import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingMnemonicViewModel
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.onboarding.screens.AuthScreenWrapper
@@ -545,24 +546,28 @@ class OnboardingFragment : Fragment() {
         val vm = daggerViewModel { component.get().getViewModel() }
         MnemonicPhraseScreenWrapper(
             viewModel = vm,
-            onCheckLaterClicked = {
-                findNavController().navigate(
-                    R.id.action_openHome,
-                    HomeScreenFragment.args(deepLink)
-                )
-            },
-            onGoToAppClicked = {
-                findNavController().navigate(
-                    R.id.action_openHome,
-                    HomeScreenFragment.args(deepLink)
-                )
-            },
             copyMnemonicToClipboard = ::copyMnemonicToClipboard,
             vm = vm,
             mnemonicColorPalette = mnemonicColorPalette
         )
         DisposableEffect(Unit) {
             onDispose { component.release() }
+        }
+        LaunchedEffect(Unit) {
+            vm.commands.collect { command ->
+                when(command) {
+                    OnboardingMnemonicViewModel.Command.OpenHome -> {
+                        runCatching {
+                            findNavController().navigate(
+                                R.id.action_openHome,
+                                HomeScreenFragment.args(deepLink)
+                            )
+                        }.onFailure {
+                            Timber.e(it, "Error while navigation to home")
+                        }
+                    }
+                }
+            }
         }
     }
 

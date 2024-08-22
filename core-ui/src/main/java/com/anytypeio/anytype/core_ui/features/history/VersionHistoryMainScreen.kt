@@ -142,7 +142,7 @@ private fun VersionHistorySuccessState(
                     width = 0.5.dp, color = colorResource(id = R.color.shape_primary)
                 )
             ) {
-                Spacer(modifier = Modifier.height(if (isExpanded) 12.dp else 16.dp))
+                Spacer(modifier = Modifier.height(if (isExpanded) 12.dp else 14.dp))
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -169,7 +169,7 @@ private fun VersionHistorySuccessState(
                         GroupItem(item = it, onItemClick = onItemClick)
                     }
                 }
-                Spacer(modifier = Modifier.height(if (isExpanded) 12.dp else 16.dp))
+                Spacer(modifier = Modifier.height(if (isExpanded) 12.dp else 14.dp))
             }
         }
     }

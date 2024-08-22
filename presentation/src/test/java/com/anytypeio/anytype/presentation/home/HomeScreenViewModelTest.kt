@@ -1827,7 +1827,7 @@ class HomeScreenViewModelTest {
 
         vm.onStart()
 
-        advanceUntilIdle()
+        advanceTimeBy(delayBeforeSwitchingSpace - 1)
 
         verifyBlocking(storelessSubscriptionContainer, times(1)) {
             subscribe(

@@ -1675,6 +1675,8 @@ class HomeScreenViewModelTest {
 
         advanceTimeBy(delayBeforeSwitchingSpace + 1)
 
+        advanceUntilIdle()
+
         verifyBlocking(unsubscriber, times(1)) {
             unsubscribe(
                 subscriptions = listOf(
@@ -1845,7 +1847,7 @@ class HomeScreenViewModelTest {
 
         vm.onStart()
 
-        advanceUntilIdle()
+        advanceTimeBy(delayBeforeSwitchingSpace - 1)
 
         verifyBlocking(storelessSubscriptionContainer, times(1)) {
             subscribe(
@@ -1883,6 +1885,8 @@ class HomeScreenViewModelTest {
 
         // Verifying unsubscribe behavior
 
+        advanceUntilIdle()
+
         verifyBlocking(unsubscriber, times(1)) {
             unsubscribe(
                 subscriptions = listOf(
@@ -1892,6 +1896,8 @@ class HomeScreenViewModelTest {
                 )
             )
         }
+
+        verify(closeObject, times(1)).async(params = WIDGET_OBJECT_ID)
     }
 
     @Test
@@ -2682,6 +2688,13 @@ class HomeScreenViewModelTest {
                     params = WIDGET_OBJECT_ID
                 )
             } doReturn flowOf(Resultat.Loading(), Resultat.Success(Unit))
+        }
+        closeObject.stub {
+            onBlocking {
+                async(
+                    params = WIDGET_OBJECT_ID
+                )
+            } doReturn Resultat.success(Unit)
         }
     }
 

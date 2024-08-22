@@ -26,7 +26,7 @@ class OnboardingMnemonicViewModel @Inject constructor(
     init {
         Timber.i("OnboardingMnemonicViewModel, init")
         viewModelScope.sendAnalyticsOnboardingScreenEvent(analytics,
-            EventsDictionary.ScreenOnboardingStep.VAULT
+            EventsDictionary.ScreenOnboardingStep.PHRASE
         )
         viewModelScope.launch {
             proceedWithMnemonicPhrase()
@@ -40,7 +40,7 @@ class OnboardingMnemonicViewModel @Inject constructor(
         viewModelScope.sendAnalyticsOnboardingClickEvent(
             analytics = analytics,
             type = EventsDictionary.ClickOnboardingButton.SHOW_AND_COPY,
-            step = EventsDictionary.ScreenOnboardingStep.VAULT
+            step = EventsDictionary.ScreenOnboardingStep.PHRASE
         )
     }
 
@@ -48,7 +48,7 @@ class OnboardingMnemonicViewModel @Inject constructor(
         viewModelScope.sendAnalyticsOnboardingClickEvent(
             analytics = analytics,
             type = EventsDictionary.ClickOnboardingButton.CHECK_LATER,
-            step = EventsDictionary.ScreenOnboardingStep.VAULT
+            step = EventsDictionary.ScreenOnboardingStep.PHRASE
         )
         viewModelScope.launch {
             val config = configStorage.getOrNull()

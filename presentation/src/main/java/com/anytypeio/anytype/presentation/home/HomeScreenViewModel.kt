@@ -1272,6 +1272,15 @@ class HomeScreenViewModel(
                     }
                 }
             }
+            is DeepLinkResolver.Action.DeepLinkToMembership -> {
+                viewModelScope.launch {
+                    commands.emit(
+                        Command.Deeplink.MembershipScreen(
+                            tierId = deeplink.tierId
+                        )
+                    )
+                }
+            }
             else -> {
                 Timber.d("No deep link")
             }
@@ -2190,6 +2199,7 @@ sealed class Command {
             val deepLinkType: String,
             val deepLinkSource: String
         ) : Deeplink()
+        data class MembershipScreen(val tierId: String?) : Deeplink()
     }
 }
 

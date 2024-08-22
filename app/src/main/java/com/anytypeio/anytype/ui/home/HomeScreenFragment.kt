@@ -16,6 +16,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
@@ -36,6 +37,7 @@ import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.creation.SelectObjectTypeFragment
+import com.anytypeio.anytype.ui.payments.MembershipFragment
 import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment
@@ -243,6 +245,13 @@ class HomeScreenFragment : BaseComposeFragment() {
                         deepLinkType = command.deepLinkType,
                         deepLinkSource = command.deepLinkSource
                     )
+                )
+            }
+            is Command.Deeplink.MembershipScreen -> {
+                findNavController().navigate(
+                    R.id.paymentsScreen,
+                    MembershipFragment.args(command.tierId),
+                    NavOptions.Builder().setLaunchSingleTop(true).build()
                 )
             }
             is Command.Deeplink.DeepLinkToObjectNotWorking -> {

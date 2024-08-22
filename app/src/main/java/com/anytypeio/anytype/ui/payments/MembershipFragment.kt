@@ -12,6 +12,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -23,6 +24,7 @@ import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_ui.views.BaseTwoButtonsDarkThemeAlertDialog
+import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -58,6 +60,8 @@ class MembershipFragment : BaseBottomSheetComposeFragment() {
     lateinit var factory: MembershipViewModelFactory
     private val vm by viewModels<MembershipViewModel> { factory }
     private lateinit var navController: NavHostController
+
+    private val argTierId get() = argOrNull<String>(ARG_TIER_ID)
 
     @Inject
     lateinit var billingClientLifecycle: BillingClientLifecycle
@@ -183,6 +187,7 @@ class MembershipFragment : BaseBottomSheetComposeFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        vm.showTierOnStart(tierId = argTierId)
         setupBottomSheetBehavior(DEFAULT_PADDING_TOP)
         subscribe(vm.navigation) { command ->
             Timber.d("MembershipFragment command: $command")
@@ -209,10 +214,12 @@ class MembershipFragment : BaseBottomSheetComposeFragment() {
                         toast("Couldn't parse url: ${command.url}")
                     }
                 }
+
                 MembershipNavigation.Main -> {}
                 is MembershipNavigation.OpenEmail -> {
                     val mail = resources.getString(R.string.payments_email_to)
-                    val subject = resources.getString(R.string.payments_email_subject, command.accountId)
+                    val subject =
+                        resources.getString(R.string.payments_email_subject, command.accountId)
                     val body = resources.getString(R.string.payments_email_body)
                     val mailBody = mail +
                             "?subject=$subject" +
@@ -228,7 +235,8 @@ class MembershipFragment : BaseBottomSheetComposeFragment() {
                     val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
                     currentDateTime = sdf.format(Date())
                     val mail = resources.getString(R.string.membership_support_email)
-                    val subject = resources.getString(R.string.membership_support_subject, command.accountId)
+                    val subject =
+                        resources.getString(R.string.membership_support_subject, command.accountId)
                     val body = getString(
                         R.string.membership_support_body,
                         command.error, currentDateTime, deviceModel, osVersion, appVersion
@@ -259,5 +267,10 @@ class MembershipFragment : BaseBottomSheetComposeFragment() {
 
     override fun releaseDependencies() {
         componentManager().membershipComponent.release()
+    }
+
+    companion object {
+        const val ARG_TIER_ID = "args.membership.tier"
+        fun args(tierId: String?) = bundleOf(ARG_TIER_ID to tierId)
     }
 }

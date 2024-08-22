@@ -55,6 +55,7 @@ import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.SpaceJoinRequestFragment
 import com.anytypeio.anytype.ui.notifications.NotificationsFragment
+import com.anytypeio.anytype.ui.payments.MembershipFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.sharing.SharingFragment
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
@@ -249,6 +250,17 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                     )
                                 }.onFailure {
                                     Timber.e(it, "Error while navigation for deep link invite")
+                                }
+                            }
+                            is Command.Deeplink.MembershipScreen -> {
+                                runCatching {
+                                    findNavController(R.id.fragment).navigate(
+                                        R.id.paymentsScreen,
+                                        MembershipFragment.args(tierId = command.tierId),
+                                        NavOptions.Builder().setLaunchSingleTop(true).build()
+                                    )
+                                }.onFailure {
+                                    Timber.w(it, "Error while navigation for deep link membership tier")
                                 }
                             }
                         }

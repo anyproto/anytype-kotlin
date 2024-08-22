@@ -1745,5 +1745,6 @@ Please provide specific details of your needs here.</string>
     <string name="version_history_error_get_version">Error getting version history</string>
     <string name="version_history_error_get_members">Error getting members</string>
     <string name="new_object">New object</string>
+    <string name="vault_my_spaces">My spaces</string>
 
 </resources>

@@ -1493,4 +1493,5 @@ Please provide specific details of your needs here.</string>
     <string name="sync_status_unrecognized">Errore sconosciuto</string>
     <string name="version_history_title">Cronologia delle versioni</string>
     <string name="new_object">Nuovo oggetto</string>
+    <string name="vault_my_spaces">My spaces</string>
 </resources>

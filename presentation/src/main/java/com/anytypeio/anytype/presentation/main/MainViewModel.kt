@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.NotificationPayload
 import com.anytypeio.anytype.core_models.NotificationStatus
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
+import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
@@ -350,6 +351,11 @@ class MainViewModel(
                     }
                 }
             }
+            is DeepLinkResolver.Action.DeepLinkToMembership -> {
+                commands.emit(
+                    Command.Deeplink.MembershipScreen(tierId = deeplink.tierId)
+                )
+            }
             else -> {
                 Timber.d("No deep link")
             }
@@ -381,6 +387,7 @@ class MainViewModel(
                 val deepLinkType: String,
                 val deepLinkSource: String
             ) : Deeplink()
+            data class MembershipScreen(val tierId: String?) : Deeplink()
         }
     }
 

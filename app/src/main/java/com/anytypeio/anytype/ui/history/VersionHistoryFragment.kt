@@ -104,15 +104,18 @@ class VersionHistoryFragment : BaseBottomSheetComposeFragment() {
     private fun NavigationGraph(navController: NavHostController) {
         NavHost(
             navController = navController,
-            startDestination = Command.Main.route
+            startDestination = NAVIGATION_MAIN
         ) {
-            composable(Command.Main.route) {
+            composable(NAVIGATION_MAIN) {
                 VersionHistoryScreen(
-                    state = vm.viewState.collectAsStateWithLifecycle().value,
-                    onItemClick = vm::onGroupItemClicked
+                    state = vm.viewState.collectAsStateWithLifecycle(),
+                    listState = vm.listState.collectAsStateWithLifecycle(),
+                    latestVisibleVersionId = vm.latestVisibleVersionId.collectAsStateWithLifecycle(),
+                    onGroupItemClicked = vm::onGroupItemClicked,
+                    onLastItemScrolled = vm::startPaging
                 )
             }
-            bottomSheet(Command.VersionPreview.route) {
+            bottomSheet(NAVIGATION_VERSION_PREVIEW) {
                 VersionHistoryPreviewScreen(
                     state = vm.previewViewState.collectAsStateWithLifecycle().value,
                     editorAdapter = editorAdapter,
@@ -140,7 +143,7 @@ class VersionHistoryFragment : BaseBottomSheetComposeFragment() {
     }
 
     private fun navigateToVersionPreview() {
-        navComposeController.navigate(Command.VersionPreview.route)
+        navComposeController.navigate(NAVIGATION_VERSION_PREVIEW)
     }
 
     private fun exitToObjectMenu() {
@@ -230,6 +233,9 @@ class VersionHistoryFragment : BaseBottomSheetComposeFragment() {
 
         const val CTX_ARG = "anytype.ui.history.ctx_arg"
         const val SPACE_ID_ARG = "anytype.ui.history.space_id_arg"
+
+        const val NAVIGATION_MAIN = "main"
+        const val NAVIGATION_VERSION_PREVIEW = "preview"
 
         fun args(ctx: Id, spaceId: Id) = bundleOf(
             CTX_ARG to ctx,

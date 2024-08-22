@@ -42,6 +42,9 @@ import java.time.ZoneId
 import java.util.Locale
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -59,22 +62,53 @@ class VersionHistoryViewModel(
 ) : ViewModel(), BlockViewRenderer by renderer {
 
     private val _viewState = MutableStateFlow<VersionHistoryState>(VersionHistoryState.Loading)
-    val viewState = _viewState
+    val viewState = _viewState.asStateFlow()
     private val _previewViewState =
         MutableStateFlow<VersionHistoryPreviewScreen>(VersionHistoryPreviewScreen.Hidden)
     val previewViewState = _previewViewState
     val navigation = MutableSharedFlow<Command>(0)
 
+    private val _members = MutableStateFlow<List<ObjectWrapper.Basic>>(emptyList())
+
+    //Paging
+    private val canPaginate = MutableStateFlow(false)
+    val listState = MutableStateFlow(ListState.IDLE)
+    val latestVisibleVersionId = MutableStateFlow("")
+    private val _versions = MutableStateFlow<List<Version>>(emptyList())
+
     init {
         Timber.d("VersionHistoryViewModel created")
         getSpaceMembers()
+        getHistoryVersions(objectId = vmParams.objectId)
         viewModelScope.launch {
             sendAnalyticsShowVersionHistoryScreen(analytics)
+        }
+        viewModelScope.launch {
+            combine(
+                _members,
+                _versions
+            ) { members, versions ->
+                members to versions
+            }.collectLatest { (members, versions) ->
+                if (members.isNotEmpty() && versions.isNotEmpty()) {
+                    handleVersionsSuccess(versions, members)
+                }
+            }
         }
     }
 
     fun onStart() {
         Timber.d("VersionHistoryViewModel started")
+    }
+
+    fun startPaging(latestVersionId: String) {
+        Timber.d("Start paging, latestVersionId: $latestVersionId, canPaginate: ${canPaginate.value}")
+        if (canPaginate.value) {
+            getHistoryVersions(
+                objectId = vmParams.objectId,
+                latestVersionId = latestVersionId
+            )
+        }
     }
 
     fun onGroupItemClicked(item: VersionHistoryGroup.Item) {
@@ -107,6 +141,7 @@ class VersionHistoryViewModel(
                         )
                     }
                 }
+
                 else -> {}
             }
         }
@@ -116,7 +151,8 @@ class VersionHistoryViewModel(
         relation: RelationKey,
         relationFormat: Relation.Format
     ) {
-        val currentState = (_previewViewState.value as? VersionHistoryPreviewScreen.Success) ?: return
+        val currentState =
+            (_previewViewState.value as? VersionHistoryPreviewScreen.Success) ?: return
         val isSet = currentState.isSet
         when (relationFormat) {
             RelationFormat.SHORT_TEXT,
@@ -180,33 +216,48 @@ class VersionHistoryViewModel(
             ).process(
                 failure = {
                     Timber.e(it, "Error while fetching new member")
-                    _viewState.value = VersionHistoryState.Error.SpaceMembers(it.message.orEmpty())
+                    _viewState.value = VersionHistoryState.Error.SpaceMembers
                 },
                 success = { members ->
                     if (members.isEmpty()) {
                         _viewState.value =
-                            VersionHistoryState.Error.SpaceMembers("No members found")
+                            VersionHistoryState.Error.SpaceMembers
                     } else {
-                        getHistoryVersions(vmParams.objectId, members)
+                        _members.value = members
                     }
                 }
             )
         }
     }
 
-    private fun getHistoryVersions(objectId: String, members: List<ObjectWrapper.Basic>) {
+    private fun getHistoryVersions(objectId: String, latestVersionId: String = "") {
         viewModelScope.launch {
-            val params = GetVersions.Params(objectId = objectId)
+            val params = GetVersions.Params(
+                objectId = objectId,
+                lastVersion = latestVersionId,
+                limit = VERSIONS_MAX_LIMIT
+            )
             getVersions.async(params).fold(
                 onSuccess = { versions ->
-                    if (versions.isEmpty()) {
-                        _viewState.value = VersionHistoryState.Error.NoVersions
+                    canPaginate.value = versions.size == VERSIONS_MAX_LIMIT
+                    if (latestVersionId.isEmpty()) {
+                        if (versions.isEmpty()) {
+                            _viewState.value = VersionHistoryState.Error.NoVersions
+                        } else {
+                            _versions.value = versions
+                        }
                     } else {
-                        handleVersionsSuccess(versions, members)
+                        _versions.value += versions
+                    }
+                    listState.value = ListState.IDLE
+                    if (canPaginate.value) {
+                        latestVisibleVersionId.value = versions.lastOrNull()?.id ?: ""
                     }
                 },
                 onFailure = {
-                    _viewState.value = VersionHistoryState.Error.GetVersions(it.message.orEmpty())
+                    _viewState.value = VersionHistoryState.Error.GetVersions
+                    listState.value =
+                        if (latestVersionId.isEmpty()) ListState.ERROR else ListState.PAGINATION_EXHAUST
                 },
                 onLoading = {}
             )
@@ -254,13 +305,16 @@ class VersionHistoryViewModel(
             val spaceMemberLatestVersion =
                 spaceMemberVersions.firstOrNull()?.firstOrNull() ?: return@mapNotNull null
 
+            val spaceMemberOldestVersion =
+                spaceMemberVersions.lastOrNull()?.lastOrNull() ?: return@mapNotNull null
+
             val groupItems = spaceMemberVersions.toGroupItems(
                 spaceMembers = spaceMembers,
                 locale = locale
             )
 
             VersionHistoryGroup(
-                id = spaceMemberLatestVersion.id,
+                id = spaceMemberOldestVersion.id,
                 title = getGroupTitle(spaceMemberLatestVersion.timestamp, locale),
                 icons = groupItems.distinctBy { it.spaceMember }.mapNotNull { it.icon },
                 items = groupItems
@@ -412,7 +466,8 @@ class VersionHistoryViewModel(
                     val event = payload.events
                         .filterIsInstance<Event.Command.ShowObject>()
                         .first()
-                    val obj = ObjectWrapper.Basic(event.details.details[vmParams.objectId]?.map.orEmpty())
+                    val obj =
+                        ObjectWrapper.Basic(event.details.details[vmParams.objectId]?.map.orEmpty())
                     val root = event.blocks.first { it.id == vmParams.objectId }
                     val blocks = event.blocks.asMap().render(
                         mode = Mode.Read,
@@ -446,29 +501,34 @@ class VersionHistoryViewModel(
         val spaceId: SpaceId
     )
 
-    sealed class Command(val route: String) {
-        data object Main : Command("main")
-        data object VersionPreview : Command("version preview")
-        data object ExitToObject : Command("")
-        data class RelationMultiSelect(val relationKey: RelationKey, val isSet: Boolean) : Command("relation_select")
-        data class RelationObject(val relationKey: RelationKey, val isSet: Boolean) : Command("relation_object")
-        data class RelationDate(val relationKey: RelationKey, val isSet: Boolean) : Command("relation_date")
-        data class RelationText(val relationKey: RelationKey, val isSet: Boolean) : Command("relation_text")
+    sealed class Command {
+        data object Main : Command()
+        data object VersionPreview : Command()
+        data object ExitToObject : Command()
+        data class RelationMultiSelect(val relationKey: RelationKey, val isSet: Boolean) : Command()
+        data class RelationObject(val relationKey: RelationKey, val isSet: Boolean) : Command()
+        data class RelationDate(val relationKey: RelationKey, val isSet: Boolean) : Command()
+        data class RelationText(val relationKey: RelationKey, val isSet: Boolean) : Command()
     }
 
     companion object {
         const val GROUP_BY_DAY_FORMAT = "d MM yyyy"
         const val GROUP_DATE_FORMAT_CURRENT_YEAR = "MMMM d"
         const val GROUP_DATE_FORMAT_OTHER_YEAR = "MMMM d, yyyy"
+
+        const val VERSIONS_MAX_LIMIT = 200
     }
 }
 
 sealed class VersionHistoryState {
     data object Loading : VersionHistoryState()
-    data class Success(val groups: List<VersionHistoryGroup>) : VersionHistoryState()
+    data class Success(
+        val groups: List<VersionHistoryGroup>
+    ) : VersionHistoryState()
+
     sealed class Error : VersionHistoryState() {
-        data class SpaceMembers(val message: String) : Error()
-        data class GetVersions(val message: String) : Error()
+        data object SpaceMembers : Error()
+        data object GetVersions : Error()
         data object NoVersions : Error()
     }
 }
@@ -512,4 +572,12 @@ data class VersionHistoryGroup(
         data object Yesterday : GroupTitle()
         data class Date(val date: String) : GroupTitle()
     }
+}
+
+enum class ListState {
+    IDLE,
+    LOADING,
+    PAGINATING,
+    ERROR,
+    PAGINATION_EXHAUST,
 }

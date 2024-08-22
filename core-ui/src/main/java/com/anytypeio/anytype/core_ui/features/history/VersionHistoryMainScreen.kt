@@ -214,11 +214,11 @@ private fun VersionHistorySuccessState(
                     width = 0.5.dp, color = colorResource(id = R.color.shape_primary)
                 )
             ) {
-                Spacer(modifier = Modifier.height(if (isExpanded) 12.dp else 18.dp))
+                Spacer(modifier = Modifier.height(if (isExpanded) 12.dp else 14.dp))
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight()
+                        .wrapContentHeight()
                         .padding(horizontal = 16.dp)
                         .clickable {
                             expandedGroupId = if (expandedGroupId == group.id) null else group.id
@@ -236,11 +236,12 @@ private fun VersionHistorySuccessState(
                     }
                 }
                 if (isExpanded) {
+                    Spacer(modifier = Modifier.height(4.dp))
                     group.items.forEach {
                         GroupItem(item = it, onItemClick = onItemClick)
                     }
                 }
-                Spacer(modifier = Modifier.height(if (isExpanded) 12.dp else 18.dp))
+                Spacer(modifier = Modifier.height(if (isExpanded) 12.dp else 14.dp))
             }
         }
     }
@@ -308,7 +309,7 @@ private fun RowScope.HeaderIcons(
             .weight(1f)
             .padding(start = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(
-            space = (-4).dp,
+            space = (-8).dp,
             alignment = Alignment.End
         ),
         reverseLayout = true

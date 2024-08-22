@@ -11,6 +11,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingClick
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingScreenEvent
 import com.anytypeio.anytype.presentation.extension.sendOpenAccountEvent
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -22,6 +23,7 @@ class OnboardingMnemonicViewModel @Inject constructor(
 ) : ViewModel() {
 
     val state = MutableStateFlow<State>(State.Idle(""))
+    val commands = MutableSharedFlow<Command>()
 
     init {
         Timber.i("OnboardingMnemonicViewModel, init")
@@ -59,6 +61,7 @@ class OnboardingMnemonicViewModel @Inject constructor(
             } else {
                 Timber.w("config was missing before the end of onboarding")
             }
+            commands.emit(Command.OpenHome)
         }
     }
 
@@ -72,6 +75,7 @@ class OnboardingMnemonicViewModel @Inject constructor(
             } else {
                 Timber.w("config was missing before the end of onboarding")
             }
+            commands.emit(Command.OpenHome)
         }
     }
 
@@ -109,4 +113,7 @@ class OnboardingMnemonicViewModel @Inject constructor(
         }
     }
 
+    sealed class Command {
+        data object OpenHome : Command()
+    }
 }

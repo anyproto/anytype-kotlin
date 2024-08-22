@@ -236,7 +236,7 @@ private fun RowScope.HeaderIcons(
             .weight(1f)
             .padding(start = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(
-            space = (-4).dp,
+            space = (-8).dp,
             alignment = Alignment.End
         ),
         reverseLayout = true

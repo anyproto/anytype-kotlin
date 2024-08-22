@@ -98,6 +98,7 @@ class MembershipViewModel(
     val anyEmailState = TextFieldState(initialText = "")
 
     init {
+        Timber.i("MembershipViewModel, init")
         viewModelScope.launch {
             combine(
                 _showTierOnStart.filter { it != NONE_ID },

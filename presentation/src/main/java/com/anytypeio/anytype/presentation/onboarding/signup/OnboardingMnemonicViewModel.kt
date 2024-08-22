@@ -56,6 +56,8 @@ class OnboardingMnemonicViewModel @Inject constructor(
                 analytics.sendOpenAccountEvent(
                     analytics = config.analytics
                 )
+            } else {
+                Timber.w("config was missing before the end of onboarding")
             }
         }
     }
@@ -67,6 +69,8 @@ class OnboardingMnemonicViewModel @Inject constructor(
                 analytics.sendOpenAccountEvent(
                     analytics = config.analytics
                 )
+            } else {
+                Timber.w("config was missing before the end of onboarding")
             }
         }
     }

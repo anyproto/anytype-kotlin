@@ -128,6 +128,8 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                         crashReporter.setUser(config.analytics)
                         setupGlobalSubscriptions()
                         proceedWithSettingUpMobileUseCase(config.space, name)
+                    } else {
+                        Timber.w("Config was missing after account creation")
                     }
                 }
             )

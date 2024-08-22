@@ -146,7 +146,7 @@ private fun VersionHistorySuccessState(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight()
+                        .wrapContentHeight()
                         .padding(horizontal = 16.dp)
                         .clickable {
                             expandedGroupId = if (expandedGroupId == group.id) null else group.id
@@ -164,6 +164,7 @@ private fun VersionHistorySuccessState(
                     }
                 }
                 if (isExpanded) {
+                    Spacer(modifier = Modifier.height(4.dp))
                     group.items.forEach {
                         GroupItem(item = it, onItemClick = onItemClick)
                     }

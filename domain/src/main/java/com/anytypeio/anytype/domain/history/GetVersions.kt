@@ -25,6 +25,6 @@ class GetVersions @Inject constructor(
     data class Params(
         val objectId: Id,
         val lastVersion: Id? = null,
-        val limit: Int = 200
+        val limit: Int = 300
     )
 }

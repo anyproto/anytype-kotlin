@@ -71,7 +71,7 @@ fun VersionHistoryScreen(
     state: State<VersionHistoryState>,
     listState: State<ListState>,
     latestVisibleVersionId: State<String>,
-    startPaging: (String) -> Unit,
+    onLastItemScrolled: (String) -> Unit,
     onGroupItemClicked: (VersionHistoryGroup.Item) -> Unit,
 ) {
 
@@ -90,7 +90,7 @@ fun VersionHistoryScreen(
             .filter { it }
             .collect {
                 if (listState.value == ListState.IDLE) {
-                    startPaging(latestVisibleVersionId.value)
+                    onLastItemScrolled(latestVisibleVersionId.value)
                 }
             }
     }

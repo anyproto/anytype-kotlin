@@ -1478,6 +1478,9 @@ Please provide specific details of your needs here.</string>
     <string name="sync_status_network_error">没有访问空间的权限</string>
     <string name="sync_status_unrecognized">未知的错误</string>
     <string name="version_history_title">历史版本</string>
+    <string name="version_history_error_no_versions">No versions found</string>
+    <string name="version_history_error_get_version">Error getting version history</string>
+    <string name="version_history_error_get_members">Error getting members</string>
     <string name="new_object">新对象</string>
     <string name="vault_my_spaces">My spaces</string>
 </resources>

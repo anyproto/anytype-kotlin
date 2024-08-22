@@ -1478,6 +1478,9 @@ Please provide specific details of your needs here.</string>
     <string name="sync_status_network_error">Tidak ada akses ke ruang</string>
     <string name="sync_status_unrecognized">Galat tak dikenali</string>
     <string name="version_history_title">Riwayat versi</string>
+    <string name="version_history_error_no_versions">No versions found</string>
+    <string name="version_history_error_get_version">Error getting version history</string>
+    <string name="version_history_error_get_members">Error getting members</string>
     <string name="new_object">Objek baru</string>
     <string name="vault_my_spaces">My spaces</string>
 </resources>

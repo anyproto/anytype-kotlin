@@ -7,7 +7,6 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
 /**
  * Use-case for closing a smart block by id.
- * @see Params
  */
 open class CloseBlock(
     private val repo: BlockRepository,

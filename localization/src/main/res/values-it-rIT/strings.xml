@@ -1492,9 +1492,9 @@ Please provide specific details of your needs here.</string>
     <string name="sync_status_network_error">Nessun accesso allo spazio</string>
     <string name="sync_status_unrecognized">Errore sconosciuto</string>
     <string name="version_history_title">Cronologia delle versioni</string>
-    <string name="version_history_error_no_versions">No versions found</string>
-    <string name="version_history_error_get_version">Error getting version history</string>
-    <string name="version_history_error_get_members">Error getting members</string>
+    <string name="version_history_error_no_versions">Nessuna versione trovata</string>
+    <string name="version_history_error_get_version">Errore nell\'ottenere la cronologia delle versioni</string>
+    <string name="version_history_error_get_members">Errore nell\'ottenere i membri</string>
     <string name="new_object">Nuovo oggetto</string>
-    <string name="vault_my_spaces">My spaces</string>
+    <string name="vault_my_spaces">I miei spazi</string>
 </resources>

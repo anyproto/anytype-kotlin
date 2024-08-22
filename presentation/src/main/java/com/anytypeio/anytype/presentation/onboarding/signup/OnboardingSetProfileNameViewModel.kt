@@ -57,7 +57,7 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         Timber.i("OnboardingSetProfileNameViewModel, init")
         viewModelScope.launch {
             sendAnalyticsOnboardingScreenEvent(analytics,
-                EventsDictionary.ScreenOnboardingStep.VOID
+                EventsDictionary.ScreenOnboardingStep.SOUL
             )
         }
     }
@@ -128,6 +128,8 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                         crashReporter.setUser(config.analytics)
                         setupGlobalSubscriptions()
                         proceedWithSettingUpMobileUseCase(config.space, name)
+                    } else {
+                        Timber.w("Config was missing after account creation")
                     }
                 }
             )

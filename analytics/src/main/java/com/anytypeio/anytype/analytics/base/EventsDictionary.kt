@@ -247,8 +247,8 @@ object EventsDictionary {
     }
 
     enum class ScreenOnboardingStep(val value: String) {
-        VOID("Void"),
-        PHRASE("Phrase")
+        SOUL("Soul"),
+        VAULT("Vault")
     }
 
     enum class ClickOnboardingButton(val value: String) {

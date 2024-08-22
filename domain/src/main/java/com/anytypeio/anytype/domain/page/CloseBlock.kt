@@ -4,7 +4,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import kotlinx.coroutines.delay
 
 /**
  * Use-case for closing a smart block by id.
@@ -16,7 +15,6 @@ open class CloseBlock(
 ) : ResultInteractor<Id, Unit>(dispatchers.io) {
 
     override suspend fun doWork(params: Id) {
-        delay(100000)
         repo.closePage(params)
     }
 }

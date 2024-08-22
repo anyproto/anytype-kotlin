@@ -221,39 +221,41 @@ class HomeScreenViewModel(
         .observe()
         .distinctUntilChanged()
         .onEach { newConfig ->
-            val openObjectState = objectViewState.value
-            if (openObjectState is ObjectViewState.Success) {
-                val subscriptions = buildList {
-                    widgets.value.orEmpty().forEach { widget ->
-                        if (widget.config.space != newConfig.space) {
-                            if (widget.source is Widget.Source.Bundled)
-                                add(widget.source.id)
-                            else
-                                add(widget.id)
+            viewModelScope.launch {
+                val openObjectState = objectViewState.value
+                if (openObjectState is ObjectViewState.Success) {
+                    val subscriptions = buildList {
+                        widgets.value.orEmpty().forEach { widget ->
+                            if (widget.config.space != newConfig.space) {
+                                if (widget.source is Widget.Source.Bundled)
+                                    add(widget.source.id)
+                                else
+                                    add(widget.id)
+                            }
                         }
                     }
-                }
-                if (subscriptions.isNotEmpty()) {
-                    unsubscribe(subscriptions)
-                }
-                mutex.withLock {
-                    val closed = mutableSetOf<Id>()
-                    openWidgetObjectsHistory.forEach { previouslyOpenedWidgetObject ->
-                        if (previouslyOpenedWidgetObject != newConfig.widgets) {
-                            closeObject
-                                .async(params = previouslyOpenedWidgetObject)
-                                .fold(
-                                    onSuccess = {
-                                        closed.add(previouslyOpenedWidgetObject)
-                                    },
-                                    onFailure = {
-                                        Timber.e(it, "Error while closing object from history: $previouslyOpenedWidgetObject")
-                                    }
-                                )
-                        }
+                    if (subscriptions.isNotEmpty()) {
+                        unsubscribe(subscriptions)
                     }
-                    if (closed.isNotEmpty()) {
-                        openWidgetObjectsHistory.removeAll(closed)
+                    mutex.withLock {
+                        val closed = mutableSetOf<Id>()
+                        openWidgetObjectsHistory.forEach { previouslyOpenedWidgetObject ->
+                            if (previouslyOpenedWidgetObject != newConfig.widgets) {
+                                closeObject
+                                    .async(params = previouslyOpenedWidgetObject)
+                                    .fold(
+                                        onSuccess = {
+                                            closed.add(previouslyOpenedWidgetObject)
+                                        },
+                                        onFailure = {
+                                            Timber.e(it, "Error while closing object from history: $previouslyOpenedWidgetObject")
+                                        },
+                                    )
+                            }
+                        }
+                        if (closed.isNotEmpty()) {
+                            openWidgetObjectsHistory.removeAll(closed)
+                        }
                     }
                 }
             }
@@ -269,7 +271,9 @@ class HomeScreenViewModel(
                 result.fold(
                     onSuccess = { objectView ->
                         onSessionStarted().also {
-                            mutex.withLock { openWidgetObjectsHistory.add(objectView.root) }
+                            viewModelScope.launch {
+                                mutex.withLock { openWidgetObjectsHistory.add(objectView.root) }
+                            }
                         }
                     },
                     onFailure = { e ->
@@ -345,27 +349,6 @@ class HomeScreenViewModel(
                         }
                     }
                 }
-        }
-    }
-
-    private suspend fun proceedWithClearingObjectSessionHistory(currentConfig: Config) {
-        mutex.withLock {
-            val closed = mutableSetOf<Id>()
-            openWidgetObjectsHistory.forEach { previouslyOpenedWidgetObject ->
-                if (previouslyOpenedWidgetObject != currentConfig.widgets) {
-                    closeObject
-                        .async(params = previouslyOpenedWidgetObject)
-                        .fold(
-                            onSuccess = { closed.add(previouslyOpenedWidgetObject) },
-                            onFailure = {
-                                Timber.e(it, "Error while closing object from history: $previouslyOpenedWidgetObject")
-                            }
-                        )
-                }
-            }
-            if (closed.isNotEmpty()) {
-                openWidgetObjectsHistory.removeAll(closed)
-            }
         }
     }
 

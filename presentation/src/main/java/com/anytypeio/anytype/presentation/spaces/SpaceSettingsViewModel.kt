@@ -190,7 +190,7 @@ class SpaceSettingsViewModel(
         viewModelScope.launch {
             val state = spaceViewState.value
             if (state is ViewState.Success) {
-                if (state.data.permissions.isOwnerOrEditor()) {
+                if (state.data.permissions.isOwner()) {
                     commands.emit(Command.ShowDeleteSpaceWarning)
                     analytics.sendEvent(
                         eventName = EventsDictionary.clickDeleteSpace,

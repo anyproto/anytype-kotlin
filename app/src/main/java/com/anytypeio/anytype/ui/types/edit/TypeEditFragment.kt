@@ -26,6 +26,7 @@ import com.anytypeio.anytype.ui.types.picker.REQUEST_KEY_PICK_EMOJI
 import com.anytypeio.anytype.ui.types.picker.REQUEST_KEY_REMOVE_EMOJI
 import com.anytypeio.anytype.ui.types.picker.RESULT_EMOJI_UNICODE
 import javax.inject.Inject
+import timber.log.Timber
 
 class TypeEditFragment : BaseBottomSheetComposeFragment() {
 
@@ -79,7 +80,11 @@ class TypeEditFragment : BaseBottomSheetComposeFragment() {
                     findNavController().popBackStack()
                 }
                 is TypeEditViewModel.Navigation.SelectEmoji -> {
-                    findNavController().navigate(R.id.openEmojiPicker)
+                    runCatching {
+                        findNavController().navigate(R.id.openEmojiPicker)
+                    }.onFailure {
+                        Timber.w("Error while opening emoji picker")
+                    }
                 }
                 is TypeEditViewModel.Navigation.BackWithUninstall -> {
                     setFragmentResult(

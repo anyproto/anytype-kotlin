@@ -31,7 +31,7 @@ fun Markup.toSpannable(
     underlineHeight: Float
 ) = SpannableStringBuilder(body).apply {
     marks.forEach { mark ->
-        if (!isRangeValid(mark)) return@forEach
+        if (!isRangeValid(mark = mark, textLength = length)) return@forEach
         when (mark) {
             is Markup.Mark.Italic -> setSpan(
                 Span.Italic(),
@@ -139,8 +139,8 @@ fun Markup.toSpannable(
     }
 }
 
-private fun isRangeValid(mark: Markup.Mark): Boolean {
-    return mark.from >= 0 && mark.to >= 0 && mark.from < mark.to
+private fun isRangeValid(mark: Markup.Mark, textLength: Int): Boolean {
+    return mark.from >= 0 && mark.to >= 0 && mark.from < mark.to && mark.to <= textLength
 }
 
 fun Editable.setMarkup(
@@ -158,7 +158,7 @@ fun Editable.setMarkup(
 ) {
     removeSpans<Span>()
     markup.marks.forEach { mark ->
-        if (!isRangeValid(mark)) return@forEach
+        if (!isRangeValid(mark, length)) return@forEach
         when (mark) {
             is Markup.Mark.Italic -> setSpan(
                 Span.Italic(),
@@ -280,7 +280,7 @@ fun Editable.setMentionSpan(
     mentionInitialsSize: Float,
     textColor: Int
 ): Editable = this.apply {
-    if (isRangeValid(mark)) {
+    if (isRangeValid(mark, length)) {
         proceedWithSettingMentionSpan(
             onImageReady = onImageReady,
             mark = mark,
@@ -308,7 +308,7 @@ fun Editable.proceedWithSettingMentionSpan(
     mentionInitialsSize: Float,
     textColor: Int
 ) {
-    if (!isRangeValid(mark)) return
+    if (!isRangeValid(mark, length)) return
     when (mark) {
         is Markup.Mark.Mention.Deleted -> {
             val placeholder = context.drawable(R.drawable.ic_non_existent_object)

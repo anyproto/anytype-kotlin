@@ -1309,9 +1309,10 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
 
-    private fun proceedWithScrollingToActionMenu(command: Command.ScrollToActionMenu): Unit {
+    private fun proceedWithScrollingToActionMenu(command: Command.ScrollToActionMenu) {
         val lastSelected =
-            (vm.state.value as ViewState.Success).blocks.indexOfLast { it.id == command.target }
+            (vm.state.value as? ViewState.Success)?.blocks?.indexOfLast { it.id == command.target }
+                ?: return
         if (lastSelected != -1) {
             val lm = binding.recycler.layoutManager as LinearLayoutManager
             val targetView = lm.findViewByPosition(lastSelected)

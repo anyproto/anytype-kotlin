@@ -6177,11 +6177,11 @@ class EditorViewModel(
     )
 
     sealed class TypesWidgetItem {
-        object Search : TypesWidgetItem()
-        object Done : TypesWidgetItem()
+        data object Search : TypesWidgetItem()
+        data object Done : TypesWidgetItem()
         data class Type(val item: ObjectTypeView) : TypesWidgetItem()
-        object Expand : TypesWidgetItem()
-        object Collapse : TypesWidgetItem()
+        data object Expand : TypesWidgetItem()
+        data object Collapse : TypesWidgetItem()
     }
 
     private val _objectTypes = mutableListOf<ObjectWrapper.Type>()
@@ -6221,12 +6221,19 @@ class EditorViewModel(
                     _objectTypes.addAll(objects)
                     val items = buildList {
                         add(TypesWidgetItem.Search)
-                        addAll(objects.getObjectTypeViewsForSBPage(
-                            isWithCollection = true,
-                            isWithBookmark = false,
-                            excludeTypes = excludeTypes
-                        ).filter { !excludeTypes.contains(it.key) }
-                            .map { TypesWidgetItem.Type(it, ) })
+                        addAll(
+                            objects.getObjectTypeViewsForSBPage(
+                                isWithCollection = true,
+                                isWithBookmark = false,
+                                excludeTypes = excludeTypes
+                            ).filter {
+                                !excludeTypes.contains(it.key)
+                            }.map {
+                                TypesWidgetItem.Type(it)
+                            }.distinctBy {
+                                it.item.id
+                            }
+                        )
                     }
                     _typesWidgetState.value = _typesWidgetState.value.copy(items = items)
                 }

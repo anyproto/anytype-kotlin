@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -307,7 +306,7 @@ fun GlobalSearchScreen(
             items(
                 count = state.views.size,
                 key = { idx ->
-                    state.views[idx].id
+                    "global-search-item-${state.views[idx].id}"
                 }
             ) { idx ->
                 val item = state.views[idx]

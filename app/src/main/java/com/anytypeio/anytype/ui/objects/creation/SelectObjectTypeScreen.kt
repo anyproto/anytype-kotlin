@@ -66,7 +66,6 @@ import com.anytypeio.anytype.core_ui.widgets.SearchField
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.SelectTypeView
 import com.anytypeio.anytype.presentation.objects.SelectTypeViewState
-import com.anytypeio.anytype.ui.spaces.Header
 
 @Preview
 @Composable
@@ -431,7 +430,7 @@ private fun LazyColumnContent(
                 }
                 is SelectTypeView.Type -> {
                     item(
-                        key = view.typeKey
+                        key = "select-object-type-${view.typeKey}"
                     ) {
                         ObjectTypeItem(
                             name = view.name,

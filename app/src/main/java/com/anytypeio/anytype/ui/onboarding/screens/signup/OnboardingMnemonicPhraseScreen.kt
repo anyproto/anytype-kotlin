@@ -52,8 +52,6 @@ import com.anytypeio.anytype.ui.onboarding.MnemonicStub
 @Composable
 fun MnemonicPhraseScreenWrapper(
     viewModel: OnboardingMnemonicViewModel,
-    onCheckLaterClicked: () -> Unit,
-    onGoToAppClicked: () -> Unit,
     copyMnemonicToClipboard: (String) -> Unit,
     vm: OnboardingMnemonicViewModel,
     mnemonicColorPalette: List<Color>
@@ -62,18 +60,10 @@ fun MnemonicPhraseScreenWrapper(
     MnemonicPhraseScreen(
         state = state,
         reviewMnemonic = { viewModel.openMnemonic() },
-        onCheckLaterClicked = {
-            onCheckLaterClicked().also {
-                vm.onCheckLaterClicked()
-            }
-        },
+        onCheckLaterClicked = vm::onCheckLaterClicked,
         copyMnemonicToClipboard = copyMnemonicToClipboard,
         mnemonicColorPalette = mnemonicColorPalette,
-        onGoToAppClicked = {
-            onGoToAppClicked().also {
-                vm.onGoToTheAppClicked()
-            }
-        }
+        onGoToAppClicked = vm::onGoToTheAppClicked
     )
 }
 

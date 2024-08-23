@@ -106,12 +106,17 @@ fun SpaceWidgetCard(
         val spaceTypeText = when(spaceType) {
             DEFAULT_SPACE_TYPE -> stringResource(id = R.string.space_type_default_space)
             PRIVATE_SPACE_TYPE -> stringResource(id = R.string.space_type_private_space)
-            SHARED_SPACE_TYPE -> pluralStringResource(
-                id = R.plurals.multiplayer_number_of_space_members,
-                membersCount,
-                membersCount,
-                membersCount
-            )
+            SHARED_SPACE_TYPE -> {
+                if (membersCount > 0 ) {
+                    pluralStringResource(
+                        id = R.plurals.multiplayer_number_of_space_members,
+                        membersCount,
+                        membersCount,
+                        membersCount
+                    )
+                } else
+                    stringResource(id = R.string.three_dots_text_placeholder)
+            }
             else -> stringResource(id = R.string.space_type_unknown)
         }
         Text(

@@ -1017,7 +1017,8 @@ class HomeScreenViewModel(
     private fun proceedWithChangingType(widget: Id) {
         Timber.d("onChangeWidgetSourceClicked, widget:[$widget]")
         val curr = widgets.value.orEmpty().find { it.id == widget }
-        if (curr != null) {
+        val sourceId = curr?.source?.id
+        if (curr != null && sourceId != null) {
             viewModelScope.launch {
                 val config = spaceManager.getConfig()
                 if (config != null) {
@@ -1025,7 +1026,7 @@ class HomeScreenViewModel(
                         Command.ChangeWidgetType(
                             ctx = config.widgets,
                             widget = widget,
-                            source = curr.source.id,
+                            source = sourceId,
                             type = parseWidgetType(curr),
                             layout = when (val source = curr.source) {
                                 is Widget.Source.Bundled -> UNDEFINED_LAYOUT_CODE

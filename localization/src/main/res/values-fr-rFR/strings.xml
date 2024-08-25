@@ -1402,7 +1402,6 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="gallery_experience_alert_title_error">Oups !</string>
     <string name="gallery_experience_alert_button_space">Espace ouvert</string>
     <string name="gallery_experience_alert_button_error">Fermer</string>
-    <string name="three_dots_text_placeholder">...</string>
     <string name="membership_btn_join">Rejoindre</string>
     <string name="notifications_prompt_get_notified">Recevoir une alerte</string>
     <string name="notifications_prompt_secondary_button_text">Plus tard</string>
@@ -1488,9 +1487,9 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="sync_status_network_error">Pas d\'accès à l\'espace</string>
     <string name="sync_status_unrecognized">Erreur inconnue</string>
     <string name="version_history_title">Historique de version</string>
-    <string name="version_history_error_no_versions">No versions found</string>
-    <string name="version_history_error_get_version">Error getting version history</string>
-    <string name="version_history_error_get_members">Error getting members</string>
+    <string name="version_history_error_no_versions">Aucune version trouvée</string>
+    <string name="version_history_error_get_version">Erreur lors de l\'obtention de l\'historique des versions</string>
+    <string name="version_history_error_get_members">Erreur lors de l\'obtention des membres</string>
     <string name="new_object">Nouvel objet</string>
-    <string name="vault_my_spaces">My spaces</string>
+    <string name="vault_my_spaces">Mes espaces</string>
 </resources>

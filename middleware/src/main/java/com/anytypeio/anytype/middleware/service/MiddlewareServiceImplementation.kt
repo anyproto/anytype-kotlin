@@ -1758,6 +1758,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun debugAccountSelectTrace(request: Rpc.Debug.AccountSelectTrace.Request): Rpc.Debug.AccountSelectTrace.Response {
+        val encoded = Service.debugAccountSelectTrace(
+            Rpc.Debug.AccountSelectTrace.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Debug.AccountSelectTrace.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Debug.AccountSelectTrace.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun nodeUsageInfo(request: Rpc.File.NodeUsage.Request): Rpc.File.NodeUsage.Response {
         val encoded = Service.fileNodeUsage(
             Rpc.File.NodeUsage.Request.ADAPTER.encode(request)

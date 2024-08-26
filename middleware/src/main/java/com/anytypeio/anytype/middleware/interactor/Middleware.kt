@@ -2387,6 +2387,15 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
+    fun debugAccountSelectTrace(): String {
+        val request = Rpc.Debug.AccountSelectTrace.Request()
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.debugAccountSelectTrace(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.path
+    }
+
+    @Throws(Exception::class)
     fun generateSpaceInviteLink(space: SpaceId) : SpaceInviteLink {
         val request = Rpc.Space.InviteGenerate.Request(
             spaceId = space.id

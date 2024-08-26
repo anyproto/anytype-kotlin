@@ -8,10 +8,12 @@ import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -34,6 +36,7 @@ class ListWidgetContainer(
     private val isWidgetCollapsed: Flow<Boolean>,
     private val objectWatcher: ObjectWatcher,
     private val getSpaceView: GetSpaceView,
+    private val spaceViewCache: SpaceViewSubscriptionContainer,
     isSessionActive: Flow<Boolean>,
     onRequestCache: () -> WidgetView.ListOfObjects? = { null }
 ) : WidgetContainer {
@@ -103,9 +106,7 @@ class ListWidgetContainer(
                         }
                 }
                 BundledWidgetSourceIds.RECENT -> {
-                    val spaceView = getSpaceView.async(
-                        GetSpaceView.Params.BySpaceViewId(widget.config.spaceView)
-                    ).getOrNull()
+                    val spaceView = getSpaceView()
                     val spaceViewCreationDate = spaceView
                         ?.getValue<Double?>(Relations.CREATED_DATE)
                         ?.toLong()
@@ -162,6 +163,12 @@ class ListWidgetContainer(
         customFavoritesOrder = customFavoritesOrder,
         spaceCreationDateInSeconds = spaceCreationDateInSeconds
     )
+
+    private suspend fun getSpaceView() : ObjectWrapper? {
+        return spaceViewCache.get(SpaceId(widget.config.space)) ?: getSpaceView.async(
+            GetSpaceView.Params.BySpaceViewId(widget.config.spaceView)
+        ).getOrNull()
+    }
 
     private fun resolveType() = when (subscription) {
         BundledWidgetSourceIds.RECENT -> WidgetView.ListOfObjects.Type.Recent

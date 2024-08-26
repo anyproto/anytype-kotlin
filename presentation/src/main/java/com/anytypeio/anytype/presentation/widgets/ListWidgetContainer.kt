@@ -118,18 +118,6 @@ class ListWidgetContainer(
                         buildWidgetViewWithElements(
                             objects = objects
                         )
-                    }.onStart {
-                        emit(
-                            WidgetView.ListOfObjects(
-                                id = widget.id,
-                                source = widget.source,
-                                type = resolveType(),
-                                elements = emptyList(),
-                                isExpanded = true,
-                                isCompact = widget.isCompact,
-                                isLoading = true
-                            )
-                        )
                     }
                 }
                 else -> {

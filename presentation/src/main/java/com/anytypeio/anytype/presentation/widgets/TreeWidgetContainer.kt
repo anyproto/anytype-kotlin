@@ -26,7 +26,6 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import timber.log.Timber
 
 
 class TreeWidgetContainer(
@@ -79,7 +78,6 @@ class TreeWidgetContainer(
         when (val source = widget.source) {
             is Widget.Source.Bundled -> {
                 if (isWidgetCollapsed) {
-                    Timber.d("DROID-2521 Tree Widget collapsed")
                     flowOf(
                         WidgetView.Tree(
                             id = widget.id,
@@ -90,7 +88,6 @@ class TreeWidgetContainer(
                         )
                     )
                 } else {
-                    Timber.d("DROID-2521 Tree Widget expanded. Fetching...")
                     fetchRootLevelBundledSourceObjects().map { rootLevelObjects ->
                         rootLevelObjects.map { it.id }
                     }.flatMapLatest { rootLevelObjects ->
@@ -186,6 +183,18 @@ class TreeWidgetContainer(
                                 rootLimit = WidgetConfig.NO_LIMIT
                             )
                         )
+                    }.onStart {
+                        if (paths.isEmpty()) {
+                            emit(
+                                WidgetView.Tree(
+                                    id = widget.id,
+                                    source = widget.source,
+                                    isExpanded = true,
+                                    elements = emptyList(),
+                                    isLoading = true
+                                )
+                            )
+                        }
                     }
                 }
             }

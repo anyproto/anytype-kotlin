@@ -1399,7 +1399,6 @@ Please provide specific details of your needs here.</string>
     <string name="gallery_experience_alert_title_error">Waduh!</string>
     <string name="gallery_experience_alert_button_space">Buka ruang</string>
     <string name="gallery_experience_alert_button_error">Tutup</string>
-    <string name="three_dots_text_placeholder">...</string>
     <string name="membership_btn_join">Gabung</string>
     <string name="notifications_prompt_get_notified">Dapatkan pemberitahuan</string>
     <string name="notifications_prompt_secondary_button_text">Tidak dulu</string>
@@ -1478,9 +1477,9 @@ Please provide specific details of your needs here.</string>
     <string name="sync_status_network_error">Tidak ada akses ke ruang</string>
     <string name="sync_status_unrecognized">Galat tak dikenali</string>
     <string name="version_history_title">Riwayat versi</string>
-    <string name="version_history_error_no_versions">No versions found</string>
-    <string name="version_history_error_get_version">Error getting version history</string>
-    <string name="version_history_error_get_members">Error getting members</string>
+    <string name="version_history_error_no_versions">Tidak ada versi lain</string>
+    <string name="version_history_error_get_version">Galat mengambil riwayat versi</string>
+    <string name="version_history_error_get_members">Galat mengambil anggota</string>
     <string name="new_object">Objek baru</string>
-    <string name="vault_my_spaces">My spaces</string>
+    <string name="vault_my_spaces">Ruangku</string>
 </resources>

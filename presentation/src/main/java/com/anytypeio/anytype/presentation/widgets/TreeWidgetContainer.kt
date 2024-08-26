@@ -128,6 +128,18 @@ class TreeWidgetContainer(
                                 rootLimit = rootLevelLimit
                             )
                         )
+                    }.onStart {
+                        if (paths.isEmpty()) {
+                            emit(
+                                WidgetView.Tree(
+                                    id = widget.id,
+                                    source = widget.source,
+                                    isExpanded = true,
+                                    elements = emptyList(),
+                                    isLoading = true
+                                )
+                            )
+                        }
                     }
                 }
             }

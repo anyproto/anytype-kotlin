@@ -16,8 +16,11 @@ import com.anytypeio.anytype.presentation.widgets.WidgetConfig.isValidObject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.take
@@ -74,91 +77,117 @@ class TreeWidgetContainer(
     }.flatMapLatest { (paths, isWidgetCollapsed) ->
         when (val source = widget.source) {
             is Widget.Source.Bundled -> {
-                fetchRootLevelBundledSourceObjects().map { rootLevelObjects ->
-                    rootLevelObjects.map { it.id }
-                }.flatMapLatest { rootLevelObjects ->
+                if (isWidgetCollapsed) {
+                    flowOf(
+                        WidgetView.Tree(
+                            id = widget.id,
+                            source = widget.source,
+                            isExpanded = false,
+                            elements = emptyList(),
+                            isLoading = false
+                        )
+                    )
+                } else {
+                    fetchRootLevelBundledSourceObjects().map { rootLevelObjects ->
+                        rootLevelObjects.map { it.id }
+                    }.flatMapLatest { rootLevelObjects ->
+                        container.subscribe(
+                            StoreSearchByIdsParams(
+                                subscription = widget.id,
+                                keys = keys,
+                                targets = getBundledSubscriptionTargets(
+                                    paths = paths,
+                                    links = rootLevelObjects
+                                )
+                            )
+                        ).map { data ->
+                            rootLevelObjects to data
+                        }
+                    }.map { (rootLevelLinks, objectWrappers) ->
+                        val valid = objectWrappers.filter { obj -> isValidObject(obj) }
+                        val data = valid.associateBy { r -> r.id }
+                        mutex.withLock {
+                            with(nodes) {
+                                clear()
+                                putAll(valid.associate { obj -> obj.id to obj.links })
+                            }
+                        }
+                        WidgetView.Tree(
+                            id = widget.id,
+                            source = widget.source,
+                            isExpanded = true,
+                            elements = buildTree(
+                                links = rootLevelLinks,
+                                level = ROOT_INDENT,
+                                expanded = paths,
+                                path = widget.id + SEPARATOR + widget.source.id + SEPARATOR,
+                                data = data,
+                                rootLimit = rootLevelLimit
+                            )
+                        )
+                    }.onStart {
+                        emit(
+                            WidgetView.Tree(
+                                id = widget.id,
+                                source = widget.source,
+                                isExpanded = true,
+                                elements = emptyList(),
+                                isLoading = true
+                            )
+                        )
+                    }
+                }
+            }
+            is Widget.Source.Default -> {
+                if (isWidgetCollapsed) {
+                    flowOf(
+                        WidgetView.Tree(
+                            id = widget.id,
+                            source = widget.source,
+                            isExpanded = false,
+                            elements = emptyList(),
+                            isLoading = false
+                        )
+                    )
+                } else {
                     container.subscribe(
                         StoreSearchByIdsParams(
                             subscription = widget.id,
                             keys = keys,
-                            targets = if (!isWidgetCollapsed) {
-                                getBundledSubscriptionTargets(
-                                    paths = paths,
-                                    links = rootLevelObjects
-                                )
-                            } else {
-                                emptyList()
-                            }
-                        )
-                    ).map { data ->
-                        rootLevelObjects to data
-                    }
-                }.map { (rootLevelLinks, objectWrappers) ->
-                    val valid = objectWrappers.filter { obj -> isValidObject(obj) }
-                    val data = valid.associateBy { r -> r.id }
-                    mutex.withLock {
-                        with(nodes) {
-                            clear()
-                            putAll(valid.associate { obj -> obj.id to obj.links })
-                        }
-                    }
-                    WidgetView.Tree(
-                        id = widget.id,
-                        source = widget.source,
-                        isExpanded = !isWidgetCollapsed,
-                        elements = buildTree(
-                            links = rootLevelLinks,
-                            level = ROOT_INDENT,
-                            expanded = paths,
-                            path = widget.id + SEPARATOR + widget.source.id + SEPARATOR,
-                            data = data,
-                            rootLimit = rootLevelLimit
-                        )
-                    )
-                }
-            }
-            is Widget.Source.Default -> {
-                container.subscribe(
-                    StoreSearchByIdsParams(
-                        subscription = widget.id,
-                        keys = keys,
-                        targets = if (!isWidgetCollapsed) {
-                            getDefaultSubscriptionTargets(
+                            targets = getDefaultSubscriptionTargets(
                                 paths = paths,
                                 source = source
                             )
-                        } else {
-                            emptyList()
-                        }
-                    )
-                ).map { results ->
-                    val valid = results.filter { obj -> isValidObject(obj) }
-                    val data = valid.associateBy { r -> r.id }
-                    mutex.withLock {
-                        with(nodes) {
-                            clear()
-                            putAll(valid.associate { obj -> obj.id to obj.links })
-                        }
-                    }
-                    WidgetView.Tree(
-                        id = widget.id,
-                        source = widget.source,
-                        isExpanded = !isWidgetCollapsed,
-                        elements = buildTree(
-                            links = source.obj.links,
-                            level = ROOT_INDENT,
-                            expanded = paths,
-                            path = widget.id + SEPARATOR + widget.source.id + SEPARATOR,
-                            data = data,
-                            rootLimit = WidgetConfig.NO_LIMIT
                         )
-                    )
+                    ).map { results ->
+                        val valid = results.filter { obj -> isValidObject(obj) }
+                        val data = valid.associateBy { r -> r.id }
+                        mutex.withLock {
+                            with(nodes) {
+                                clear()
+                                putAll(valid.associate { obj -> obj.id to obj.links })
+                            }
+                        }
+                        WidgetView.Tree(
+                            id = widget.id,
+                            source = widget.source,
+                            isExpanded = true,
+                            elements = buildTree(
+                                links = source.obj.links,
+                                level = ROOT_INDENT,
+                                expanded = paths,
+                                path = widget.id + SEPARATOR + widget.source.id + SEPARATOR,
+                                data = data,
+                                rootLimit = WidgetConfig.NO_LIMIT
+                            )
+                        )
+                    }
                 }
             }
         }
     }
 
-    private suspend fun fetchRootLevelBundledSourceObjects(): Flow<List<ObjectWrapper.Basic>> {
+    private fun fetchRootLevelBundledSourceObjects(): Flow<List<ObjectWrapper.Basic>> {
         return when (widget.source.id) {
             BundledWidgetSourceIds.FAVORITE -> {
                 objectWatcher
@@ -181,22 +210,26 @@ class TreeWidgetContainer(
                     }
             }
             BundledWidgetSourceIds.RECENT -> {
-                val spaceView = getSpaceView()
-                val spaceViewCreationDate = spaceView
-                    ?.getValue<Double?>(Relations.CREATED_DATE)
-                    ?.toLong()
-                container.subscribe(
-                    ListWidgetContainer.params(
-                        subscription = widget.source.id,
-                        spaces = buildList {
-                            add(widget.config.space)
-                            add(widget.config.techSpace)
-                        },
-                        keys = keys,
-                        limit = rootLevelLimit,
-                        spaceCreationDateInSeconds = spaceViewCreationDate
+                flow {
+                    val spaceView = getSpaceView()
+                    val spaceViewCreationDate = spaceView
+                        ?.getValue<Double?>(Relations.CREATED_DATE)
+                        ?.toLong()
+                    emitAll(
+                        container.subscribe(
+                            ListWidgetContainer.params(
+                                subscription = widget.source.id,
+                                spaces = buildList {
+                                    add(widget.config.space)
+                                    add(widget.config.techSpace)
+                                },
+                                keys = keys,
+                                limit = rootLevelLimit,
+                                spaceCreationDateInSeconds = spaceViewCreationDate
+                            )
+                        )
                     )
-                )
+                }
             }
             else -> {
                 container.subscribe(

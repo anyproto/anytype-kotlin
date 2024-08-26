@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
+import com.anytypeio.anytype.domain.debugging.DebugAccountSelectTrace
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
@@ -49,7 +50,8 @@ class ObjectSetMenuViewModel(
     private val addObjectToCollection: AddObjectToCollection,
     private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader,
     private val deepLinkResolver: DeepLinkResolver,
-    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val debugAccountSelectTrace: DebugAccountSelectTrace
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
     addToFavorite = addToFavorite,
@@ -65,7 +67,8 @@ class ObjectSetMenuViewModel(
     debugGoroutinesShareDownloader = debugGoroutinesShareDownloader,
     createWidget = createWidget,
     spaceManager = spaceManager,
-    analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+    analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+    debugAccountSelectTrace = debugAccountSelectTrace
 ) {
 
     init {
@@ -90,7 +93,8 @@ class ObjectSetMenuViewModel(
         private val createWidget: CreateWidget,
         private val spaceManager: SpaceManager,
         private val deepLinkResolver: DeepLinkResolver,
-        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        private val debugAccountSelectTrace: DebugAccountSelectTrace
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectSetMenuViewModel(
@@ -110,7 +114,8 @@ class ObjectSetMenuViewModel(
                 createWidget = createWidget,
                 spaceManager = spaceManager,
                 deepLinkResolver = deepLinkResolver,
-                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+                debugAccountSelectTrace = debugAccountSelectTrace
             ) as T
         }
     }

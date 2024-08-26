@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
+import com.anytypeio.anytype.domain.debugging.DebugAccountSelectTrace
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
@@ -60,7 +61,8 @@ abstract class ObjectMenuViewModelBase(
     private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader,
     private val createWidget: CreateWidget,
     private val spaceManager: SpaceManager,
-    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val debugAccountSelectTrace: DebugAccountSelectTrace
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     protected val jobs = mutableListOf<Job>()
@@ -380,6 +382,20 @@ abstract class ObjectMenuViewModelBase(
                     }
                 )
             }
+        }
+    }
+
+    fun debugAccountSelectTrace(ctx: Id) {
+        jobs += viewModelScope.launch {
+            debugAccountSelectTrace.async(Unit).fold(
+                onSuccess = { path ->
+                    commands.emit(Command.ShareDebugGoroutines(path))
+                },
+                onFailure = {
+                    sendToast("Error while collecting account select trace :${it.message}")
+                    Timber.e(it, "Error while collecting account select trace")
+                }
+            )
         }
     }
 

@@ -86,6 +86,7 @@ abstract class ObjectMenuBaseFragment :
         click(binding.optionRelations) { vm.onRelationsClicked() }
         click(binding.optionCover) { vm.onCoverClicked(ctx = ctx, space = space) }
         click(binding.debugGoroutines) { vm.onDiagnosticsGoroutinesClicked(ctx = ctx) }
+        click(binding.debugAccountSelect) { vm.debugAccountSelectTrace(ctx = ctx) }
 
         proceed(vm.actions) { actionAdapter.submitList(it) }
         proceed(vm.toasts) { toast(it) }
@@ -96,6 +97,8 @@ abstract class ObjectMenuBaseFragment :
         if (BuildConfig.DEBUG) {
             binding.debugGoroutines.visible()
             binding.debugGoroutinesDivider.visible()
+            binding.debugAccountSelect.visible()
+            binding.debugAccountSelectDivider.visible()
         }
 
         super.onStart()

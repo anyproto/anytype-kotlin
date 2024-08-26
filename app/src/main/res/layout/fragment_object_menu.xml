@@ -164,7 +164,7 @@
         app:layout_constraintTop_toBottomOf="@id/objectDiagnostics" />
 
     <com.anytypeio.anytype.core_ui.widgets.ObjectMenuItemWidget
-        android:id="@+id/debugGoroutines"
+        android:id="@+id/debugAccountSelect"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -174,6 +174,34 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/objectDiagnosticsDivider"
+        app:subtitle="Command Debug.AccountSelectTrace"
+        app:title="Account Select Trace"
+        tools:visibility="visible" />
+
+    <View
+        android:id="@+id/debugAccountSelectDivider"
+        android:layout_width="0dp"
+        android:layout_height="0.5dp"
+        android:layout_marginStart="72dp"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:background="@color/shape_primary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/debugAccountSelect" />
+
+    <com.anytypeio.anytype.core_ui.widgets.ObjectMenuItemWidget
+        android:id="@+id/debugGoroutines"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/default_ripple"
+        android:visibility="gone"
+        app:icon="@drawable/ic_object_menu_debug_goroutines"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/debugAccountSelectDivider"
         app:subtitle="Command Debug.StackGoroutines"
         app:title="Debug Goroutines"
         tools:visibility="visible" />

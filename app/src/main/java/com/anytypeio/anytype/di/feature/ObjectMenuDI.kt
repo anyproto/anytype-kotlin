@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
+import com.anytypeio.anytype.domain.debugging.DebugAccountSelectTrace
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
@@ -129,7 +130,8 @@ object ObjectMenuModule {
         createWidget: CreateWidget,
         spaceManager: SpaceManager,
         deepLinkResolver: DeepLinkResolver,
-        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        debugAccountSelectTrace: DebugAccountSelectTrace
     ): ObjectMenuViewModel.Factory = ObjectMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
         duplicateObject = duplicateObject,
@@ -151,7 +153,8 @@ object ObjectMenuModule {
         createWidget = createWidget,
         spaceManager = spaceManager,
         deepLinkResolver = deepLinkResolver,
-        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+        debugAccountSelectTrace = debugAccountSelectTrace
     )
 
     @JvmStatic
@@ -228,7 +231,8 @@ object ObjectSetMenuModule {
         createWidget: CreateWidget,
         spaceManager: SpaceManager,
         deepLinkResolver: DeepLinkResolver,
-        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        debugAccountSelectTrace: DebugAccountSelectTrace
     ): ObjectSetMenuViewModel.Factory = ObjectSetMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
         addToFavorite = addToFavorite,
@@ -246,7 +250,8 @@ object ObjectSetMenuModule {
         createWidget = createWidget,
         spaceManager = spaceManager,
         deepLinkResolver = deepLinkResolver,
-        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+        debugAccountSelectTrace = debugAccountSelectTrace
     )
 
     @JvmStatic

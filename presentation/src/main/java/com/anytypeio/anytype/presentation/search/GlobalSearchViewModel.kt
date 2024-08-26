@@ -88,15 +88,18 @@ class GlobalSearchViewModel(
     ) { mode, query ->
         mode to query
     }.flatMapLatest { (mode, query) ->
+        val space = SpaceId(spaceManager.get())
         when(mode) {
             is Mode.Default -> {
-                buildDefaultSearchFlow(query)
+                buildDefaultSearchFlow(query = query, space = space)
             }
             is Mode.Related -> {
-                buildRelatedSearchFlow(query, mode)
+                buildRelatedSearchFlow(query = query, mode = mode, space = space)
             }
         }
-    }.scan<ViewState, ViewState>(initial = ViewState.Init) { curr, new ->
+    }.scan<ViewState, ViewState>(initial = ViewState.Init(
+        query = "Test8888"
+    )) { curr, new ->
         when(new) {
             is ViewState.Default -> {
                 if (new.isLoading) {
@@ -121,12 +124,13 @@ class GlobalSearchViewModel(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(),
-        initialValue = ViewState.Init
+        initialValue = ViewState.Init("")
     )
 
     private suspend fun buildRelatedSearchFlow(
         query: String,
-        mode: Mode.Related
+        mode: Mode.Related,
+        space: SpaceId
     ) = searchWithMeta
         .stream(
             Command.SearchWithMeta(
@@ -153,7 +157,8 @@ class GlobalSearchViewModel(
                 },
                 sorts = ObjectSearchConstants.sortsSearchObjects,
                 withMetaRelationDetails = false,
-                withMeta = false
+                withMeta = false,
+                space = space
             )
         ).map { result ->
             when (result) {
@@ -186,7 +191,7 @@ class GlobalSearchViewModel(
             }
         }
 
-    private suspend fun buildDefaultSearchFlow(query: String) = searchWithMeta
+    private suspend fun buildDefaultSearchFlow(query: String, space: SpaceId) = searchWithMeta
         .stream(
             Command.SearchWithMeta(
                 query = query,
@@ -195,11 +200,12 @@ class GlobalSearchViewModel(
                 keys = DEFAULT_KEYS,
                 filters = ObjectSearchConstants.filterSearchObjects(
                     // TODO add tech space?
-                    spaces = listOf(spaceManager.get())
+                    spaces = listOf(space.id)
                 ),
                 sorts = ObjectSearchConstants.sortsSearchObjects,
                 withMetaRelationDetails = true,
-                withMeta = true
+                withMeta = true,
+                space = space
             )
         ).map { result ->
             when (result) {
@@ -317,7 +323,9 @@ class GlobalSearchViewModel(
         abstract val views: List<GlobalSearchItemView>
         abstract val isLoading: Boolean
 
-        data object Init: ViewState() {
+        data class Init(
+            val query: String = EMPTY_STRING_VALUE
+        ): ViewState() {
             override val views: List<GlobalSearchItemView> = emptyList()
             override val isLoading: Boolean = false
         }

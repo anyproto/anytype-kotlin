@@ -126,7 +126,7 @@ fun GlobalSearchScreen(
         }
     }
 
-    var query by remember { mutableStateOf(TextFieldValue()) }
+    var query by remember { mutableStateOf(TextFieldValue("YUIO999")) }
 
     Column(
         modifier = Modifier

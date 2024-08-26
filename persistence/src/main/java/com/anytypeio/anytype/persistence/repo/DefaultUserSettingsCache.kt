@@ -300,6 +300,54 @@ class DefaultUserSettingsCache(
         }
     }
 
+    override suspend fun setLastSearchQuery(query: String, space: SpaceId) {
+        context.spacePrefsStore.updateData { existingPreferences ->
+            val givenSpacePreference = existingPreferences
+                .preferences
+                .getOrDefault(
+                    key = space.id,
+                    defaultValue = SpacePreference()
+                )
+            val updated = givenSpacePreference.copy(
+                lastSearchQuery = query
+            )
+            val result = buildMap {
+                putAll(existingPreferences.preferences)
+                put(key = space.id, updated)
+            }
+            SpacePreferences(preferences = result)
+        }
+    }
+
+    override suspend fun getLastSearchQuery(space: SpaceId): String {
+        return context.spacePrefsStore
+            .data
+            .map { preferences ->
+                preferences
+                    .preferences[space.id]
+                    ?.lastSearchQuery.orEmpty()
+            }
+            .first()
+    }
+
+    override suspend fun clearLastSearchQuery(space: SpaceId) {
+        context.spacePrefsStore.updateData { existingPreferences ->
+            val givenSpacePreference = existingPreferences
+                .preferences
+                .getOrDefault(key = space.id, defaultValue = SpacePreference())
+            val updated = givenSpacePreference.copy(
+                lastSearchQuery  = null
+            )
+            val result = buildMap {
+                putAll(existingPreferences.preferences)
+                put(key = space.id, updated)
+            }
+            SpacePreferences(
+                preferences = result
+            )
+        }
+    }
+
     companion object {
         const val CURRENT_SPACE_KEY = "prefs.user_settings.current_space"
         const val DEFAULT_OBJECT_TYPE_ID_KEY = "prefs.user_settings.default_object_type.id"

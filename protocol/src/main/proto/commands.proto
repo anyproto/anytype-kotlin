@@ -2417,6 +2417,35 @@ message Rpc {
             }
         }
 
+        message ListModifyDetailValues {
+            message Request {
+                repeated string objectIds = 1;
+                repeated Operation operations = 2;
+
+                message Operation {
+                    string relationKey = 1;
+                    google.protobuf.Value add = 2;
+                    google.protobuf.Value set = 3;
+                    google.protobuf.Value remove = 4;
+                }
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
+
         message ApplyTemplate {
             message Request {
                 string contextId = 1;
@@ -2559,9 +2588,9 @@ message Rpc {
             }
 
             message Response {
-                Error error = 1;
-                string collectionId = 2;
-                int64 objectsCount = 3;
+                Error error = 1; // deprecated
+                string collectionId = 2; // deprecated
+                int64 objectsCount = 3; // deprecated
 
                 message Error {
                     Code code = 1;

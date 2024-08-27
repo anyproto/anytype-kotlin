@@ -108,6 +108,8 @@ message Event {
             Space.SyncStatus.Update spaceSyncStatusUpdate = 119;
 
             P2PStatus.Update p2pStatusUpdate = 120;
+
+            Import.Finish importFinish = 121;
         }
     }
 
@@ -1086,6 +1088,7 @@ message Event {
             Syncing = 1;
             Error = 2;
             Offline = 3;
+            NetworkNeedsUpdate = 4;
         }
         enum Network {
             Anytype = 0;
@@ -1110,6 +1113,14 @@ message Event {
             NotConnected = 0;
             NotPossible = 1;
             Connected = 2;
+        }
+    }
+
+    message Import {
+        message Finish {
+            string rootCollectionID = 1;
+            int64 objectsCount = 2;
+            model.Import.Type importType = 3;
         }
     }
 }

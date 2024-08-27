@@ -5,12 +5,16 @@ import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.google.gson.Gson
 import timber.log.Timber
 import javax.inject.Inject
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
 
 interface MiddlewareProtobufLogger {
 
     fun logRequest(any: Any)
 
     fun logResponse(any: Any)
+
+    fun logResponse(any: Any, time: Duration?)
 
     fun logEvent(any: Any)
 
@@ -29,6 +33,10 @@ interface MiddlewareProtobufLogger {
             if (featureToggles.isLogMiddlewareInteraction) {
                 Timber.d("response -> ${any.toLogMessage()}")
             }
+        }
+
+        override fun logResponse(any: Any, time: Duration?) {
+            Timber.d("takenTime:${time?.toLong(DurationUnit.MILLISECONDS)}, response -> ${any.toLogMessage()}")
         }
 
         override fun logEvent(any: Any) {

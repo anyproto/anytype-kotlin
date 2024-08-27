@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -55,6 +56,9 @@ class TreeWidgetContainerTest {
 
     @Mock
     lateinit var getSpaceView: GetSpaceView
+
+    @Mock
+    lateinit var spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer
 
     val dispatchers = AppCoroutineDispatchers(
         io = coroutineTestRule.dispatcher,
@@ -105,7 +109,8 @@ class TreeWidgetContainerTest {
                 urlBuilder = urlBuilder,
                 isSessionActive = flowOf(true),
                 objectWatcher = objectWatcher,
-                getSpaceView = getSpaceView
+                getSpaceView = getSpaceView,
+                spaceViewCache = spaceViewSubscriptionContainer
             )
 
             stubObjectSearch(
@@ -180,7 +185,8 @@ class TreeWidgetContainerTest {
             urlBuilder = urlBuilder,
             isSessionActive = flowOf(true),
             objectWatcher = objectWatcher,
-            getSpaceView = getSpaceView
+            getSpaceView = getSpaceView,
+            spaceViewCache = spaceViewSubscriptionContainer
         )
 
         stubObjectSearch(
@@ -270,7 +276,8 @@ class TreeWidgetContainerTest {
                 urlBuilder = urlBuilder,
                 isSessionActive = flowOf(true),
                 objectWatcher = objectWatcher,
-                getSpaceView = getSpaceView
+                getSpaceView = getSpaceView,
+                spaceViewCache = spaceViewSubscriptionContainer
             )
 
             stubObjectSearch(
@@ -415,7 +422,8 @@ class TreeWidgetContainerTest {
             urlBuilder = urlBuilder,
             isSessionActive = flowOf(true),
             objectWatcher = objectWatcher,
-            getSpaceView = getSpaceView
+            getSpaceView = getSpaceView,
+            spaceViewCache = spaceViewSubscriptionContainer
         )
 
         stubObjectSearch(
@@ -477,7 +485,8 @@ class TreeWidgetContainerTest {
             urlBuilder = urlBuilder,
             isSessionActive = flowOf(true),
             objectWatcher = objectWatcher,
-            getSpaceView = getSpaceView
+            getSpaceView = getSpaceView,
+            spaceViewCache = spaceViewSubscriptionContainer
         )
 
         stubObjectSearch(

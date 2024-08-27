@@ -8,9 +8,11 @@ import javax.inject.Inject
 class DebugAccountSelectTrace @Inject constructor(
     private val repo: BlockRepository,
     dispatchers: AppCoroutineDispatchers
-) : ResultInteractor<Unit, String>(dispatchers.io) {
+) : ResultInteractor<DebugAccountSelectTrace.Params, String>(dispatchers.io) {
 
-    override suspend fun doWork(params: Unit): String {
-        return repo.debugAccountSelectTrace()
+    override suspend fun doWork(params: Params): String {
+        return repo.debugAccountSelectTrace(params.dir)
     }
+
+    data class Params(val dir: String)
 }

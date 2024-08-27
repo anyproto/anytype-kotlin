@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
 import com.anytypeio.anytype.domain.debugging.DebugAccountSelectTrace
+import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
@@ -69,7 +70,8 @@ class ObjectMenuViewModel(
     private val spaceManager: SpaceManager,
     private val deepLinkResolver: DeepLinkResolver,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val debugAccountSelectTrace: DebugAccountSelectTrace
+    private val debugAccountSelectTrace: DebugAccountSelectTrace,
+    private val pathProvider: PathProvider
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
     addToFavorite = addToFavorite,
@@ -86,7 +88,8 @@ class ObjectMenuViewModel(
     createWidget = createWidget,
     spaceManager = spaceManager,
     analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-    debugAccountSelectTrace = debugAccountSelectTrace
+    debugAccountSelectTrace = debugAccountSelectTrace,
+    pathProvider = pathProvider
 ) {
 
     init {
@@ -479,7 +482,8 @@ class ObjectMenuViewModel(
         private val spaceManager: SpaceManager,
         private val deepLinkResolver: DeepLinkResolver,
         private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-        private val debugAccountSelectTrace: DebugAccountSelectTrace
+        private val debugAccountSelectTrace: DebugAccountSelectTrace,
+        private val pathProvider: PathProvider
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectMenuViewModel(
@@ -504,7 +508,8 @@ class ObjectMenuViewModel(
                 spaceManager = spaceManager,
                 deepLinkResolver = deepLinkResolver,
                 analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-                debugAccountSelectTrace = debugAccountSelectTrace
+                debugAccountSelectTrace = debugAccountSelectTrace,
+                pathProvider = pathProvider
             ) as T
         }
     }

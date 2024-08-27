@@ -2387,8 +2387,8 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun debugAccountSelectTrace(): String {
-        val request = Rpc.Debug.AccountSelectTrace.Request()
+    fun debugAccountSelectTrace(dir: String): String {
+        val request = Rpc.Debug.AccountSelectTrace.Request(dir = dir)
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.debugAccountSelectTrace(request)
         if (BuildConfig.DEBUG) logResponse(response)

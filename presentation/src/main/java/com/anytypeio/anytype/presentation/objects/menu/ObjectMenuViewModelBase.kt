@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
 import com.anytypeio.anytype.domain.debugging.DebugAccountSelectTrace
+import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
@@ -62,7 +63,8 @@ abstract class ObjectMenuViewModelBase(
     private val createWidget: CreateWidget,
     private val spaceManager: SpaceManager,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val debugAccountSelectTrace: DebugAccountSelectTrace
+    private val debugAccountSelectTrace: DebugAccountSelectTrace,
+    private val pathProvider: PathProvider
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     protected val jobs = mutableListOf<Job>()
@@ -385,10 +387,12 @@ abstract class ObjectMenuViewModelBase(
         }
     }
 
-    fun debugAccountSelectTrace(ctx: Id) {
+    fun debugAccountSelectTrace() {
         jobs += viewModelScope.launch {
-            debugAccountSelectTrace.async(Unit).fold(
+            val params = DebugAccountSelectTrace.Params(dir = pathProvider.providePath())
+            debugAccountSelectTrace.async(params).fold(
                 onSuccess = { path ->
+                    Timber.i("Account select trace collected: $path")
                     commands.emit(Command.ShareDebugGoroutines(path))
                 },
                 onFailure = {

@@ -859,8 +859,8 @@ class BlockMiddleware(
         return middleware.debugStackGoroutines(path)
     }
 
-    override suspend fun debugAccountSelectTrace(): String {
-        return middleware.debugAccountSelectTrace()
+    override suspend fun debugAccountSelectTrace(dir: String): String {
+        return middleware.debugAccountSelectTrace(dir)
     }
 
     override suspend fun deleteRelationOption(command: Command.DeleteRelationOptions) {

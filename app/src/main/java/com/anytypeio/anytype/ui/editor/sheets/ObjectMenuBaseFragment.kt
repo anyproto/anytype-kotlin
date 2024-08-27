@@ -86,7 +86,7 @@ abstract class ObjectMenuBaseFragment :
         click(binding.optionRelations) { vm.onRelationsClicked() }
         click(binding.optionCover) { vm.onCoverClicked(ctx = ctx, space = space) }
         click(binding.debugGoroutines) { vm.onDiagnosticsGoroutinesClicked(ctx = ctx) }
-        click(binding.debugAccountSelect) { vm.debugAccountSelectTrace(ctx = ctx) }
+        click(binding.debugAccountSelect) { vm.debugAccountSelectTrace() }
 
         proceed(vm.actions) { actionAdapter.submitList(it) }
         proceed(vm.toasts) { toast(it) }

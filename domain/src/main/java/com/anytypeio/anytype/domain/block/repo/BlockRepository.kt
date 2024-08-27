@@ -431,7 +431,7 @@ interface BlockRepository {
     suspend fun duplicateObjectsList(ids: List<Id>): List<Id>
     suspend fun createTemplateFromObject(ctx: Id): Id
     suspend fun debugStackGoroutines(path: String)
-    suspend fun debugAccountSelectTrace(): String
+    suspend fun debugAccountSelectTrace(dir: String): String
     suspend fun deleteRelationOption(command: Command.DeleteRelationOptions)
 
     suspend fun makeSpaceShareable(space: SpaceId)

@@ -896,8 +896,8 @@ class BlockDataRepository(
         return remote.debugStackGoroutines(path)
     }
 
-    override suspend fun debugAccountSelectTrace(): String {
-        return remote.debugAccountSelectTrace()
+    override suspend fun debugAccountSelectTrace(dir: String): String {
+        return remote.debugAccountSelectTrace(dir)
     }
 
     override suspend fun deleteRelationOption(command: Command.DeleteRelationOptions) {

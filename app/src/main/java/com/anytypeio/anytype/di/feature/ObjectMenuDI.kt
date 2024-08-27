@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
 import com.anytypeio.anytype.domain.debugging.DebugAccountSelectTrace
+import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
@@ -131,7 +132,8 @@ object ObjectMenuModule {
         spaceManager: SpaceManager,
         deepLinkResolver: DeepLinkResolver,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-        debugAccountSelectTrace: DebugAccountSelectTrace
+        debugAccountSelectTrace: DebugAccountSelectTrace,
+        pathProvider: PathProvider
     ): ObjectMenuViewModel.Factory = ObjectMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
         duplicateObject = duplicateObject,
@@ -154,7 +156,8 @@ object ObjectMenuModule {
         spaceManager = spaceManager,
         deepLinkResolver = deepLinkResolver,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-        debugAccountSelectTrace = debugAccountSelectTrace
+        debugAccountSelectTrace = debugAccountSelectTrace,
+        pathProvider = pathProvider
     )
 
     @JvmStatic
@@ -232,7 +235,8 @@ object ObjectSetMenuModule {
         spaceManager: SpaceManager,
         deepLinkResolver: DeepLinkResolver,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-        debugAccountSelectTrace: DebugAccountSelectTrace
+        debugAccountSelectTrace: DebugAccountSelectTrace,
+        pathProvider: PathProvider
     ): ObjectSetMenuViewModel.Factory = ObjectSetMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
         addToFavorite = addToFavorite,
@@ -251,7 +255,8 @@ object ObjectSetMenuModule {
         spaceManager = spaceManager,
         deepLinkResolver = deepLinkResolver,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-        debugAccountSelectTrace = debugAccountSelectTrace
+        debugAccountSelectTrace = debugAccountSelectTrace,
+        pathProvider = pathProvider
     )
 
     @JvmStatic

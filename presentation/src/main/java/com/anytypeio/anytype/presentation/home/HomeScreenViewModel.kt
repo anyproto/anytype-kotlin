@@ -43,6 +43,7 @@ import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.Reducer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
@@ -176,7 +177,8 @@ class HomeScreenViewModel(
     private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val coverImageHashProvider: CoverImageHashProvider,
-    private val storeOfRelations: StoreOfRelations
+    private val storeOfRelations: StoreOfRelations,
+    private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -401,6 +403,7 @@ class HomeScreenViewModel(
                             urlBuilder = urlBuilder,
                             objectWatcher = objectWatcher,
                             getSpaceView = getSpaceView,
+                            spaceViewCache = spaceViewSubscriptionContainer,
                             onRequestCache = {
                                 currentlyDisplayedViews.find { view ->
                                     view.id == widget.id
@@ -419,6 +422,7 @@ class HomeScreenViewModel(
                                 isSessionActive = isSessionActive,
                                 objectWatcher = objectWatcher,
                                 getSpaceView = getSpaceView,
+                                spaceViewCache = spaceViewSubscriptionContainer,
                                 onRequestCache = {
                                     currentlyDisplayedViews.find { view ->
                                         view.id == widget.id
@@ -1702,7 +1706,8 @@ class HomeScreenViewModel(
         private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
         private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         private val coverImageHashProvider: CoverImageHashProvider,
-        private val storeOfRelations: StoreOfRelations
+        private val storeOfRelations: StoreOfRelations,
+        private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -1744,7 +1749,8 @@ class HomeScreenViewModel(
             deepLinkToObjectDelegate = deepLinkToObjectDelegate,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             coverImageHashProvider = coverImageHashProvider,
-            storeOfRelations = storeOfRelations
+            storeOfRelations = storeOfRelations,
+            spaceViewSubscriptionContainer = spaceViewSubscriptionContainer
         ) as T
     }
 

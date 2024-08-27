@@ -43,6 +43,7 @@ import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
@@ -222,6 +223,9 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var storeOfRelations: StoreOfRelations
+
+    @Mock
+    lateinit var spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer
 
     lateinit var userPermissionProvider: UserPermissionProvider
 
@@ -2907,7 +2911,8 @@ class HomeScreenViewModelTest {
         deepLinkToObjectDelegate = deepLinkToObjectDelegate,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         coverImageHashProvider = coverImageHashProvider,
-        storeOfRelations = storeOfRelations
+        storeOfRelations = storeOfRelations,
+        spaceViewSubscriptionContainer = spaceViewSubscriptionContainer
     )
 
     companion object {

@@ -36,8 +36,10 @@ interface MiddlewareProtobufLogger {
         }
 
         override fun logResponse(any: Any, time: Duration?) {
-            Timber.d("takenTime:${time?.toLong(DurationUnit.MILLISECONDS)}, response -> ${any.toLogMessage()}")
+            Timber.d("response -> ${any.toLogMessage()} [${time.format()}ms] ")
         }
+
+        private fun Duration?.format(): Long? = this?.toLong(DurationUnit.MILLISECONDS)
 
         override fun logEvent(any: Any) {
             if (featureToggles.isLogMiddlewareInteraction) {

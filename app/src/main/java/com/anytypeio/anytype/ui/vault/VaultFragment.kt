@@ -39,26 +39,32 @@ class VaultFragment : BaseComposeFragment() {
                 VaultScreen(
                     spaces = vm.spaces.collectAsStateWithLifecycle().value,
                     onSpaceClicked = vm::onSpaceClicked,
-                    onCreateSpaceClicked = {
-                        // TODO
-                    },
-                    onSettingsClicked = {
-                        // TODO move to command and provide entry space id
-                        runCatching {
-                            findNavController().navigate(
-                                R.id.profileScreen,
-                                bundleOf(ProfileSettingsFragment.SPACE_ID_KEY to "")
-                            )
-                        }
-                    }
+                    onCreateSpaceClicked = vm::onCreateSpaceClicked,
+                    onSettingsClicked = vm::onSettingsClicked
                 )
             }
             LaunchedEffect(Unit) {
                 vm.commands.collect { command ->
                     when(command) {
-                        Command.EnterSpaceHomeScreen -> {
-                            // Temporary implementation for dev builds
-                            findNavController().popBackStack()
+                        is Command.EnterSpaceHomeScreen -> {
+                            runCatching {
+                                findNavController().popBackStack()
+                            }
+                        }
+                        is Command.CreateNewSpace -> {
+                            runCatching {
+                                findNavController().navigate(
+                                    R.id.createSpaceScreen
+                                )
+                            }
+                        }
+                        is Command.OpenProfileSettings -> {
+                            runCatching {
+                                findNavController().navigate(
+                                    R.id.profileScreen,
+                                    bundleOf(ProfileSettingsFragment.SPACE_ID_KEY to command.space.id)
+                                )
+                            }
                         }
                     }
                 }

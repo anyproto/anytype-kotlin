@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Wallpaper
+import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.domain.base.fold
@@ -85,6 +86,29 @@ class VaultViewModel(
         }
     }
 
+    fun onSettingsClicked() {
+        viewModelScope.launch {
+            val entrySpaceView = spaces.value.find { space ->
+                space.space.spaceAccessType == SpaceAccessType.DEFAULT
+            }
+            if (entrySpaceView != null && entrySpaceView.space.targetSpaceId != null) {
+                commands.emit(
+                    Command.OpenProfileSettings(
+                        space = SpaceId(requireNotNull(entrySpaceView.space.targetSpaceId))
+                    )
+                )
+            } else {
+                Timber.w("Entry space not found")
+            }
+        }
+    }
+
+    fun onCreateSpaceClicked() {
+        viewModelScope.launch {
+            commands.emit(Command.CreateNewSpace)
+        }
+    }
+
     private suspend fun proceedWithSavingCurrentSpace(targetSpace: String) {
         saveCurrentSpace.async(
             SaveCurrentSpace.Params(SpaceId(targetSpace))
@@ -124,6 +148,8 @@ class VaultViewModel(
     )
 
     sealed class Command {
-        data object EnterSpaceHomeScreen : Command()
+        data object EnterSpaceHomeScreen: Command()
+        data object CreateNewSpace: Command()
+        data class OpenProfileSettings(val space: SpaceId): Command()
     }
 }

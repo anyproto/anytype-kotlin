@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.history.VersionHistoryViewModel.Companion.GROUP_DATE_FORMAT_OTHER_YEAR
+import com.anytypeio.anytype.presentation.history.VersionHistoryViewModel.Companion.VERSIONS_MAX_LIMIT
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.widgets.collection.DateProviderImpl
@@ -314,7 +315,7 @@ class VersionHistoryViewModelTest {
                 groups = buildList {
                     add(
                         VersionHistoryGroup(
-                            id = versionsNew[8].id,
+                            id = versionsNew[0].id,
                             title = VersionHistoryGroup.GroupTitle.Date(
                                 dateProvider.formatToDateString(
                                     timestamp = versionsNew[8].timestamp.inMillis,
@@ -395,7 +396,7 @@ class VersionHistoryViewModelTest {
                     )
                     add(
                         VersionHistoryGroup(
-                            id = versions[0].id,
+                            id = versions[3].id,
                             title = VersionHistoryGroup.GroupTitle.Date(dateProvider.formatToDateString(
                                 timestamp = versions[0].timestamp.inMillis,
                                 pattern = GROUP_DATE_FORMAT_OTHER_YEAR,
@@ -456,7 +457,7 @@ class VersionHistoryViewModelTest {
                     )
                     add(
                         VersionHistoryGroup(
-                            id = versions[4].id,
+                            id = versions[6].id,
                             title = VersionHistoryGroup.GroupTitle.Date(
                                 dateProvider.formatToDateString(
                                     timestamp = versions[4].timestamp.inMillis,
@@ -517,7 +518,9 @@ class VersionHistoryViewModelTest {
 
     private fun stubVersions(stubbedVersions: List<Version>) {
         val params = GetVersions.Params(
-            objectId = objectId
+            objectId = objectId,
+            lastVersion = "",
+            limit = VERSIONS_MAX_LIMIT
         )
         getVersions.stub {
             onBlocking { async(params) } doReturn Resultat.success(stubbedVersions)

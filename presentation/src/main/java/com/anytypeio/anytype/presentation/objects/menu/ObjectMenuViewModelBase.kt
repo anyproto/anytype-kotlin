@@ -202,7 +202,7 @@ abstract class ObjectMenuViewModelBase(
         backLinkIcon: ObjectIcon,
         fromName: String
     ) {
-        Timber.e("onBackLinkOrAddToObjectAction, ctx:[$ctx], backLinkId:[$backLinkId], backLinkName:[$backLinkName], backLinkLayout:[$backLinkLayout], fromName:[$fromName]")
+        Timber.d("onBackLinkOrAddToObjectAction, ctx:[$ctx], backLinkId:[$backLinkId], backLinkLayout:[$backLinkLayout]")
         if (backLinkLayout == null) {
             Timber.e("onBackLinkOrAddToObjectAction, layout is null")
             viewModelScope.launch { _toasts.emit(BACK_LINK_WRONG_LAYOUT) }

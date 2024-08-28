@@ -237,7 +237,12 @@ class AddToAnytypeViewModel(
 
             if (targetSpaceView != null && targetSpaceId != null) {
                 val paths = uris.mapNotNull { uri ->
-                    fileSharer.getPath(uri)
+                    try {
+                        fileSharer.getPath(uri)
+                    } catch (e: Exception) {
+                        Timber.e(e, "Error getting path for URI: $uri")
+                        null
+                    }
                 }
 
                 when (paths.size) {

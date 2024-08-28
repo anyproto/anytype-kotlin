@@ -64,6 +64,8 @@ import com.anytypeio.anytype.middleware.mappers.toPayload
 import com.anytypeio.anytype.middleware.model.CreateWalletResponse
 import com.anytypeio.anytype.middleware.service.MiddlewareService
 import javax.inject.Inject
+import kotlin.time.Duration
+import kotlin.time.measureTimedValue
 import timber.log.Timber
 
 class Middleware @Inject constructor(
@@ -85,16 +87,16 @@ class Middleware @Inject constructor(
             networkCustomConfigFilePath = command.networkConfigFilePath.orEmpty(),
             preferYamuxTransport = command.preferYamuxTransport ?: false
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.accountCreate(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.accountCreate(request) }
+        logResponseIfDebug(response, time)
         return response.toAccountSetup()
     }
 
     @Throws(Exception::class)
     fun accountSelect(command: Command.AccountSelect): AccountSetup {
 
-        val networkMode = command.networkMode?.toMiddlewareModel() ?: MNetworkMode.DefaultConfig
+        val networkMode = command.networkMode.toMiddlewareModel()
         val networkCustomConfigFilePath = if (networkMode == MNetworkMode.CustomConfig) {
             command.networkConfigFilePath.orEmpty()
         } else ""
@@ -105,18 +107,18 @@ class Middleware @Inject constructor(
             networkCustomConfigFilePath = networkCustomConfigFilePath,
             preferYamuxTransport = command.preferYamuxTransport ?: false
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.accountSelect(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.accountSelect(request) }
+        logResponseIfDebug(response, time)
         return response.toAccountSetup()
     }
 
     @Throws(Exception::class)
     fun accountDelete(): AccountStatus {
         val request = Rpc.Account.Delete.Request()
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.accountDelete(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.accountDelete(request) }
+        logResponseIfDebug(response, time)
         val status = response.status
         checkNotNull(status) { "Account status was null" }
         return status.core()
@@ -125,17 +127,17 @@ class Middleware @Inject constructor(
     @Throws(Exception::class)
     fun accountRecover() {
         val request = Rpc.Account.Recover.Request()
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.accountRecover(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.accountRecover(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
     fun accountRestore(): AccountStatus {
         val request = Rpc.Account.RevertDeletion.Request()
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.accountRevertDeletion(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.accountRevertDeletion(request) }
+        logResponseIfDebug(response, time)
         val status = response.status
         checkNotNull(status) { "Account status was null" }
         return status.core()
@@ -146,9 +148,9 @@ class Middleware @Inject constructor(
         val request: Rpc.Account.Stop.Request = Rpc.Account.Stop.Request(
             removeData = clearLocalRepositoryData
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.accountStop(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.accountStop(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
@@ -159,9 +161,9 @@ class Middleware @Inject constructor(
             url = command.url,
             position = command.position.toMiddlewareModel()
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockBookmarkCreateAndFetch(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockBookmarkCreateAndFetch(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -172,9 +174,9 @@ class Middleware @Inject constructor(
             blockId = command.target,
             url = command.url
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockBookmarkFetch(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockBookmarkFetch(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -192,9 +194,9 @@ class Middleware @Inject constructor(
             selectedTextRange = range,
             blocks = blocks
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockCopy(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockCopy(request) }
+        logResponseIfDebug(response, time)
         return Response.Clipboard.Copy(
             response.textSlot,
             response.htmlSlot,
@@ -215,9 +217,9 @@ class Middleware @Inject constructor(
             position = position.toMiddlewareModel(),
             block = factory.create(prototype)
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockCreate(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockCreate(request) }
+        logResponseIfDebug(response, time)
 
         return Pair(response.blockId, response.event.toPayload())
     }
@@ -235,9 +237,9 @@ class Middleware @Inject constructor(
             viewId = view,
             position = pos
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewViewSetPosition(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockDataViewViewSetPosition(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -252,9 +254,9 @@ class Middleware @Inject constructor(
             blockId = dv,
             relationKeys = listOf(relation)
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewRelationAdd(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockDataViewRelationAdd(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -265,9 +267,9 @@ class Middleware @Inject constructor(
             blockId = dv,
             relationKeys = listOf(relation)
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewRelationDelete(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockDataViewRelationDelete(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -286,9 +288,9 @@ class Middleware @Inject constructor(
                 type = type.toMiddlewareModel()
             )
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewViewCreate(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockDataViewViewCreate(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -303,9 +305,9 @@ class Middleware @Inject constructor(
             blockId = target,
             view = viewer.toMiddlewareModel()
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewViewCreate(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockDataViewViewCreate(request) }
+        logResponseIfDebug(response, time)
         return Pair(response.viewId, response.event.toPayload())
     }
 
@@ -320,9 +322,9 @@ class Middleware @Inject constructor(
             blockId = dataview,
             viewId = viewer
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewViewDelete(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockDataViewViewDelete(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -338,9 +340,9 @@ class Middleware @Inject constructor(
             viewId = viewer.id,
             view = viewer.toMiddlewareModel()
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewViewUpdate(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockDataViewViewUpdate(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -350,9 +352,9 @@ class Middleware @Inject constructor(
             contextId = command.context,
             blockIds = command.targets
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockListDelete(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockListDelete(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -364,9 +366,9 @@ class Middleware @Inject constructor(
             blockIds = command.blocks,
             position = Block.Position.Bottom
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockListDuplicate(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockListDuplicate(request) }
+        logResponseIfDebug(response, time)
 
         return Pair(response.blockIds, response.event.toPayload())
     }
@@ -383,9 +385,9 @@ class Middleware @Inject constructor(
             dropTargetId = command.targetId
         )
 
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockListMoveToExistingObject(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockListMoveToExistingObject(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -395,9 +397,9 @@ class Middleware @Inject constructor(
             contextId = command.context,
             blockIds = command.targets
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockListMoveToNewObject(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockListMoveToNewObject(request) }
+        logResponseIfDebug(response, time)
         return listOf(response.linkId)
     }
 
@@ -412,9 +414,9 @@ class Middleware @Inject constructor(
             align = align
         )
 
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockListSetAlign(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockListSetAlign(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -425,9 +427,9 @@ class Middleware @Inject constructor(
             blockIds = command.targets,
             color = command.color
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockListSetBackgroundColor(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockListSetBackgroundColor(request) }
+        logResponseIfDebug(response, time)
 
         return response.event.toPayload()
     }
@@ -440,9 +442,9 @@ class Middleware @Inject constructor(
             blockIds = command.targets,
             style = style
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockListSetDivStyle(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockListSetDivStyle(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -461,9 +463,9 @@ class Middleware @Inject constructor(
             contextId = command.context,
             blockFields = fields
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockListSetFields(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockListSetFields(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -478,9 +480,9 @@ class Middleware @Inject constructor(
             blockIds = targets,
             style = style.toMiddlewareModel()
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockListTurnInto(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockListTurnInto(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -491,9 +493,9 @@ class Middleware @Inject constructor(
             firstBlockId = command.pair.first,
             secondBlockId = command.pair.second
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockMerge(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockMerge(request) }
+        logResponseIfDebug(response, time)
 
         return response.event.toPayload()
     }
@@ -518,9 +520,9 @@ class Middleware @Inject constructor(
             selectedBlockIds = command.selected,
             isPartOfBlock = command.isPartOfBlock ?: false
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockPaste(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockPaste(request) }
+        logResponseIfDebug(response, time)
         return Response.Clipboard.Paste(
             response.caretPosition,
             response.isSameBlockCaret,
@@ -551,9 +553,9 @@ class Middleware @Inject constructor(
             blockId = command.blockId,
             key = command.key
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockRelationSetKey(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockRelationSetKey(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -569,11 +571,9 @@ class Middleware @Inject constructor(
             block = model
         )
 
-        if (BuildConfig.DEBUG) logRequest(request)
-
-        val response = service.blockCreate(request)
-
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockCreate(request) }
+        logResponseIfDebug(response, time)
 
         return Pair(response.blockId, response.event.toPayload())
     }
@@ -598,11 +598,9 @@ class Middleware @Inject constructor(
             mode = mode
         )
 
-        if (BuildConfig.DEBUG) logRequest(request)
-
-        val response = service.blockSplit(request)
-
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockSplit(request) }
+        logResponseIfDebug(response, time)
 
         return Pair(response.blockId, response.event.toPayload())
     }
@@ -614,9 +612,9 @@ class Middleware @Inject constructor(
             color = command.color,
             blockIds = command.targets
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockTextListSetColor(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockTextListSetColor(request) }
+        logResponseIfDebug(response, time)
 
         return response.event.toPayload()
     }
@@ -631,9 +629,9 @@ class Middleware @Inject constructor(
             blockIds = targets,
             mark = mark
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockTextListSetMark(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockTextListSetMark(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -645,9 +643,9 @@ class Middleware @Inject constructor(
             blockIds = command.targets,
             contextId = command.context
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockTextListSetStyle(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockTextListSetStyle(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -664,9 +662,9 @@ class Middleware @Inject constructor(
             iconImage = image,
             iconEmoji = emoji,
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockTextSetIcon(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockTextSetIcon(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -681,9 +679,9 @@ class Middleware @Inject constructor(
             blockId = target,
             checked = isChecked
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockTextSetChecked(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockTextSetChecked(request) }
+        logResponseIfDebug(response, time)
 
         return response.event.toPayload()
     }
@@ -702,9 +700,9 @@ class Middleware @Inject constructor(
             text = text,
             marks = markup
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockTextSetText(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockTextSetText(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
@@ -720,11 +718,9 @@ class Middleware @Inject constructor(
             description = content.description.toMiddlewareModel(),
             relations = content.relations.toList()
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockLinkListSetAppearance(
-            request
-        )
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockLinkListSetAppearance(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -736,9 +732,9 @@ class Middleware @Inject constructor(
             contextId = command.contextId,
             blockId = command.blockId
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockUpload(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockUpload(request) }
+        logResponseIfDebug(response, time)
 
         return response.event.toPayload()
     }
@@ -753,9 +749,9 @@ class Middleware @Inject constructor(
             contextId = contextId,
             objectId = id
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectOpen(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectOpen(request) }
+        logResponseIfDebug(response, time)
 
         return response.objectView?.toPayload()
             ?: throw IllegalStateException("Object view was null")
@@ -766,27 +762,27 @@ class Middleware @Inject constructor(
         val request = Rpc.Debug.ExportLocalstore.Request(
             path = path
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.debugExportLocalStore(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.debugExportLocalStore(request) }
+        logResponseIfDebug(response, time)
         return response.path
     }
 
     @Throws(Exception::class)
     fun debugSpaceSummary(space: SpaceId): String {
         val request = Rpc.Debug.SpaceSummary.Request(spaceId = space.id)
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.debugSpaceSummary(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.debugSpaceSummary(request) }
+        logResponseIfDebug(response, time)
         return response.infos.toCoreModel()
     }
 
     @Throws(Exception::class)
     fun debugSubscriptions(): List<Id> {
         val request = Rpc.Debug.Subscriptions.Request()
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.debugSubscriptions(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.debugSubscriptions(request) }
+        logResponseIfDebug(response, time)
         return response.subscriptions
     }
 
@@ -796,18 +792,18 @@ class Middleware @Inject constructor(
             treeId = objectId,
             path = path
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.debugObject(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.debugObject(request) }
+        logResponseIfDebug(response, time)
         return response.filename
     }
 
     @Throws(Exception::class)
     fun fileListOffload() {
         val request = Rpc.File.ListOffload.Request()
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.fileListOffload(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.fileListOffload(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
@@ -818,9 +814,9 @@ class Middleware @Inject constructor(
             type = type,
             spaceId = command.space.id
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.fileUpload(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.fileUpload(request) }
+        logResponseIfDebug(response, time)
         return ObjectWrapper.File(response.details.orEmpty())
     }
 
@@ -832,9 +828,9 @@ class Middleware @Inject constructor(
             position = command.blockPosition.toMiddlewareModel(),
             localFilePaths = command.localFilePaths
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.fileDrop(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.fileDrop(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -844,9 +840,9 @@ class Middleware @Inject constructor(
             objectId = command.objectId,
             path = command.path
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.fileDownload(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.fileDownload(request) }
+        logResponseIfDebug(response, time)
         return response
     }
 
@@ -858,17 +854,17 @@ class Middleware @Inject constructor(
             contextId = command.objectId,
             templateId = command.template.orEmpty()
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectApplyTemplate(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectApplyTemplate(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
     fun objectClose(id: String) {
         val request = Rpc.Object.Close.Request(objectId = id)
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectClose(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectClose(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
@@ -882,9 +878,9 @@ class Middleware @Inject constructor(
             spaceId = command.space.id,
             objectTypeUniqueKey = command.typeKey.key
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectCreate(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectCreate(request) }
+        logResponseIfDebug(response, time)
         return response.toCoreModel()
     }
 
@@ -905,9 +901,9 @@ class Middleware @Inject constructor(
             spaceId = command.space
         )
 
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockLinkCreateWithObject(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockLinkCreateWithObject(request) }
+        logResponseIfDebug(response, time)
         return response.toCoreModel()
     }
 
@@ -924,9 +920,9 @@ class Middleware @Inject constructor(
             },
             spaceId = space
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectCreateBookmark(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectCreateBookmark(request) }
+        logResponseIfDebug(response, time)
         return response.objectId
     }
 
@@ -936,9 +932,9 @@ class Middleware @Inject constructor(
             contextId = ctx,
             url = url
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectBookmarkFetch(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectBookmarkFetch(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
@@ -963,9 +959,9 @@ class Middleware @Inject constructor(
             },
             spaceId = space
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectCreateRelation(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectCreateRelation(request) }
+        logResponseIfDebug(response, time)
         return ObjectWrapper.Relation(
             response.details ?: throw IllegalStateException("Missing details")
         )
@@ -986,9 +982,9 @@ class Middleware @Inject constructor(
             },
             spaceId = space
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectCreateObjectType(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectCreateObjectType(request) }
+        logResponseIfDebug(response)
         return response.details ?: throw IllegalStateException("Null object type struct")
     }
 
@@ -1007,9 +1003,9 @@ class Middleware @Inject constructor(
             },
             spaceId = space
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectCreateRelationOption(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectCreateRelationOption(request) }
+        logResponseIfDebug(response, time)
         return ObjectWrapper.Option(
             response.details ?: throw IllegalStateException("Missing details")
         )
@@ -1031,11 +1027,10 @@ class Middleware @Inject constructor(
             spaceId = space
         )
 
-        if (BuildConfig.DEBUG) logRequest(request)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectCreateSet(request) }
+        logResponseIfDebug(response, time)
 
-        val response = service.objectCreateSet(request)
-
-        if (BuildConfig.DEBUG) logResponse(response)
         return Response.Set.Create(
             targetId = response.objectId,
             payload = response.event.toPayload(),
@@ -1046,9 +1041,9 @@ class Middleware @Inject constructor(
     @Throws(Exception::class)
     fun objectDuplicate(id: Id): Id {
         val request = Rpc.Object.Duplicate.Request(contextId = id)
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectDuplicate(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectDuplicate(request) }
+        logResponseIfDebug(response, time)
         return response.id
     }
 
@@ -1063,9 +1058,9 @@ class Middleware @Inject constructor(
             keys = keys,
             ids = ids
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectIdsSubscribe(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectIdsSubscribe(request) }
+        logResponseIfDebug(response, time)
         return SearchResult(
             results = response.records.mapNotNull { record ->
                 if (record != null && record.isNotEmpty())
@@ -1086,9 +1081,9 @@ class Middleware @Inject constructor(
     @Throws(Exception::class)
     fun objectListDelete(targets: List<Id>) {
         val request = Rpc.Object.ListDelete.Request(objectIds = targets)
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectListDelete(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectListDelete(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
@@ -1100,17 +1095,17 @@ class Middleware @Inject constructor(
             objectIds = targets,
             isArchived = isArchived,
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectListSetIsArchived(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectListSetIsArchived(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
     fun objectOpenOld(id: String): Payload {
         val request = Rpc.Object.Open.Request(objectId = id)
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectOpen(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectOpen(request) }
+        logResponseIfDebug(response, time)
 
         return response.objectView?.toPayload()
             ?: throw IllegalStateException("Object view was null")
@@ -1119,18 +1114,18 @@ class Middleware @Inject constructor(
     @Throws(Exception::class)
     fun objectOpen(id: String): ObjectView {
         val request = Rpc.Object.Open.Request(objectId = id)
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectOpen(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectOpen(request) }
+        logResponseIfDebug(response, time)
         return response.objectView?.toCore() ?: throw IllegalStateException("Object view was null")
     }
 
     @Throws(Exception::class)
     fun objectRedo(command: Command.Redo): Payload {
         val request = Rpc.Object.Redo.Request(contextId = command.context)
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectRedo(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectRedo(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -1140,9 +1135,9 @@ class Middleware @Inject constructor(
             contextId = ctx,
             relationKeys = listOf(relation)
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectRelationAdd(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectRelationAdd(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -1155,9 +1150,9 @@ class Middleware @Inject constructor(
             contextId = ctx,
             relations = relations
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectRelationAddFeatured(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectRelationAddFeatured(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -1167,9 +1162,9 @@ class Middleware @Inject constructor(
             contextId = ctx,
             relationKeys = listOf(relation)
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectRelationDelete(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectRelationDelete(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -1182,9 +1177,9 @@ class Middleware @Inject constructor(
             contextId = ctx,
             relations = relations
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectRelationRemoveFeatured(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectRelationRemoveFeatured(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -1202,9 +1197,9 @@ class Middleware @Inject constructor(
             contextId = ctx,
             details = listOf(coverIdDetail, coverTypeDetail)
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectSetDetails(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectSetDetails(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -1224,9 +1219,9 @@ class Middleware @Inject constructor(
             details = listOf(imageDetail, emojiDetail)
         )
 
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectSetDetails(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectSetDetails(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -1247,9 +1242,9 @@ class Middleware @Inject constructor(
             limit = limit,
             keys = keys
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectSearch(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectSearch(request) }
+        logResponseIfDebug(response, time)
         return response.records.map { it?.toMap() ?: emptyMap() }
     }
 
@@ -1263,9 +1258,9 @@ class Middleware @Inject constructor(
             limit = command.limit,
             keys = command.keys
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectSearchWithMeta(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectSearchWithMeta(request) }
+        logResponseIfDebug(response, time)
         return response.toCoreModelSearchResults()
     }
 
@@ -1298,9 +1293,9 @@ class Middleware @Inject constructor(
             noDepSubscription = noDepSubscription ?: false,
             collectionId = collection.orEmpty()
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectSearchSubscribe(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectSearchSubscribe(request) }
+        logResponseIfDebug(response, time)
         return SearchResult(
             results = response.records.mapNotNull { record ->
                 if (record != null && record.isNotEmpty())
@@ -1323,9 +1318,9 @@ class Middleware @Inject constructor(
         val request = Rpc.Object.SearchUnsubscribe.Request(
             subIds = subscriptions
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectSearchUnsubscribe(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectSearchUnsubscribe(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
@@ -1345,9 +1340,9 @@ class Middleware @Inject constructor(
             contextId = ctx,
             details = listOf(coverIdDetail, coverTypeDetail)
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectSetDetails(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectSetDetails(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -1368,9 +1363,9 @@ class Middleware @Inject constructor(
             contextId = ctx,
             details = listOf(coverIdDetail, coverTypeDetail)
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectSetDetails(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectSetDetails(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -1391,9 +1386,9 @@ class Middleware @Inject constructor(
             contextId = ctx,
             details = listOf(coverIdDetail, coverTypeDetail)
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectSetDetails(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectSetDetails(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -1411,9 +1406,9 @@ class Middleware @Inject constructor(
             contextId = ctx,
             details = listOf(detail)
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectSetDetails(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectSetDetails(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -1432,9 +1427,9 @@ class Middleware @Inject constructor(
             contextId = ctx,
             details = detailsList
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectSetDetails(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectSetDetails(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -1456,11 +1451,9 @@ class Middleware @Inject constructor(
             details = listOf(emojiDetail, imageDetail)
         )
 
-        if (BuildConfig.DEBUG) logRequest(request)
-
-        val response = service.objectSetDetails(request)
-
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectSetDetails(request) }
+        logResponseIfDebug(response, time)
 
         return response.event.toPayload()
     }
@@ -1482,11 +1475,9 @@ class Middleware @Inject constructor(
             details = listOf(imageDetail, emojiDetail)
         )
 
-        if (BuildConfig.DEBUG) logRequest(request)
-
-        val response = service.objectSetDetails(request)
-
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectSetDetails(request) }
+        logResponseIfDebug(response, time)
 
         return response.event.toPayload()
     }
@@ -1504,9 +1495,9 @@ class Middleware @Inject constructor(
             contextId = ctx,
             isArchived = isArchived
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectSetIsArchived(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectSetIsArchived(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Deprecated(
@@ -1522,9 +1513,9 @@ class Middleware @Inject constructor(
             contextId = ctx,
             isFavorite = isFavorite
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectSetIsFavorite(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectSetIsFavorite(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -1538,9 +1529,9 @@ class Middleware @Inject constructor(
             objectIds = objectIds,
             isFavorite = isFavorite
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectListSetIsFavorite(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectListSetIsFavorite(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
@@ -1549,9 +1540,9 @@ class Middleware @Inject constructor(
             contextId = ctx,
             layout = layout.toMiddlewareModel()
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectSetLayout(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectSetLayout(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -1561,9 +1552,9 @@ class Middleware @Inject constructor(
             contextId = ctx,
             objectTypeUniqueKey = objectTypeKey
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectSetObjectType(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectSetObjectType(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -1577,17 +1568,17 @@ class Middleware @Inject constructor(
             contextId = command.context,
             details = listOf(detail)
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectSetDetails(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectSetDetails(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
     fun objectShowOld(id: String): Payload {
         val request = Rpc.Object.Show.Request(objectId = id)
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectShow(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectShow(request) }
+        logResponseIfDebug(response, time)
         return response.objectView?.toPayload()
             ?: throw IllegalStateException("Object view was null")
     }
@@ -1595,18 +1586,18 @@ class Middleware @Inject constructor(
     @Throws(Exception::class)
     fun objectShow(id: String): ObjectView {
         val request = Rpc.Object.Show.Request(objectId = id)
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectShow(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectShow(request) }
+        logResponseIfDebug(response, time)
         return response.objectView?.toCore() ?: throw IllegalStateException("Object view was null")
     }
 
     @Throws(Exception::class)
     fun objectUndo(command: Command.Undo): Payload {
         val request = Rpc.Object.Undo.Request(contextId = command.context)
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectUndo(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectUndo(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -1616,17 +1607,17 @@ class Middleware @Inject constructor(
             spaceId = space,
             useCase = Rpc.Object.ImportUseCase.Request.UseCase.GET_STARTED
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectImportUseCase(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectImportUseCase(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
     fun versionGet(): Rpc.App.GetVersion.Response {
         val request = Rpc.App.GetVersion.Request()
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.versionGet(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.versionGet(request) }
+        logResponseIfDebug(response, time)
         return response
     }
 
@@ -1639,32 +1630,26 @@ class Middleware @Inject constructor(
             platform = platform,
             version = version
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.metricsSetParameters(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.metricsSetParameters(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
     fun walletConvert(entropy: String): String {
         val request = Rpc.Wallet.Convert.Request(entropy = entropy)
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.walletConvert(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.walletConvert(request) }
+        logResponseIfDebug(response, time)
         return response.mnemonic
     }
 
     @Throws(Exception::class)
     fun walletCreate(path: String): CreateWalletResponse {
-
         val request = Rpc.Wallet.Create.Request(rootPath = path)
-
-        if (BuildConfig.DEBUG) logRequest(request)
-
-        val response = service.walletCreate(request)
-
-        if (BuildConfig.DEBUG) logResponse(response)
-
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.walletCreate(request) }
+        logResponseIfDebug(response, time)
         return CreateWalletResponse(response.mnemonic)
     }
 
@@ -1674,9 +1659,9 @@ class Middleware @Inject constructor(
             mnemonic = mnemonic,
             rootPath = path
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.walletRecover(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.walletRecover(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
@@ -1694,9 +1679,9 @@ class Middleware @Inject constructor(
             rows = rows,
             columns = columns
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.createTable(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.createTable(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -1706,9 +1691,9 @@ class Middleware @Inject constructor(
             contextId = ctx,
             blockIds = targetIds
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockTableRowListFill(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockTableRowListFill(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -1718,9 +1703,9 @@ class Middleware @Inject constructor(
             contextId = ctx,
             source = source
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectToSet(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectToSet(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
@@ -1728,9 +1713,9 @@ class Middleware @Inject constructor(
         val request = Rpc.Object.ToCollection.Request(
             contextId = ctx
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectToCollection(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectToCollection(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
@@ -1744,9 +1729,9 @@ class Middleware @Inject constructor(
             blockId = blockId,
             source = sources
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewSetSource(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockDataViewSetSource(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -1759,9 +1744,9 @@ class Middleware @Inject constructor(
             contextId = ctx,
             blockIds = blockIds
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockListClearContent(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockListClearContent(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -1774,9 +1759,9 @@ class Middleware @Inject constructor(
             contextId = ctx,
             blockIds = blockIds
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockListClearStyle(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockListClearStyle(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -1789,9 +1774,9 @@ class Middleware @Inject constructor(
             contextId = ctx,
             blockIds = blockIds
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockTableColumnListFill(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockTableColumnListFill(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -1806,9 +1791,9 @@ class Middleware @Inject constructor(
             targetId = targetId,
             position = position
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockTableRowCreate(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockTableRowCreate(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -1823,9 +1808,9 @@ class Middleware @Inject constructor(
             targetId = targetId,
             isHeader = isHeader
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockTableRowSetHeader(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockTableRowSetHeader(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -1840,9 +1825,9 @@ class Middleware @Inject constructor(
             targetId = targetId,
             position = position
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockTableColumnCreate(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockTableColumnCreate(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -1855,9 +1840,9 @@ class Middleware @Inject constructor(
             contextId = ctx,
             targetId = targetId
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockTableColumnDelete(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockTableColumnDelete(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -1870,9 +1855,9 @@ class Middleware @Inject constructor(
             contextId = ctx,
             targetId = targetId
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockTableRowDelete(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockTableRowDelete(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -1889,9 +1874,9 @@ class Middleware @Inject constructor(
             blockId = blockId,
             position = position
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockTableColumnDuplicate(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockTableColumnDuplicate(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -1908,9 +1893,9 @@ class Middleware @Inject constructor(
             blockId = blockId,
             position = position
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockTableRowDuplicate(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockTableRowDuplicate(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -1925,9 +1910,9 @@ class Middleware @Inject constructor(
             columnId = columnId,
             type = type
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockTableSort(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockTableSort(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -1944,9 +1929,9 @@ class Middleware @Inject constructor(
             columns = columns,
             rows = rows
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockTableExpand(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockTableExpand(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -1963,18 +1948,18 @@ class Middleware @Inject constructor(
             dropTargetId = dropTarget,
             position = position.toMiddlewareModel()
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockTableColumnMove(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockTableColumnMove(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
     @Throws(Exception::class)
     fun spaceDelete(space: SpaceId) {
         val request = Rpc.Space.Delete.Request(spaceId = space.id)
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.spaceDelete(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.spaceDelete(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
@@ -1983,9 +1968,9 @@ class Middleware @Inject constructor(
             details = details,
             useCase = Rpc.Object.ImportUseCase.Request.UseCase.EMPTY
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.workspaceCreate(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.workspaceCreate(request) }
+        logResponseIfDebug(response, time)
         return response.spaceId
     }
 
@@ -1994,9 +1979,9 @@ class Middleware @Inject constructor(
         val request = Rpc.Workspace.Open.Request(
             spaceId = space
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.workspaceOpen(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.workspaceOpen(request) }
+        logResponseIfDebug(response, time)
         val info = response.info
         if (info != null) {
             return info.config()
@@ -2014,9 +1999,9 @@ class Middleware @Inject constructor(
             spaceId = space.id,
             details = struct
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.workspaceSetInfo(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.workspaceSetInfo(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
@@ -2025,9 +2010,9 @@ class Middleware @Inject constructor(
             objectIds = objects,
             spaceId = space
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.workspaceObjectListAdd(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.workspaceObjectListAdd(request) }
+        logResponseIfDebug(response, time)
         return response.objectIds
     }
 
@@ -2037,9 +2022,9 @@ class Middleware @Inject constructor(
             objectId = command.objectId,
             spaceId = command.space
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.workspaceObjectAdd(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.workspaceObjectAdd(request) }
+        logResponseIfDebug(response, time)
         return Pair(response.objectId, response.details)
     }
 
@@ -2048,9 +2033,9 @@ class Middleware @Inject constructor(
         val request = Rpc.Workspace.Object.ListRemove.Request(
             objectIds = objects
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.workspaceObjectListRemove(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.workspaceObjectListRemove(request) }
+        logResponseIfDebug(response, time)
         return response.ids
     }
 
@@ -2073,9 +2058,9 @@ class Middleware @Inject constructor(
             targetId = target.orEmpty(),
             position = position.toMiddlewareModel()
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockCreateWidget(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockCreateWidget(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -2089,9 +2074,9 @@ class Middleware @Inject constructor(
             blockId = widget,
             viewId = view
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockWidgetSetViewId(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockWidgetSetViewId(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -2113,9 +2098,9 @@ class Middleware @Inject constructor(
                 )
             )
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockCreateWidget(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockCreateWidget(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -2138,9 +2123,9 @@ class Middleware @Inject constructor(
             viewId = command.view,
             filter = filter
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewAddFilter(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockDataViewAddFilter(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -2155,9 +2140,9 @@ class Middleware @Inject constructor(
             id = command.id,
             filter = command.filter.toMiddlewareModel()
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewReplaceFilter(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockDataViewReplaceFilter(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -2171,9 +2156,9 @@ class Middleware @Inject constructor(
             viewId = command.view,
             ids = command.ids
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewRemoveFilter(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockDataViewRemoveFilter(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -2192,9 +2177,9 @@ class Middleware @Inject constructor(
                 includeTime = command.includeTime ?: false
             )
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewAddSort(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockDataViewAddSort(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -2207,9 +2192,9 @@ class Middleware @Inject constructor(
             id = command.sort.id,
             sort = command.sort.toMiddlewareModel()
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewReplaceSort(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockDataViewReplaceSort(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -2223,9 +2208,9 @@ class Middleware @Inject constructor(
             viewId = command.view,
             ids = command.ids
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewRemoveSort(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockDataViewRemoveSort(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -2240,9 +2225,9 @@ class Middleware @Inject constructor(
             relation = command.relation.toMiddlewareModel(),
             relationKey = command.relation.key
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewReplaceViewRelation(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockDataViewReplaceViewRelation(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -2257,9 +2242,9 @@ class Middleware @Inject constructor(
             relationKey = command.relation.key,
             relation = command.relation.toMiddlewareModel()
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewReplaceViewRelation(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockDataViewReplaceViewRelation(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -2273,9 +2258,9 @@ class Middleware @Inject constructor(
             viewId = command.view,
             relationKeys = command.keys
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewRemoveViewRelation(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockDataViewRemoveViewRelation(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -2289,9 +2274,9 @@ class Middleware @Inject constructor(
             viewId = command.view,
             relationKeys = command.keys
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.blockDataViewSortViewRelation(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockDataViewSortViewRelation(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -2303,9 +2288,9 @@ class Middleware @Inject constructor(
             contextId = command.ctx,
             internalFlags = command.flags.toMiddlewareModel()
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.setInternalFlags(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.setInternalFlags(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -2315,9 +2300,9 @@ class Middleware @Inject constructor(
             afterId = command.afterId,
             objectIds = command.ids
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.addObjectToCollection(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.addObjectToCollection(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
@@ -2326,18 +2311,18 @@ class Middleware @Inject constructor(
             contextId = command.ctx,
             source = listOf(command.query)
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.setObjectSource(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.setObjectSource(request) }
+        logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
 
     @Throws(Exception::class)
     fun nodeUsage(): NodeUsageInfo {
         val request = Rpc.File.NodeUsage.Request()
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.nodeUsageInfo(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.nodeUsageInfo(request) }
+        logResponseIfDebug(response, time)
         return response.toCoreModel()
     }
 
@@ -2348,9 +2333,9 @@ class Middleware @Inject constructor(
         val request = Rpc.Object.ListDuplicate.Request(
             objectIds = objects
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectsListDuplicate(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectsListDuplicate(request) }
+        logResponseIfDebug(response, time)
         return response.ids
     }
 
@@ -2361,9 +2346,9 @@ class Middleware @Inject constructor(
         val request = Rpc.Template.CreateFromObject.Request(
             contextId = ctx
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.createTemplateFromObject(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.createTemplateFromObject(request) }
+        logResponseIfDebug(response, time)
         return response.id
     }
 
@@ -2374,9 +2359,9 @@ class Middleware @Inject constructor(
         val request = Rpc.Relation.ListRemoveOption.Request(
             optionIds = command.optionIds
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.deleteRelationOptions(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.deleteRelationOptions(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
@@ -2384,9 +2369,9 @@ class Middleware @Inject constructor(
         val request = Rpc.Debug.StackGoroutines.Request(
             path = path
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.debugStackGoroutines(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.debugStackGoroutines(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
@@ -2394,9 +2379,9 @@ class Middleware @Inject constructor(
         val request = Rpc.Space.InviteGenerate.Request(
             spaceId = space.id
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.spaceInviteGenerate(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.spaceInviteGenerate(request) }
+        logResponseIfDebug(response, time)
         return SpaceInviteLink(
             contentId = response.inviteCid,
             fileKey= response.inviteFileKey
@@ -2414,9 +2399,9 @@ class Middleware @Inject constructor(
             identity = identity,
             permissions = permissions.toMw()
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.spaceRequestApprove(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.spaceRequestApprove(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
@@ -2428,9 +2413,9 @@ class Middleware @Inject constructor(
             spaceId = space.id,
             identity = identity
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.spaceRequestDecline(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.spaceRequestDecline(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
@@ -2442,9 +2427,9 @@ class Middleware @Inject constructor(
             spaceId = space.id,
             identities = identities
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.spaceParticipantRemove(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.spaceParticipantRemove(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
@@ -2458,9 +2443,9 @@ class Middleware @Inject constructor(
                 )
             )
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.spaceParticipantPermissionsChange(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.spaceParticipantPermissionsChange(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
@@ -2471,9 +2456,9 @@ class Middleware @Inject constructor(
             inviteFileKey = command.inviteFileKey,
             spaceId = command.space.id
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.spaceJoin(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.spaceJoin(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
@@ -2481,9 +2466,9 @@ class Middleware @Inject constructor(
         val request = Rpc.Space.JoinCancel.Request(
             spaceId = space.id
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.spaceJoinCancel(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.spaceJoinCancel(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
@@ -2492,9 +2477,9 @@ class Middleware @Inject constructor(
             spaceId = command.space.id,
             identities = command.identities
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.spaceLeaveApprove(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.spaceLeaveApprove(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
@@ -2506,9 +2491,9 @@ class Middleware @Inject constructor(
             inviteCid = inviteContentId,
             inviteFileKey = inviteFileKey,
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.spaceInviteView(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.spaceInviteView(request) }
+        logResponseIfDebug(response, time)
         return SpaceInviteView(
             space = SpaceId(response.spaceId),
             creatorName = response.creatorName,
@@ -2522,9 +2507,9 @@ class Middleware @Inject constructor(
         val request = Rpc.Space.StopSharing.Request(
             spaceId = space.id
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.spaceStopSharing(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.spaceStopSharing(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
@@ -2532,9 +2517,9 @@ class Middleware @Inject constructor(
         val request = Rpc.Space.InviteGetCurrent.Request(
             spaceId = space.id
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.spaceInviteGetCurrent(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.spaceInviteGetCurrent(request) }
+        logResponseIfDebug(response, time)
         return SpaceInviteLink(
             fileKey = response.inviteFileKey,
             contentId = response.inviteCid
@@ -2546,17 +2531,17 @@ class Middleware @Inject constructor(
         val request = Rpc.Space.MakeShareable.Request(
             spaceId = space.id
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.spaceMakeShareable(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.spaceMakeShareable(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
     fun revokeSpaceInvite(space: SpaceId) {
         val request = Rpc.Space.InviteRevoke.Request(spaceId = space.id)
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.spaceInviteRevoke(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.spaceInviteRevoke(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
@@ -2564,9 +2549,9 @@ class Middleware @Inject constructor(
         val request = Rpc.Gallery.DownloadManifest.Request(
             url = command.url
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.downloadManifest(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.downloadManifest(request) }
+        logResponseIfDebug(response, time)
         return response.info?.toCoreModel()
     }
 
@@ -2580,17 +2565,17 @@ class Middleware @Inject constructor(
             title = command.title,
             isNewSpace = command.isNewSpace
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.objectImportExperience(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectImportExperience(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
     fun replyNotifications(notifications: List<Id>) {
         val request = Rpc.Notification.Reply.Request(ids = notifications)
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.notificationReply(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.notificationReply(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws
@@ -2598,9 +2583,9 @@ class Middleware @Inject constructor(
         val request = Rpc.Membership.GetStatus.Request(
             noCache = command.noCache
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.membershipStatus(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.membershipStatus(request) }
+        logResponseIfDebug(response, time)
         return response.data_?.toCoreModel()
     }
 
@@ -2611,9 +2596,9 @@ class Middleware @Inject constructor(
             nsName = command.name,
             nsNameType = command.nameType.toMw()
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.membershipIsNameValid(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.membershipIsNameValid(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws
@@ -2624,9 +2609,9 @@ class Middleware @Inject constructor(
             nsNameType = command.nameType.toMw(),
             paymentMethod = command.paymentMethod.toMw()
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.membershipRegisterPaymentRequest(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.membershipRegisterPaymentRequest(request) }
+        logResponseIfDebug(response, time)
         return GetPaymentUrlResponse(
             billingId = response.billingId
         )
@@ -2635,9 +2620,9 @@ class Middleware @Inject constructor(
     @Throws
     fun membershipGetPortalLinkUrl(): String {
         val request = Rpc.Membership.GetPortalLinkUrl.Request()
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.membershipGetPortalLinkUrl(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.membershipGetPortalLinkUrl(request) }
+        logResponseIfDebug(response, time)
         return response.portalUrl
     }
 
@@ -2647,17 +2632,17 @@ class Middleware @Inject constructor(
             nsName = command.name,
             nsNameType = command.nameType.toMw(),
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.membershipFinalize(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.membershipFinalize(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws
     fun membershipGetVerificationEmailStatus(): EmailVerificationStatus {
         val request = Rpc.Membership.GetVerificationEmailStatus.Request()
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.membershipGetVerificationEmailStatus(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.membershipGetVerificationEmailStatus(request) }
+        logResponseIfDebug(response, time)
         return response.status.toCoreModel()
     }
 
@@ -2667,9 +2652,9 @@ class Middleware @Inject constructor(
             email = command.email,
             subscribeToNewsletter = command.subscribeToNewsletter
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.membershipGetVerificationEmail(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.membershipGetVerificationEmail(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws
@@ -2677,9 +2662,9 @@ class Middleware @Inject constructor(
         val request = Rpc.Membership.VerifyEmailCode.Request(
             code = command.code
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.membershipVerifyEmailCode(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.membershipVerifyEmailCode(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws
@@ -2688,9 +2673,9 @@ class Middleware @Inject constructor(
             noCache = command.noCache,
             locale = command.locale
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.membershipGetTiers(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.membershipGetTiers(request) }
+        logResponseIfDebug(response, time)
         return response.tiers.map { it.toCoreModel() }
     }
 
@@ -2699,9 +2684,9 @@ class Middleware @Inject constructor(
         val request = Rpc.Process.Cancel.Request(
             id = command.processId
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.processCancel(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.processCancel(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws
@@ -2712,9 +2697,9 @@ class Middleware @Inject constructor(
             limit = command.limit
 
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.getVersions(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.getVersions(request) }
+        logResponseIfDebug(response, time)
         return response.versions.map { it.toCoreModel() }
     }
 
@@ -2725,9 +2710,9 @@ class Middleware @Inject constructor(
             versionId = command.versionId,
             traceId = command.traceId
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.showVersion(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.showVersion(request) }
+        logResponseIfDebug(response, time)
         return response.toCoreModel()
     }
 
@@ -2737,9 +2722,9 @@ class Middleware @Inject constructor(
             objectId = command.objectId,
             versionId = command.versionId
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.setVersion(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.setVersion(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws
@@ -2750,21 +2735,25 @@ class Middleware @Inject constructor(
             currentVersion = command.currentVersion,
             previousVersion = command.previousVersion
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.diffVersions(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.diffVersions(request) }
+        logResponseIfDebug(response, time)
         return response.toCoreModel(context = command.objectId)
     }
 
-    private fun logRequest(any: Any) {
-        logger.logRequest(any).also {
-            if (BuildConfig.DEBUG && threadInfo.isOnMainThread()) {
-                Timber.w("Main thread is used for operation: ${any::class.qualifiedName}")
+    private fun logRequestIfDebug(request: Any) {
+        if (BuildConfig.DEBUG) {
+            logger.logRequest(request).also {
+                if (BuildConfig.DEBUG && threadInfo.isOnMainThread()) {
+                    Timber.w("Main thread is used for operation: ${request::class.qualifiedName}")
+                }
             }
         }
     }
 
-    private fun logResponse(any: Any) {
-        logger.logResponse(any)
+    private fun logResponseIfDebug(response: Any, time: Duration? = null) {
+        if (BuildConfig.DEBUG) {
+            logger.logResponse(response, time)
+        }
     }
 }

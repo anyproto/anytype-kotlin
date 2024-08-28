@@ -6020,7 +6020,13 @@ class EditorViewModel(
 
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.Mentions.OnMentionClicked)
 
-        val target = blocks.first { it.id == focus.value }
+        val target = blocks.find { it.id == focus.value }
+
+        if (target == null) {
+            sendToast("Error while creating mention, target block is null")
+            Timber.e("Error while creating mention, target block is null")
+            return
+        }
 
         val new = target.addMention(
             mentionText = name.getMentionName(MENTION_TITLE_EMPTY),

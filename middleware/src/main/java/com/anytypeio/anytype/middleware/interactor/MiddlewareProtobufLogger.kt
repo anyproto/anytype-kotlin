@@ -3,12 +3,16 @@ package com.anytypeio.anytype.middleware.interactor
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import timber.log.Timber
 import javax.inject.Inject
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
 
 interface MiddlewareProtobufLogger {
 
     fun logRequest(any: Any)
 
     fun logResponse(any: Any)
+
+    fun logResponse(any: Any, time: Duration?)
 
     fun logEvent(any: Any)
 
@@ -28,6 +32,12 @@ interface MiddlewareProtobufLogger {
                 Timber.d("response -> ${any.toLogMessage()}")
             }
         }
+
+        override fun logResponse(any: Any, time: Duration?) {
+            Timber.d("response -> ${any.toLogMessage()} [${time.format()}ms] ")
+        }
+
+        private fun Duration?.format(): Long? = this?.toLong(DurationUnit.MILLISECONDS)
 
         override fun logEvent(any: Any) {
             if (featureToggles.isLogMiddlewareInteraction) {

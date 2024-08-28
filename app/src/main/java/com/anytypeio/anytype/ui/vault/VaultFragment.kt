@@ -45,35 +45,41 @@ class VaultFragment : BaseComposeFragment() {
             }
             LaunchedEffect(Unit) {
                 vm.commands.collect { command ->
-                    when(command) {
-                        is Command.EnterSpaceHomeScreen -> {
-                            runCatching {
-                                findNavController().popBackStack()
-                            }
-                        }
-                        is Command.CreateNewSpace -> {
-                            runCatching {
-                                findNavController().navigate(
-                                    R.id.createSpaceScreen
-                                )
-                            }
-                        }
-                        is Command.OpenProfileSettings -> {
-                            runCatching {
-                                findNavController().navigate(
-                                    R.id.profileScreen,
-                                    bundleOf(ProfileSettingsFragment.SPACE_ID_KEY to command.space.id)
-                                )
-                            }
-                        }
-                    }
+                    proceedWithCommand(command)
+                }
+            }
+        }
+    }
+
+    private fun proceedWithCommand(command: Command) {
+        when (command) {
+            is Command.EnterSpaceHomeScreen -> {
+                runCatching {
+                    findNavController().popBackStack()
+                }
+            }
+
+            is Command.CreateNewSpace -> {
+                runCatching {
+                    findNavController().navigate(
+                        R.id.createSpaceScreen
+                    )
+                }
+            }
+
+            is Command.OpenProfileSettings -> {
+                runCatching {
+                    findNavController().navigate(
+                        R.id.profileScreen,
+                        bundleOf(ProfileSettingsFragment.SPACE_ID_KEY to command.space.id)
+                    )
                 }
             }
         }
     }
 
     override fun onApplyWindowRootInsets(view: View) {
-        // Do nothing
+        // Do nothing ?
     }
 
     override fun injectDependencies() {

@@ -35,6 +35,7 @@ import com.anytypeio.anytype.BuildConfig.USE_EDGE_TO_EDGE
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
@@ -89,9 +90,8 @@ fun VaultScreen(
                        SpaceAccessType.SHARED -> stringResource(id = R.string.space_type_shared_space)
                        else -> EMPTY_STRING_VALUE
                    },
-                   onCardClicked = {
-                       onSpaceClicked(item)
-                   }
+                   wallpaper = item.wallpaper,
+                   onCardClicked = { onSpaceClicked(item) }
                )
            }
        }
@@ -139,7 +139,8 @@ fun VaultScreenToolbar(
 fun VaultSpaceCard(
     title: String,
     subtitle: String,
-    onCardClicked: () -> Unit
+    onCardClicked: () -> Unit,
+    wallpaper: Wallpaper
 ) {
     Box(
         modifier = Modifier
@@ -204,7 +205,8 @@ fun VaultSpaceCardPreview() {
     VaultSpaceCard(
         title = "B&O Museum",
         subtitle = "Private space",
-        onCardClicked = {}
+        onCardClicked = {},
+        wallpaper = Wallpaper.Default
     )
 }
 

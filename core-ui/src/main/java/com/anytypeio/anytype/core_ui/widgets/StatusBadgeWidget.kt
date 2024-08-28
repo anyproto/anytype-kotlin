@@ -39,20 +39,20 @@ class StatusBadgeWidget @JvmOverloads constructor(
                                     visible()
                                     setImageResource(R.drawable.ic_synced_10)
                                 }
-
                                 SpaceSyncStatus.SYNCING -> {
                                     visible()
                                     setImageResource(R.drawable.ic_syncing)
                                 }
-
                                 SpaceSyncStatus.ERROR -> {
                                     visible()
                                     setImageResource(R.drawable.ic_sync_error_10)
                                 }
-
                                 SpaceSyncStatus.OFFLINE -> {
                                     visible()
                                     setImageResource(R.drawable.ic_sync_grey_10)
+                                }
+                                SpaceSyncStatus.NETWORK_UPDATE_NEEDED -> {
+                                    // TODO
                                 }
                             }
                         }

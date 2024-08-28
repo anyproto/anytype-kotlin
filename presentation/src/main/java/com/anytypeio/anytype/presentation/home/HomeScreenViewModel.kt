@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.DVFilterOperator
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
@@ -1457,14 +1458,16 @@ class HomeScreenViewModel(
                                 DVFilter(
                                     relation = Relations.LAYOUT,
                                     value = ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
-                                    condition = DVFilterCondition.EQUAL
+                                    condition = DVFilterCondition.EQUAL,
+                                    operator = DVFilterOperator.NO
                                 )
                             )
                             add(
                                 DVFilter(
                                     relation = Relations.UNIQUE_KEY,
                                     value = keys.toList(),
-                                    condition = DVFilterCondition.IN
+                                    condition = DVFilterCondition.IN,
+                                    operator = DVFilterOperator.NO
                                 )
                             )
                         }
@@ -1476,11 +1479,15 @@ class HomeScreenViewModel(
                             .map { ObjectWrapper.Type(it.map) }
                             .sortedBy { keys.indexOf(it.uniqueKey) }
 
-                        val actions = types.map { type ->
-                            AppActionManager.Action.CreateNew(
-                                type = TypeKey(type.uniqueKey),
-                                name = type.name.orEmpty()
-                            )
+                        val actions = types.mapNotNull { type ->
+                            if (type.map.containsKey(Relations.UNIQUE_KEY)) {
+                                AppActionManager.Action.CreateNew(
+                                    type = TypeKey(type.uniqueKey),
+                                    name = type.name.orEmpty()
+                                )
+                            } else {
+                                null
+                            }
                         }
                         appActionManager.setup(actions = actions)
                     },

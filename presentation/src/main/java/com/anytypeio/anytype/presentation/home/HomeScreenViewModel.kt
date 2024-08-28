@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.home
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -1472,7 +1471,6 @@ class HomeScreenViewModel(
                     )
                 ).process(
                     success = { wrappers ->
-                        Log.d("Test1983", "Size:${wrappers.size}")
                         val types = wrappers
                             .filter { type -> type.notDeletedNorArchived }
                             .map { ObjectWrapper.Type(it.map) }

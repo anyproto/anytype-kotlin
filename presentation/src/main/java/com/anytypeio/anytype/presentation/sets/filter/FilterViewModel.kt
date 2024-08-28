@@ -314,7 +314,6 @@ open class FilterViewModel(
         }
         else -> {
             filterValueListState.value = emptyList()
-            Timber.e("No need values list for format ${relation.format}")
         }
     }
 

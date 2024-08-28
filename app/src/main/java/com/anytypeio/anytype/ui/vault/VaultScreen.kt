@@ -122,7 +122,7 @@ fun VaultScreenToolbar(
             modifier = Modifier.align(Alignment.Center)
         )
         Image(
-            painter = painterResource(id = R.drawable.ic_space_settings),
+            painter = painterResource(id = R.drawable.ic_vault_settings),
             contentDescription = "Settings icon",
             modifier = Modifier
                 .align(Alignment.CenterStart)

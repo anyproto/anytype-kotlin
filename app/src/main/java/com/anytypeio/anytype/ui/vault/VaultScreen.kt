@@ -205,7 +205,7 @@ fun VaultSpaceCard(
                 .padding(start = 16.dp)
                 .size(64.dp)
                 .background(
-                    color = Color.Red,
+                    color = Color.White,
                     shape = RoundedCornerShape(8.dp)
                 )
                 .align(Alignment.CenterStart)

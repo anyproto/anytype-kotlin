@@ -4,9 +4,12 @@ import android.R.id.copy
 import android.R.id.paste
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Paint
 import android.os.Parcelable
 import android.text.InputType
 import android.text.Spanned
+import android.text.TextPaint
+import android.text.TextUtils
 import android.text.TextWatcher
 import android.text.util.Linkify
 import android.util.AttributeSet
@@ -255,6 +258,34 @@ class TextInputWidget : AppCompatEditText {
             }
         }
         super.onDraw(canvas)
+    }
+
+    private var pendingText : CharSequence? = null
+    private var pendingType: BufferType? = null
+
+    override fun setText(text: CharSequence?, type: BufferType?) {
+        // try to cover most popular cases of setting up the text: by resId and by text
+        if (ellipsize != null) {
+            pendingText = text
+            pendingType = type
+        }
+        super.setText(text, pendingType)
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        if (pendingText != null) {
+            var text = pendingText
+            if (ellipsize != null) {
+                val textPaint = TextPaint(Paint.ANTI_ALIAS_FLAG or Paint.SUBPIXEL_TEXT_FLAG)
+                textPaint.textSize = textSize
+                // We don't have layout initialized until onMeasure is called
+                text = TextUtils.ellipsize(text, textPaint, layout.width.toFloat(), ellipsize)
+            }
+            super.setText(text, pendingType)
+            pendingText = null
+            pendingType = null
+        }
     }
 
     fun setLinksClickable() {

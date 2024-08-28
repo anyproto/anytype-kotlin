@@ -54,7 +54,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/graphic"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="W. J. T. Mitchell — There Are No Visual Media.pdf" />
+            tools:text="@string/about" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

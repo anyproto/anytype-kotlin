@@ -8,13 +8,16 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.fragment.findNavController
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.vault.VaultViewModel
 import com.anytypeio.anytype.presentation.vault.VaultViewModel.Command
+import com.anytypeio.anytype.ui.settings.ProfileSettingsFragment
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 
@@ -38,6 +41,15 @@ class VaultFragment : BaseComposeFragment() {
                     onSpaceClicked = vm::onSpaceClicked,
                     onCreateSpaceClicked = {
                         // TODO
+                    },
+                    onSettingsClicked = {
+                        // TODO move to command and provide entry space id
+                        runCatching {
+                            findNavController().navigate(
+                                R.id.profileScreen,
+                                bundleOf(ProfileSettingsFragment.SPACE_ID_KEY to "")
+                            )
+                        }
                     }
                 )
             }

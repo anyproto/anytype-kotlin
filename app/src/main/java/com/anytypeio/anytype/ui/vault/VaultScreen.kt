@@ -57,7 +57,8 @@ import com.anytypeio.anytype.ui.widgets.types.gradient
 fun VaultScreen(
     spaces: List<VaultSpaceView>,
     onSpaceClicked: (VaultSpaceView) -> Unit,
-    onCreateSpaceClicked: () -> Unit
+    onCreateSpaceClicked: () -> Unit,
+    onSettingsClicked: () -> Unit
 ) {
     Box(
         Modifier
@@ -73,7 +74,8 @@ fun VaultScreen(
             )
     ) {
        VaultScreenToolbar(
-           onPlusClicked = onCreateSpaceClicked
+           onPlusClicked = onCreateSpaceClicked,
+           onSettingsClicked = onSettingsClicked
        )
        LazyColumn(
            modifier = Modifier
@@ -108,7 +110,8 @@ fun VaultScreen(
 
 @Composable
 fun VaultScreenToolbar(
-    onPlusClicked: () -> Unit
+    onPlusClicked: () -> Unit,
+    onSettingsClicked: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -127,6 +130,9 @@ fun VaultScreenToolbar(
             modifier = Modifier
                 .align(Alignment.CenterStart)
                 .padding(start = 16.dp)
+                .noRippleClickable {
+                    onSettingsClicked()
+                }
         )
         Image(
             // TODO change icon
@@ -236,7 +242,8 @@ fun VaultSpaceCard(
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
 fun VaultScreenToolbarPreview() {
     VaultScreenToolbar(
-        onPlusClicked = {}
+        onPlusClicked = {},
+        onSettingsClicked = {}
     )
 }
 
@@ -271,6 +278,7 @@ fun VaultScreenPreview() {
             )
         },
         onSpaceClicked = {},
-        onCreateSpaceClicked = {}
+        onCreateSpaceClicked = {},
+        onSettingsClicked = {}
     )
 }

@@ -196,13 +196,7 @@
 
     <fragment
         android:id="@+id/vaultScreen"
-        android:name="com.anytypeio.anytype.ui.vault.VaultFragment">
-<!--        <action-->
-<!--            android:id="@+id/switchSpaceAction"-->
-<!--            app:popUpTo="@+id/homeScreen"-->
-<!--            app:popUpToInclusive="false"-->
-<!--            app:enterAnim="@anim/anim_switch_space_enter" />-->
-    </fragment>
+        android:name="com.anytypeio.anytype.ui.vault.VaultFragment"/>
 
     <dialog
         android:id="@+id/createSpaceScreen"

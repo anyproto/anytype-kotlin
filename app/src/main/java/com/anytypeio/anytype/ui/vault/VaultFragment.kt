@@ -32,9 +32,7 @@ class VaultFragment : BaseComposeFragment() {
             MaterialTheme(typography = typography) {
                 VaultScreen(
                     spaces = vm.spaces.collectAsStateWithLifecycle().value,
-                    onSpaceClicked = {
-                        // TODO
-                    },
+                    onSpaceClicked = vm::onSpaceClicked,
                     onCreateSpaceClicked = {
                         // TODO
                     }

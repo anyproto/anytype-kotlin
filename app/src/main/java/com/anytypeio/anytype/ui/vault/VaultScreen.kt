@@ -5,6 +5,7 @@ import android.os.Build.VERSION.SDK_INT
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -24,6 +25,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -43,8 +46,11 @@ import com.anytypeio.anytype.core_ui.views.BodyBold
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
+import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.vault.VaultViewModel.VaultSpaceView
+import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
+import com.anytypeio.anytype.ui.widgets.types.gradient
 
 
 @Composable
@@ -70,11 +76,12 @@ fun VaultScreen(
            onPlusClicked = onCreateSpaceClicked
        )
        LazyColumn(
-           Modifier
+           modifier = Modifier
                .fillMaxSize()
                .padding(
                    top = 48.dp
-               )
+               ),
+           verticalArrangement = Arrangement.spacedBy(8.dp)
        ) {
            items(
                items = spaces,
@@ -147,6 +154,41 @@ fun VaultSpaceCard(
             .fillMaxWidth()
             .height(96.dp)
             .padding(horizontal = 8.dp)
+            .clip(RoundedCornerShape(20.dp))
+            .then(
+                when(wallpaper) {
+                    is Wallpaper.Color -> {
+                        val color = WallpaperColor.entries.find {
+                            it.code == wallpaper.code
+                        }
+                        if (color != null) {
+                            Modifier.background(
+                                color = Color(Integer.decode(color.hex)),
+                                shape = RoundedCornerShape(20.dp)
+                            )
+                        } else {
+                            Modifier
+                        }
+                    }
+                    is Wallpaper.Gradient -> {
+                        Modifier.background(
+                            brush = Brush.horizontalGradient(
+                                colors = gradient(wallpaper.code)
+                            ),
+                            shape = RoundedCornerShape(20.dp)
+                        )
+                    }
+                    is Wallpaper.Default -> {
+                        Modifier.background(
+                            brush = Brush.horizontalGradient(
+                                colors = gradient(CoverGradient.SKY)
+                            ),
+                            shape = RoundedCornerShape(20.dp)
+                        )
+                    }
+                    else -> Modifier
+                }
+            )
             .clickable {
                 onCardClicked()
             }
@@ -154,13 +196,13 @@ fun VaultSpaceCard(
         // TODO render space icon
         Box(
             modifier = Modifier
+                .padding(start = 16.dp)
                 .size(64.dp)
                 .background(
                     color = Color.Red,
                     shape = RoundedCornerShape(8.dp)
                 )
                 .align(Alignment.CenterStart)
-                .padding(start = 16.dp)
         )
         Column(
             modifier = Modifier

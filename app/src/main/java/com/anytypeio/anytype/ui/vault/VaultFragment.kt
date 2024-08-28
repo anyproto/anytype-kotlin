@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
@@ -11,6 +12,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.vault.VaultViewModel
+import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 
 class VaultFragment : BaseComposeFragment() {
@@ -27,16 +29,22 @@ class VaultFragment : BaseComposeFragment() {
     ): View = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
-            VaultScreen(
-                spaces = vm.spaces.collectAsStateWithLifecycle().value,
-                onSpaceClicked = {
-                    // TODO
-                },
-                onCreateSpaceClicked = {
-                    // TODO
-                }
-            )
+            MaterialTheme(typography = typography) {
+                VaultScreen(
+                    spaces = vm.spaces.collectAsStateWithLifecycle().value,
+                    onSpaceClicked = {
+                        // TODO
+                    },
+                    onCreateSpaceClicked = {
+                        // TODO
+                    }
+                )
+            }
         }
+    }
+
+    override fun onApplyWindowRootInsets(view: View) {
+        // Do nothing
     }
 
     override fun injectDependencies() {

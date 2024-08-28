@@ -7,6 +7,7 @@ import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.presentation.vault.VaultViewModel
 import com.anytypeio.anytype.ui.vault.VaultFragment
 import dagger.Binds
@@ -48,4 +49,5 @@ interface VaultComponentDependencies : ComponentDependencies {
     fun appCoroutineDispatchers(): AppCoroutineDispatchers
     fun analytics(): Analytics
     fun urlBuilder(): UrlBuilder
+    fun spaceViewSubscriptionContainer(): SpaceViewSubscriptionContainer
 }

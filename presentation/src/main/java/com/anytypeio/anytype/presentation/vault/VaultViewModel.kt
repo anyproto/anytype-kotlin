@@ -18,6 +18,7 @@ import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -32,6 +33,7 @@ class VaultViewModel(
 ) : BaseViewModel() {
 
     val spaces = MutableStateFlow<List<VaultSpaceView>>(emptyList())
+    val commands = MutableSharedFlow<Command>(replay = 0)
 
     init {
         Timber.i("VaultViewModel, init")
@@ -91,7 +93,7 @@ class VaultViewModel(
                 Timber.e(it, "Error while saving current space on vault screen")
             },
             onSuccess = {
-                // TODO
+                commands.emit(Command.EnterSpaceHomeScreen)
             }
         )
     }
@@ -115,10 +117,13 @@ class VaultViewModel(
         ) as T
     }
 
-
     data class VaultSpaceView(
         val space: ObjectWrapper.SpaceView,
         val icon: SpaceIconView,
         val wallpaper: Wallpaper = Wallpaper.Default
     )
+
+    sealed class Command {
+        data object EnterSpaceHomeScreen : Command()
+    }
 }

@@ -122,28 +122,28 @@ class CreateDVObjectTest : ObjectSetViewModelTestSetup() {
             DVFilter(
                 relation = filter1Relation.key,
                 relationFormat = RelationFormat.SHORT_TEXT,
-                operator = DVFilterOperator.AND,
+                operator = DVFilterOperator.NO,
                 condition = DVFilterCondition.EQUAL,
                 value = "321"
             ),
             DVFilter(
                 relation = filter2Relation.key,
                 relationFormat = RelationFormat.CHECKBOX,
-                operator = DVFilterOperator.AND,
+                operator = DVFilterOperator.NO,
                 condition = DVFilterCondition.EQUAL,
                 value = true
             ),
             DVFilter(
                 relation = filter3Relation.key,
                 relationFormat = RelationFormat.SHORT_TEXT,
-                operator = DVFilterOperator.AND,
+                operator = DVFilterOperator.NO,
                 condition = DVFilterCondition.EQUAL,
                 value = "456"
             ),
             DVFilter(
                 relation = filter4Relation.key,
                 relationFormat = RelationFormat.SHORT_TEXT,
-                operator = DVFilterOperator.AND,
+                operator = DVFilterOperator.NO,
                 condition = notPermittedConditions.random(),
                 value = "456"
             )
@@ -209,7 +209,6 @@ class CreateDVObjectTest : ObjectSetViewModelTestSetup() {
             DVFilter(
                 relation = prefilledRelation.key,
                 relationFormat = prefilledRelation.relationFormat,
-                operator = Block.Content.DataView.Filter.Operator.AND,
                 condition = Block.Content.DataView.Filter.Condition.EQUAL,
                 value = "456"
             )
@@ -294,28 +293,24 @@ class CreateDVObjectTest : ObjectSetViewModelTestSetup() {
             DVFilter(
                 relation = filter1Relation.key,
                 relationFormat = RelationFormat.SHORT_TEXT,
-                operator = Block.Content.DataView.Filter.Operator.AND,
                 condition = Block.Content.DataView.Filter.Condition.EQUAL,
                 value = "321"
             ),
             DVFilter(
                 relation = filter2Relation.key,
                 relationFormat = RelationFormat.CHECKBOX,
-                operator = Block.Content.DataView.Filter.Operator.AND,
                 condition = Block.Content.DataView.Filter.Condition.EQUAL,
                 value = true
             ),
             DVFilter(
                 relation = filter3Relation.key,
                 relationFormat = RelationFormat.SHORT_TEXT,
-                operator = Block.Content.DataView.Filter.Operator.AND,
                 condition = Block.Content.DataView.Filter.Condition.EQUAL,
                 value = "456"
             ),
             DVFilter(
                 relation = filter4Relation.key,
                 relationFormat = RelationFormat.SHORT_TEXT,
-                operator = Block.Content.DataView.Filter.Operator.AND,
                 condition = notPermittedConditions.random(),
                 value = "456"
             )
@@ -403,28 +398,24 @@ class CreateDVObjectTest : ObjectSetViewModelTestSetup() {
             DVFilter(
                 relation = filter1Relation.key,
                 relationFormat = RelationFormat.SHORT_TEXT,
-                operator = Block.Content.DataView.Filter.Operator.AND,
                 condition = Block.Content.DataView.Filter.Condition.EQUAL,
                 value = "321"
             ),
             DVFilter(
                 relation = filter2Relation.key,
                 relationFormat = RelationFormat.CHECKBOX,
-                operator = Block.Content.DataView.Filter.Operator.AND,
                 condition = Block.Content.DataView.Filter.Condition.EQUAL,
                 value = true
             ),
             DVFilter(
                 relation = filter3Relation.key,
                 relationFormat = RelationFormat.SHORT_TEXT,
-                operator = Block.Content.DataView.Filter.Operator.AND,
                 condition = Block.Content.DataView.Filter.Condition.EQUAL,
                 value = "456"
             ),
             DVFilter(
                 relation = filter4Relation.key,
                 relationFormat = RelationFormat.SHORT_TEXT,
-                operator = Block.Content.DataView.Filter.Operator.AND,
                 condition = notPermittedConditions.random(),
                 value = "456"
             )
@@ -467,7 +458,6 @@ class CreateDVObjectTest : ObjectSetViewModelTestSetup() {
             DVFilter(
                 relation = filterDate.key,
                 relationFormat = RelationFormat.DATE,
-                operator = Block.Content.DataView.Filter.Operator.AND,
                 condition = Block.Content.DataView.Filter.Condition.EQUAL,
                 quickOption = quickOption,
                 value = filterValue
@@ -618,7 +608,6 @@ class CreateDVObjectTest : ObjectSetViewModelTestSetup() {
         val filters = listOf(
             DVFilter(
                 relation = filter1Relation.key,
-                operator = Block.Content.DataView.Filter.Operator.AND,
                 condition = Block.Content.DataView.Filter.Condition.EQUAL,
                 value = true
             )

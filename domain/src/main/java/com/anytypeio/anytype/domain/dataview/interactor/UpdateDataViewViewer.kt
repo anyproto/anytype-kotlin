@@ -146,7 +146,7 @@ class UpdateDataViewViewer(
                 val view: Id,
                 val relationKey: String,
                 val relationFormat: RelationFormat? = null,
-                val operator: Block.Content.DataView.Filter.Operator = Block.Content.DataView.Filter.Operator.AND,
+                val operator: Block.Content.DataView.Filter.Operator = Block.Content.DataView.Filter.Operator.NO,
                 val condition: Block.Content.DataView.Filter.Condition,
                 val quickOption: Block.Content.DataView.Filter.QuickOption = Block.Content.DataView.Filter.QuickOption.EXACT_DATE,
                 val value: Any? = null

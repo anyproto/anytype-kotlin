@@ -826,7 +826,7 @@ open class FilterViewModel(
         viewerId: Id,
         relationKey: String,
         relationFormat: RelationFormat? = null,
-        operator: DVFilterOperator = DVFilterOperator.AND,
+        operator: DVFilterOperator = DVFilterOperator.NO,
         condition: DVFilterCondition,
         quickOption: DVFilterQuickOption = DVFilterQuickOption.EXACT_DATE,
         value: Any? = null

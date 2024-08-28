@@ -289,7 +289,6 @@ private fun getNetworkCardSettings(
                     secondaryText = stringResource(id = R.string.sync_status_anytype_end_to_end)
                 )
             }
-
             SpaceSyncStatus.SYNCING -> {
                 CardSettings(
                     icon = painterResource(R.drawable.ic_sync_net_connected),
@@ -303,7 +302,6 @@ private fun getNetworkCardSettings(
                     )
                 )
             }
-
             SpaceSyncStatus.ERROR -> {
                 val errorText = getErrorText(error)
                 CardSettings(
@@ -312,13 +310,15 @@ private fun getNetworkCardSettings(
                     secondaryText = stringResource(id = errorText)
                 )
             }
-
             SpaceSyncStatus.OFFLINE -> {
                 CardSettings(
                     icon = painterResource(R.drawable.ic_sync_net_default),
                     mainText = stringResource(id = R.string.sync_status_anytype_network),
                     secondaryText = stringResource(id = R.string.sync_status_anytype_network_no_connecting)
                 )
+            }
+            SpaceSyncStatus.NETWORK_UPDATE_NEEDED -> {
+                TODO()
             }
         }
 
@@ -362,9 +362,9 @@ private fun getNetworkCardSettings(
                         secondaryText = stringResource(id = R.string.sync_status_anytype_network_no_connecting)
                     )
                 }
+                SpaceSyncStatus.NETWORK_UPDATE_NEEDED -> TODO()
             }
         }
-
         SpaceSyncNetwork.LOCAL_ONLY -> {
             CardSettings(
                 icon = painterResource(R.drawable.ic_sync_local_only),

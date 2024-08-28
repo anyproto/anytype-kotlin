@@ -84,7 +84,8 @@ enum class SpaceSyncStatus {
     SYNCED,
     SYNCING,
     ERROR,
-    OFFLINE
+    OFFLINE,
+    NETWORK_UPDATE_NEEDED
 }
 
 enum class SpaceSyncNetwork {

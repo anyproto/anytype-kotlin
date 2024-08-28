@@ -351,12 +351,12 @@ data class Block(
                 val id: Id = "",
                 val relation: Key,
                 val relationFormat: RelationFormat? = null,
-                val operator: Operator = Operator.AND,
+                val operator: Operator = Operator.NO,
                 val condition: Condition,
                 val quickOption: QuickOption = QuickOption.EXACT_DATE,
                 val value: Any? = null
             ) {
-                enum class Operator { AND, OR }
+                enum class Operator { AND, OR, NO }
                 enum class Condition {
                     EQUAL, NOT_EQUAL, GREATER, LESS, GREATER_OR_EQUAL, LESS_OR_EQUAL,
                     LIKE, NOT_LIKE, IN, NOT_IN, EMPTY, NOT_EMPTY, ALL_IN, NOT_ALL_IN, NONE,

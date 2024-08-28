@@ -58,7 +58,6 @@ class VaultFragment : BaseComposeFragment() {
                     findNavController().popBackStack()
                 }
             }
-
             is Command.CreateNewSpace -> {
                 runCatching {
                     findNavController().navigate(
@@ -66,7 +65,6 @@ class VaultFragment : BaseComposeFragment() {
                     )
                 }
             }
-
             is Command.OpenProfileSettings -> {
                 runCatching {
                     findNavController().navigate(

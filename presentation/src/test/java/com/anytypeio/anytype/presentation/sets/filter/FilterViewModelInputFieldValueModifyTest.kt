@@ -171,7 +171,6 @@ class FilterViewModelInputFieldValueModifyTest {
             filters = listOf(
                 Block.Content.DataView.Filter(
                     relation = relation1.key,
-                    operator = Block.Content.DataView.Filter.Operator.AND,
                     condition = Block.Content.DataView.Filter.Condition.LIKE,
                     value = MockDataFactory.randomString()
                 )
@@ -407,6 +406,6 @@ class FilterViewModelInputFieldValueModifyTest {
     companion object {
         const val EMPTY_STRING = ""
         const val NOT_EMPTY_STRING = "not empty"
-        val DEFAULT_OPERATOR = Block.Content.DataView.Filter.Operator.AND
+        val DEFAULT_OPERATOR = Block.Content.DataView.Filter.Operator.NO
     }
 }

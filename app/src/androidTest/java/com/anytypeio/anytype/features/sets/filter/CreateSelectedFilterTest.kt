@@ -117,7 +117,7 @@ class CreateSelectedFilterTest {
         val filter = DVFilter(
             relation = relationKey,
             value = true,
-            operator = Block.Content.DataView.Filter.Operator.AND,
+            operator = Block.Content.DataView.Filter.Operator.NO,
             condition = DVFilterCondition.EQUAL
         )
 
@@ -187,7 +187,7 @@ class CreateSelectedFilterTest {
         val filter = DVFilter(
             relation = relationKey,
             value = true,
-            operator = Block.Content.DataView.Filter.Operator.AND,
+            operator = Block.Content.DataView.Filter.Operator.NO,
             condition = DVFilterCondition.EQUAL
         )
 

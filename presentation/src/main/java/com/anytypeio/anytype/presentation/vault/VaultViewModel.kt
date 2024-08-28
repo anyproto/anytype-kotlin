@@ -4,8 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
@@ -18,7 +20,8 @@ import timber.log.Timber
 
 class VaultViewModel(
     private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
-    private val urlBuilder: UrlBuilder
+    private val urlBuilder: UrlBuilder,
+    private val getSpaceWallpapers: GetSpaceWallpapers
 ) : BaseViewModel() {
 
     val spaces = MutableStateFlow<List<VaultSpaceView>>(emptyList())
@@ -26,6 +29,7 @@ class VaultViewModel(
     init {
         Timber.i("VaultViewModel, init")
         viewModelScope.launch {
+            val wallpapers = getSpaceWallpapers.async(Unit).getOrNull() ?: emptyMap()
             spaceViewSubscriptionContainer
                 .observe()
                 .map { spaces ->
@@ -35,6 +39,10 @@ class VaultViewModel(
                             icon = space.spaceIcon(
                                 builder = urlBuilder,
                                 spaceGradientProvider = SpaceGradientProvider.Default
+                            ),
+                            wallpaper = wallpapers.getOrDefault(
+                                key = space.targetSpaceId,
+                                defaultValue = Wallpaper.Default
                             )
                         )
                     }
@@ -46,6 +54,7 @@ class VaultViewModel(
 
     class Factory @Inject constructor(
         private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
+        private val getSpaceWallpapers: GetSpaceWallpapers,
         private val urlBuilder: UrlBuilder
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
@@ -53,6 +62,7 @@ class VaultViewModel(
             modelClass: Class<T>
         ) = VaultViewModel(
             spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+            getSpaceWallpapers = getSpaceWallpapers,
             urlBuilder = urlBuilder
         ) as T
     }
@@ -60,6 +70,7 @@ class VaultViewModel(
 
     data class VaultSpaceView(
         val space: ObjectWrapper.SpaceView,
-        val icon: SpaceIconView
+        val icon: SpaceIconView,
+        val wallpaper: Wallpaper = Wallpaper.Default
     )
 }

@@ -351,7 +351,7 @@ data class Block(
                 val id: Id = "",
                 val relation: Key,
                 val relationFormat: RelationFormat? = null,
-                val operator: Operator = Operator.AND,
+                val operator: Operator = Operator.NO,
                 val condition: Condition,
                 val quickOption: QuickOption = QuickOption.EXACT_DATE,
                 val value: Any? = null

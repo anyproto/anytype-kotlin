@@ -23,7 +23,7 @@ interface MiddlewareProtobufLogger {
 
         override fun logRequest(any: Any) {
             if (featureToggles.isLogMiddlewareInteraction) {
-                Timber.d("request -> ${any.toLogMessage()}")
+                Timber.d("request -> ${any.toLogMessageRequest()}")
             }
         }
 
@@ -53,6 +53,12 @@ interface MiddlewareProtobufLogger {
                     protobufConverter.provideConverter().toJson(this)
                 }"
             }
+        }
+
+        private fun Any.toLogMessageRequest(): String {
+            return "${this::class.java.canonicalName}:\n${
+                protobufConverter.provideConverter().toJson(this)
+            }"
         }
     }
 }

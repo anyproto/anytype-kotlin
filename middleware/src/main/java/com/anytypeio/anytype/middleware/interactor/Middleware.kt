@@ -2697,9 +2697,9 @@ class Middleware @Inject constructor(
             limit = command.limit
 
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.getVersions(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.getVersions(request) }
+        logResponseIfDebug(response, time)
         return response.versions.map { it.toCoreModel() }
     }
 
@@ -2710,9 +2710,9 @@ class Middleware @Inject constructor(
             versionId = command.versionId,
             traceId = command.traceId
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.showVersion(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.showVersion(request) }
+        logResponseIfDebug(response, time)
         return response.toCoreModel()
     }
 
@@ -2722,9 +2722,9 @@ class Middleware @Inject constructor(
             objectId = command.objectId,
             versionId = command.versionId
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.setVersion(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.setVersion(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws
@@ -2735,25 +2735,25 @@ class Middleware @Inject constructor(
             currentVersion = command.currentVersion,
             previousVersion = command.previousVersion
         )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.diffVersions(request)
-        if (BuildConfig.DEBUG) logResponse(response)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.diffVersions(request) }
+        logResponseIfDebug(response, time)
         return response.toCoreModel(context = command.objectId)
     }
 
-    private fun logRequest(any: Any) {
-        logger.logRequest(any).also {
-            if (BuildConfig.DEBUG && threadInfo.isOnMainThread()) {
-                Timber.w("Main thread is used for operation: ${any::class.qualifiedName}")
+    private fun logRequestIfDebug(request: Any) {
+        if (BuildConfig.DEBUG) {
+            logger.logRequest(request).also {
+                if (BuildConfig.DEBUG && threadInfo.isOnMainThread()) {
+                    Timber.w("Main thread is used for operation: ${request::class.qualifiedName}")
+                }
             }
         }
     }
 
-    private fun logRequestIfDebug(request: Any) {
-        if (BuildConfig.DEBUG) logRequest(request)
-    }
-
     private fun logResponseIfDebug(response: Any, time: Duration? = null) {
-        if (BuildConfig.DEBUG) logger.logResponse(response, time)
+        if (BuildConfig.DEBUG) {
+            logger.logResponse(response, time)
+        }
     }
 }

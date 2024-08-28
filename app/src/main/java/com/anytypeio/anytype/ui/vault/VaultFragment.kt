@@ -79,7 +79,7 @@ class VaultFragment : BaseComposeFragment() {
     }
 
     override fun onApplyWindowRootInsets(view: View) {
-        // Do nothing ?
+        // TODO Do nothing ?
     }
 
     override fun injectDependencies() {

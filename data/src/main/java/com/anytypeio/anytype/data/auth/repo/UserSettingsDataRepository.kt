@@ -17,6 +17,10 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
 
     override suspend fun getWallpaper(space: Id): Wallpaper = cache.getWallpaper(space)
 
+    override suspend fun getWallpapers(): Map<Id, Wallpaper> {
+        return cache.getWallpapers()
+    }
+
     override suspend fun setDefaultObjectType(
         space: SpaceId,
         type: TypeId

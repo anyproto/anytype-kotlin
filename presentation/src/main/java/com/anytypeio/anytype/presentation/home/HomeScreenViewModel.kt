@@ -58,6 +58,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.search.GetLastSearchQuery
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.domain.types.GetPinnedObjectTypes
@@ -194,7 +195,8 @@ class HomeScreenViewModel(
     private val payloadDelegator: PayloadDelegator,
     private val createBlock: CreateBlock,
     private val dateProvider: DateProvider,
-    private val addObjectToCollection: AddObjectToCollection
+    private val addObjectToCollection: AddObjectToCollection,
+    private val getLastSearchQuery: GetLastSearchQuery
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -1669,6 +1671,17 @@ class HomeScreenViewModel(
     }
 
     fun onSearchIconClicked() {
+        viewModelScope.launch {
+            val space = spaceManager.get()
+            commands.emit(
+                Command.OpenGlobalSearchScreen(
+                    initialQuery = getLastSearchQuery.run(
+                        GetLastSearchQuery.Params(space = SpaceId(space))
+                    ),
+                    space = space
+                )
+            )
+        }
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = EventsDictionary.searchScreenShow,
@@ -2046,7 +2059,8 @@ class HomeScreenViewModel(
         private val createBlock: CreateBlock,
         private val dateProvider: DateProvider,
         private val coverImageHashProvider: CoverImageHashProvider,
-        private val addObjectToCollection: AddObjectToCollection
+        private val addObjectToCollection: AddObjectToCollection,
+        private val getLastSearchQuery: GetLastSearchQuery
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -2093,7 +2107,8 @@ class HomeScreenViewModel(
             payloadDelegator = payloadDelegator,
             createBlock = createBlock,
             dateProvider = dateProvider,
-            addObjectToCollection = addObjectToCollection
+            addObjectToCollection = addObjectToCollection,
+            getLastSearchQuery = getLastSearchQuery
         ) as T
     }
 
@@ -2135,6 +2150,8 @@ sealed class Command {
     data class OpenSpaceSettings(val spaceId: SpaceId) : Command()
 
     data class OpenObjectCreateDialog(val space: SpaceId) : Command()
+
+    data class OpenGlobalSearchScreen(val initialQuery: String, val space: Id) : Command()
 
     data class SelectWidgetType(
         val ctx: Id,

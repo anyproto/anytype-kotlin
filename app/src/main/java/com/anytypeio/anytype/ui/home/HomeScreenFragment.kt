@@ -18,6 +18,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
+import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
@@ -104,7 +105,11 @@ class HomeScreenFragment : BaseComposeFragment() {
                     onProfileClicked = throttledClick(
                         onClick = {
                             runCatching {
-                                findNavController().navigate(R.id.action_open_spaces)
+                                if (BuildConfig.DEBUG) {
+                                    findNavController().navigate(R.id.action_open_vault)
+                                } else {
+                                    findNavController().navigate(R.id.action_open_spaces)
+                                }
                             }
                         }
                     ),

@@ -15,6 +15,7 @@ interface UserSettingsRepository {
 
     suspend fun setWallpaper(space: Id, wallpaper: Wallpaper)
     suspend fun getWallpaper(space: Id): Wallpaper
+    suspend fun getWallpapers(): Map<Id, Wallpaper>
 
     suspend fun setDefaultObjectType(space: SpaceId, type: TypeId)
     suspend fun getDefaultObjectType(space: SpaceId): TypeId?

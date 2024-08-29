@@ -57,7 +57,7 @@ class VaultFragment : BaseComposeFragment() {
         when (command) {
             is Command.EnterSpaceHomeScreen -> {
                 runCatching {
-                    findNavController().popBackStack()
+                    findNavController().navigate(R.id.openSpace)
                 }
             }
             is Command.CreateNewSpace -> {

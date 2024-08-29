@@ -1086,6 +1086,7 @@ message Event {
             Syncing = 1;
             Error = 2;
             Offline = 3;
+            NetworkNeedsUpdate = 4;
         }
         enum Network {
             Anytype = 0;

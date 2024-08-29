@@ -344,6 +344,12 @@
             app:enterAnim="@anim/fade_in"
             app:popUpTo="@id/authStartScreen"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_openVault"
+            app:destination="@id/vaultScreen"
+            app:enterAnim="@anim/fade_in"
+            app:popUpTo="@id/authStartScreen"
+            app:popUpToInclusive="true" />
 
     </navigation>
 

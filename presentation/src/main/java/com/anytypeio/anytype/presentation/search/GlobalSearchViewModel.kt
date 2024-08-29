@@ -34,7 +34,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.search.SearchWithMeta
-import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.domain.search.SetLastSearchQuery
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchBacklinksEvent
@@ -62,16 +62,17 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class GlobalSearchViewModel(
+    private val vmParams: VmParams,
     private val searchWithMeta: SearchWithMeta,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val storeOfRelations: StoreOfRelations,
-    private val spaceManager: SpaceManager,
     private val urlBuilder: UrlBuilder,
     private val analytics: Analytics,
-    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val setLastSearchQuery: SetLastSearchQuery
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
-    private val userInput = MutableStateFlow(EMPTY_STRING_VALUE)
+    private val userInput = MutableStateFlow(vmParams.initialQuery)
     private val searchQuery = userInput
         .take(1)
         .onCompletion {
@@ -88,18 +89,19 @@ class GlobalSearchViewModel(
     ) { mode, query ->
         mode to query
     }.flatMapLatest { (mode, query) ->
-        val space = SpaceId(spaceManager.get())
         when(mode) {
             is Mode.Default -> {
-                buildDefaultSearchFlow(query = query, space = space)
+                buildDefaultSearchFlow(query = query, space = vmParams.space)
             }
             is Mode.Related -> {
-                buildRelatedSearchFlow(query = query, mode = mode, space = space)
+                buildRelatedSearchFlow(query = query, mode = mode, space = vmParams.space)
             }
         }
-    }.scan<ViewState, ViewState>(initial = ViewState.Init(
-        query = "Test8888"
-    )) { curr, new ->
+    }.scan<ViewState, ViewState>(
+        initial = ViewState.Init(
+            query = vmParams.initialQuery
+        )
+    ) { curr, new ->
         when(new) {
             is ViewState.Default -> {
                 if (new.isLoading) {
@@ -141,7 +143,7 @@ class GlobalSearchViewModel(
                 filters = buildList {
                     addAll(
                         ObjectSearchConstants.filterSearchObjects(
-                            spaces = listOf(spaceManager.get())
+                            spaces = listOf(vmParams.space.id)
                         )
                     )
                     add(
@@ -256,7 +258,7 @@ class GlobalSearchViewModel(
         viewModelScope.launch {
             sendAnalyticsSearchResultEvent(
                 analytics = analytics,
-                spaceParams = provideParams(spaceManager.get())
+                spaceParams = provideParams(vmParams.space.id)
             )
         }
     }
@@ -276,30 +278,34 @@ class GlobalSearchViewModel(
         viewModelScope.launch {
             sendAnalyticsSearchBacklinksEvent(
                 analytics = analytics,
-                spaceParams = provideParams(spaceManager.get())
+                spaceParams = provideParams(vmParams.space.id)
             )
         }
     }
 
+    data class VmParams(val initialQuery: String, val space: SpaceId)
+
     class Factory @Inject constructor(
+        private val vmParams: VmParams,
         private val searchWithMeta: SearchWithMeta,
         private val storeOfObjectTypes: StoreOfObjectTypes,
         private val storeOfRelations: StoreOfRelations,
-        private val spaceManager: SpaceManager,
         private val urlBuilder: UrlBuilder,
         private val analytics: Analytics,
-        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        private val setLastSearchQuery: SetLastSearchQuery
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return GlobalSearchViewModel(
+                vmParams = vmParams,
                 searchWithMeta = searchWithMeta,
                 storeOfObjectTypes = storeOfObjectTypes,
                 storeOfRelations = storeOfRelations,
-                spaceManager = spaceManager,
                 urlBuilder = urlBuilder,
                 analytics = analytics,
-                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+                setLastSearchQuery = setLastSearchQuery
             ) as T
         }
     }

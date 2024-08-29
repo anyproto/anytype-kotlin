@@ -4,17 +4,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.isKeyboardVisible
+import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -33,6 +36,9 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
     lateinit var factory: GlobalSearchViewModel.Factory
 
     private val vm by viewModels<GlobalSearchViewModel> { factory }
+
+    private val initialQuery get() = argString(ARG_INITIAL_STATE)
+    private val space get() = argString(ARG_SPACE)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -64,7 +70,7 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
             }
             LaunchedEffect(Unit) {
                 vm.navigation.collect { nav ->
-                    when(nav) {
+                    when (nav) {
                         is OpenObjectNavigation.OpenEditor -> {
                             findNavController().navigate(
                                 R.id.objectNavigation,
@@ -74,6 +80,7 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
                                 )
                             )
                         }
+
                         is OpenObjectNavigation.OpenDataView -> {
                             findNavController().navigate(
                                 R.id.dataViewNavigation,
@@ -83,6 +90,7 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
                                 )
                             )
                         }
+
                         else -> {
                             // Do nothing.
                         }
@@ -98,13 +106,23 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
     }
 
     override fun injectDependencies() {
-        componentManager().globalSearchComponent.get().inject(this)
+        val params = GlobalSearchViewModel.VmParams(
+            initialQuery = initialQuery,
+            space = SpaceId(space)
+        )
+        componentManager().globalSearchComponent.get(params).inject(this)
     }
+
     override fun releaseDependencies() {
         componentManager().globalSearchComponent.release()
     }
 
     companion object {
         const val KEYBOARD_HIDE_DELAY = 300L
+
+        const val ARG_INITIAL_STATE = "arg.global.search.initial_state"
+        const val ARG_SPACE = "arg.global.search.space"
+        fun args(initial: String, space: Id): Bundle =
+            bundleOf(ARG_INITIAL_STATE to initial, ARG_SPACE to space)
     }
 }

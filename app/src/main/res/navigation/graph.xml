@@ -203,7 +203,7 @@
         <action
             android:id="@+id/openSpace"
             app:destination="@id/homeScreen"
-            app:enterAnim="@anim/nav_default_enter_anim" />
+            app:enterAnim="@anim/slide_in_right" />
     </fragment>
 
     <dialog

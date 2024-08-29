@@ -140,7 +140,8 @@ class Navigator : AppNavigation {
 //        navController?.navigate(R.id.pageSearchFragment)
         // Uncomment to use new search
         navController?.navigate(
-            R.id.globalSearchScreen, GlobalSearchFragment.args(
+            R.id.globalSearchScreen,
+            GlobalSearchFragment.args(
                 initialQuery = initialQuery,
                 space = space
             )

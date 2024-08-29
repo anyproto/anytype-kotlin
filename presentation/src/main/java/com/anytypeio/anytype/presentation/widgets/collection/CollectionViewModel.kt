@@ -47,6 +47,7 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendDeletionWarning
 import com.anytypeio.anytype.presentation.extension.sendScreenHomeEvent
+import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Companion.HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
@@ -833,13 +834,25 @@ class CollectionViewModel(
             props = Props(mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.navigation))
         )
         viewModelScope.launch {
-            commands.emit(
-                Command.ToSearch(
-                    initialQuery = getLastSearchQuery.run(
-                        GetLastSearchQuery.Params(space = SpaceId(space))
-                    ),
-                    space = space
-                )
+            val params = GetLastSearchQuery.Params(space = SpaceId(space))
+            getLastSearchQuery.async(params).fold(
+                onSuccess = { query ->
+                    commands.emit(
+                        Command.ToSearch(
+                            initialQuery = query,
+                            space = space
+                        )
+                    )
+                },
+                onFailure = {
+                    Timber.e(it, "Error while getting last search query")
+                    commands.emit(
+                        Command.ToSearch(
+                            initialQuery = "",
+                            space = space
+                        )
+                    )
+                }
             )
         }
     }

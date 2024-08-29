@@ -1673,13 +1673,25 @@ class HomeScreenViewModel(
     fun onSearchIconClicked() {
         viewModelScope.launch {
             val space = spaceManager.get()
-            commands.emit(
-                Command.OpenGlobalSearchScreen(
-                    initialQuery = getLastSearchQuery.run(
-                        GetLastSearchQuery.Params(space = SpaceId(space))
-                    ),
-                    space = space
-                )
+            val params = GetLastSearchQuery.Params(space = SpaceId(space))
+            getLastSearchQuery.async(params).fold(
+                onSuccess = { query ->
+                    commands.emit(
+                        Command.OpenGlobalSearchScreen(
+                            initialQuery = query,
+                            space = space
+                        )
+                    )
+                },
+                onFailure = {
+                    Timber.e(it, "Error while getting last search query")
+                    commands.emit(
+                        Command.OpenGlobalSearchScreen(
+                            initialQuery = "",
+                            space = space
+                        )
+                    )
+                }
             )
         }
         viewModelScope.sendEvent(

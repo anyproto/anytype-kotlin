@@ -34,7 +34,6 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.search.SearchWithMeta
-import com.anytypeio.anytype.domain.search.SetLastSearchQuery
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchBacklinksEvent
@@ -69,7 +68,6 @@ class GlobalSearchViewModel(
     private val urlBuilder: UrlBuilder,
     private val analytics: Analytics,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val setLastSearchQuery: SetLastSearchQuery
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val userInput = MutableStateFlow(vmParams.initialQuery)
@@ -292,8 +290,7 @@ class GlobalSearchViewModel(
         private val storeOfRelations: StoreOfRelations,
         private val urlBuilder: UrlBuilder,
         private val analytics: Analytics,
-        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-        private val setLastSearchQuery: SetLastSearchQuery
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -304,8 +301,7 @@ class GlobalSearchViewModel(
                 storeOfRelations = storeOfRelations,
                 urlBuilder = urlBuilder,
                 analytics = analytics,
-                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-                setLastSearchQuery = setLastSearchQuery
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
             ) as T
         }
     }

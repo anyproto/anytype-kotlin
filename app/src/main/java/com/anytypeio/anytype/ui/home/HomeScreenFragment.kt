@@ -92,10 +92,7 @@ class HomeScreenFragment : BaseComposeFragment() {
                     onWidgetSourceClicked = vm::onWidgetSourceClicked,
                     onChangeWidgetView = vm::onChangeCurrentWidgetView,
                     onToggleExpandedWidgetState = vm::onToggleCollapsedWidgetState,
-                    onSearchClicked = {
-                        vm.onSearchIconClicked()
-                        runCatching { navigation().openPageSearch() }
-                    },
+                    onSearchClicked = vm::onSearchIconClicked,
                     onLibraryClicked = {
                         vm.onLibraryClicked()
                     },
@@ -321,6 +318,16 @@ class HomeScreenFragment : BaseComposeFragment() {
                     }
                 }
                 dialog.show(childFragmentManager, "object-create-dialog")
+            }
+            is Command.OpenGlobalSearchScreen -> {
+                runCatching {
+                    navigation().openPageSearch(
+                        initialQuery = command.initialQuery,
+                        space = command.space
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while opening global search screen")
+                }
             }
         }
     }

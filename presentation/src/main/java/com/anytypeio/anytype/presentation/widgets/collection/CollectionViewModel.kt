@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.process
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -38,6 +39,7 @@ import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.search.GetLastSearchQuery
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.getSpaceWithTechSpace
@@ -45,6 +47,7 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendDeletionWarning
 import com.anytypeio.anytype.presentation.extension.sendScreenHomeEvent
+import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Companion.HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
@@ -107,7 +110,8 @@ class CollectionViewModel(
     private val spaceManager: SpaceManager,
     private val getSpaceView: GetSpaceView,
     private val dateTypeNameProvider: DateTypeNameProvider,
-    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val getLastSearchQuery: GetLastSearchQuery
 ) : ViewModel(), Reducer<CoreObjectView, Payload>, AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val payloads: Flow<Payload>
@@ -823,14 +827,33 @@ class CollectionViewModel(
         }
     }
 
-    fun onSearchClicked() {
+    fun onSearchClicked(space: Id) {
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = EventsDictionary.searchScreenShow,
             props = Props(mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.navigation))
         )
-        launch {
-            commands.emit(Command.ToSearch)
+        viewModelScope.launch {
+            val params = GetLastSearchQuery.Params(space = SpaceId(space))
+            getLastSearchQuery.async(params).fold(
+                onSuccess = { query ->
+                    commands.emit(
+                        Command.ToSearch(
+                            initialQuery = query,
+                            space = space
+                        )
+                    )
+                },
+                onFailure = {
+                    Timber.e(it, "Error while getting last search query")
+                    commands.emit(
+                        Command.ToSearch(
+                            initialQuery = "",
+                            space = space
+                        )
+                    )
+                }
+            )
         }
     }
 
@@ -944,7 +967,8 @@ class CollectionViewModel(
         private val spaceManager: SpaceManager,
         private val getSpaceView: GetSpaceView,
         private val dateTypeNameProvider: DateTypeNameProvider,
-        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        private val getLastSearchQuery: GetLastSearchQuery
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -970,7 +994,8 @@ class CollectionViewModel(
                 spaceManager = spaceManager,
                 getSpaceView = getSpaceView,
                 dateTypeNameProvider = dateTypeNameProvider,
-                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+                getLastSearchQuery = getLastSearchQuery
             ) as T
         }
     }
@@ -982,7 +1007,7 @@ class CollectionViewModel(
         data class LaunchObjectSet(val target: Id, val space: Id) : Command()
 
         data object ToDesktop : Command()
-        data object ToSearch : Command()
+        data class ToSearch(val initialQuery: String, val space: Id) : Command()
         data object SelectSpace : Command()
         data object Exit : Command()
     }

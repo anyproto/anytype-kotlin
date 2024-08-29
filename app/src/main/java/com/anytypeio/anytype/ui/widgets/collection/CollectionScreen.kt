@@ -119,7 +119,8 @@ import org.burnoutcrew.reorderable.reorderable
 fun ScreenContent(
     vm: CollectionViewModel,
     uiState: CollectionUiState,
-    onCreateObjectLongClicked: () -> Unit
+    onCreateObjectLongClicked: () -> Unit,
+    onSearchClicked: () -> Unit
 ) {
     Box(
         Modifier.background(color = colorResource(R.color.background_primary))
@@ -144,7 +145,7 @@ fun ScreenContent(
                 BottomNavigationMenu(
                     backClick = { vm.onPrevClicked() },
                     homeClick = { vm.onHomeClicked() },
-                    searchClick = { vm.onSearchClicked() },
+                    searchClick = onSearchClicked,
                     addDocClick = { vm.onAddClicked(null) },
                     onCreateObjectLongClicked = onCreateObjectLongClicked,
                     onProfileClicked = vm::onProfileClicked,
@@ -585,7 +586,8 @@ fun CollectionItem(
 @Composable
 fun CollectionScreen(
     vm: CollectionViewModel,
-    onCreateObjectLongClicked: () -> Unit
+    onCreateObjectLongClicked: () -> Unit,
+    onSearchClicked: () -> Unit
 ) {
 
     val uiState by vm.uiState.collectAsStateWithLifecycle()
@@ -604,7 +606,12 @@ fun CollectionScreen(
                 sheetContent = { BlockWidget(localDensity, vm, state) },
                 sheetPeekHeight = 0.dp
             ) {
-                ScreenContent(vm, state, onCreateObjectLongClicked)
+                ScreenContent(
+                    vm = vm,
+                    uiState = state,
+                    onCreateObjectLongClicked = onCreateObjectLongClicked,
+                    onSearchClicked = onSearchClicked
+                )
 
                 LaunchedEffect(state) {
 

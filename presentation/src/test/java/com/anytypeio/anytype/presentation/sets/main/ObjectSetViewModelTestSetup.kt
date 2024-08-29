@@ -57,6 +57,7 @@ import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
+import com.anytypeio.anytype.domain.search.GetLastSearchQuery
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
@@ -212,6 +213,9 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
 
+    @Mock
+    lateinit var getLastSearchQuery: GetLastSearchQuery
+
     var permissions: UserPermissionProvider = UserPermissionProviderStub()
 
     lateinit var spaceConfig: Config
@@ -303,7 +307,8 @@ open class ObjectSetViewModelTestSetup {
             permissions = permissions,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
-            clearLastOpenedObject = clearLastOpenedObject
+            clearLastOpenedObject = clearLastOpenedObject,
+            getLastSearchQuery = getLastSearchQuery
         )
     }
 

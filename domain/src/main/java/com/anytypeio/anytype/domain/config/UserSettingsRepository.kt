@@ -27,6 +27,10 @@ interface UserSettingsRepository {
     suspend fun getLastOpenedObject(space: SpaceId) : Id?
     suspend fun clearLastOpenedObject(space: SpaceId)
 
+    suspend fun setLastSearchQuery(query: String, space: SpaceId)
+    suspend fun getLastSearchQuery(space: SpaceId): String
+    suspend fun clearLastSearchQuery(space: SpaceId)
+
     suspend fun setThemeMode(mode: ThemeMode)
     suspend fun getThemeMode(): ThemeMode
 

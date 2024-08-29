@@ -73,4 +73,16 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
     override suspend fun clearLastOpenedObject(space: SpaceId) {
         cache.clearLastOpenedObject(space)
     }
+
+    override suspend fun setLastSearchQuery(query: String, space: SpaceId) {
+        cache.setLastSearchQuery(query, space)
+    }
+
+    override suspend fun getLastSearchQuery(space: SpaceId): String {
+        return cache.getLastSearchQuery(space)
+    }
+
+    override suspend fun clearLastSearchQuery(space: SpaceId) {
+        cache.clearLastSearchQuery(space)
+    }
 }

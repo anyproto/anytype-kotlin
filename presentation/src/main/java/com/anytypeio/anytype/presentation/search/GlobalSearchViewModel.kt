@@ -34,7 +34,6 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.search.SearchWithMeta
-import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchBacklinksEvent
@@ -62,16 +61,16 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class GlobalSearchViewModel(
+    private val vmParams: VmParams,
     private val searchWithMeta: SearchWithMeta,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val storeOfRelations: StoreOfRelations,
-    private val spaceManager: SpaceManager,
     private val urlBuilder: UrlBuilder,
     private val analytics: Analytics,
-    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
-    private val userInput = MutableStateFlow(EMPTY_STRING_VALUE)
+    private val userInput = MutableStateFlow(vmParams.initialQuery)
     private val searchQuery = userInput
         .take(1)
         .onCompletion {
@@ -90,13 +89,17 @@ class GlobalSearchViewModel(
     }.flatMapLatest { (mode, query) ->
         when(mode) {
             is Mode.Default -> {
-                buildDefaultSearchFlow(query)
+                buildDefaultSearchFlow(query = query, space = vmParams.space)
             }
             is Mode.Related -> {
-                buildRelatedSearchFlow(query, mode)
+                buildRelatedSearchFlow(query = query, mode = mode, space = vmParams.space)
             }
         }
-    }.scan<ViewState, ViewState>(initial = ViewState.Init) { curr, new ->
+    }.scan<ViewState, ViewState>(
+        initial = ViewState.Init(
+            query = vmParams.initialQuery
+        )
+    ) { curr, new ->
         when(new) {
             is ViewState.Default -> {
                 if (new.isLoading) {
@@ -121,12 +124,13 @@ class GlobalSearchViewModel(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(),
-        initialValue = ViewState.Init
+        initialValue = ViewState.Init("")
     )
 
     private suspend fun buildRelatedSearchFlow(
         query: String,
-        mode: Mode.Related
+        mode: Mode.Related,
+        space: SpaceId
     ) = searchWithMeta
         .stream(
             Command.SearchWithMeta(
@@ -137,7 +141,7 @@ class GlobalSearchViewModel(
                 filters = buildList {
                     addAll(
                         ObjectSearchConstants.filterSearchObjects(
-                            spaces = listOf(spaceManager.get())
+                            spaces = listOf(vmParams.space.id)
                         )
                     )
                     add(
@@ -153,7 +157,8 @@ class GlobalSearchViewModel(
                 },
                 sorts = ObjectSearchConstants.sortsSearchObjects,
                 withMetaRelationDetails = false,
-                withMeta = false
+                withMeta = false,
+                space = space
             )
         ).map { result ->
             when (result) {
@@ -186,7 +191,7 @@ class GlobalSearchViewModel(
             }
         }
 
-    private suspend fun buildDefaultSearchFlow(query: String) = searchWithMeta
+    private suspend fun buildDefaultSearchFlow(query: String, space: SpaceId) = searchWithMeta
         .stream(
             Command.SearchWithMeta(
                 query = query,
@@ -195,11 +200,12 @@ class GlobalSearchViewModel(
                 keys = DEFAULT_KEYS,
                 filters = ObjectSearchConstants.filterSearchObjects(
                     // TODO add tech space?
-                    spaces = listOf(spaceManager.get())
+                    spaces = listOf(space.id)
                 ),
                 sorts = ObjectSearchConstants.sortsSearchObjects,
                 withMetaRelationDetails = true,
-                withMeta = true
+                withMeta = true,
+                space = space
             )
         ).map { result ->
             when (result) {
@@ -250,7 +256,7 @@ class GlobalSearchViewModel(
         viewModelScope.launch {
             sendAnalyticsSearchResultEvent(
                 analytics = analytics,
-                spaceParams = provideParams(spaceManager.get())
+                spaceParams = provideParams(vmParams.space.id)
             )
         }
     }
@@ -270,16 +276,18 @@ class GlobalSearchViewModel(
         viewModelScope.launch {
             sendAnalyticsSearchBacklinksEvent(
                 analytics = analytics,
-                spaceParams = provideParams(spaceManager.get())
+                spaceParams = provideParams(vmParams.space.id)
             )
         }
     }
 
+    data class VmParams(val initialQuery: String, val space: SpaceId)
+
     class Factory @Inject constructor(
+        private val vmParams: VmParams,
         private val searchWithMeta: SearchWithMeta,
         private val storeOfObjectTypes: StoreOfObjectTypes,
         private val storeOfRelations: StoreOfRelations,
-        private val spaceManager: SpaceManager,
         private val urlBuilder: UrlBuilder,
         private val analytics: Analytics,
         private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
@@ -287,10 +295,10 @@ class GlobalSearchViewModel(
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return GlobalSearchViewModel(
+                vmParams = vmParams,
                 searchWithMeta = searchWithMeta,
                 storeOfObjectTypes = storeOfObjectTypes,
                 storeOfRelations = storeOfRelations,
-                spaceManager = spaceManager,
                 urlBuilder = urlBuilder,
                 analytics = analytics,
                 analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
@@ -317,7 +325,9 @@ class GlobalSearchViewModel(
         abstract val views: List<GlobalSearchItemView>
         abstract val isLoading: Boolean
 
-        data object Init: ViewState() {
+        data class Init(
+            val query: String = EMPTY_STRING_VALUE
+        ): ViewState() {
             override val views: List<GlobalSearchItemView> = emptyList()
             override val isLoading: Boolean = false
         }

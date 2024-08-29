@@ -57,6 +57,7 @@ import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
+import com.anytypeio.anytype.domain.search.GetLastSearchQuery
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
@@ -245,7 +246,8 @@ object ObjectSetModule {
         permissions: UserPermissionProvider,
         clearLastOpenedObject: ClearLastOpenedObject,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-        spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
+        spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
+        getLastSearchQuery: GetLastSearchQuery
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         params = params,
         openObjectSet = openObjectSet,
@@ -287,8 +289,17 @@ object ObjectSetModule {
         permissions = permissions,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
-        clearLastOpenedObject = clearLastOpenedObject
+        clearLastOpenedObject = clearLastOpenedObject,
+        getLastSearchQuery = getLastSearchQuery
     )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideGetLastSearchQuery(
+        repo: UserSettingsRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): GetLastSearchQuery = GetLastSearchQuery(repo, dispatchers)
 
     @JvmStatic
     @Provides

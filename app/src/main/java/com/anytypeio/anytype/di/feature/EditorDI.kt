@@ -80,6 +80,7 @@ import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.relations.AddFileToObject
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.SetRelationKey
+import com.anytypeio.anytype.domain.search.GetLastSearchQuery
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.table.CreateTable
@@ -292,7 +293,8 @@ object EditorSessionModule {
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         syncStatusProvider: SpaceSyncAndP2PStatusProvider,
         getNetworkMode: GetNetworkMode,
-        clearLastOpenedObject: ClearLastOpenedObject
+        clearLastOpenedObject: ClearLastOpenedObject,
+        getLastSearchQuery: GetLastSearchQuery
     ): EditorViewModelFactory = EditorViewModelFactory(
         params = params,
         permissions = permissions,
@@ -338,7 +340,8 @@ object EditorSessionModule {
         getNetworkMode = getNetworkMode,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         clearLastOpenedObject = clearLastOpenedObject,
-        syncStatusProvider = syncStatusProvider
+        syncStatusProvider = syncStatusProvider,
+        getLastSearchQuery = getLastSearchQuery
     )
 
     @JvmStatic
@@ -1200,6 +1203,14 @@ object EditorUseCaseModule {
         dispatchers = dispatchers,
         spaceManager = spaceManager
     )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideGetLastSearchQueryUseCase(
+        repo: UserSettingsRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): GetLastSearchQuery = GetLastSearchQuery(repo, dispatchers)
 
     @Module
     interface Bindings {

@@ -78,6 +78,7 @@ import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.SetRelationKey
+import com.anytypeio.anytype.domain.search.GetLastSearchQuery
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.table.CreateTable
@@ -292,6 +293,9 @@ open class EditorPresentationTestSetup {
     @Mock
     lateinit var convertObjectToCollection: ConvertObjectToCollection
 
+    @Mock
+    lateinit var getLastSearchQuery: GetLastSearchQuery
+
     lateinit var tableDelegate: EditorTableDelegate
 
     lateinit var dispatcher: Dispatcher<Payload>
@@ -499,7 +503,8 @@ open class EditorPresentationTestSetup {
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             clearLastOpenedObject = clearLastOpenedObject,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
-            getNetworkMode = getNetworkMode
+            getNetworkMode = getNetworkMode,
+            getLastSearchQuery = getLastSearchQuery
         )
     }
 

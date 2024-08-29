@@ -58,6 +58,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -127,6 +128,10 @@ fun GlobalSearchScreen(
     }
 
     var query by remember { mutableStateOf(TextFieldValue()) }
+
+    if (state is GlobalSearchViewModel.ViewState.Init) {
+        query = TextFieldValue(text = state.query, selection = TextRange(start = 0, end = state.query.length))
+    }
 
     Column(
         modifier = Modifier

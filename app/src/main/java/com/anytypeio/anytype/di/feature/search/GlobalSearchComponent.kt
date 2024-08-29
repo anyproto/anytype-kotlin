@@ -6,14 +6,15 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.ui.search.GlobalSearchFragment
 import dagger.Binds
+import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 
@@ -28,8 +29,12 @@ import dagger.Module
 interface GlobalSearchComponent {
     @Component.Factory
     interface Factory {
-        fun create(dependencies: GlobalSearchDependencies): GlobalSearchComponent
+        fun create(
+            @BindsInstance vmParams: GlobalSearchViewModel.VmParams,
+            dependencies: GlobalSearchDependencies
+        ): GlobalSearchComponent
     }
+
     fun inject(fragment: GlobalSearchFragment)
 }
 
@@ -49,7 +54,7 @@ interface GlobalSearchDependencies : ComponentDependencies {
     fun dispatchers(): AppCoroutineDispatchers
     fun storeOfObjectTypes(): StoreOfObjectTypes
     fun storeOfRelations(): StoreOfRelations
-    fun spaceManager(): SpaceManager
     fun analytics(): Analytics
-    fun analyticsHelper() : AnalyticSpaceHelperDelegate
+    fun analyticsHelper(): AnalyticSpaceHelperDelegate
+    fun userSettingsRepository(): UserSettingsRepository
 }

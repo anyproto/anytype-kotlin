@@ -98,6 +98,7 @@ import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
+import com.anytypeio.anytype.domain.search.GetLastSearchQuery
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.templates.ApplyTemplate
@@ -331,7 +332,8 @@ class EditorViewModel(
     private val getNetworkMode: GetNetworkMode,
     private val clearLastOpenedObject: ClearLastOpenedObject,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
+    private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
+    private val getLastSearchQuery: GetLastSearchQuery
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -4301,7 +4303,33 @@ class EditorViewModel(
             eventName = searchScreenShow,
             props = Props(mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.navigation))
         )
-        navigation.postValue(EventWrapper(AppNavigation.Command.OpenPageSearch))
+
+        viewModelScope.launch {
+            val params = GetLastSearchQuery.Params(space = vmParams.space)
+            getLastSearchQuery.async(params).fold(
+                onSuccess = { query ->
+                    navigation.postValue(
+                        EventWrapper(
+                            AppNavigation.Command.OpenPageSearch(
+                                initialQuery = query,
+                                space = vmParams.space.id
+                            )
+                        )
+                    )
+                },
+                onFailure = {
+                    Timber.e(it, "Error while getting last search query")
+                    navigation.postValue(
+                        EventWrapper(
+                            AppNavigation.Command.OpenPageSearch(
+                                initialQuery = "",
+                                space = vmParams.space.id
+                            )
+                        )
+                    )
+                }
+            )
+        }
     }
 
     private fun onMultiSelectModeBlockClicked() {

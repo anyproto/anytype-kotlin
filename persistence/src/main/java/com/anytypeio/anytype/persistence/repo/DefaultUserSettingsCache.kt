@@ -137,6 +137,18 @@ class DefaultUserSettingsCache(
         }
     }
 
+    override suspend fun getWallpapers(): Map<Id, Wallpaper> {
+        val rawSettings = prefs.getString(WALLPAPER_SETTINGS_KEY, "")
+        return if (rawSettings.isNullOrEmpty()) {
+            emptyMap()
+        } else {
+            val deserialized = rawSettings.deserializeWallpaperSettings()
+            return deserialized.mapValues { setting ->
+                setting.value.asWallpaper()
+            }
+        }
+    }
+
     override suspend fun setThemeMode(mode: ThemeMode) {
         prefs
             .edit()

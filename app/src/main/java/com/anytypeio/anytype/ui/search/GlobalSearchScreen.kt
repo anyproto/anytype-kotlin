@@ -130,7 +130,7 @@ fun GlobalSearchScreen(
     var query by remember { mutableStateOf(TextFieldValue()) }
 
     if (state is GlobalSearchViewModel.ViewState.Init) {
-        query = TextFieldValue(text = state.query, selection = TextRange(state.query.length))
+        query = TextFieldValue(text = state.query, selection = TextRange(start = 0, end = state.query.length))
     }
 
     Column(

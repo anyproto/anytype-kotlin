@@ -94,7 +94,6 @@ import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.DocumentExternalEventReducer
@@ -118,7 +117,6 @@ import com.anytypeio.anytype.presentation.util.downloader.DocumentFileShareDownl
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
@@ -147,7 +145,6 @@ open class EditorTestSetup {
     lateinit var updateDetail: UpdateDetail
 
     lateinit var copyFileToCacheDirectory: CopyFileToCacheDirectory
-    lateinit var workspaceManager: WorkspaceManager
 
     @Mock
     lateinit var documentFileShareDownloader: DocumentFileShareDownloader
@@ -402,11 +399,6 @@ open class EditorTestSetup {
 
         featureToggles = mock<DefaultFeatureToggles>()
         addRelationToObject = AddRelationToObject(repo)
-
-        workspaceManager = WorkspaceManager.DefaultWorkspaceManager()
-        runBlocking {
-            workspaceManager.setCurrentWorkspace(defaultSpace)
-        }
 
         interceptFileLimitEvents = InterceptFileLimitEvents(fileLimitsEventChannel, dispatchers)
 

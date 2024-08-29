@@ -2,10 +2,6 @@ package com.anytypeio.anytype.domain.workspace
 
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.DEFAULT_SPACE_TYPE
-import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
-import com.anytypeio.anytype.core_models.SpaceType
-import com.anytypeio.anytype.core_models.UNKNOWN_SPACE_TYPE
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -15,21 +11,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-
-@Deprecated("To be deleted")
-interface WorkspaceManager {
-    suspend fun getCurrentWorkspace(): Id
-    suspend fun setCurrentWorkspace(id: Id)
-    class DefaultWorkspaceManager : WorkspaceManager {
-        private val mutex = Mutex()
-        private lateinit var workspace: Id
-        override suspend fun getCurrentWorkspace(): Id = mutex.withLock { workspace }
-        override suspend fun setCurrentWorkspace(id: Id) = mutex.withLock { workspace = id }
-    }
-}
 
 interface SpaceManager {
 
@@ -37,7 +19,6 @@ interface SpaceManager {
     suspend fun set(space: Id): Result<Config>
     fun getConfig(): Config?
     fun getConfig(space: SpaceId) : Config?
-    fun getType(space: Id): SpaceType
     fun observe() : Flow<Config>
     fun clear()
 
@@ -48,7 +29,7 @@ interface SpaceManager {
         private val logger: Logger
     ) : SpaceManager {
 
-        private val currentSpace = MutableStateFlow(NO_SPACE_OR_DEFAULT)
+        private val currentSpace = MutableStateFlow(VAULT)
         private val info = mutableMapOf<Id, Config>()
 
         override suspend fun get(): Id {
@@ -64,18 +45,6 @@ interface SpaceManager {
                 info[curr]
             } else {
                 configStorage.getOrNull()
-            }
-        }
-
-        override fun getType(space: Id): SpaceType {
-            val accountConfig = configStorage.getOrNull()
-            return if (accountConfig != null) {
-                if (space == accountConfig.space)
-                    DEFAULT_SPACE_TYPE
-                else
-                    PRIVATE_SPACE_TYPE
-            } else {
-                UNKNOWN_SPACE_TYPE
             }
         }
 
@@ -116,11 +85,11 @@ interface SpaceManager {
 
         override fun clear() {
             info.clear()
-            currentSpace.value = NO_SPACE_OR_DEFAULT
+            currentSpace.value = VAULT
         }
 
         companion object {
-            const val NO_SPACE_OR_DEFAULT = ""
+            const val VAULT = ""
         }
     }
 }

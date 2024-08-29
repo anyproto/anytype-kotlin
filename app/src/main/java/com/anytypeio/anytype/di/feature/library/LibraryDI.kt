@@ -21,7 +21,6 @@ import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
 import com.anytypeio.anytype.domain.workspace.RemoveObjectsFromWorkspace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.library.LibraryListDelegate
 import com.anytypeio.anytype.presentation.library.LibraryResourceManager
@@ -211,7 +210,6 @@ object LibraryModule {
 
 interface LibraryDependencies : ComponentDependencies {
     fun blockRepository(): BlockRepository
-    fun workspaceManager(): WorkspaceManager
     fun urlBuilder(): UrlBuilder
     fun channel(): SubscriptionEventChannel
     fun dispatchers(): AppCoroutineDispatchers

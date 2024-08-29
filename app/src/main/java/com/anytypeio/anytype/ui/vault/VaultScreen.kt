@@ -181,7 +181,10 @@ fun VaultSpaceCard(
                     is Wallpaper.Gradient -> {
                         Modifier.background(
                             brush = Brush.horizontalGradient(
-                                colors = gradient(wallpaper.code)
+                                colors = gradient(
+                                    gradient = wallpaper.code,
+                                    alpha = 0.3f
+                                )
                             ),
                             shape = RoundedCornerShape(20.dp)
                         )
@@ -189,7 +192,10 @@ fun VaultSpaceCard(
                     is Wallpaper.Default -> {
                         Modifier.background(
                             brush = Brush.horizontalGradient(
-                                colors = gradient(CoverGradient.SKY)
+                                colors = gradient(
+                                    gradient = CoverGradient.SKY,
+                                    alpha = 0.3f
+                                )
                             ),
                             shape = RoundedCornerShape(20.dp)
                         )

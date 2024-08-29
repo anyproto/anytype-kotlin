@@ -6376,6 +6376,7 @@ message Rpc {
         message AccountSelectTrace {
             message Request {
                 option (no_auth) = true;
+                string dir = 1; // empty means using OS-provided temp dir
             }
 
             message Response {

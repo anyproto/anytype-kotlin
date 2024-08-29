@@ -1441,11 +1441,15 @@ class HomeScreenViewModel(
                             .map { ObjectWrapper.Type(it.map) }
                             .sortedBy { keys.indexOf(it.uniqueKey) }
 
-                        val actions = types.map { type ->
-                            AppActionManager.Action.CreateNew(
-                                type = TypeKey(type.uniqueKey),
-                                name = type.name.orEmpty()
-                            )
+                        val actions = types.mapNotNull { type ->
+                            if (type.map.containsKey(Relations.UNIQUE_KEY)) {
+                                AppActionManager.Action.CreateNew(
+                                    type = TypeKey(type.uniqueKey),
+                                    name = type.name.orEmpty()
+                                )
+                            } else {
+                                null
+                            }
                         }
                         appActionManager.setup(actions = actions)
                     },

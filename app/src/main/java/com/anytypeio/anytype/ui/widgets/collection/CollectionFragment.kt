@@ -71,6 +71,9 @@ class CollectionFragment : BaseComposeFragment() {
                                 }
                             }
                             dialog.show(childFragmentManager, "fullscreen-widget-create-object-of-type-dialog")
+                        },
+                        onSearchClicked = {
+                            vm.onSearchClicked(space)
                         }
                     )
                 }
@@ -101,7 +104,10 @@ class CollectionFragment : BaseComposeFragment() {
                 space = space
             )
             is Command.ToDesktop -> navigation.exitToDesktop()
-            is Command.ToSearch -> navigation.openPageSearch()
+            is Command.ToSearch -> navigation.openPageSearch(
+                initialQuery = command.initialQuery,
+                space = command.space
+            )
             is Command.SelectSpace -> {
                 findNavController().navigate(
                     R.id.selectSpaceScreen,

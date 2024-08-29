@@ -2,9 +2,12 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.media
 
 import android.text.Spannable
 import android.text.SpannableString
+import android.text.TextUtils
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
+import android.util.DisplayMetrics
 import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.view.updateLayoutParams
@@ -20,7 +23,6 @@ import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecoration
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.readableFileSize
 import com.anytypeio.anytype.core_utils.ext.removeSpans
-import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import timber.log.Timber
@@ -42,40 +44,58 @@ class File(val binding: ItemBlockFileBinding) : Media(binding.root), Decoratable
 
     fun bind(item: BlockView.Media.File, clicked: (ListenerType) -> Unit) {
         super.bind(item, clicked)
-        name.enableReadMode()
+
         if (item.size != null && item.name != null) {
             val size = item.size!!.readableFileSize()
+            val fileName = item.name!!
+            val fileExt = if (item.fileExt.isNullOrBlank()) "" else ".${item.fileExt}"
 
-            val spannable = if (item.fileExt.isNullOrBlank()) {
-                SpannableString("${item.name}  $size")
-            } else {
-                SpannableString("${item.name}.${item.fileExt}  $size")
-            }
-            val start = if (item.fileExt.isNullOrBlank()) {
-                item.name!!.length + 2
-            } else {
-                item.name!!.length + item.fileExt!!.length + 2
-            }
-            val end = if (item.fileExt.isNullOrBlank()) {
-                item.name!!.length + 2 + size.length
-            } else {
-                item.name!!.length + item.fileExt!!.length + 3 + size.length
-            }
+            val displayMetrics: DisplayMetrics = itemView.context.resources.displayMetrics
+            val screenWidthPx = displayMetrics.widthPixels
+
+            val layoutParams = name.layoutParams as ViewGroup.MarginLayoutParams
+            val margins = layoutParams.marginStart + layoutParams.marginEnd
+            val paddings = name.paddingStart + name.paddingEnd
+
+            val textPaint = name.paint
+            val availableWidthPx = screenWidthPx - icon.width - margins - paddings
+            val maxTextWidthPx = availableWidthPx - textPaint.measureText("$fileExt $size")
+
+            val displayFileName =
+                if (textPaint.measureText(fileName + fileExt + size) > maxTextWidthPx) {
+                    val ellipsis = "..."
+                    val keepLength =
+                        (maxTextWidthPx - textPaint.measureText(ellipsis + fileExt + size)).toInt()
+                    TextUtils.ellipsize(
+                        fileName,
+                        textPaint,
+                        keepLength.toFloat(),
+                        TextUtils.TruncateAt.MIDDLE
+                    ).toString()
+                } else {
+                    fileName
+                }
+
+            val fullText = "$displayFileName$fileExt $size"
+
+            val spannable = SpannableString(fullText)
+
+            val sizeStart = fullText.length - size.length
             spannable.setSpan(
                 RelativeSizeSpan(0.87f),
-                start,
-                end,
-                Markup.DEFAULT_SPANNABLE_FLAG
+                sizeStart,
+                fullText.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
             )
             spannable.setSpan(
                 ForegroundColorSpan(itemView.context.color(R.color.text_secondary)),
-                start,
-                end,
-                Markup.DEFAULT_SPANNABLE_FLAG
+                sizeStart,
+                fullText.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
             )
-            name.setText(spannable, TextView.BufferType.SPANNABLE)
+            name.text = spannable
         } else {
-            name.setText(item.name, TextView.BufferType.SPANNABLE)
+            name.text = item.name
         }
 
         applySearchHighlight(item)
@@ -115,8 +135,11 @@ class File(val binding: ItemBlockFileBinding) : Media(binding.root), Decoratable
     }
 
     private fun clearSearchHighlights() {
-        name.editableText.removeSpans<SearchHighlightSpan>()
-        name.editableText.removeSpans<SearchTargetHighlightSpan>()
+        val spannableText = name.text as? Spannable
+        spannableText?.let {
+            it.removeSpans<SearchHighlightSpan>()
+            it.removeSpans<SearchTargetHighlightSpan>()
+        }
     }
 
     override fun onMediaBlockClicked(item: BlockView.Media, clicked: (ListenerType) -> Unit) {

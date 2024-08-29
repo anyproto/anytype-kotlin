@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -41,6 +40,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
+import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyBold
 import com.anytypeio.anytype.core_ui.views.Relations3
@@ -100,7 +100,8 @@ fun VaultScreen(
                        else -> EMPTY_STRING_VALUE
                    },
                    wallpaper = item.wallpaper,
-                   onCardClicked = { onSpaceClicked(item) }
+                   onCardClicked = { onSpaceClicked(item) },
+                   icon = item.icon
                )
            }
        }
@@ -153,6 +154,7 @@ fun VaultSpaceCard(
     title: String,
     subtitle: String,
     onCardClicked: () -> Unit,
+    icon: SpaceIconView,
     wallpaper: Wallpaper
 ) {
     Box(
@@ -199,16 +201,16 @@ fun VaultSpaceCard(
                 onCardClicked()
             }
     ) {
-        // TODO render space icon
-        Box(
-            modifier = Modifier
-                .padding(start = 16.dp)
-                .size(64.dp)
-                .background(
-                    color = Color.White,
-                    shape = RoundedCornerShape(8.dp)
-                )
-                .align(Alignment.CenterStart)
+        SpaceIconView(
+            icon = icon,
+            onSpaceIconClick = {
+                onCardClicked()
+            },
+            gradientBackground = colorResource(id = R.color.default_gradient_background),
+            gradientCornerRadius = 4.dp,
+            mainSize = 64.dp,
+            modifier = Modifier.padding(start = 16.dp).align(Alignment.CenterStart),
+            gradientSize = 48.dp
         )
         Column(
             modifier = Modifier
@@ -255,7 +257,8 @@ fun VaultSpaceCardPreview() {
         title = "B&O Museum",
         subtitle = "Private space",
         onCardClicked = {},
-        wallpaper = Wallpaper.Default
+        wallpaper = Wallpaper.Default,
+        icon = SpaceIconView.Placeholder
     )
 }
 

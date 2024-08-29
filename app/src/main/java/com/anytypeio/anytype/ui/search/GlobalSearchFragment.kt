@@ -122,7 +122,7 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
 
         const val ARG_INITIAL_STATE = "arg.global.search.initial_state"
         const val ARG_SPACE = "arg.global.search.space"
-        fun args(initial: String, space: Id): Bundle =
-            bundleOf(ARG_INITIAL_STATE to initial, ARG_SPACE to space)
+        fun args(initialQuery: String, space: Id): Bundle =
+            bundleOf(ARG_INITIAL_STATE to initialQuery, ARG_SPACE to space)
     }
 }

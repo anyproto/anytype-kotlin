@@ -1405,7 +1405,6 @@ Please provide specific details of your needs here.</string>
     <string name="gallery_experience_alert_title_error">Hoppla!</string>
     <string name="gallery_experience_alert_button_space">Öffne Space</string>
     <string name="gallery_experience_alert_button_error">Schließen</string>
-    <string name="three_dots_text_placeholder">...</string>
     <string name="membership_btn_join">Beitreten</string>
     <string name="notifications_prompt_get_notified">Benachrichtigung erhalten</string>
     <string name="notifications_prompt_secondary_button_text">Nicht jetzt</string>
@@ -1491,9 +1490,9 @@ Please provide specific details of your needs here.</string>
     <string name="sync_status_network_error">No access to the space</string>
     <string name="sync_status_unrecognized">Unerkannter Fehler</string>
     <string name="version_history_title">Versionsverlauf</string>
-    <string name="version_history_error_no_versions">No versions found</string>
-    <string name="version_history_error_get_version">Error getting version history</string>
-    <string name="version_history_error_get_members">Error getting members</string>
+    <string name="version_history_error_no_versions">Keine Versionen gefunden</string>
+    <string name="version_history_error_get_version">Fehler beim Abrufen des Versionsverlaufs</string>
+    <string name="version_history_error_get_members">Fehler beim Abrufen der Mitglieder</string>
     <string name="new_object">Neues Objekt</string>
     <string name="vault_my_spaces">My spaces</string>
 </resources>

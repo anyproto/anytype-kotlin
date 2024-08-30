@@ -14,7 +14,6 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.platform.MetricsProvider
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -41,9 +40,6 @@ class StartAccountTest {
 
     @Mock
     lateinit var configStorage: ConfigStorage
-
-    @Mock
-    lateinit var workspaceManager: WorkspaceManager
 
     @Mock
     lateinit var metricsProvider: MetricsProvider

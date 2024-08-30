@@ -12,7 +12,6 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.linking.BackLinkOrAddToObjectViewModelFactory
 import com.anytypeio.anytype.ui.linking.BacklinkOrAddToObjectFragment
@@ -75,7 +74,6 @@ object BackLinkToObjectModule {
 interface BacklinkOrAddToObjectDependencies : ComponentDependencies {
     fun authRepository(): AuthRepository
     fun blockRepository(): BlockRepository
-    fun workspaceManager(): WorkspaceManager
     fun urlBuilder(): UrlBuilder
     fun dispatchers(): AppCoroutineDispatchers
     fun analytics(): Analytics

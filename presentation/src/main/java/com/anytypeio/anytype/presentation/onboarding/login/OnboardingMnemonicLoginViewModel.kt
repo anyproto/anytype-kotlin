@@ -305,7 +305,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
 
     private fun navigateToDashboard() {
         viewModelScope.launch {
-            command.emit(Command.NavigateToHomeScreen)
+            command.emit(Command.NavigateToVaultScreen)
         }
     }
 
@@ -364,7 +364,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     sealed class Command {
         data object Exit : Command()
         data object NavigateToMigrationErrorScreen : Command()
-        data object NavigateToHomeScreen: Command()
+        data object NavigateToVaultScreen: Command()
         data class ShowToast(val message: String) : Command()
         data class ShareDebugGoroutines(val path: String, val uriFileProvider: UriFileProvider) : Command()
     }

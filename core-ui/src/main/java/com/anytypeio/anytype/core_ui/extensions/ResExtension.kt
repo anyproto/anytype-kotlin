@@ -305,6 +305,7 @@ fun SyncStatusView?.getLabelText(context: Context): String = when (this) {
     SyncStatusView.Synced.AnyNetwork -> context.getString(R.string.sync_status_synced)
     SyncStatusView.Synced.SelfHostedNetwork -> context.getString(R.string.sync_status_synced)
     SyncStatusView.Synced.StagingNetwork -> context.getString(R.string.sync_status_synced)
+    SyncStatusView.NetworkNeedsUpdate -> context.getString(R.string.sync_status_need_update)
     else -> ""
 }
 
@@ -318,5 +319,6 @@ fun SyncStatusView?.getToastMsg(context: Context): String = when (this) {
     SyncStatusView.Synced.StagingNetwork -> context.getString(R.string.sync_status_toast_synced_staging)
     SyncStatusView.Syncing -> context.getString(R.string.sync_status_toast_syncing)
     SyncStatusView.Unknown -> context.getString(R.string.sync_status_toast_unknown)
+    SyncStatusView.NetworkNeedsUpdate -> context.getString(R.string.sync_status_toast_need_update)
     else -> ""
 }

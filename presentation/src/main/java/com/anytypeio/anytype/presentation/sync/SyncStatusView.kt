@@ -17,6 +17,7 @@ sealed class SyncStatusView {
     }
     object Failed : SyncStatusView()
     object IncompatibleVersion : SyncStatusView()
+    data object NetworkNeedsUpdate : SyncStatusView()
 }
 
 fun SyncStatus.toView(networkId: Id?, networkMode: NetworkMode): SyncStatusView {
@@ -34,6 +35,7 @@ fun SyncStatus.toView(networkId: Id?, networkMode: NetworkMode): SyncStatusView 
         }
         SyncStatus.FAILED -> SyncStatusView.Failed
         SyncStatus.INCOMPATIBLE_VERSION -> SyncStatusView.IncompatibleVersion
+        SyncStatus.NETWORK_NEEDS_UPDATE -> SyncStatusView.NetworkNeedsUpdate
     }
 }
 

@@ -43,6 +43,10 @@ class StatusBadgeWidget @JvmOverloads constructor(
                 visible()
                 tint(color = context.color(R.color.palette_system_green))
             }
+            SyncStatusView.NetworkNeedsUpdate -> {
+                visible()
+                tint(color = context.color(R.color.palette_system_yellow))
+            }
         }
     }
 }

@@ -307,6 +307,7 @@
     <string name="sync_status_syncing">Syncing…</string>
     <string name="sync_status_synced">Synced</string>
     <string name="sync_status_failed">Not synced</string>
+    <string name="sync_status_need_update">Need update</string>
 
     <string name="sync_status_toast_unknown">Initializing sync</string>
     <string name="sync_status_toast_offline">Anytype node is not connected</string>
@@ -315,6 +316,7 @@
     <string name="sync_status_toast_synced_staging">Backed up on Anytype Staging</string>
     <string name="sync_status_toast_synced_local">Local only</string>
     <string name="sync_status_toast_synced_self_hosted">Backed up on Self-hosted Network</string>
+    <string name="sync_status_toast_need_update">Sync might be slow</string>
 
 
     <string name="sync_status_toast_failed">Failed to sync, trying again…</string>

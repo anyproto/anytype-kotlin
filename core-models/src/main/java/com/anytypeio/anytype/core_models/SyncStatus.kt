@@ -6,5 +6,6 @@ enum class SyncStatus {
     SYNCING,
     SYNCED,
     FAILED,
-    INCOMPATIBLE_VERSION
+    INCOMPATIBLE_VERSION,
+    NETWORK_NEEDS_UPDATE
 }

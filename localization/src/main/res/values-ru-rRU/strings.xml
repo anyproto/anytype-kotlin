@@ -14,7 +14,7 @@
     <string name="debug_sync_report">Отладочный отчет синхронизации</string>
     <string name="debug">Отладка</string>
     <string name="account">Хранилище</string>
-    <string name="reset_account">Reset vault</string>
+    <string name="reset_account">Сбросить учетную запись</string>
     <string name="delete_account">Удалить хранилище</string>
     <string name="space_debug">Отладка области</string>
     <string name="data">Данные</string>
@@ -28,7 +28,7 @@
     <string name="dark">Тёмный</string>
     <string name="system">Системный</string>
     <string name="settings">Настройки</string>
-    <string name="have_you_back_up_your_recovery_phrase">Have you backed up your Key?</string>
+    <string name="have_you_back_up_your_recovery_phrase">Вы сделали резервную копию вашего ключа?</string>
     <string name="you_will_need_to_sign_in">Он необходим для входа в хранилище. Храните его в безопасном месте. Если Вы его потеряете - больше не сможете войти в своё хранилище.</string>
     <string name="about_help_and_community">Помощь и сообщество</string>
     <string name="about_what_is_new">Что нового</string>
@@ -42,7 +42,7 @@
     <string name="about_meta_info_for_copy">Устройство: %1$s\nAndroid версия: %2$d\nВерсия приложения: %3$s\nНомер сборки: %4$d\nВерсия библиотеки: %5$s\nАккаунт\u00A0ID:\u00A0%6$s\nУстройство\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s</string>
     <string name="space">Пространство</string>
     <string name="space_name">Название пространства</string>
-    <string name="default_space">Entry space</string>
+    <string name="default_space">Пространство входа</string>
     <string name="space_settings_apply_random_gradient">Применить случайный градиент</string>
     <string name="space_settings_apply_upload_image">Загрузить изображение</string>
     <string name="delete_space">Удалить пространство</string>
@@ -59,7 +59,7 @@
     <string name="account_name">Название</string>
     <string name="space_settings">Настройки пространства</string>
     <string name="data_management">Управление данными</string>
-    <string name="deleted_account_danger_zone_msg">Once you request your vault to be deleted, you have 30 days to cancel this request. After 30 days, your encrypted vault data is permanently removed from the backup node, you won\'t be able to sign into Anytype on new devices.</string>
+    <string name="deleted_account_danger_zone_msg">Как только вы запросите удаление вашего хранилища, у вас будет 30 дней, чтобы отменить этот запрос. После 30 дней ваши зашифрованные данные хранилища будут навсегда удалены из резервной копии, и вы не сможете войти в Anytype на новых устройствах.</string>
     <string name="danger_zone">Осторожно!</string>
     <string name="snackbar_template_add">Новый шаблон добавлен к типу</string>
     <string name="settings_membership">Членство</string>
@@ -281,7 +281,7 @@
     <string name="relation_format_number">Число</string>
     <string name="relation_format_date">Дата</string>
     <string name="relation_format_status">Выбрать</string>
-    <string name="relation_format_file">File &amp; Media</string>
+    <string name="relation_format_file">Файлы &amp; Медиа</string>
     <string name="relation_format_checkbox">Флажок</string>
     <string name="relation_format_url">URL</string>
     <string name="relation_format_email">E-mail</string>
@@ -438,7 +438,7 @@
     <string name="paste_link">Ссылка</string>
     <string name="next">Далее</string>
     <string name="limit_object_types">Ограничить типы объектов</string>
-    <string name="deleted_account_msg">We\'re sorry to see you go. Once you request your vault to be deleted, you have 30 days to cancel this request. After 30 days, your encrypted vault data is permanently removed from the backup node.</string>
+    <string name="deleted_account_msg">Мы сожалеем, что вы покидаете нас. Как только вы запросите удаление вашего хранилища, у вас будет 30 дней, чтобы отменить этот запрос. После 30 дней ваши зашифрованные данные хранилища будут навсегда удалены из резервной копии.</string>
     <string name="swipe_down_to_skip">Смахните вниз, чтобы пропустить</string>
     <string name="show">Показать</string>
     <string name="this_type_has_templates">Этот тип имеет %1$d шаблонов</string>
@@ -492,7 +492,7 @@
     <string name="block_data_view_content_description_no_data">The source of the inline set has no type</string>
     <string name="object_search_recently_opened_section_title">Недавно открытые</string>
     <string name="widget_source_anytype_library">Библиотека Anytype</string>
-    <string name="widget_source_default_lists">Default lists</string>
+    <string name="widget_source_default_lists">Списки по умолчанию</string>
     <string name="your_favorite_objects">Ваши Избранные объекты</string>
     <string name="on_this_device">На этом устройстве</string>
     <string name="sets_of_objects">Набор объектов из вашего пространства</string>
@@ -513,7 +513,7 @@
     <string name="collection_widget_description">Коллекция объектов</string>
     <string name="no_type_named">Нет типа с именем \"%1$s\"</string>
     <string name="try_to_create_new_one_or_search_for_something_else">Создайте новый или найдите что-то другое</string>
-    <string name="try_different_search_query">Try a different search query.</string>
+    <string name="try_different_search_query">Попробуйте другой запрос поиска.</string>
     <string name="change_wallpaper">Изменить обои</string>
     <string name="change_icon">Изменить иконку</string>
     <string name="random">Случайно</string>
@@ -555,9 +555,9 @@
     <string name="start_login_text">С помощью Anytype вы можете писать заметки и документы, управлять задачами, делиться файлами и сохранять важные материалы из Интернета.</string>
     <string name="login">Войти</string>
     <string name="sign_up">Зарегистрироваться</string>
-    <string name="type_your_recovery_phrase">or type your Key</string>
-    <string name="login_with_recovery_phrase">Login with your Key</string>
-    <string name="or_scan_qr_code">Scan Qr code</string>
+    <string name="type_your_recovery_phrase">или введите ваш ключ</string>
+    <string name="login_with_recovery_phrase">Войти с помощью вашего ключа</string>
+    <string name="or_scan_qr_code">Сканировать QR-код</string>
     <string name="choose_pin_code">Укажите PIN-код</string>
     <string name="congratulations">Поздравляем!</string>
     <string name="time_to_update_title">Пришло время обновить приложение</string>
@@ -584,8 +584,8 @@
     <string name="other_settings">Другие настройки</string>
     <string name="your_page">Ваша общая страница</string>
     <string name="updates">Обновления</string>
-    <string name="recovery_phrase_text">You\'ll need it to sign in. Keep it in a safe place. If you lose it, you can no longer access your vault.</string>
-    <string name="back_up_your_recovery_phrase">Back up your Key</string>
+    <string name="recovery_phrase_text">Он вам понадобится для входа. Храните его в безопасном месте. Если вы его потеряете, вы больше не сможете получить доступ к вашему хранилищу.</string>
+    <string name="back_up_your_recovery_phrase">Создайте резервную копию вашего ключа</string>
     <string name="i_ve_written_it_down">Я записал</string>
     <string name="keychain_mock">witch collapse practice feed shame open despair creek road again ice least lake tree young address brain envelope</string>
     <string name="show_and_copy_mnemonic">Показать и скопировать фразу</string>
@@ -635,7 +635,7 @@
     <string name="link">Ссылка</string>
     <string name="move_into_this_page">Переместить на страницу</string>
     <string name="move_into">Переместить в</string>
-    <string name="fetching_your_account">Fetching your vault…</string>
+    <string name="fetching_your_account">Загрузка вашего хранилища</string>
     <string name="search_on_page">Поиск на странице</string>
     <string name="object_view_type">Тип просмотра объекта</string>
     <string name="object_type_name">Название типа объекта</string>
@@ -669,8 +669,8 @@
     <string name="reset">Сброс</string>
     <string name="search_a_relation">Поиск свойств</string>
     <string name="content_description_check_icon">Check icon</string>
-    <string name="content_desc_empty_values_bottom_check_icon">Sort empty values at the bottom</string>
-    <string name="content_desc_empty_values_top_check_icon">Sort empty values at the top</string>
+    <string name="content_desc_empty_values_bottom_check_icon">Располагать пустые значения внизу</string>
+    <string name="content_desc_empty_values_top_check_icon">Располагать пустые значения сверху</string>
     <string name="filter_condition_is">Является</string>
     <string name="today">Сегодня</string>
     <string name="yesterday">Вчера</string>
@@ -695,7 +695,7 @@
     <string name="btn_upload_gallery">Загрузить из галереи</string>
     <string name="btn_upload_storage">Загрузить с внешнего накопителя</string>
     <string name="btn_upload">Загрузить</string>
-    <string name="alert_qr_camera">Go to Settings – Key on Desktop in order to find the QR code for login.</string>
+    <string name="alert_qr_camera">Перейдите в \"Настройки\" – \"Ключ\" на рабочем столе, чтобы найти QR-код для входа.</string>
     <string name="alert_qr_camera_ok">Ок</string>
     <string name="choose_option">Выберите вариант</string>
     <string name="find_a_relation">Найти отношение</string>
@@ -730,9 +730,9 @@
     <string name="shortcut_create_new_object_of_type">Новый %1$s</string>
     <string name="close">Закрыть</string>
     <string name="go_to_settings">Перейти к настройкам</string>
-    <string name="do_not_forget_mnemonic_phrase">Don\'t forget to take and save your Key</string>
+    <string name="do_not_forget_mnemonic_phrase">Не забудьте сделать и сохранить ваш ключ.</string>
     <string name="you_can_always_find_mnemonic_in_settings">Фразу всегда можно найти в настройках на рабочем столе.</string>
-    <string name="if_you_lose_recovery_phrase_warning">If you lose the Key and get logged out you will not be able to ever access your data again. Save this Key outside of Anytype for data recovery.</string>
+    <string name="if_you_lose_recovery_phrase_warning">Если вы потеряете ключ и выйдете из системы, вы больше не сможете получить доступ к вашим данным. Сохраните этот ключ вне Anytype для восстановления данных.</string>
     <string name="card_size">Размер карточки</string>
     <string name="clear_cache">Очистить кэш</string>
     <string name="clear_cache_title">Вы уверены?</string>
@@ -746,22 +746,22 @@
     <string name="unsplash">Unsplash</string>
     <string name="cancel_deletion">Отменить удаление</string>
     <string name="logout_and_clear_local_data">Выйти и очистить локальные данные</string>
-    <string name="planned_for_deletion_in_n_days">This vault is planned for deletion in %1$d days</string>
-    <string name="planned_for_deletion_tomorrow">This vault is planned for deletion tomorrow</string>
-    <string name="planned_for_deletion_today">This vault is planned for deletion today</string>
-    <string name="planned_for_deletion_unknown">This vault is planned for deletion in ? days</string>
-    <string name="are_you_sure_to_delete_account">Are you sure to delete your vault?</string>
+    <string name="planned_for_deletion_in_n_days">Это хранилище запланировано на удаление через %1$d дней.</string>
+    <string name="planned_for_deletion_tomorrow">Это хранилище запланировано на удаление завтра.</string>
+    <string name="planned_for_deletion_today">Это хранилище запланировано на удаление сегодня</string>
+    <string name="planned_for_deletion_unknown">Это хранилище  запланировано на удаление в течении ? дней</string>
+    <string name="are_you_sure_to_delete_account">Вы уверены, что хотите удалить ваше хранилище?</string>
     <string name="deleted_account_warning_msg">Произойдет выход из вашего аккаунта на всех устройствах. У вас будет 30 дней, чтобы восстановить его. После этого он будет удален навсегда.</string>
     <string name="use_template">Выбрать шаблон</string>
     <string name="swipe_to_choose">Используйте свайп для выбора</string>
     <string name="without_template">Без шаблона</string>
     <string name="unsplash_generic_error">Ошибка при поиске изображений на Unsplash. Пожалуйста, повторите попытку позже.</string>
-    <string name="do_not_forget_to_save_recovery_phrase_msg">Don\'t forget to take and save your Key from settings</string>
+    <string name="do_not_forget_to_save_recovery_phrase_msg">Не забудьте сделать резервную копию вашего ключа в настройках и сохранить его.</string>
     <string name="unlock_your_object_to_add_new_relation">Разблокируйте объект, чтобы добавить новое отношение</string>
     <string name="unlock_your_object_to_edit_relations">Разблокируйте ваш объект для редактирования отношений</string>
     <string name="fragment_relation_create_from_scratch_title">Выберите тип свойства</string>
     <string name="fragment_dashboard_restore">Восстановить</string>
-    <string name="your_account_deleted">Your vault is deleted.</string>
+    <string name="your_account_deleted">Ваше хранилище было удалено.</string>
     <plurals name="fragment_dashboard_selected_count">
         <item quantity="one">Выбрано %d объект</item>
         <item quantity="few">Выбрано %d объекта</item>
@@ -781,7 +781,7 @@
     </string-array>
     <string name="snack_link_to">связано с</string>
     <string name="snack_move_to">перемещен в</string>
-    <string name="recovery_phrase_copied">Your Key copied</string>
+    <string name="recovery_phrase_copied">Ваш ключ скопирован</string>
     <string name="type_editing_title">Настройки типа</string>
     <string name="relation_editing_title">Настройки отношений</string>
     <string name="type_editing_uninstall">Удалить</string>
@@ -793,7 +793,7 @@
     <string name="almost_there">Почти готово!</string>
     <string name="i_did_not_not_complete_migration">Я не завершил процесс миграции</string>
     <string name="not_completed_migration_steps">Я не завершил процесс миграции</string>
-    <string name="almost_there_subtitle">To use this version of the app, please choose the correct option below to migrate your vault.</string>
+    <string name="almost_there_subtitle">Чтобы использовать эту версию приложения, пожалуйста, выберите правильный вариант ниже для миграции учетной записи.</string>
     <string name="i_completed_migration">Я завершил миграцию</string>
     <string name="here">здесь</string>
     <string name="update_steps_first">Скачать десктопное приложение</string>
@@ -825,8 +825,8 @@
     <string name="created_by_id_copied_toast_msg">ID создателя скопирован</string>
     <string name="anytype_update_alert_description">Некоторые из ваших данных были изменены в более новой версии Anytype. Пожалуйста, обновите текущее приложение для работы со всеми вашими документами и последними функциями.</string>
     <string name="anytype_update_alert_title">Пришло время обновить приложение</string>
-    <string name="space_type_default">Entry</string>
-    <string name="space_type_default_space">Entry space</string>
+    <string name="space_type_default">Стартовое пространство</string>
+    <string name="space_type_default_space">Пространство входа</string>
     <string name="space_type_private">Приватный</string>
     <string name="space_type_private_space">Личное пространство</string>
     <string name="space_type_shared">Общие</string>
@@ -927,7 +927,7 @@
     <!--region WIDGETS -->
     <string name="create_widget">Создать виджет</string>
     <string name="edit_widgets">Редактировать виджеты</string>
-    <string name="add_widget">Add widget</string>
+    <string name="add_widget">Добавить виджет</string>
     <string name="widget_source">Источник виджета</string>
     <string name="widget_type">Тип виджета</string>
     <string name="widget_add_below">Добавить ниже</string>
@@ -974,12 +974,12 @@
     <!--region ONBOARDING -->
     <string name="onboarding_auth_title">универсальное приложение</string>
     <string name="onboarding_auth_subtitle">for those\nwho celebrate\ntrust &amp; autonomy</string>
-    <string name="onboarding_auth_description">Create &amp; collaborate in spaces you own. Encrypted, offline &amp; open.</string>
+    <string name="onboarding_auth_description">Создавайте &amp;  сотрудничайте в пространствах, которые вы владеете. Зашифровано, офлайн &amp;  открыто.</string>
     <string name="onboarding_terms_and_policy_prefix">"By continuing you agree to "</string>
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
     <string name="onboarding_terms_and_policy_infix">" и "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
-    <string name="onboarding_new_vault_button_text">New vault</string>
+    <string name="onboarding_new_vault_button_text">Новое хранилище</string>
     <string name="onboarding_enter_my_vault">Войти в мое хранилище</string>
     <string name="onboarding_have_key_button_text">У меня есть Ключ</string>
     <string name="onboarding_get_my_key_button_text">Получить мой Ключ</string>
@@ -988,7 +988,7 @@
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
     <string name="onboarding_this_is_your_key_title">Это Ваш Ключ</string>
-    <string name="onboarding_key_description">It gives you full ownership over your vault. It cannot be recovered.</string>
+    <string name="onboarding_key_description">Это дает вам полное владение вашим хранилищем. При утрате его нельзя восстановить.</string>
     <string name="onboarding_show_my_key">Показать мой Ключ</string>
     <string name="onboarding_key_skip">Пропустить</string>
     <string name="onboarding_key_copy">Копировать в буфер обмена</string>
@@ -996,19 +996,19 @@
     <string name="onboarding_soul_creation_description">Видим только людям, с которыми вы чем-то поделились. Централизованного реестра имен не существует.</string>
     <string name="onboarding_soul_creation_placeholder">Идентификатор Anytype</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
-    <string name="onboarding_type_your_key">Type your recovery phrase</string>
+    <string name="onboarding_type_your_key">Введите вашу фразу для восстановления</string>
     <string name="onboarding_login_or">ИЛИ</string>
     <string name="onboarding_entering_void_title">Входим в пустоту</string>
-    <string name="onboarding_your_key_can_t_be_empty">Your Key can\'t be empty</string>
+    <string name="onboarding_your_key_can_t_be_empty">Ваш ключ не может быть пустым</string>
     <string name="onboarding_mnemonic_read_more">Подробнее</string>
     <string name="onboarding_key_additional_info">Вы можете найти этот ключ позже в настройках Anytype</string>
     <string name="onboarding_what_is_the_key">Что такое Ключ?</string>
     <string name="onboarding_recovery_phrase_description">Фраза восстановления - это случайная комбинация из 12 слов. Волшебным образом из этих слов генерируется ваш аккаунт на устройстве.</string>
-    <string name="onboarding_recovery_phrase_description_2">Whomever knows the combination of these words owns your vault. </string>
-    <string name="onboarding_recovery_phrase_description_3">Right now, you are the only person in the world who knows it.</string>
+    <string name="onboarding_recovery_phrase_description_2">Тот, кто знает комбинацию этих слов, владеет вашим хранилищем.</string>
+    <string name="onboarding_recovery_phrase_description_3">На данный момент только вы знаете эту информацию.</string>
     <string name="onboarding_recovery_phrase_description_4">Даже всех вычислительных ресурсов на Земле недостаточно для его взлома. Если Вы потеряете его, он не может быть восстановлен. Так что храните его где-нибудь в безопасном месте!</string>
-    <string name="onboarding_how_to_save_my_phrase">How to save my Key?</string>
-    <string name="onboarding_how_to_save_my_phrase_2">The easiest way to store your Key is to save it in your password manager.</string>
+    <string name="onboarding_how_to_save_my_phrase">Как сохранить мой ключ?</string>
+    <string name="onboarding_how_to_save_my_phrase_2">Самый простой способ сохранить ваш ключ — записать его в вашем менеджере паролей.</string>
     <string name="onboarding_how_to_save_my_phrase_3">Самый безопасный способ - записать ее на бумаге и оставить бумагу в безопасном месте.</string>
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
@@ -1052,11 +1052,11 @@
     <string name="sharing_menu_save_as_file_option">Файл</string>
     <string name="sharing_menu_save_as_images_option">Images</string>
     <string name="sharing_menu_save_as_files_option">Files</string>
-    <string name="sharing_menu_save_as_videos_option">Videos</string>
+    <string name="sharing_menu_save_as_videos_option">Видео</string>
     <string name="sharing_menu_data">Данные</string>
     <string name="sharing_menu_add_to_anytype_header_title">Добавить в Anytype</string>
-    <string name="sharing_menu_add_to_anytype_error">Anytype file upload error: %1$s</string>
-    <string name="sharing_menu_add_to_anytype_success">All files have been successfully uploaded</string>
+    <string name="sharing_menu_add_to_anytype_error">Ошибка загрузки файла в Anytype: %1$s</string>
+    <string name="sharing_menu_add_to_anytype_success">Все файлы успешно загружены</string>
     <string name="sharing_menu_toast_object_added">New object is added to the space \'%1$s\'</string>
     <string name="sharing_menu_btn_add">Добавить</string>
     <string name="sharing_menu_btn_open">Открыть</string>
@@ -1074,14 +1074,14 @@
     <!--endregion-->
     <plurals name="backlinks_count">
         <item quantity="one">%d обратная ссылка</item>
-        <item quantity="few">%d backlinks</item>
-        <item quantity="many">%d backlinks</item>
-        <item quantity="other">%d backlinks</item>
+        <item quantity="few">%d обратная ссылки</item>
+        <item quantity="many">%d обратная ссылок</item>
+        <item quantity="other">%d обратные ссылки</item>
     </plurals>
     <plurals name="links_from_count">
         <item quantity="one">%d ссылка</item>
-        <item quantity="few">%d links</item>
-        <item quantity="many">%d links</item>
+        <item quantity="few">%d ссылки</item>
+        <item quantity="many">%d ссылок</item>
         <item quantity="other">%d ссылки</item>
     </plurals>
     <!--region ORIGIN RELATION VALUES -->
@@ -1153,9 +1153,9 @@
     <string name="multiplayer_members_and_requests">Участники</string>
     <string name="multiplayer_cant_add_members">You can’t add more members</string>
     <string name="multiplayer_cant_add_editors">You can’t add more editors</string>
-    <string name="multiplayer_upgrade_button">✦ Upgrade</string>
-    <string name="multiplayer_upgrade_button_request">✦ Upgrade to add more members</string>
-    <string name="multiplayer_upgrade_spaces_button">✦ Upgrade to add more spaces</string>
+    <string name="multiplayer_upgrade_button">✦ Обновить</string>
+    <string name="multiplayer_upgrade_button_request">✦ Обновите, чтобы добавить больше участников</string>
+    <string name="multiplayer_upgrade_spaces_button">✦ Обновите, чтобы добавить больше пространств</string>
     <string name="multiplayer_members">Участники</string>
     <string name="multiplayer_leave_request">Оставить запрос</string>
     <string name="multiplayer_join_request">Запрос на присоединение</string>
@@ -1165,9 +1165,9 @@
     <string name="multiplayer_can_edit">Can edit</string>
     <string name="multiplayer_can_view">Только просмотр</string>
     <string name="multiplayer_space_add_viewer">Add viewer</string>
-    <string name="multiplayer_space_add_more_viewer">✦ Add more viewers</string>
+    <string name="multiplayer_space_add_more_viewer">✦ Добавьте больше зрителей</string>
     <string name="multiplayer_space_add_editor">Add editor</string>
-    <string name="multiplayer_space_add_more_editor">✦ Add more editors</string>
+    <string name="multiplayer_space_add_more_editor">✦ Добавьте больше редакторов</string>
     <string name="multiplayer_space_request_reject">Отклонить</string>
     <string name="multiplayer_space_join_request_header">%1$s requested to join %2$s space</string>
     <string name="multiplayer_remove_member">Remove member</string>
@@ -1203,7 +1203,7 @@
     <string name="multiplayer_error_space_not_found">Пространство не найдено</string>
     <string name="multiplayer_read_only_access_error">Доступ только для чтения. Свяжитесь с владельцем пространства для изменений.</string>
     <string name="multiplayer_notification_member_user_sends_join_request">%1$s запросил(а) присоединиться к пространству %2$s.</string>
-    <string name="multiplayer_notification_member_user_sends_leave_request">%1$s requested to leave the %2$s space.</string>
+    <string name="multiplayer_notification_member_user_sends_leave_request">%1$s запросил(а) выйти из пространства %2$s.</string>
     <string name="multiplayer_notification_new_join_request">Новая заявка на вступление</string>
     <string name="multiplayer_notification_member_joined_space_with_read_only_rights">%1$s присоединился %2$s к пространству с правами доступа только для чтения</string>
     <string name="multiplayer_notification_member_joined_space_with_editor_only_rights">%1$s присоединился %2$s к пространству с правами доступа редактирования</string>
@@ -1214,65 +1214,65 @@
     <string name="multiplayer_notification_member_permissions_changed">Разрешения изменены</string>
     <string name="multiplayer_notification_member_permission_change_read">Ваши права доступа были изменены на только для чтения в пространстве %1$s.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Права доступа были изменены на редактирование в пространстве %1$s.</string>
-    <string name="multiplayer_notification_member_join_request_declined">Your request to join the %1$s space has been declined.</string>
+    <string name="multiplayer_notification_member_join_request_declined">Ваш запрос на присоединение к пространству %1$s был отклонен.</string>
     <string name="multiplayer_notification_request_declined">Заявка отклонена</string>
     <string name="multiplayer_notification_view_request">Вид</string>
     <string name="multiplayer_notification_go_to_space">Перейти в пространство</string>
-    <string name="multiplayer_toast_permission_not_allowed">Changing permissions is not allowed</string>
-    <string name="multiplayer_toast_share_limit_reached">Sharing limit reached</string>
-    <string name="multiplayer_deeplink_to_your_object">Deeplink to your object</string>
-    <string name="multiplayer_deeplink_to_your_object_error">This deeplink is not working. Object might be deleted or there might be issues with space access.</string>
-    <string name="multiplayer_collaborate_on_spaces">Collaborate on spaces</string>
-    <string name="multiplayer_collaborate_step_1">1.  Tap the Space widget to access settings</string>
-    <string name="multiplayer_collaborate_step_2">2.  Open Share section</string>
-    <string name="multiplayer_collaborate_step_3">3.  Generate an invite link and share it</string>
+    <string name="multiplayer_toast_permission_not_allowed">Изменение прав доступа не разрешено</string>
+    <string name="multiplayer_toast_share_limit_reached">Достигнут лимит на совместное использование</string>
+    <string name="multiplayer_deeplink_to_your_object">Прямая ссылка на ваш объект</string>
+    <string name="multiplayer_deeplink_to_your_object_error">Эта прямая ссылка не работает. Объект может быть удален или могут быть проблемы с доступом к пространству.</string>
+    <string name="multiplayer_collaborate_on_spaces">Сотрудничайте в пространствах</string>
+    <string name="multiplayer_collaborate_step_1">1. Нажмите на виджет Пространства, чтобы получить доступ к настройкам</string>
+    <string name="multiplayer_collaborate_step_2">2. Откройте раздел «Доступ»</string>
+    <string name="multiplayer_collaborate_step_3">3. Создайте ссылку для приглашения и поделитесь ею</string>
     <plurals name="multiplayer_number_of_space_members">
-        <item quantity="one">%1$d member</item>
-        <item quantity="few">%1$d members</item>
+        <item quantity="one">%1$d участник</item>
+        <item quantity="few">%1$d участника</item>
         <item quantity="many">%1$d members</item>
-        <item quantity="other">%1$d members</item>
+        <item quantity="other">%1$d участники</item>
     </plurals>
     <plurals name="multiplayer_number_of_join_requests">
-        <item quantity="one">%1$d request</item>
-        <item quantity="few">%1$d requests</item>
-        <item quantity="many">%1$d requests</item>
-        <item quantity="other">%1$d requests</item>
+        <item quantity="one">%1$d запрос</item>
+        <item quantity="few">%1$d запроса</item>
+        <item quantity="many">%1$d запросов</item>
+        <item quantity="other">%1$d запросы</item>
     </plurals>
-    <string name="multiplayer_you_as_member">you</string>
+    <string name="multiplayer_you_as_member">вы</string>
     <string name="multiplayer_spaces">Пространства</string>
     <string name="multiplayer_space_status_joining">Присоединяется</string>
     <string name="multiplayer_space_status_active">Активно</string>
     <string name="multiplayer_space_status_removing">Удалено</string>
     <string name="multiplayer_cancel_join_request">Отменить запрос на присоединение</string>
     <string name="multiplayer_cancel_join_request_msg">You will have to send join request again</string>
-    <string name="multiplayer_do_not_cancel_join_request">Do not cancel</string>
+    <string name="multiplayer_do_not_cancel_join_request">Не отменять</string>
     <string name="multiplayer_error_invite_not_found">Приглашение не существует. Пожалуйста, убедитесь, что ваши устройства синхронизированы.</string>
     <string name="multiplayer_error_invite_bad_content">Ссылку на приглашение не удалось разобрать. Она может содержать ошибки в формате или недопустимые данные.</string>
     <string name="multiplayer_error_space_is_deleted">Похоже, пространство было удалено. Пожалуйста, убедитесь, что ваши устройства синхронизированы.</string>
     <string name="multiplayer_error_limit_reached">Достигнут лимит для этого пространства. Пожалуйста, обновите ваше членство или обратитесь в службу поддержки.</string>
     <string name="multiplayer_error_not_shareable">Похоже, доступ к пространству был закрыт. Пожалуйста, убедитесь, что ваши устройства синхронизированы.</string>
     <string name="multiplayer_error_request_failed">Упс! Ошибка запроса. Пожалуйста, проверьте подключение к Интернету и повторите попытку.</string>
-    <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">This link does not seem to work</string>
-    <string name="multiplayer_invite_link_space_not_found">This invite link is no longer valid because the space was not found.</string>
+    <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">Эта ссылка, похоже, не работает</string>
+    <string name="multiplayer_invite_link_space_not_found">Эта ссылка на приглашение больше не действительна, так как пространство не найдено.</string>
     <string name="multiplayer_invite_link_request_already_sent">Запрос отправлен</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Членство</string>
     <string name="payments_subheader">Присоединение к сети Anytype означает внесение вклада в её историю</string>
-    <string name="payments_card_text_1">Co-create the Vision</string>
-    <string name="payments_card_description_1">As a valued member your voice matters! Engage in exclusive events, shape strategic choices, and influence our roadmap.</string>
-    <string name="payments_card_text_2">Unlock Member Benefits</string>
-    <string name="payments_card_description_2">Members enjoy higher backup storage &amp; sync limits, invitations for multiple guests to collaborate in shared spaces, and a unique identity on the Anytype Network.</string>
+    <string name="payments_card_text_1">Совместно создавайте Видение</string>
+    <string name="payments_card_description_1">Как ценному участнику, ваше мнение имеет значение! Участвуйте в эксклюзивных мероприятиях, определяйте стратегические решения и влияйте на наше развитие.</string>
+    <string name="payments_card_text_2">Разблокируйте преимущества для участников</string>
+    <string name="payments_card_description_2">Члены получают увеличенные лимиты резервного хранения и синхронизации, приглашения для нескольких гостей для совместной работы в общих пространствах и уникальную идентичность в сети Anytype.</string>
     <string name="payments_card_text_3">Поддержка Цифровой Независимости</string>
     <string name="payments_card_description_3">Ваш вклад поддерживает нашу независимую команду и одобряет нашу перспективу, ориентированной на пользователя и безопасной совместной цифровой среды.</string>
     <string name="payments_card_text_4">Инвестировать в Соединение</string>
-    <string name="payments_card_description_4">Our network\'s value exceeds the sum of its parts. Your membership sustains the infrastructure for its growth which underpins this network.</string>
-    <string name="payments_tier_explorer">Explorer</string>
-    <string name="payments_tier_explorer_description">Dive into the network and enjoy the thrill of one-on-one collaboration</string>
-    <string name="payments_tier_builder">Builder</string>
-    <string name="payments_tier_builder_description">Unlock the magic of multi-party collaboration and enjoy top-notch support</string>
+    <string name="payments_card_description_4">Ценность нашей сети превышает сумму её частей. Ваше членство поддерживает инфраструктуру для её роста, которая лежит в основе этой сети.</string>
+    <string name="payments_tier_explorer">Исследователь</string>
+    <string name="payments_tier_explorer_description">Исследуйте сеть и наслаждайтесь захватывающим индивидуальным сотрудничеством.</string>
+    <string name="payments_tier_builder">Создатель</string>
+    <string name="payments_tier_builder_description">Разблокируйте возможности многопользовательского сотрудничества и получите первоклассную поддержку.</string>
     <string name="payments_tier_cocreator">Соавтор</string>
-    <string name="payments_tier_cocreator_description">Support our adventure and unlock exclusive access and perks</string>
+    <string name="payments_tier_cocreator_description">Поддержите наше приключение и получите эксклюзивный доступ и привилегии</string>
     <string name="payments_tier_custom">Пользовательский</string>
     <string name="payments_tier_custom_description">Членство в соответствии с вашими конкретными потребностями и предпочтениями</string>
     <string name="payments_button_learn">Узнать больше</string>
@@ -1280,7 +1280,7 @@
     <string name="payments_button_contact">Контакт</string>
     <string name="payments_button_info">More info</string>
     <string name="payments_button_submit">Отправить</string>
-    <string name="payments_button_pay">Pay by card</string>
+    <string name="payments_button_pay">Оплатить картой</string>
     <string name="payments_button_change_email">Изменить E-mail</string>
     <string name="payments_member_link">Детали уровней членства </string>
     <string name="payments_privacy_link">Политика конфиденциальности</string>
@@ -1290,35 +1290,35 @@
     <string name="payments_current_label">Текущий</string>
     <!-- Tier details -->
     <string name="payments_tier_details_name_title">Выберите ваше уникальное имя</string>
-    <string name="payments_tier_details_name_subtitle">This is your unique name on the Anytype network, confirming your Membership. It acts as your personal domain and cannot be changed.</string>
+    <string name="payments_tier_details_name_subtitle">Это ваше уникальное имя в сети Anytype, подтверждающее ваше членство. Оно служит вашим личным доменом и не может быть изменено.</string>
     <string name="payments_tier_details_name_hint">Меня</string>
-    <string name="payments_tier_details_name_domain">.any</string>
+    <string name="payments_tier_details_name_domain">.любой</string>
     <string name="payments_tier_details_name_min">Минимум 7 символов</string>
-    <string name="payments_tier_details_name_error">This name is already taken!</string>
-    <string name="payments_tier_details_name_validated">This name [%1$s] is up for grabs!</string>
-    <string name="payments_tier_details_name_validating">Validating name</string>
+    <string name="payments_tier_details_name_error">Это имя уже занято!</string>
+    <string name="payments_tier_details_name_validated">Это имя [%1$s] доступно!</string>
+    <string name="payments_tier_details_name_validating">Проверка имени</string>
     <string name="payments_tier_details_free_forever">Навсегда</string>
-    <string name="payments_tier_details_valid_until">Valid until %1$s</string>
-    <string name="payments_tier_details_info_explorer">Dive into the network and enjoy the thrill of one-on-one collaboration</string>
+    <string name="payments_tier_details_valid_until">Действительно до %1$s</string>
+    <string name="payments_tier_details_info_explorer">Исследуйте сеть и наслаждайтесь захватывающим индивидуальным сотрудничеством.</string>
     <string-array name="payments_benefits_explorer">
         <item>1 ГБ сетевого пространства</item>
-        <item>10 one-to-one spaces</item>
-        <item>Up to 10 shared spaces in read-only mode</item>
+        <item>10 индивидуальных пространств</item>
+        <item>До 10 общих пространств в режиме только для чтения</item>
     </string-array>
-    <string name="payments_tier_details_info_builder">Unlock the magic of multi-party collaboration and enjoy top-notch support</string>
+    <string name="payments_tier_details_info_builder">Разблокируйте возможности многопользовательского сотрудничества и получите первоклассную поддержку.</string>
     <string-array name="payments_benefits_builder">
         <item>Уникальное имя (от 7 символов)</item>
         <item>128 ГБ сетевого пространства</item>
         <item>10 мест для гостевых соавторов</item>
         <item>Приоритетная поддержка</item>
     </string-array>
-    <string name="payments_tier_details_info_cocreator">Support our adventure and unlock exclusive access and perks</string>
+    <string name="payments_tier_details_info_cocreator">Поддержите наше приключение и получите эксклюзивный доступ и привилегии</string>
     <string-array name="payments_benefits_cocreator">
         <item>Уникальное имя (от 5 символов)</item>
-        <item>256 GB of network space</item>
-        <item>25 Guest collaborator seats</item>
+        <item>256 ГБ сетевого пространства</item>
+        <item>25 мест для гостей-сотрудников</item>
         <item>Общение с командой</item>
-        <item>Unique collectible</item>
+        <item>Уникальный коллекционный</item>
     </string-array>
     <string name="payments_detials_button_pay">Оплатить картой</string>
     <string name="payments_detials_button_submit">Отправить</string>
@@ -1329,27 +1329,27 @@
     <string name="payments_email_hint">E-mail</string>
     <string name="payments_tier_current_title">Ваш текущий статус:</string>
     <string name="payments_tier_current_valid">Действительно до</string>
-    <string name="payments_tier_current_paid_by">Paid by</string>
+    <string name="payments_tier_current_paid_by">Оплачено</string>
     <string name="payments_tier_current_paid_by_card">Stripe</string>
     <string name="payments_tier_current_paid_by_crypto">Криптовалюта</string>
     <string name="payments_tier_current_paid_by_apple">Apple subscription</string>
     <string name="payments_tier_current_paid_by_google">Google subscription</string>
     <string name="payments_tier_current_button">Управление платежами</string>
     <string name="membership_manage_tier_desktop">You can manage tier on Desktop platform</string>
-    <string name="membership_manage_tier_ios">You can manage tier on iOS platform</string>
-    <string name="membership_manage_tier_another_account">You can manage tier on another Google account</string>
+    <string name="membership_manage_tier_ios">Вы можете управлять уровнем на платформе iOS</string>
+    <string name="membership_manage_tier_another_account">Вы можете управлять уровнем на другой учетной записи Google.</string>
     <string name="payments_tier_current_change_email_button">Изменить E-mail</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Введите код, отправленный на вашу электронную почту</string>
     <string name="payments_code_resend">Отправить ещё раз</string>
-    <string name="payments_code_resend_in">Resend in %1$d sec</string>
+    <string name="payments_code_resend_in">Повторить через %1$d сек</string>
     <!-- Membership Welcome -->
     <string name="payments_welcome_title">Добро пожаловать в сеть,\n%1$s</string>
     <string name="payments_welcome_subtitle">Big cheers for your curiosity!</string>
     <string name="payments_welcome_button">Далее</string>
     <!-- Membership Email -->
     <string name="membership_support_email">support@anytype.io</string>
-    <string name="membership_support_subject">Membership Screen Error Report - %1$s</string>
+    <string name="membership_support_subject">Отчет об ошибке на экране членства - %1$s</string>
     <string name="membership_support_body">        Hi Anytype Support Team,\n\n
 
         I encountered an error on the Membership Screen in the app. Below are the details:\n
@@ -1368,13 +1368,16 @@
         Best regards,       \n
     </string>
     <string name="payments_email_to">membership-upgrade@anytype.io</string>
-    <string name="payments_email_subject">Upgrade %1$s</string>
-    <string name="payments_email_body">Hello Anytype team! I would like to extend my current membership for more (please choose an option):\n
-- Extra remote storage\n
-- More space editors\n
-- Additional shared spaces\n
-Specifically,
-Please provide specific details of your needs here.</string>
+    <string name="payments_email_subject">Обновить %1$s</string>
+    <string name="payments_email_body">Здравствуйте, команда Anytype!
+
+Я хотел(а) бы продлить свое текущее членство, выбрав одно из следующих:
+- Дополнительное удаленное хранилище
+- Больше редакторов пространств
+- Дополнительные общие пространства
+
+Конкретно,
+Пожалуйста, укажите подробности ваших потребностей здесь.</string>
     <!-- Membership name errors -->
     <string name="membership_name_bad_input">Что-то не так с полем ввода, попробуйте еще раз</string>
     <string name="membership_name_cache_error">Ошибка на нашей стороне, попробуйте позже</string>
@@ -1387,10 +1390,10 @@ Please provide specific details of your needs here.</string>
     <string name="membership_name_too_long">Имя пользователя слишком длинное</string>
     <string name="membership_name_too_short">Имя пользователя слишком короткое </string>
     <string name="membership_any_name_not_reserved">Это имя не может быть зарезервировано</string>
-    <string name="membership_any_name_null_error">Empty error</string>
+    <string name="membership_any_name_null_error">Пожалуйста, заполните данные!</string>
     <string name="membership_any_name_unknown">Неизвестная ошибка</string>
     <string name="membership_email_wrong_format">Адрес электронной почты имеет неверный формат</string>
-    <string name="membership_email_already_verified">Email is already verified</string>
+    <string name="membership_email_already_verified">Электронная почта уже подтверждена</string>
     <string name="membership_email_already_sent">Электронное письмо уже отправлено, попробуйте снова через 1 минуту.</string>
     <string name="membership_email_failed_to_send">Не удалось отправить электронное письмо</string>
     <string name="membership_email_membership_already_exists">Членство уже существует</string>
@@ -1447,28 +1450,28 @@ Please provide specific details of your needs here.</string>
     <string name="membership_upgrade_button">Contact Anytype Team</string>
     <string name="membership_space_settings_share_limit">Вы достигли лимита в %1$d пространств, которыми можно поделиться.</string>
     <plurals name="period_years">
-        <item quantity="one">year</item>
-        <item quantity="few">%d years</item>
+        <item quantity="one">год</item>
+        <item quantity="few">%d года</item>
         <item quantity="many">%d лет</item>
-        <item quantity="other">%d years</item>
+        <item quantity="other">%d лет</item>
     </plurals>
     <plurals name="period_months">
-        <item quantity="one">month</item>
+        <item quantity="one">месяц</item>
         <item quantity="few">%d months</item>
         <item quantity="many">%d месяцев</item>
-        <item quantity="other">%d months</item>
+        <item quantity="other">%d месяцы</item>
     </plurals>
     <plurals name="period_weeks">
-        <item quantity="one">week</item>
+        <item quantity="one">неделя</item>
         <item quantity="few">%d weeks</item>
         <item quantity="many">%d недель</item>
         <item quantity="other">%d weeks</item>
     </plurals>
     <plurals name="period_days">
-        <item quantity="one">day</item>
+        <item quantity="one">день</item>
         <item quantity="few">%d days</item>
         <item quantity="many">%d дней</item>
-        <item quantity="other">%d days</item>
+        <item quantity="other">%d дни</item>
     </plurals>
     <string name="membership_error_button_text_action">Связаться с нами</string>
     <string name="membership_error_button_text_dismiss">Ок</string>
@@ -1486,39 +1489,39 @@ Please provide specific details of your needs here.</string>
     <string name="sync_status_self_host">Self Host</string>
     <string name="sync_status_self_host_synced">Синхронизировано</string>
     <plurals name="sync_status_self_host_syncing">
-        <item quantity="one">%1$d item syncing</item>
-        <item quantity="few">%1$d items syncing...</item>
-        <item quantity="many">%1$d items syncing...</item>
-        <item quantity="other">%1$d items syncing...</item>
+        <item quantity="one">%1$d элемент синхронизируется</item>
+        <item quantity="few">%1$d элемента синхронизируется</item>
+        <item quantity="many">%1$d элементов синхронизируется</item>
+        <item quantity="other">%1$d элементы синхронизируется</item>
     </plurals>
     <string name="sync_status_p2p">P2P Connection</string>
     <plurals name="sync_status_p2p_devices">
-        <item quantity="one">%1$d device connected</item>
+        <item quantity="one">%1$d устройство подключено</item>
         <item quantity="few">%1$d devices connected</item>
-        <item quantity="many">%1$d devices connected</item>
-        <item quantity="other">%1$d devices connected</item>
+        <item quantity="many">%1$d устройств подключено</item>
+        <item quantity="other">%1$d устройств подключено</item>
     </plurals>
     <string name="sync_status_p2p_connecting">P2P Connecting...</string>
-    <string name="sync_status_p2p_disabled">Disabled</string>
-    <string name="sync_status_p2p_restricted">Restricted. Check device settings.</string>
+    <string name="sync_status_p2p_disabled">Отключено</string>
+    <string name="sync_status_p2p_restricted">Есть ограничения. Проверьте настройки устройства.</string>
     <string name="sync_status_anytype_network">Anytype Network</string>
     <string name="sync_status_anytype_end_to_end">End-to-end encrypted</string>
     <plurals name="sync_status_network_items">
-        <item quantity="one">%1$d item syncing...</item>
+        <item quantity="one">%1$d элемент синхронизируется...</item>
         <item quantity="few">%1$d items syncing...</item>
-        <item quantity="many">%1$d items syncing...</item>
-        <item quantity="other">%1$d items syncing...</item>
+        <item quantity="many">%1$d элемент синхронизируется...</item>
+        <item quantity="other">%1$d элементы синхронизируется...</item>
     </plurals>
-    <string name="sync_status_anytype_network_connecting">Network Connecting...</string>
+    <string name="sync_status_anytype_network_connecting">Сетевое подключение...</string>
     <string name="sync_status_anytype_network_no_connecting">Нет соединения</string>
     <string name="sync_status_storage_limit_exceed">Storage limit reached</string>
     <string name="sync_status_incompatible_version">Несовместимая версия</string>
     <string name="sync_status_network_error">No access to the space</string>
     <string name="sync_status_unrecognized">Unrecognized error</string>
-    <string name="version_history_title">Version history</string>
-    <string name="version_history_error_no_versions">No versions found</string>
-    <string name="version_history_error_get_version">Error getting version history</string>
-    <string name="version_history_error_get_members">Error getting members</string>
+    <string name="version_history_title">История версий</string>
+    <string name="version_history_error_no_versions">История версий не найдена</string>
+    <string name="version_history_error_get_version">Ошибка получения истории версий</string>
+    <string name="version_history_error_get_members">Ошибка при получении участников</string>
     <string name="new_object">Новый объект</string>
-    <string name="vault_my_spaces">My spaces</string>
+    <string name="vault_my_spaces">Мои пространства</string>
 </resources>

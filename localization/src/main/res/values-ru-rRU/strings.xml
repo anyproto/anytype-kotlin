@@ -14,7 +14,7 @@
     <string name="debug_sync_report">Отладочный отчет синхронизации</string>
     <string name="debug">Отладка</string>
     <string name="account">Хранилище</string>
-    <string name="reset_account">Сбросить учетную запись</string>
+    <string name="reset_account">Сбросить хранилище</string>
     <string name="delete_account">Удалить хранилище</string>
     <string name="space_debug">Отладка области</string>
     <string name="data">Данные</string>
@@ -1229,7 +1229,7 @@
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="one">%1$d участник</item>
         <item quantity="few">%1$d участника</item>
-        <item quantity="many">%1$d members</item>
+        <item quantity="many">%1$d участников</item>
         <item quantity="other">%1$d участники</item>
     </plurals>
     <plurals name="multiplayer_number_of_join_requests">
@@ -1457,19 +1457,19 @@
     </plurals>
     <plurals name="period_months">
         <item quantity="one">месяц</item>
-        <item quantity="few">%d months</item>
+        <item quantity="few">%d месяца</item>
         <item quantity="many">%d месяцев</item>
         <item quantity="other">%d месяцы</item>
     </plurals>
     <plurals name="period_weeks">
         <item quantity="one">неделя</item>
-        <item quantity="few">%d weeks</item>
+        <item quantity="few">%d недели</item>
         <item quantity="many">%d недель</item>
-        <item quantity="other">%d weeks</item>
+        <item quantity="other">%d недели</item>
     </plurals>
     <plurals name="period_days">
         <item quantity="one">день</item>
-        <item quantity="few">%d days</item>
+        <item quantity="few">%d дня</item>
         <item quantity="many">%d дней</item>
         <item quantity="other">%d дни</item>
     </plurals>
@@ -1497,7 +1497,7 @@
     <string name="sync_status_p2p">P2P Connection</string>
     <plurals name="sync_status_p2p_devices">
         <item quantity="one">%1$d устройство подключено</item>
-        <item quantity="few">%1$d devices connected</item>
+        <item quantity="few">%1$d устройства подключено</item>
         <item quantity="many">%1$d устройств подключено</item>
         <item quantity="other">%1$d устройств подключено</item>
     </plurals>
@@ -1508,8 +1508,8 @@
     <string name="sync_status_anytype_end_to_end">End-to-end encrypted</string>
     <plurals name="sync_status_network_items">
         <item quantity="one">%1$d элемент синхронизируется...</item>
-        <item quantity="few">%1$d items syncing...</item>
-        <item quantity="many">%1$d элемент синхронизируется...</item>
+        <item quantity="few">%1$d элемента синхронизируется...</item>
+        <item quantity="many">%1$d элементов синхронизируется...</item>
         <item quantity="other">%1$d элементы синхронизируется...</item>
     </plurals>
     <string name="sync_status_anytype_network_connecting">Сетевое подключение...</string>

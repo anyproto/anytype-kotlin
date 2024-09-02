@@ -323,6 +323,8 @@ class HomeScreenFragment : BaseComposeFragment() {
             is Command.OpenVault -> {
                 runCatching {
                     findNavController().navigate(R.id.action_open_vault)
+                }.onFailure {
+                    Timber.e(it, "Error while opening vault from home screen")
                 }
             }
         }

@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.spaces.GetLastOpenedSpace
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -87,9 +88,12 @@ class SplashViewModelTest {
     @Mock
     lateinit var analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
 
+    @Mock
+    lateinit var getLastOpenedSpace: GetLastOpenedSpace
+
     lateinit var vm: SplashViewModel
 
-    val defaultSpaceConfig = StubConfig()
+    private val defaultSpaceConfig = StubConfig()
 
     @Before
     fun setup() {
@@ -114,7 +118,8 @@ class SplashViewModelTest {
             localeProvider = localeProvider,
             spaceManager = spaceManager,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-            globalSubscriptionManager = globalSubscriptionManager
+            globalSubscriptionManager = globalSubscriptionManager,
+            getLastOpenedSpace = getLastOpenedSpace
         )
     }
 

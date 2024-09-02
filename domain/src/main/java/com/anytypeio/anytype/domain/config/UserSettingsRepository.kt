@@ -12,6 +12,7 @@ interface UserSettingsRepository {
 
     suspend fun setCurrentSpace(space: SpaceId)
     suspend fun getCurrentSpace(): SpaceId?
+    suspend fun clearCurrentSpace()
 
     suspend fun setWallpaper(space: Id, wallpaper: Wallpaper)
     suspend fun getWallpaper(space: Id): Wallpaper

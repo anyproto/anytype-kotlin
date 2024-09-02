@@ -60,6 +60,7 @@ import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.GetLastSearchQuery
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.domain.types.GetPinnedObjectTypes
 import com.anytypeio.anytype.domain.widgets.CreateWidget
@@ -196,7 +197,8 @@ class HomeScreenViewModel(
     private val createBlock: CreateBlock,
     private val dateProvider: DateProvider,
     private val addObjectToCollection: AddObjectToCollection,
-    private val getLastSearchQuery: GetLastSearchQuery
+    private val getLastSearchQuery: GetLastSearchQuery,
+    private val clearLastOpenedSpace: ClearLastOpenedSpace
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -1641,7 +1643,14 @@ class HomeScreenViewModel(
 
     fun onVaultClicked() {
         viewModelScope.launch {
-
+            clearLastOpenedSpace.async(Unit).fold(
+                onSuccess = {
+                    Timber.d("Cleared last opened space before opening vault")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while clearing last opened space before opening vault")
+                }
+            )
             commands.emit(Command.OpenVault)
         }
     }
@@ -2079,7 +2088,8 @@ class HomeScreenViewModel(
         private val dateProvider: DateProvider,
         private val coverImageHashProvider: CoverImageHashProvider,
         private val addObjectToCollection: AddObjectToCollection,
-        private val getLastSearchQuery: GetLastSearchQuery
+        private val getLastSearchQuery: GetLastSearchQuery,
+        private val clearLastOpenedSpace: ClearLastOpenedSpace
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -2127,7 +2137,8 @@ class HomeScreenViewModel(
             createBlock = createBlock,
             dateProvider = dateProvider,
             addObjectToCollection = addObjectToCollection,
-            getLastSearchQuery = getLastSearchQuery
+            getLastSearchQuery = getLastSearchQuery,
+            clearLastOpenedSpace = clearLastOpenedSpace
         ) as T
     }
 

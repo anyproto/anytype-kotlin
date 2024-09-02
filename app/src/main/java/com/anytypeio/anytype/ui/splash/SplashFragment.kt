@@ -83,7 +83,6 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
         when (command) {
             is SplashViewModel.Command.NavigateToDashboard -> {
                 try {
-                    findNavController().navigate(R.id.vaultScreen)
                     findNavController().navigate(
                         R.id.action_splashScreen_to_homeScreen,
                         args = HomeScreenFragment.args(command.deeplink)

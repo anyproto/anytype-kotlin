@@ -283,7 +283,6 @@ class SplashViewModel(
     sealed class Command {
         data class NavigateToDashboard(val deeplink: String? = null) : Command()
         data class NavigateToVault(val deeplink: String? = null) : Command()
-        data object NavigateToWidgets : Command()
         data object NavigateToAuthStart : Command()
         data object NavigateToMigration: Command()
         data object CheckAppStartIntent : Command()

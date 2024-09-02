@@ -1346,7 +1346,7 @@
     <!-- Membership Welcome -->
     <string name="payments_welcome_title">Добро пожаловать в сеть,\n%1$s</string>
     <string name="payments_welcome_subtitle">Большое спасибо за Ваше любопытство!</string>
-    <string name="payments_welcome_button">Далее</string>
+    <string name="payments_welcome_button">Продолжить</string>
     <!-- Membership Email -->
     <string name="membership_support_email">support@anytype.io</string>
     <string name="membership_support_subject">Отчет об ошибке на экране членства - %1$s</string>

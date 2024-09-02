@@ -1639,6 +1639,13 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onVaultClicked() {
+        viewModelScope.launch {
+
+            commands.emit(Command.OpenVault)
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         Timber.d("onCleared")
@@ -2164,6 +2171,8 @@ sealed class Command {
     data class OpenObjectCreateDialog(val space: SpaceId) : Command()
 
     data class OpenGlobalSearchScreen(val initialQuery: String, val space: Id) : Command()
+
+    data object OpenVault: Command()
 
     data class SelectWidgetType(
         val ctx: Id,

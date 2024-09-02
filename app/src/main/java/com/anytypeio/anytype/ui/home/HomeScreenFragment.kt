@@ -102,7 +102,7 @@ class HomeScreenFragment : BaseComposeFragment() {
                         onClick = { vm.onCreateNewObjectLongClicked() }
                     ),
                     onProfileClicked = throttledClick(
-                        onClick = { vm::onVaultClicked }
+                        onClick = vm::onVaultClicked
                     ),
                     onSpaceWidgetClicked = throttledClick(
                         onClick = vm::onSpaceSettingsClicked

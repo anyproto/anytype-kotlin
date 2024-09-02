@@ -84,6 +84,17 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
             is SplashViewModel.Command.NavigateToDashboard -> {
                 try {
                     findNavController().navigate(
+                        R.id.action_splashScreen_to_homeScreen,
+                        args = HomeScreenFragment.args(command.deeplink)
+                    )
+                } catch (e: Exception) {
+                    Timber.e(e, "Error while opening dashboard from splash screen")
+                    toast("Error while navigating to desktop: ${e.message}")
+                }
+            }
+            is SplashViewModel.Command.NavigateToVault -> {
+                try {
+                    findNavController().navigate(
                         R.id.action_splashScreen_to_vaultScreen,
                         args = HomeScreenFragment.args(command.deeplink)
                     )

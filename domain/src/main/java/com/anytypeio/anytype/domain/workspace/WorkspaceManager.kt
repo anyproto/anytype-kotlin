@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.debugging.Logger
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.withContext
 
@@ -17,9 +18,13 @@ interface SpaceManager {
 
     suspend fun get(): Id
     suspend fun set(space: Id): Result<Config>
+    suspend fun vault()
+
     fun getConfig(): Config?
     fun getConfig(space: SpaceId) : Config?
     fun observe() : Flow<Config>
+    fun state(): Flow<State>
+
     fun clear()
 
     class Impl @Inject constructor(
@@ -83,6 +88,26 @@ interface SpaceManager {
             }
         }
 
+        override fun state(): Flow<State> {
+            return currentSpace.map { space ->
+                if (space == VAULT) {
+                    State.Vault
+                } else {
+                    val config = info[space]
+                    if (config != null) {
+                        State.Space.Active(config)
+                    } else {
+                        State.Space.Idle(SpaceId(space))
+                    }
+                }
+            }
+        }
+
+        override suspend fun vault() {
+            currentSpace.value = VAULT
+            info.clear()
+        }
+
         override fun clear() {
             info.clear()
             currentSpace.value = VAULT
@@ -90,6 +115,14 @@ interface SpaceManager {
 
         companion object {
             const val VAULT = ""
+        }
+    }
+
+    sealed class State {
+        data object Vault: State()
+        sealed class Space: State() {
+            data class Idle(val space: SpaceId): Space()
+            data class Active(val config: Config): Space()
         }
     }
 }

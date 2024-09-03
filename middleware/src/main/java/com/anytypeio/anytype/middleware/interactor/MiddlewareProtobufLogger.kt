@@ -22,31 +22,31 @@ interface MiddlewareProtobufLogger {
     ) : MiddlewareProtobufLogger {
 
         override fun logRequest(any: Any) {
-            if (featureToggles.isLogMiddlewareInteraction) {
-                Timber.d("request -> ${any.toLogMessage()}")
-            }
+            //if (featureToggles.isLogMiddlewareInteraction) {
+                Timber.d("request -> ${any.toLogMessage(false)}")
+            //}
         }
 
         override fun logResponse(any: Any) {
             if (featureToggles.isLogMiddlewareInteraction) {
-                Timber.d("response -> ${any.toLogMessage()}")
+                Timber.d("response -> ${any.toLogMessage(true)}")
             }
         }
 
         override fun logResponse(any: Any, time: Duration?) {
-            Timber.d("response -> ${any.toLogMessage()} [${time.format()}ms] ")
+            Timber.d("response -> ${any.toLogMessage(true)} [${time.format()}ms] ")
         }
 
         private fun Duration?.format(): Long? = this?.toLong(DurationUnit.MILLISECONDS)
 
         override fun logEvent(any: Any) {
             if (featureToggles.isLogMiddlewareInteraction) {
-                Timber.d("event -> ${any.toLogMessage()}")
+                //Timber.d("event -> ${any.toLogMessage(false)}")
             }
         }
 
-        private fun Any.toLogMessage(): String {
-            return if (featureToggles.isConciseLogging) {
+        private fun Any.toLogMessage(isConciseLogging: Boolean): String {
+            return if (isConciseLogging) {
                 this::class.java.canonicalName
             } else {
                 "${this::class.java.canonicalName}:\n${

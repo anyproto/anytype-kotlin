@@ -7,4 +7,8 @@
     <item name="menuChangeType" type="id"/>
     <item name="menuOpenSet" type="id"/>
     <item name="menuCreateSet" type="id"/>
+
+    <item name="object_set_header" type="id"/>
+    <item name="featuredRelationsWidget" type="id"/>
+
 </resources>

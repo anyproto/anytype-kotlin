@@ -5,9 +5,9 @@ import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SubscriptionEvent
-import com.anytypeio.anytype.domain.`object`.move
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.`object`.move
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
@@ -25,6 +25,8 @@ class ObjectTypesSubscriptionContainer(
 
     fun observe(params: Params): Flow<Index> {
         return flow {
+            // TODO add tests for this behavior
+            // store.clear()
             val initial = repo.searchObjectsWithSubscription(
                 subscription = params.subscription,
                 sorts = params.sorts,
@@ -130,6 +132,8 @@ class ObjectTypesSubscriptionContainer(
 
     suspend fun unsubscribe() = withContext(dispatchers.io) {
         runCatching {
+            // TODO add tests for this behavior
+            // store.clear()
             repo.cancelObjectSearchSubscription(
                 listOf(SUBSCRIPTION_ID)
             )
@@ -157,7 +161,15 @@ class ObjectTypesSubscriptionContainer(
         val objects: List<Id> = emptyList(),
         val dependencies: List<Id> = emptyList(),
         val lastModified: Long = 0L
-    )
+    ) {
+        companion object {
+            fun empty() = Index(
+                objects = emptyList(),
+                dependencies = emptyList(),
+                lastModified = 0L
+            )
+        }
+    }
 
     companion object {
         const val SUBSCRIPTION_ID = "object-type-store-subscription"

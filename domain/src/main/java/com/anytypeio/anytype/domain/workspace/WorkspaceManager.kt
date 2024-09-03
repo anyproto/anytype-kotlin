@@ -14,6 +14,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.withContext
 
+/**
+ * Maybe convert to AppStateManager, with different states.
+ */
 interface SpaceManager {
 
     suspend fun get(): Id
@@ -69,6 +72,7 @@ interface SpaceManager {
             }
         }
 
+        @Deprecated("Might need refactoring")
         override fun observe(): Flow<Config> {
             return currentSpace.mapNotNull { space ->
                 if (space.isEmpty()) {
@@ -119,6 +123,7 @@ interface SpaceManager {
     }
 
     sealed class State {
+        data object Init: State()
         data object Vault: State()
         sealed class Space: State() {
             data class Idle(val space: SpaceId): Space()

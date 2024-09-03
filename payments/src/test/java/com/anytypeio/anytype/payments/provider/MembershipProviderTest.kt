@@ -112,7 +112,7 @@ class MembershipProviderTest {
                 }
                 whenever(localeProvider.language()).thenReturn("en")
 
-                awaitAccountStartManager.setIsStarted(true)
+                awaitAccountStartManager.setState(AwaitAccountStartManager.State.Started)
                 val membershipProviderFlow = provider.status().testIn(backgroundScope)
                 val membershipProviderFlow1 = provider.status().testIn(backgroundScope)
                 val membershipProviderFlow2 = provider.activeTier().testIn(backgroundScope)

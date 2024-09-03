@@ -318,7 +318,11 @@ private fun getNetworkCardSettings(
                 )
             }
             SpaceSyncStatus.NETWORK_UPDATE_NEEDED -> {
-                TODO()
+                CardSettings(
+                    icon = painterResource(R.drawable.ic_sync_limitations),
+                    mainText = stringResource(id = R.string.sync_status_anytype_network),
+                    secondaryText = stringResource(id = R.string.sync_status_anytype_sync_slow)
+                )
             }
         }
 
@@ -362,7 +366,13 @@ private fun getNetworkCardSettings(
                         secondaryText = stringResource(id = R.string.sync_status_anytype_network_no_connecting)
                     )
                 }
-                SpaceSyncStatus.NETWORK_UPDATE_NEEDED -> TODO()
+                SpaceSyncStatus.NETWORK_UPDATE_NEEDED -> {
+                    CardSettings(
+                        icon = painterResource(R.drawable.ic_sync_limitations),
+                        mainText = stringResource(id = R.string.sync_status_self_host),
+                        secondaryText = stringResource(id = R.string.sync_status_anytype_sync_slow)
+                    )
+                }
             }
         }
         SpaceSyncNetwork.LOCAL_ONLY -> {

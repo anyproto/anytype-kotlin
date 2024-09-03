@@ -452,7 +452,8 @@ open class ObjectSetFragment :
                 SpaceSyncStatusScreen(
                     uiState = vm.syncStatusWidget.collectAsStateWithLifecycle().value,
                     onDismiss = vm::onSyncWidgetDismiss,
-                    scope = lifecycleScope
+                    scope = lifecycleScope,
+                    onUpdateAppClick = vm::onUpdateAppClick
                 )
             }
         }
@@ -1227,6 +1228,21 @@ open class ObjectSetFragment :
                 toast(
                     getString(R.string.multiplayer_read_only_access_error)
                 )
+            }
+            ObjectSetCommand.Intent.OpenAppStore -> {
+                try {
+                    Intent(Intent.ACTION_VIEW).apply {
+                        data = Uri.parse("${getString(R.string.play_market_url)}${context?.packageName}")
+                    }.let {
+                        startActivity(it)
+                    }
+                } catch (e: Throwable) {
+                    Intent(Intent.ACTION_VIEW).apply {
+                        data = Uri.parse(getString(R.string.download_anytype_url))
+                    }.let {
+                        startActivity(it)
+                    }
+                }
             }
         }
     }

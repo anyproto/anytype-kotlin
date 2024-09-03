@@ -4,7 +4,9 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -60,7 +62,8 @@ import kotlinx.coroutines.launch
 fun SpaceSyncStatusScreen(
     uiState: SyncStatusWidgetState,
     onDismiss: () -> Unit,
-    scope: CoroutineScope
+    scope: CoroutineScope,
+    onUpdateAppClick: () -> Unit
 ) {
     val isVisible = uiState is SyncStatusWidgetState.Success || uiState is SyncStatusWidgetState.Error
 
@@ -112,7 +115,8 @@ fun SpaceSyncStatusScreen(
                 SyncStatusWidgetState.Hidden -> LoadingState()
                 is SyncStatusWidgetState.Success -> SuccessState(
                     spaceSyncUpdate = uiState.spaceSyncUpdate,
-                    p2pStatus = uiState.p2PStatusUpdate
+                    p2pStatus = uiState.p2PStatusUpdate,
+                    onUpdateAppClick = onUpdateAppClick
                 )
             }
         }
@@ -145,9 +149,13 @@ private fun ColumnScope.ErrorState() {
 }
 
 @Composable
-private fun SuccessState(spaceSyncUpdate: SpaceSyncUpdate, p2pStatus: P2PStatusUpdate) {
+private fun SuccessState(
+    spaceSyncUpdate: SpaceSyncUpdate,
+    p2pStatus: P2PStatusUpdate,
+    onUpdateAppClick: () -> Unit
+) {
     if (spaceSyncUpdate is SpaceSyncUpdate.Update) {
-        SpaceSyncStatusItem(spaceSyncUpdate)
+        SpaceSyncStatusItem(spaceSyncUpdate, onUpdateAppClick)
         Divider()
     }
     if (p2pStatus is P2PStatusUpdate.Update) {
@@ -197,7 +205,8 @@ private fun P2PStatusItem(
 
 @Composable
 private fun SpaceSyncStatusItem(
-    spaceSyncUpdate: SpaceSyncUpdate.Update
+    spaceSyncUpdate: SpaceSyncUpdate.Update,
+    onUpdateAppClick: () -> Unit = {}
 ) {
     val networkCardSettings = getNetworkCardSettings(
         syncStatus = spaceSyncUpdate.status,
@@ -205,15 +214,21 @@ private fun SpaceSyncStatusItem(
         error = spaceSyncUpdate.error,
         syncingObjectsCounter = spaceSyncUpdate.syncingObjectsCounter
     )
-    Row(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(72.dp)
-            .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .clickable {
+                if (spaceSyncUpdate.status == SpaceSyncStatus.NETWORK_UPDATE_NEEDED) {
+                    onUpdateAppClick()
+                }
+            }
     ) {
         Image(
-            modifier = Modifier.wrapContentSize(),
+            modifier = Modifier
+                .wrapContentSize()
+                .padding(start = 16.dp)
+                .align(Alignment.CenterStart),
             painter = networkCardSettings.icon,
             contentDescription = "dfas",
             alpha = networkCardSettings.alpha
@@ -221,7 +236,8 @@ private fun SpaceSyncStatusItem(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 12.dp)
+                .padding(start = 76.dp)
+                .align(Alignment.CenterStart)
         ) {
             Text(
                 text = networkCardSettings.mainText,
@@ -235,6 +251,16 @@ private fun SpaceSyncStatusItem(
                     color = colorResource(R.color.text_secondary)
                 )
             }
+        }
+        if (spaceSyncUpdate.status == SpaceSyncStatus.NETWORK_UPDATE_NEEDED)  {
+            Image(
+                modifier = Modifier
+                    .padding(end = 20.dp)
+                    .wrapContentSize()
+                    .align(Alignment.CenterEnd),
+                painter = painterResource(id = R.drawable.ic_arrow_top_end),
+                contentDescription = "update app icon"
+            )
         }
     }
 }
@@ -550,4 +576,17 @@ fun SpaceSyncStatusPreview12() {
         spaceId = "1"
     )
     P2PStatusItem(p2pStatus = p2pStatus)
+}
+
+@Preview(name = "AnytypeNetworkNeedUpdate", showBackground = true)
+@Composable
+fun SpaceSyncStatusPreview13() {
+    val spaceSyncUpdate = SpaceSyncUpdate.Update(
+        id = "1",
+        status = SpaceSyncStatus.NETWORK_UPDATE_NEEDED,
+        network = SpaceSyncNetwork.ANYTYPE,
+        error = SpaceSyncError.NULL,
+        syncingObjectsCounter = 0
+    )
+    SpaceSyncStatusItem(spaceSyncUpdate = spaceSyncUpdate)
 }

@@ -61,7 +61,7 @@ class ResumeAccount @Inject constructor(
             }
             setup.account.id
         }
-        awaitAccountStartManager.setIsStarted(true)
+        awaitAccountStartManager.setState(AwaitAccountStartManager.State.Started)
         result
     }
 }

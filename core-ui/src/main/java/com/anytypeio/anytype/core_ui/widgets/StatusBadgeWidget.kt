@@ -52,7 +52,8 @@ class StatusBadgeWidget @JvmOverloads constructor(
                                     setImageResource(R.drawable.ic_sync_grey_10)
                                 }
                                 SpaceSyncStatus.NETWORK_UPDATE_NEEDED -> {
-                                    // TODO
+                                    visible()
+                                    setImageResource(R.drawable.ic_sync_slow_10)
                                 }
                             }
                         }

@@ -951,18 +951,20 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     }
                 }
                 is Command.OpenAppStore -> {
-                    try {
-                        Intent(Intent.ACTION_VIEW).apply {
-                            data = Uri.parse("${getString(R.string.play_market_url)}${context?.packageName}")
-                        }.let {
-                            startActivity(it)
-                        }
-                    } catch (e: Throwable) {
-                        Intent(Intent.ACTION_VIEW).apply {
-                            data = Uri.parse(getString(R.string.download_anytype_url))
-                        }.let {
-                            startActivity(it)
-                        }
+                    runCatching {
+                        startActivity(
+                            Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse("${getString(R.string.play_market_url)}${context?.packageName}")
+                            )
+                        )
+                    }.onFailure {
+                        startActivity(
+                            Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse(getString(R.string.download_anytype_url))
+                            )
+                        )
                     }
                 }
                 is Command.OpenDocumentMenu -> {

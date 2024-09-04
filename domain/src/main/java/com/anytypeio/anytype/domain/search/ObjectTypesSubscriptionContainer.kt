@@ -25,8 +25,6 @@ class ObjectTypesSubscriptionContainer(
 
     fun observe(params: Params): Flow<Index> {
         return flow {
-            // TODO add tests for this behavior
-            // store.clear()
             val initial = repo.searchObjectsWithSubscription(
                 subscription = params.subscription,
                 sorts = params.sorts,
@@ -41,6 +39,7 @@ class ObjectTypesSubscriptionContainer(
                 beforeId = null,
                 collection = null
             )
+            store.clear()
             store.merge(
                 types = initial.results.map { ObjectWrapper.Type(it.map) }
             )
@@ -132,8 +131,7 @@ class ObjectTypesSubscriptionContainer(
 
     suspend fun unsubscribe() = withContext(dispatchers.io) {
         runCatching {
-            // TODO add tests for this behavior
-            // store.clear()
+            store.clear()
             repo.cancelObjectSearchSubscription(
                 listOf(SUBSCRIPTION_ID)
             )

@@ -22,7 +22,7 @@ class ObjectTypesSubscriptionManager (
     private val spaceManager: SpaceManager
 ): GlobalSubscription {
 
-    val pipeline = spaceManager.state().flatMapLatest { state ->
+    val pipeline get() = spaceManager.state().flatMapLatest { state ->
         when(state) {
             is SpaceManager.State.Space.Active -> {
                 val params = buildParams(state.config)

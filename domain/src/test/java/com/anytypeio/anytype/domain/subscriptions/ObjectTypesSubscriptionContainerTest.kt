@@ -13,9 +13,11 @@ import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionContainer
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlin.test.assertEquals
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -50,11 +52,13 @@ class ObjectTypesSubscriptionContainerTest {
     }
 
     @Test
-    fun `should populate store with results`() = runTest {
+    fun `should populate store with latest results and clear it when unsubscribe`() = runTest {
 
         // SETUP
 
-        val subscription = MockDataFactory.randomUuid()
+        val delay = 300
+
+        val subscription = ObjectTypesSubscriptionContainer.SUBSCRIPTION_ID
 
         val store = DefaultStoreOfObjectTypes()
 
@@ -70,7 +74,7 @@ class ObjectTypesSubscriptionContainerTest {
         )
 
         val manager = ObjectTypesSubscriptionManager(
-            scope = this,
+            scope = TestScope(),
             spaceManager = spaceManager,
             container = container
         )
@@ -108,8 +112,13 @@ class ObjectTypesSubscriptionContainerTest {
                 subscribe(
                     listOf(subscription)
                 )
-            } doReturn
-                    emptyFlow()
+            } doReturn emptyFlow()
+        }
+
+        repo.stub {
+            onBlocking {
+                cancelObjectSearchSubscription(listOf(subscription))
+            } doReturn Unit
         }
 
         spaceManager.stub {
@@ -121,6 +130,7 @@ class ObjectTypesSubscriptionContainerTest {
                         defaultSpaceConfig
                     )
                 )
+                delay(300)
                 emit(
                     SpaceManager.State.Space.Active(
                         alternativeSpaceConfig
@@ -177,10 +187,23 @@ class ObjectTypesSubscriptionContainerTest {
 
         manager.pipeline.test {
             val first = awaitItem()
+            assertEquals(
+                expected = defaultSpaceTypes,
+                actual = store.getAll()
+            )
             val second = awaitItem()
             awaitComplete()
+            assertEquals(
+                expected = alternativeSpaceTypes,
+                actual = store.getAll()
+            )
+
+            container.unsubscribe()
+
+            assertEquals(
+                expected = emptyList(),
+                actual = store.getAll()
+            )
         }
-
     }
-
 }

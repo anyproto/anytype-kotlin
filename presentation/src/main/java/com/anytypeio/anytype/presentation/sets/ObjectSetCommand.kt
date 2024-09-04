@@ -115,6 +115,7 @@ sealed class ObjectSetCommand {
         data class GoTo(val url: String) : Intent()
         data class MailTo(val email: String) : Intent()
         data class Call(val phone: String) : Intent()
+        data object OpenAppStore : Intent()
     }
 
     data object ShowOnlyAccessError : ObjectSetCommand()

@@ -78,6 +78,7 @@ import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ext.hideSoftInput
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.safeNavigate
+import com.anytypeio.anytype.core_utils.ext.startMarketPageOrWeb
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.syncFocusWithImeVisibility
 import com.anytypeio.anytype.core_utils.ext.syncTranslationWithImeVisibility
@@ -452,7 +453,8 @@ open class ObjectSetFragment :
                 SpaceSyncStatusScreen(
                     uiState = vm.syncStatusWidget.collectAsStateWithLifecycle().value,
                     onDismiss = vm::onSyncWidgetDismiss,
-                    scope = lifecycleScope
+                    scope = lifecycleScope,
+                    onUpdateAppClick = vm::onUpdateAppClick
                 )
             }
         }
@@ -1227,6 +1229,9 @@ open class ObjectSetFragment :
                 toast(
                     getString(R.string.multiplayer_read_only_access_error)
                 )
+            }
+            ObjectSetCommand.Intent.OpenAppStore -> {
+                startMarketPageOrWeb()
             }
         }
     }

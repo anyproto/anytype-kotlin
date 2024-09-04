@@ -7413,6 +7413,10 @@ class EditorViewModel(
     fun onSyncWidgetDismiss() {
         syncStatusWidget.value = SyncStatusWidgetState.Hidden
     }
+
+    fun onUpdateAppClick() {
+        dispatch(command = Command.OpenAppStore)
+    }
     //endregion
 
     data class Params(

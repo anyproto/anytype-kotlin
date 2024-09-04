@@ -1,8 +1,11 @@
 package com.anytypeio.anytype.core_utils.ext
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Parcelable
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.anytypeio.anytype.core_utils.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -55,3 +58,21 @@ fun <T> CoroutineScope.subscribe(flow: Flow<T>, body: suspend (T) -> Unit): Job 
 
 fun <T> Fragment.subscribe(flow: Flow<T>, body: (T) -> Unit): Job =
     flow.cancellable().onEach { body(it) }.launchIn(viewLifecycleOwner.lifecycleScope)
+
+fun Fragment.startMarketPageOrWeb() {
+    runCatching {
+        startActivity(
+            Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse("${getString(R.string.play_market_url)}${context?.packageName}")
+            )
+        )
+    }.onFailure {
+        startActivity(
+            Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse(getString(R.string.download_anytype_url))
+            )
+        )
+    }
+}

@@ -2,15 +2,15 @@ package com.anytypeio.anytype.presentation.membership.provider
 
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.membership.Membership
+import com.anytypeio.anytype.core_models.membership.MembershipStatus
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
+import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.workspace.MembershipChannel
-import com.anytypeio.anytype.core_models.membership.MembershipStatus
-import com.anytypeio.anytype.core_models.membership.TierId
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -38,13 +38,13 @@ interface MembershipProvider {
 
         @OptIn(ExperimentalCoroutinesApi::class)
         override fun status(): Flow<MembershipStatus> {
-            return awaitAccountStartManager.isStarted().flatMapLatest { isStarted ->
-                if (isStarted) {
-                    buildStatusFlow(
+            return awaitAccountStartManager.state().flatMapLatest { state ->
+                when(state) {
+                    AwaitAccountStartManager.State.Started -> buildStatusFlow(
                         initial = proceedWithGettingMembership()
                     )
-                } else {
-                    emptyFlow()
+                    AwaitAccountStartManager.State.Init -> emptyFlow()
+                    AwaitAccountStartManager.State.Stopped -> emptyFlow()
                 }
             }.catch { e -> Timber.e(e) }
                 .flowOn(dispatchers.io)
@@ -52,13 +52,13 @@ interface MembershipProvider {
 
         @OptIn(ExperimentalCoroutinesApi::class)
         override fun activeTier(): Flow<TierId> {
-            return awaitAccountStartManager.isStarted().flatMapLatest { isStarted ->
-                if (isStarted) {
-                    buildActiveTierFlow(
+            return awaitAccountStartManager.state().flatMapLatest { state ->
+                when(state) {
+                    AwaitAccountStartManager.State.Started -> buildActiveTierFlow(
                         initial = proceedWithGettingMembership()
                     )
-                } else {
-                    emptyFlow()
+                    AwaitAccountStartManager.State.Init -> emptyFlow()
+                    AwaitAccountStartManager.State.Stopped -> emptyFlow()
                 }
             }.catch { e -> Timber.e(e) }
                 .flowOn(dispatchers.io)

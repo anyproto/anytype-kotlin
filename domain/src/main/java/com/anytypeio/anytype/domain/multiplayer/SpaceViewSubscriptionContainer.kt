@@ -51,11 +51,18 @@ interface SpaceViewSubscriptionContainer {
 
         init {
             scope.launch {
-                awaitAccountStart.isStarted().collect { isStarted ->
-                    if (isStarted)
-                        start()
-                    else
-                        stop()
+                awaitAccountStart.state().collect { state ->
+                    when(state) {
+                        AwaitAccountStartManager.State.Init -> {
+                            // Do nothing
+                        }
+                        AwaitAccountStartManager.State.Started -> {
+                            start()
+                        }
+                        AwaitAccountStartManager.State.Stopped -> {
+                            stop()
+                        }
+                    }
                 }
             }
         }

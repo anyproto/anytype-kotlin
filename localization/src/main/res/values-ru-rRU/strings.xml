@@ -1514,6 +1514,7 @@
     </plurals>
     <string name="sync_status_anytype_network_connecting">Сетевое подключение...</string>
     <string name="sync_status_anytype_network_no_connecting">Нет соединения</string>
+    <string name="sync_status_anytype_sync_slow">Синхронизация может быть медленной. Обновите приложение.</string>
     <string name="sync_status_storage_limit_exceed">Достигнут предел хранилища.</string>
     <string name="sync_status_incompatible_version">Несовместимая версия</string>
     <string name="sync_status_network_error">Нет доступа к пространству</string>

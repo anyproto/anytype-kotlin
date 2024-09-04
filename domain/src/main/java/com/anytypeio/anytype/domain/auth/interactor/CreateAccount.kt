@@ -47,7 +47,7 @@ open class CreateAccount @Inject constructor(
         }
         configStorage.set(setup.config)
         spaceManager.set(setup.config.space)
-        awaitAccountStartManager.setIsStarted(true)
+        awaitAccountStartManager.setState(AwaitAccountStartManager.State.Started)
         return setup.account
     }
 

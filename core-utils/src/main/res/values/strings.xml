@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">CoreUtils</string>
+    <string name="download_anytype_url" translatable="false">https://download.anytype.io</string>
+    <string name="play_market_url" translatable="false">market://details?id=</string>
 </resources>

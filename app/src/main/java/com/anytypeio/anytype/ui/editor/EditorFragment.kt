@@ -99,6 +99,7 @@ import com.anytypeio.anytype.core_utils.ext.lastDecorator
 import com.anytypeio.anytype.core_utils.ext.safeNavigate
 import com.anytypeio.anytype.core_utils.ext.screen
 import com.anytypeio.anytype.core_utils.ext.show
+import com.anytypeio.anytype.core_utils.ext.startMarketPageOrWeb
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.syncTranslationWithImeVisibility
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
@@ -951,21 +952,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     }
                 }
                 is Command.OpenAppStore -> {
-                    runCatching {
-                        startActivity(
-                            Intent(
-                                Intent.ACTION_VIEW,
-                                Uri.parse("${getString(R.string.play_market_url)}${context?.packageName}")
-                            )
-                        )
-                    }.onFailure {
-                        startActivity(
-                            Intent(
-                                Intent.ACTION_VIEW,
-                                Uri.parse(getString(R.string.download_anytype_url))
-                            )
-                        )
-                    }
+                    startMarketPageOrWeb()
                 }
                 is Command.OpenDocumentMenu -> {
                     hideKeyboard()

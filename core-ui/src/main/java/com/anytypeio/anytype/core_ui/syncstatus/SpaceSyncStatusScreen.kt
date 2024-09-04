@@ -48,6 +48,7 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncUpdate
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.Title2
@@ -218,7 +219,7 @@ private fun SpaceSyncStatusItem(
         modifier = Modifier
             .fillMaxWidth()
             .height(72.dp)
-            .clickable {
+            .noRippleClickable {
                 if (spaceSyncUpdate.status == SpaceSyncStatus.NETWORK_UPDATE_NEEDED) {
                     onUpdateAppClick()
                 }

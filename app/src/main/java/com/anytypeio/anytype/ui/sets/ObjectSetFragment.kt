@@ -78,6 +78,7 @@ import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ext.hideSoftInput
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.safeNavigate
+import com.anytypeio.anytype.core_utils.ext.startMarketPageOrWeb
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.syncFocusWithImeVisibility
 import com.anytypeio.anytype.core_utils.ext.syncTranslationWithImeVisibility
@@ -1230,19 +1231,7 @@ open class ObjectSetFragment :
                 )
             }
             ObjectSetCommand.Intent.OpenAppStore -> {
-                try {
-                    Intent(Intent.ACTION_VIEW).apply {
-                        data = Uri.parse("${getString(R.string.play_market_url)}${context?.packageName}")
-                    }.let {
-                        startActivity(it)
-                    }
-                } catch (e: Throwable) {
-                    Intent(Intent.ACTION_VIEW).apply {
-                        data = Uri.parse(getString(R.string.download_anytype_url))
-                    }.let {
-                        startActivity(it)
-                    }
-                }
+                startMarketPageOrWeb()
             }
         }
     }

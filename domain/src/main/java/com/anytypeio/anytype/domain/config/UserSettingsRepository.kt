@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.domain.config
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.GlobalSearchCache
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.WidgetSession
@@ -28,9 +29,9 @@ interface UserSettingsRepository {
     suspend fun getLastOpenedObject(space: SpaceId) : Id?
     suspend fun clearLastOpenedObject(space: SpaceId)
 
-    suspend fun setLastSearchQuery(query: String, space: SpaceId)
-    suspend fun getLastSearchQuery(space: SpaceId): String
-    suspend fun clearLastSearchQuery(space: SpaceId)
+    suspend fun setLatestGlobalSearch(search: GlobalSearchCache, space: SpaceId)
+    suspend fun getLatestGlobalSearch(space: SpaceId): GlobalSearchCache?
+    suspend fun clearLatestGlobalSearch(space: SpaceId)
 
     suspend fun setThemeMode(mode: ThemeMode)
     suspend fun getThemeMode(): ThemeMode

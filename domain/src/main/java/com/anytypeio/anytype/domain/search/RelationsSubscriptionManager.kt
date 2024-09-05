@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Marketplace
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.domain.subscriptions.GlobalSubscription
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
@@ -22,7 +23,7 @@ class RelationsSubscriptionManager @Inject constructor(
     private val scope: CoroutineScope = GlobalScope,
     private val container: RelationsSubscriptionContainer,
     private val spaceManager: SpaceManager
-) {
+): GlobalSubscription {
     val pipeline get() = spaceManager.state().flatMapLatest { state ->
         when(state) {
             is SpaceManager.State.Space.Active -> {

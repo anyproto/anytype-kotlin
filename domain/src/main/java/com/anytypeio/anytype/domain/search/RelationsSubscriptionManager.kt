@@ -44,7 +44,7 @@ class RelationsSubscriptionManager @Inject constructor(
                     )
                 }
             }
-            SpaceManager.State.Vault -> {
+            SpaceManager.State.NoSpace -> {
                 flow {
                     container.unsubscribe()
                     emit(

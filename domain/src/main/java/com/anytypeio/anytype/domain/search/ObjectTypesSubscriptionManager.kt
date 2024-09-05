@@ -36,7 +36,7 @@ class ObjectTypesSubscriptionManager (
                     )
                 }
             }
-            SpaceManager.State.Vault -> {
+            SpaceManager.State.NoSpace -> {
                 flow {
                     container.unsubscribe()
                     emit(

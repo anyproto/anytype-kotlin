@@ -1643,7 +1643,7 @@ class HomeScreenViewModel(
 
     fun onVaultClicked() {
         viewModelScope.launch {
-            spaceManager.vault()
+            spaceManager.clear()
             clearLastOpenedSpace.async(Unit).fold(
                 onSuccess = {
                     Timber.d("Cleared last opened space before opening vault")

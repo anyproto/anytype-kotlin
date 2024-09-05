@@ -21,7 +21,6 @@ interface SpaceManager {
 
     suspend fun get(): Id
     suspend fun set(space: Id): Result<Config>
-    suspend fun vault()
 
     fun getConfig(): Config?
     fun getConfig(space: SpaceId) : Config?
@@ -37,14 +36,15 @@ interface SpaceManager {
         private val logger: Logger
     ) : SpaceManager {
 
-        private val currentSpace = MutableStateFlow(VAULT)
+        private val currentSpace = MutableStateFlow(NO_SPACE)
         private val info = mutableMapOf<Id, Config>()
 
         override suspend fun get(): Id {
             val curr = currentSpace.value
-            return curr.ifEmpty {
-                configStorage.getOrNull()?.space.orEmpty()
+            if (curr.isEmpty()) {
+                logger.logWarning("Accessing space manager in no space state")
             }
+            return curr
         }
 
         override fun getConfig(): Config? {
@@ -52,7 +52,7 @@ interface SpaceManager {
             return if (curr.isNotEmpty()) {
                 info[curr]
             } else {
-                configStorage.getOrNull()
+                null
             }
         }
 
@@ -72,30 +72,20 @@ interface SpaceManager {
             }
         }
 
-        @Deprecated("Might need refactoring")
         override fun observe(): Flow<Config> {
             return currentSpace.mapNotNull { space ->
                 if (space.isEmpty()) {
-                    configStorage.getOrNull()
+                    null
                 } else {
-                    val config = info[space]
-                    if (config != null)
-                        config
-                    else {
-                        val default = configStorage.getOrNull()
-                        if (default != null && default.space == space)
-                            default
-                        else
-                            null
-                    }
+                    info[space]
                 }
             }
         }
 
         override fun state(): Flow<State> {
             return currentSpace.map { space ->
-                if (space == VAULT) {
-                    State.Vault
+                if (space == NO_SPACE) {
+                    State.NoSpace
                 } else {
                     val config = info[space]
                     if (config != null) {
@@ -107,24 +97,19 @@ interface SpaceManager {
             }
         }
 
-        override suspend fun vault() {
-            currentSpace.value = VAULT
-            info.clear()
-        }
-
         override fun clear() {
             info.clear()
-            currentSpace.value = VAULT
+            currentSpace.value = NO_SPACE
         }
 
         companion object {
-            const val VAULT = ""
+            const val NO_SPACE = ""
         }
     }
 
     sealed class State {
         data object Init: State()
-        data object Vault: State()
+        data object NoSpace: State()
         sealed class Space: State() {
             data class Idle(val space: SpaceId): Space()
             data class Active(val config: Config): Space()

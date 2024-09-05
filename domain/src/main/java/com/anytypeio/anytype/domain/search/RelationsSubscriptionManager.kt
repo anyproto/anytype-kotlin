@@ -41,13 +41,13 @@ class RelationsSubscriptionManager @Inject constructor(
                     emit(RelationsSubscriptionContainer.Index.empty())
                 }
             }
-            SpaceManager.State.NoSpace -> {
+            is SpaceManager.State.NoSpace -> {
                 flow {
                     container.unsubscribe()
                     emit(RelationsSubscriptionContainer.Index.empty())
                 }
             }
-            SpaceManager.State.Init -> {
+            is SpaceManager.State.Init -> {
                 emptyFlow()
             }
         }

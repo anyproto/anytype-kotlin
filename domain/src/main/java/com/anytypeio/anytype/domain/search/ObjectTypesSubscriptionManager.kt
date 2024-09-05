@@ -33,13 +33,13 @@ class ObjectTypesSubscriptionManager (
                     emit(ObjectTypesSubscriptionContainer.Index.empty())
                 }
             }
-            SpaceManager.State.NoSpace -> {
+            is SpaceManager.State.NoSpace -> {
                 flow {
                     container.unsubscribe()
                     emit(ObjectTypesSubscriptionContainer.Index.empty())
                 }
             }
-            SpaceManager.State.Init -> {
+            is SpaceManager.State.Init -> {
                 emptyFlow()
             }
         }

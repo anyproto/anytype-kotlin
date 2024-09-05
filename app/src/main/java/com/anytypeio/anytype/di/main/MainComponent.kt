@@ -128,7 +128,6 @@ interface MainComponent :
     GlobalSearchDependencies,
     MembershipUpdateComponentDependencies,
     VaultComponentDependencies,
-    MembershipUpdateComponentDependencies,
     DiscussionComponentDependencies
 {
 

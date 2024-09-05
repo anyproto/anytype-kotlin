@@ -34,6 +34,7 @@ import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewMode
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModelFactory
 import com.anytypeio.anytype.feature_discussions.ui.DiscussionScreenWrapper
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.ui.search.GlobalSearchScreen
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
@@ -83,7 +84,14 @@ class DiscussionFragment : BaseComposeFragment() {
                             dragHandle = null
                         ) {
                             val component = componentManager().globalSearchComponent
-                            val searchViewModel = daggerViewModel { component.get().getViewModel() }
+                            val searchViewModel = daggerViewModel {
+                                component.get(
+                                    params = GlobalSearchViewModel.VmParams(
+                                        initialQuery = "",
+                                        space = SpaceId("TODO")
+                                    )
+                                ).getViewModel()
+                            }
                             GlobalSearchScreen(
                                 modifier = Modifier.padding(top = 12.dp),
                                 state = searchViewModel.state

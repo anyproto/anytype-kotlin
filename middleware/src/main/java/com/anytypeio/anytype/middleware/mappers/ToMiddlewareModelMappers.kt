@@ -408,7 +408,7 @@ fun Any?.validate() : Any? {
 fun Block.Content.DataView.Filter.Operator.toMiddlewareModel(): MDVFilterOperator = when (this) {
     Block.Content.DataView.Filter.Operator.AND -> MDVFilterOperator.And
     Block.Content.DataView.Filter.Operator.OR -> MDVFilterOperator.Or
-    Block.Content.DataView.Filter.Operator.NO -> MDVFilterOperator.No
+    Block.Content.DataView.Filter.Operator.NO -> TODO("Should wait for the updated protocol")
 }
 
 fun Block.Content.DataView.Filter.QuickOption.toMiddlewareModel(): MDVFilterQuickOption =

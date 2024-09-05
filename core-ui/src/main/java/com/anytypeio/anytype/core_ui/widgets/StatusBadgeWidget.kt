@@ -3,13 +3,14 @@ package com.anytypeio.anytype.core_ui.widgets
 import android.content.Context
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatImageView
+import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncError
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncUpdate
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusState
+
 
 class StatusBadgeWidget @JvmOverloads constructor(
     context: Context,
@@ -22,7 +23,7 @@ class StatusBadgeWidget @JvmOverloads constructor(
                 visible()
                 setImageResource(R.drawable.ic_sync_error_10)
             }
-            SpaceSyncAndP2PStatusState.Initial -> {
+            SpaceSyncAndP2PStatusState.Init -> {
                 gone()
             }
             is SpaceSyncAndP2PStatusState.Success -> {
@@ -38,20 +39,21 @@ class StatusBadgeWidget @JvmOverloads constructor(
                                     visible()
                                     setImageResource(R.drawable.ic_synced_10)
                                 }
-
                                 SpaceSyncStatus.SYNCING -> {
                                     visible()
                                     setImageResource(R.drawable.ic_syncing)
                                 }
-
                                 SpaceSyncStatus.ERROR -> {
                                     visible()
                                     setImageResource(R.drawable.ic_sync_error_10)
                                 }
-
                                 SpaceSyncStatus.OFFLINE -> {
                                     visible()
                                     setImageResource(R.drawable.ic_sync_grey_10)
+                                }
+                                SpaceSyncStatus.NETWORK_UPDATE_NEEDED -> {
+                                    visible()
+                                    setImageResource(R.drawable.ic_sync_slow_10)
                                 }
                             }
                         }

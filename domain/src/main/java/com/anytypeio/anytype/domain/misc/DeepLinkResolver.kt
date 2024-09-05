@@ -2,6 +2,7 @@ package com.anytypeio.anytype.domain.misc
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 
 interface DeepLinkResolver {
@@ -21,6 +22,9 @@ interface DeepLinkResolver {
         data class DeepLinkToObject(
             val obj: Id,
             val space: SpaceId
+        ) : Action()
+        data class DeepLinkToMembership(
+            val tierId: String?
         ) : Action()
     }
 }

@@ -56,7 +56,9 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.search.GetLastSearchQuery
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.domain.types.GetPinnedObjectTypes
 import com.anytypeio.anytype.domain.widgets.CreateWidget
@@ -242,6 +244,12 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var addObjectToCollection: AddObjectToCollection
+
+    @Mock
+    lateinit var getLastSearchQuery: GetLastSearchQuery
+
+    @Mock
+    lateinit var clearLastOpenedSpace: ClearLastOpenedSpace
 
     lateinit var userPermissionProvider: UserPermissionProvider
 
@@ -1675,6 +1683,8 @@ class HomeScreenViewModelTest {
 
         advanceTimeBy(delayBeforeSwitchingSpace + 1)
 
+        advanceUntilIdle()
+
         verifyBlocking(unsubscriber, times(1)) {
             unsubscribe(
                 subscriptions = listOf(
@@ -1845,7 +1855,7 @@ class HomeScreenViewModelTest {
 
         vm.onStart()
 
-        advanceUntilIdle()
+        advanceTimeBy(delayBeforeSwitchingSpace - 1)
 
         verifyBlocking(storelessSubscriptionContainer, times(1)) {
             subscribe(
@@ -1883,6 +1893,8 @@ class HomeScreenViewModelTest {
 
         // Verifying unsubscribe behavior
 
+        advanceUntilIdle()
+
         verifyBlocking(unsubscriber, times(1)) {
             unsubscribe(
                 subscriptions = listOf(
@@ -1892,6 +1904,8 @@ class HomeScreenViewModelTest {
                 )
             )
         }
+
+        verify(closeObject, times(1)).async(params = WIDGET_OBJECT_ID)
     }
 
     @Test
@@ -2683,6 +2697,13 @@ class HomeScreenViewModelTest {
                 )
             } doReturn flowOf(Resultat.Loading(), Resultat.Success(Unit))
         }
+        closeObject.stub {
+            onBlocking {
+                async(
+                    params = WIDGET_OBJECT_ID
+                )
+            } doReturn Resultat.success(Unit)
+        }
     }
 
     private fun stubSearchByIds(
@@ -2926,7 +2947,9 @@ class HomeScreenViewModelTest {
         createBlock = createBlock,
         createDataViewObject = createDataViewObject,
         dateProvider = dateProvider,
-        addObjectToCollection = addObjectToCollection
+        addObjectToCollection = addObjectToCollection,
+        getLastSearchQuery = getLastSearchQuery,
+        clearLastOpenedSpace = clearLastOpenedSpace
     )
 
     companion object {

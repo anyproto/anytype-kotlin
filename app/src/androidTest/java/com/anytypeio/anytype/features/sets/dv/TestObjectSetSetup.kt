@@ -29,6 +29,7 @@ import com.anytypeio.anytype.domain.dataview.SetDataViewQuery
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -47,6 +48,7 @@ import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
+import com.anytypeio.anytype.domain.search.GetLastSearchQuery
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
@@ -68,7 +70,6 @@ import com.anytypeio.anytype.presentation.sets.ObjectSetViewModelFactory
 import com.anytypeio.anytype.presentation.sets.state.DefaultObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerDelegate
-import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.collection.DateProviderImpl
@@ -184,6 +185,9 @@ abstract class TestObjectSetSetup {
 
     @Mock
     lateinit var clearLastOpenedObject: ClearLastOpenedObject
+
+    @Mock
+    lateinit var getLastSearchQuery: GetLastSearchQuery
 
     private lateinit var getTemplates: GetTemplates
     private lateinit var getDefaultObjectType: GetDefaultObjectType
@@ -312,7 +316,8 @@ abstract class TestObjectSetSetup {
             permissions = permissions,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
-            clearLastOpenedObject = clearLastOpenedObject
+            clearLastOpenedObject = clearLastOpenedObject,
+            getLastSearchQuery = getLastSearchQuery
         )
     }
 

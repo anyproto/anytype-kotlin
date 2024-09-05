@@ -100,10 +100,11 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                     toast("Error while navigating to desktop: ${e.message}")
                 }
             }
-            is SplashViewModel.Command.NavigateToWidgets -> {
+            is SplashViewModel.Command.NavigateToVault -> {
                 try {
                     findNavController().navigate(
-                        R.id.action_splashScreen_to_widgets
+                        R.id.action_splashScreen_to_vaultScreen,
+                        args = HomeScreenFragment.args(command.deeplink)
                     )
                     findNavController().navigate(
                         R.id.discussionScreen,
@@ -113,8 +114,8 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                         )
                     )
                 } catch (e: Exception) {
-                    Timber.e(e, "Error while opening widgets from splash screen")
-                    toast("Error while navigating to widgets: ${e.message}")
+                    Timber.e(e, "Error while opening dashboard from splash screen")
+                    toast("Error while navigating to desktop: ${e.message}")
                 }
             }
             is SplashViewModel.Command.NavigateToObject -> {

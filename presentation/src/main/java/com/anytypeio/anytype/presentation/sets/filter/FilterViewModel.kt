@@ -314,7 +314,6 @@ open class FilterViewModel(
         }
         else -> {
             filterValueListState.value = emptyList()
-            Timber.e("No need values list for format ${relation.format}")
         }
     }
 
@@ -827,7 +826,7 @@ open class FilterViewModel(
         viewerId: Id,
         relationKey: String,
         relationFormat: RelationFormat? = null,
-        operator: DVFilterOperator = DVFilterOperator.AND,
+        operator: DVFilterOperator = DVFilterOperator.NO,
         condition: DVFilterCondition,
         quickOption: DVFilterQuickOption = DVFilterQuickOption.EXACT_DATE,
         value: Any? = null

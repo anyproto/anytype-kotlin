@@ -85,7 +85,9 @@ class RemoteFilesManageFragment : BaseBottomSheetComposeFragment() {
                 space = command.space
             )
             is CollectionViewModel.Command.ToDesktop -> navigation.exitToDesktop()
-            is CollectionViewModel.Command.ToSearch -> navigation.openPageSearch()
+            is CollectionViewModel.Command.ToSearch -> {
+                // Do nothing.
+            }
             is CollectionViewModel.Command.Exit -> exit()
             is CollectionViewModel.Command.SelectSpace -> {
                 // Do nothing.

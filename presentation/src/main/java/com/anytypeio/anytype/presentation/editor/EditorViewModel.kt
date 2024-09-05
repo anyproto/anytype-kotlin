@@ -49,6 +49,7 @@ import com.anytypeio.anytype.core_models.ext.sortByType
 import com.anytypeio.anytype.core_models.ext.supportNesting
 import com.anytypeio.anytype.core_models.ext.title
 import com.anytypeio.anytype.core_models.ext.updateTextContent
+import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -77,6 +78,7 @@ import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.icon.SetImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
@@ -96,6 +98,7 @@ import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
+import com.anytypeio.anytype.domain.search.GetLastSearchQuery
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.templates.ApplyTemplate
@@ -251,8 +254,6 @@ import com.anytypeio.anytype.presentation.relations.getObjectRelations
 import com.anytypeio.anytype.presentation.relations.views
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
-import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusProvider
-import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.toSyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.updateStatus
@@ -331,7 +332,8 @@ class EditorViewModel(
     private val getNetworkMode: GetNetworkMode,
     private val clearLastOpenedObject: ClearLastOpenedObject,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
+    private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
+    private val getLastSearchQuery: GetLastSearchQuery
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -4301,7 +4303,33 @@ class EditorViewModel(
             eventName = searchScreenShow,
             props = Props(mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.navigation))
         )
-        navigation.postValue(EventWrapper(AppNavigation.Command.OpenPageSearch))
+
+        viewModelScope.launch {
+            val params = GetLastSearchQuery.Params(space = vmParams.space)
+            getLastSearchQuery.async(params).fold(
+                onSuccess = { query ->
+                    navigation.postValue(
+                        EventWrapper(
+                            AppNavigation.Command.OpenPageSearch(
+                                initialQuery = query,
+                                space = vmParams.space.id
+                            )
+                        )
+                    )
+                },
+                onFailure = {
+                    Timber.e(it, "Error while getting last search query")
+                    navigation.postValue(
+                        EventWrapper(
+                            AppNavigation.Command.OpenPageSearch(
+                                initialQuery = "",
+                                space = vmParams.space.id
+                            )
+                        )
+                    )
+                }
+            )
+        }
     }
 
     private fun onMultiSelectModeBlockClicked() {
@@ -6023,7 +6051,13 @@ class EditorViewModel(
 
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.Mentions.OnMentionClicked)
 
-        val target = blocks.first { it.id == focus.value }
+        val target = blocks.find { it.id == focus.value }
+
+        if (target == null) {
+            sendToast("Error while creating mention, target block is null")
+            Timber.e("Error while creating mention, target block is null")
+            return
+        }
 
         val new = target.addMention(
             mentionText = name.getMentionName(MENTION_TITLE_EMPTY),
@@ -6162,11 +6196,11 @@ class EditorViewModel(
     )
 
     sealed class TypesWidgetItem {
-        object Search : TypesWidgetItem()
-        object Done : TypesWidgetItem()
+        data object Search : TypesWidgetItem()
+        data object Done : TypesWidgetItem()
         data class Type(val item: ObjectTypeView) : TypesWidgetItem()
-        object Expand : TypesWidgetItem()
-        object Collapse : TypesWidgetItem()
+        data object Expand : TypesWidgetItem()
+        data object Collapse : TypesWidgetItem()
     }
 
     private val _objectTypes = mutableListOf<ObjectWrapper.Type>()
@@ -6206,12 +6240,19 @@ class EditorViewModel(
                     _objectTypes.addAll(objects)
                     val items = buildList {
                         add(TypesWidgetItem.Search)
-                        addAll(objects.getObjectTypeViewsForSBPage(
-                            isWithCollection = true,
-                            isWithBookmark = false,
-                            excludeTypes = excludeTypes
-                        ).filter { !excludeTypes.contains(it.key) }
-                            .map { TypesWidgetItem.Type(it, ) })
+                        addAll(
+                            objects.getObjectTypeViewsForSBPage(
+                                isWithCollection = true,
+                                isWithBookmark = false,
+                                excludeTypes = excludeTypes
+                            ).filter {
+                                !excludeTypes.contains(it.key)
+                            }.map {
+                                TypesWidgetItem.Type(it)
+                            }.distinctBy {
+                                it.item.id
+                            }
+                        )
                     }
                     _typesWidgetState.value = _typesWidgetState.value.copy(items = items)
                 }
@@ -7350,7 +7391,7 @@ class EditorViewModel(
     }
 
     //region SYNC STATUS
-    val spaceSyncStatus = MutableStateFlow<SpaceSyncAndP2PStatusState>(SpaceSyncAndP2PStatusState.Initial)
+    val spaceSyncStatus = MutableStateFlow<SpaceSyncAndP2PStatusState>(SpaceSyncAndP2PStatusState.Init)
     val syncStatusWidget = MutableStateFlow<SyncStatusWidgetState>(SyncStatusWidgetState.Hidden)
 
     fun onSyncStatusBadgeClicked() {
@@ -7362,6 +7403,9 @@ class EditorViewModel(
         jobs += viewModelScope.launch {
             spaceSyncAndP2PStatusProvider
                 .observe()
+                .catch {
+                    Timber.e(it, "Error while observing sync status")
+                }
                 .collect { syncAndP2pState ->
                     spaceSyncStatus.value = syncAndP2pState
                     syncStatusWidget.value = syncStatusWidget.value.updateStatus(syncAndP2pState)
@@ -7371,6 +7415,10 @@ class EditorViewModel(
 
     fun onSyncWidgetDismiss() {
         syncStatusWidget.value = SyncStatusWidgetState.Hidden
+    }
+
+    fun onUpdateAppClick() {
+        dispatch(command = Command.OpenAppStore)
     }
     //endregion
 

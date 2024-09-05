@@ -13,6 +13,7 @@ import com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.editor.EditorModalFragment
 import com.anytypeio.anytype.ui.library.LibraryFragment
+import com.anytypeio.anytype.ui.search.GlobalSearchFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.RemoteFilesManageFragment
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.TYPE_TEMPLATE_EDIT
@@ -145,11 +146,17 @@ class Navigator : AppNavigation {
         }
     }
 
-    override fun openPageSearch() {
+    override fun openPageSearch(initialQuery: String, space: Id) {
         // Old search
 //        navController?.navigate(R.id.pageSearchFragment)
         // Uncomment to use new search
-        navController?.navigate(R.id.globalSearchScreen)
+        navController?.navigate(
+            R.id.globalSearchScreen,
+            GlobalSearchFragment.args(
+                initialQuery = initialQuery,
+                space = space
+            )
+        )
     }
 
     override fun openObjectSet(

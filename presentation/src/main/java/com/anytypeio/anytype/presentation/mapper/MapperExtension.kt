@@ -463,6 +463,7 @@ fun Block.Content.DataView.Sort.Type.toView(): Viewer.SortType = when (this) {
 fun DVFilterOperator.toView(): Viewer.FilterOperator = when (this) {
     Block.Content.DataView.Filter.Operator.AND -> Viewer.FilterOperator.And
     Block.Content.DataView.Filter.Operator.OR -> Viewer.FilterOperator.Or
+    Block.Content.DataView.Filter.Operator.NO -> Viewer.FilterOperator.No
 }
 
 fun DVFilterCondition.toTextView(): Viewer.Filter.Condition.Text = when (this) {
@@ -524,6 +525,7 @@ fun DVFilterCondition.toCheckboxView(): Viewer.Filter.Condition.Checkbox = when 
 fun Viewer.FilterOperator.toDomain(): DVFilterOperator = when (this) {
     Viewer.FilterOperator.And -> DVFilterOperator.AND
     Viewer.FilterOperator.Or -> DVFilterOperator.OR
+    Viewer.FilterOperator.No -> DVFilterOperator.NO
 }
 
 fun Viewer.Filter.Condition.toDomain(): DVFilterCondition = when (this) {

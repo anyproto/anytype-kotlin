@@ -53,6 +53,7 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.addTextFromSelectedStart
 import com.anytypeio.anytype.core_ui.extensions.color
@@ -98,6 +99,7 @@ import com.anytypeio.anytype.core_utils.ext.lastDecorator
 import com.anytypeio.anytype.core_utils.ext.safeNavigate
 import com.anytypeio.anytype.core_utils.ext.screen
 import com.anytypeio.anytype.core_utils.ext.show
+import com.anytypeio.anytype.core_utils.ext.startMarketPageOrWeb
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.syncTranslationWithImeVisibility
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
@@ -125,7 +127,6 @@ import com.anytypeio.anytype.presentation.editor.model.EditorFooter
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateViewState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
-import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.base.navigation
@@ -745,7 +746,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 SpaceSyncStatusScreen(
                     uiState = vm.syncStatusWidget.collectAsStateWithLifecycle().value,
                     onDismiss = vm::onSyncWidgetDismiss,
-                    scope = lifecycleScope
+                    scope = lifecycleScope,
+                    onUpdateAppClick = vm::onUpdateAppClick
                 )
             }
         }
@@ -871,7 +873,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
     private fun bindSyncStatus(status: SpaceSyncAndP2PStatusState) {
         binding.topToolbar.status.bind(status)
-        if (status is SpaceSyncAndP2PStatusState.Initial) {
+        if (status is SpaceSyncAndP2PStatusState.Init) {
             binding.topToolbar.hideStatusContainer()
         } else {
             binding.topToolbar.showStatusContainer()
@@ -948,6 +950,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     } catch (e: Throwable) {
                         toast("Couldn't parse url: ${command.url}")
                     }
+                }
+                is Command.OpenAppStore -> {
+                    startMarketPageOrWeb()
                 }
                 is Command.OpenDocumentMenu -> {
                     hideKeyboard()
@@ -1292,9 +1297,10 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
 
-    private fun proceedWithScrollingToActionMenu(command: Command.ScrollToActionMenu): Unit {
+    private fun proceedWithScrollingToActionMenu(command: Command.ScrollToActionMenu) {
         val lastSelected =
-            (vm.state.value as ViewState.Success).blocks.indexOfLast { it.id == command.target }
+            (vm.state.value as? ViewState.Success)?.blocks?.indexOfLast { it.id == command.target }
+                ?: return
         if (lastSelected != -1) {
             val lm = binding.recycler.layoutManager as LinearLayoutManager
             val targetView = lm.findViewByPosition(lastSelected)

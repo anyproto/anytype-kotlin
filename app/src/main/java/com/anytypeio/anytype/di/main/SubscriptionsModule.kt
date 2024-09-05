@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.Logger
+import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.DefaultUserPermissionProvider
@@ -24,6 +25,8 @@ import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.domain.workspace.SyncAndP2PStatusChannel
+import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusProviderImpl
 import dagger.Module
 import dagger.Provides
 import javax.inject.Named
@@ -161,6 +164,17 @@ object SubscriptionsModule {
         container = container,
         manager = spaceManager,
         awaitAccountStart = awaitAccountStartManager
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideSpaceSyncStatusProvider(
+        syncChannel: SyncAndP2PStatusChannel,
+        spaceManager: SpaceManager
+    ): SpaceSyncAndP2PStatusProvider = SpaceSyncAndP2PStatusProviderImpl(
+        spaceManager = spaceManager,
+        spaceSyncStatusChannel = syncChannel
     )
 
     @JvmStatic

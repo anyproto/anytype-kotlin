@@ -51,6 +51,12 @@ class DefaultUserSettingsCache(
             SpaceId(value)
     }
 
+    override suspend fun clearCurrentSpace() {
+        prefs.edit()
+            .putString(CURRENT_SPACE_KEY, "")
+            .apply()
+    }
+
     override suspend fun setDefaultObjectType(space: SpaceId, type: TypeId) {
         val curr = prefs
             .getString(DEFAULT_OBJECT_TYPES_KEY, NO_VALUE)
@@ -134,6 +140,18 @@ class DefaultUserSettingsCache(
             val deserialized = rawSettings.deserializeWallpaperSettings()
             val setting = deserialized[space]
             setting?.asWallpaper() ?: Wallpaper.Default
+        }
+    }
+
+    override suspend fun getWallpapers(): Map<Id, Wallpaper> {
+        val rawSettings = prefs.getString(WALLPAPER_SETTINGS_KEY, "")
+        return if (rawSettings.isNullOrEmpty()) {
+            emptyMap()
+        } else {
+            val deserialized = rawSettings.deserializeWallpaperSettings()
+            return deserialized.mapValues { setting ->
+                setting.value.asWallpaper()
+            }
         }
     }
 
@@ -289,6 +307,54 @@ class DefaultUserSettingsCache(
                 .getOrDefault(key = space.id, defaultValue = SpacePreference())
             val updated = givenSpacePreference.copy(
                 lastOpenedObject = null
+            )
+            val result = buildMap {
+                putAll(existingPreferences.preferences)
+                put(key = space.id, updated)
+            }
+            SpacePreferences(
+                preferences = result
+            )
+        }
+    }
+
+    override suspend fun setLastSearchQuery(query: String, space: SpaceId) {
+        context.spacePrefsStore.updateData { existingPreferences ->
+            val givenSpacePreference = existingPreferences
+                .preferences
+                .getOrDefault(
+                    key = space.id,
+                    defaultValue = SpacePreference()
+                )
+            val updated = givenSpacePreference.copy(
+                lastSearchQuery = query
+            )
+            val result = buildMap {
+                putAll(existingPreferences.preferences)
+                put(key = space.id, updated)
+            }
+            SpacePreferences(preferences = result)
+        }
+    }
+
+    override suspend fun getLastSearchQuery(space: SpaceId): String {
+        return context.spacePrefsStore
+            .data
+            .map { preferences ->
+                preferences
+                    .preferences[space.id]
+                    ?.lastSearchQuery.orEmpty()
+            }
+            .first()
+    }
+
+    override suspend fun clearLastSearchQuery(space: SpaceId) {
+        context.spacePrefsStore.updateData { existingPreferences ->
+            val givenSpacePreference = existingPreferences
+                .preferences
+                .getOrDefault(key = space.id, defaultValue = SpacePreference())
+            val updated = givenSpacePreference.copy(
+                lastSearchQuery  = null
             )
             val result = buildMap {
                 putAll(existingPreferences.preferences)

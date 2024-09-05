@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,10 +29,14 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -40,6 +45,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,18 +53,59 @@ import com.anytypeio.anytype.core_models.primitives.TimeInSeconds
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Header
+import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.fontInterRegular
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
+import com.anytypeio.anytype.presentation.history.ListState
 import com.anytypeio.anytype.presentation.history.VersionHistoryGroup
 import com.anytypeio.anytype.presentation.history.VersionHistoryState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 
 @Composable
 fun VersionHistoryScreen(
+    state: State<VersionHistoryState>,
+    listState: State<ListState>,
+    latestVisibleVersionId: State<String>,
+    onLastItemScrolled: (String) -> Unit,
+    onGroupItemClicked: (VersionHistoryGroup.Item) -> Unit,
+) {
+
+    val lazyListState = rememberLazyListState()
+
+    val shouldStartPaging = remember {
+        derivedStateOf {
+            val lastItem = lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()
+            lastItem?.key == latestVisibleVersionId.value
+        }
+    }
+
+    LaunchedEffect(key1 = shouldStartPaging) {
+        snapshotFlow { shouldStartPaging.value }
+            .distinctUntilChanged()
+            .filter { it }
+            .collect {
+                if (listState.value == ListState.IDLE) {
+                    onLastItemScrolled(latestVisibleVersionId.value)
+                }
+            }
+    }
+
+    VersionHistoryMainScreen(
+        state = state.value,
+        lazyListState = lazyListState,
+        onItemClick = onGroupItemClicked
+    )
+}
+
+@Composable
+private fun VersionHistoryMainScreen(
     state: VersionHistoryState,
+    lazyListState: LazyListState,
     onItemClick: (VersionHistoryGroup.Item) -> Unit
 ) {
     Column(
@@ -73,18 +120,29 @@ fun VersionHistoryScreen(
         )
         Header(text = stringResource(id = R.string.version_history_title))
         when (state) {
-            is VersionHistoryState.Error.GetVersions -> TODO()
-            VersionHistoryState.Error.NoVersions -> TODO()
-            is VersionHistoryState.Error.SpaceMembers -> TODO()
+            is VersionHistoryState.Error.GetVersions -> VersionHistoryError(
+                error = stringResource(
+                    id = R.string.version_history_error_get_version
+                )
+            )
+
+            VersionHistoryState.Error.NoVersions -> VersionHistoryError(
+                error = stringResource(id = R.string.version_history_error_no_versions)
+            )
+
+            is VersionHistoryState.Error.SpaceMembers -> VersionHistoryError(
+                error = stringResource(id = R.string.version_history_error_get_members)
+            )
+
             VersionHistoryState.Loading -> VersionHistoryLoading()
             is VersionHistoryState.Success -> {
                 VersionHistorySuccessState(
                     state = state,
-                    onItemClick = onItemClick
+                    onItemClick = onItemClick,
+                    lazyListState = lazyListState,
                 )
             }
         }
-
     }
 }
 
@@ -101,16 +159,30 @@ private fun VersionHistoryLoading() {
 }
 
 @Composable
+private fun VersionHistoryError(error: String) {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 20.dp),
+            text = error,
+            style = Caption1Medium,
+            color = colorResource(id = R.color.palette_dark_red),
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
 private fun VersionHistorySuccessState(
     state: VersionHistoryState.Success,
-    onItemClick: (VersionHistoryGroup.Item) -> Unit
+    onItemClick: (VersionHistoryGroup.Item) -> Unit,
+    lazyListState: LazyListState
 ) {
 
     var expandedGroupId by remember {
-        mutableStateOf<String?>(state.groups.firstOrNull { it.isExpanded }?.id)
+        mutableStateOf(state.groups.firstOrNull { it.isExpanded }?.id)
     }
-
-    val lazyListState = rememberLazyListState()
 
     LazyColumn(
         state = lazyListState,
@@ -142,11 +214,11 @@ private fun VersionHistorySuccessState(
                     width = 0.5.dp, color = colorResource(id = R.color.shape_primary)
                 )
             ) {
-                Spacer(modifier = Modifier.height(if (isExpanded) 12.dp else 18.dp))
+                Spacer(modifier = Modifier.height(if (isExpanded) 12.dp else 14.dp))
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight()
+                        .wrapContentHeight()
                         .padding(horizontal = 16.dp)
                         .clickable {
                             expandedGroupId = if (expandedGroupId == group.id) null else group.id
@@ -164,11 +236,12 @@ private fun VersionHistorySuccessState(
                     }
                 }
                 if (isExpanded) {
+                    Spacer(modifier = Modifier.height(4.dp))
                     group.items.forEach {
                         GroupItem(item = it, onItemClick = onItemClick)
                     }
                 }
-                Spacer(modifier = Modifier.height(if (isExpanded) 12.dp else 18.dp))
+                Spacer(modifier = Modifier.height(if (isExpanded) 12.dp else 14.dp))
             }
         }
     }
@@ -236,7 +309,7 @@ private fun RowScope.HeaderIcons(
             .weight(1f)
             .padding(start = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(
-            space = (-4).dp,
+            space = (-8).dp,
             alignment = Alignment.End
         ),
         reverseLayout = true
@@ -304,7 +377,7 @@ fun VersionHistoryAvatarTextStyle() = TextStyle(
 )
 @Composable
 private fun SpaceListScreenPreview() {
-    VersionHistoryScreen(
+    VersionHistoryMainScreen(
         state = VersionHistoryState.Success(
             groups = listOf(
                 VersionHistoryGroup(
@@ -384,7 +457,8 @@ private fun SpaceListScreenPreview() {
                 )
             )
         ),
-        onItemClick = {}
+        onItemClick = {},
+        lazyListState = rememberLazyListState()
     )
 }
 
@@ -404,8 +478,9 @@ const val MEMBERS_ICONS_MAX_SIZE = 3
 )
 @Composable
 private fun SpaceListScreenPreviewLoading() {
-    VersionHistoryScreen(
-        state = VersionHistoryState.Loading,
-        onItemClick = {}
+    VersionHistoryMainScreen(
+        state = VersionHistoryState.Error.NoVersions,
+        onItemClick = {},
+        lazyListState = rememberLazyListState()
     )
 }

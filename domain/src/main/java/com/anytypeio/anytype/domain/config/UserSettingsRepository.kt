@@ -12,9 +12,11 @@ interface UserSettingsRepository {
 
     suspend fun setCurrentSpace(space: SpaceId)
     suspend fun getCurrentSpace(): SpaceId?
+    suspend fun clearCurrentSpace()
 
     suspend fun setWallpaper(space: Id, wallpaper: Wallpaper)
     suspend fun getWallpaper(space: Id): Wallpaper
+    suspend fun getWallpapers(): Map<Id, Wallpaper>
 
     suspend fun setDefaultObjectType(space: SpaceId, type: TypeId)
     suspend fun getDefaultObjectType(space: SpaceId): TypeId?
@@ -25,6 +27,10 @@ interface UserSettingsRepository {
     suspend fun setLastOpenedObject(id: Id, space: SpaceId)
     suspend fun getLastOpenedObject(space: SpaceId) : Id?
     suspend fun clearLastOpenedObject(space: SpaceId)
+
+    suspend fun setLastSearchQuery(query: String, space: SpaceId)
+    suspend fun getLastSearchQuery(space: SpaceId): String
+    suspend fun clearLastSearchQuery(space: SpaceId)
 
     suspend fun setThemeMode(mode: ThemeMode)
     suspend fun getThemeMode(): ThemeMode

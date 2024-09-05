@@ -257,7 +257,7 @@ class StorelessSubscriptionContainerTest {
         }
     }
 
-    //@Test
+    @Test
     fun `should resolve into consistent state even if event order is unexpected`() = runTest {
 
         // SET, ADD, COUNTERS + SET

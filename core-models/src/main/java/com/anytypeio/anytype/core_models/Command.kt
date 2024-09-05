@@ -521,7 +521,8 @@ sealed class Command {
         val sorts: List<DVSort>,
         val filters: List<DVFilter>,
         val withMeta: Boolean,
-        val withMetaRelationDetails: Boolean
+        val withMetaRelationDetails: Boolean,
+        val space: SpaceId
     ) {
         data class Result(
             val obj: Id,

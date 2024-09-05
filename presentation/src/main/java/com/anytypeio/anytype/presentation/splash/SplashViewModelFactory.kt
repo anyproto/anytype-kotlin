@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.spaces.GetLastOpenedSpace
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -31,7 +32,8 @@ class SplashViewModelFactory @Inject constructor(
     private val localeProvider: LocaleProvider,
     private val spaceManager: SpaceManager,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val globalSubscriptionManager: GlobalSubscriptionManager
+    private val globalSubscriptionManager: GlobalSubscriptionManager,
+    private val getLastOpenedSpace: GetLastOpenedSpace
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -47,6 +49,7 @@ class SplashViewModelFactory @Inject constructor(
             localeProvider = localeProvider,
             spaceManager = spaceManager,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-            globalSubscriptionManager = globalSubscriptionManager
+            globalSubscriptionManager = globalSubscriptionManager,
+            getLastOpenedSpace = getLastOpenedSpace
         ) as T
 }

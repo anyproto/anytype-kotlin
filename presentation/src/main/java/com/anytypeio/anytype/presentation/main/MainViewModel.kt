@@ -40,7 +40,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
@@ -305,16 +304,11 @@ class MainViewModel(
         deepLinkJobs.cancel()
         deepLinkJobs += viewModelScope.launch {
             awaitAccountStartManager
-                .isStarted()
-                .filter { isStarted -> isStarted }
+                .awaitStart()
                 .onEach { delay(NEW_DEEP_LINK_DELAY) }
                 .take(1)
-                .collect { isStarted ->
-                    if (isStarted) {
-                        proceedWithNewDeepLink(deeplink)
-                    } else {
-                        Timber.w("Account not started")
-                    }
+                .collect {
+                    proceedWithNewDeepLink(deeplink)
                 }
         }
     }
@@ -350,6 +344,11 @@ class MainViewModel(
                     }
                 }
             }
+            is DeepLinkResolver.Action.DeepLinkToMembership -> {
+                commands.emit(
+                    Command.Deeplink.MembershipScreen(tierId = deeplink.tierId)
+                )
+            }
             else -> {
                 Timber.d("No deep link")
             }
@@ -381,6 +380,7 @@ class MainViewModel(
                 val deepLinkType: String,
                 val deepLinkSource: String
             ) : Deeplink()
+            data class MembershipScreen(val tierId: String?) : Deeplink()
         }
     }
 

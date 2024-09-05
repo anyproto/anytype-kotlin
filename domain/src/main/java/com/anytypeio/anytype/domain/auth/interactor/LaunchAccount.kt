@@ -5,7 +5,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.BaseUseCase
-import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
@@ -57,7 +56,7 @@ class LaunchAccount @Inject constructor(
             } else {
                 spaceManager.set(setup.config.space)
             }
-            awaitAccountStartManager.setIsStarted(true)
+            awaitAccountStartManager.setState(AwaitAccountStartManager.State.Started)
             setup.config.analytics
         }
     }

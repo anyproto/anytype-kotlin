@@ -58,6 +58,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -97,6 +98,7 @@ import com.anytypeio.anytype.core_ui.widgets.DefaultObjectImageIcon
 import com.anytypeio.anytype.core_ui.widgets.DefaultProfileAvatarIcon
 import com.anytypeio.anytype.core_ui.widgets.DefaultProfileIconImage
 import com.anytypeio.anytype.core_ui.widgets.DefaultTaskObjectIcon
+import com.anytypeio.anytype.core_ui.widgets.DefaultTaskObjectIcon
 import com.anytypeio.anytype.core_ui.widgets.GlobalSearchObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
@@ -130,6 +132,10 @@ fun GlobalSearchScreen(
     }
 
     var query by remember { mutableStateOf(TextFieldValue()) }
+
+    if (state is GlobalSearchViewModel.ViewState.Init) {
+        query = TextFieldValue(text = state.query, selection = TextRange(start = 0, end = state.query.length))
+    }
 
     Column(
         modifier = modifier
@@ -312,7 +318,7 @@ fun GlobalSearchScreen(
             items(
                 count = state.views.size,
                 key = { idx ->
-                    state.views[idx].id
+                    "global-search-item-${state.views[idx].id}"
                 }
             ) { idx ->
                 val item = state.views[idx]
@@ -457,14 +463,9 @@ private fun GlobalSearchItem(
                 )
                 .align(Alignment.CenterStart)
         ) {
-            Text(
-                text = globalSearchItemView.title.ifEmpty {
-                    stringResource(id = R.string.untitled)
-                },
-                style = PreviewTitle2Medium,
-                color = colorResource(id = R.color.text_primary),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+            DefaultTitleWithHighlights(
+                text = globalSearchItemView.title,
+                nameMeta = globalSearchItemView.nameMeta
             )
             when(val meta = globalSearchItemView.meta) {
                 is GlobalSearchItemView.Meta.Block -> {
@@ -583,6 +584,36 @@ private fun DefaultMetaBlockWithHighlights(
         ),
         style = Relations2,
         color = colorResource(id = R.color.text_primary)
+    )
+}
+
+@Composable
+private fun DefaultTitleWithHighlights(
+    text: String,
+    nameMeta: GlobalSearchItemView.NameMeta?
+) {
+    val title = when {
+        text.isEmpty() -> AnnotatedString(stringResource(id = R.string.untitled))
+        nameMeta == null -> AnnotatedString(text)
+        else -> AnnotatedString(
+            text = text,
+            spanStyles = nameMeta.highlights.map { range ->
+                AnnotatedString.Range(
+                    SpanStyle(
+                        background = colorResource(id = R.color.palette_light_ice)
+                    ),
+                    range.first,
+                    range.last
+                )
+            }
+        )
+    }
+    Text(
+        text = title,
+        style = PreviewTitle2Medium,
+        color = colorResource(id = R.color.text_primary),
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis
     )
 }
 

@@ -95,6 +95,7 @@ import com.anytypeio.anytype.di.feature.types.DaggerCreateObjectTypeComponent
 import com.anytypeio.anytype.di.feature.types.DaggerTypeEditComponent
 import com.anytypeio.anytype.di.feature.types.DaggerTypeIconPickComponent
 import com.anytypeio.anytype.di.feature.update.DaggerMigrationErrorComponent
+import com.anytypeio.anytype.di.feature.vault.DaggerVaultComponent
 import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeModule
@@ -111,6 +112,7 @@ import com.anytypeio.anytype.presentation.objects.SelectObjectTypeViewModel
 import com.anytypeio.anytype.presentation.relations.option.CreateOrEditOptionViewModel
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueViewModel
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagOrStatusValueViewModel
+import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
 import com.anytypeio.anytype.ui.relations.RelationEditParameters
@@ -323,10 +325,10 @@ class ComponentManager(
             .build()
     }
 
-    val globalSearchComponent = Component {
+    val globalSearchComponent = ComponentWithParams { params: GlobalSearchViewModel.VmParams ->
         DaggerGlobalSearchComponent
             .factory()
-            .create(findComponentDependencies())
+            .create(params, findComponentDependencies())
     }
 
     val objectSetComponent = ComponentMapWithParam { param: DefaultComponentParam ->
@@ -1055,6 +1057,12 @@ class ComponentManager(
             .withDependencies(findComponentDependencies())
             .withParams(params)
             .build()
+    }
+
+    val vaultComponent = Component {
+        DaggerVaultComponent
+            .factory()
+            .create(findComponentDependencies())
     }
 
     class Component<T>(private val builder: () -> T) {

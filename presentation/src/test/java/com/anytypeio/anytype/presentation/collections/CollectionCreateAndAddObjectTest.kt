@@ -124,7 +124,8 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
             permissions = permissions,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
-            clearLastOpenedObject = clearLastOpenedObject
+            clearLastOpenedObject = clearLastOpenedObject,
+            getLastSearchQuery = getLastSearchQuery
         )
         stubNetworkMode()
         stubObservePermissions()
@@ -138,6 +139,7 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
 
     @Test
     fun `create pre-populated record in Collection`() = runTest {
+
         // SETUP
 
         val filters = mockObjectCollection.filters
@@ -168,12 +170,18 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
         )
 
         // TESTING
+
         proceedWithStartingViewModel()
 
+
         // ASSERT DATA VIEW STATE
+
         viewModel.currentViewer.test {
             val first = awaitItem()
+
             assertIs<DataViewViewState.Init>(first)
+
+            advanceUntilIdle()
 
             cancelAndIgnoreRemainingEvents()
 
@@ -190,7 +198,10 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
 
             val spaceId = SpaceId(mockObjectCollection.spaceId)
             val command = Command.CreateObject(
-                prefilled = mapOf(filters[0].relation to filters[0].value, filters[1].relation to filters[1].value),
+                prefilled = mapOf(
+                    filters[0].relation to filters[0].value,
+                    filters[1].relation to filters[1].value
+                ),
                 internalFlags = listOf(InternalFlags.ShouldSelectTemplate),
                 space = spaceId,
                 typeKey = TypeKey(newObjectTypeKey),

@@ -89,6 +89,10 @@ class ObjectMenuViewModel(
     payloadDelegator = payloadDelegator
 ) {
 
+    init {
+        Timber.i("ObjectMenuViewModel, init")
+    }
+
     private val objectRestrictions = storage.objectRestrictions.current()
 
     override fun buildActions(

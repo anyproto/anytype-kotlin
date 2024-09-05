@@ -44,6 +44,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.setEmojiOrNull
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridAdapter
@@ -77,6 +78,7 @@ import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ext.hideSoftInput
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.safeNavigate
+import com.anytypeio.anytype.core_utils.ext.startMarketPageOrWeb
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.syncFocusWithImeVisibility
 import com.anytypeio.anytype.core_utils.ext.syncTranslationWithImeVisibility
@@ -100,7 +102,6 @@ import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi
 import com.anytypeio.anytype.presentation.sets.ViewersWidgetUi
 import com.anytypeio.anytype.presentation.sets.isVisible
 import com.anytypeio.anytype.presentation.sets.model.Viewer
-import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
@@ -452,7 +453,8 @@ open class ObjectSetFragment :
                 SpaceSyncStatusScreen(
                     uiState = vm.syncStatusWidget.collectAsStateWithLifecycle().value,
                     onDismiss = vm::onSyncWidgetDismiss,
-                    scope = lifecycleScope
+                    scope = lifecycleScope,
+                    onUpdateAppClick = vm::onUpdateAppClick
                 )
             }
         }
@@ -1227,6 +1229,9 @@ open class ObjectSetFragment :
                 toast(
                     getString(R.string.multiplayer_read_only_access_error)
                 )
+            }
+            ObjectSetCommand.Intent.OpenAppStore -> {
+                startMarketPageOrWeb()
             }
         }
     }

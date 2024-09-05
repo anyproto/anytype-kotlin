@@ -82,7 +82,7 @@ fun StubFilter(
     id: Id = MockDataFactory.randomUuid(),
     relationKey: Key = MockDataFactory.randomUuid(),
     relationFormat: RelationFormat = RelationFormat.LONG_TEXT,
-    operator: DVFilterOperator = DVFilterOperator.AND,
+    operator: DVFilterOperator = DVFilterOperator.NO,
     condition: DVFilterCondition = DVFilterCondition.EQUAL,
     quickOption: DVFilterQuickOption = DVFilterQuickOption.EXACT_DATE,
     value: Any? = null

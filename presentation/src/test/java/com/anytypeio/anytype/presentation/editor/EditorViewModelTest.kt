@@ -60,6 +60,7 @@ import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -86,6 +87,7 @@ import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.SetRelationKey
+import com.anytypeio.anytype.domain.search.GetLastSearchQuery
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.table.CreateTable
@@ -119,7 +121,6 @@ import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColo
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
-import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
@@ -363,6 +364,9 @@ open class EditorViewModelTest {
 
     @Mock
     lateinit var spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
+
+    @Mock
+    lateinit var getLastSearchQuery: GetLastSearchQuery
 
     lateinit var vm: EditorViewModel
 
@@ -3960,7 +3964,8 @@ open class EditorViewModelTest {
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
             clearLastOpenedObject = clearLastOpenedObject,
-            getNetworkMode = getNetworkMode
+            getNetworkMode = getNetworkMode,
+            getLastSearchQuery = getLastSearchQuery
         )
     }
 

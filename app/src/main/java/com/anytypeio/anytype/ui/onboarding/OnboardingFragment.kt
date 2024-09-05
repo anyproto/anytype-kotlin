@@ -81,12 +81,13 @@ import com.anytypeio.anytype.presentation.onboarding.OnboardingStartViewModel
 import com.anytypeio.anytype.presentation.onboarding.OnboardingStartViewModel.SideEffect
 import com.anytypeio.anytype.presentation.onboarding.OnboardingViewModel
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel
+import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingMnemonicViewModel
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel
-import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.onboarding.screens.AuthScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signin.RecoveryScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.MnemonicPhraseScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.SetProfileNameWrapper
+import com.anytypeio.anytype.ui.vault.VaultFragment
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
@@ -408,14 +409,14 @@ class OnboardingFragment : Fragment() {
                     OnboardingMnemonicLoginViewModel.Command.Exit -> {
                         navController.popBackStack()
                     }
-                    OnboardingMnemonicLoginViewModel.Command.NavigateToHomeScreen -> {
+                    OnboardingMnemonicLoginViewModel.Command.NavigateToVaultScreen -> {
                         runCatching {
                             findNavController().navigate(
-                                R.id.action_openHome,
-                                HomeScreenFragment.args(deepLink)
+                                R.id.actionOpenVault,
+                                VaultFragment.args(deepLink)
                             )
                         }.onFailure {
-                            Timber.e(it, "Error while trying to open home screen from onboarding")
+                            Timber.e(it, "Error while trying to open vault screen from onboarding")
                         }
                     }
                     OnboardingMnemonicLoginViewModel.Command.NavigateToMigrationErrorScreen -> {
@@ -545,24 +546,28 @@ class OnboardingFragment : Fragment() {
         val vm = daggerViewModel { component.get().getViewModel() }
         MnemonicPhraseScreenWrapper(
             viewModel = vm,
-            onCheckLaterClicked = {
-                findNavController().navigate(
-                    R.id.action_openHome,
-                    HomeScreenFragment.args(deepLink)
-                )
-            },
-            onGoToAppClicked = {
-                findNavController().navigate(
-                    R.id.action_openHome,
-                    HomeScreenFragment.args(deepLink)
-                )
-            },
             copyMnemonicToClipboard = ::copyMnemonicToClipboard,
             vm = vm,
             mnemonicColorPalette = mnemonicColorPalette
         )
         DisposableEffect(Unit) {
             onDispose { component.release() }
+        }
+        LaunchedEffect(Unit) {
+            vm.commands.collect { command ->
+                when(command) {
+                    OnboardingMnemonicViewModel.Command.OpenVault -> {
+                        runCatching {
+                            findNavController().navigate(
+                                R.id.action_open_vault,
+                                VaultFragment.args(deepLink)
+                            )
+                        }.onFailure {
+                            Timber.e(it, "Error while navigation to vault")
+                        }
+                    }
+                }
+            }
         }
     }
 

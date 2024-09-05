@@ -22,6 +22,7 @@ import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -39,6 +40,7 @@ import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
@@ -55,6 +57,7 @@ import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.DataViewState
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
+import com.anytypeio.anytype.domain.search.GetLastSearchQuery
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.templates.CreateTemplate
@@ -96,8 +99,6 @@ import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubsc
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerDelegate
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerEvent
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerView
-import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusProvider
-import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.toSyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.updateStatus
@@ -108,6 +109,7 @@ import com.anytypeio.anytype.presentation.templates.TemplateView
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUI
 import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUIAction
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command
 import com.anytypeio.anytype.presentation.widgets.enterEditing
 import com.anytypeio.anytype.presentation.widgets.exitEditing
 import com.anytypeio.anytype.presentation.widgets.hideMoreMenu
@@ -180,6 +182,7 @@ class ObjectSetViewModel(
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val clearLastOpenedObject: ClearLastOpenedObject,
+    private val getLastSearchQuery: GetLastSearchQuery
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>,
     ViewerDelegate by viewerDelegate,
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate
@@ -1652,9 +1655,25 @@ class ObjectSetViewModel(
             props = Props(mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.navigation))
         )
         viewModelScope.launch {
-            closeBlock.async(context).fold(
-                onSuccess = { dispatch(AppNavigation.Command.OpenPageSearch) },
-                onFailure = { Timber.e(it, "Error while closing object set: $context") }
+            val params = GetLastSearchQuery.Params(space = vmParams.space)
+            getLastSearchQuery.async(params).fold(
+                onSuccess = { query ->
+                    dispatch(
+                        AppNavigation.Command.OpenPageSearch(
+                            initialQuery = query,
+                            space = vmParams.space.id
+                        )
+                    )
+                },
+                onFailure = {
+                    Timber.e(it, "Error while getting last search query")
+                    dispatch(
+                        AppNavigation.Command.OpenPageSearch(
+                            initialQuery = "",
+                            space = vmParams.space.id
+                        )
+                    )
+                }
             )
         }
     }
@@ -2821,7 +2840,7 @@ class ObjectSetViewModel(
     //endregion
 
     //region SYNC STATUS
-    val spaceSyncStatus = MutableStateFlow<SpaceSyncAndP2PStatusState>(SpaceSyncAndP2PStatusState.Initial)
+    val spaceSyncStatus = MutableStateFlow<SpaceSyncAndP2PStatusState>(SpaceSyncAndP2PStatusState.Init)
     val syncStatusWidget = MutableStateFlow<SyncStatusWidgetState>(SyncStatusWidgetState.Hidden)
 
     fun onSyncStatusBadgeClicked() {
@@ -2833,6 +2852,9 @@ class ObjectSetViewModel(
         jobs += viewModelScope.launch {
             spaceSyncAndP2PStatusProvider
                 .observe()
+                .catch {
+                    Timber.e(it, "Error while observing sync status")
+                }
                 .collect { syncAndP2pState ->
                     spaceSyncStatus.value = syncAndP2pState
                     syncStatusWidget.value = syncStatusWidget.value.updateStatus(syncAndP2pState)
@@ -2842,6 +2864,10 @@ class ObjectSetViewModel(
 
     fun onSyncWidgetDismiss() {
         syncStatusWidget.value = SyncStatusWidgetState.Hidden
+    }
+
+    fun onUpdateAppClick() {
+        dispatch(command = ObjectSetCommand.Intent.OpenAppStore)
     }
     //endregion
 

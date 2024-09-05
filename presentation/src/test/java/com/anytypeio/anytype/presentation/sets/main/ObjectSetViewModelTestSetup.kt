@@ -36,6 +36,7 @@ import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -56,6 +57,7 @@ import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
+import com.anytypeio.anytype.domain.search.GetLastSearchQuery
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
@@ -81,7 +83,6 @@ import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
 import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
 import com.anytypeio.anytype.presentation.sets.updateFormatForSubscription
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerDelegate
-import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -212,6 +213,9 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
 
+    @Mock
+    lateinit var getLastSearchQuery: GetLastSearchQuery
+
     var permissions: UserPermissionProvider = UserPermissionProviderStub()
 
     lateinit var spaceConfig: Config
@@ -303,7 +307,8 @@ open class ObjectSetViewModelTestSetup {
             permissions = permissions,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
-            clearLastOpenedObject = clearLastOpenedObject
+            clearLastOpenedObject = clearLastOpenedObject,
+            getLastSearchQuery = getLastSearchQuery
         )
     }
 

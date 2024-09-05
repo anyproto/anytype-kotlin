@@ -17,6 +17,10 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
 
     override suspend fun getWallpaper(space: Id): Wallpaper = cache.getWallpaper(space)
 
+    override suspend fun getWallpapers(): Map<Id, Wallpaper> {
+        return cache.getWallpapers()
+    }
+
     override suspend fun setDefaultObjectType(
         space: SpaceId,
         type: TypeId
@@ -58,6 +62,8 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
 
     override suspend fun getCurrentSpace(): SpaceId? = cache.getCurrentSpace()
 
+    override suspend fun clearCurrentSpace() = cache.clearCurrentSpace()
+
     override suspend fun setLastOpenedObject(id: Id, space: SpaceId) {
         cache.setLastOpenedObject(id, space)
     }
@@ -68,5 +74,17 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
 
     override suspend fun clearLastOpenedObject(space: SpaceId) {
         cache.clearLastOpenedObject(space)
+    }
+
+    override suspend fun setLastSearchQuery(query: String, space: SpaceId) {
+        cache.setLastSearchQuery(query, space)
+    }
+
+    override suspend fun getLastSearchQuery(space: SpaceId): String {
+        return cache.getLastSearchQuery(space)
+    }
+
+    override suspend fun clearLastSearchQuery(space: SpaceId) {
+        cache.clearLastSearchQuery(space)
     }
 }

@@ -51,7 +51,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onSubscription
 import kotlinx.coroutines.flow.shareIn
@@ -105,8 +104,7 @@ class AddToAnytypeViewModel(
         }
         viewModelScope.launch {
             awaitAccountStartManager
-                .isStarted()
-                .filter { isStarted -> isStarted }
+                .awaitStart()
                 .flatMapLatest {
                     combine(
                         spaces,
@@ -237,7 +235,12 @@ class AddToAnytypeViewModel(
 
             if (targetSpaceView != null && targetSpaceId != null) {
                 val paths = uris.mapNotNull { uri ->
-                    fileSharer.getPath(uri)
+                    try {
+                        fileSharer.getPath(uri)
+                    } catch (e: Exception) {
+                        Timber.e(e, "Error getting path for URI: $uri")
+                        null
+                    }
                 }
 
                 when (paths.size) {

@@ -56,6 +56,7 @@ import com.anytypeio.anytype.di.feature.types.CreateObjectTypeDependencies
 import com.anytypeio.anytype.di.feature.types.TypeEditDependencies
 import com.anytypeio.anytype.di.feature.types.TypeIconPickDependencies
 import com.anytypeio.anytype.di.feature.update.MigrationErrorDependencies
+import com.anytypeio.anytype.di.feature.vault.VaultComponentDependencies
 import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectSubComponent
 import com.anytypeio.anytype.ui.widgets.collection.CollectionDependencies
 import dagger.Binds
@@ -125,6 +126,8 @@ interface MainComponent :
     GalleryInstallationComponentDependencies,
     NotificationDependencies,
     GlobalSearchDependencies,
+    MembershipUpdateComponentDependencies,
+    VaultComponentDependencies,
     MembershipUpdateComponentDependencies,
     DiscussionComponentDependencies
 {
@@ -352,4 +355,9 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(DiscussionComponentDependencies::class)
     abstract fun provideDiscussionComponentDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(VaultComponentDependencies::class)
+    abstract fun provideVaultComponentDependencies(component: MainComponent): ComponentDependencies
 }

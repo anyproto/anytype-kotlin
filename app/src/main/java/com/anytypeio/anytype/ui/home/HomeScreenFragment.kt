@@ -16,6 +16,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
@@ -36,6 +37,7 @@ import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.creation.SelectObjectTypeFragment
+import com.anytypeio.anytype.ui.payments.MembershipFragment
 import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment
@@ -90,10 +92,7 @@ class HomeScreenFragment : BaseComposeFragment() {
                     onWidgetSourceClicked = vm::onWidgetSourceClicked,
                     onChangeWidgetView = vm::onChangeCurrentWidgetView,
                     onToggleExpandedWidgetState = vm::onToggleCollapsedWidgetState,
-                    onSearchClicked = {
-                        vm.onSearchIconClicked()
-                        runCatching { navigation().openPageSearch() }
-                    },
+                    onSearchClicked = vm::onSearchIconClicked,
                     onLibraryClicked = {
                         vm.onLibraryClicked()
                     },
@@ -104,11 +103,7 @@ class HomeScreenFragment : BaseComposeFragment() {
                         onClick = { vm.onCreateNewObjectLongClicked() }
                     ),
                     onProfileClicked = throttledClick(
-                        onClick = {
-                            runCatching {
-                                findNavController().navigate(R.id.action_open_spaces)
-                            }
-                        }
+                        onClick = vm::onVaultClicked
                     ),
                     onSpaceWidgetClicked = throttledClick(
                         onClick = vm::onSpaceSettingsClicked
@@ -242,6 +237,13 @@ class HomeScreenFragment : BaseComposeFragment() {
                     )
                 )
             }
+            is Command.Deeplink.MembershipScreen -> {
+                findNavController().navigate(
+                    R.id.paymentsScreen,
+                    MembershipFragment.args(command.tierId),
+                    NavOptions.Builder().setLaunchSingleTop(true).build()
+                )
+            }
             is Command.Deeplink.DeepLinkToObjectNotWorking -> {
                 toast(
                     getString(R.string.multiplayer_deeplink_to_your_object_error)
@@ -304,6 +306,23 @@ class HomeScreenFragment : BaseComposeFragment() {
                     }
                 }
                 dialog.show(childFragmentManager, "object-create-dialog")
+            }
+            is Command.OpenGlobalSearchScreen -> {
+                runCatching {
+                    navigation().openPageSearch(
+                        initialQuery = command.initialQuery,
+                        space = command.space
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while opening global search screen")
+                }
+            }
+            is Command.OpenVault -> {
+                runCatching {
+                    findNavController().navigate(R.id.action_open_vault)
+                }.onFailure {
+                    Timber.e(it, "Error while opening vault from home screen")
+                }
             }
         }
     }

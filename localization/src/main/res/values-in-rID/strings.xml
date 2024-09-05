@@ -9,12 +9,12 @@
     <string name="personalization">Personalisasi</string>
     <string name="appearance">Penampilan</string>
     <string name="file_storage">Penyimpanan berkas</string>
-    <string name="key">Key</string>
+    <string name="key">Kunci</string>
     <string name="clear_file_cache">Bersihkan tembolok</string>
     <string name="debug_sync_report">Laporan Sinkronisasi Debug</string>
     <string name="debug">Awakutu</string>
     <string name="account">Vault</string>
-    <string name="reset_account">Reset vault</string>
+    <string name="reset_account">Setel ulang brankas</string>
     <string name="delete_account">Delete vault</string>
     <string name="space_debug">Awakutu ruang</string>
     <string name="data">Data</string>
@@ -28,7 +28,7 @@
     <string name="dark">Gelap</string>
     <string name="system">Sistem</string>
     <string name="settings">Setelan</string>
-    <string name="have_you_back_up_your_recovery_phrase">Have you backed up your Key?</string>
+    <string name="have_you_back_up_your_recovery_phrase">Sudahkah kamu mencadangkan Kuncimu?</string>
     <string name="you_will_need_to_sign_in">You will need it to enter your vault. Keep it in a safe place. If you lose it, you can no longer enter your vault.</string>
     <string name="about_help_and_community">Bantuan &amp; Komunitas</string>
     <string name="about_what_is_new">Yang Baru</string>
@@ -42,7 +42,7 @@
     <string name="about_meta_info_for_copy">Perangkat: %1$s\nVersi Android: %2$d\nVersi Aplikasi: %3$s\nPembuatan Nomor: %4$d\nVersi Pustaka: %5$s\nAkun\u00A0ID:\u00A0%6$s\nPerangkat\u00A0ID:\u00A0%7$s\nAnalisis\u00A0ID:\u00A0%8$s</string>
     <string name="space">Ruang</string>
     <string name="space_name">Nama Ruang</string>
-    <string name="default_space">Entry space</string>
+    <string name="default_space">Ruang bawaan</string>
     <string name="space_settings_apply_random_gradient">Terapkan gradasi acak</string>
     <string name="space_settings_apply_upload_image">Upload image</string>
     <string name="delete_space">Hapus ruang</string>
@@ -59,7 +59,7 @@
     <string name="account_name">Nama</string>
     <string name="space_settings">Setelan ruang</string>
     <string name="data_management">Manajemen data</string>
-    <string name="deleted_account_danger_zone_msg">Once you request your vault to be deleted, you have 30 days to cancel this request. After 30 days, your encrypted vault data is permanently removed from the backup node, you won\'t be able to sign into Anytype on new devices.</string>
+    <string name="deleted_account_danger_zone_msg">Begitu kamu meminta brankasmu dihapus, kamu punya waktu 30 hari untuk membatalkan permintaan ini. Setelah 30 hari, data brankas terenkripsimu akan dihapus secara permanen dari simpul cadangan, dan kamu tidak akan bisa masuk ke Anytype di perangkat baru.</string>
     <string name="danger_zone">Hapus akun (Hati-hati!)</string>
     <string name="snackbar_template_add">Templat baru ditambahkan ke tipe ini</string>
     <string name="settings_membership">Langganan</string>
@@ -435,7 +435,7 @@
     <string name="paste_link">Tautan</string>
     <string name="next">Lanjut</string>
     <string name="limit_object_types">Batasi tipe objek</string>
-    <string name="deleted_account_msg">We\'re sorry to see you go. Once you request your vault to be deleted, you have 30 days to cancel this request. After 30 days, your encrypted vault data is permanently removed from the backup node.</string>
+    <string name="deleted_account_msg">Kami sedih melihatmu pergi. Setelah kamu meminta brankasmu dihapus, kamu punya waktu 30 hari untuk membatalkan tindakan ini. Setelah 30 hari, data brankas terenkripsimu akan dihapus secara permanen dari simpul cadangan.</string>
     <string name="swipe_down_to_skip">Swipe down to skip</string>
     <string name="show">Tampilkan</string>
     <string name="this_type_has_templates">This type has %1$d templates</string>
@@ -552,8 +552,8 @@
     <string name="start_login_text">Dengan Anytype, kamu bisa menulis catatan dan dokumen, mengatur tugas, membagikan berkas, serta menyimpan konten penting dari web.</string>
     <string name="login">Masuk</string>
     <string name="sign_up">Daftar</string>
-    <string name="type_your_recovery_phrase">or type your Key</string>
-    <string name="login_with_recovery_phrase">Login with your Key</string>
+    <string name="type_your_recovery_phrase">atau masukkan Kuncimu</string>
+    <string name="login_with_recovery_phrase">Masuk dengan Kuncimu</string>
     <string name="or_scan_qr_code">Pindai kode QR</string>
     <string name="choose_pin_code">Pilih kode pin</string>
     <string name="congratulations">Selamat!</string>
@@ -582,7 +582,7 @@
     <string name="your_page">Halaman publikmu</string>
     <string name="updates">Pembaruan</string>
     <string name="recovery_phrase_text">You\'ll need it to sign in. Keep it in a safe place. If you lose it, you can no longer access your vault.</string>
-    <string name="back_up_your_recovery_phrase">Back up your Key</string>
+    <string name="back_up_your_recovery_phrase">Cadangkan Kuncimu</string>
     <string name="i_ve_written_it_down">i\'ve written it down</string>
     <string name="keychain_mock">witch collapse practice feed shame open despair creek road again ice least lake tree young address brain envelope</string>
     <string name="show_and_copy_mnemonic">Tampilkan dan salin frasa</string>
@@ -692,7 +692,7 @@
     <string name="btn_upload_gallery">Upload from Gallery</string>
     <string name="btn_upload_storage">Upload from External storage</string>
     <string name="btn_upload">Unggah</string>
-    <string name="alert_qr_camera">Go to Settings – Key on Desktop in order to find the QR code for login.</string>
+    <string name="alert_qr_camera">Pergi ke Pengaturan – Kunci di versi Desktop untuk menemukan kode QR masuk.</string>
     <string name="alert_qr_camera_ok">Oke</string>
     <string name="choose_option">Choose option</string>
     <string name="find_a_relation">Find a relation</string>
@@ -729,7 +729,7 @@
     <string name="go_to_settings">Go to settings</string>
     <string name="do_not_forget_mnemonic_phrase">Don\'t forget to take and save your Key</string>
     <string name="you_can_always_find_mnemonic_in_settings">You can always find the phrase in the settings on the dashboard screen.</string>
-    <string name="if_you_lose_recovery_phrase_warning">If you lose the Key and get logged out you will not be able to ever access your data again. Save this Key outside of Anytype for data recovery.</string>
+    <string name="if_you_lose_recovery_phrase_warning">Jika kamu kehilangan Kunci lalu keluar log, kamu tidak akan bisa mengakses datamu lagi. Simpanlah Kunci ini di luar Anytype untuk pemulihan data.</string>
     <string name="card_size">Ukuran kartu</string>
     <string name="clear_cache">Clear cache</string>
     <string name="clear_cache_title">Apakah kamu yakin?</string>
@@ -743,11 +743,11 @@
     <string name="unsplash">Unsplash</string>
     <string name="cancel_deletion">Batalkan penghapusan</string>
     <string name="logout_and_clear_local_data">Logout and clear local data</string>
-    <string name="planned_for_deletion_in_n_days">This vault is planned for deletion in %1$d days</string>
-    <string name="planned_for_deletion_tomorrow">This vault is planned for deletion tomorrow</string>
-    <string name="planned_for_deletion_today">This vault is planned for deletion today</string>
-    <string name="planned_for_deletion_unknown">This vault is planned for deletion in ? days</string>
-    <string name="are_you_sure_to_delete_account">Are you sure to delete your vault?</string>
+    <string name="planned_for_deletion_in_n_days">Brankas ini direncanakan untuk dihapus dalam %1$d hari</string>
+    <string name="planned_for_deletion_tomorrow">Brankas ini direncanakan untuk dihapus besok</string>
+    <string name="planned_for_deletion_today">Brankas ini direncanakan untuk dihapus hari ini</string>
+    <string name="planned_for_deletion_unknown">Brankas ini direncanakan untuk dihapus dalam ? hari</string>
+    <string name="are_you_sure_to_delete_account">Kamu yakin ingin menghapus brankas?</string>
     <string name="deleted_account_warning_msg">You will be logged out on all other devices. You will have 30 days to recover it. Afterwards it will be deleted permanently.</string>
     <string name="use_template">Pilih templat</string>
     <string name="swipe_to_choose">Use swipe to choose</string>
@@ -758,7 +758,7 @@
     <string name="unlock_your_object_to_edit_relations">Unlock your object to edit relations</string>
     <string name="fragment_relation_create_from_scratch_title">Pilih jenis relasi</string>
     <string name="fragment_dashboard_restore">Pulihkan</string>
-    <string name="your_account_deleted">Your vault is deleted.</string>
+    <string name="your_account_deleted">Brankasmu telah dihapus.</string>
     <plurals name="fragment_dashboard_selected_count">
         <item quantity="other">%d objects selected</item>
     </plurals>
@@ -775,7 +775,7 @@
     </string-array>
     <string name="snack_link_to">ditautkan pada</string>
     <string name="snack_move_to">moved to</string>
-    <string name="recovery_phrase_copied">Your Key copied</string>
+    <string name="recovery_phrase_copied">Kunci disalin</string>
     <string name="type_editing_title">Type settings</string>
     <string name="relation_editing_title">Relation settings</string>
     <string name="type_editing_uninstall">Hapus</string>
@@ -820,7 +820,7 @@
     <string name="anytype_update_alert_description">Some of your data was managed in a newer version of Anytype. Please update the app to work with all your docs and the latest features.</string>
     <string name="anytype_update_alert_title">Waktunya memperbarui</string>
     <string name="space_type_default">Entry</string>
-    <string name="space_type_default_space">Entry space</string>
+    <string name="space_type_default_space">Ruang bawaan</string>
     <string name="space_type_private">Pribadi</string>
     <string name="space_type_private_space">Ruang pribadi</string>
     <string name="space_type_shared">Berbagi</string>
@@ -973,7 +973,7 @@
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
     <string name="onboarding_terms_and_policy_infix">" dan "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
-    <string name="onboarding_new_vault_button_text">New vault</string>
+    <string name="onboarding_new_vault_button_text">Brankas baru</string>
     <string name="onboarding_enter_my_vault">Get my Key</string>
     <string name="onboarding_have_key_button_text">I have a Key</string>
     <string name="onboarding_get_my_key_button_text">Get my Key</string>
@@ -981,9 +981,9 @@
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
-    <string name="onboarding_this_is_your_key_title">This is your Key</string>
+    <string name="onboarding_this_is_your_key_title">Ini Kuncimu</string>
     <string name="onboarding_key_description">It gives you full ownership over your vault. It cannot be recovered.</string>
-    <string name="onboarding_show_my_key">Show my Key</string>
+    <string name="onboarding_show_my_key">Tampilkan Kunciku</string>
     <string name="onboarding_key_skip">Lewati</string>
     <string name="onboarding_key_copy">Salin ke papan klip</string>
     <string name="onboarding_set_your_name_title">Set your name</string>
@@ -993,10 +993,10 @@
     <string name="onboarding_type_your_key">Masukkan frasa pemulihanmu</string>
     <string name="onboarding_login_or">ATAU</string>
     <string name="onboarding_entering_void_title">Memasuki Void</string>
-    <string name="onboarding_your_key_can_t_be_empty">Your Key can\'t be empty</string>
+    <string name="onboarding_your_key_can_t_be_empty">Kunci tidak boleh kosong</string>
     <string name="onboarding_mnemonic_read_more">Baca selengkapnya</string>
-    <string name="onboarding_key_additional_info">You can find this key later in Anytype settings</string>
-    <string name="onboarding_what_is_the_key">What is the Key?</string>
+    <string name="onboarding_key_additional_info">Kamu bisa menemukan kunci ini di setelan Anytype</string>
+    <string name="onboarding_what_is_the_key">Apa itu Kunci?</string>
     <string name="onboarding_recovery_phrase_description">It is represented by a recovery phrase – 12 random words from which your vault is magically generated on this device.</string>
     <string name="onboarding_recovery_phrase_description_2">Whomever knows the combination of these words owns your vault. </string>
     <string name="onboarding_recovery_phrase_description_3">Right now, you are the only person in the world who knows it.</string>
@@ -1111,7 +1111,7 @@
     <string name="create_object">Buat objek</string>
     <string name="msg_query_cannot_be_changed">Kueri ini bisa berubah hanya pada tampilan komputer</string>
     <!--region ONBOARDING ERRORS -->
-    <string name="error_invalid_recovery_phrase">Invalid Key</string>
+    <string name="error_invalid_recovery_phrase">Kunci tidak valid</string>
     <string name="network">Jaringan</string>
     <string name="network_with_colon">Jaringan:</string>
     <string name="network_settings_anytype_network">Jaringan Anytype</string>
@@ -1399,7 +1399,6 @@ Please provide specific details of your needs here.</string>
     <string name="gallery_experience_alert_title_error">Waduh!</string>
     <string name="gallery_experience_alert_button_space">Buka ruang</string>
     <string name="gallery_experience_alert_button_error">Tutup</string>
-    <string name="three_dots_text_placeholder">...</string>
     <string name="membership_btn_join">Gabung</string>
     <string name="notifications_prompt_get_notified">Dapatkan pemberitahuan</string>
     <string name="notifications_prompt_secondary_button_text">Tidak dulu</string>
@@ -1473,10 +1472,15 @@ Please provide specific details of your needs here.</string>
     </plurals>
     <string name="sync_status_anytype_network_connecting">Menghubungkan ke Jaringan ...</string>
     <string name="sync_status_anytype_network_no_connecting">Tak ada koneksi</string>
+    <string name="sync_status_anytype_sync_slow">Sinkronisasi mungkin lambat. Coba perbarui aplikasi.</string>
     <string name="sync_status_storage_limit_exceed">Batas penyimpanan tercapai</string>
     <string name="sync_status_incompatible_version">Incompatible version</string>
     <string name="sync_status_network_error">Tidak ada akses ke ruang</string>
     <string name="sync_status_unrecognized">Galat tak dikenali</string>
     <string name="version_history_title">Riwayat versi</string>
+    <string name="version_history_error_no_versions">Tidak ada versi lain</string>
+    <string name="version_history_error_get_version">Galat mengambil riwayat versi</string>
+    <string name="version_history_error_get_members">Galat mengambil anggota</string>
     <string name="new_object">Objek baru</string>
+    <string name="vault_my_spaces">Ruangku</string>
 </resources>

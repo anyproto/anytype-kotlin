@@ -64,7 +64,7 @@ class NotificationsProviderTest {
         // Arrange
         val eventList = listOf(testEvent)
         whenever(notificationsChannel.observe()).thenReturn(flowOf(eventList))
-        awaitAccountStartManager.setIsStarted(true)
+        awaitAccountStartManager.setState(AwaitAccountStartManager.State.Started)
 
         // Act
         notificationsProvider.events.test {
@@ -78,8 +78,8 @@ class NotificationsProviderTest {
         // Arrange
         val eventList = listOf(testEvent)
         whenever(notificationsChannel.observe()).thenReturn(flowOf(eventList))
-        awaitAccountStartManager.setIsStarted(true) // Start and then stop
-        awaitAccountStartManager.setIsStarted(false)
+        awaitAccountStartManager.setState(AwaitAccountStartManager.State.Started) // Start and then stop
+        awaitAccountStartManager.setState(AwaitAccountStartManager.State.Stopped)
 
         // Act & Assert
         notificationsProvider.events.test(timeout = Duration.parse("2s")) {
@@ -94,7 +94,7 @@ class NotificationsProviderTest {
             // Arrange
             val eventFlow = flowOf(listOf(testEvent))
             whenever(notificationsChannel.observe()).thenReturn(eventFlow)
-            awaitAccountStartManager.setIsStarted(true)
+            awaitAccountStartManager.setState(AwaitAccountStartManager.State.Started)
 
             // Act & Assert
             notificationsProvider.events.test(timeout = Duration.parse("2s")) {

@@ -57,6 +57,7 @@ import com.anytypeio.anytype.domain.cover.RemoveDocCover
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -81,6 +82,7 @@ import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.domain.page.bookmark.SetupBookmark
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.SetRelationKey
+import com.anytypeio.anytype.domain.search.GetLastSearchQuery
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.table.CreateTable
@@ -92,7 +94,6 @@ import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.DocumentExternalEventReducer
@@ -109,7 +110,6 @@ import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
-import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -117,7 +117,6 @@ import com.anytypeio.anytype.presentation.util.downloader.DocumentFileShareDownl
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
@@ -146,7 +145,6 @@ open class EditorTestSetup {
     lateinit var updateDetail: UpdateDetail
 
     lateinit var copyFileToCacheDirectory: CopyFileToCacheDirectory
-    lateinit var workspaceManager: WorkspaceManager
 
     @Mock
     lateinit var documentFileShareDownloader: DocumentFileShareDownloader
@@ -297,6 +295,9 @@ open class EditorTestSetup {
     @Mock
     lateinit var spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
 
+    @Mock
+    lateinit var getLastSearchQuery: GetLastSearchQuery
+
     lateinit var interceptFileLimitEvents: InterceptFileLimitEvents
 
     lateinit var addRelationToObject: AddRelationToObject
@@ -398,11 +399,6 @@ open class EditorTestSetup {
 
         featureToggles = mock<DefaultFeatureToggles>()
         addRelationToObject = AddRelationToObject(repo)
-
-        workspaceManager = WorkspaceManager.DefaultWorkspaceManager()
-        runBlocking {
-            workspaceManager.setCurrentWorkspace(defaultSpace)
-        }
 
         interceptFileLimitEvents = InterceptFileLimitEvents(fileLimitsEventChannel, dispatchers)
 
@@ -506,7 +502,8 @@ open class EditorTestSetup {
             syncStatusProvider = spaceSyncAndP2PStatusProvider,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             clearLastOpenedObject = clearLastOpenedObject,
-            getNetworkMode = getNetworkMode
+            getNetworkMode = getNetworkMode,
+            getLastSearchQuery = getLastSearchQuery
         )
     }
 

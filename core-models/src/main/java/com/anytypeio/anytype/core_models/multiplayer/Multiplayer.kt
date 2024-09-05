@@ -84,7 +84,8 @@ enum class SpaceSyncStatus {
     SYNCED,
     SYNCING,
     ERROR,
-    OFFLINE
+    OFFLINE,
+    NETWORK_UPDATE_NEEDED
 }
 
 enum class SpaceSyncNetwork {
@@ -113,4 +114,13 @@ enum class P2PStatus {
     NOT_CONNECTED,
     NOT_POSSIBLE,
     CONNECTED
+}
+
+sealed class SpaceSyncAndP2PStatusState {
+    data object Init : SpaceSyncAndP2PStatusState()
+    data class Error(val message: String) : SpaceSyncAndP2PStatusState()
+    data class Success(
+        val spaceSyncUpdate: SpaceSyncUpdate,
+        val p2PStatusUpdate: P2PStatusUpdate
+    ) : SpaceSyncAndP2PStatusState()
 }

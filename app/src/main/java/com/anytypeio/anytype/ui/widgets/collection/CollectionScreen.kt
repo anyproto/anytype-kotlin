@@ -119,7 +119,8 @@ import org.burnoutcrew.reorderable.reorderable
 fun ScreenContent(
     vm: CollectionViewModel,
     uiState: CollectionUiState,
-    onCreateObjectLongClicked: () -> Unit
+    onCreateObjectLongClicked: () -> Unit,
+    onSearchClicked: () -> Unit
 ) {
     Box(
         Modifier.background(color = colorResource(R.color.background_primary))
@@ -144,7 +145,7 @@ fun ScreenContent(
                 BottomNavigationMenu(
                     backClick = { vm.onPrevClicked() },
                     homeClick = { vm.onHomeClicked() },
-                    searchClick = { vm.onSearchClicked() },
+                    searchClick = onSearchClicked,
                     addDocClick = { vm.onAddClicked(null) },
                     onCreateObjectLongClicked = onCreateObjectLongClicked,
                     onProfileClicked = vm::onProfileClicked,
@@ -233,7 +234,8 @@ fun ListView(
                     items = views.value,
                     key = {
                         when (it) {
-                            is ObjectView -> it.obj.id
+                            // TODO remove when DROID-2750 fixed.
+                            is ObjectView -> "fullscreen-widget-item-${it.obj.id}"
                             is CollectionView.FavoritesView -> it.obj.id
                             is SectionView -> it.name
                             is EmptySearch -> it.query
@@ -584,7 +586,8 @@ fun CollectionItem(
 @Composable
 fun CollectionScreen(
     vm: CollectionViewModel,
-    onCreateObjectLongClicked: () -> Unit
+    onCreateObjectLongClicked: () -> Unit,
+    onSearchClicked: () -> Unit
 ) {
 
     val uiState by vm.uiState.collectAsStateWithLifecycle()
@@ -603,7 +606,12 @@ fun CollectionScreen(
                 sheetContent = { BlockWidget(localDensity, vm, state) },
                 sheetPeekHeight = 0.dp
             ) {
-                ScreenContent(vm, state, onCreateObjectLongClicked)
+                ScreenContent(
+                    vm = vm,
+                    uiState = state,
+                    onCreateObjectLongClicked = onCreateObjectLongClicked,
+                    onSearchClicked = onSearchClicked
+                )
 
                 LaunchedEffect(state) {
 

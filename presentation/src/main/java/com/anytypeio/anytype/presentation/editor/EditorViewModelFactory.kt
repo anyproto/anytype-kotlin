@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -33,6 +34,7 @@ import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
+import com.anytypeio.anytype.domain.search.GetLastSearchQuery
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.templates.ApplyTemplate
@@ -46,7 +48,6 @@ import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
 import com.anytypeio.anytype.presentation.editor.editor.table.EditorTableDelegate
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
-import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -97,7 +98,8 @@ open class EditorViewModelFactory @Inject constructor(
     private val getNetworkMode: GetNetworkMode,
     private val clearLastOpenedObject: ClearLastOpenedObject,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val syncStatusProvider: SpaceSyncAndP2PStatusProvider
+    private val syncStatusProvider: SpaceSyncAndP2PStatusProvider,
+    private val getLastSearchQuery: GetLastSearchQuery
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -147,7 +149,8 @@ open class EditorViewModelFactory @Inject constructor(
             spaceSyncAndP2PStatusProvider = syncStatusProvider,
             getNetworkMode = getNetworkMode,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-            clearLastOpenedObject = clearLastOpenedObject
+            clearLastOpenedObject = clearLastOpenedObject,
+            getLastSearchQuery = getLastSearchQuery
         ) as T
     }
 }

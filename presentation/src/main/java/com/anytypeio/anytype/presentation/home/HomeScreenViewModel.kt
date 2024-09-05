@@ -58,7 +58,9 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.search.GetLastSearchQuery
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.domain.types.GetPinnedObjectTypes
 import com.anytypeio.anytype.domain.widgets.CreateWidget
@@ -194,7 +196,9 @@ class HomeScreenViewModel(
     private val payloadDelegator: PayloadDelegator,
     private val createBlock: CreateBlock,
     private val dateProvider: DateProvider,
-    private val addObjectToCollection: AddObjectToCollection
+    private val addObjectToCollection: AddObjectToCollection,
+    private val getLastSearchQuery: GetLastSearchQuery,
+    private val clearLastOpenedSpace: ClearLastOpenedSpace
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -239,39 +243,41 @@ class HomeScreenViewModel(
         .observe()
         .distinctUntilChanged()
         .onEach { newConfig ->
-            val openObjectState = objectViewState.value
-            if (openObjectState is ObjectViewState.Success) {
-                val subscriptions = buildList {
-                    widgets.value.orEmpty().forEach { widget ->
-                        if (widget.config.space != newConfig.space) {
-                            if (widget.source is Widget.Source.Bundled)
-                                add(widget.source.id)
-                            else
-                                add(widget.id)
+            viewModelScope.launch {
+                val openObjectState = objectViewState.value
+                if (openObjectState is ObjectViewState.Success) {
+                    val subscriptions = buildList {
+                        widgets.value.orEmpty().forEach { widget ->
+                            if (widget.config.space != newConfig.space) {
+                                if (widget.source is Widget.Source.Bundled)
+                                    add(widget.source.id)
+                                else
+                                    add(widget.id)
+                            }
                         }
                     }
-                }
-                if (subscriptions.isNotEmpty()) {
-                    unsubscribe(subscriptions)
-                }
-                mutex.withLock {
-                    val closed = mutableSetOf<Id>()
-                    openWidgetObjectsHistory.forEach { previouslyOpenedWidgetObject ->
-                        if (previouslyOpenedWidgetObject != newConfig.widgets) {
-                            closeObject
-                                .async(params = previouslyOpenedWidgetObject)
-                                .fold(
-                                    onSuccess = {
-                                        closed.add(previouslyOpenedWidgetObject)
-                                    },
-                                    onFailure = {
-                                        Timber.e(it, "Error while closing object from history: $previouslyOpenedWidgetObject")
-                                    }
-                                )
-                        }
+                    if (subscriptions.isNotEmpty()) {
+                        unsubscribe(subscriptions)
                     }
-                    if (closed.isNotEmpty()) {
-                        openWidgetObjectsHistory.removeAll(closed)
+                    mutex.withLock {
+                        val closed = mutableSetOf<Id>()
+                        openWidgetObjectsHistory.forEach { previouslyOpenedWidgetObject ->
+                            if (previouslyOpenedWidgetObject != newConfig.widgets) {
+                                closeObject
+                                    .async(params = previouslyOpenedWidgetObject)
+                                    .fold(
+                                        onSuccess = {
+                                            closed.add(previouslyOpenedWidgetObject)
+                                        },
+                                        onFailure = {
+                                            Timber.e(it, "Error while closing object from history: $previouslyOpenedWidgetObject")
+                                        },
+                                    )
+                            }
+                        }
+                        if (closed.isNotEmpty()) {
+                            openWidgetObjectsHistory.removeAll(closed)
+                        }
                     }
                 }
             }
@@ -287,13 +293,18 @@ class HomeScreenViewModel(
                 result.fold(
                     onSuccess = { objectView ->
                         onSessionStarted().also {
-                            mutex.withLock { openWidgetObjectsHistory.add(objectView.root) }
+                            viewModelScope.launch {
+                                mutex.withLock { openWidgetObjectsHistory.add(objectView.root) }
+                            }
                         }
                     },
                     onFailure = { e ->
                         onSessionFailed().also {
                             Timber.e(e, "Error while opening object.")
                         }
+                    },
+                    onLoading = {
+                        widgets.value = emptyList()
                     }
                 )
             }.map { result ->
@@ -360,27 +371,6 @@ class HomeScreenViewModel(
                         }
                     }
                 }
-        }
-    }
-
-    private suspend fun proceedWithClearingObjectSessionHistory(currentConfig: Config) {
-        mutex.withLock {
-            val closed = mutableSetOf<Id>()
-            openWidgetObjectsHistory.forEach { previouslyOpenedWidgetObject ->
-                if (previouslyOpenedWidgetObject != currentConfig.widgets) {
-                    closeObject
-                        .async(params = previouslyOpenedWidgetObject)
-                        .fold(
-                            onSuccess = { closed.add(previouslyOpenedWidgetObject) },
-                            onFailure = {
-                                Timber.e(it, "Error while closing object from history: $previouslyOpenedWidgetObject")
-                            }
-                        )
-                }
-            }
-            if (closed.isNotEmpty()) {
-                openWidgetObjectsHistory.removeAll(closed)
-            }
         }
     }
 
@@ -1061,7 +1051,8 @@ class HomeScreenViewModel(
     private fun proceedWithChangingType(widget: Id) {
         Timber.d("onChangeWidgetSourceClicked, widget:[$widget]")
         val curr = widgets.value.orEmpty().find { it.id == widget }
-        if (curr != null) {
+        val sourceId = curr?.source?.id
+        if (curr != null && sourceId != null) {
             viewModelScope.launch {
                 val config = spaceManager.getConfig()
                 if (config != null) {
@@ -1069,7 +1060,7 @@ class HomeScreenViewModel(
                         Command.ChangeWidgetType(
                             ctx = config.widgets,
                             widget = widget,
-                            source = curr.source.id,
+                            source = sourceId,
                             type = parseWidgetType(curr),
                             layout = when (val source = curr.source) {
                                 is Widget.Source.Bundled -> UNDEFINED_LAYOUT_CODE
@@ -1270,6 +1261,15 @@ class HomeScreenViewModel(
                             proceedWithNavigation(result.obj.navigation())
                         }
                     }
+                }
+            }
+            is DeepLinkResolver.Action.DeepLinkToMembership -> {
+                viewModelScope.launch {
+                    commands.emit(
+                        Command.Deeplink.MembershipScreen(
+                            tierId = deeplink.tierId
+                        )
+                    )
                 }
             }
             else -> {
@@ -1649,6 +1649,21 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onVaultClicked() {
+        viewModelScope.launch {
+            spaceManager.clear()
+            clearLastOpenedSpace.async(Unit).fold(
+                onSuccess = {
+                    Timber.d("Cleared last opened space before opening vault")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while clearing last opened space before opening vault")
+                }
+            )
+            commands.emit(Command.OpenVault)
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         Timber.d("onCleared")
@@ -1681,6 +1696,29 @@ class HomeScreenViewModel(
     }
 
     fun onSearchIconClicked() {
+        viewModelScope.launch {
+            val space = spaceManager.get()
+            val params = GetLastSearchQuery.Params(space = SpaceId(space))
+            getLastSearchQuery.async(params).fold(
+                onSuccess = { query ->
+                    commands.emit(
+                        Command.OpenGlobalSearchScreen(
+                            initialQuery = query,
+                            space = space
+                        )
+                    )
+                },
+                onFailure = {
+                    Timber.e(it, "Error while getting last search query")
+                    commands.emit(
+                        Command.OpenGlobalSearchScreen(
+                            initialQuery = "",
+                            space = space
+                        )
+                    )
+                }
+            )
+        }
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = EventsDictionary.searchScreenShow,
@@ -2059,7 +2097,9 @@ class HomeScreenViewModel(
         private val createBlock: CreateBlock,
         private val dateProvider: DateProvider,
         private val coverImageHashProvider: CoverImageHashProvider,
-        private val addObjectToCollection: AddObjectToCollection
+        private val addObjectToCollection: AddObjectToCollection,
+        private val getLastSearchQuery: GetLastSearchQuery,
+        private val clearLastOpenedSpace: ClearLastOpenedSpace
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -2106,7 +2146,9 @@ class HomeScreenViewModel(
             payloadDelegator = payloadDelegator,
             createBlock = createBlock,
             dateProvider = dateProvider,
-            addObjectToCollection = addObjectToCollection
+            addObjectToCollection = addObjectToCollection,
+            getLastSearchQuery = getLastSearchQuery,
+            clearLastOpenedSpace = clearLastOpenedSpace
         ) as T
     }
 
@@ -2148,6 +2190,10 @@ sealed class Command {
     data class OpenSpaceSettings(val spaceId: SpaceId) : Command()
 
     data class OpenObjectCreateDialog(val space: SpaceId) : Command()
+
+    data class OpenGlobalSearchScreen(val initialQuery: String, val space: Id) : Command()
+
+    data object OpenVault: Command()
 
     data class SelectWidgetType(
         val ctx: Id,
@@ -2199,6 +2245,7 @@ sealed class Command {
             val deepLinkType: String,
             val deepLinkSource: String
         ) : Deeplink()
+        data class MembershipScreen(val tierId: String?) : Deeplink()
     }
 }
 

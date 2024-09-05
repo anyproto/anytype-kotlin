@@ -49,7 +49,8 @@ class ObjectTypesSubscriptionManager (
 
     fun onStart() {
         job?.cancel()
-        job = scope.launch { pipeline.collect()
+        job = scope.launch {
+            pipeline.collect()
         }
     }
 

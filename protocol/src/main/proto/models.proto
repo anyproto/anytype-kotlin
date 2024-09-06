@@ -51,7 +51,8 @@ enum SmartBlockType {
 
     NotificationObject = 0x217;
     DevicesObject = 0x218;
-    ChatObject = 0x219;
+    ChatObject = 0x219; // Container for any-store based chats
+    ChatDerivedObject = 0x220; // Any-store based object for chat
 }
 
 message Search {
@@ -99,8 +100,6 @@ message Block {
         Content.TableRow tableRow = 28;
         Content.Widget widget = 29;
         Content.Chat chat = 30;
-        Content.ChatMessage chatMessage = 31;
-
     }
 
     message Restrictions {
@@ -436,10 +435,12 @@ message Block {
                 QuickOption quickOption = 6;
                 RelationFormat format = 7;
                 bool includeTime = 8;
+                repeated Filter nestedFilters = 10;
 
                 enum Operator {
-                    And = 0;
+                    No = 0;
                     Or = 1;
+                    And = 2;
                 }
 
                 enum Condition {
@@ -580,73 +581,6 @@ message Block {
         message Chat {
 
         }
-
-        // text stored per part
-        // single mark covers only one part
-        // client doesn't need to calculate ranges for parts. For example just convert some html blocks(quote, ul, etc) to Part
-        // in case mark covers multiple parts, client put it them separately
-        message ChatMessage {
-            string creator = 1;
-            int64 createdDate = 2;
-
-            Parts parts = 3;
-
-            message Attachment {
-                string id = 1;
-                oneof content {
-                    Block.Content.Text text = 14;
-                    Block.Content.File file = 15;
-                    Block.Content.Bookmark bookmark = 18;
-                    Block.Content.Link link = 20;
-                    Block.Content.Latex latex = 24;
-                }
-            }
-            repeated Attachment attachments = 4;
-
-            message Parts {
-                repeated Part parts = 1;
-            }
-
-            message Part {
-                string text = 1;
-                PartStyle style = 2;
-                Marks marks = 3; // list of marks to apply to the text
-            }
-
-            message Marks {
-                repeated Mark marks = 1;
-            }
-            message Mark {
-                Range range = 1; // range of symbols to apply this mark. From(symbol) To(symbol)
-                Type type = 2;
-                string param = 3; // link, color, etc
-
-                enum Type {
-                    Strikethrough = 0;
-                    Keyboard = 1;
-                    Italic = 2;
-                    Bold = 3;
-                    Underscored = 4;
-                    Link = 5;
-                    TextColor = 6;
-                    BackgroundColor = 7;
-                    Mention = 8;
-                    Emoji = 9;
-                    Object = 10;
-                }
-            }
-
-            enum PartStyle {
-                Paragraph = 0;
-                Quote = 5;
-                Code = 6;
-                Marked = 9;
-                Numbered = 10;
-                Callout = 13;
-            }
-
-        }
-
     }
 }
 
@@ -825,6 +759,7 @@ message ObjectType {
 
         pdf = 20;
         chat = 21;
+        chatDerived = 22;
     }
 }
 
@@ -1382,4 +1317,40 @@ message DeviceInfo {
     int64 addDate = 3;
     bool archived = 4;
     bool isConnected = 5;
+}
+
+message ChatMessage {
+    string id = 1;        // Unique message identifier
+    string orderId = 2;   // Used for subscriptions
+    string creator = 3;       // Identifier for the message creator
+    int64 createdAt = 4;
+    string replyToMessageId = 5;   // Identifier for the message being replied to
+    MessageContent message = 6;  // Message content
+    repeated Attachment attachments = 7;  // Attachments slice
+    Reactions reactions = 8;  // Reactions to the message
+
+    message MessageContent {
+        string text = 1;      // The text content of the message part
+        Block.Content.Text.Style style = 2;    // The style/type of the message part
+        repeated Block.Content.Text.Mark marks = 3; // List of marks applied to the text
+    }
+
+    message Attachment {
+        string target = 1;       // Identifier for the attachment object
+        AttachmentType type = 2; // Type of attachment
+
+        enum AttachmentType {
+            FILE = 0;   // File attachment
+            IMAGE = 1;  // Image attachment
+            LINK = 2;   // Link attachment
+        }
+    }
+
+    message Reactions {
+        map<string, IdentityList> reactions = 1; // Map of emoji to list of user IDs
+
+        message IdentityList {
+            repeated string ids = 1; // List of user IDs
+        }
+    }
 }

@@ -590,4 +590,13 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun diffVersions(request: Rpc.History.DiffVersions.Request): Rpc.History.DiffVersions.Response
     //endregion
+
+    //region CHATS
+
+    fun chatAddMessage(request: Rpc.Chat.AddMessage.Request): Rpc.Chat.AddMessage.Response
+    fun chatGetMessages(request: Rpc.Chat.GetMessages.Request): Rpc.Chat.GetMessages.Response
+    fun chatSubscribeLastMessages(request: Rpc.Chat.SubscribeLastMessages.Request): Rpc.Chat.SubscribeLastMessages.Response
+    fun chatUnsubscribe(request: Rpc.Chat.Unsubscribe.Request): Rpc.Chat.Unsubscribe.Response
+
+    //endregion
 }

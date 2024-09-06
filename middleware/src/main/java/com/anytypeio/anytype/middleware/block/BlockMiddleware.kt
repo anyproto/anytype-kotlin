@@ -25,6 +25,7 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.history.DiffVersionResponse
 import com.anytypeio.anytype.core_models.history.ShowVersionResponse
 import com.anytypeio.anytype.core_models.history.Version
@@ -1012,5 +1013,21 @@ class BlockMiddleware(
 
     override suspend fun diffVersions(command: Command.VersionHistory.DiffVersions): DiffVersionResponse {
         return middleware.diffVersions(command)
+    }
+
+    override suspend fun addChatMessage(command: Command.ChatCommand.AddMessage): Id {
+        return middleware.chatAddMessage(command)
+    }
+
+    override suspend fun getChatMessages(
+        command: Command.ChatCommand.GetMessages
+    ): List<Chat.Message> {
+        return middleware.chatGetMessages(command)
+    }
+
+    override suspend fun subscribeLastChatMessages(
+        command: Command.ChatCommand.SubscribeLastMessages
+    ): Command.ChatCommand.SubscribeLastMessages.Response {
+        return middleware.chatSubscribeLastMessages(command)
     }
 }

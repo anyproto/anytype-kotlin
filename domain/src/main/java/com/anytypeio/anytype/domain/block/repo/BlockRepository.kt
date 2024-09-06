@@ -24,6 +24,7 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.history.DiffVersionResponse
 import com.anytypeio.anytype.core_models.history.ShowVersionResponse
 import com.anytypeio.anytype.core_models.history.Version
@@ -485,4 +486,12 @@ interface BlockRepository {
     suspend fun showVersion(command: Command.VersionHistory.ShowVersion): ShowVersionResponse
     suspend fun setVersion(command: Command.VersionHistory.SetVersion)
     suspend fun diffVersions(command: Command.VersionHistory.DiffVersions): DiffVersionResponse
+
+    //region CHATS
+
+    suspend fun addChatMessage(command: Command.ChatCommand.AddMessage): Id
+    suspend fun getChatMessages(command: Command.ChatCommand.GetMessages): List<Chat.Message>
+    suspend fun subscribeLastChatMessages(command: Command.ChatCommand.SubscribeLastMessages): Command.ChatCommand.SubscribeLastMessages.Response
+
+    //endregion
 }

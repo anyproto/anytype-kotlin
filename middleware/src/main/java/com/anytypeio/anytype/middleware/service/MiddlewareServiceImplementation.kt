@@ -2323,4 +2323,56 @@ class MiddlewareServiceImplementation @Inject constructor(
             return response
         }
     }
+
+    override fun chatAddMessage(request: Rpc.Chat.AddMessage.Request): Rpc.Chat.AddMessage.Response {
+        val encoded = Service.chatAddMessage(
+            Rpc.Chat.AddMessage.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Chat.AddMessage.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Chat.AddMessage.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun chatGetMessages(request: Rpc.Chat.GetMessages.Request): Rpc.Chat.GetMessages.Response {
+        val encoded = Service.chatGetMessages(
+            Rpc.Chat.GetMessages.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Chat.GetMessages.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Chat.GetMessages.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun chatSubscribeLastMessages(request: Rpc.Chat.SubscribeLastMessages.Request): Rpc.Chat.SubscribeLastMessages.Response {
+        val encoded = Service.chatSubscribeLastMessages(
+            Rpc.Chat.SubscribeLastMessages.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Chat.SubscribeLastMessages.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Chat.SubscribeLastMessages.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun chatUnsubscribe(request: Rpc.Chat.Unsubscribe.Request): Rpc.Chat.Unsubscribe.Response {
+        val encoded = Service.chatUnsubscribe(
+            Rpc.Chat.Unsubscribe.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Chat.Unsubscribe.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Chat.Unsubscribe.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

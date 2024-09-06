@@ -146,6 +146,13 @@ fun GlobalSearchScreen(
         )
     }
 
+    if (state is GlobalSearchViewModel.ViewState.RelatedInit) {
+        query = TextFieldValue(
+            text = state.query,
+            selection = TextRange(start = 0, end = state.query.length)
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -276,55 +283,18 @@ fun GlobalSearchScreen(
         ) {
             if (state is GlobalSearchViewModel.ViewState.Related) {
                 stickyHeader {
-                    Row(
-                        modifier = Modifier
-                            .height(48.dp)
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.Bottom
-                    ) {
-                        Text(
-                            text = buildAnnotatedString {
-                                append(stringResource(R.string.global_search_related_to))
-                                withStyle(
-                                    style = SpanStyle(
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                ) {
-                                    append(state.target.title)
-                                }
-                            },
-                            style = Caption1Regular,
-                            color = colorResource(id = R.color.text_secondary),
-                            modifier = Modifier
-                                .weight(1.0f)
-                                .padding(
-                                    start = 20.dp,
-                                    bottom = 8.dp
-                                ),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text(
-                            text = stringResource(id = R.string.clear),
-                            style = Caption1Regular,
-                            color = colorResource(id = R.color.text_secondary),
-                            modifier = Modifier
-                                .padding(
-                                    start = 20.dp,
-                                    end = 20.dp,
-                                    bottom = 8.dp
-                                )
-                                .clickable {
-                                    onClearRelatedClicked().also {
-                                        query = TextFieldValue()
-                                    }
-                                }
-                        )
+                    RelatedHeader(title = state.target.title) {
+                        onClearRelatedClicked()
+                        query = TextFieldValue()
                     }
-                    Divider(
-                        paddingStart = 20.dp,
-                        paddingEnd = 20.dp
-                    )
+                }
+            }
+            if (state is GlobalSearchViewModel.ViewState.RelatedInit) {
+                stickyHeader {
+                    RelatedHeader(title = state.target.title) {
+                        onClearRelatedClicked()
+                        query = TextFieldValue()
+                    }
                 }
             }
             items(
@@ -407,6 +377,60 @@ fun GlobalSearchScreen(
             focusRequester.requestFocus()
         }
     }
+}
+
+@Composable
+private fun RelatedHeader(
+    title: String,
+    onClearRelatedClicked: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .height(48.dp)
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.Bottom
+    ) {
+        Text(
+            text = buildAnnotatedString {
+                append(stringResource(R.string.global_search_related_to))
+                withStyle(
+                    style = SpanStyle(
+                        fontWeight = FontWeight.Bold
+                    )
+                ) {
+                    append(title)
+                }
+            },
+            style = Caption1Regular,
+            color = colorResource(id = R.color.text_secondary),
+            modifier = Modifier
+                .weight(1.0f)
+                .padding(
+                    start = 20.dp,
+                    bottom = 8.dp
+                ),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        Text(
+            text = stringResource(id = R.string.clear),
+            style = Caption1Regular,
+            color = colorResource(id = R.color.text_secondary),
+            modifier = Modifier
+                .padding(
+                    start = 20.dp,
+                    end = 20.dp,
+                    bottom = 8.dp
+                )
+                .clickable {
+                    onClearRelatedClicked()
+                }
+        )
+    }
+    Divider(
+        paddingStart = 20.dp,
+        paddingEnd = 20.dp
+    )
 }
 
 @OptIn(ExperimentalFoundationApi::class)

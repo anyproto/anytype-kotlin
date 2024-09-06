@@ -563,7 +563,7 @@ fun MembershipPaymentMethod.toMw(): MMembershipPaymentMethod = when (this) {
 
 fun Chat.Message.mw(): MChatMessage = MChatMessage(
     id = id,
-    message = content.mw(),
+    message = content?.mw(),
     orderId = order,
     attachments = attachments.map { it.mw() },
     createdAt = timestamp,

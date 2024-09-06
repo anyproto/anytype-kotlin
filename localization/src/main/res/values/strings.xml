@@ -307,7 +307,7 @@
     <string name="sync_status_syncing">Syncing…</string>
     <string name="sync_status_synced">Synced</string>
     <string name="sync_status_failed">Not synced</string>
-    <string name="sync_status_need_update">Need update</string>
+    <string name="sync_status_need_update">Update the app</string>
 
     <string name="sync_status_toast_unknown">Initializing sync</string>
     <string name="sync_status_toast_offline">Anytype node is not connected</string>

@@ -107,7 +107,6 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
 
     override fun injectDependencies() {
         val params = GlobalSearchViewModel.VmParams(
-            initialQuery = initialQuery,
             space = SpaceId(space)
         )
         componentManager().globalSearchComponent.get(params).inject(this)

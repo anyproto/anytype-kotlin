@@ -1026,6 +1026,7 @@ message Event {
                 Synced = 3;
                 Failed = 4;
                 IncompatibleVersion = 5;
+                NetworkNeedsUpdate = 6;
             }
         }
     }

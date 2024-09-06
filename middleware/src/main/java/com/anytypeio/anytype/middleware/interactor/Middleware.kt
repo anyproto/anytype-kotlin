@@ -2741,6 +2741,18 @@ class Middleware @Inject constructor(
         return response.toCoreModel(context = command.objectId)
     }
 
+    @Throws
+    fun chatAddMessage(command: Command.ChatCommand.AddChatMessage) {
+        val request = Rpc.Chat.AddMessage.Request(
+            chatObjectId = command.chat,
+            message = command.message
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.diffVersions(request) }
+        logResponseIfDebug(response, time)
+        return response.toCoreModel(context = command.objectId)
+    }
+
     private fun logRequestIfDebug(request: Any) {
         if (BuildConfig.DEBUG) {
             logger.logRequest(request).also {

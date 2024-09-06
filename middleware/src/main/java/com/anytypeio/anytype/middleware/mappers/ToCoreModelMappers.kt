@@ -630,7 +630,7 @@ fun MDVFilterQuickOption.toCoreModels(): DVFilterQuickOption = when (this) {
 fun MDVFilterOperator.toCoreModels(): DVFilterOperator = when (this) {
     MDVFilterOperator.And -> DVFilterOperator.AND
     MDVFilterOperator.Or -> DVFilterOperator.OR
-//    MDVFilterOperator.No -> DVFilterOperator.NO
+    MDVFilterOperator.No -> DVFilterOperator.NO
 }
 
 fun MDVSort.toCoreModels(): Block.Content.DataView.Sort = DVSort(
@@ -695,6 +695,7 @@ fun MOTypeLayout.toCoreModels(): ObjectType.Layout = when (this) {
     MOTypeLayout.spaceView -> ObjectType.Layout.SPACE_VIEW
     MOTypeLayout.pdf -> ObjectType.Layout.PDF
     MOTypeLayout.chat -> ObjectType.Layout.CHAT
+    MOTypeLayout.chatDerived -> ObjectType.Layout.CHAT_DERIVED
 }
 
 fun MRelationDataSource.source(): Relation.Source = when (this) {
@@ -1083,7 +1084,7 @@ fun MSpaceSyncStatus.toCoreModel(): SpaceSyncStatus = when (this) {
     MSpaceSyncStatus.Syncing -> SpaceSyncStatus.SYNCING
     MSpaceSyncStatus.Error -> SpaceSyncStatus.ERROR
     MSpaceSyncStatus.Offline -> SpaceSyncStatus.OFFLINE
-//    MSpaceSyncStatus.NetworkNeedsUpdate -> SpaceSyncStatus.NETWORK_UPDATE_NEEDED
+    MSpaceSyncStatus.NetworkNeedsUpdate -> SpaceSyncStatus.NETWORK_UPDATE_NEEDED
 }
 
 fun MSpaceSyncNetwork.toCoreModel(): SpaceSyncNetwork = when (this) {

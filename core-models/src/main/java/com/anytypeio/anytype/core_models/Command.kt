@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_models
 
+import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.NameServiceNameType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -571,5 +572,26 @@ sealed class Command {
             val currentVersion: Id,
             val previousVersion: Id
         ) : VersionHistory()
+    }
+
+    sealed class ChatCommand {
+        data class AddChatMessage(
+            val chat: Id,
+            val message: Chat.Message
+        ): ChatCommand()
+        data class GetChatMessages(
+            val chat: Id,
+            val beforeMessageId: Id,
+            val limit: Int
+        ): ChatCommand()
+        data class SubscribeLastChatMessages(
+            val chat: Id,
+            val limit: Int
+        ): ChatCommand() {
+            data class Response(
+                val messages: List<Chat.Message>,
+                val messageCountBefore: Int
+            )
+        }
     }
 }

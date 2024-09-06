@@ -35,6 +35,13 @@ typealias MBPosition = anytype.model.Block.Position
 typealias MBSplitMode = anytype.Rpc.Block.Split.Request.Mode
 typealias MBTableOfContents = anytype.model.Block.Content.TableOfContents
 
+typealias MChatMessage = anytype.model.ChatMessage
+typealias MChatMessageContent = anytype.model.ChatMessage.MessageContent
+typealias MChatMessageAttachment = anytype.model.ChatMessage.Attachment
+typealias MChatMessageAttachmentType = anytype.model.ChatMessage.Attachment.AttachmentType
+typealias MChatMessageReactions = anytype.model.ChatMessage.Reactions
+typealias MChatMessageReactionIdentity = anytype.model.ChatMessage.Reactions.IdentityList
+
 typealias MDV = anytype.model.Block.Content.Dataview
 typealias MDVView = anytype.model.Block.Content.Dataview.View
 typealias MDVViewType = anytype.model.Block.Content.Dataview.View.Type

@@ -1052,15 +1052,17 @@ class BlockDataRepository(
         return remote.diffVersions(command)
     }
 
-    override suspend fun addChatMessage(command: Command.ChatCommand.AddChatMessage): Id {
+    override suspend fun addChatMessage(command: Command.ChatCommand.AddMessage): Id {
         return remote.addChatMessage(command)
     }
 
-    override suspend fun getChatMessages(command: Command.ChatCommand.GetChatMessages): List<Chat.Message> {
+    override suspend fun getChatMessages(command: Command.ChatCommand.GetMessages): List<Chat.Message> {
         return remote.getChatMessages(command)
     }
 
-    override suspend fun subscribeLastChatMessages(command: Command.ChatCommand.SubscribeLastChatMessages): Command.ChatCommand.SubscribeLastChatMessages.Response {
+    override suspend fun subscribeLastChatMessages(
+        command: Command.ChatCommand.SubscribeLastMessages
+    ): Command.ChatCommand.SubscribeLastMessages.Response {
         return remote.subscribeLastChatMessages(command)
     }
 }

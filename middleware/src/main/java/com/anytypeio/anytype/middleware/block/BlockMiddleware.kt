@@ -1015,15 +1015,15 @@ class BlockMiddleware(
         return middleware.diffVersions(command)
     }
 
-    override suspend fun addChatMessage(command: Command.ChatCommand.AddChatMessage): Id {
-        TODO()
+    override suspend fun addChatMessage(command: Command.ChatCommand.AddMessage): Id {
+        return middleware.chatAddMessage(command)
     }
 
-    override suspend fun getChatMessages(command: Command.ChatCommand.GetChatMessages): List<Chat.Message> {
-        TODO("Not yet implemented")
+    override suspend fun getChatMessages(command: Command.ChatCommand.GetMessages): List<Chat.Message> {
+        return middleware.chatGetMessages(command)
     }
 
-    override suspend fun subscribeLastChatMessages(command: Command.ChatCommand.SubscribeLastChatMessages): Command.ChatCommand.SubscribeLastChatMessages.Response {
-        TODO("Not yet implemented")
+    override suspend fun subscribeLastChatMessages(command: Command.ChatCommand.SubscribeLastMessages): Command.ChatCommand.SubscribeLastMessages.Response {
+        return middleware.chatSubscribeLastMessages(command)
     }
 }

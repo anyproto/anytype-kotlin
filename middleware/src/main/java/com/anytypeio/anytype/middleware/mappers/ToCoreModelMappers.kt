@@ -44,6 +44,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.SpaceUsage
+import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.history.DiffVersionResponse
 import com.anytypeio.anytype.core_models.history.ShowVersionResponse
 import com.anytypeio.anytype.core_models.history.Version
@@ -1105,6 +1106,34 @@ fun MP2PStatus.toCoreModel(): P2PStatus = when (this) {
     MP2PStatus.NotPossible -> P2PStatus.NOT_POSSIBLE
     MP2PStatus.Connected -> P2PStatus.CONNECTED
 }
+
+fun MChatMessage.core(): Chat.Message = Chat.Message(
+    id = id,
+    content = message?.core(),
+    creator = creator,
+    timestamp = createdAt,
+    replyToMessageId = replyToMessageId.ifEmpty { null },
+    attachments = attachments.map { attachment ->
+        Chat.Message.Attachment(
+            target = attachment.target,
+            type = when(attachment.type) {
+                MChatMessageAttachmentType.FILE -> Chat.Message.Attachment.Type.File
+                MChatMessageAttachmentType.IMAGE -> Chat.Message.Attachment.Type.Image
+                MChatMessageAttachmentType.LINK -> Chat.Message.Attachment.Type.Link
+            }
+        )
+    },
+    order = orderId,
+    reactions = reactions?.reactions?.mapValues { (unicode, identities) ->
+        identities.ids
+    } ?: emptyMap()
+)
+
+fun MChatMessageContent.core(): Chat.Message.Content = Chat.Message.Content(
+    text = text,
+    style = style.toCoreModels(),
+    marks = marks.map { it.toCoreModels() }
+)
 
 fun Rpc.History.Version.toCoreModel(): Version {
     return Version(

@@ -489,9 +489,9 @@ interface BlockRepository {
 
     //region CHATS
 
-    suspend fun addChatMessage(command: Command.ChatCommand.AddChatMessage): Id
-    suspend fun getChatMessages(command: Command.ChatCommand.GetChatMessages): List<Chat.Message>
-    suspend fun subscribeLastChatMessages(command: Command.ChatCommand.SubscribeLastChatMessages): Command.ChatCommand.SubscribeLastChatMessages.Response
+    suspend fun addChatMessage(command: Command.ChatCommand.AddMessage): Id
+    suspend fun getChatMessages(command: Command.ChatCommand.GetMessages): List<Chat.Message>
+    suspend fun subscribeLastChatMessages(command: Command.ChatCommand.SubscribeLastMessages): Command.ChatCommand.SubscribeLastMessages.Response
 
     //endregion
 }

@@ -575,16 +575,16 @@ sealed class Command {
     }
 
     sealed class ChatCommand {
-        data class AddChatMessage(
+        data class AddMessage(
             val chat: Id,
             val message: Chat.Message
         ): ChatCommand()
-        data class GetChatMessages(
+        data class GetMessages(
             val chat: Id,
             val beforeMessageId: Id,
             val limit: Int
         ): ChatCommand()
-        data class SubscribeLastChatMessages(
+        data class SubscribeLastMessages(
             val chat: Id,
             val limit: Int
         ): ChatCommand() {

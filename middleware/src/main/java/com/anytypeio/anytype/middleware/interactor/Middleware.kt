@@ -31,6 +31,7 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.history.DiffVersionResponse
 import com.anytypeio.anytype.core_models.history.ShowVersionResponse
 import com.anytypeio.anytype.core_models.history.Version
@@ -2742,15 +2743,42 @@ class Middleware @Inject constructor(
     }
 
     @Throws
-    fun chatAddMessage(command: Command.ChatCommand.AddChatMessage) {
+    fun chatAddMessage(command: Command.ChatCommand.AddMessage) : Id {
         val request = Rpc.Chat.AddMessage.Request(
             chatObjectId = command.chat,
-            message = command.message
+            message = command.message.mw()
         )
         logRequestIfDebug(request)
-        val (response, time) = measureTimedValue { service.diffVersions(request) }
+        val (response, time) = measureTimedValue { service.chatAddMessage(request) }
         logResponseIfDebug(response, time)
-        return response.toCoreModel(context = command.objectId)
+        return response.messageId
+    }
+
+    @Throws
+    fun chatGetMessages(command: Command.ChatCommand.GetMessages) : List<Chat.Message> {
+        val request = Rpc.Chat.GetMessages.Request(
+            chatObjectId = command.chat
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.chatGetMessages(request) }
+        logResponseIfDebug(response, time)
+        return response.messages.map { it.core() }
+    }
+
+    @Throws
+    fun chatSubscribeLastMessages(
+        command: Command.ChatCommand.SubscribeLastMessages
+    ): Command.ChatCommand.SubscribeLastMessages.Response {
+        val request = Rpc.Chat.SubscribeLastMessages.Request(
+            chatObjectId = command.chat
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.chatSubscribeLastMessages(request) }
+        logResponseIfDebug(response, time)
+        return Command.ChatCommand.SubscribeLastMessages.Response(
+            messages = response.messages.map { it.core() },
+            messageCountBefore = response.numMessagesBefore
+        )
     }
 
     private fun logRequestIfDebug(request: Any) {

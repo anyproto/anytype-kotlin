@@ -10,8 +10,8 @@ import javax.inject.Inject
 class AddChatMessage @Inject constructor(
     private val repo: BlockRepository,
     private val dispatchers: AppCoroutineDispatchers
-) : ResultInteractor<Command.ChatCommand.AddChatMessage, Id>(dispatchers.io) {
-    override suspend fun doWork(params: Command.ChatCommand.AddChatMessage): Id {
+) : ResultInteractor<Command.ChatCommand.AddMessage, Id>(dispatchers.io) {
+    override suspend fun doWork(params: Command.ChatCommand.AddMessage): Id {
         return repo.addChatMessage(command = params)
     }
 }

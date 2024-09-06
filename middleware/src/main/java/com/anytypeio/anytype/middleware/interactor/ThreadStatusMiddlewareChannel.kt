@@ -31,6 +31,7 @@ class ThreadStatusMiddlewareChannel(
                 MSyncStatus.Synced -> SyncStatus.SYNCED
                 MSyncStatus.Failed -> SyncStatus.FAILED
                 MSyncStatus.IncompatibleVersion -> SyncStatus.INCOMPATIBLE_VERSION
+                MSyncStatus.NetworkNeedsUpdate -> SyncStatus.NETWORK_NEEDS_UPDATE
             }
         }
 }

@@ -7,7 +7,6 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
-import com.anytypeio.anytype.core_models.GlobalSearchCache
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -46,6 +45,7 @@ import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.filterObjectsByIds
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.filterSearchObjects
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -92,193 +92,79 @@ class GlobalSearchViewModel(
     val state = _state.asStateFlow()
 
     init {
+        Timber.d("GlobalSearchViewModel, init")
         proceedRestoreGlobalSearch(space = vmParams.space)
     }
 
     private fun proceedRestoreGlobalSearch(space: SpaceId) {
+        Timber.d("restoreGlobalSearch, space $space")
         viewModelScope.launch {
             val params = RestoreGlobalSearch.Params(spaceId = space)
             restoreGlobalSearch.async(params = params).fold(
                 onSuccess = { response ->
-                    Timber.i("restoreGlobalSearch, onSuccess ${response.globalSearchCache}")
-                    userInput.value = response.globalSearchCache?.query ?: EMPTY_STRING_VALUE
-                    initialSearch(response.globalSearchCache)
+                    val globalSearchCache = response.globalSearchCache
+                    Timber.d("restoreGlobalSearch, onSuccess $globalSearchCache")
+                    userInput.value = globalSearchCache?.query ?: EMPTY_STRING_VALUE
+                    val relatedObjectId = globalSearchCache?.relatedObject
+                    if (!relatedObjectId.isNullOrEmpty()) {
+                        proceedRelatedObjectSearch(
+                            query = globalSearchCache.query,
+                            relatedObjectId = relatedObjectId
+                        )
+                    } else {
+                        val initialState =
+                            ViewState.Init(query = globalSearchCache?.query ?: EMPTY_STRING_VALUE)
+                        proceedWithInitialState(initialState)
+                    }
                 },
                 onFailure = {
+                    Timber.e(it, "restoreGlobalSearch, onFailure")
                     userInput.value = EMPTY_STRING_VALUE
                     proceedWithInitialState(ViewState.Init(query = EMPTY_STRING_VALUE))
-                    Timber.e(it, "restoreGlobalSearch, onFailure")
                 }
             )
         }
     }
 
-    private suspend fun initialSearch(globalSearchCache: GlobalSearchCache?) {
-        val relatedObjectId = globalSearchCache?.relatedObject
-        if (!relatedObjectId.isNullOrEmpty()) {
-            proceedRelatedObjectSearch(relatedObjectId)
-            val params = SearchWithMeta.Params(
-                relatedObjectId = relatedObjectId,
-                command = Command.SearchWithMeta(
-                    query = EMPTY_STRING_VALUE,
-                    limit = 1,
-                    offset = 0,
-                    keys = DEFAULT_KEYS,
-                    filters = buildList {
-                        addAll(filterSearchObjects(spaces = listOf(vmParams.space.id)))
-                        add(
-                            DVFilter(
-                                relation = Relations.ID,
-                                value = relatedObjectId,
-                                condition = DVFilterCondition.IN
-                            )
-                        )
-                    },
-                    sorts = emptyList(),
-                    withMetaRelationDetails = false,
-                    withMeta = false,
-                    space = vmParams.space
-                )
-            )
-            searchWithMeta.async(params).fold(
-                onSuccess = { result ->
-                    val relatedObject = result.firstOrNull()?.wrapper
-                    if (relatedObject != null) {
-                        val params1 = relatedSearchFlowParams(
-                            query = globalSearchCache.query,
-                            links = relatedObject.links,
-                            backlinks = relatedObject.backlinks,
-                            space = vmParams.space,
-                            relatedObjectId = relatedObjectId
-                        )
-                        searchWithMeta.async(params1).fold(
-                            onFailure = {
-                                Timber.e(it)
-                                proceedWithInitialState(ViewState.Init(query = EMPTY_STRING_VALUE))
-                            },
-                            onSuccess = { links ->
-                                val target = result.firstOrNull()?.view(
-                                    storeOfRelations = storeOfRelations,
-                                    storeOfObjectTypes = storeOfObjectTypes,
-                                    urlBuilder = urlBuilder
-                                )
-                                if (target != null) {
-                                    mode.value = Mode.Related(target = target)
-                                    proceedWithInitialState(ViewState.RelatedInit(
-                                        query = globalSearchCache.query,
-                                        target = target,
-                                        views = links.mapNotNull {
-                                            it.view(
-                                                storeOfRelations = storeOfRelations,
-                                                storeOfObjectTypes = storeOfObjectTypes,
-                                                urlBuilder = urlBuilder
-                                            )
-                                        },
-                                        isLoading = false
-                                    ))
-                                } else {
-                                    proceedWithInitialState(ViewState.Init(query = globalSearchCache.query ?: EMPTY_STRING_VALUE))
-                                }
-                            }
-                        )
-                    }
-                },
-                onFailure = {
-                    Timber.e(it)
-                    proceedWithInitialState(ViewState.Init(query = EMPTY_STRING_VALUE))
-                })
-        } else {
-            val initialState = ViewState.Init(query = globalSearchCache?.query ?: EMPTY_STRING_VALUE)
-            proceedWithInitialState(initialState)
-        }
-    }
-
-    private suspend fun proceedRelatedObjectSearch(relatedObjectId: Id) {
+    private suspend fun proceedRelatedObjectSearch(query: String, relatedObjectId: Id) {
         val params = SearchWithMeta.Params(
             relatedObjectId = relatedObjectId,
             command = Command.SearchWithMeta(
                 limit = 1,
                 keys = DEFAULT_KEYS,
-                filters = buildList {
-                    addAll(filterSearchObjects(spaces = listOf(vmParams.space.id)))
-                    add(
-                        DVFilter(
-                            relation = Relations.ID,
-                            value = relatedObjectId,
-                            condition = DVFilterCondition.IN
-                        )
-                    )
-                },
+                filters = filterObjectsByIds(
+                    ids = listOf(relatedObjectId),
+                    spaces = listOf(vmParams.space.id)
+                ),
                 space = vmParams.space
             )
         )
         searchWithMeta.async(params).fold(
             onSuccess = { result ->
-                val relatedObject = result.firstOrNull()?.view(
+                Timber.d("proceedRelatedObjectSearch, onSuccess $result")
+                val relatedGlobalSearchItemView = result.firstOrNull()?.view(
                     storeOfRelations = storeOfRelations,
                     storeOfObjectTypes = storeOfObjectTypes,
                     urlBuilder = urlBuilder
                 )
-                if (relatedObject != null) {
-                    mode.value = Mode.Related(target = relatedObject)
-                    proceedUpdateGlobalSearch(
-                        query = EMPTY_STRING_VALUE,
-                        relatedObjectId = relatedObjectId
+                if (relatedGlobalSearchItemView != null) {
+                    mode.value = Mode.Related(target = relatedGlobalSearchItemView)
+                    proceedWithInitialState(
+                        ViewState.RelatedInit(
+                            query = query,
+                            target = relatedGlobalSearchItemView,
+                            isLoading = false
+                        )
                     )
-                    proceedWithInitialState(ViewState.RelatedInit(
-                        query = EMPTY_STRING_VALUE,
-                        target = relatedObject,
-                        isLoading = false
-                    ))
+                } else {
+                    proceedWithInitialState(ViewState.Init(query = query))
                 }
             },
             onFailure = {
-                Timber.e(it)
+                Timber.e(it, "proceedRelatedObjectSearch, onFailure")
+                proceedWithInitialState(ViewState.Init(query = query))
             }
         )
-    }
-
-    private suspend fun proceedRelatedLinksSearch(
-        query: String,
-        relatedObject: ObjectWrapper.Basic
-    ) {
-//        val params = relatedSearchFlowParams(
-//            query = query,
-//            links = relatedObject.links,
-//            backlinks = relatedObject.backlinks,
-//            space = vmParams.space,
-//            relatedObjectId = relatedObject.id
-//        )
-//        searchWithMeta.async(params).fold(
-//            onFailure = {
-//                Timber.e(it)
-//                proceedWithInitialState(ViewState.Init(query = EMPTY_STRING_VALUE))
-//            },
-//            onSuccess = { result ->
-//                val target = result.firstOrNull()?.view(
-//                    storeOfRelations = storeOfRelations,
-//                    storeOfObjectTypes = storeOfObjectTypes,
-//                    urlBuilder = urlBuilder
-//                )
-//                if (target != null) {
-//                    mode.value = Mode.Related(target = target)
-//                    proceedWithInitialState(ViewState.RelatedInit(
-//                        query = query,
-//                        target = target,
-//                        views = links.mapNotNull {
-//                            it.view(
-//                                storeOfRelations = storeOfRelations,
-//                                storeOfObjectTypes = storeOfObjectTypes,
-//                                urlBuilder = urlBuilder
-//                            )
-//                        },
-//                        isLoading = false
-//                    ))
-//                } else {
-//                    proceedWithInitialState(ViewState.Init(query = globalSearchCache.query ?: EMPTY_STRING_VALUE))
-//                }
-//            }
-//        )
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

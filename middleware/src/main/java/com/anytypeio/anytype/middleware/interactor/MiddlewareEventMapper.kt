@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.middleware.BuildConfig
 import com.anytypeio.anytype.middleware.mappers.MWidgetLayout
+import com.anytypeio.anytype.middleware.mappers.core
 import com.anytypeio.anytype.middleware.mappers.toCoreModel
 import com.anytypeio.anytype.middleware.mappers.toCoreModels
 import com.anytypeio.anytype.middleware.mappers.toCoreModelsAlign
@@ -289,6 +290,44 @@ fun anytype.Event.Message.toCoreModels(
             context = context,
             dv = event.id,
             isCollection = event.value_
+        )
+    }
+    chatAdd != null -> {
+        val event = chatAdd
+        checkNotNull(event)
+        Event.Command.Chats.Add(
+            context = context,
+            id = event.id,
+            order = event.orderId,
+            message = requireNotNull(event.message).core()
+        )
+    }
+    chatDelete != null -> {
+        val event = chatDelete
+        checkNotNull(event)
+        Event.Command.Chats.Delete(
+            context = context,
+            id = event.id
+        )
+    }
+    chatUpdate != null -> {
+        val event = chatUpdate
+        checkNotNull(event)
+        Event.Command.Chats.Update(
+            context = context,
+            id = event.id,
+            message = requireNotNull(event.message).core()
+        )
+    }
+    chatUpdateReactions != null -> {
+        val event = chatUpdateReactions
+        checkNotNull(event)
+        Event.Command.Chats.UpdateReactions(
+            context = context,
+            id = event.id,
+            reactions = event.reactions?.reactions.orEmpty().mapValues { (unicode, identities) ->
+                identities.ids
+            }
         )
     }
     else -> {

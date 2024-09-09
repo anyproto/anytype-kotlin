@@ -27,10 +27,10 @@ class ChatContainer @Inject constructor(
         emitAll(
             channel.observe(chat = chat).scan(initial.messages) { state, events ->
                 state.reduce(events)
-            }.catch {
-                emit(emptyList())
             }
         )
+    }.catch {
+        emit(emptyList())
     }
 
     fun List<Chat.Message>.reduce(events: List<Event.Command.Chats>): List<Chat.Message> {

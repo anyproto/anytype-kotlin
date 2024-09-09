@@ -36,7 +36,7 @@ interface AppNavigation {
 
     fun exit()
     fun exitToDesktop()
-    fun openPageSearch(initialQuery: String, space: Id)
+    fun openPageSearch(space: Id)
     fun openUpdateAppScreen()
     fun openRemoteFilesManageScreen(subscription: Id)
 
@@ -70,7 +70,6 @@ interface AppNavigation {
         object MigrationErrorScreen: Command()
 
         data class OpenPageSearch(
-            val initialQuery: String,
             val space: Id
         ) : Command()
 

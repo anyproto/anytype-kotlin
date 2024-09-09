@@ -39,7 +39,6 @@ class NavigationRouter(
                 is AppNavigation.Command.Exit -> navigation.exit()
                 is AppNavigation.Command.ExitToDesktop -> navigation.exitToDesktop()
                 is AppNavigation.Command.OpenPageSearch -> navigation.openPageSearch(
-                    initialQuery = command.initialQuery,
                     space = command.space
                 )
                 is AppNavigation.Command.OpenUpdateAppScreen -> navigation.openUpdateAppScreen()

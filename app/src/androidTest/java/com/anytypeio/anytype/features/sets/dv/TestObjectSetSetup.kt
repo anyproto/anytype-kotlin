@@ -48,7 +48,6 @@ import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
-import com.anytypeio.anytype.domain.search.GetLastSearchQuery
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
@@ -186,9 +185,6 @@ abstract class TestObjectSetSetup {
     @Mock
     lateinit var clearLastOpenedObject: ClearLastOpenedObject
 
-    @Mock
-    lateinit var getLastSearchQuery: GetLastSearchQuery
-
     private lateinit var getTemplates: GetTemplates
     private lateinit var getDefaultObjectType: GetDefaultObjectType
 
@@ -316,8 +312,7 @@ abstract class TestObjectSetSetup {
             permissions = permissions,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
-            clearLastOpenedObject = clearLastOpenedObject,
-            getLastSearchQuery = getLastSearchQuery
+            clearLastOpenedObject = clearLastOpenedObject
         )
     }
 

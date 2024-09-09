@@ -57,7 +57,6 @@ import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.DataViewState
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
-import com.anytypeio.anytype.domain.search.GetLastSearchQuery
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.templates.CreateTemplate
@@ -109,7 +108,6 @@ import com.anytypeio.anytype.presentation.templates.TemplateView
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUI
 import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUIAction
-import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command
 import com.anytypeio.anytype.presentation.widgets.enterEditing
 import com.anytypeio.anytype.presentation.widgets.exitEditing
 import com.anytypeio.anytype.presentation.widgets.hideMoreMenu
@@ -182,7 +180,6 @@ class ObjectSetViewModel(
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val clearLastOpenedObject: ClearLastOpenedObject,
-    private val getLastSearchQuery: GetLastSearchQuery
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>,
     ViewerDelegate by viewerDelegate,
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate
@@ -1655,25 +1652,10 @@ class ObjectSetViewModel(
             props = Props(mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.navigation))
         )
         viewModelScope.launch {
-            val params = GetLastSearchQuery.Params(space = vmParams.space)
-            getLastSearchQuery.async(params).fold(
-                onSuccess = { query ->
-                    dispatch(
-                        AppNavigation.Command.OpenPageSearch(
-                            initialQuery = query,
-                            space = vmParams.space.id
-                        )
-                    )
-                },
-                onFailure = {
-                    Timber.e(it, "Error while getting last search query")
-                    dispatch(
-                        AppNavigation.Command.OpenPageSearch(
-                            initialQuery = "",
-                            space = vmParams.space.id
-                        )
-                    )
-                }
+            dispatch(
+                AppNavigation.Command.OpenPageSearch(
+                    space = vmParams.space.id
+                )
             )
         }
     }

@@ -1065,4 +1065,8 @@ class BlockDataRepository(
     ): Command.ChatCommand.SubscribeLastMessages.Response {
         return remote.subscribeLastChatMessages(command)
     }
+
+    override suspend fun unsubscribeChat(chat: Id) {
+        return remote.unsubscribeChat(chat)
+    }
 }

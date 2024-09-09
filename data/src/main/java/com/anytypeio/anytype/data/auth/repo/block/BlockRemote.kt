@@ -451,6 +451,7 @@ interface BlockRemote {
     suspend fun addChatMessage(command: Command.ChatCommand.AddMessage): Id
     suspend fun getChatMessages(command: Command.ChatCommand.GetMessages): List<Chat.Message>
     suspend fun subscribeLastChatMessages(command: Command.ChatCommand.SubscribeLastMessages): Command.ChatCommand.SubscribeLastMessages.Response
+    suspend fun unsubscribeChat(chat: Id)
 
     //endregion
 }

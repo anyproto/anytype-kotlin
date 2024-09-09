@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.scan
@@ -28,6 +29,8 @@ class ChatContainer @Inject constructor(
             emitAll(
                 channel.observe(chat = chat).scan(initial) { state, events ->
                     state.reduce(events)
+                }.catch {
+                    emit(emptyList())
                 }
             )
 

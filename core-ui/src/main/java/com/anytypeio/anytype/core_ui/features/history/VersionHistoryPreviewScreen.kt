@@ -1,9 +1,8 @@
 package com.anytypeio.anytype.core_ui.features.history
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.widget.HorizontalScrollView
-import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -50,7 +49,6 @@ import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
-import com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.history.VersionHistoryPreviewScreen
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -164,6 +162,9 @@ private fun ObjectSetScreen(
             view
         },
         update = {
+            it.findViewById<TextView>(R.id.tvCurrentViewerName).apply {
+                text = state.viewer?.name
+            }
             editorAdapter.updateWithDiffUtil(state.blocks)
             gridAdapter.submitList(state.viewer?.columns)
         }

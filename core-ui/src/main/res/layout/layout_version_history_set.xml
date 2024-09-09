@@ -12,6 +12,35 @@
         android:layout_height="wrap_content"
         android:orientation="vertical" />
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/default_collection_dv_header_height">
+
+        <TextView
+            android:id="@+id/tvCurrentViewerName"
+            style="@style/ViewerTitleStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:drawablePadding="2dp"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/dp_20"
+            app:drawableEndCompat="@drawable/ic_arrow_expand_dv_viewer"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="All" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/shape_primary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <include
         android:id="@+id/gridContainer"
         layout="@layout/item_viewer_container"

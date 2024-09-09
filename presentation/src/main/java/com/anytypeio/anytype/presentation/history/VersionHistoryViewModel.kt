@@ -132,14 +132,24 @@ class VersionHistoryViewModel(
                 .distinctUntilChanged()
                 .collectLatest { state ->
                     val viewer = mapToViewer(state)
-                    _previewViewState.value = VersionHistoryPreviewScreen.Success.Set(
-                        versionId = "",
-                        dateFormatted = "",
-                        timeFormatted = "",
-                        icon = null,
-                        viewer = viewer,
-                        blocks = emptyList()
-                    )
+                    when (val currentState = _previewViewState.value) {
+                        VersionHistoryPreviewScreen.Loading -> {
+                            _previewViewState.value = VersionHistoryPreviewScreen.Success.Set(
+                                versionId = "",
+                                blocks = emptyList(),
+                                dateFormatted = "",
+                                timeFormatted = "",
+                                viewer = viewer,
+                                icon = null
+                            )
+                        }
+                        is VersionHistoryPreviewScreen.Success.Set -> {
+                            _previewViewState.value = currentState.copy(
+                                viewer = viewer
+                            )
+                        }
+                        else -> {}
+                    }
                 }
         }
     }
@@ -561,7 +571,13 @@ class VersionHistoryViewModel(
                     )
                 }
                 is VersionHistoryPreviewScreen.Success.Set -> {
-                    _previewViewState.value = currentState.copy(blocks = blocks)
+                    _previewViewState.value = currentState.copy(
+                        versionId = item.id,
+                        dateFormatted = item.dateFormatted,
+                        timeFormatted = item.timeFormatted,
+                        icon = item.icon,
+                        blocks = blocks
+                    )
                 }
                 else -> {}
             }

@@ -4,7 +4,6 @@ import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.chats.Chat
-import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
@@ -14,13 +13,11 @@ import kotlinx.coroutines.flow.scan
 
 class ChatContainer @Inject constructor(
     private val repo: BlockRepository,
-    private val channel: ChatEventChannel,
-    private val dispatchers: AppCoroutineDispatchers
+    private val channel: ChatEventChannel
 ) {
 
     fun watch(chat: Id): Flow<List<Chat.Message>> {
         val flow = flow {
-
             val initial = repo.subscribeLastChatMessages(
                 command = Command.ChatCommand.SubscribeLastMessages(
                     chat = chat,
@@ -39,6 +36,7 @@ class ChatContainer @Inject constructor(
     }
 
     fun List<Chat.Message>.reduce(events: List<Event.Command.Chats>): List<Chat.Message> {
+        // Naive implementation
         var result = this
         events.forEach { event ->
             when(event) {
@@ -53,6 +51,8 @@ class ChatContainer @Inject constructor(
                                 add(event.message)
                             }.sortedBy { it.order }
                         }
+                    } else {
+                        result = listOf(event.message)
                     }
                 }
                 is Event.Command.Chats.Delete -> {
@@ -61,10 +61,22 @@ class ChatContainer @Inject constructor(
                     }
                 }
                 is Event.Command.Chats.Update -> {
-
+                    result = result.map { msg ->
+                        if (msg.id == event.id)
+                            event.message
+                        else
+                            msg
+                    }
                 }
                 is Event.Command.Chats.UpdateReactions -> {
-                    // TODO
+                    result = result.map { msg ->
+                        if (msg.id == event.id)
+                            msg.copy(
+                                reactions = event.reactions
+                            )
+                        else
+                            msg
+                    }
                 }
             }
         }

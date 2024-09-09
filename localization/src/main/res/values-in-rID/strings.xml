@@ -1472,6 +1472,7 @@ Please provide specific details of your needs here.</string>
     </plurals>
     <string name="sync_status_anytype_network_connecting">Menghubungkan ke Jaringan ...</string>
     <string name="sync_status_anytype_network_no_connecting">Tak ada koneksi</string>
+    <string name="sync_status_anytype_sync_slow">Sinkronisasi mungkin lambat. Coba perbarui aplikasi.</string>
     <string name="sync_status_storage_limit_exceed">Batas penyimpanan tercapai</string>
     <string name="sync_status_incompatible_version">Incompatible version</string>
     <string name="sync_status_network_error">Tidak ada akses ke ruang</string>

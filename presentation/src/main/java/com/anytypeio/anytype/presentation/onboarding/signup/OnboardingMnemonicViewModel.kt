@@ -61,7 +61,7 @@ class OnboardingMnemonicViewModel @Inject constructor(
             } else {
                 Timber.w("config was missing before the end of onboarding")
             }
-            commands.emit(Command.OpenHome)
+            commands.emit(Command.OpenVault)
         }
     }
 
@@ -75,7 +75,7 @@ class OnboardingMnemonicViewModel @Inject constructor(
             } else {
                 Timber.w("config was missing before the end of onboarding")
             }
-            commands.emit(Command.OpenHome)
+            commands.emit(Command.OpenVault)
         }
     }
 
@@ -114,6 +114,6 @@ class OnboardingMnemonicViewModel @Inject constructor(
     }
 
     sealed class Command {
-        data object OpenHome : Command()
+        data object OpenVault : Command()
     }
 }

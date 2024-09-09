@@ -99,6 +99,7 @@ import com.anytypeio.anytype.core_utils.ext.lastDecorator
 import com.anytypeio.anytype.core_utils.ext.safeNavigate
 import com.anytypeio.anytype.core_utils.ext.screen
 import com.anytypeio.anytype.core_utils.ext.show
+import com.anytypeio.anytype.core_utils.ext.startMarketPageOrWeb
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.syncTranslationWithImeVisibility
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
@@ -745,7 +746,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 SpaceSyncStatusScreen(
                     uiState = vm.syncStatusWidget.collectAsStateWithLifecycle().value,
                     onDismiss = vm::onSyncWidgetDismiss,
-                    scope = lifecycleScope
+                    scope = lifecycleScope,
+                    onUpdateAppClick = vm::onUpdateAppClick
                 )
             }
         }
@@ -948,6 +950,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     } catch (e: Throwable) {
                         toast("Couldn't parse url: ${command.url}")
                     }
+                }
+                is Command.OpenAppStore -> {
+                    startMarketPageOrWeb()
                 }
                 is Command.OpenDocumentMenu -> {
                     hideKeyboard()

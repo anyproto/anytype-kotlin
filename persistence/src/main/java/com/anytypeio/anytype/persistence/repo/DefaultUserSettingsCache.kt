@@ -51,6 +51,12 @@ class DefaultUserSettingsCache(
             SpaceId(value)
     }
 
+    override suspend fun clearCurrentSpace() {
+        prefs.edit()
+            .putString(CURRENT_SPACE_KEY, "")
+            .apply()
+    }
+
     override suspend fun setDefaultObjectType(space: SpaceId, type: TypeId) {
         val curr = prefs
             .getString(DEFAULT_OBJECT_TYPES_KEY, NO_VALUE)

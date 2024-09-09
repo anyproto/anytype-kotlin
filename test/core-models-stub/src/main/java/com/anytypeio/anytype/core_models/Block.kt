@@ -213,7 +213,7 @@ fun StubCallout(
 
 fun StubRelation(
     relationKey: String = MockDataFactory.randomString(),
-    format: RelationFormat
+    format: RelationFormat = Relation.Format.SHORT_TEXT
 ): Relation = Relation(
     key = relationKey,
     name = MockDataFactory.randomString(),

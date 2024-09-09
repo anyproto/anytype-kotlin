@@ -2,6 +2,7 @@ package com.anytypeio.anytype.domain.config
 
 import com.anytypeio.anytype.core_models.Config
 
+@Deprecated("Refactoring needed")
 interface ConfigStorage {
     @Deprecated("Unsafe method. Use getOrNull() instead")
     @Throws(IllegalStateException::class)

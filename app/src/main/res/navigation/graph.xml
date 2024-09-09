@@ -160,7 +160,10 @@
             app:destination="@id/selectSpaceScreen" />
         <action
             android:id="@+id/action_open_vault"
-            app:destination="@id/vaultScreen" />
+            app:destination="@id/vaultScreen"
+            app:popUpTo="@id/vaultScreen"
+            app:popUpToInclusive="true"
+            />
     </fragment>
 
     <fragment
@@ -196,7 +199,11 @@
 
     <fragment
         android:id="@+id/vaultScreen"
-        android:name="com.anytypeio.anytype.ui.vault.VaultFragment"/>
+        android:name="com.anytypeio.anytype.ui.vault.VaultFragment">
+        <action
+            android:id="@+id/openSpace"
+            app:destination="@id/homeScreen" />
+    </fragment>
 
     <dialog
         android:id="@+id/createSpaceScreen"
@@ -279,6 +286,15 @@
             app:popUpTo="@+id/splashScreen"
             app:popUpToInclusive="true" />
         <action
+            android:id="@+id/action_splashScreen_to_vaultScreen"
+            app:destination="@id/vaultScreen"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@+id/splashScreen"
+            app:popUpToInclusive="true" />
+        <action
             android:id="@+id/action_splashScreen_to_widgets"
             app:destination="@id/homeScreen"
             app:enterAnim="@anim/nav_default_enter_anim"
@@ -344,7 +360,12 @@
             app:enterAnim="@anim/fade_in"
             app:popUpTo="@id/authStartScreen"
             app:popUpToInclusive="true" />
-
+        <action
+            android:id="@+id/actionOpenVault"
+            app:destination="@id/vaultScreen"
+            app:enterAnim="@anim/fade_in"
+            app:popUpTo="@id/authStartScreen"
+            app:popUpToInclusive="true" />
     </navigation>
 
     <fragment

@@ -26,7 +26,7 @@ class Logout @Inject constructor(
         user.clear()
         config.clear()
         spaceManager.clear()
-        awaitAccountStartManager.setIsStarted(false)
+        awaitAccountStartManager.setState(AwaitAccountStartManager.State.Stopped)
     }
 
     class Params(

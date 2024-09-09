@@ -2865,6 +2865,10 @@ class ObjectSetViewModel(
     fun onSyncWidgetDismiss() {
         syncStatusWidget.value = SyncStatusWidgetState.Hidden
     }
+
+    fun onUpdateAppClick() {
+        dispatch(command = ObjectSetCommand.Intent.OpenAppStore)
+    }
     //endregion
 
     companion object {

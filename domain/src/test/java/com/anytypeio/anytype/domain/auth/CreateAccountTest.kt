@@ -127,7 +127,7 @@ class CreateAccountTest {
             verifyNoMoreInteractions(repo)
             verify(configStorage, times(1)).set(setup.config)
             verify(spaceManager, times(1)).set(setup.config.space)
-            verify(awaitAccountStartManager, times(1)).setIsStarted(true)
+            verify(awaitAccountStartManager, times(1)).setState(AwaitAccountStartManager.State.Started)
         }
 
     private fun stubMetricsProvider(version: String, platform: String) {

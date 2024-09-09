@@ -1482,6 +1482,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     </plurals>
     <string name="sync_status_anytype_network_connecting">Connexion au réseau...</string>
     <string name="sync_status_anytype_network_no_connecting">Pas de connexion</string>
+    <string name="sync_status_anytype_sync_slow">La synchronisation peut être lente. Mettez à jour l\'application.</string>
     <string name="sync_status_storage_limit_exceed">Limite de stockage atteinte</string>
     <string name="sync_status_incompatible_version">Version incompatible</string>
     <string name="sync_status_network_error">Pas d\'accès à l\'espace</string>

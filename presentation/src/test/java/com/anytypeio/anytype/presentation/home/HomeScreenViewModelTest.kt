@@ -58,6 +58,7 @@ import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.GetLastSearchQuery
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.domain.types.GetPinnedObjectTypes
 import com.anytypeio.anytype.domain.widgets.CreateWidget
@@ -246,6 +247,9 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var getLastSearchQuery: GetLastSearchQuery
+
+    @Mock
+    lateinit var clearLastOpenedSpace: ClearLastOpenedSpace
 
     lateinit var userPermissionProvider: UserPermissionProvider
 
@@ -2944,7 +2948,8 @@ class HomeScreenViewModelTest {
         createDataViewObject = createDataViewObject,
         dateProvider = dateProvider,
         addObjectToCollection = addObjectToCollection,
-        getLastSearchQuery = getLastSearchQuery
+        getLastSearchQuery = getLastSearchQuery,
+        clearLastOpenedSpace = clearLastOpenedSpace
     )
 
     companion object {

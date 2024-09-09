@@ -292,7 +292,7 @@
     <string name="ityem_relations">İlişkiler</string>
     <string name="add_sort">Bir sıralama ekleyin</string>
     <string name="apply">Uygula</string>
-    <string name="add_filter">Bir filtre ekleyin</string>
+    <string name="add_filter">Bir filtre ekleyin </string>
     <string name="relation_format_tag">Çoklu seçim</string>
     <string name="unknown_number_of_objects">Bilinmeyen sayıda nesne</string>
     <string name="sort_ascending">Artan</string>
@@ -1141,7 +1141,7 @@
     <string name="multiplayer_space_request_to_join">Katılma isteği gönder</string>
     <string name="multiplayer_space_request_to_join_msg">%2$s tarafından oluşturulan %1$s alanına katılmaya davet edildiniz. Alan sahibinin sizi kabul etmesi için bir istek gönderin.</string>
     <string name="multiplayer_tap_to_write_request_to_join_comment">Yorumunuzu yazmak için dokunun</string>
-    <string name="multiplayer_share_space">Alanı paylaş</string>
+    <string name="multiplayer_share_space">Alan paylaş</string>
     <string name="multiplayer_members_and_requests">Üyeler</string>
     <string name="multiplayer_cant_add_members">Daha fazla üye ekleyemezsiniz</string>
     <string name="multiplayer_cant_add_editors">Daha fazla düzenleyici ekleyemezsiniz</string>
@@ -1166,7 +1166,7 @@
     <string name="multiplayer_remove_member_warning_text">%1$s alandan kaldırılacak</string>
     <string name="multiplayer_request_sent_toast">İstek gönderildi</string>
     <string name="multiplayer_space_stop_sharing">Paylaşımı durdur</string>
-    <string name="multiplayer_space_stop_sharing_space">Alanı paylaşmayı durdurun</string>
+    <string name="multiplayer_space_stop_sharing_space">Alan paylaşımını durdur</string>
     <string name="multiplayer_space_stop_sharing_space_description">Katılımcılar artık bu alanla senkronize edilmeyecek ve paylaşım bağlantısı devre dışı bırakılacaktır.</string>
     <string name="multiplayer_more_info">Daha fazla bilgi</string>
     <string name="multiplayer_sharing">Paylaşım</string>
@@ -1175,7 +1175,7 @@
     <string name="multiplayer_manage">Yönet</string>
     <string name="multiplayer_leave_space">Alandan ayrıl</string>
     <string name="multiplayer_leave_space_warning_subtitle">Bu alan cihazlarınızdan kaldırılacak ve artık bu alana erişiminiz olmayacak.</string>
-    <string name="multiplayer_generate_invite_link_description">Alanı paylaşmak ve yeni üyeler eklemek için davet bağlantısı oluşturun</string>
+    <string name="multiplayer_generate_invite_link_description">Alan paylaşmak ve yeni üyeler eklemek için davet bağlantısı oluşturun</string>
     <string name="multiplayer_generate_invite_link">Davet bağlantısı oluştur</string>
     <string name="multiplayer_show_qr_code">Kare kodu göster</string>
     <string name="multiplayer_how_to_share_space">Bir alan nasıl paylaşılır?</string>
@@ -1405,7 +1405,6 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="gallery_experience_alert_title_error">Hay aksi!</string>
     <string name="gallery_experience_alert_button_space">Alan açın</string>
     <string name="gallery_experience_alert_button_error">Kapat</string>
-    <string name="three_dots_text_placeholder">...</string>
     <string name="membership_btn_join">Katıl</string>
     <string name="notifications_prompt_get_notified">Haberdar olun</string>
     <string name="notifications_prompt_secondary_button_text">Şimdi değil</string>
@@ -1486,6 +1485,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     </plurals>
     <string name="sync_status_anytype_network_connecting">Ağa bağlanılıyor...</string>
     <string name="sync_status_anytype_network_no_connecting">Bağlantı yok</string>
+    <string name="sync_status_anytype_sync_slow">Senkronizasyon yavaş olabilir. Uygulamayı güncelleyin.</string>
     <string name="sync_status_storage_limit_exceed">Depolama sınırına ulaşıldı</string>
     <string name="sync_status_incompatible_version">Uyumsuz sürüm</string>
     <string name="sync_status_network_error">Alana erişim yok</string>

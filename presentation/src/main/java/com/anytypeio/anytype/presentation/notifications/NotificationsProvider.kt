@@ -42,8 +42,11 @@ interface NotificationsProvider {
 
         @OptIn(ExperimentalCoroutinesApi::class)
         private fun observe(): Flow<List<Notification.Event>> {
-            return awaitAccountStartManager.isStarted().flatMapLatest { isStarted ->
-                if (isStarted) notificationsChannel.observe() else emptyFlow()
+            return awaitAccountStartManager.state().flatMapLatest { state ->
+                if (state is AwaitAccountStartManager.State.Started)
+                    notificationsChannel.observe()
+                else
+                    emptyFlow()
             }
         }
     }

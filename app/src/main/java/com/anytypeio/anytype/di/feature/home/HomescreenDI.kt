@@ -39,7 +39,6 @@ import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.workspace.NotificationsChannel
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.PayloadDelegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -280,7 +279,6 @@ interface HomeScreenDependencies : ComponentDependencies {
     fun urlBuilder(): UrlBuilder
     fun objectStore(): ObjectStore
     fun subscriptionEventChannel(): SubscriptionEventChannel
-    fun workspaceManager(): WorkspaceManager
     fun analytics(): Analytics
     fun eventChannel(): EventChannel
     fun dispatchers(): AppCoroutineDispatchers

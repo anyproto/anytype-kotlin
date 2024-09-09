@@ -8,18 +8,12 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.SyncAndP2PStatusChannel
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
 
 @Module
 object WorkspaceModule {
-
-    @JvmStatic
-    @Provides
-    @Singleton
-    fun manager(): WorkspaceManager = WorkspaceManager.DefaultWorkspaceManager()
 
     @JvmStatic
     @Provides

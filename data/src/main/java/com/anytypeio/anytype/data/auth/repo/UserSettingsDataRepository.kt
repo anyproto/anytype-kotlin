@@ -62,6 +62,8 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
 
     override suspend fun getCurrentSpace(): SpaceId? = cache.getCurrentSpace()
 
+    override suspend fun clearCurrentSpace() = cache.clearCurrentSpace()
+
     override suspend fun setLastOpenedObject(id: Id, space: SpaceId) {
         cache.setLastOpenedObject(id, space)
     }

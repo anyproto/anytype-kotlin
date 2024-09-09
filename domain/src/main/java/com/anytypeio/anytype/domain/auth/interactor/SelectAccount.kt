@@ -9,7 +9,6 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.platform.MetricsProvider
 import javax.inject.Inject
-import kotlinx.coroutines.delay
 
 /**
  * Use case for selecting user account.
@@ -42,7 +41,7 @@ class SelectAccount @Inject constructor(
             setCurrentAccount(setup.account.id)
         }
         configStorage.set(config = setup.config)
-        awaitAccountStartManager.setIsStarted(true)
+        awaitAccountStartManager.setState(AwaitAccountStartManager.State.Started)
         StartAccountResult(setup.config.analytics, setup.status)
     }
 

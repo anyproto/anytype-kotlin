@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 interface UserSettingsCache {
     suspend fun setCurrentSpace(space: SpaceId)
     suspend fun getCurrentSpace(): SpaceId?
+    suspend fun clearCurrentSpace()
 
     suspend fun setDefaultObjectType(space: SpaceId, type: TypeId)
     suspend fun getDefaultObjectType(space: SpaceId): TypeId?

@@ -12,7 +12,6 @@ import com.anytypeio.anytype.core_models.NotificationPayload
 import com.anytypeio.anytype.core_models.NotificationStatus
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
-import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
@@ -41,7 +40,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
@@ -306,16 +304,11 @@ class MainViewModel(
         deepLinkJobs.cancel()
         deepLinkJobs += viewModelScope.launch {
             awaitAccountStartManager
-                .isStarted()
-                .filter { isStarted -> isStarted }
+                .awaitStart()
                 .onEach { delay(NEW_DEEP_LINK_DELAY) }
                 .take(1)
-                .collect { isStarted ->
-                    if (isStarted) {
-                        proceedWithNewDeepLink(deeplink)
-                    } else {
-                        Timber.w("Account not started")
-                    }
+                .collect {
+                    proceedWithNewDeepLink(deeplink)
                 }
         }
     }

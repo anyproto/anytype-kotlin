@@ -23,6 +23,8 @@ import javax.inject.Inject
 
 class VaultFragment : BaseComposeFragment() {
 
+    // TODO handle deeplink
+
     @Inject
     lateinit var factory: VaultViewModel.Factory
 
@@ -55,7 +57,7 @@ class VaultFragment : BaseComposeFragment() {
         when (command) {
             is Command.EnterSpaceHomeScreen -> {
                 runCatching {
-                    findNavController().popBackStack()
+                    findNavController().navigate(R.id.openSpace)
                 }
             }
             is Command.CreateNewSpace -> {
@@ -86,5 +88,13 @@ class VaultFragment : BaseComposeFragment() {
 
     override fun releaseDependencies() {
         componentManager().vaultComponent.release()
+    }
+
+    companion object {
+        const val SHOW_MNEMONIC_KEY = "arg.vault-screen.show-mnemonic"
+        const val DEEP_LINK_KEY = "arg.vault-screen.deep-link"
+        fun args(deeplink: String?) : Bundle = bundleOf(
+            DEEP_LINK_KEY to deeplink
+        )
     }
 }

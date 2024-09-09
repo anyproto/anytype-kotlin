@@ -1406,7 +1406,6 @@ Please provide specific details of your needs here.</string>
     <string name="gallery_experience_alert_title_error">Ops!</string>
     <string name="gallery_experience_alert_button_space">Apri spazio</string>
     <string name="gallery_experience_alert_button_error">Chiudi</string>
-    <string name="three_dots_text_placeholder">...</string>
     <string name="membership_btn_join">Unisciti</string>
     <string name="notifications_prompt_get_notified">Ricevi notifiche</string>
     <string name="notifications_prompt_secondary_button_text">Non ora</string>
@@ -1487,6 +1486,7 @@ Please provide specific details of your needs here.</string>
     </plurals>
     <string name="sync_status_anytype_network_connecting">Connessione alla Rete...</string>
     <string name="sync_status_anytype_network_no_connecting">Nessuna connessione</string>
+    <string name="sync_status_anytype_sync_slow">La sincronizzazione potrebbe essere lenta. Aggiornare l\'app.</string>
     <string name="sync_status_storage_limit_exceed">Limite di archiviazione raggiunto</string>
     <string name="sync_status_incompatible_version">Incompatible version</string>
     <string name="sync_status_network_error">Nessun accesso allo spazio</string>

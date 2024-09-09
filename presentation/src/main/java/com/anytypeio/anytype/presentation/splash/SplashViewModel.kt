@@ -29,6 +29,7 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.spaces.GetLastOpenedSpace
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
@@ -56,7 +57,8 @@ class SplashViewModel(
     private val localeProvider: LocaleProvider,
     private val spaceManager: SpaceManager,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val globalSubscriptionManager: GlobalSubscriptionManager
+    private val globalSubscriptionManager: GlobalSubscriptionManager,
+    private val getLastOpenedSpace: GetLastOpenedSpace
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val state = MutableStateFlow<ViewState<Any>>(ViewState.Init)
@@ -246,7 +248,12 @@ class SplashViewModel(
     }
 
     private suspend fun proceedWithDashboardNavigation(deeplink: String? = null) {
-        commands.emit(Command.NavigateToDashboard(deeplink))
+        val space = getLastOpenedSpace.async(Unit).getOrNull()
+        if (space != null) {
+            commands.emit(Command.NavigateToDashboard(deeplink))
+        } else {
+            commands.emit(Command.NavigateToVault(deeplink))
+        }
     }
 
     private fun updateUserProps(id: String) {
@@ -275,7 +282,7 @@ class SplashViewModel(
 
     sealed class Command {
         data class NavigateToDashboard(val deeplink: String? = null) : Command()
-        data object NavigateToWidgets : Command()
+        data class NavigateToVault(val deeplink: String? = null) : Command()
         data object NavigateToAuthStart : Command()
         data object NavigateToMigration: Command()
         data object CheckAppStartIntent : Command()

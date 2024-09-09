@@ -17,25 +17,22 @@ class ChatContainer @Inject constructor(
     private val channel: ChatEventChannel
 ) {
 
-    fun watch(chat: Id): Flow<List<Chat.Message>> {
-        val flow = flow {
-            val initial = repo.subscribeLastChatMessages(
-                command = Command.ChatCommand.SubscribeLastMessages(
-                    chat = chat,
-                    limit = DEFAULT_LAST_MESSAGE_COUNT
-                )
-            ).messages
-
-            emitAll(
-                channel.observe(chat = chat).scan(initial) { state, events ->
-                    state.reduce(events)
-                }.catch {
-                    emit(emptyList())
-                }
+    fun watch(chat: Id): Flow<List<Chat.Message>> = flow {
+        val initial = repo.subscribeLastChatMessages(
+            command = Command.ChatCommand.SubscribeLastMessages(
+                chat = chat,
+                limit = DEFAULT_LAST_MESSAGE_COUNT
             )
+        ).messages
 
-        }
-        return flow
+        emitAll(
+            channel.observe(chat = chat).scan(initial) { state, events ->
+                state.reduce(events)
+            }.catch {
+                emit(emptyList())
+            }
+        )
+
     }
 
     fun List<Chat.Message>.reduce(events: List<Event.Command.Chats>): List<Chat.Message> {

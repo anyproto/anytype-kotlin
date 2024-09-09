@@ -31,7 +31,6 @@ class ChatContainer @Inject constructor(
                 emit(emptyList())
             }
         )
-
     }
 
     fun List<Chat.Message>.reduce(events: List<Event.Command.Chats>): List<Chat.Message> {

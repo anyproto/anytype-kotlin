@@ -82,23 +82,6 @@ class DiscussionViewModel(
                 )
             )
         }
-//        messages.value = buildList {
-//            add(
-//                DiscussionView.Message(
-//                    id = {size.inc()}.toString(),
-//                    author = "Me",
-//                    timestamp = System.currentTimeMillis(),
-//                    msg = msg,
-//                    attachments = attachments.value.map { a ->
-//                        DiscussionView.Message.Attachment(
-//                            item = a
-//                        )
-//                    }
-//                )
-//            )
-//            addAll(messages.value)
-//            attachments.value = emptyList()
-//        }
     }
 
     fun onTitleChanged(input: String) {

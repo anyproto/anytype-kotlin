@@ -320,6 +320,7 @@ class ChatContainerTest {
         }
     }
 
+    // TODO move to test-utils
     fun StubChatMessage(
         id: Id = MockDataFactory.randomUuid(),
         order: Id = MockDataFactory.randomUuid(),
@@ -337,6 +338,7 @@ class ChatContainerTest {
         content = content
     )
 
+    // TODO move to test-utils
     fun StubChatMessageContent(
         text: String,
         style: TextStyle = TextStyle.P,

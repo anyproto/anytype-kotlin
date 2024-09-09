@@ -23,10 +23,9 @@ class ChatContainer @Inject constructor(
                 chat = chat,
                 limit = DEFAULT_LAST_MESSAGE_COUNT
             )
-        ).messages
-
+        )
         emitAll(
-            channel.observe(chat = chat).scan(initial) { state, events ->
+            channel.observe(chat = chat).scan(initial.messages) { state, events ->
                 state.reduce(events)
             }.catch {
                 emit(emptyList())

@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.history
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
@@ -13,7 +12,6 @@ import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.core_models.history.Version
 import com.anytypeio.anytype.core_models.isDataView
-import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TimeInSeconds
@@ -25,10 +23,7 @@ import com.anytypeio.anytype.domain.history.ShowVersion
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.objects.DefaultObjectStore
-import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.domain.search.DataViewState
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.editor.Editor.Mode
 import com.anytypeio.anytype.presentation.editor.EditorViewModel.Companion.INITIAL_INDENT
@@ -43,19 +38,12 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsVersionHistoryR
 import com.anytypeio.anytype.presentation.history.VersionHistoryGroup.GroupTitle
 import com.anytypeio.anytype.presentation.mapper.toViewerColumns
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.objects.isCreateObjectAllowed
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.getRelationFormat
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
-import com.anytypeio.anytype.presentation.sets.DataViewViewState
-import com.anytypeio.anytype.presentation.sets.dataViewState
-import com.anytypeio.anytype.presentation.sets.featuredRelations
-import com.anytypeio.anytype.presentation.sets.header
-import com.anytypeio.anytype.presentation.sets.isEmpty
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
-import com.anytypeio.anytype.presentation.sets.toViewersView
 import com.anytypeio.anytype.presentation.sets.viewerByIdOrFirst
 import java.time.Instant
 import java.time.LocalDate

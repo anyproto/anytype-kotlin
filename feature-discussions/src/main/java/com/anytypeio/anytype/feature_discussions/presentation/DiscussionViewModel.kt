@@ -31,6 +31,8 @@ class DiscussionViewModel(
     val messages = MutableStateFlow<List<DiscussionView.Message>>(emptyList())
     val attachments = MutableStateFlow<List<GlobalSearchItemView>>(emptyList())
 
+    lateinit var chat: Id
+
     init {
         viewModelScope.launch {
             openObject.async(
@@ -55,6 +57,7 @@ class DiscussionViewModel(
     private suspend fun proceedWithObservingChatMessages(root: ObjectWrapper.Basic) {
         val chat = root.getValue<Id>(Relations.CHAT_ID)
         if (chat != null) {
+            this.chat = chat
             chatContainer
                 .watch(chat)
                 .onEach { Timber.d("Got new update: $it") }
@@ -62,11 +65,11 @@ class DiscussionViewModel(
                     messages.value = it.map { msg ->
                         DiscussionView.Message(
                             id = msg.id,
-                            timestamp = msg.timestamp,
+                            timestamp = msg.timestamp * 1000,
                             author = msg.creator,
                             msg = msg.content?.text.orEmpty()
                         )
-                    }
+                    }.reversed()
                 }
         } else {
             Timber.w("Chat ID was missing in chat smart-object details")
@@ -78,7 +81,7 @@ class DiscussionViewModel(
         viewModelScope.launch {
             addChatMessage.async(
                 params = Command.ChatCommand.AddMessage(
-                    chat = params.ctx,
+                    chat = chat,
                     message = Chat.Message(
                         id = "",
                         timestamp = 0L,

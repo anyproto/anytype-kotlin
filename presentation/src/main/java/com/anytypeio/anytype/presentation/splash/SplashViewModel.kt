@@ -165,8 +165,7 @@ class SplashViewModel(
             val params = CreateObjectByTypeAndTemplate.Param(
                 typeKey = TypeKey(type),
                 space = space,
-                keys = ObjectSearchConstants.defaultKeysObjectType,
-                internalFlags = listOf(InternalFlags.ShouldSelectTemplate)
+                keys = ObjectSearchConstants.defaultKeysObjectType
             )
             createObjectByTypeAndTemplate.async(params).fold(
                 onFailure = { e ->

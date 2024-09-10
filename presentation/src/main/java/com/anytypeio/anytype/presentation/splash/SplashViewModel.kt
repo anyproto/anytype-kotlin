@@ -55,7 +55,6 @@ class SplashViewModel(
     private val launchWallet: LaunchWallet,
     private val launchAccount: LaunchAccount,
     private val getLastOpenedObject: GetLastOpenedObject,
-    private val createObject: CreateObject,
     private val crashReporter: CrashReporter,
     private val localeProvider: LocaleProvider,
     private val spaceManager: SpaceManager,

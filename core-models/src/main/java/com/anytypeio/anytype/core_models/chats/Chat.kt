@@ -5,6 +5,9 @@ import com.anytypeio.anytype.core_models.Id
 
 sealed class Chat {
 
+    /**
+     * @property [id] message id
+     */
     data class Message(
         val id: Id,
         val order: Id,
@@ -29,6 +32,28 @@ sealed class Chat {
                 data object Image: Type()
                 data object Link: Type()
             }
+        }
+
+        companion object {
+            /**
+             * New message builder.
+             */
+            fun new(
+                text: String
+            ) : Message = Chat.Message(
+                id = "",
+                timestamp = 0L,
+                attachments = emptyList(),
+                reactions = emptyMap(),
+                creator = "",
+                replyToMessageId = "",
+                content = Chat.Message.Content(
+                    text = text,
+                    marks = emptyList(),
+                    style = Block.Content.Text.Style.P
+                ),
+                order = ""
+            )
         }
     }
 }

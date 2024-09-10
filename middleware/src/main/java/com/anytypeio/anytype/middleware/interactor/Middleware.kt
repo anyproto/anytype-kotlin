@@ -2781,6 +2781,14 @@ class Middleware @Inject constructor(
         )
     }
 
+    @Throws
+    fun chatUnsubscribe(chat: Id) {
+        val request = Rpc.Chat.Unsubscribe.Request(chatObjectId = chat)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.chatUnsubscribe(request) }
+        logResponseIfDebug(response, time)
+    }
+
     private fun logRequestIfDebug(request: Any) {
         if (BuildConfig.DEBUG) {
             logger.logRequest(request).also {

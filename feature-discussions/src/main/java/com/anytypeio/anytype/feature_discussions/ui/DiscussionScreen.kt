@@ -93,7 +93,7 @@ import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.widgets.GlobalSearchObjectIcon
-import com.anytypeio.anytype.core_utils.const.DateConst.DEFAULT_DATE_FORMAT
+import com.anytypeio.anytype.core_utils.const.DateConst.TIME_H24
 import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
 import com.anytypeio.anytype.feature_discussions.R
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionView
@@ -604,7 +604,7 @@ fun Bubble(
             )
             Text(
                 text = timestamp.formatTimeInMillis(
-                    DEFAULT_DATE_FORMAT
+                    TIME_H24
                 ),
                 style = Caption1Regular,
                 color = colorResource(id = R.color.text_secondary),

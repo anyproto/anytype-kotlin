@@ -8,7 +8,9 @@ import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.di.feature.EditorSubComponent.Builder
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.chats.ChatEventChannel
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModelFactory
@@ -60,4 +62,6 @@ interface DiscussionComponentDependencies : ComponentDependencies {
     fun eventProxy(): EventProxy
     fun featureToggles(): FeatureToggles
     fun userSettings(): UserSettingsRepository
+    fun chatEventChannel(): ChatEventChannel
+    fun logger(): Logger
 }

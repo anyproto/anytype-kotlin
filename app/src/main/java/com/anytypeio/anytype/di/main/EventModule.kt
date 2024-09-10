@@ -3,6 +3,7 @@ package com.anytypeio.anytype.di.main
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.data.auth.account.AccountStatusDataChannel
 import com.anytypeio.anytype.data.auth.account.AccountStatusRemoteChannel
+import com.anytypeio.anytype.data.auth.event.ChatEventRemoteChannel
 import com.anytypeio.anytype.data.auth.event.EventDataChannel
 import com.anytypeio.anytype.data.auth.event.EventRemoteChannel
 import com.anytypeio.anytype.data.auth.event.FileLimitsDataChannel
@@ -12,19 +13,21 @@ import com.anytypeio.anytype.data.auth.event.SubscriptionEventRemoteChannel
 import com.anytypeio.anytype.data.auth.status.SyncAndP2PStatusEventsStore
 import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
 import com.anytypeio.anytype.domain.account.AccountStatusChannel
+import com.anytypeio.anytype.domain.chats.ChatEventChannel
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.interactor.AccountStatusMiddlewareChannel
+import com.anytypeio.anytype.middleware.interactor.EventHandler
 import com.anytypeio.anytype.middleware.interactor.EventHandlerChannel
 import com.anytypeio.anytype.middleware.interactor.EventHandlerChannelImpl
-import com.anytypeio.anytype.middleware.interactor.EventHandler
 import com.anytypeio.anytype.middleware.interactor.FileLimitsMiddlewareChannel
 import com.anytypeio.anytype.middleware.interactor.MiddlewareEventChannel
 import com.anytypeio.anytype.middleware.interactor.MiddlewareProtobufLogger
 import com.anytypeio.anytype.middleware.interactor.MiddlewareSubscriptionEventChannel
 import com.anytypeio.anytype.middleware.interactor.SyncAndP2PStatusEventsStoreImpl
+import com.anytypeio.anytype.middleware.interactor.events.ChatEventMiddlewareChannel
 import com.anytypeio.anytype.presentation.common.PayloadDelegator
 import dagger.Binds
 import dagger.Module
@@ -148,6 +151,35 @@ object EventModule {
     @Provides
     @Singleton
     fun provideDefaultEventChannel(): EventHandlerChannel = EventHandlerChannelImpl()
+
+    //region Chats
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideChatEventChannel(
+        channel: ChatEventRemoteChannel.Default
+    ): ChatEventChannel = channel
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideChatEventDataChannel(
+        remote: ChatEventRemoteChannel
+    ): ChatEventRemoteChannel.Default = ChatEventRemoteChannel.Default(
+        channel = remote
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideChatEventMWChannel(
+        proxy: EventProxy
+    ): ChatEventRemoteChannel = ChatEventMiddlewareChannel(
+        proxy
+    )
+
+    //endregion
 
     @Module
     interface Bindings {

@@ -1030,4 +1030,8 @@ class BlockMiddleware(
     ): Command.ChatCommand.SubscribeLastMessages.Response {
         return middleware.chatSubscribeLastMessages(command)
     }
+
+    override suspend fun unsubscribeChat(chat: Id) {
+        return middleware.chatUnsubscribe(chat = chat)
+    }
 }

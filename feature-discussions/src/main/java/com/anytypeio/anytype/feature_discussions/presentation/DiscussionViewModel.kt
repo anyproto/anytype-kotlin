@@ -7,6 +7,8 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.base.onFailure
+import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.chats.AddChatMessage
 import com.anytypeio.anytype.domain.chats.ChatContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
@@ -15,6 +17,8 @@ import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -32,8 +36,10 @@ class DiscussionViewModel(
     val name = MutableStateFlow<String?>(null)
     val messages = MutableStateFlow<List<DiscussionView.Message>>(emptyList())
     val attachments = MutableStateFlow<List<GlobalSearchItemView>>(emptyList())
+    val commands = MutableSharedFlow<UXCommand>()
 
-    lateinit var chat: Id
+    // TODO naive implementation; switch to state
+    private lateinit var chat: Id
 
     init {
         viewModelScope.launch {
@@ -93,7 +99,12 @@ class DiscussionViewModel(
                     chat = chat,
                     message = Chat.Message.new(msg)
                 )
-            )
+            ).onSuccess {
+                delay(JUMP_TO_BOTTOM_DELAY)
+                commands.emit(UXCommand.JumpToBottom)
+            }.onFailure {
+                Timber.e(it, "Error while adding message")
+            }
         }
     }
 
@@ -118,5 +129,16 @@ class DiscussionViewModel(
 
     fun onClearAttachmentClicked() {
         attachments.value = emptyList()
+    }
+
+    sealed class UXCommand {
+        data object JumpToBottom: UXCommand()
+    }
+
+    companion object {
+        /**
+         * Delay before jump-to-bottom after adding new message to the chat.
+         */
+        const val JUMP_TO_BOTTOM_DELAY = 150L
     }
 }

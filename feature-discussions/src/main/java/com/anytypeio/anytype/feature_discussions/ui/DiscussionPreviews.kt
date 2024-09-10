@@ -67,7 +67,8 @@ fun DiscussionScreenPreview() {
         onTitleChanged = {},
         onAttachClicked = {},
         attachments = emptyList(),
-        onClearAttachmentClicked = {}
+        onClearAttachmentClicked = {},
+        lazyListState = LazyListState()
     )
 }
 

@@ -43,6 +43,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -97,6 +98,7 @@ import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
 import com.anytypeio.anytype.feature_discussions.R
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionView
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
+import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel.UXCommand
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import kotlinx.coroutines.launch
@@ -122,6 +124,7 @@ fun DiscussionScreenWrapper(
                         color = colorResource(id = R.color.background_primary)
                     )
             ) {
+                val lazyListState = rememberLazyListState()
                 DiscussionScreen(
                     title = vm.name.collectAsState().value,
                     messages = vm.messages.collectAsState().value,
@@ -129,8 +132,18 @@ fun DiscussionScreenWrapper(
                     onMessageSent = vm::onMessageSent,
                     onTitleChanged = vm::onTitleChanged,
                     onAttachClicked = onAttachClicked,
-                    onClearAttachmentClicked = vm::onClearAttachmentClicked
+                    onClearAttachmentClicked = vm::onClearAttachmentClicked,
+                    lazyListState = lazyListState
                 )
+                LaunchedEffect(Unit) {
+                    vm.commands.collect { command ->
+                        when(command) {
+                            UXCommand.JumpToBottom -> {
+                                lazyListState.animateScrollToItem(0)
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -141,6 +154,7 @@ fun DiscussionScreenWrapper(
  */
 @Composable
 fun DiscussionScreen(
+    lazyListState: LazyListState,
     title: String?,
     messages: List<DiscussionView.Message>,
     attachments: List<GlobalSearchItemView>,
@@ -149,7 +163,6 @@ fun DiscussionScreen(
     onAttachClicked: () -> Unit,
     onClearAttachmentClicked: () -> Unit
 ) {
-    val lazyListState = rememberLazyListState()
     var isTitleFocused by remember { mutableStateOf(false) }
     val isHeaderVisible by remember {
         derivedStateOf {

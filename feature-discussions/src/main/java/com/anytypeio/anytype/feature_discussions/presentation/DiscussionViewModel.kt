@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.feature_discussions.presentation
 
 import androidx.lifecycle.viewModelScope
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -82,20 +81,7 @@ class DiscussionViewModel(
             addChatMessage.async(
                 params = Command.ChatCommand.AddMessage(
                     chat = chat,
-                    message = Chat.Message(
-                        id = "",
-                        timestamp = 0L,
-                        attachments = emptyList(),
-                        reactions = emptyMap(),
-                        creator = "",
-                        replyToMessageId = "",
-                        content = Chat.Message.Content(
-                            text = msg,
-                            marks = emptyList(),
-                            style = Block.Content.Text.Style.P
-                        ),
-                        order = ""
-                    )
+                    message = Chat.Message.new(msg)
                 )
             )
         }

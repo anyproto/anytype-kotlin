@@ -496,7 +496,7 @@ fun Messages(
                         .align(Alignment.Bottom)
                 ) {
                     Text(
-                        text = msg.author.ifEmpty { stringResource(id = R.string.u) },
+                        text = msg.author.take(1).uppercase().ifEmpty { stringResource(id = R.string.u) },
                         modifier = Modifier.align(Alignment.Center),
                         style = TextStyle(
                             fontSize = 11.sp,

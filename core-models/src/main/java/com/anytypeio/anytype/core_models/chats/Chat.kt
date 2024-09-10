@@ -35,6 +35,9 @@ sealed class Chat {
         }
 
         companion object {
+            /**
+             * New message builder.
+             */
             fun new(
                 text: String
             ) : Message = Chat.Message(

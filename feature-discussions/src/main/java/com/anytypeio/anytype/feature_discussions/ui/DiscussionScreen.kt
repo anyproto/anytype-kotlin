@@ -38,7 +38,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -116,10 +115,12 @@ fun DiscussionScreenWrapper(
         composable(
             route = "discussions"
         ) {
-            Surface(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(color = colorResource(id = R.color.background_primary))
+                    .background(
+                        color = colorResource(id = R.color.background_primary)
+                    )
             ) {
                 DiscussionScreen(
                     title = vm.name.collectAsState().value,

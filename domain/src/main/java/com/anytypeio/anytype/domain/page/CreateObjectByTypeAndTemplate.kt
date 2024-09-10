@@ -43,7 +43,6 @@ class CreateObjectByTypeAndTemplate @Inject constructor(
     private suspend fun searchObjectType(params: Param): ObjectWrapper.Basic? {
         try {
             val searchCommand = createSearchCommand(params)
-            logger.logInfo("999Searching object type with command: $searchCommand")
             return repo.searchObjectWithMeta(searchCommand).firstOrNull()?.wrapper
         } catch (e: Exception) {
             throw RuntimeException("Failed to search object type", e)
@@ -61,8 +60,8 @@ class CreateObjectByTypeAndTemplate @Inject constructor(
             filters = listOf(
                 DVFilter(
                     relation = Relations.UNIQUE_KEY,
-                    condition = DVFilterCondition.IN,
-                    value = listOf(params.typeKey.key)
+                    condition = DVFilterCondition.EQUAL,
+                    value = params.typeKey.key
                 ),
                 DVFilter(
                     relation = Relations.IS_ARCHIVED,

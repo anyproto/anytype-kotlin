@@ -11,6 +11,7 @@ import com.anytypeio.anytype.analytics.base.updateUserProperties
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds.SET
 import com.anytypeio.anytype.core_models.ObjectType
@@ -29,6 +30,7 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.page.CreateObjectByTypeAndTemplate
 import com.anytypeio.anytype.domain.spaces.GetLastOpenedSpace
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -36,6 +38,7 @@ import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -58,7 +61,8 @@ class SplashViewModel(
     private val spaceManager: SpaceManager,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val globalSubscriptionManager: GlobalSubscriptionManager,
-    private val getLastOpenedSpace: GetLastOpenedSpace
+    private val getLastOpenedSpace: GetLastOpenedSpace,
+    private val createObjectByTypeAndTemplate: CreateObjectByTypeAndTemplate
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val state = MutableStateFlow<ViewState<Any>>(ViewState.Init)
@@ -154,13 +158,21 @@ class SplashViewModel(
     }
 
     fun onIntentCreateNewObject(type: Key) {
+        Timber.d("onIntentCreateNewObject, type:[$type]")
         viewModelScope.launch {
             val startTime = System.currentTimeMillis()
-            createObject.execute(
-                CreateObject.Param(type = TypeKey(type))
-            ).fold(
+            val spaceId = spaceManager.get()
+            val space = SpaceId(spaceId)
+            val params = CreateObjectByTypeAndTemplate.Param(
+                typeKey = TypeKey(type),
+                space = space,
+                keys = ObjectSearchConstants.defaultKeysObjectType,
+                internalFlags = listOf(InternalFlags.ShouldSelectTemplate)
+            )
+            createObjectByTypeAndTemplate.async(params).fold(
                 onFailure = { e ->
                     Timber.e(e, "Error while creating a new object with type:$type")
+                    commands.emit(Command.Toast(e.message ?: "Error while creating object"))
                     proceedWithNavigation()
                 },
                 onSuccess = { result ->
@@ -170,22 +182,21 @@ class SplashViewModel(
                         route = EventsDictionary.Routes.home,
                         startTime = startTime,
                         view = EventsDictionary.View.viewHome,
-                        spaceParams = provideParams(spaceManager.get())
+                        spaceParams = provideParams(spaceId)
                     )
                     val target = result.objectId
-                    val space = requireNotNull(result.obj.spaceId)
                     if (type == COLLECTION || type == SET) {
                         commands.emit(
                             Command.NavigateToObjectSet(
                                 id = target,
-                                space = space
+                                space = spaceId
                             )
                         )
                     } else {
                         commands.emit(
                             Command.NavigateToObject(
                                 id = target,
-                                space = space
+                                space = spaceId
                             )
                         )
                     }
@@ -199,7 +210,7 @@ class SplashViewModel(
     }
 
     fun onDeepLinkLaunch(deeplink: String) {
-        Timber.d("onDeepLinkLaunch")
+        Timber.d("onDeepLinkLaunch, deeplink:[$deeplink]")
         viewModelScope.launch {
             proceedWithDashboardNavigation(deeplink)
         }
@@ -288,6 +299,7 @@ class SplashViewModel(
         data object CheckAppStartIntent : Command()
         data class NavigateToObject(val id: Id, val space: Id) : Command()
         data class NavigateToObjectSet(val id: Id, val space: Id) : Command()
+        data class Toast(val message: String) : Command()
     }
 
     companion object {

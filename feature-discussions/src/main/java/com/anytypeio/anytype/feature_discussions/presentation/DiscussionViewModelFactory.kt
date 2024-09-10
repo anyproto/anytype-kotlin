@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.domain.chats.AddChatMessage
 import com.anytypeio.anytype.domain.chats.ChatContainer
+import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -14,7 +15,8 @@ class DiscussionViewModelFactory @Inject constructor(
     private val setObjectDetails: SetObjectDetails,
     private val openObject: OpenObject,
     private val chatContainer: ChatContainer,
-    private val addChatMessage: AddChatMessage
+    private val addChatMessage: AddChatMessage,
+    private val members: ActiveSpaceMemberSubscriptionContainer
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T = DiscussionViewModel(
@@ -22,6 +24,7 @@ class DiscussionViewModelFactory @Inject constructor(
         setObjectDetails = setObjectDetails,
         openObject = openObject,
         chatContainer = chatContainer,
-        addChatMessage = addChatMessage
+        addChatMessage = addChatMessage,
+        members = members
     ) as T
 }

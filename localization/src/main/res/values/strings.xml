@@ -407,7 +407,7 @@
     <string name="objects">Objects</string>
     <string name="web_pages">Web pages</string>
     <string name="select_files">Select files</string>
-    <string name="u">U</string>
+    <string name="u" translatable="false">U</string>
     <string name="enter_text">Enter text</string>
     <string name="enter_number">Enter number</string>
     <string name="enter_date">Enter date</string>

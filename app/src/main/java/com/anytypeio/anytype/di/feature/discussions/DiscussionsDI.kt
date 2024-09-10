@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.chats.ChatEventChannel
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModelFactory
 import com.anytypeio.anytype.middleware.EventProxy
@@ -64,4 +65,5 @@ interface DiscussionComponentDependencies : ComponentDependencies {
     fun userSettings(): UserSettingsRepository
     fun chatEventChannel(): ChatEventChannel
     fun logger(): Logger
+    fun members(): ActiveSpaceMemberSubscriptionContainer
 }

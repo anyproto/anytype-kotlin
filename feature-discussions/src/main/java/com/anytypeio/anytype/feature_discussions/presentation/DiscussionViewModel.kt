@@ -9,6 +9,8 @@ import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.chats.AddChatMessage
 import com.anytypeio.anytype.domain.chats.ChatContainer
+import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer.Store
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -23,7 +25,8 @@ class DiscussionViewModel(
     private val setObjectDetails: SetObjectDetails,
     private val openObject: OpenObject,
     private val chatContainer: ChatContainer,
-    private val addChatMessage: AddChatMessage
+    private val addChatMessage: AddChatMessage,
+    private val members: ActiveSpaceMemberSubscriptionContainer
 ) : BaseViewModel() {
 
     val name = MutableStateFlow<String?>(null)
@@ -65,8 +68,15 @@ class DiscussionViewModel(
                         DiscussionView.Message(
                             id = msg.id,
                             timestamp = msg.timestamp * 1000,
-                            author = msg.creator,
-                            msg = msg.content?.text.orEmpty()
+                            msg = msg.content?.text.orEmpty(),
+                            author = members.get().let { store ->
+                                when(store) {
+                                    is Store.Data -> store.members.find { member ->
+                                        member.identity == msg.creator
+                                    }?.name ?: msg.creator.takeLast(5)
+                                    is Store.Empty -> msg.creator.takeLast(5)
+                                }
+                            }
                         )
                     }.reversed()
                 }

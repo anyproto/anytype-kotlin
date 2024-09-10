@@ -27,79 +27,61 @@ class CreateObjectByTypeAndTemplate @Inject constructor(
 
     override suspend fun doWork(params: Param): Result {
         val wrapper = searchObjectType(params)
+        logger.logInfo("CreateObjectByTypeAndTemplate, search object type:[$wrapper]")
         return wrapper?.let {
-            if (it.isValid) {
-                createObjectFromWrapper(
-                    wrapper = it,
-                    params = params
-                )
-            } else {
-                throw RuntimeException("Invalid object wrapper")
-            }
+            createObject(
+                typeKey = params.typeKey,
+                template = it.defaultTemplateId,
+                internalFlags = params.internalFlags,
+                prefilled = params.prefilled,
+                space = params.space
+            )
         } ?: throw RuntimeException("Object type not found")
     }
 
     @Throws(RuntimeException::class)
-    private suspend fun searchObjectType(params: Param): ObjectWrapper.Basic? {
+    private suspend fun searchObjectType(params: Param): ObjectWrapper.Type? {
         try {
-            val searchCommand = createSearchCommand(params)
-            return repo.searchObjectWithMeta(searchCommand).firstOrNull()?.wrapper
+            val struct = repo.searchObjects(
+                limit = 1,
+                keys = params.keys,
+                sorts = params.sorts,
+                filters = listOf(
+                    DVFilter(
+                        relation = Relations.UNIQUE_KEY,
+                        condition = DVFilterCondition.EQUAL,
+                        value = params.typeKey.key
+                    ),
+                    DVFilter(
+                        relation = Relations.IS_ARCHIVED,
+                        condition = DVFilterCondition.NOT_EQUAL,
+                        value = true
+                    ),
+                    DVFilter(
+                        relation = Relations.IS_HIDDEN,
+                        condition = DVFilterCondition.NOT_EQUAL,
+                        value = true
+                    ),
+                    DVFilter(
+                        relation = Relations.IS_DELETED,
+                        condition = DVFilterCondition.NOT_EQUAL,
+                        value = true
+                    ),
+                    DVFilter(
+                        relation = Relations.SPACE_ID,
+                        condition = DVFilterCondition.IN,
+                        value = listOf(params.space.id)
+                    )
+                ),
+            )
+            return if (struct.isNotEmpty()) {
+                ObjectWrapper.Type(struct.first())
+            } else {
+                null
+            }
         } catch (e: Exception) {
             throw RuntimeException("Failed to search object type", e)
         }
-    }
-
-    private fun createSearchCommand(params: Param): Command.SearchWithMeta {
-        return Command.SearchWithMeta(
-            query = EMPTY_QUERY,
-            limit = 1,
-            offset = 0,
-            keys = params.keys,
-            space = params.space,
-            sorts = params.sorts,
-            filters = listOf(
-                DVFilter(
-                    relation = Relations.UNIQUE_KEY,
-                    condition = DVFilterCondition.EQUAL,
-                    value = params.typeKey.key
-                ),
-                DVFilter(
-                    relation = Relations.IS_ARCHIVED,
-                    condition = DVFilterCondition.NOT_EQUAL,
-                    value = true
-                ),
-                DVFilter(
-                    relation = Relations.IS_HIDDEN,
-                    condition = DVFilterCondition.NOT_EQUAL,
-                    value = true
-                ),
-                DVFilter(
-                    relation = Relations.IS_DELETED,
-                    condition = DVFilterCondition.NOT_EQUAL,
-                    value = true
-                ),
-                DVFilter(
-                    relation = Relations.SPACE_ID,
-                    condition = DVFilterCondition.IN,
-                    value = listOf(params.space.id)
-                )
-            ),
-            withMeta = false,
-            withMetaRelationDetails = false
-        )
-    }
-
-    private suspend fun createObjectFromWrapper(wrapper: ObjectWrapper, params: Param): Result {
-        val objType = ObjectWrapper.Type(wrapper.map)
-        val defaultTemplateId = objType.defaultTemplateId
-
-        return createObject(
-            typeKey = params.typeKey,
-            template = defaultTemplateId,
-            internalFlags = params.internalFlags,
-            prefilled = params.prefilled,
-            space = params.space
-        )
     }
 
     private suspend fun createObject(
@@ -145,8 +127,4 @@ class CreateObjectByTypeAndTemplate @Inject constructor(
         val typeKey: TypeKey,
         val obj: ObjectWrapper.Basic
     )
-
-    companion object {
-        const val EMPTY_QUERY = ""
-    }
 }

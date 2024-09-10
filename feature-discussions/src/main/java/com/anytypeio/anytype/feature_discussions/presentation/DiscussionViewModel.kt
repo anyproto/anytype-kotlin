@@ -3,6 +3,7 @@ package com.anytypeio.anytype.feature_discussions.presentation
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.chats.Chat
@@ -14,6 +15,7 @@ import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -40,22 +42,34 @@ class DiscussionViewModel(
             ).fold(
                 onSuccess = { obj ->
                     val root = ObjectWrapper.Basic(obj.details[params.ctx].orEmpty())
-                    Timber.d("DROID-2635 Opened object: $root")
                     name.value = root.name
+                    proceedWithObservingChatMessages(root)
+                },
+                onFailure = {
+                    Timber.e(it, "Error while opening chat object")
                 }
             )
-            chatContainer.watch(
-                params.ctx
-            ).collect {
-                messages.value = it.map { msg ->
-                    DiscussionView.Message(
-                        id = msg.id,
-                        timestamp = msg.timestamp,
-                        author = msg.creator,
-                        msg = msg.content?.text.orEmpty()
-                    )
+        }
+    }
+
+    private suspend fun proceedWithObservingChatMessages(root: ObjectWrapper.Basic) {
+        val chat = root.getValue<Id>(Relations.CHAT_ID)
+        if (chat != null) {
+            chatContainer
+                .watch(chat)
+                .onEach { Timber.d("Got new update: $it") }
+                .collect {
+                    messages.value = it.map { msg ->
+                        DiscussionView.Message(
+                            id = msg.id,
+                            timestamp = msg.timestamp,
+                            author = msg.creator,
+                            msg = msg.content?.text.orEmpty()
+                        )
+                    }
                 }
-            }
+        } else {
+            Timber.w("Chat ID was missing in chat smart-object details")
         }
     }
 

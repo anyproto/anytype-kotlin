@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.debugging.Logger
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -14,7 +15,8 @@ import kotlinx.coroutines.flow.scan
 
 class ChatContainer @Inject constructor(
     private val repo: BlockRepository,
-    private val channel: ChatEventChannel
+    private val channel: ChatEventChannel,
+    private val logger: Logger
 ) {
 
     fun watch(chat: Id): Flow<List<Chat.Message>> = flow {
@@ -30,6 +32,7 @@ class ChatContainer @Inject constructor(
             }
         )
     }.catch {
+        logger.logException(it)
         emit(emptyList())
     }
 

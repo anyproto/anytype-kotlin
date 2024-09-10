@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.common.DefaultCoroutineTestRule
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlinx.coroutines.delay
@@ -41,6 +42,9 @@ class ChatContainerTest {
     @Mock
     lateinit var repo: BlockRepository
 
+    @Mock
+    lateinit var logger: Logger
+
     private val givenChatID = MockDataFactory.randomUuid()
 
     @Before
@@ -53,7 +57,8 @@ class ChatContainerTest {
 
         val container = ChatContainer(
             repo = repo,
-            channel = channel
+            channel = channel,
+            logger = logger
         )
 
         val msg = StubChatMessage(
@@ -117,7 +122,8 @@ class ChatContainerTest {
 
         val container = ChatContainer(
             repo = repo,
-            channel = channel
+            channel = channel,
+            logger = logger
         )
 
         val initialMsg = StubChatMessage(
@@ -179,7 +185,8 @@ class ChatContainerTest {
 
         val container = ChatContainer(
             repo = repo,
-            channel = channel
+            channel = channel,
+            logger = logger
         )
 
         val initialMsg = StubChatMessage(
@@ -250,7 +257,8 @@ class ChatContainerTest {
 
         val container = ChatContainer(
             repo = repo,
-            channel = channel
+            channel = channel,
+            logger = logger
         )
 
         val initialMsg = StubChatMessage(

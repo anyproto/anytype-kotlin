@@ -88,13 +88,6 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                         R.id.action_splashScreen_to_homeScreen,
                         args = HomeScreenFragment.args(command.deeplink)
                     )
-                    findNavController().navigate(
-                        R.id.discussionScreen,
-                        args = DiscussionFragment.args(
-                            space = "fake-space-id",
-                            ctx = "fake-ctx"
-                        )
-                    )
                 } catch (e: Exception) {
                     Timber.e(e, "Error while opening dashboard from splash screen")
                     toast("Error while navigating to desktop: ${e.message}")

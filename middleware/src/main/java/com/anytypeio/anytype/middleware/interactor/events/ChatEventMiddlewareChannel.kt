@@ -6,6 +6,7 @@ import com.anytypeio.anytype.data.auth.event.ChatEventRemoteChannel
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.mappers.core
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.mapNotNull
 
 class ChatEventMiddlewareChannel(
@@ -59,6 +60,8 @@ class ChatEventMiddlewareChannel(
                     }
                 }
             }
+        }.filter { events ->
+            events.isNotEmpty()
         }
     }
 }

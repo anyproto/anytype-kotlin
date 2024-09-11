@@ -525,7 +525,7 @@ fun Messages(
                     msg = msg.msg,
                     timestamp = msg.timestamp,
                     attachments = msg.attachments,
-                    isMe = msg.isMe
+                    isUserAuthor = msg.isUserAuthor
                 )
             }
             if (idx == messages.lastIndex) {
@@ -589,14 +589,14 @@ fun Bubble(
     msg: String,
     timestamp: Long,
     attachments: List<DiscussionView.Message.Attachment> = emptyList(),
-    isMe: Boolean = false
+    isUserAuthor: Boolean = false
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                color = if (isMe)
+                color = if (isUserAuthor)
                     colorResource(id = R.color.palette_very_light_lime)
                 else
                     colorResource (id = R.color.palette_very_light_grey)

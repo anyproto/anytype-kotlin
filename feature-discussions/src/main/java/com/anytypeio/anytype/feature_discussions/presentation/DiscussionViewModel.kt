@@ -92,7 +92,7 @@ class DiscussionViewModel(
                                     is Store.Empty -> msg.creator.takeLast(5)
                                 }
                             },
-                            isMe = msg.creator == account
+                            isUserAuthor = msg.creator == account
                         )
                     }.reversed()
                 }

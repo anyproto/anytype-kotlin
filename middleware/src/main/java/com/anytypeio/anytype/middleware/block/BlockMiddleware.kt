@@ -1031,6 +1031,12 @@ class BlockMiddleware(
         return middleware.chatSubscribeLastMessages(command)
     }
 
+    override suspend fun toggleChatMessageReaction(command: Command.ChatCommand.ToggleMessageReaction) {
+        middleware.chatToggleMessageReaction(
+            command = command
+        )
+    }
+
     override suspend fun unsubscribeChat(chat: Id) {
         return middleware.chatUnsubscribe(chat = chat)
     }

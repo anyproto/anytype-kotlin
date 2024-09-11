@@ -9,7 +9,8 @@ sealed interface DiscussionView {
         val author: String,
         val timestamp: Long,
         val attachments: List<Attachment> = emptyList(),
-        val isUserAuthor: Boolean = false
+        val reactions: List<Pair<String, Int>> = emptyList(),
+        val isUserAuthor: Boolean = false,
     ) : DiscussionView {
         data class Attachment(
             val item: GlobalSearchItemView

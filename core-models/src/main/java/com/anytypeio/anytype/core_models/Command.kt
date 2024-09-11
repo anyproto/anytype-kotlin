@@ -593,5 +593,10 @@ sealed class Command {
                 val messageCountBefore: Int
             )
         }
+        data class ToggleMessageReaction(
+            val chat: Id,
+            val msg: Id,
+            val emoji: String
+        ): ChatCommand()
     }
 }

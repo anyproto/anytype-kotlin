@@ -78,6 +78,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
@@ -85,6 +86,7 @@ import com.anytypeio.anytype.core_ui.foundation.AlertIcon
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_BLUE
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
@@ -133,7 +135,8 @@ fun DiscussionScreenWrapper(
                     onTitleChanged = vm::onTitleChanged,
                     onAttachClicked = onAttachClicked,
                     onClearAttachmentClicked = vm::onClearAttachmentClicked,
-                    lazyListState = lazyListState
+                    lazyListState = lazyListState,
+                    onReacted = vm::onReacted
                 )
                 LaunchedEffect(Unit) {
                     vm.commands.collect { command ->
@@ -161,7 +164,8 @@ fun DiscussionScreen(
     onMessageSent: (String) -> Unit,
     onTitleChanged: (String) -> Unit,
     onAttachClicked: () -> Unit,
-    onClearAttachmentClicked: () -> Unit
+    onClearAttachmentClicked: () -> Unit,
+    onReacted: (Id, String) -> Unit
 ) {
     var isTitleFocused by remember { mutableStateOf(false) }
     val isHeaderVisible by remember {
@@ -194,7 +198,8 @@ fun DiscussionScreen(
                 title = title,
                 onTitleFocusChanged = {
                     isTitleFocused = it
-                }
+                },
+                onReacted = onReacted
             )
             // Jump to bottom button shows up when user scrolls past a threshold.
             // Convert to pixels:
@@ -482,7 +487,8 @@ fun Messages(
     modifier: Modifier = Modifier,
     messages: List<DiscussionView.Message>,
     scrollState: LazyListState,
-    onTitleFocusChanged: (Boolean) -> Unit
+    onTitleFocusChanged: (Boolean) -> Unit,
+    onReacted: (Id, String) -> Unit
 ) {
     LazyColumn(
         modifier = modifier,
@@ -525,7 +531,10 @@ fun Messages(
                     msg = msg.msg,
                     timestamp = msg.timestamp,
                     attachments = msg.attachments,
-                    isUserAuthor = msg.isUserAuthor
+                    isUserAuthor = msg.isUserAuthor,
+                    onReacted = { emoji ->
+                        onReacted(msg.id, emoji)
+                    }
                 )
             }
             if (idx == messages.lastIndex) {
@@ -572,7 +581,7 @@ fun Messages(
                 )
                 Text(
                     style = Relations2,
-                    text = "Discussion",
+                    text = stringResource(R.string.chat),
                     color = colorResource(id = R.color.text_secondary),
                     modifier = Modifier.padding(
                         start = 20.dp
@@ -589,7 +598,9 @@ fun Bubble(
     msg: String,
     timestamp: Long,
     attachments: List<DiscussionView.Message.Attachment> = emptyList(),
-    isUserAuthor: Boolean = false
+    isUserAuthor: Boolean = false,
+    reactions: List<Pair<String, Int>> = emptyList(),
+    onReacted: (String) -> Unit
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
     Column(
@@ -599,8 +610,7 @@ fun Bubble(
                 color = if (isUserAuthor)
                     colorResource(id = R.color.palette_very_light_lime)
                 else
-                    colorResource (id = R.color.palette_very_light_grey)
-                ,
+                    colorResource(id = R.color.palette_very_light_grey),
                 shape = RoundedCornerShape(24.dp)
             )
             .clip(RoundedCornerShape(24.dp))
@@ -652,6 +662,11 @@ fun Bubble(
                 globalSearchItemView = it.item
             )
         }
+        if (reactions.isNotEmpty()) {
+            ReactionList(
+                reactions = reactions
+            )
+        }
         Spacer(modifier = Modifier.height(12.dp))
         MaterialTheme(
             shapes = MaterialTheme.shapes.copy(
@@ -676,6 +691,7 @@ fun Bubble(
                             Text(
                                 text = "\uD83D\uDC4D",
                                 modifier = Modifier.noRippleClickable {
+                                    onReacted("\uD83D\uDC4D")
                                     showDropdownMenu = false
                                 }
                             )
@@ -683,6 +699,7 @@ fun Bubble(
                             Text(
                                 text = "❤\uFE0F",
                                 modifier = Modifier.noRippleClickable {
+                                    onReacted("❤\uFE0F")
                                     showDropdownMenu = false
                                 }
                             )
@@ -690,6 +707,7 @@ fun Bubble(
                             Text(
                                 text = "\uD83D\uDE02",
                                 modifier = Modifier.noRippleClickable {
+                                    onReacted("\uD83D\uDE02")
                                     showDropdownMenu = false
                                 }
                             )
@@ -697,6 +715,7 @@ fun Bubble(
                             Text(
                                 text = "\uD83D\uDE2E",
                                 modifier = Modifier.noRippleClickable {
+                                    onReacted("\uD83D\uDE2E")
                                     showDropdownMenu = false
                                 }
                             )
@@ -704,6 +723,7 @@ fun Bubble(
                             Text(
                                 text = "\uD83D\uDE22",
                                 modifier = Modifier.noRippleClickable {
+                                    onReacted("\uD83D\uDE22")
                                     showDropdownMenu = false
                                 }
                             )
@@ -860,6 +880,62 @@ fun GoToBottomButton(
             )
         }
     }
+}
+
+@Composable
+fun ReactionList(reactions: List<Pair<String, Int>>) {
+    Row(
+        modifier = Modifier
+    ) {
+        reactions.forEach { (emoji, count) ->
+            Box(
+                modifier = Modifier
+                    .height(32.dp)
+                    .width(60.dp)
+                    .background(
+                        color = colorResource(id = R.color.background_highlighted),
+                        shape = RoundedCornerShape(100.dp)
+                    )
+                    .clip(RoundedCornerShape(100.dp))
+            ) {
+                Text(
+                    text = emoji,
+                    style = BodyCalloutMedium,
+                    modifier = Modifier
+                        .align(
+                            alignment = Alignment.CenterStart
+                        )
+                        .padding(
+                            start = 8.dp
+                        )
+                )
+                Text(
+                    text = count.toString(),
+                    style = BodyCalloutMedium,
+                    modifier = Modifier
+                        .align(
+                            alignment = Alignment.CenterEnd
+                        )
+                        .padding(
+                            end = 12.dp
+                        )
+                )
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
+@Composable
+fun ReactionListPreview() {
+    ReactionList(
+        reactions = listOf(
+            "❤\uFE0F" to 1,
+            "❤\uFE0F" to 2,
+            "❤\uFE0F" to 3
+        )
+    )
 }
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")

@@ -92,7 +92,10 @@ class DiscussionViewModel(
                                     is Store.Empty -> msg.creator.takeLast(5)
                                 }
                             },
-                            isUserAuthor = msg.creator == account
+                            isUserAuthor = msg.creator == account,
+                            reactions = msg.reactions.mapValues { (emoji, ids) ->
+                                ids.size
+                            }.toList()
                         )
                     }.reversed()
                 }
@@ -139,6 +142,17 @@ class DiscussionViewModel(
 
     fun onClearAttachmentClicked() {
         attachments.value = emptyList()
+    }
+
+    fun onReacted(msg: Id, reaction: String) {
+        viewModelScope.launch {
+            val message = messages.value.find { it.id == msg }
+            if (message != null) {
+
+            } else {
+                Timber.w("Target message not found for reaction")
+            }
+        }
     }
 
     sealed class UXCommand {

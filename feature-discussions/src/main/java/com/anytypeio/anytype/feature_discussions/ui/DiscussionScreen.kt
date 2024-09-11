@@ -83,8 +83,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.AlertIcon
 import com.anytypeio.anytype.core_ui.foundation.Divider
@@ -147,7 +146,8 @@ fun DiscussionScreenWrapper(
                             AnnotatedString(text = msg.msg)
                         )
                     },
-                    onDeleteMessage = vm::onDeleteMessage
+                    onDeleteMessage = vm::onDeleteMessage,
+                    onAttachmentClicked = vm::onAttachmentClicked
                 )
                 LaunchedEffect(Unit) {
                     vm.commands.collect { command ->
@@ -178,7 +178,8 @@ fun DiscussionScreen(
     onClearAttachmentClicked: () -> Unit,
     onReacted: (Id, String) -> Unit,
     onDeleteMessage: (DiscussionView.Message) -> Unit,
-    onCopyMessage: (DiscussionView.Message) -> Unit
+    onCopyMessage: (DiscussionView.Message) -> Unit,
+    onAttachmentClicked: (Chat.Message.Attachment) -> Unit,
 ) {
     var isTitleFocused by remember { mutableStateOf(false) }
     val isHeaderVisible by remember {
@@ -214,7 +215,8 @@ fun DiscussionScreen(
                 },
                 onReacted = onReacted,
                 onCopyMessage = onCopyMessage,
-                onDeleteMessage = onDeleteMessage
+                onDeleteMessage = onDeleteMessage,
+                onAttachmentClicked = onAttachmentClicked
             )
             // Jump to bottom button shows up when user scrolls past a threshold.
             // Convert to pixels:
@@ -255,7 +257,12 @@ fun DiscussionScreen(
                         start = 16.dp,
                         end = 16.dp
                     ),
-                    globalSearchItemView = it
+                    title = it.title,
+                    type = it.type,
+                    icon = it.icon,
+                    onAttachmentClicked = {
+                        // TODO
+                    }
                 )
                 Image(
                     painter = painterResource(id = R.drawable.ic_clear_18),
@@ -505,7 +512,8 @@ fun Messages(
     onTitleFocusChanged: (Boolean) -> Unit,
     onReacted: (Id, String) -> Unit,
     onDeleteMessage: (DiscussionView.Message) -> Unit,
-    onCopyMessage: (DiscussionView.Message) -> Unit
+    onCopyMessage: (DiscussionView.Message) -> Unit,
+    onAttachmentClicked: (Chat.Message.Attachment) -> Unit
 ) {
     LazyColumn(
         modifier = modifier,
@@ -558,7 +566,8 @@ fun Messages(
                     },
                     onCopyMessage = {
                         onCopyMessage(msg)
-                    }
+                    },
+                    onAttachmentClicked = onAttachmentClicked
                 )
             }
             if (idx == messages.lastIndex) {
@@ -621,12 +630,13 @@ fun Bubble(
     name: String,
     msg: String,
     timestamp: Long,
-    attachments: List<DiscussionView.Message.Attachment> = emptyList(),
+    attachments: List<Chat.Message.Attachment> = emptyList(),
     isUserAuthor: Boolean = false,
     reactions: List<DiscussionView.Message.Reaction> = emptyList(),
     onReacted: (String) -> Unit,
     onDeleteMessage: () -> Unit,
-    onCopyMessage: () -> Unit
+    onCopyMessage: () -> Unit,
+    onAttachmentClicked: (Chat.Message.Attachment) -> Unit
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
     Column(
@@ -678,14 +688,19 @@ fun Bubble(
             style = BodyRegular,
             color = colorResource(id = R.color.text_primary)
         )
-        attachments.forEach {
+        attachments.forEach { attachment ->
             Attachment(
                 modifier = Modifier.padding(
                     start = 16.dp,
                     end = 16.dp,
                     top = 8.dp
                 ),
-                globalSearchItemView = it.item
+                title = attachment.target,
+                type = attachment.type.toString(),
+                icon = ObjectIcon.None,
+                onAttachmentClicked = {
+                    onAttachmentClicked(attachment)
+                }
             )
         }
         if (reactions.isNotEmpty()) {
@@ -841,7 +856,10 @@ fun TopDiscussionToolbar(
 @Composable
 fun Attachment(
     modifier: Modifier,
-    globalSearchItemView: GlobalSearchItemView
+    title: String,
+    type: String,
+    icon: ObjectIcon,
+    onAttachmentClicked: () -> Unit
 ) {
     Box(
         modifier = modifier
@@ -853,10 +871,14 @@ fun Attachment(
                 color = colorResource(id = R.color.shape_tertiary),
                 shape = RoundedCornerShape(12.dp)
             )
-            .background(color = colorResource(id = R.color.background_secondary))
+            .background(
+                color = colorResource(id = R.color.background_secondary)
+            ).clickable {
+                onAttachmentClicked()
+            }
     ) {
         GlobalSearchObjectIcon(
-            icon = globalSearchItemView.icon,
+            icon = icon,
             iconSize = 48.dp,
             modifier = Modifier
                 .padding(
@@ -868,10 +890,14 @@ fun Attachment(
             }
         )
         Text(
-            text = globalSearchItemView.title,
+            text = title,
             modifier = Modifier.padding(
-                start = 72.dp,
-                top = 17.5.dp
+                start = if (icon != ObjectIcon.None)
+                    72.dp
+                else
+                    12.dp,
+                top = 17.5.dp,
+                end = 12.dp
             ),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -879,11 +905,14 @@ fun Attachment(
             color = colorResource(id = R.color.text_primary)
         )
         Text(
-            text = globalSearchItemView.type,
+            text = type,
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(
-                    start = 72.dp,
+                    start = if (icon != ObjectIcon.None)
+                        72.dp
+                    else
+                        12.dp,
                     bottom = 17.5.dp
                 ),
             maxLines = 1,
@@ -1057,18 +1086,10 @@ fun TopDiscussionToolbarPreview() {
 fun AttachmentPreview() {
     Attachment(
         modifier = Modifier,
-        GlobalSearchItemView(
-            id = "id",
-            layout = ObjectType.Layout.BASIC,
-            title = "Travel to Switzerland",
-            type = "Project",
-            meta = GlobalSearchItemView.Meta.None,
-            pinned = false,
-            links = emptyList(),
-            backlinks = emptyList(),
-            space = SpaceId("spaced"),
-            icon = ObjectIcon.None
-        )
+        icon = ObjectIcon.None,
+        type = "Project",
+        title = "Travel to Switzerland",
+        onAttachmentClicked = {}
     )
 }
 

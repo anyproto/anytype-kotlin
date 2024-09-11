@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.feature_discussions.R
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionView
 import kotlin.time.DurationUnit
@@ -41,7 +42,8 @@ fun DiscussionPreview() {
         onTitleFocusChanged = {},
         onReacted = { a, b -> },
         onDeleteMessage = {},
-        onCopyMessage = {}
+        onCopyMessage = {},
+        onAttachmentClicked = {}
     )
 }
 
@@ -74,7 +76,8 @@ fun DiscussionScreenPreview() {
         lazyListState = LazyListState(),
         onReacted = { a, b -> },
         onCopyMessage = {},
-        onDeleteMessage = {}
+        onDeleteMessage = {},
+        onAttachmentClicked = {}
     )
 }
 
@@ -88,6 +91,30 @@ fun BubblePreview() {
         timestamp = System.currentTimeMillis(),
         onReacted = {},
         onDeleteMessage = {},
-        onCopyMessage = {}
+        onCopyMessage = {},
+        onAttachmentClicked = {}
+    )
+}
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
+@Composable
+fun BubbleWithAttachmentPreview() {
+    Bubble(
+        name = "Leo Marx",
+        msg = stringResource(id = R.string.default_text_placeholder),
+        timestamp = System.currentTimeMillis(),
+        onReacted = {},
+        onDeleteMessage = {},
+        onCopyMessage = {},
+        attachments = buildList {
+            add(
+                Chat.Message.Attachment(
+                    target = "Walter Benjamin",
+                    type = Chat.Message.Attachment.Type.Image
+                )
+            )
+        },
+        onAttachmentClicked = {}
     )
 }

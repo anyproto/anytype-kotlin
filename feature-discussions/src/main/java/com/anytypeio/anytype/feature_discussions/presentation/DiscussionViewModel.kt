@@ -19,6 +19,7 @@ import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionCon
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -43,6 +44,7 @@ class DiscussionViewModel(
     val messages = MutableStateFlow<List<DiscussionView.Message>>(emptyList())
     val attachments = MutableStateFlow<List<GlobalSearchItemView>>(emptyList())
     val commands = MutableSharedFlow<UXCommand>()
+    val navigation = MutableSharedFlow<OpenObjectNavigation>()
 
     // TODO naive implementation; switch to state
     private lateinit var chat: Id
@@ -103,7 +105,8 @@ class DiscussionViewModel(
                                     count = ids.size,
                                     isSelected = ids.contains(account)
                                 )
-                            }
+                            },
+                            attachments = msg.attachments
                         )
                     }.reversed()
                 }
@@ -182,6 +185,18 @@ class DiscussionViewModel(
             ).onFailure {
                 Timber.e(it, "Error while deleting chat message")
             }
+        }
+    }
+
+    fun onAttachmentClicked(attachment: Chat.Message.Attachment) {
+        viewModelScope.launch {
+            // TODO naive implementation. Currently used for debugging.
+            navigation.emit(
+                OpenObjectNavigation.OpenEditor(
+                    target = attachment.target,
+                    space = params.space.id
+                )
+            )
         }
     }
 

@@ -10,6 +10,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,10 +23,12 @@ import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.daggerViewModel
@@ -33,10 +36,13 @@ import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewMode
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModelFactory
 import com.anytypeio.anytype.feature_discussions.ui.DiscussionScreenWrapper
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
+import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchScreen
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
+import timber.log.Timber
 
 class DiscussionFragment : BaseComposeFragment() {
 
@@ -113,6 +119,26 @@ class DiscussionFragment : BaseComposeFragment() {
                         }
                     } else {
                         componentManager().globalSearchComponent.release()
+                    }
+                }
+                LaunchedEffect(Unit) {
+                    vm.navigation.collect { nav ->
+                        when(nav) {
+                            is OpenObjectNavigation.OpenEditor -> {
+                                runCatching {
+                                    findNavController().navigate(
+                                        R.id.objectNavigation,
+                                        EditorFragment.args(
+                                            ctx = nav.target,
+                                            space = nav.space
+                                        )
+                                    )
+                                }.onFailure {
+                                    Timber.w("Error while opening editor from chat.")
+                                }
+                            }
+                            else -> toast("TODO")
+                        }
                     }
                 }
             }

@@ -2356,6 +2356,12 @@ fun ObjectType.Layout.navigation(
                 space = space
             )
         }
+        ObjectType.Layout.CHAT -> {
+            OpenObjectNavigation.OpenDiscussion(
+                target = target,
+                space = space
+            )
+        }
         else -> {
             OpenObjectNavigation.UnexpectedLayoutError(this)
         }

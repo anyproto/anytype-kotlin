@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.chats.Chat
+import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.base.onSuccess
@@ -30,7 +31,8 @@ class DiscussionViewModel(
     private val openObject: OpenObject,
     private val chatContainer: ChatContainer,
     private val addChatMessage: AddChatMessage,
-    private val members: ActiveSpaceMemberSubscriptionContainer
+    private val members: ActiveSpaceMemberSubscriptionContainer,
+    private val getAccount: GetAccount
 ) : BaseViewModel() {
 
     val name = MutableStateFlow<String?>(null)
@@ -43,6 +45,7 @@ class DiscussionViewModel(
 
     init {
         viewModelScope.launch {
+            val account = requireNotNull(getAccount.async(Unit).getOrNull())
             openObject.async(
                 OpenObject.Params(
                     spaceId = params.space,
@@ -53,7 +56,10 @@ class DiscussionViewModel(
                 onSuccess = { obj ->
                     val root = ObjectWrapper.Basic(obj.details[params.ctx].orEmpty())
                     name.value = root.name
-                    proceedWithObservingChatMessages(root)
+                    proceedWithObservingChatMessages(
+                        account = account.id,
+                        root = root
+                    )
                 },
                 onFailure = {
                     Timber.e(it, "Error while opening chat object")
@@ -62,7 +68,10 @@ class DiscussionViewModel(
         }
     }
 
-    private suspend fun proceedWithObservingChatMessages(root: ObjectWrapper.Basic) {
+    private suspend fun proceedWithObservingChatMessages(
+        account: Id,
+        root: ObjectWrapper.Basic
+    ) {
         val chat = root.getValue<Id>(Relations.CHAT_ID)
         if (chat != null) {
             this.chat = chat
@@ -82,7 +91,8 @@ class DiscussionViewModel(
                                     }?.name ?: msg.creator.takeLast(5)
                                     is Store.Empty -> msg.creator.takeLast(5)
                                 }
-                            }
+                            },
+                            isMe = msg.creator == account
                         )
                     }.reversed()
                 }

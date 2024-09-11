@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.di.feature.EditorSubComponent.Builder
+import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.chats.ChatEventChannel
@@ -56,6 +57,7 @@ object DiscussionModule {
 
 interface DiscussionComponentDependencies : ComponentDependencies {
     fun blockRepository(): BlockRepository
+    fun authRepo(): AuthRepository
     fun appCoroutineDispatchers(): AppCoroutineDispatchers
     fun analytics(): Analytics
     fun urlBuilder(): UrlBuilder

@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.domain.config
 
 import com.anytypeio.anytype.core_models.Config
+import com.anytypeio.anytype.core_models.Id
 
 @Deprecated("Refactoring needed")
 interface ConfigStorage {
@@ -27,4 +28,8 @@ interface ConfigStorage {
             instance = null
         }
     }
+}
+
+interface UserIdentityProvider {
+    fun id(): Id
 }

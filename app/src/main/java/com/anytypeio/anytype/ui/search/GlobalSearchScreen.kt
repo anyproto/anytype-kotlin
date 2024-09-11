@@ -98,7 +98,6 @@ import com.anytypeio.anytype.core_ui.widgets.DefaultObjectImageIcon
 import com.anytypeio.anytype.core_ui.widgets.DefaultProfileAvatarIcon
 import com.anytypeio.anytype.core_ui.widgets.DefaultProfileIconImage
 import com.anytypeio.anytype.core_ui.widgets.DefaultTaskObjectIcon
-import com.anytypeio.anytype.core_ui.widgets.DefaultTaskObjectIcon
 import com.anytypeio.anytype.core_ui.widgets.GlobalSearchObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
@@ -152,7 +151,6 @@ fun GlobalSearchScreen(
                 .padding(vertical = 6.dp)
                 .align(Alignment.CenterHorizontally)
         )
-
 
         Row(
             modifier = Modifier

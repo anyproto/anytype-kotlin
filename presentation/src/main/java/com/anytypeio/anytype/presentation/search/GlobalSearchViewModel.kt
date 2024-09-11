@@ -43,7 +43,6 @@ import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
 import javax.inject.Inject
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -364,7 +363,7 @@ class GlobalSearchViewModel @Inject constructor(
  * @property [title] object title
  * @property [type] type screen name
  */
-data class  GlobalSearchItemView(
+data class GlobalSearchItemView(
     val id: Id,
     val icon: ObjectIcon,
     val space: SpaceId,

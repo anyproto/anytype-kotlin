@@ -95,9 +95,13 @@ class DiscussionViewModel(
                                 }
                             },
                             isUserAuthor = msg.creator == account,
-                            reactions = msg.reactions.mapValues { (emoji, ids) ->
-                                ids.size
-                            }.toList()
+                            reactions = msg.reactions.map{ (emoji, ids) ->
+                                DiscussionView.Message.Reaction(
+                                    emoji = emoji,
+                                    count = ids.size,
+                                    isSelected = ids.contains(account)
+                                )
+                            }
                         )
                     }.reversed()
                 }

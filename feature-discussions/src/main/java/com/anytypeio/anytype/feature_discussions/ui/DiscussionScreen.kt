@@ -11,6 +11,8 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -600,7 +602,7 @@ fun Bubble(
     timestamp: Long,
     attachments: List<DiscussionView.Message.Attachment> = emptyList(),
     isUserAuthor: Boolean = false,
-    reactions: List<Pair<String, Int>> = emptyList(),
+    reactions: List<DiscussionView.Message.Reaction> = emptyList(),
     onReacted: (String) -> Unit
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
@@ -884,30 +886,46 @@ fun GoToBottomButton(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ReactionList(
-    reactions: List<Pair<String, Int>>,
+    reactions: List<DiscussionView.Message.Reaction>,
     onReacted: (String) -> Unit
 ) {
-    Row(
-        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
+    FlowRow(
+        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        reactions.forEach { (emoji, count) ->
+        reactions.forEach { reaction ->
             Box(
                 modifier = Modifier
                     .height(32.dp)
                     .width(60.dp)
                     .background(
-                        color = colorResource(id = R.color.background_highlighted),
+                        color = if (reaction.isSelected)
+                            colorResource(id = R.color.palette_very_light_orange)
+                        else
+                            colorResource(id = R.color.background_highlighted),
                         shape = RoundedCornerShape(100.dp)
                     )
                     .clip(RoundedCornerShape(100.dp))
+                    .then(
+                        if (reaction.isSelected)
+                            Modifier.border(
+                                width = 1.dp,
+                                color = colorResource(id = R.color.palette_system_amber_50),
+                                shape = RoundedCornerShape(100.dp)
+                            )
+                        else
+                            Modifier
+                    )
                     .clickable {
-                        onReacted(emoji)
+                        onReacted(reaction.emoji)
                     }
             ) {
                 Text(
-                    text = emoji,
+                    text = reaction.emoji,
                     style = BodyCalloutMedium,
                     modifier = Modifier
                         .align(
@@ -918,7 +936,7 @@ fun ReactionList(
                         )
                 )
                 Text(
-                    text = count.toString(),
+                    text = reaction.count.toString(),
                     style = BodyCalloutMedium,
                     modifier = Modifier
                         .align(
@@ -926,10 +944,10 @@ fun ReactionList(
                         )
                         .padding(
                             end = 12.dp
-                        )
+                        ),
+                    color = colorResource(id = R.color.text_primary)
                 )
             }
-            Spacer(modifier = Modifier.width(8.dp))
         }
     }
 }
@@ -940,9 +958,36 @@ fun ReactionList(
 fun ReactionListPreview() {
     ReactionList(
         reactions = listOf(
-            "❤\uFE0F" to 1,
-            "❤\uFE0F" to 2,
-            "❤\uFE0F" to 3
+            DiscussionView.Message.Reaction(
+                emoji =  "❤\uFE0F",
+                count = 1,
+                isSelected = false
+            ),
+            DiscussionView.Message.Reaction(
+                emoji =  "❤\uFE0F",
+                count = 1,
+                isSelected = true
+            ),
+            DiscussionView.Message.Reaction(
+                emoji =  "❤\uFE0F",
+                count = 1,
+                isSelected = false
+            ),
+            DiscussionView.Message.Reaction(
+                emoji =  "❤\uFE0F",
+                count = 1,
+                isSelected = false
+            ),
+            DiscussionView.Message.Reaction(
+                emoji =  "❤\uFE0F",
+                count = 1,
+                isSelected = false
+            ),
+            DiscussionView.Message.Reaction(
+                emoji =  "❤\uFE0F",
+                count = 1,
+                isSelected = false
+            )
         ),
         onReacted = {}
     )

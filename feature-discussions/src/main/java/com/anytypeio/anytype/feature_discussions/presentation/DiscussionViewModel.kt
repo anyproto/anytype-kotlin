@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.chats.AddChatMessage
 import com.anytypeio.anytype.domain.chats.ChatContainer
+import com.anytypeio.anytype.domain.chats.DeleteChatMessage
 import com.anytypeio.anytype.domain.chats.ToggleChatMessageReaction
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer.Store
@@ -32,6 +33,7 @@ class DiscussionViewModel(
     private val openObject: OpenObject,
     private val chatContainer: ChatContainer,
     private val addChatMessage: AddChatMessage,
+    private val deleteChatMessage: DeleteChatMessage,
     private val toggleChatMessageReaction: ToggleChatMessageReaction,
     private val members: ActiveSpaceMemberSubscriptionContainer,
     private val getAccount: GetAccount
@@ -165,6 +167,20 @@ class DiscussionViewModel(
                 }
             } else {
                 Timber.w("Target message not found for reaction")
+            }
+        }
+    }
+
+    fun onDeleteMessage(msg: DiscussionView.Message) {
+        Timber.d("onDeleteMessageClicked")
+        viewModelScope.launch {
+            deleteChatMessage.async(
+                Command.ChatCommand.DeleteMessage(
+                    chat = chat,
+                    msg = msg.id
+                )
+            ).onFailure {
+                Timber.e(it, "Error while deleting chat message")
             }
         }
     }

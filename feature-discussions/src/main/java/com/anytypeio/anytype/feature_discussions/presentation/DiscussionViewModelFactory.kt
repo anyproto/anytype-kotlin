@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.chats.AddChatMessage
 import com.anytypeio.anytype.domain.chats.ChatContainer
+import com.anytypeio.anytype.domain.chats.DeleteChatMessage
 import com.anytypeio.anytype.domain.chats.ToggleChatMessageReaction
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.OpenObject
@@ -18,6 +19,7 @@ class DiscussionViewModelFactory @Inject constructor(
     private val openObject: OpenObject,
     private val chatContainer: ChatContainer,
     private val addChatMessage: AddChatMessage,
+    private val deleteChatMessage: DeleteChatMessage,
     private val toggleChatMessageReaction: ToggleChatMessageReaction,
     private val members: ActiveSpaceMemberSubscriptionContainer,
     private val getAccount: GetAccount
@@ -31,6 +33,7 @@ class DiscussionViewModelFactory @Inject constructor(
         addChatMessage = addChatMessage,
         toggleChatMessageReaction = toggleChatMessageReaction,
         members = members,
-        getAccount = getAccount
+        getAccount = getAccount,
+        deleteChatMessage = deleteChatMessage
     ) as T
 }

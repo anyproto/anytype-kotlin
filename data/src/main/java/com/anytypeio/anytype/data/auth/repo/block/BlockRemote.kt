@@ -449,6 +449,7 @@ interface BlockRemote {
     //region CHATS
 
     suspend fun addChatMessage(command: Command.ChatCommand.AddMessage): Id
+    suspend fun deleteChatMessage(command: Command.ChatCommand.DeleteMessage)
     suspend fun getChatMessages(command: Command.ChatCommand.GetMessages): List<Chat.Message>
     suspend fun subscribeLastChatMessages(command: Command.ChatCommand.SubscribeLastMessages): Command.ChatCommand.SubscribeLastMessages.Response
     suspend fun toggleChatMessageReaction(command: Command.ChatCommand.ToggleMessageReaction)

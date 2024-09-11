@@ -60,12 +60,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -128,6 +130,7 @@ fun DiscussionScreenWrapper(
                         color = colorResource(id = R.color.background_primary)
                     )
             ) {
+                val clipboard = LocalClipboardManager.current
                 val lazyListState = rememberLazyListState()
                 DiscussionScreen(
                     title = vm.name.collectAsState().value,
@@ -138,7 +141,13 @@ fun DiscussionScreenWrapper(
                     onAttachClicked = onAttachClicked,
                     onClearAttachmentClicked = vm::onClearAttachmentClicked,
                     lazyListState = lazyListState,
-                    onReacted = vm::onReacted
+                    onReacted = vm::onReacted,
+                    onCopyMessage = { msg ->
+                        clipboard.setText(
+                            AnnotatedString(text = msg.msg)
+                        )
+                    },
+                    onDeleteMessage = vm::onDeleteMessage
                 )
                 LaunchedEffect(Unit) {
                     vm.commands.collect { command ->
@@ -167,7 +176,9 @@ fun DiscussionScreen(
     onTitleChanged: (String) -> Unit,
     onAttachClicked: () -> Unit,
     onClearAttachmentClicked: () -> Unit,
-    onReacted: (Id, String) -> Unit
+    onReacted: (Id, String) -> Unit,
+    onDeleteMessage: (DiscussionView.Message) -> Unit,
+    onCopyMessage: (DiscussionView.Message) -> Unit
 ) {
     var isTitleFocused by remember { mutableStateOf(false) }
     val isHeaderVisible by remember {
@@ -201,7 +212,9 @@ fun DiscussionScreen(
                 onTitleFocusChanged = {
                     isTitleFocused = it
                 },
-                onReacted = onReacted
+                onReacted = onReacted,
+                onCopyMessage = onCopyMessage,
+                onDeleteMessage = onDeleteMessage
             )
             // Jump to bottom button shows up when user scrolls past a threshold.
             // Convert to pixels:
@@ -490,7 +503,9 @@ fun Messages(
     messages: List<DiscussionView.Message>,
     scrollState: LazyListState,
     onTitleFocusChanged: (Boolean) -> Unit,
-    onReacted: (Id, String) -> Unit
+    onReacted: (Id, String) -> Unit,
+    onDeleteMessage: (DiscussionView.Message) -> Unit,
+    onCopyMessage: (DiscussionView.Message) -> Unit
 ) {
     LazyColumn(
         modifier = modifier,
@@ -537,7 +552,13 @@ fun Messages(
                     onReacted = { emoji ->
                         onReacted(msg.id, emoji)
                     },
-                    reactions = msg.reactions
+                    reactions = msg.reactions,
+                    onDeleteMessage = {
+                        onDeleteMessage(msg)
+                    },
+                    onCopyMessage = {
+                        onCopyMessage(msg)
+                    }
                 )
             }
             if (idx == messages.lastIndex) {
@@ -603,7 +624,9 @@ fun Bubble(
     attachments: List<DiscussionView.Message.Attachment> = emptyList(),
     isUserAuthor: Boolean = false,
     reactions: List<DiscussionView.Message.Reaction> = emptyList(),
-    onReacted: (String) -> Unit
+    onReacted: (String) -> Unit,
+    onDeleteMessage: () -> Unit,
+    onCopyMessage: () -> Unit
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
     Column(
@@ -733,8 +756,36 @@ fun Bubble(
                             )
                         }
                     },
-                    onClick = { /*TODO*/ }
+                    onClick = {
+                        // Do nothing.
+                    }
                 )
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = stringResource(R.string.copy),
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                    },
+                    onClick = {
+                        onCopyMessage()
+                        showDropdownMenu = false
+                    }
+                )
+                if (isUserAuthor) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = stringResource(id = R.string.delete),
+                                color = colorResource(id = R.color.palette_system_red)
+                            )
+                        },
+                        onClick = {
+                            onDeleteMessage()
+                            showDropdownMenu = false
+                        }
+                    )
+                }
             }
         }
     }

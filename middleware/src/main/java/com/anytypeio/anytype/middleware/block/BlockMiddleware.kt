@@ -1019,6 +1019,10 @@ class BlockMiddleware(
         return middleware.chatAddMessage(command)
     }
 
+    override suspend fun deleteChatMessage(command: Command.ChatCommand.DeleteMessage) {
+        middleware.chatDeleteMessage(command)
+    }
+
     override suspend fun getChatMessages(
         command: Command.ChatCommand.GetMessages
     ): List<Chat.Message> {

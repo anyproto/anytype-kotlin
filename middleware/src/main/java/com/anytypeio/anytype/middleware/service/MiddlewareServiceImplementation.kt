@@ -2337,6 +2337,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun chatDeleteMessage(request: Rpc.Chat.DeleteMessage.Request): Rpc.Chat.DeleteMessage.Response {
+        val encoded = Service.chatDeleteMessage(
+            Rpc.Chat.DeleteMessage.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Chat.DeleteMessage.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Chat.DeleteMessage.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun chatGetMessages(request: Rpc.Chat.GetMessages.Request): Rpc.Chat.GetMessages.Response {
         val encoded = Service.chatGetMessages(
             Rpc.Chat.GetMessages.Request.ADAPTER.encode(request)

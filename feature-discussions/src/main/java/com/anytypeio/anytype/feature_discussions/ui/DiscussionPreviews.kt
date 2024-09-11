@@ -39,7 +39,9 @@ fun DiscussionPreview() {
         title = "Conversations with friends",
         onTitleChanged = {},
         onTitleFocusChanged = {},
-        onReacted = { a, b -> }
+        onReacted = { a, b -> },
+        onDeleteMessage = {},
+        onCopyMessage = {}
     )
 }
 
@@ -70,7 +72,9 @@ fun DiscussionScreenPreview() {
         attachments = emptyList(),
         onClearAttachmentClicked = {},
         lazyListState = LazyListState(),
-        onReacted = { a, b -> }
+        onReacted = { a, b -> },
+        onCopyMessage = {},
+        onDeleteMessage = {}
     )
 }
 
@@ -82,6 +86,8 @@ fun BubblePreview() {
         name = "Leo Marx",
         msg = stringResource(id = R.string.default_text_placeholder),
         timestamp = System.currentTimeMillis(),
-        onReacted = {}
+        onReacted = {},
+        onDeleteMessage = {},
+        onCopyMessage = {}
     )
 }

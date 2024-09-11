@@ -2766,6 +2766,17 @@ class Middleware @Inject constructor(
     }
 
     @Throws
+    fun chatDeleteMessage(command: Command.ChatCommand.DeleteMessage) {
+        val request = Rpc.Chat.DeleteMessage.Request(
+            chatObjectId = command.chat,
+            messageId = command.msg
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.chatDeleteMessage(request) }
+        logResponseIfDebug(response, time)
+    }
+
+    @Throws
     fun chatSubscribeLastMessages(
         command: Command.ChatCommand.SubscribeLastMessages
     ): Command.ChatCommand.SubscribeLastMessages.Response {

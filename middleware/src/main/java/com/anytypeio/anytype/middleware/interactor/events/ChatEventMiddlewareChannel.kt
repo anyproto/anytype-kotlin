@@ -14,54 +14,61 @@ class ChatEventMiddlewareChannel(
 ): ChatEventRemoteChannel {
 
     override fun observe(chat: Id): Flow<List<Event.Command.Chats>> {
-        return eventProxy.flow().mapNotNull { item ->
-            item.messages.mapNotNull { msg ->
-                when {
-                    msg.chatAdd != null -> {
-                        val event = msg.chatAdd
-                        checkNotNull(event)
-                        Event.Command.Chats.Add(
-                            context = item.contextId,
-                            order = event.orderId,
-                            id = event.id,
-                            message = requireNotNull(event.message?.core())
-                        )
-                    }
-                    msg.chatUpdate != null -> {
-                        val event = msg.chatUpdate
-                        checkNotNull(event)
-                        Event.Command.Chats.Update(
-                            context = item.contextId,
-                            id = event.id,
-                            message = requireNotNull(event.message?.core())
-                        )
-                    }
-                    msg.chatDelete != null -> {
-                        val event = msg.chatDelete
-                        checkNotNull(event)
-                        Event.Command.Chats.Delete(
-                            context = item.contextId,
-                            id = event.id
-                        )
-                    }
-                    msg.chatUpdateReactions != null -> {
-                        val event = msg.chatUpdateReactions
-                        checkNotNull(event)
-                        Event.Command.Chats.UpdateReactions(
-                            context = item.contextId,
-                            id = event.id,
-                            reactions = event.reactions?.reactions?.mapValues { (unicode, identities) ->
-                                identities.ids
-                            } ?: emptyMap()
-                        )
-                    }
-                    else -> {
-                        null
+        return eventProxy
+            .flow()
+            .filter { it.contextId == chat }
+            .mapNotNull { item ->
+                item.messages.mapNotNull { msg ->
+                    when {
+                        msg.chatAdd != null -> {
+                            val event = msg.chatAdd
+                            checkNotNull(event)
+                            Event.Command.Chats.Add(
+                                context = item.contextId,
+                                order = event.orderId,
+                                id = event.id,
+                                message = requireNotNull(event.message?.core())
+                            )
+                        }
+
+                        msg.chatUpdate != null -> {
+                            val event = msg.chatUpdate
+                            checkNotNull(event)
+                            Event.Command.Chats.Update(
+                                context = item.contextId,
+                                id = event.id,
+                                message = requireNotNull(event.message?.core())
+                            )
+                        }
+
+                        msg.chatDelete != null -> {
+                            val event = msg.chatDelete
+                            checkNotNull(event)
+                            Event.Command.Chats.Delete(
+                                context = item.contextId,
+                                id = event.id
+                            )
+                        }
+
+                        msg.chatUpdateReactions != null -> {
+                            val event = msg.chatUpdateReactions
+                            checkNotNull(event)
+                            Event.Command.Chats.UpdateReactions(
+                                context = item.contextId,
+                                id = event.id,
+                                reactions = event.reactions?.reactions?.mapValues { (unicode, identities) ->
+                                    identities.ids
+                                } ?: emptyMap()
+                            )
+                        }
+
+                        else -> {
+                            null
+                        }
                     }
                 }
+            }.filter { events ->
+                events.isNotEmpty()
             }
-        }.filter { events ->
-            events.isNotEmpty()
-        }
     }
 }

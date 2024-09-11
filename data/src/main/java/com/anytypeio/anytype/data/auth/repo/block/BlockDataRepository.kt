@@ -1066,6 +1066,10 @@ class BlockDataRepository(
         return remote.subscribeLastChatMessages(command)
     }
 
+    override suspend fun toggleChatMessageReaction(command: Command.ChatCommand.ToggleMessageReaction) {
+        return remote.toggleChatMessageReaction(command = command)
+    }
+
     override suspend fun unsubscribeChat(chat: Id) {
         return remote.unsubscribeChat(chat)
     }

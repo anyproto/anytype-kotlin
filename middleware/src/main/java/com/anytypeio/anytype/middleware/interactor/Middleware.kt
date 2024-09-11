@@ -2782,6 +2782,20 @@ class Middleware @Inject constructor(
     }
 
     @Throws
+    fun chatToggleMessageReaction(
+        command: Command.ChatCommand.ToggleMessageReaction
+    ) {
+        val request = Rpc.Chat.ToggleMessageReaction.Request(
+            chatObjectId = command.chat,
+            messageId = command.msg,
+            emoji = command.emoji
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.chatToggleMessageReaction(request) }
+        logResponseIfDebug(response, time)
+    }
+
+    @Throws
     fun chatUnsubscribe(chat: Id) {
         val request = Rpc.Chat.Unsubscribe.Request(chatObjectId = chat)
         logRequestIfDebug(request)

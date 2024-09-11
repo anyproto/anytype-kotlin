@@ -2363,6 +2363,21 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun chatToggleMessageReaction(
+        request: Rpc.Chat.ToggleMessageReaction.Request
+    ): Rpc.Chat.ToggleMessageReaction.Response {
+        val encoded = Service.chatToggleMessageReaction(
+            Rpc.Chat.ToggleMessageReaction.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Chat.ToggleMessageReaction.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Chat.ToggleMessageReaction.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun chatUnsubscribe(request: Rpc.Chat.Unsubscribe.Request): Rpc.Chat.Unsubscribe.Response {
         val encoded = Service.chatUnsubscribe(
             Rpc.Chat.Unsubscribe.Request.ADAPTER.encode(request)

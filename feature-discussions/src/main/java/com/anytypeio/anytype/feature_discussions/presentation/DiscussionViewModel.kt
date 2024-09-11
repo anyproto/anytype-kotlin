@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.chats.AddChatMessage
 import com.anytypeio.anytype.domain.chats.ChatContainer
+import com.anytypeio.anytype.domain.chats.ToggleChatMessageReaction
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer.Store
 import com.anytypeio.anytype.domain.`object`.OpenObject
@@ -31,6 +32,7 @@ class DiscussionViewModel(
     private val openObject: OpenObject,
     private val chatContainer: ChatContainer,
     private val addChatMessage: AddChatMessage,
+    private val toggleChatMessageReaction: ToggleChatMessageReaction,
     private val members: ActiveSpaceMemberSubscriptionContainer,
     private val getAccount: GetAccount
 ) : BaseViewModel() {
@@ -92,7 +94,10 @@ class DiscussionViewModel(
                                     is Store.Empty -> msg.creator.takeLast(5)
                                 }
                             },
-                            isUserAuthor = msg.creator == account
+                            isUserAuthor = msg.creator == account,
+                            reactions = msg.reactions.mapValues { (emoji, ids) ->
+                                ids.size
+                            }.toList()
                         )
                     }.reversed()
                 }
@@ -139,6 +144,25 @@ class DiscussionViewModel(
 
     fun onClearAttachmentClicked() {
         attachments.value = emptyList()
+    }
+
+    fun onReacted(msg: Id, reaction: String) {
+        viewModelScope.launch {
+            val message = messages.value.find { it.id == msg }
+            if (message != null) {
+                toggleChatMessageReaction.async(
+                    Command.ChatCommand.ToggleMessageReaction(
+                        chat = chat,
+                        msg = msg,
+                        emoji = reaction
+                    )
+                ).onFailure {
+                    Timber.e(it, "Error while toggling chat message reaction")
+                }
+            } else {
+                Timber.w("Target message not found for reaction")
+            }
+        }
     }
 
     sealed class UXCommand {

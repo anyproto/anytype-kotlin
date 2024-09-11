@@ -534,7 +534,8 @@ fun Messages(
                     isUserAuthor = msg.isUserAuthor,
                     onReacted = { emoji ->
                         onReacted(msg.id, emoji)
-                    }
+                    },
+                    reactions = msg.reactions
                 )
             }
             if (idx == messages.lastIndex) {
@@ -664,7 +665,8 @@ fun Bubble(
         }
         if (reactions.isNotEmpty()) {
             ReactionList(
-                reactions = reactions
+                reactions = reactions,
+                onReacted = onReacted
             )
         }
         Spacer(modifier = Modifier.height(12.dp))
@@ -883,9 +885,12 @@ fun GoToBottomButton(
 }
 
 @Composable
-fun ReactionList(reactions: List<Pair<String, Int>>) {
+fun ReactionList(
+    reactions: List<Pair<String, Int>>,
+    onReacted: (String) -> Unit
+) {
     Row(
-        modifier = Modifier
+        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
     ) {
         reactions.forEach { (emoji, count) ->
             Box(
@@ -897,6 +902,9 @@ fun ReactionList(reactions: List<Pair<String, Int>>) {
                         shape = RoundedCornerShape(100.dp)
                     )
                     .clip(RoundedCornerShape(100.dp))
+                    .clickable {
+                        onReacted(emoji)
+                    }
             ) {
                 Text(
                     text = emoji,
@@ -921,6 +929,7 @@ fun ReactionList(reactions: List<Pair<String, Int>>) {
                         )
                 )
             }
+            Spacer(modifier = Modifier.width(8.dp))
         }
     }
 }
@@ -934,7 +943,8 @@ fun ReactionListPreview() {
             "❤\uFE0F" to 1,
             "❤\uFE0F" to 2,
             "❤\uFE0F" to 3
-        )
+        ),
+        onReacted = {}
     )
 }
 

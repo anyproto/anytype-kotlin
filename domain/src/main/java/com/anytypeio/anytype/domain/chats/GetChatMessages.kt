@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 class GetChatMessages @Inject constructor(
     private val repo: BlockRepository,
-    private val dispatchers: AppCoroutineDispatchers
+    dispatchers: AppCoroutineDispatchers
 ): ResultInteractor<Command.ChatCommand.GetMessages, List<Chat.Message>>(dispatchers.io) {
     override suspend fun doWork(
         params: Command.ChatCommand.GetMessages

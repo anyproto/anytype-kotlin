@@ -54,6 +54,27 @@ sealed class Chat {
                 ),
                 order = ""
             )
+
+            /**
+             * New message builder.
+             */
+            fun updated(
+                id: Id,
+                text: String
+            ) : Message = Chat.Message(
+                id = id,
+                timestamp = 0L,
+                attachments = emptyList(),
+                reactions = emptyMap(),
+                creator = "",
+                replyToMessageId = "",
+                content = Chat.Message.Content(
+                    text = text,
+                    marks = emptyList(),
+                    style = Block.Content.Text.Style.P
+                ),
+                order = ""
+            )
         }
     }
 }

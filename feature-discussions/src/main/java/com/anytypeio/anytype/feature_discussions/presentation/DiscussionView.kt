@@ -6,7 +6,7 @@ import com.anytypeio.anytype.core_models.chats.Chat
 sealed interface DiscussionView {
     data class Message(
         val id: String,
-        val msg: String,
+        val content: String,
         val author: String,
         val timestamp: Long,
         val attachments: List<Chat.Message.Attachment> = emptyList(),

@@ -102,7 +102,7 @@ class DiscussionViewModel(
                         DiscussionView.Message(
                             id = msg.id,
                             timestamp = msg.timestamp * 1000,
-                            msg = msg.content?.text.orEmpty(),
+                            content = msg.content?.text.orEmpty(),
                             author = member?.name ?: msg.creator.takeLast(5),
                             isUserAuthor = msg.creator == account,
                             reactions = msg.reactions.map{ (emoji, ids) ->
@@ -131,33 +131,47 @@ class DiscussionViewModel(
     fun onMessageSent(msg: String) {
         Timber.d("DROID-2635 OnMessageSent: $msg")
         viewModelScope.launch {
-            addChatMessage.async(
-                params = Command.ChatCommand.AddMessage(
-                    chat = chat,
-                    message = Chat.Message.new(msg)
-                )
-            ).onSuccess {
-                delay(JUMP_TO_BOTTOM_DELAY)
-                commands.emit(UXCommand.JumpToBottom)
-            }.onFailure {
-                Timber.e(it, "Error while adding message")
+            when(val mode = chatBoxMode.value) {
+                is ChatBoxMode.Default -> {
+                    addChatMessage.async(
+                        params = Command.ChatCommand.AddMessage(
+                            chat = chat,
+                            message = Chat.Message.new(msg)
+                        )
+                    ).onSuccess {
+                        delay(JUMP_TO_BOTTOM_DELAY)
+                        commands.emit(UXCommand.JumpToBottom)
+                    }.onFailure {
+                        Timber.e(it, "Error while adding message")
+                    }
+                }
+                is ChatBoxMode.EditMessage -> {
+                    editChatMessage.async(
+                        params = Command.ChatCommand.EditMessage(
+                            chat = chat,
+                            message = Chat.Message.updated(
+                                id = mode.msg,
+                                text = msg
+                            )
+                        )
+                    ).onSuccess {
+                        delay(JUMP_TO_BOTTOM_DELAY)
+                        commands.emit(UXCommand.JumpToBottom)
+                    }.onFailure {
+                        Timber.e(it, "Error while adding message")
+                    }.onSuccess {
+                        chatBoxMode.value = ChatBoxMode.Default
+                    }
+                }
             }
         }
     }
 
     fun onRequestEditMessageClicked(msg: DiscussionView.Message) {
+        Timber.d("onRequestEditMessageClicked")
         viewModelScope.launch {
             chatBoxMode.value = ChatBoxMode.EditMessage(msg.id)
-            commands.emit(
-                UXCommand.SetChatBoxInput(
-                    input = msg.msg
-                )
-            )
         }
-    }
-
-    fun onMessageEdited() {
-        // TODO
     }
 
     fun onTitleChanged(input: String) {
@@ -184,6 +198,7 @@ class DiscussionViewModel(
     }
 
     fun onReacted(msg: Id, reaction: String) {
+        Timber.d("onReacted")
         viewModelScope.launch {
             val message = messages.value.find { it.id == msg }
             if (message != null) {
@@ -225,6 +240,12 @@ class DiscussionViewModel(
                     space = params.space.id
                 )
             )
+        }
+    }
+
+    fun onExitEditMessageMode() {
+        viewModelScope.launch {
+            chatBoxMode.value = ChatBoxMode.Default
         }
     }
 

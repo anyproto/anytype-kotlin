@@ -1748,5 +1748,6 @@ Please provide specific details of your needs here.</string>
     <string name="vault_my_spaces">My spaces</string>
     <string name="chat">Chat</string>
     <string name="copy">Copy</string>
+    <string name="chats_edit_message">Edit message</string>
 
 </resources>

@@ -450,6 +450,14 @@ class CollectionViewModel(
                         )
                     )
                 }
+                ObjectType.Layout.CHAT -> {
+                    commands.emit(
+                        Command.OpenChat(
+                            target = target,
+                            space = view.space
+                        )
+                    )
+                }
                 else -> {
                     Timber.e("Unexpected layout: ${view.layout}")
                 }
@@ -1008,6 +1016,7 @@ class CollectionViewModel(
         data class LaunchDocument(val target: Id, val space: Id) : Command()
         data class OpenCollection(val subscription: Subscription, val space: Id) : Command()
         data class LaunchObjectSet(val target: Id, val space: Id) : Command()
+        data class OpenChat(val target: Id, val space: Id) : Command()
 
         data object ToDesktop : Command()
         data class ToSearch(val initialQuery: String, val space: Id) : Command()

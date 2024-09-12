@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.chats.AddChatMessage
 import com.anytypeio.anytype.domain.chats.ChatContainer
 import com.anytypeio.anytype.domain.chats.DeleteChatMessage
 import com.anytypeio.anytype.domain.chats.ToggleChatMessageReaction
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer.Store
 import com.anytypeio.anytype.domain.`object`.OpenObject
@@ -37,7 +38,8 @@ class DiscussionViewModel(
     private val deleteChatMessage: DeleteChatMessage,
     private val toggleChatMessageReaction: ToggleChatMessageReaction,
     private val members: ActiveSpaceMemberSubscriptionContainer,
-    private val getAccount: GetAccount
+    private val getAccount: GetAccount,
+    private val urlBuilder: UrlBuilder
 ) : BaseViewModel() {
 
     val name = MutableStateFlow<String?>(null)
@@ -86,18 +88,19 @@ class DiscussionViewModel(
                 .onEach { Timber.d("Got new update: $it") }
                 .collect {
                     messages.value = it.map { msg ->
+                        val member = members.get().let { type ->
+                            when(type) {
+                                is Store.Data -> type.members.find { member ->
+                                    member.identity == msg.creator
+                                }
+                                is Store.Empty -> null
+                            }
+                        }
                         DiscussionView.Message(
                             id = msg.id,
                             timestamp = msg.timestamp * 1000,
                             msg = msg.content?.text.orEmpty(),
-                            author = members.get().let { store ->
-                                when(store) {
-                                    is Store.Data -> store.members.find { member ->
-                                        member.identity == msg.creator
-                                    }?.name ?: msg.creator.takeLast(5)
-                                    is Store.Empty -> msg.creator.takeLast(5)
-                                }
-                            },
+                            author = member?.name ?: msg.creator.takeLast(5),
                             isUserAuthor = msg.creator == account,
                             reactions = msg.reactions.map{ (emoji, ids) ->
                                 DiscussionView.Message.Reaction(
@@ -106,7 +109,14 @@ class DiscussionViewModel(
                                     isSelected = ids.contains(account)
                                 )
                             },
-                            attachments = msg.attachments
+                            attachments = msg.attachments,
+                            avatar = if (member != null && !member.iconImage.isNullOrEmpty()) {
+                                DiscussionView.Message.Avatar.Image(
+                                    urlBuilder.thumbnail(member.iconImage!!)
+                                )
+                            } else {
+                                DiscussionView.Message.Avatar.Initials(member?.name.orEmpty())
+                            }
                         )
                     }.reversed()
                 }

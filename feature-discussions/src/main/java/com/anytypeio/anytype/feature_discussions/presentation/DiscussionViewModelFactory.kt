@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.chats.AddChatMessage
 import com.anytypeio.anytype.domain.chats.ChatContainer
 import com.anytypeio.anytype.domain.chats.DeleteChatMessage
 import com.anytypeio.anytype.domain.chats.ToggleChatMessageReaction
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
@@ -22,7 +23,8 @@ class DiscussionViewModelFactory @Inject constructor(
     private val deleteChatMessage: DeleteChatMessage,
     private val toggleChatMessageReaction: ToggleChatMessageReaction,
     private val members: ActiveSpaceMemberSubscriptionContainer,
-    private val getAccount: GetAccount
+    private val getAccount: GetAccount,
+    private val urlBuilder: UrlBuilder
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T = DiscussionViewModel(
@@ -34,6 +36,7 @@ class DiscussionViewModelFactory @Inject constructor(
         toggleChatMessageReaction = toggleChatMessageReaction,
         members = members,
         getAccount = getAccount,
-        deleteChatMessage = deleteChatMessage
+        deleteChatMessage = deleteChatMessage,
+        urlBuilder = urlBuilder
     ) as T
 }

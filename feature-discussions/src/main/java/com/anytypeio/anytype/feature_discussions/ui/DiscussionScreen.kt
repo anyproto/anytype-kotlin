@@ -60,6 +60,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -82,6 +83,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
@@ -535,7 +537,7 @@ fun Messages(
                     modifier = Modifier
                         .size(32.dp)
                         .background(
-                            colorResource(id = R.color.palette_system_blue),
+                            colorResource(id = R.color.text_tertiary),
                             shape = CircleShape
                         )
                         .align(Alignment.Bottom)
@@ -544,11 +546,21 @@ fun Messages(
                         text = msg.author.take(1).uppercase().ifEmpty { stringResource(id = R.string.u) },
                         modifier = Modifier.align(Alignment.Center),
                         style = TextStyle(
-                            fontSize = 11.sp,
+                            fontSize = 20.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = colorResource(id = R.color.text_white)
                         )
                     )
+                    if (msg.avatar is DiscussionView.Message.Avatar.Image) {
+                        Image(
+                            painter = rememberAsyncImagePainter(model = msg.avatar.hash),
+                            contentDescription = "Space member profile icon",
+                            modifier = modifier
+                                .size(32.dp)
+                                .clip(CircleShape),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Bubble(
@@ -873,7 +885,8 @@ fun Attachment(
             )
             .background(
                 color = colorResource(id = R.color.background_secondary)
-            ).clickable {
+            )
+            .clickable {
                 onAttachmentClicked()
             }
     ) {

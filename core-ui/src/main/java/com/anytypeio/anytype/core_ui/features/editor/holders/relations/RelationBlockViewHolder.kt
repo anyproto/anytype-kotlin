@@ -33,6 +33,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationDeletedBinding
 import com.anytypeio.anytype.core_ui.extensions.clearDrawable
 import com.anytypeio.anytype.core_ui.extensions.setDrawable
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
+import com.anytypeio.anytype.core_utils.ext.readableFileSize
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
@@ -169,8 +170,13 @@ sealed class RelationBlockViewHolder(
 
         override fun applyRelationValue(item: ObjectRelationView) {
             tvValue.apply {
-                text = item.value
                 if (item is ObjectRelationView.Default) {
+                    if (item.format == Relation.Format.NUMBER && item.key == "sizeInBytes") {
+                        val sizeInBytes = item.value?.toLongOrNull() ?: 0L
+                        text = sizeInBytes.readableFileSize()
+                    } else {
+                        text = item.value
+                    }
                     when (item.format) {
                         Relation.Format.SHORT_TEXT -> setHint(R.string.enter_text)
                         Relation.Format.LONG_TEXT -> setHint(R.string.enter_text)

@@ -386,4 +386,8 @@ object TestLogger : Logger {
     override fun logInfo(msg: String) {
         println("Info: $msg")
     }
+
+    override fun logException(e: Throwable, msg: String) {
+        println("Error: $msg, ${e.message}")
+    }
 }

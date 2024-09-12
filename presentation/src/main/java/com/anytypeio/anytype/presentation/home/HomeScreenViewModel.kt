@@ -399,9 +399,13 @@ class HomeScreenViewModel(
                 } else {
                     widgets
                 }
-            }.flowOn(appCoroutineDispatchers.io).collect {
-                views.value = it
             }
+                .catch {
+                    Timber.e(it, "Error while rendering widgets")
+                }
+                .flowOn(appCoroutineDispatchers.io).collect {
+                    views.value = it
+                }
         }
     }
 

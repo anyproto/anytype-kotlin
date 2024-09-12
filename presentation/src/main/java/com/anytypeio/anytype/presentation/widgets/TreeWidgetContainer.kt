@@ -41,7 +41,7 @@ class TreeWidgetContainer(
 
     private val nodes = mutableMapOf<Id, List<Id>>()
 
-    override val view = isSessionActive.flatMapLatest { isActive ->
+    override val view : Flow<WidgetView> = isSessionActive.flatMapLatest { isActive ->
         if (isActive)
             buildViewFlow().onStart {
                 isWidgetCollapsed.take(1).collect { isCollapsed ->

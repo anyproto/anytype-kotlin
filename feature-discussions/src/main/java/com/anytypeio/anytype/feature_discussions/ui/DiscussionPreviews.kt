@@ -78,7 +78,8 @@ fun DiscussionScreenPreview() {
         onReacted = { a, b -> },
         onCopyMessage = {},
         onDeleteMessage = {},
-        onAttachmentClicked = {}
+        onAttachmentClicked = {},
+        onEditMessage = {}
     )
 }
 

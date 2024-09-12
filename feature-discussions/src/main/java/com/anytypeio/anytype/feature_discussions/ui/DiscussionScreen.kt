@@ -150,13 +150,17 @@ fun DiscussionScreenWrapper(
                         )
                     },
                     onDeleteMessage = vm::onDeleteMessage,
+                    onEditMessage = vm::onRequestEditMessageClicked,
                     onAttachmentClicked = vm::onAttachmentClicked
                 )
                 LaunchedEffect(Unit) {
                     vm.commands.collect { command ->
                         when(command) {
-                            UXCommand.JumpToBottom -> {
+                            is UXCommand.JumpToBottom -> {
                                 lazyListState.animateScrollToItem(0)
+                            }
+                            is UXCommand.SetChatBoxInput -> {
+                                // TODO
                             }
                         }
                     }
@@ -182,9 +186,11 @@ fun DiscussionScreen(
     onReacted: (Id, String) -> Unit,
     onDeleteMessage: (DiscussionView.Message) -> Unit,
     onCopyMessage: (DiscussionView.Message) -> Unit,
+    onEditMessage: (DiscussionView.Message) -> Unit,
     onAttachmentClicked: (Chat.Message.Attachment) -> Unit,
 ) {
     var isTitleFocused by remember { mutableStateOf(false) }
+    var isInEditMessage by remember { mutableStateOf(false) }
     val isHeaderVisible by remember {
         derivedStateOf {
             val layoutInfo = lazyListState.layoutInfo
@@ -219,7 +225,8 @@ fun DiscussionScreen(
                 onReacted = onReacted,
                 onCopyMessage = onCopyMessage,
                 onDeleteMessage = onDeleteMessage,
-                onAttachmentClicked = onAttachmentClicked
+                onAttachmentClicked = onAttachmentClicked,
+                onEditMessage = onEditMessage
             )
             // Jump to bottom button shows up when user scrolls past a threshold.
             // Convert to pixels:
@@ -349,7 +356,7 @@ private fun ChatBox(
     isTitleFocused: Boolean,
     attachments: List<GlobalSearchItemView>,
 ) {
-    val context = LocalContext.current
+
     var textState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue())
     }
@@ -516,7 +523,8 @@ fun Messages(
     onReacted: (Id, String) -> Unit,
     onDeleteMessage: (DiscussionView.Message) -> Unit,
     onCopyMessage: (DiscussionView.Message) -> Unit,
-    onAttachmentClicked: (Chat.Message.Attachment) -> Unit
+    onAttachmentClicked: (Chat.Message.Attachment) -> Unit,
+    onEditMessage: (DiscussionView.Message) -> Unit
 ) {
     LazyColumn(
         modifier = modifier,
@@ -583,7 +591,10 @@ fun Messages(
                     onCopyMessage = {
                         onCopyMessage(msg)
                     },
-                    onAttachmentClicked = onAttachmentClicked
+                    onAttachmentClicked = onAttachmentClicked,
+                    onEditMessage = {
+                        onEditMessage(msg)
+                    }
                 )
             }
             if (idx == messages.lastIndex) {
@@ -652,6 +663,7 @@ fun Bubble(
     onReacted: (String) -> Unit,
     onDeleteMessage: () -> Unit,
     onCopyMessage: () -> Unit,
+    onEditMessage: () -> Unit,
     onAttachmentClicked: (Chat.Message.Attachment) -> Unit
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
@@ -803,6 +815,20 @@ fun Bubble(
                         showDropdownMenu = false
                     }
                 )
+                if (isUserAuthor) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = stringResource(R.string.edit),
+                                color = colorResource(id = R.color.text_primary)
+                            )
+                        },
+                        onClick = {
+                            onEditMessage()
+                            showDropdownMenu = false
+                        }
+                    )
+                }
                 if (isUserAuthor) {
                     DropdownMenuItem(
                         text = {

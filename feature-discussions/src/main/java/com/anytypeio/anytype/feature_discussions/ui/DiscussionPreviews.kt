@@ -43,7 +43,8 @@ fun DiscussionPreview() {
         onReacted = { a, b -> },
         onDeleteMessage = {},
         onCopyMessage = {},
-        onAttachmentClicked = {}
+        onAttachmentClicked = {},
+        onEditMessage = {}
     )
 }
 
@@ -92,7 +93,8 @@ fun BubblePreview() {
         onReacted = {},
         onDeleteMessage = {},
         onCopyMessage = {},
-        onAttachmentClicked = {}
+        onAttachmentClicked = {},
+        onEditMessage = {}
     )
 }
 
@@ -115,6 +117,7 @@ fun BubbleWithAttachmentPreview() {
                 )
             )
         },
-        onAttachmentClicked = {}
+        onAttachmentClicked = {},
+        onEditMessage = {}
     )
 }

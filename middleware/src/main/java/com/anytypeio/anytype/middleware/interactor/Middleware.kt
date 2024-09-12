@@ -2755,6 +2755,18 @@ class Middleware @Inject constructor(
     }
 
     @Throws
+    fun chatEditMessageContent(command: Command.ChatCommand.EditMessage) {
+        val request = Rpc.Chat.EditMessageContent.Request(
+            chatObjectId = command.chat,
+            messageId = command.message.id,
+            editedMessage = command.message.mw()
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.chatEditMessage(request) }
+        logResponseIfDebug(response, time)
+    }
+
+    @Throws
     fun chatGetMessages(command: Command.ChatCommand.GetMessages) : List<Chat.Message> {
         val request = Rpc.Chat.GetMessages.Request(
             chatObjectId = command.chat
@@ -2781,7 +2793,8 @@ class Middleware @Inject constructor(
         command: Command.ChatCommand.SubscribeLastMessages
     ): Command.ChatCommand.SubscribeLastMessages.Response {
         val request = Rpc.Chat.SubscribeLastMessages.Request(
-            chatObjectId = command.chat
+            chatObjectId = command.chat,
+            limit = command.limit
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.chatSubscribeLastMessages(request) }

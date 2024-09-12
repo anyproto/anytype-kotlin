@@ -6,6 +6,7 @@ import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.chats.AddChatMessage
 import com.anytypeio.anytype.domain.chats.ChatContainer
 import com.anytypeio.anytype.domain.chats.DeleteChatMessage
+import com.anytypeio.anytype.domain.chats.EditChatMessage
 import com.anytypeio.anytype.domain.chats.ToggleChatMessageReaction
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
@@ -20,6 +21,7 @@ class DiscussionViewModelFactory @Inject constructor(
     private val openObject: OpenObject,
     private val chatContainer: ChatContainer,
     private val addChatMessage: AddChatMessage,
+    private val editChatMessage: EditChatMessage,
     private val deleteChatMessage: DeleteChatMessage,
     private val toggleChatMessageReaction: ToggleChatMessageReaction,
     private val members: ActiveSpaceMemberSubscriptionContainer,
@@ -37,6 +39,7 @@ class DiscussionViewModelFactory @Inject constructor(
         members = members,
         getAccount = getAccount,
         deleteChatMessage = deleteChatMessage,
-        urlBuilder = urlBuilder
+        urlBuilder = urlBuilder,
+        editChatMessage = editChatMessage
     ) as T
 }

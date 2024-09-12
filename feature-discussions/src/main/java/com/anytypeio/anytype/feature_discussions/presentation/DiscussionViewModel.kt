@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.chats.AddChatMessage
 import com.anytypeio.anytype.domain.chats.ChatContainer
 import com.anytypeio.anytype.domain.chats.DeleteChatMessage
+import com.anytypeio.anytype.domain.chats.EditChatMessage
 import com.anytypeio.anytype.domain.chats.ToggleChatMessageReaction
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
@@ -35,6 +36,7 @@ class DiscussionViewModel(
     private val openObject: OpenObject,
     private val chatContainer: ChatContainer,
     private val addChatMessage: AddChatMessage,
+    private val editChatMessage: EditChatMessage,
     private val deleteChatMessage: DeleteChatMessage,
     private val toggleChatMessageReaction: ToggleChatMessageReaction,
     private val members: ActiveSpaceMemberSubscriptionContainer,
@@ -47,6 +49,7 @@ class DiscussionViewModel(
     val attachments = MutableStateFlow<List<GlobalSearchItemView>>(emptyList())
     val commands = MutableSharedFlow<UXCommand>()
     val navigation = MutableSharedFlow<OpenObjectNavigation>()
+    val chatBoxMode = MutableStateFlow<ChatBoxMode>(ChatBoxMode.Default)
 
     // TODO naive implementation; switch to state
     private lateinit var chat: Id
@@ -142,6 +145,21 @@ class DiscussionViewModel(
         }
     }
 
+    fun onRequestEditMessageClicked(msg: DiscussionView.Message) {
+        viewModelScope.launch {
+            chatBoxMode.value = ChatBoxMode.EditMessage(msg.id)
+            commands.emit(
+                UXCommand.SetChatBoxInput(
+                    input = msg.msg
+                )
+            )
+        }
+    }
+
+    fun onMessageEdited() {
+        // TODO
+    }
+
     fun onTitleChanged(input: String) {
         Timber.d("DROID-2635 OnTitleChanged: $input")
         viewModelScope.launch {
@@ -212,6 +230,12 @@ class DiscussionViewModel(
 
     sealed class UXCommand {
         data object JumpToBottom: UXCommand()
+        data class SetChatBoxInput(val input: String): UXCommand()
+    }
+
+    sealed class ChatBoxMode {
+        data object Default : ChatBoxMode()
+        data class EditMessage(val msg: Id) : ChatBoxMode()
     }
 
     companion object {

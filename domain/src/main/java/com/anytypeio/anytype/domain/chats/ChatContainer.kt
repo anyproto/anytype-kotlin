@@ -85,6 +85,6 @@ class ChatContainer @Inject constructor(
     }
 
     companion object {
-        const val DEFAULT_LAST_MESSAGE_COUNT = 50
+        const val DEFAULT_LAST_MESSAGE_COUNT = 0
     }
 }

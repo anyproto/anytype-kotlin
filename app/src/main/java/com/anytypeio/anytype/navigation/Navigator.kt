@@ -34,6 +34,16 @@ class Navigator : AppNavigation {
         }
     }
 
+    override fun openChat(target: Id, space: Id) {
+        navController?.navigate(
+            R.id.discussionScreen,
+            DiscussionFragment.args(
+                ctx = target,
+                space = space
+            )
+        )
+    }
+
     override fun openDocument(target: Id, space: Id) {
         navController?.navigate(
             R.id.objectNavigation,

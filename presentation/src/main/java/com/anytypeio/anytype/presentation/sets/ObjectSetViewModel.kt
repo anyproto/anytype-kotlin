@@ -109,7 +109,6 @@ import com.anytypeio.anytype.presentation.templates.TemplateView
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUI
 import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUIAction
-import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command
 import com.anytypeio.anytype.presentation.widgets.enterEditing
 import com.anytypeio.anytype.presentation.widgets.exitEditing
 import com.anytypeio.anytype.presentation.widgets.hideMoreMenu
@@ -1551,6 +1550,31 @@ class ObjectSetViewModel(
                         navigate(
                             EventWrapper(
                                 AppNavigation.Command.OpenSetOrCollection(
+                                    target = target,
+                                    space = space
+                                )
+                            )
+                        )
+                    }
+                )
+            }
+            ObjectType.Layout.CHAT -> {
+                closeBlock.async(context).fold(
+                    onSuccess = {
+                        navigate(
+                            EventWrapper(
+                                AppNavigation.Command.OpenChat(
+                                    target = target,
+                                    space = space
+                                )
+                            )
+                        )
+                    },
+                    onFailure = {
+                        Timber.e(it, "Error while closing object set: $context")
+                        navigate(
+                            EventWrapper(
+                                AppNavigation.Command.OpenChat(
                                     target = target,
                                     space = space
                                 )

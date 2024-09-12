@@ -16,6 +16,7 @@ interface AppNavigation {
         view: Id? = null,
         isPopUpToDashboard: Boolean = false
     )
+    fun openChat(target: Id, space: Id)
     fun openDocument(target: Id, space: Id)
     fun openDiscussion(target: Id, space: Id)
     fun openModalTemplateSelect(
@@ -59,6 +60,7 @@ interface AppNavigation {
         object ExitFromMigrationScreen : Command()
 
         data class OpenObject(val target: Id, val space: Id) : Command()
+        data class OpenChat(val target: Id, val space: Id) : Command()
         data class LaunchDocument(val target: Id, val space: Id) : Command()
         data class OpenModalTemplateSelect(
             val template: Id,

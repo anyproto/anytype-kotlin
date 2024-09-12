@@ -103,6 +103,10 @@ class CollectionFragment : BaseComposeFragment() {
                 subscription = command.subscription,
                 space = space
             )
+            is Command.OpenChat -> navigation.openChat(
+                target = command.target,
+                space = command.space
+            )
             is Command.ToDesktop -> navigation.exitToDesktop()
             is Command.ToSearch -> navigation.openPageSearch(
                 initialQuery = command.initialQuery,

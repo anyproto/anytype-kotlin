@@ -2073,6 +2073,9 @@ class ObjectSetViewModel(
                         is TypeTemplatesWidgetUI.Init -> emptyList()
                     }
                 }
+                .catch {
+                    Timber.e(it, "Error while processing templates")
+                }
                 .collect{ templateViews ->
                     typeTemplatesWidgetState.value =
                         when (val uistate = typeTemplatesWidgetState.value) {

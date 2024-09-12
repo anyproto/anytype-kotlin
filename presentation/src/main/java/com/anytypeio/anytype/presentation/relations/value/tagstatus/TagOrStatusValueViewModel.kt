@@ -29,6 +29,7 @@ import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
@@ -95,7 +96,11 @@ class TagOrStatusValueViewModel(
                     query = query,
                     ids = ids
                 )
-            }.collect()
+            }
+                .catch {
+                    Timber.e(it, "TagOrStatusValue, Error while combining flows")
+                }
+                .collect()
         }
     }
 

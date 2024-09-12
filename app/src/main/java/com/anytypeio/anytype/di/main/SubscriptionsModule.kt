@@ -141,12 +141,14 @@ object SubscriptionsModule {
         dispatchers: AppCoroutineDispatchers,
         @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
         container: StorelessSubscriptionContainer,
-        awaitAccountStartManager: AwaitAccountStartManager
+        awaitAccountStartManager: AwaitAccountStartManager,
+        logger: Logger
     ) : SpaceViewSubscriptionContainer = SpaceViewSubscriptionContainer.Default(
         dispatchers = dispatchers,
         scope = scope,
         container = container,
-        awaitAccountStart = awaitAccountStartManager
+        awaitAccountStart = awaitAccountStartManager,
+        logger = logger
     )
 
     @JvmStatic
@@ -157,13 +159,15 @@ object SubscriptionsModule {
         @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
         container: StorelessSubscriptionContainer,
         spaceManager: SpaceManager,
-        awaitAccountStartManager: AwaitAccountStartManager
+        awaitAccountStartManager: AwaitAccountStartManager,
+        logger: Logger
     ) : ActiveSpaceMemberSubscriptionContainer = ActiveSpaceMemberSubscriptionContainer.Default(
         dispatchers = dispatchers,
         scope = scope,
         container = container,
         manager = spaceManager,
-        awaitAccountStart = awaitAccountStartManager
+        awaitAccountStart = awaitAccountStartManager,
+        logger = logger
     )
 
     @JvmStatic

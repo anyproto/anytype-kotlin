@@ -56,7 +56,7 @@ sealed class Chat {
             )
 
             /**
-             * New message builder.
+             * Updated message builder.
              */
             fun updated(
                 id: Id,

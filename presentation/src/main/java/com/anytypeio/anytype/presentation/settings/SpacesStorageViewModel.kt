@@ -119,6 +119,7 @@ class SpacesStorageViewModel(
                 createSpacesStorageScreenState(nodeUsageInfo, spaces)
             }
                 .flowOn(appCoroutineDispatchers.io)
+                .catch { Timber.e(it, "Error while getting spaces") }
                 .collect { _viewState.value = it }
         }
     }

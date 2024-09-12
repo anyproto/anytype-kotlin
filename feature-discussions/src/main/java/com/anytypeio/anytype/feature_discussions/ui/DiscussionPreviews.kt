@@ -19,19 +19,19 @@ fun DiscussionPreview() {
         messages = listOf(
             DiscussionView.Message(
                 id = "1",
-                msg = stringResource(id = R.string.default_text_placeholder),
+                content = stringResource(id = R.string.default_text_placeholder),
                 author = "Walter",
                 timestamp = System.currentTimeMillis()
             ),
             DiscussionView.Message(
                 id = "2",
-                msg = stringResource(id = R.string.default_text_placeholder),
+                content = stringResource(id = R.string.default_text_placeholder),
                 author = "Leo",
                 timestamp = System.currentTimeMillis()
             ),
             DiscussionView.Message(
                 id = "3",
-                msg = stringResource(id = R.string.default_text_placeholder),
+                content = stringResource(id = R.string.default_text_placeholder),
                 author = "Gilbert",
                 timestamp = System.currentTimeMillis()
             )
@@ -43,7 +43,8 @@ fun DiscussionPreview() {
         onReacted = { a, b -> },
         onDeleteMessage = {},
         onCopyMessage = {},
-        onAttachmentClicked = {}
+        onAttachmentClicked = {},
+        onEditMessage = {}
     )
 }
 
@@ -58,7 +59,7 @@ fun DiscussionScreenPreview() {
                 add(
                     DiscussionView.Message(
                         id = idx.toString(),
-                        msg = stringResource(id = R.string.default_text_placeholder),
+                        content = stringResource(id = R.string.default_text_placeholder),
                         author = "User ${idx.inc()}",
                         timestamp =
                         System.currentTimeMillis()
@@ -77,7 +78,9 @@ fun DiscussionScreenPreview() {
         onReacted = { a, b -> },
         onCopyMessage = {},
         onDeleteMessage = {},
-        onAttachmentClicked = {}
+        onAttachmentClicked = {},
+        onEditMessage = {},
+        onExitEditMessageMode = {}
     )
 }
 
@@ -92,7 +95,8 @@ fun BubblePreview() {
         onReacted = {},
         onDeleteMessage = {},
         onCopyMessage = {},
-        onAttachmentClicked = {}
+        onAttachmentClicked = {},
+        onEditMessage = {}
     )
 }
 
@@ -115,6 +119,7 @@ fun BubbleWithAttachmentPreview() {
                 )
             )
         },
-        onAttachmentClicked = {}
+        onAttachmentClicked = {},
+        onEditMessage = {}
     )
 }

@@ -583,6 +583,10 @@ sealed class Command {
             val chat: Id,
             val msg: Id
         ): ChatCommand()
+        data class EditMessage(
+            val chat: Id,
+            val message: Chat.Message
+        ): ChatCommand()
         data class GetMessages(
             val chat: Id,
             val beforeMessageId: Id,

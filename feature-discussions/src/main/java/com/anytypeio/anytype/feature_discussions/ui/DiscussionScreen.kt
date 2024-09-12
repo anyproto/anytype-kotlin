@@ -57,9 +57,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -68,6 +71,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -82,6 +86,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
@@ -91,6 +97,7 @@ import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_BLUE
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
 import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
@@ -103,6 +110,7 @@ import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
 import com.anytypeio.anytype.feature_discussions.R
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionView
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
+import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel.ChatBoxMode
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel.UXCommand
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
@@ -143,17 +151,23 @@ fun DiscussionScreenWrapper(
                     onReacted = vm::onReacted,
                     onCopyMessage = { msg ->
                         clipboard.setText(
-                            AnnotatedString(text = msg.msg)
+                            AnnotatedString(text = msg.content)
                         )
                     },
                     onDeleteMessage = vm::onDeleteMessage,
-                    onAttachmentClicked = vm::onAttachmentClicked
+                    onEditMessage = vm::onRequestEditMessageClicked,
+                    onAttachmentClicked = vm::onAttachmentClicked,
+                    isInEditMessageMode = vm.chatBoxMode.collectAsState().value is ChatBoxMode.EditMessage,
+                    onExitEditMessageMode = vm::onExitEditMessageMode
                 )
                 LaunchedEffect(Unit) {
                     vm.commands.collect { command ->
                         when(command) {
-                            UXCommand.JumpToBottom -> {
+                            is UXCommand.JumpToBottom -> {
                                 lazyListState.animateScrollToItem(0)
+                            }
+                            is UXCommand.SetChatBoxInput -> {
+                                // TODO
                             }
                         }
                     }
@@ -168,6 +182,7 @@ fun DiscussionScreenWrapper(
  */
 @Composable
 fun DiscussionScreen(
+    isInEditMessageMode: Boolean = false,
     lazyListState: LazyListState,
     title: String?,
     messages: List<DiscussionView.Message>,
@@ -179,9 +194,15 @@ fun DiscussionScreen(
     onReacted: (Id, String) -> Unit,
     onDeleteMessage: (DiscussionView.Message) -> Unit,
     onCopyMessage: (DiscussionView.Message) -> Unit,
+    onEditMessage: (DiscussionView.Message) -> Unit,
     onAttachmentClicked: (Chat.Message.Attachment) -> Unit,
+    onExitEditMessageMode: () -> Unit
 ) {
+    var textState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(TextFieldValue(""))
+    }
     var isTitleFocused by remember { mutableStateOf(false) }
+    val chatBoxFocusRequester = FocusRequester()
     val isHeaderVisible by remember {
         derivedStateOf {
             val layoutInfo = lazyListState.layoutInfo
@@ -216,7 +237,16 @@ fun DiscussionScreen(
                 onReacted = onReacted,
                 onCopyMessage = onCopyMessage,
                 onDeleteMessage = onDeleteMessage,
-                onAttachmentClicked = onAttachmentClicked
+                onAttachmentClicked = onAttachmentClicked,
+                onEditMessage = { msg ->
+                    onEditMessage(msg).also {
+                        textState = TextFieldValue(
+                            msg.content,
+                            selection = TextRange(msg.content.length)
+                        )
+                        chatBoxFocusRequester.requestFocus()
+                    }
+                }
             )
             // Jump to bottom button shows up when user scrolls past a threshold.
             // Convert to pixels:
@@ -281,7 +311,19 @@ fun DiscussionScreen(
                 )
             }
         }
+        if (isInEditMessageMode) {
+            EditMessageToolbar(
+                onExitClicked = {
+                    onExitEditMessageMode().also {
+                        textState = TextFieldValue()
+                    }
+                }
+            )
+        }
+
         ChatBox(
+            chatBoxFocusRequester = chatBoxFocusRequester,
+            textState = textState,
             onMessageSent = onMessageSent,
             onAttachClicked = onAttachClicked,
             resetScroll = {
@@ -290,7 +332,13 @@ fun DiscussionScreen(
                 }
             },
             isTitleFocused = isTitleFocused,
-            attachments = attachments
+            attachments = attachments,
+            updateValue = {
+                textState = it
+            },
+            clearText = {
+                textState = TextFieldValue()
+            }
         )
     }
 }
@@ -340,16 +388,16 @@ private fun DiscussionTitle(
 
 @Composable
 private fun ChatBox(
+    chatBoxFocusRequester: FocusRequester,
+    textState: TextFieldValue,
     onMessageSent: (String) -> Unit = {},
     onAttachClicked: () -> Unit = {},
     resetScroll: () -> Unit = {},
     isTitleFocused: Boolean,
     attachments: List<GlobalSearchItemView>,
+    clearText: () -> Unit,
+    updateValue: (TextFieldValue) -> Unit
 ) {
-    val context = LocalContext.current
-    var textState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-        mutableStateOf(TextFieldValue())
-    }
 
     val scope = rememberCoroutineScope()
 
@@ -390,15 +438,16 @@ private fun ChatBox(
             textState = textState,
             onMessageSent = {
                 onMessageSent(it)
-                textState = TextFieldValue()
+                clearText()
                 resetScroll()
             },
             onTextChanged = { value ->
-                textState = value
+                updateValue(value)
             },
             modifier = Modifier
                 .weight(1f)
                 .align(Alignment.Bottom)
+                .focusRequester(chatBoxFocusRequester)
         )
         Box(
             modifier = Modifier
@@ -408,7 +457,7 @@ private fun ChatBox(
                 .clickable {
                     if (textState.text.isNotBlank()) {
                         onMessageSent(textState.text)
-                        textState = TextFieldValue()
+                        clearText()
                         resetScroll()
                     }
                 }
@@ -423,6 +472,48 @@ private fun ChatBox(
                 )
             }
         }
+    }
+}
+
+@Composable
+fun EditMessageToolbar(
+    onExitClicked: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .height(40.dp)
+            .fillMaxWidth()
+            .background(
+                color = colorResource(id = R.color.background_highlighted_light)
+            )
+    ) {
+        Text(
+            modifier = Modifier
+                .padding(
+                    start = 12.dp
+                )
+                .align(
+                    Alignment.CenterStart
+                ),
+            text = stringResource(R.string.chats_edit_message),
+            style = Caption1Medium,
+            color = colorResource(id = R.color.text_primary)
+        )
+        Image(
+            modifier = Modifier
+                .padding(
+                    end = 12.dp
+                )
+                .align(
+                    Alignment.CenterEnd
+                )
+                .noRippleClickable {
+                    onExitClicked()
+                }
+            ,
+            painter = painterResource(id = R.drawable.ic_edit_message_close),
+            contentDescription = "Close edit-message mode"
+        )
     }
 }
 
@@ -513,7 +604,8 @@ fun Messages(
     onReacted: (Id, String) -> Unit,
     onDeleteMessage: (DiscussionView.Message) -> Unit,
     onCopyMessage: (DiscussionView.Message) -> Unit,
-    onAttachmentClicked: (Chat.Message.Attachment) -> Unit
+    onAttachmentClicked: (Chat.Message.Attachment) -> Unit,
+    onEditMessage: (DiscussionView.Message) -> Unit
 ) {
     LazyColumn(
         modifier = modifier,
@@ -535,7 +627,7 @@ fun Messages(
                     modifier = Modifier
                         .size(32.dp)
                         .background(
-                            colorResource(id = R.color.palette_system_blue),
+                            colorResource(id = R.color.text_tertiary),
                             shape = CircleShape
                         )
                         .align(Alignment.Bottom)
@@ -544,16 +636,29 @@ fun Messages(
                         text = msg.author.take(1).uppercase().ifEmpty { stringResource(id = R.string.u) },
                         modifier = Modifier.align(Alignment.Center),
                         style = TextStyle(
-                            fontSize = 11.sp,
+                            fontSize = 20.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = colorResource(id = R.color.text_white)
                         )
                     )
+                    if (msg.avatar is DiscussionView.Message.Avatar.Image) {
+                        AsyncImage(
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(msg.avatar.hash)
+                                .crossfade(true)
+                                .build(),
+                            contentDescription = "Space member profile icon",
+                            modifier = modifier
+                                .size(32.dp)
+                                .clip(CircleShape),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Bubble(
                     name = msg.author,
-                    msg = msg.msg,
+                    msg = msg.content,
                     timestamp = msg.timestamp,
                     attachments = msg.attachments,
                     isUserAuthor = msg.isUserAuthor,
@@ -567,7 +672,10 @@ fun Messages(
                     onCopyMessage = {
                         onCopyMessage(msg)
                     },
-                    onAttachmentClicked = onAttachmentClicked
+                    onAttachmentClicked = onAttachmentClicked,
+                    onEditMessage = {
+                        onEditMessage(msg)
+                    }
                 )
             }
             if (idx == messages.lastIndex) {
@@ -636,6 +744,7 @@ fun Bubble(
     onReacted: (String) -> Unit,
     onDeleteMessage: () -> Unit,
     onCopyMessage: () -> Unit,
+    onEditMessage: () -> Unit,
     onAttachmentClicked: (Chat.Message.Attachment) -> Unit
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
@@ -791,6 +900,20 @@ fun Bubble(
                     DropdownMenuItem(
                         text = {
                             Text(
+                                text = stringResource(R.string.edit),
+                                color = colorResource(id = R.color.text_primary)
+                            )
+                        },
+                        onClick = {
+                            onEditMessage()
+                            showDropdownMenu = false
+                        }
+                    )
+                }
+                if (isUserAuthor) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
                                 text = stringResource(id = R.string.delete),
                                 color = colorResource(id = R.color.palette_system_red)
                             )
@@ -873,7 +996,8 @@ fun Attachment(
             )
             .background(
                 color = colorResource(id = R.color.background_secondary)
-            ).clickable {
+            )
+            .clickable {
                 onAttachmentClicked()
             }
     ) {

@@ -13,7 +13,9 @@ import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.chats.AddChatMessage
 import com.anytypeio.anytype.domain.chats.ChatContainer
 import com.anytypeio.anytype.domain.chats.DeleteChatMessage
+import com.anytypeio.anytype.domain.chats.EditChatMessage
 import com.anytypeio.anytype.domain.chats.ToggleChatMessageReaction
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer.Store
 import com.anytypeio.anytype.domain.`object`.OpenObject
@@ -34,10 +36,12 @@ class DiscussionViewModel(
     private val openObject: OpenObject,
     private val chatContainer: ChatContainer,
     private val addChatMessage: AddChatMessage,
+    private val editChatMessage: EditChatMessage,
     private val deleteChatMessage: DeleteChatMessage,
     private val toggleChatMessageReaction: ToggleChatMessageReaction,
     private val members: ActiveSpaceMemberSubscriptionContainer,
-    private val getAccount: GetAccount
+    private val getAccount: GetAccount,
+    private val urlBuilder: UrlBuilder
 ) : BaseViewModel() {
 
     val name = MutableStateFlow<String?>(null)
@@ -45,6 +49,7 @@ class DiscussionViewModel(
     val attachments = MutableStateFlow<List<GlobalSearchItemView>>(emptyList())
     val commands = MutableSharedFlow<UXCommand>()
     val navigation = MutableSharedFlow<OpenObjectNavigation>()
+    val chatBoxMode = MutableStateFlow<ChatBoxMode>(ChatBoxMode.Default)
 
     // TODO naive implementation; switch to state
     private lateinit var chat: Id
@@ -86,18 +91,19 @@ class DiscussionViewModel(
                 .onEach { Timber.d("Got new update: $it") }
                 .collect {
                     messages.value = it.map { msg ->
+                        val member = members.get().let { type ->
+                            when(type) {
+                                is Store.Data -> type.members.find { member ->
+                                    member.identity == msg.creator
+                                }
+                                is Store.Empty -> null
+                            }
+                        }
                         DiscussionView.Message(
                             id = msg.id,
                             timestamp = msg.timestamp * 1000,
-                            msg = msg.content?.text.orEmpty(),
-                            author = members.get().let { store ->
-                                when(store) {
-                                    is Store.Data -> store.members.find { member ->
-                                        member.identity == msg.creator
-                                    }?.name ?: msg.creator.takeLast(5)
-                                    is Store.Empty -> msg.creator.takeLast(5)
-                                }
-                            },
+                            content = msg.content?.text.orEmpty(),
+                            author = member?.name ?: msg.creator.takeLast(5),
                             isUserAuthor = msg.creator == account,
                             reactions = msg.reactions.map{ (emoji, ids) ->
                                 DiscussionView.Message.Reaction(
@@ -106,7 +112,14 @@ class DiscussionViewModel(
                                     isSelected = ids.contains(account)
                                 )
                             },
-                            attachments = msg.attachments
+                            attachments = msg.attachments,
+                            avatar = if (member != null && !member.iconImage.isNullOrEmpty()) {
+                                DiscussionView.Message.Avatar.Image(
+                                    urlBuilder.thumbnail(member.iconImage!!)
+                                )
+                            } else {
+                                DiscussionView.Message.Avatar.Initials(member?.name.orEmpty())
+                            }
                         )
                     }.reversed()
                 }
@@ -118,17 +131,46 @@ class DiscussionViewModel(
     fun onMessageSent(msg: String) {
         Timber.d("DROID-2635 OnMessageSent: $msg")
         viewModelScope.launch {
-            addChatMessage.async(
-                params = Command.ChatCommand.AddMessage(
-                    chat = chat,
-                    message = Chat.Message.new(msg)
-                )
-            ).onSuccess {
-                delay(JUMP_TO_BOTTOM_DELAY)
-                commands.emit(UXCommand.JumpToBottom)
-            }.onFailure {
-                Timber.e(it, "Error while adding message")
+            when(val mode = chatBoxMode.value) {
+                is ChatBoxMode.Default -> {
+                    addChatMessage.async(
+                        params = Command.ChatCommand.AddMessage(
+                            chat = chat,
+                            message = Chat.Message.new(msg)
+                        )
+                    ).onSuccess {
+                        delay(JUMP_TO_BOTTOM_DELAY)
+                        commands.emit(UXCommand.JumpToBottom)
+                    }.onFailure {
+                        Timber.e(it, "Error while adding message")
+                    }
+                }
+                is ChatBoxMode.EditMessage -> {
+                    editChatMessage.async(
+                        params = Command.ChatCommand.EditMessage(
+                            chat = chat,
+                            message = Chat.Message.updated(
+                                id = mode.msg,
+                                text = msg
+                            )
+                        )
+                    ).onSuccess {
+                        delay(JUMP_TO_BOTTOM_DELAY)
+                        commands.emit(UXCommand.JumpToBottom)
+                    }.onFailure {
+                        Timber.e(it, "Error while adding message")
+                    }.onSuccess {
+                        chatBoxMode.value = ChatBoxMode.Default
+                    }
+                }
             }
+        }
+    }
+
+    fun onRequestEditMessageClicked(msg: DiscussionView.Message) {
+        Timber.d("onRequestEditMessageClicked")
+        viewModelScope.launch {
+            chatBoxMode.value = ChatBoxMode.EditMessage(msg.id)
         }
     }
 
@@ -156,6 +198,7 @@ class DiscussionViewModel(
     }
 
     fun onReacted(msg: Id, reaction: String) {
+        Timber.d("onReacted")
         viewModelScope.launch {
             val message = messages.value.find { it.id == msg }
             if (message != null) {
@@ -200,8 +243,20 @@ class DiscussionViewModel(
         }
     }
 
+    fun onExitEditMessageMode() {
+        viewModelScope.launch {
+            chatBoxMode.value = ChatBoxMode.Default
+        }
+    }
+
     sealed class UXCommand {
         data object JumpToBottom: UXCommand()
+        data class SetChatBoxInput(val input: String): UXCommand()
+    }
+
+    sealed class ChatBoxMode {
+        data object Default : ChatBoxMode()
+        data class EditMessage(val msg: Id) : ChatBoxMode()
     }
 
     companion object {

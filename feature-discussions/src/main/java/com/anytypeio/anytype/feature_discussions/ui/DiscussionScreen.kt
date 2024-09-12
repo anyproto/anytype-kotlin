@@ -83,7 +83,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
@@ -552,8 +553,11 @@ fun Messages(
                         )
                     )
                     if (msg.avatar is DiscussionView.Message.Avatar.Image) {
-                        Image(
-                            painter = rememberAsyncImagePainter(model = msg.avatar.hash),
+                        AsyncImage(
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(msg.avatar.hash)
+                                .crossfade(true)
+                                .build(),
                             contentDescription = "Space member profile icon",
                             modifier = modifier
                                 .size(32.dp)

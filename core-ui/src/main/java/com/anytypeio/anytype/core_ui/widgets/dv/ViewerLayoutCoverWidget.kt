@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_ui.widgets.dv
 
+import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
@@ -15,7 +16,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FractionalThreshold
@@ -36,6 +39,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
@@ -43,7 +48,6 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.widgets.DragStates
 import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi
 import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi.State.ImagePreview
-import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi.Action.Cover
 import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -59,6 +63,8 @@ fun ViewerLayoutCoverWidget(
 
     val swipeableState = rememberSwipeableState(DragStates.VISIBLE)
     val sizePx = with(LocalDensity.current) { LocalConfiguration.current.screenHeightDp.dp.toPx() }
+
+    val lazyListState = rememberLazyListState()
 
     if (swipeableState.isAnimationRunning && swipeableState.targetValue == DragStates.DISMISSED) {
         DisposableEffect(Unit) {
@@ -107,19 +113,31 @@ fun ViewerLayoutCoverWidget(
                     .padding(bottom = 20.dp)
             ) {
                 WidgetHeader(title = stringResource(R.string.view_layout_cover_widget_title))
-                LazyColumn {
-                    item {
-                        CoverItem(
-                            text = stringResource(id = R.string.none),
-                            checked = uiState.cover == ImagePreview.None
-                        ) {
-                            action(Cover(ImagePreview.None))
+                LazyColumn(
+                    state = lazyListState,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    items(
+                        count = uiState.imagePreviewItems.size,
+                        key = { index -> uiState.imagePreviewItems[index].relationKey.key }
+                    ) { idx ->
+                        val item = uiState.imagePreviewItems[idx]
+                        val title = when (item) {
+                            is ImagePreview.None -> stringResource(id = R.string.none)
+                            is ImagePreview.PageCover -> stringResource(id = R.string.page_cover)
+                            is ImagePreview.Custom -> item.name
+                        }
+                        val iconDrawableRes = when (item) {
+                            is ImagePreview.None -> null
+                            is ImagePreview.PageCover -> null
+                            is ImagePreview.Custom -> R.drawable.ic_relation_attachment_24
                         }
                         CoverItem(
-                            text = stringResource(id = R.string.page_cover),
-                            checked = uiState.cover == ImagePreview.Cover
+                            text = title,
+                            checked = item.isChecked,
+                            iconDrawableRes = iconDrawableRes
                         ) {
-                            action(Cover(ImagePreview.Cover))
+                            action(ViewerLayoutWidgetUi.Action.ImagePreviewUpdate(item))
                         }
                     }
                 }
@@ -133,7 +151,8 @@ fun ViewerLayoutCoverWidget(
 private fun CoverItem(
     text: String,
     checked: Boolean,
-    action: () -> Unit,
+    @DrawableRes iconDrawableRes: Int? = null,
+    action: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -142,12 +161,28 @@ private fun CoverItem(
             .height(58.dp)
             .noRippleThrottledClickable { action() }
     ) {
-        Text(
-            modifier = Modifier.align(Alignment.CenterStart),
-            text = text,
-            style = BodyRegular,
-            color = colorResource(id = R.color.text_primary)
-        )
+        if (iconDrawableRes != null) {
+            Image(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .align(Alignment.CenterStart),
+                painter = painterResource(id = iconDrawableRes),
+                contentDescription = "File relation icon"
+            )
+            Text(
+                modifier = Modifier.padding(start = 34.dp).align(Alignment.CenterStart),
+                text = text,
+                style = BodyRegular,
+                color = colorResource(id = R.color.text_primary)
+            )
+        } else {
+            Text(
+                modifier = Modifier.align(Alignment.CenterStart),
+                text = text,
+                style = BodyRegular,
+                color = colorResource(id = R.color.text_primary)
+            )
+        }
         if (checked) {
             Image(
                 modifier = Modifier.align(Alignment.CenterEnd),
@@ -173,10 +208,18 @@ fun PreviewLayoutCoverWidget() {
                 toggled = false
             ),
             cardSize = ViewerLayoutWidgetUi.State.CardSize.Small,
-            cover = ViewerLayoutWidgetUi.State.ImagePreview.Cover,
             showCardSize = true,
             viewer = "",
-            showCoverMenu = true
+            showCoverMenu = true,
+            imagePreviewItems = listOf(
+                ImagePreview.None(isChecked = false),
+                ImagePreview.PageCover(isChecked = true),
+                ImagePreview.Custom(
+                    relationKey = RelationKey(Relations.IDENTITY),
+                    isChecked = false,
+                    name = "Some File Relation"
+                )
+            )
         ),
         action = {},
         scope = CoroutineScope(

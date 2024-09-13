@@ -122,11 +122,7 @@ fun ViewerLayoutCoverWidget(
                         key = { index -> uiState.imagePreviewItems[index].relationKey.key }
                     ) { idx ->
                         val item = uiState.imagePreviewItems[idx]
-                        val title = when (item) {
-                            is ImagePreview.None -> stringResource(id = R.string.none)
-                            is ImagePreview.PageCover -> stringResource(id = R.string.page_cover)
-                            is ImagePreview.Custom -> item.name
-                        }
+                        val title = item.getTitle()
                         val iconDrawableRes = when (item) {
                             is ImagePreview.None -> null
                             is ImagePreview.PageCover -> null
@@ -170,7 +166,9 @@ private fun CoverItem(
                 contentDescription = "File relation icon"
             )
             Text(
-                modifier = Modifier.padding(start = 34.dp).align(Alignment.CenterStart),
+                modifier = Modifier
+                    .padding(start = 34.dp)
+                    .align(Alignment.CenterStart),
                 text = text,
                 style = BodyRegular,
                 color = colorResource(id = R.color.text_primary)

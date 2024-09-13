@@ -160,6 +160,7 @@ fun ViewerLayoutWidget(
                         .padding(bottom = 20.dp)
                 ) {
                     WidgetHeader(title = stringResource(R.string.view_layout_widget_title))
+                    Spacer(modifier = Modifier.height(12.dp))
                     LayoutIcons(uiState = currentState, action = action)
                     Spacer(modifier = Modifier.height(8.dp))
                     LayoutSwitcherItem(

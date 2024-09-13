@@ -19,7 +19,9 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.Text
@@ -30,8 +32,10 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -106,38 +110,32 @@ fun ViewerLayoutCoverWidget(
                 )
                 .clip(shape)
         ) {
-            Column(
+            WidgetHeader(title = stringResource(R.string.view_layout_cover_widget_title))
+            LazyColumn(
+                state = lazyListState,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight()
-                    .padding(bottom = 20.dp)
+                    .padding(top = 64.dp, bottom = 250.dp)
             ) {
-                WidgetHeader(title = stringResource(R.string.view_layout_cover_widget_title))
-                LazyColumn(
-                    state = lazyListState,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    items(
-                        count = uiState.imagePreviewItems.size,
-                        key = { index -> uiState.imagePreviewItems[index].relationKey.key }
-                    ) { idx ->
-                        val item = uiState.imagePreviewItems[idx]
-                        val title = item.getTitle()
-                        val iconDrawableRes = when (item) {
-                            is ImagePreview.None -> null
-                            is ImagePreview.PageCover -> null
-                            is ImagePreview.Custom -> R.drawable.ic_relation_attachment_24
-                        }
-                        CoverItem(
-                            text = title,
-                            checked = item.isChecked,
-                            iconDrawableRes = iconDrawableRes
-                        ) {
-                            action(ViewerLayoutWidgetUi.Action.ImagePreviewUpdate(item))
-                        }
+                items(
+                    count = uiState.imagePreviewItems.size,
+                    key = { index -> uiState.imagePreviewItems[index].relationKey.key }
+                ) { idx ->
+                    val item = uiState.imagePreviewItems[idx]
+                    val title = item.getTitle()
+                    val iconDrawableRes = when (item) {
+                        is ImagePreview.None -> null
+                        is ImagePreview.PageCover -> null
+                        is ImagePreview.Custom -> R.drawable.ic_relation_attachment_24
+                    }
+                    CoverItem(
+                        text = title,
+                        checked = item.isChecked,
+                        iconDrawableRes = iconDrawableRes
+                    ) {
+                        action(ViewerLayoutWidgetUi.Action.ImagePreviewUpdate(item))
                     }
                 }
-                Spacer(modifier = Modifier.height(400.dp))
             }
         }
     }

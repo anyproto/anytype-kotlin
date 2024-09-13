@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FractionalThreshold
@@ -106,53 +107,56 @@ fun ViewerLayoutCoverWidget(
                     .padding(bottom = 20.dp)
             ) {
                 WidgetHeader(title = stringResource(R.string.view_layout_cover_widget_title))
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 20.dp, end = 20.dp)
-                        .height(58.dp)
-                        .noRippleThrottledClickable { action(Cover(ImagePreview.None)) }
-                ) {
-                    Text(
-                        modifier = Modifier.align(Alignment.CenterStart),
-                        text = stringResource(id = R.string.none),
-                        style = BodyRegular,
-                        color = colorResource(id = R.color.text_primary)
-                    )
-                    if (uiState.cover == ImagePreview.None) {
-                        Image(
-                            modifier = Modifier.align(Alignment.CenterEnd),
-                            painter = painterResource(id = R.drawable.ic_option_checked_black),
-                            contentDescription = "Checked"
-                        )
-                    }
-                }
-                Divider()
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 20.dp, end = 20.dp)
-                        .height(58.dp)
-                        .noRippleThrottledClickable { action(Cover(ImagePreview.Cover)) }
-                ) {
-                    Text(
-                        modifier = Modifier.align(Alignment.CenterStart),
-                        text = stringResource(id = R.string.page_cover),
-                        style = BodyRegular,
-                        color = colorResource(id = R.color.text_primary)
-                    )
-                    if (uiState.cover == ImagePreview.Cover) {
-                        Image(
-                            modifier = Modifier.align(Alignment.CenterEnd),
-                            painter = painterResource(id = R.drawable.ic_option_checked_black),
-                            contentDescription = "Checked"
-                        )
+                LazyColumn {
+                    item {
+                        CoverItem(
+                            text = stringResource(id = R.string.none),
+                            checked = uiState.cover == ImagePreview.None
+                        ) {
+                            action(Cover(ImagePreview.None))
+                        }
+                        CoverItem(
+                            text = stringResource(id = R.string.page_cover),
+                            checked = uiState.cover == ImagePreview.Cover
+                        ) {
+                            action(Cover(ImagePreview.Cover))
+                        }
                     }
                 }
                 Spacer(modifier = Modifier.height(400.dp))
             }
         }
     }
+}
+
+@Composable
+private fun CoverItem(
+    text: String,
+    checked: Boolean,
+    action: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 20.dp, end = 20.dp)
+            .height(58.dp)
+            .noRippleThrottledClickable { action() }
+    ) {
+        Text(
+            modifier = Modifier.align(Alignment.CenterStart),
+            text = text,
+            style = BodyRegular,
+            color = colorResource(id = R.color.text_primary)
+        )
+        if (checked) {
+            Image(
+                modifier = Modifier.align(Alignment.CenterEnd),
+                painter = painterResource(id = R.drawable.ic_option_checked_black),
+                contentDescription = "Checked"
+            )
+        }
+    }
+    Divider()
 }
 
 @Preview(backgroundColor = 0xFFFFFFFF, showBackground = true)

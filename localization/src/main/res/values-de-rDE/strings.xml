@@ -1163,7 +1163,7 @@
     <string name="multiplayer_space_request_reject">Ablehnen</string>
     <string name="multiplayer_space_join_request_header">%1$s beantragte den Beitritt zu %2$s</string>
     <string name="multiplayer_remove_member">Mitglied entfernen</string>
-    <string name="multiplayer_remove_member_warning_text">%1$s will be removed from space</string>
+    <string name="multiplayer_remove_member_warning_text">%1$s wird aus dem Space entfernt</string>
     <string name="multiplayer_request_sent_toast">Anfrage gesendet</string>
     <string name="multiplayer_space_stop_sharing">Beende Teilen</string>
     <string name="multiplayer_space_stop_sharing_space">Space nichtmehr freigeben</string>
@@ -1188,12 +1188,12 @@
     <string name="multiplayer_how_share_three">3.</string>
     <string name="multiplayer_delete_space_sharing_link">Lösche Freigabelink</string>
     <string name="multiplayer_delete_link">Link löschen</string>
-    <string name="multiplayer_delete_link_description">New members won’t be able to join the space. You can generate a new link anytime.</string>
+    <string name="multiplayer_delete_link_description">Dem Space können keine neuen Mitglieder mehr beitreten. Du kannst jederzeit einen neuen Link generieren.</string>
     <string name="multiplayer_already_space_member">Du bist bereits Mitglied dieses Spaces.</string>
     <string name="multiplayer_open_space">Öffne Space</string>
     <string name="multiplayer_error_space_deleted">Space gelöscht</string>
     <string name="multiplayer_error_space_not_found">Space nicht gefunden</string>
-    <string name="multiplayer_read_only_access_error">Read-only access. Contact space owner for changes.</string>
+    <string name="multiplayer_read_only_access_error">Nur-Lese-Zugriff. Kontaktiere den Space-Besitzer für Änderungen.</string>
     <string name="multiplayer_notification_member_user_sends_join_request">%1$s requested to join the %2$s space.</string>
     <string name="multiplayer_notification_member_user_sends_leave_request">%1$s requested to leave the %2$s space.</string>
     <string name="multiplayer_notification_new_join_request">Neue Beitrittsanfrage</string>
@@ -1202,7 +1202,7 @@
     <string name="multiplayer_notification_member_request_approved">Anfrage genehmigt</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Your request to join the %1$s space has been approved with read-only access rights. The space will be available on your device soon.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Your request to join the %1$s space has been approved with edit access rights. The space will be available on your device soon.</string>
-    <string name="multiplayer_notification_member_removed_from_space">You have been removed from the space, or the space was deleted by the owner.</string>
+    <string name="multiplayer_notification_member_removed_from_space">Du wurdest aus dem Space entfernt oder der Space wurde vom Eigentümer/von der Eigentümerin gelöscht.</string>
     <string name="multiplayer_notification_member_permissions_changed">Berechtigungen geändert</string>
     <string name="multiplayer_notification_member_permission_change_read">Your access rights were changed to read-only in the %1$s space.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Your access rights were changed to edit in the %1$s space.</string>

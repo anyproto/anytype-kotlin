@@ -41,6 +41,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
@@ -251,6 +252,9 @@ class FilesStorageViewModel(
                 )
             }
                 .flowOn(appCoroutineDispatchers.io)
+                .catch {
+                    Timber.e(it, "Error while observing space storage usage")
+                }
                 .collect { _state.value = it }
         }
     }

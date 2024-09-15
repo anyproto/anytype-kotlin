@@ -992,19 +992,19 @@
     <string name="onboarding_soul_creation_description">Somente visto por pessoas com quem você compartilha algo. Não há registro central com esses nomes.</string>
     <string name="onboarding_soul_creation_placeholder">Identidade Anytype</string>
     <string name="onboarding_soul_creation">Criando a sua Identidade…</string>
-    <string name="onboarding_type_your_key">Type your recovery phrase</string>
+    <string name="onboarding_type_your_key">Digite sua frase de recuperação</string>
     <string name="onboarding_login_or">OU</string>
     <string name="onboarding_entering_void_title">Entrando no vazio</string>
-    <string name="onboarding_your_key_can_t_be_empty">Your Key can\'t be empty</string>
+    <string name="onboarding_your_key_can_t_be_empty">Sua chave não pode estar vazia</string>
     <string name="onboarding_mnemonic_read_more">Ler mais</string>
     <string name="onboarding_key_additional_info">Você pode encontrar a frase de recuperação mais tarde nas configurações do Anytype</string>
     <string name="onboarding_what_is_the_key">Qual é a chave?</string>
     <string name="onboarding_recovery_phrase_description">Ele é representado por uma frase de recuperação — 12 palavras aleatórias a partir do qual o seu cofre é magicamente gerado neste dispositivo.</string>
-    <string name="onboarding_recovery_phrase_description_2">Whomever knows the combination of these words owns your vault. </string>
-    <string name="onboarding_recovery_phrase_description_3">Right now, you are the only person in the world who knows it.</string>
+    <string name="onboarding_recovery_phrase_description_2">Quem quer que saiba a combinação destas palavras é dono do seu cofre?</string>
+    <string name="onboarding_recovery_phrase_description_3">No momento, você é a única pessoa no mundo que sabe ela.</string>
     <string name="onboarding_recovery_phrase_description_4">Todos os recursos computacionais na Terra não são suficientes para invadir. Se você os perde, ele não pode ser recuperado. Então, armazene-o em algum lugar seguro!</string>
-    <string name="onboarding_how_to_save_my_phrase">How to save my Key?</string>
-    <string name="onboarding_how_to_save_my_phrase_2">The easiest way to store your Key is to save it in your password manager.</string>
+    <string name="onboarding_how_to_save_my_phrase">Como salvar minha chave?</string>
+    <string name="onboarding_how_to_save_my_phrase_2">A melhor maneira de armazenar a sua frase de segurança é salvá-la em um gerenciador de senhas.</string>
     <string name="onboarding_how_to_save_my_phrase_3">A forma mais segura é escrevê-la no papel e mantê-la fora do dispositivo, num lugar seguro e seguro.</string>
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
@@ -1048,7 +1048,7 @@
     <string name="sharing_menu_save_as_file_option">Arquivo</string>
     <string name="sharing_menu_save_as_images_option">Imagem</string>
     <string name="sharing_menu_save_as_files_option">Arquivos</string>
-    <string name="sharing_menu_save_as_videos_option">Videos</string>
+    <string name="sharing_menu_save_as_videos_option">Vídeos</string>
     <string name="sharing_menu_data">Dados</string>
     <string name="sharing_menu_add_to_anytype_header_title">Adicionar ao Anytype</string>
     <string name="sharing_menu_add_to_anytype_error">Anytype file upload error: %1$s</string>
@@ -1143,8 +1143,8 @@
     <string name="multiplayer_tap_to_write_request_to_join_comment">Toque para escrever seu comentário</string>
     <string name="multiplayer_share_space">Compartilhar espaço</string>
     <string name="multiplayer_members_and_requests">Membros</string>
-    <string name="multiplayer_cant_add_members">You can’t add more members</string>
-    <string name="multiplayer_cant_add_editors">You can’t add more editors</string>
+    <string name="multiplayer_cant_add_members">Você não pode adicionar mais membros</string>
+    <string name="multiplayer_cant_add_editors">Você não pode adicionar mais editores</string>
     <string name="multiplayer_upgrade_button">✦ Upgrade</string>
     <string name="multiplayer_upgrade_button_request">✦ Upgrade to add more members</string>
     <string name="multiplayer_upgrade_spaces_button">✦ Upgrade to add more spaces</string>
@@ -1311,8 +1311,8 @@
     <string name="payments_detials_button_pay">Pagar com Cartão</string>
     <string name="payments_detials_button_submit">Enviar</string>
     <string name="payments_details_whats_included">O que está incluído</string>
-    <string name="payments_email_title">Get updates and enjoy free perks!</string>
-    <string name="payments_email_subtitle">It is not linked to your account in any way.</string>
+    <string name="payments_email_title">Receba atualizações e aproveite vantagens gratuitas!</string>
+    <string name="payments_email_subtitle">Não está vinculado ao seu cofre de forma alguma.</string>
     <string name="payments_email_checkbox_text">Gostaria de receber atualizações sobre produtos e desfrutar de vantagens gratuitas!</string>
     <string name="payments_email_hint">E-mail</string>
     <string name="payments_tier_current_title">Seu status atual:</string>
@@ -1320,8 +1320,8 @@
     <string name="payments_tier_current_paid_by">Paid by</string>
     <string name="payments_tier_current_paid_by_card">Stripe</string>
     <string name="payments_tier_current_paid_by_crypto">Crypto</string>
-    <string name="payments_tier_current_paid_by_apple">Apple subscription</string>
-    <string name="payments_tier_current_paid_by_google">Google subscription</string>
+    <string name="payments_tier_current_paid_by_apple">Assinatura Apple</string>
+    <string name="payments_tier_current_paid_by_google">Assinatura Google</string>
     <string name="payments_tier_current_button">Manage payment</string>
     <string name="membership_manage_tier_desktop">You can manage tier on Desktop platform</string>
     <string name="membership_manage_tier_ios">You can manage tier on iOS platform</string>
@@ -1333,7 +1333,7 @@
     <string name="payments_code_resend_in">Resend in %1$d sec</string>
     <!-- Membership Welcome -->
     <string name="payments_welcome_title">Welcome to the network,\n%1$s</string>
-    <string name="payments_welcome_subtitle">Big cheers for your curiosity!</string>
+    <string name="payments_welcome_subtitle">Um grande aplauso por sua curiosidade!</string>
     <string name="payments_welcome_button">Continue</string>
     <!-- Membership Email -->
     <string name="membership_support_email">support@anytype.io</string>
@@ -1430,9 +1430,9 @@ Please provide specific details of your needs here.</string>
     <string name="multiplayer_space_join_request_new_member_error">Request\'s member error</string>
     <string name="multiplayer_space_join_request_current_user_error">Current user status error</string>
     <string name="multiplayer_space_join_request_membership_status_error">Current membership status error</string>
-    <string name="membership_upgrade_title">Membership upgrade</string>
-    <string name="membership_upgrade_description">Reach us for extra storage, space editors, or more shared spaces. Anytype team will provide details and conditions tailored to your needs.</string>
-    <string name="membership_upgrade_button">Contact Anytype Team</string>
+    <string name="membership_upgrade_title">Atualizar assinatura</string>
+    <string name="membership_upgrade_description">Entre em contato conosco para obter armazenamento extra, editores de espaço ou mais espaços compartilhados. A equipe Anytype fornecerá detalhes e condições adaptadas às suas necessidades.</string>
+    <string name="membership_upgrade_button">Entrar em contato com a equipe Anytype</string>
     <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d spaces that can be shared</string>
     <plurals name="period_years">
         <item quantity="one">year</item>
@@ -1462,7 +1462,7 @@ Please provide specific details of your needs here.</string>
     <string name="widget_view_see_all_objects">Visualizar todos os objetos</string>
     <string name="sync_status_get_error">Error getting sync status</string>
     <string name="sync_status_local_only_title">Somente Local</string>
-    <string name="sync_status_data_backup">Data backup is disabled</string>
+    <string name="sync_status_data_backup">“Backup” de dados está desabilitado</string>
     <string name="sync_status_self_host">Host Próprio</string>
     <string name="sync_status_self_host_synced">Sincronizado</string>
     <plurals name="sync_status_self_host_syncing">
@@ -1478,18 +1478,18 @@ Please provide specific details of your needs here.</string>
     <string name="sync_status_p2p_disabled">Disabled</string>
     <string name="sync_status_p2p_restricted">Restricted. Check device settings.</string>
     <string name="sync_status_anytype_network">Rede Anytype</string>
-    <string name="sync_status_anytype_end_to_end">End-to-end encrypted</string>
+    <string name="sync_status_anytype_end_to_end">Criptografia de ponta a ponta</string>
     <plurals name="sync_status_network_items">
         <item quantity="one">%1$d item syncing...</item>
         <item quantity="other">%1$d items syncing...</item>
     </plurals>
     <string name="sync_status_anytype_network_connecting">Network Connecting...</string>
     <string name="sync_status_anytype_network_no_connecting">Sem conexão</string>
-    <string name="sync_status_anytype_sync_slow">Sync might be slow. Update the app.</string>
-    <string name="sync_status_storage_limit_exceed">Storage limit reached</string>
+    <string name="sync_status_anytype_sync_slow">A sincronização pode ser lenta. Atualize o app.</string>
+    <string name="sync_status_storage_limit_exceed">Limite de armazenamento atingido</string>
     <string name="sync_status_incompatible_version">Versão incompatível</string>
-    <string name="sync_status_network_error">No access to the space</string>
-    <string name="sync_status_unrecognized">Unrecognized error</string>
+    <string name="sync_status_network_error">Sem acesso ao espaço</string>
+    <string name="sync_status_unrecognized">Erro não reconhecido</string>
     <string name="version_history_title">Version history</string>
     <string name="version_history_error_no_versions">No versions found</string>
     <string name="version_history_error_get_version">Error getting version history</string>

@@ -13,7 +13,7 @@
     <string name="clear_file_cache">Limpar cache de arquivos</string>
     <string name="debug_sync_report">Relatório de Depuração de Sincronização</string>
     <string name="debug">Depuração</string>
-    <string name="account">Vault</string>
+    <string name="account">Cofre</string>
     <string name="reset_account">Reset vault</string>
     <string name="delete_account">Delete vault</string>
     <string name="space_debug">Depuração do Espaço</string>
@@ -1456,9 +1456,9 @@ Please provide specific details of your needs here.</string>
     <string name="error_login_select_vault_error">Select vault error.</string>
     <string name="global_search_related_to">"Related to: "</string>
     <string name="global_search_no_related_objects_found">Nenhum objeto relacionado encontrado</string>
-    <string name="sort_empty_values_desc">Show empty values</string>
-    <string name="sort_empty_values_bottom">On bottom</string>
-    <string name="sort_empty_values_top">On top</string>
+    <string name="sort_empty_values_desc">Mostrar valores vazios</string>
+    <string name="sort_empty_values_bottom">Na parte inferior</string>
+    <string name="sort_empty_values_top">No topo</string>
     <string name="widget_view_see_all_objects">See all objects</string>
     <string name="sync_status_get_error">Error getting sync status</string>
     <string name="sync_status_local_only_title">Local Only</string>

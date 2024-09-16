@@ -12,10 +12,10 @@ message SpacePreference {
   optional string defaultObjectTypeKey = 1;
   repeated string pinnedObjectTypeIds = 2;
   optional string lastOpenedObject = 3;
-  optional GlobalSearchPreferences globalSearchPreferences = 5;
+  optional GlobalSearchHistoryProto globalSearchHistory = 5;
 }
 
-message GlobalSearchPreferences {
+message GlobalSearchHistoryProto {
   optional string lastSearchQuery = 1;
   optional string lastSearchRelatedObjectId = 2;
 }

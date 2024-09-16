@@ -13,7 +13,7 @@ import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.data.auth.repo.UserSettingsCache
-import com.anytypeio.anytype.persistence.GlobalSearchPreferences
+import com.anytypeio.anytype.persistence.GlobalSearchHistoryProto
 import com.anytypeio.anytype.persistence.SpacePreference
 import com.anytypeio.anytype.persistence.SpacePreferences
 import com.anytypeio.anytype.persistence.common.JsonString
@@ -329,7 +329,7 @@ class DefaultUserSettingsCache(
                     defaultValue = SpacePreference()
                 )
             val updated = givenSpacePreference.copy(
-                globalSearchPreferences = GlobalSearchPreferences(
+                globalSearchHistory = GlobalSearchHistoryProto(
                     lastSearchQuery = searchCache.query,
                     lastSearchRelatedObjectId = searchCache.relatedObject
                 )
@@ -348,7 +348,7 @@ class DefaultUserSettingsCache(
             .map { preferences ->
                 val result = preferences
                     .preferences[space.id]
-                    ?.globalSearchPreferences
+                    ?.globalSearchHistory
 
                 if (result == null)  {
                     return@map null
@@ -368,7 +368,7 @@ class DefaultUserSettingsCache(
                 .preferences
                 .getOrDefault(key = space.id, defaultValue = SpacePreference())
             val updated = givenSpacePreference.copy(
-                globalSearchPreferences  = null
+                globalSearchHistory  = null
             )
             val result = buildMap {
                 putAll(existingPreferences.preferences)

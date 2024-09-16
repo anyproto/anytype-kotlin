@@ -174,13 +174,13 @@ private fun MutableList<ViewerLayoutWidgetUi.State.ImagePreview>.addCustomImageP
     validFileRelations: List<ObjectWrapper.Relation>,
     selectedCoverRelationKey: String?
 ) {
-    validFileRelations.forEach { fileRelation ->
-        add(
+    addAll(
+        validFileRelations.map { fileRelation ->
             ViewerLayoutWidgetUi.State.ImagePreview.Custom(
                 relationKey = RelationKey(fileRelation.key),
                 isChecked = selectedCoverRelationKey == fileRelation.key,
                 name = fileRelation.name.orEmpty()
             )
-        )
-    }
+        }
+    )
 }

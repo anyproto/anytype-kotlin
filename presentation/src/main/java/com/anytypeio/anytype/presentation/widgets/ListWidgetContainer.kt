@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.take
+import timber.log.Timber
 
 class ListWidgetContainer(
     private val widget: Widget.List,
@@ -81,7 +82,10 @@ class ListWidgetContainer(
                     objectWatcher
                         .watch(widget.config.home)
                         .map { obj -> obj.orderOfRootObjects(obj.root) }
-                        .catch { emit(emptyMap()) }
+                        .catch {
+                            Timber.e(it)
+                            emit(emptyMap())
+                        }
                         .flatMapLatest { order ->
                             storage.subscribe(
                                 StoreSearchByIdsParams(
@@ -100,6 +104,9 @@ class ListWidgetContainer(
                                         .sortedBy { obj -> order[obj.id] }
                                 )
                             }
+                        }
+                        .catch {
+                            Timber.e(it, "Failed to load favorite objects")
                         }
                 }
                 BundledWidgetSourceIds.RECENT -> {

@@ -8,9 +8,11 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.scan
 
 class ChatContainer @Inject constructor(
@@ -18,6 +20,8 @@ class ChatContainer @Inject constructor(
     private val channel: ChatEventChannel,
     private val logger: Logger
 ) {
+
+    private val payloads = MutableSharedFlow<List<Event.Command.Chats>>()
 
     fun watch(chat: Id): Flow<List<Chat.Message>> = flow {
         val initial = repo.subscribeLastChatMessages(
@@ -27,13 +31,20 @@ class ChatContainer @Inject constructor(
             )
         )
         emitAll(
-            channel.observe(chat = chat).scan(initial.messages) { state, events ->
+            merge(
+                channel.observe(chat = chat),
+                payloads
+            ).scan(initial.messages) { state, events ->
                 state.reduce(events)
             }
         )
     }.catch {
         logger.logException(it)
         emit(emptyList())
+    }
+
+    suspend fun onPayload(events: List<Event.Command.Chats>) {
+        payloads.emit(events)
     }
 
     fun List<Chat.Message>.reduce(events: List<Event.Command.Chats>): List<Chat.Message> {

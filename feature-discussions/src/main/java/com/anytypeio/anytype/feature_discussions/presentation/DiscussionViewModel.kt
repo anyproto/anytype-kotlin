@@ -101,10 +101,11 @@ class DiscussionViewModel(
                         }
                         DiscussionView.Message(
                             id = msg.id,
-                            timestamp = msg.timestamp * 1000,
+                            timestamp = msg.createdAt * 1000,
                             content = msg.content?.text.orEmpty(),
                             author = member?.name ?: msg.creator.takeLast(5),
                             isUserAuthor = msg.creator == account,
+                            isEdited = msg.modifiedAt > msg.createdAt,
                             reactions = msg.reactions.map{ (emoji, ids) ->
                                 DiscussionView.Message.Reaction(
                                     emoji = emoji,
@@ -133,12 +134,14 @@ class DiscussionViewModel(
         viewModelScope.launch {
             when(val mode = chatBoxMode.value) {
                 is ChatBoxMode.Default -> {
+                    // TODO consider moving this use-case inside chat container
                     addChatMessage.async(
                         params = Command.ChatCommand.AddMessage(
                             chat = chat,
                             message = Chat.Message.new(msg)
                         )
-                    ).onSuccess {
+                    ).onSuccess { (id, payload) ->
+                        chatContainer.onPayload(payload)
                         delay(JUMP_TO_BOTTOM_DELAY)
                         commands.emit(UXCommand.JumpToBottom)
                     }.onFailure {

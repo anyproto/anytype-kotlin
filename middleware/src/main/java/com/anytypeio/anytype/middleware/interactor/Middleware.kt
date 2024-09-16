@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ManifestInfo
@@ -47,6 +48,7 @@ import com.anytypeio.anytype.core_utils.tools.ThreadInfo
 import com.anytypeio.anytype.middleware.BuildConfig
 import com.anytypeio.anytype.middleware.auth.toAccountSetup
 import com.anytypeio.anytype.middleware.const.Constants
+import com.anytypeio.anytype.middleware.interactor.events.payload
 import com.anytypeio.anytype.middleware.mappers.MDVFilter
 import com.anytypeio.anytype.middleware.mappers.MDetail
 import com.anytypeio.anytype.middleware.mappers.MNetworkMode
@@ -2743,7 +2745,7 @@ class Middleware @Inject constructor(
     }
 
     @Throws
-    fun chatAddMessage(command: Command.ChatCommand.AddMessage) : Id {
+    fun chatAddMessage(command: Command.ChatCommand.AddMessage) : Pair<Id, List<Event.Command.Chats>> {
         val request = Rpc.Chat.AddMessage.Request(
             chatObjectId = command.chat,
             message = command.message.mw()
@@ -2751,7 +2753,14 @@ class Middleware @Inject constructor(
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.chatAddMessage(request) }
         logResponseIfDebug(response, time)
-        return response.messageId
+        val events = response
+            .event
+            ?.messages
+            ?.mapNotNull { msg ->
+                msg.payload(contextId = command.chat)
+            }
+            .orEmpty()
+        return response.messageId to events
     }
 
     @Throws

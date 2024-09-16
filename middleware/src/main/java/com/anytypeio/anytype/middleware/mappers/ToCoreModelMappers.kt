@@ -1111,7 +1111,8 @@ fun MChatMessage.core(): Chat.Message = Chat.Message(
     id = id,
     content = message?.core(),
     creator = creator,
-    timestamp = createdAt,
+    createdAt = createdAt,
+    modifiedAt = modifiedAt,
     replyToMessageId = replyToMessageId.ifEmpty { null },
     attachments = attachments.map { attachment ->
         Chat.Message.Attachment(

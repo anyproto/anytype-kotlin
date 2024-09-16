@@ -12,7 +12,8 @@ sealed class Chat {
         val id: Id,
         val order: Id,
         val creator: Id,
-        val timestamp: Long,
+        val createdAt: Long,
+        val modifiedAt: Long,
         val content: Content?,
         val attachments: List<Attachment> = emptyList(),
         val reactions: Map<String, List<String>>,
@@ -42,7 +43,8 @@ sealed class Chat {
                 text: String
             ) : Message = Chat.Message(
                 id = "",
-                timestamp = 0L,
+                createdAt = 0L,
+                modifiedAt = 0L,
                 attachments = emptyList(),
                 reactions = emptyMap(),
                 creator = "",
@@ -63,7 +65,8 @@ sealed class Chat {
                 text: String
             ) : Message = Chat.Message(
                 id = id,
-                timestamp = 0L,
+                createdAt = 0L,
+                modifiedAt = 0L,
                 attachments = emptyList(),
                 reactions = emptyMap(),
                 creator = "",

@@ -3,6 +3,9 @@ package com.anytypeio.anytype.middleware.mappers
 import anytype.Event.P2PStatus
 import anytype.Event.Space
 
+
+typealias MEvent = anytype.Event
+typealias MEventMessage = anytype.Event.Message
 typealias MAccount = anytype.model.Account
 typealias MAccountStatus = anytype.model.Account.Status
 typealias MAccountStatusType = anytype.model.Account.StatusType

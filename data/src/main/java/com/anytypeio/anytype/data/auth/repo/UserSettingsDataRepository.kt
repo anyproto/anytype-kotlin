@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.data.auth.repo
 
-import com.anytypeio.anytype.core_models.GlobalSearchCache
+import com.anytypeio.anytype.core_models.GlobalSearchHistory
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.Wallpaper
@@ -77,15 +77,15 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
         cache.clearLastOpenedObject(space)
     }
 
-    override suspend fun setLatestGlobalSearch(search: GlobalSearchCache, space: SpaceId) {
-        cache.setLatestGlobalSearch(search, space)
+    override suspend fun setGlobalSearchHistory(search: GlobalSearchHistory, space: SpaceId) {
+        cache.setGlobalSearchHistory(search, space)
     }
 
-    override suspend fun getLatestGlobalSearch(space: SpaceId): GlobalSearchCache? {
-        return cache.getLatestGlobalSearch(space)
+    override suspend fun setGlobalSearchHistory(space: SpaceId): GlobalSearchHistory? {
+        return cache.getGlobalSearchHistory(space)
     }
 
-    override suspend fun clearLatestGlobalSearch(space: SpaceId) {
-        cache.clearLatestGlobalSearch(space)
+    override suspend fun clearGlobalSearchHistory(space: SpaceId) {
+        cache.clearGlobalSearchHistory(space)
     }
 }

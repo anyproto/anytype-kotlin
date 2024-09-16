@@ -34,9 +34,9 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.domain.search.RestoreGlobalSearch
+import com.anytypeio.anytype.domain.search.RestoreGlobalSearchHistory
 import com.anytypeio.anytype.domain.search.SearchWithMeta
-import com.anytypeio.anytype.domain.search.UpdateGlobalSearch
+import com.anytypeio.anytype.domain.search.UpdateGlobalSearchHistory
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchBacklinksEvent
@@ -73,8 +73,8 @@ class GlobalSearchViewModel(
     private val urlBuilder: UrlBuilder,
     private val analytics: Analytics,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val restoreGlobalSearch: RestoreGlobalSearch,
-    private val updateGlobalSearch: UpdateGlobalSearch
+    private val restoreGlobalSearchHistory: RestoreGlobalSearchHistory,
+    private val updateGlobalSearchHistory: UpdateGlobalSearchHistory
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val userInput = MutableStateFlow("")
@@ -99,21 +99,21 @@ class GlobalSearchViewModel(
     private fun proceedRestoreGlobalSearch(space: SpaceId) {
         Timber.d("restoreGlobalSearch, space $space")
         viewModelScope.launch {
-            val params = RestoreGlobalSearch.Params(spaceId = space)
-            restoreGlobalSearch.async(params = params).fold(
+            val params = RestoreGlobalSearchHistory.Params(spaceId = space)
+            restoreGlobalSearchHistory.async(params = params).fold(
                 onSuccess = { response ->
-                    val globalSearchCache = response.globalSearchCache
-                    Timber.d("restoreGlobalSearch, onSuccess $globalSearchCache")
-                    userInput.value = globalSearchCache?.query ?: EMPTY_STRING_VALUE
-                    val relatedObjectId = globalSearchCache?.relatedObject
+                    val globalSearchHistory = response.globalSearchHistory
+                    Timber.d("restoreGlobalSearchHistory, onSuccess $globalSearchHistory")
+                    userInput.value = globalSearchHistory?.query ?: EMPTY_STRING_VALUE
+                    val relatedObjectId = globalSearchHistory?.relatedObject
                     if (!relatedObjectId.isNullOrEmpty()) {
                         proceedRelatedObjectSearch(
-                            query = globalSearchCache.query,
+                            query = globalSearchHistory.query,
                             relatedObjectId = relatedObjectId
                         )
                     } else {
                         val initialState =
-                            ViewState.Init(query = globalSearchCache?.query ?: EMPTY_STRING_VALUE)
+                            ViewState.Init(query = globalSearchHistory?.query ?: EMPTY_STRING_VALUE)
                         proceedWithInitialState(initialState)
                     }
                 },
@@ -396,12 +396,12 @@ class GlobalSearchViewModel(
     }
 
     private suspend fun proceedUpdateGlobalSearch(query: String, relatedObjectId: Id?) {
-        val params = UpdateGlobalSearch.Params(
+        val params = UpdateGlobalSearchHistory.Params(
             spaceId = vmParams.space,
             query = query,
             relatedObjectId = relatedObjectId
         )
-        updateGlobalSearch.async(params).fold(
+        updateGlobalSearchHistory.async(params).fold(
             onSuccess = {
                 Timber.i("updateGlobalSearch, onSuccess")
             },
@@ -421,8 +421,8 @@ class GlobalSearchViewModel(
         private val urlBuilder: UrlBuilder,
         private val analytics: Analytics,
         private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-        private val restoreGlobalSearch: RestoreGlobalSearch,
-        private val updateGlobalSearch: UpdateGlobalSearch
+        private val restoreGlobalSearchHistory: RestoreGlobalSearchHistory,
+        private val updateGlobalSearchHistory: UpdateGlobalSearchHistory
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -434,8 +434,8 @@ class GlobalSearchViewModel(
                 urlBuilder = urlBuilder,
                 analytics = analytics,
                 analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-                restoreGlobalSearch = restoreGlobalSearch,
-                updateGlobalSearch = updateGlobalSearch
+                restoreGlobalSearchHistory = restoreGlobalSearchHistory,
+                updateGlobalSearchHistory = updateGlobalSearchHistory
             ) as T
         }
     }

@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.domain.search
 
 import com.anytypeio.anytype.core_models.Command
-import com.anytypeio.anytype.core_models.GlobalSearchCache
+import com.anytypeio.anytype.core_models.GlobalSearchHistory
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
@@ -21,11 +21,11 @@ class SearchWithMeta @Inject constructor(
     }
 
     private suspend fun saveSearch(params: Params) {
-        val search = GlobalSearchCache(
+        val search = GlobalSearchHistory(
             query = params.command.query,
             relatedObject = params.relatedObjectId
         )
-        settings.setLatestGlobalSearch(search = search, space = params.command.space)
+        settings.setGlobalSearchHistory(search = search, space = params.command.space)
     }
 
     data class Params(

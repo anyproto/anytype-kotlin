@@ -3,7 +3,7 @@ package com.anytypeio.anytype.persistence
 import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
-import com.anytypeio.anytype.core_models.GlobalSearchCache
+import com.anytypeio.anytype.core_models.GlobalSearchHistory
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
@@ -281,7 +281,7 @@ class UserSettingsCacheTest {
         )
 
         val space = SpaceId(MockDataFactory.randomUuid())
-        val globalSearch = GlobalSearchCache(
+        val globalSearch = GlobalSearchHistory(
             query = MockDataFactory.randomString(),
             relatedObject = MockDataFactory.randomUuid()
         )
@@ -295,7 +295,7 @@ class UserSettingsCacheTest {
 
         // Saving global search for given space
 
-        cache.setLatestGlobalSearch(
+        cache.setGlobalSearchHistory(
             searchCache = globalSearch,
             space = space
         )
@@ -304,14 +304,14 @@ class UserSettingsCacheTest {
 
         assertEquals(
             expected = globalSearch,
-            actual = cache.getLatestGlobalSearch(space)
+            actual = cache.getGlobalSearchHistory(space)
         )
 
-        cache.clearLatestGlobalSearch(space)
+        cache.clearGlobalSearchHistory(space)
 
         assertEquals(
             expected = null,
-            actual = cache.getLatestGlobalSearch(space)
+            actual = cache.getGlobalSearchHistory(space)
         )
     }
 }

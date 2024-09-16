@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ManifestInfo
@@ -448,7 +449,7 @@ interface BlockRemote {
 
     //region CHATS
 
-    suspend fun addChatMessage(command: Command.ChatCommand.AddMessage): Id
+    suspend fun addChatMessage(command: Command.ChatCommand.AddMessage): Pair<Id, List<Event.Command.Chats>>
     suspend fun editChatMessage(command: Command.ChatCommand.EditMessage)
     suspend fun deleteChatMessage(command: Command.ChatCommand.DeleteMessage)
     suspend fun getChatMessages(command: Command.ChatCommand.GetMessages): List<Chat.Message>

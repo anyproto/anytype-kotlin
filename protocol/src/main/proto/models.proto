@@ -1324,6 +1324,7 @@ message ChatMessage {
     string orderId = 2;   // Used for subscriptions
     string creator = 3;       // Identifier for the message creator
     int64 createdAt = 4;
+    int64 modifiedAt = 9;
     string replyToMessageId = 5;   // Identifier for the message being replied to
     MessageContent message = 6;  // Message content
     repeated Attachment attachments = 7;  // Attachments slice

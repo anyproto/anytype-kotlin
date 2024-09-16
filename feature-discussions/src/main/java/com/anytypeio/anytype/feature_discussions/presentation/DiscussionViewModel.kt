@@ -138,7 +138,8 @@ class DiscussionViewModel(
                             chat = chat,
                             message = Chat.Message.new(msg)
                         )
-                    ).onSuccess {
+                    ).onSuccess { (id, payload) ->
+                        chatContainer.onPayload(payload)
                         delay(JUMP_TO_BOTTOM_DELAY)
                         commands.emit(UXCommand.JumpToBottom)
                     }.onFailure {

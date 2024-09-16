@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ManifestInfo
@@ -1052,7 +1053,7 @@ class BlockDataRepository(
         return remote.diffVersions(command)
     }
 
-    override suspend fun addChatMessage(command: Command.ChatCommand.AddMessage): Id {
+    override suspend fun addChatMessage(command: Command.ChatCommand.AddMessage): Pair<Id, List<Event.Command.Chats>> {
         return remote.addChatMessage(command)
     }
 

@@ -137,7 +137,7 @@ class VersionHistoryViewModel(
                             )
                         }
                         else -> {
-                            Timber.d("Version preview state is hidden, skipping state update")
+                            Timber.d("Version preview state is not loading or success.set, skipping state update")
                         }
                     }
                 }
@@ -533,6 +533,7 @@ class VersionHistoryViewModel(
 
     private suspend fun parseObject(
         payload: Payload,
+        //TODO: Refactoring: update ShowVersion response to include ObjectView instead of Payload
         event: Event.Command.ShowObject,
         item: VersionHistoryGroup.Item,
         obj: ObjectWrapper.Basic
@@ -571,7 +572,9 @@ class VersionHistoryViewModel(
                         blocks = blocks
                     )
                 }
-                else -> {}
+                else -> {
+                    Timber.d("Version preview state is not loading or success.set, skipping state update")
+                }
             }
         } else {
             val root = event.blocks.first { it.id == vmParams.objectId }

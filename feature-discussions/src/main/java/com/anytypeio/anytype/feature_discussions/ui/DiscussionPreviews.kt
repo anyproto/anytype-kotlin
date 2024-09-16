@@ -103,6 +103,23 @@ fun BubblePreview() {
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
 @Composable
+fun BubbleEditedPreview() {
+    Bubble(
+        name = "Leo Marx",
+        msg = stringResource(id = R.string.default_text_placeholder),
+        isEdited = true,
+        timestamp = System.currentTimeMillis(),
+        onReacted = {},
+        onDeleteMessage = {},
+        onCopyMessage = {},
+        onAttachmentClicked = {},
+        onEditMessage = {}
+    )
+}
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
+@Composable
 fun BubbleWithAttachmentPreview() {
     Bubble(
         name = "Leo Marx",

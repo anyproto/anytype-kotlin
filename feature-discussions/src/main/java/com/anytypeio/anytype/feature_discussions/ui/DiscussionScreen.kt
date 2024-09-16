@@ -71,14 +71,17 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -662,6 +665,7 @@ fun Messages(
                     timestamp = msg.timestamp,
                     attachments = msg.attachments,
                     isUserAuthor = msg.isUserAuthor,
+                    isEdited = msg.isEdited,
                     onReacted = { emoji ->
                         onReacted(msg.id, emoji)
                     },
@@ -740,6 +744,7 @@ fun Bubble(
     timestamp: Long,
     attachments: List<Chat.Message.Attachment> = emptyList(),
     isUserAuthor: Boolean = false,
+    isEdited: Boolean = false,
     reactions: List<DiscussionView.Message.Reaction> = emptyList(),
     onReacted: (String) -> Unit,
     onDeleteMessage: () -> Unit,
@@ -786,17 +791,40 @@ fun Bubble(
                 maxLines = 1
             )
         }
-        Text(
-            modifier = Modifier.padding(
-                top = 0.dp,
-                start = 16.dp,
-                end = 16.dp,
-                bottom = 0.dp
-            ),
-            text = msg,
-            style = BodyRegular,
-            color = colorResource(id = R.color.text_primary)
-        )
+        if (isEdited) {
+            Text(
+                modifier = Modifier.padding(
+                    top = 0.dp,
+                    start = 16.dp,
+                    end = 16.dp,
+                    bottom = 0.dp
+                ),
+                text = buildAnnotatedString {
+                    append(msg)
+                    withStyle(
+                        style = SpanStyle(color = colorResource(id = R.color.text_secondary))
+                    ) {
+                        append(
+                            " (${stringResource(R.string.chats_message_edited)})"
+                        )
+                    }
+                },
+                style = BodyRegular,
+                color = colorResource(id = R.color.text_primary)
+            )
+        } else {
+            Text(
+                modifier = Modifier.padding(
+                    top = 0.dp,
+                    start = 16.dp,
+                    end = 16.dp,
+                    bottom = 0.dp
+                ),
+                text = msg,
+                style = BodyRegular,
+                color = colorResource(id = R.color.text_primary)
+            )
+        }
         attachments.forEach { attachment ->
             Attachment(
                 modifier = Modifier.padding(

@@ -119,10 +119,10 @@ fun GlobalSearchScreen(
 ) {
 
     val selectionColors = TextSelectionColors(
-        backgroundColor = colorResource(id = R.color.object_search_cursor_color).copy(
+        backgroundColor = colorResource(id = R.color.cursor_color).copy(
             alpha = 0.2f
         ),
-        handleColor = colorResource(id = R.color.object_search_cursor_color),
+        handleColor = colorResource(id = R.color.cursor_color),
     )
 
     var showLoading by rememberSaveable { mutableStateOf(false) }
@@ -237,7 +237,7 @@ fun GlobalSearchScreen(
                             },
                             colors = TextFieldDefaults.textFieldColors(
                                 backgroundColor = colorResource(id = R.color.shape_transparent),
-                                cursorColor = colorResource(id = R.color.object_search_cursor_color),
+                                cursorColor = colorResource(id = R.color.cursor_color),
                             ),
                             border = {},
                             contentPadding = PaddingValues()

@@ -136,7 +136,9 @@ class VersionHistoryViewModel(
                                 viewer = viewer
                             )
                         }
-                        else -> {}
+                        else -> {
+                            Timber.d("Version preview state is hidden, skipping state update")
+                        }
                     }
                 }
         }
@@ -187,7 +189,9 @@ class VersionHistoryViewModel(
                     }
                 }
 
-                else -> {}
+                else -> {
+                    Timber.d("No interaction allowed with this listener type: $click")
+                }
             }
         }
     }

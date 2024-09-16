@@ -15,7 +15,7 @@ class UpdateGlobalSearchHistory @Inject constructor(
 
     override suspend fun doWork(params: Params) {
         settings.setGlobalSearchHistory(
-            search = GlobalSearchHistory(
+            globalSearchHistory = GlobalSearchHistory(
                 query = params.query,
                 relatedObject = params.relatedObjectId
             ),

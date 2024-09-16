@@ -104,7 +104,7 @@ class CollectionFragment : BaseComposeFragment() {
                 space = space
             )
             is Command.ToDesktop -> navigation.exitToDesktop()
-            is Command.ToSearch -> navigation.openPageSearch(
+            is Command.ToSearch -> navigation.openGlobalSearch(
                 space = command.space
             )
             is Command.SelectSpace -> {

@@ -320,7 +320,7 @@ class DefaultUserSettingsCache(
         }
     }
 
-    override suspend fun setGlobalSearchHistory(searchCache: GlobalSearchHistory, space: SpaceId) {
+    override suspend fun setGlobalSearchHistory(globalSearchHistory: GlobalSearchHistory, space: SpaceId) {
         context.spacePrefsStore.updateData { existingPreferences ->
             val givenSpacePreference = existingPreferences
                 .preferences
@@ -330,8 +330,8 @@ class DefaultUserSettingsCache(
                 )
             val updated = givenSpacePreference.copy(
                 globalSearchHistory = GlobalSearchHistoryProto(
-                    lastSearchQuery = searchCache.query,
-                    lastSearchRelatedObjectId = searchCache.relatedObject
+                    lastSearchQuery = globalSearchHistory.query,
+                    lastSearchRelatedObjectId = globalSearchHistory.relatedObject
                 )
             )
             val result = buildMap {

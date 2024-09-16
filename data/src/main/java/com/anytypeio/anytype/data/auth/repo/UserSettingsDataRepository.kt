@@ -77,8 +77,8 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
         cache.clearLastOpenedObject(space)
     }
 
-    override suspend fun setGlobalSearchHistory(search: GlobalSearchHistory, space: SpaceId) {
-        cache.setGlobalSearchHistory(search, space)
+    override suspend fun setGlobalSearchHistory(globalSearchHistory: GlobalSearchHistory, space: SpaceId) {
+        cache.setGlobalSearchHistory(globalSearchHistory, space)
     }
 
     override suspend fun setGlobalSearchHistory(space: SpaceId): GlobalSearchHistory? {

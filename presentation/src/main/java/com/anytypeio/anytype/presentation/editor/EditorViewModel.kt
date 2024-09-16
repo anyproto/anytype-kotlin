@@ -4305,7 +4305,7 @@ class EditorViewModel(
         viewModelScope.launch {
             navigation.postValue(
                 EventWrapper(
-                    AppNavigation.Command.OpenPageSearch(
+                    AppNavigation.Command.OpenGlobalSearch(
                         space = vmParams.space.id
                     )
                 )

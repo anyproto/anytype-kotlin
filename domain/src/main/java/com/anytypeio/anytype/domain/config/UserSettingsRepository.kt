@@ -29,7 +29,7 @@ interface UserSettingsRepository {
     suspend fun getLastOpenedObject(space: SpaceId) : Id?
     suspend fun clearLastOpenedObject(space: SpaceId)
 
-    suspend fun setGlobalSearchHistory(search: GlobalSearchHistory, space: SpaceId)
+    suspend fun setGlobalSearchHistory(globalSearchHistory: GlobalSearchHistory, space: SpaceId)
     suspend fun setGlobalSearchHistory(space: SpaceId): GlobalSearchHistory?
     suspend fun clearGlobalSearchHistory(space: SpaceId)
 

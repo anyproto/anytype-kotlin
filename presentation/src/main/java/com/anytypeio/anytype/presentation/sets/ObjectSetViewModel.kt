@@ -1654,7 +1654,7 @@ class ObjectSetViewModel(
         )
         viewModelScope.launch {
             dispatch(
-                AppNavigation.Command.OpenPageSearch(
+                AppNavigation.Command.OpenGlobalSearch(
                     space = vmParams.space.id
                 )
             )

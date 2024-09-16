@@ -25,7 +25,7 @@ class SearchWithMeta @Inject constructor(
             query = params.command.query,
             relatedObject = params.relatedObjectId
         )
-        settings.setGlobalSearchHistory(search = search, space = params.command.space)
+        settings.setGlobalSearchHistory(globalSearchHistory = search, space = params.command.space)
     }
 
     data class Params(

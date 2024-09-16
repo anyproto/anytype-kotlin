@@ -312,7 +312,7 @@ class HomeScreenFragment : BaseComposeFragment() {
             }
             is Command.OpenGlobalSearchScreen -> {
                 runCatching {
-                    navigation().openPageSearch(
+                    navigation().openGlobalSearch(
                         space = command.space
                     )
                 }.onFailure {

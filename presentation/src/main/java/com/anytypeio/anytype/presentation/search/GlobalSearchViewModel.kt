@@ -477,6 +477,7 @@ class GlobalSearchViewModel(
             override val isLoading: Boolean
         ): ViewState()
 
+        //ToDo: remove this state, and make Related sealed class
         data class RelatedInit (
             val query: String = EMPTY_STRING_VALUE,
             val target: GlobalSearchItemView,

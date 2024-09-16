@@ -296,7 +296,7 @@ class UserSettingsCacheTest {
         // Saving global search for given space
 
         cache.setGlobalSearchHistory(
-            searchCache = globalSearch,
+            globalSearchHistory = globalSearch,
             space = space
         )
 

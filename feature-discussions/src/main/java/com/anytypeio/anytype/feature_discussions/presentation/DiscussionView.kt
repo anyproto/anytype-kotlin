@@ -12,6 +12,7 @@ sealed interface DiscussionView {
         val attachments: List<Chat.Message.Attachment> = emptyList(),
         val reactions: List<Reaction> = emptyList(),
         val isUserAuthor: Boolean = false,
+        val isEdited: Boolean = false,
         val avatar: Avatar = Avatar.Initials()
     ) : DiscussionView {
         data class Reaction(

@@ -334,6 +334,7 @@ class ChatContainerTest {
         order: Id = MockDataFactory.randomUuid(),
         creator: Id = MockDataFactory.randomUuid(),
         timestamp: Long = MockDataFactory.randomLong(),
+        modifiedAt: Long = MockDataFactory.randomLong(),
         reactions: Map<String, List<Id>> = emptyMap(),
         content: Chat.Message.Content? = null
 
@@ -341,9 +342,10 @@ class ChatContainerTest {
         id = id,
         order = order,
         creator = creator,
-        timestamp = timestamp,
+        createdAt = timestamp,
         reactions = reactions,
-        content = content
+        content = content,
+        modifiedAt = modifiedAt
     )
 
     // TODO move to test-utils

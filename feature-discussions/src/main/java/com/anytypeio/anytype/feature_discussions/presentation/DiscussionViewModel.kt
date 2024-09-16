@@ -101,10 +101,11 @@ class DiscussionViewModel(
                         }
                         DiscussionView.Message(
                             id = msg.id,
-                            timestamp = msg.timestamp * 1000,
+                            timestamp = msg.createdAt * 1000,
                             content = msg.content?.text.orEmpty(),
                             author = member?.name ?: msg.creator.takeLast(5),
                             isUserAuthor = msg.creator == account,
+                            isEdited = msg.modifiedAt > msg.createdAt,
                             reactions = msg.reactions.map{ (emoji, ids) ->
                                 DiscussionView.Message.Reaction(
                                     emoji = emoji,

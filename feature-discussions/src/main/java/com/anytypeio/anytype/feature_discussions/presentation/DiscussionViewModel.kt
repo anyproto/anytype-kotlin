@@ -133,6 +133,7 @@ class DiscussionViewModel(
         viewModelScope.launch {
             when(val mode = chatBoxMode.value) {
                 is ChatBoxMode.Default -> {
+                    // TODO consider moving this use-case inside chat container
                     addChatMessage.async(
                         params = Command.ChatCommand.AddMessage(
                             chat = chat,

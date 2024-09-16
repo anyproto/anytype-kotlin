@@ -9,7 +9,7 @@
     <string name="personalization">Personalização</string>
     <string name="appearance">Aparência</string>
     <string name="file_storage">Armazenamento de arquivos</string>
-    <string name="key">Key</string>
+    <string name="key">Chave</string>
     <string name="clear_file_cache">Limpar cache de arquivos</string>
     <string name="debug_sync_report">Relatório de Depuração de Sincronização</string>
     <string name="debug">Depuração</string>
@@ -29,7 +29,7 @@
     <string name="system">Sistema</string>
     <string name="settings">Configurações</string>
     <string name="have_you_back_up_your_recovery_phrase">Have you backed up your Key?</string>
-    <string name="you_will_need_to_sign_in">You will need it to enter your vault. Keep it in a safe place. If you lose it, you can no longer enter your vault.</string>
+    <string name="you_will_need_to_sign_in">Você precisará dela para entrar. Guarde-a em um local seguro. Se você perdê-la, você não poderá mais acessar sua conta.</string>
     <string name="about_help_and_community">Ajuda &amp; Comunidade</string>
     <string name="about_what_is_new">Novidades</string>
     <string name="about_anytype_community">Comunidade Anytype</string>
@@ -977,19 +977,19 @@
     <string name="onboarding_terms_and_policy_privacy">Política\u00A0de\u00A0Privacidade</string>
     <string name="onboarding_new_vault_button_text">New vault</string>
     <string name="onboarding_enter_my_vault">Get my Key</string>
-    <string name="onboarding_have_key_button_text">I have a Key</string>
+    <string name="onboarding_have_key_button_text">Eu tenho uma chave</string>
     <string name="onboarding_get_my_key_button_text">Get my Key</string>
     <string name="onboarding_invite_code_title">Insira seu código de convite</string>
     <string name="onboarding_invite_code_description">Se você não tem um, basta acessar anytype.io\ne entre na lista de espera.</string>
     <string name="onboarding_void_title">Este é o seu Void</string>
     <string name="onboarding_void_description">É um local criptografado para tudo que você criar. Tudo é armazenado no seu dispositivo e salvo na rede distribuída.</string>
-    <string name="onboarding_this_is_your_key_title">This is your Key</string>
+    <string name="onboarding_this_is_your_key_title">Esta é a sua chave</string>
     <string name="onboarding_key_description">It gives you full ownership over your vault. It cannot be recovered.</string>
-    <string name="onboarding_show_my_key">Show my Key</string>
+    <string name="onboarding_show_my_key">Exibir minha chave</string>
     <string name="onboarding_key_skip">Pular</string>
     <string name="onboarding_key_copy">Copiar para área de transferência</string>
-    <string name="onboarding_set_your_name_title">Set your name</string>
-    <string name="onboarding_soul_creation_description">Only seen by people you share something with. There is no central registry of these names.</string>
+    <string name="onboarding_set_your_name_title">Digite seu nome</string>
+    <string name="onboarding_soul_creation_description">Somente visto por pessoas com quem você compartilha algo. Não há registro central com esses nomes.</string>
     <string name="onboarding_soul_creation_placeholder">Identidade Anytype</string>
     <string name="onboarding_soul_creation">Criando a sua Identidade…</string>
     <string name="onboarding_type_your_key">Type your recovery phrase</string>
@@ -997,12 +997,12 @@
     <string name="onboarding_entering_void_title">Entrando no vazio</string>
     <string name="onboarding_your_key_can_t_be_empty">Your Key can\'t be empty</string>
     <string name="onboarding_mnemonic_read_more">Ler mais</string>
-    <string name="onboarding_key_additional_info">You can find this key later in Anytype settings</string>
-    <string name="onboarding_what_is_the_key">What is the Key?</string>
-    <string name="onboarding_recovery_phrase_description">It is represented by a recovery phrase – 12 random words from which your vault is magically generated on this device.</string>
+    <string name="onboarding_key_additional_info">Você pode encontrar a frase de recuperação mais tarde nas configurações do Anytype</string>
+    <string name="onboarding_what_is_the_key">Qual é a chave?</string>
+    <string name="onboarding_recovery_phrase_description">Ele é representado por uma frase de recuperação — 12 palavras aleatórias a partir do qual o seu cofre é magicamente gerado neste dispositivo.</string>
     <string name="onboarding_recovery_phrase_description_2">Whomever knows the combination of these words owns your vault. </string>
     <string name="onboarding_recovery_phrase_description_3">Right now, you are the only person in the world who knows it.</string>
-    <string name="onboarding_recovery_phrase_description_4">All computational resources on Earth are not enough to break in. If you lose it, it cannot be recovered. So, store it somewhere safe!</string>
+    <string name="onboarding_recovery_phrase_description_4">Todos os recursos computacionais na Terra não são suficientes para invadir. Se você os perde, ele não pode ser recuperado. Então, armazene-o em algum lugar seguro!</string>
     <string name="onboarding_how_to_save_my_phrase">How to save my Key?</string>
     <string name="onboarding_how_to_save_my_phrase_2">The easiest way to store your Key is to save it in your password manager.</string>
     <string name="onboarding_how_to_save_my_phrase_3">A forma mais segura é escrevê-la no papel e mantê-la fora do dispositivo, num lugar seguro e seguro.</string>
@@ -1115,7 +1115,7 @@
     <string name="create_object">Criar objeto</string>
     <string name="msg_query_cannot_be_changed">Esta consulta só pode ser alterada na versão desktop</string>
     <!--region ONBOARDING ERRORS -->
-    <string name="error_invalid_recovery_phrase">Invalid Key</string>
+    <string name="error_invalid_recovery_phrase">Chave Inválida</string>
     <string name="network">Rede</string>
     <string name="network_with_colon">Rede:</string>
     <string name="network_settings_anytype_network">Rede Anytype</string>
@@ -1455,7 +1455,7 @@ Please provide specific details of your needs here.</string>
     <string name="error_login_network_id_mismatch">Network ID mismatch detected. Please verify your network configuration.</string>
     <string name="error_login_select_vault_error">Select vault error.</string>
     <string name="global_search_related_to">"Related to: "</string>
-    <string name="global_search_no_related_objects_found">No related objects found</string>
+    <string name="global_search_no_related_objects_found">Nenhum objeto relacionado encontrado</string>
     <string name="sort_empty_values_desc">Show empty values</string>
     <string name="sort_empty_values_bottom">On bottom</string>
     <string name="sort_empty_values_top">On top</string>

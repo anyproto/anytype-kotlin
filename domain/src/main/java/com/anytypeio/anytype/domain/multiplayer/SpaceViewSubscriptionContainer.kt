@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import javax.inject.Inject
@@ -24,6 +25,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
@@ -43,7 +45,8 @@ interface SpaceViewSubscriptionContainer {
         private val container: StorelessSubscriptionContainer,
         private val scope: CoroutineScope,
         private val dispatchers: AppCoroutineDispatchers,
-        private val awaitAccountStart: AwaitAccountStartManager
+        private val awaitAccountStart: AwaitAccountStartManager,
+        private val logger: Logger
     ) : SpaceViewSubscriptionContainer {
 
         private val data = MutableStateFlow<List<ObjectWrapper.SpaceView>>(emptyList())
@@ -140,9 +143,15 @@ interface SpaceViewSubscriptionContainer {
                     objects.map { obj ->
                         ObjectWrapper.SpaceView(obj.map)
                     }
-                }.collect {
-                    data.value = it
+                }.catch { error ->
+                    logger.logException(
+                        e = error,
+                        msg = "Failed to subscribe to space-views"
+                    )
                 }
+                    .collect {
+                        data.value = it
+                    }
             }
         }
 

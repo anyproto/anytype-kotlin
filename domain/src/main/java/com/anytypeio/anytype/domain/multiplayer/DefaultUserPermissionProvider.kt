@@ -18,6 +18,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
@@ -107,10 +108,17 @@ class DefaultUserPermissionProvider @Inject constructor(
                         Relations.PARTICIPANT_PERMISSIONS
                     )
                 )
-            ).collect { results ->
-                members.value = results.map {
-                    ObjectWrapper.SpaceMember(it.map)
+            )
+                .catch { error ->
+                    logger.logException(
+                        e = error,
+                        msg = "Failed to subscribe to user-as-space-member-permissions"
+                    )
                 }
+                .collect { results ->
+                    members.value = results.map {
+                        ObjectWrapper.SpaceMember(it.map)
+                    }
             }
         }
     }

@@ -559,7 +559,7 @@ class OnboardingFragment : Fragment() {
                     OnboardingMnemonicViewModel.Command.OpenVault -> {
                         runCatching {
                             findNavController().navigate(
-                                R.id.action_open_vault,
+                                R.id.actionOpenVault,
                                 VaultFragment.args(deepLink)
                             )
                         }.onFailure {

@@ -41,10 +41,6 @@
             android:name="com.anytypeio.anytype.ui.editor.modals.ObjectIconPickerFragment"
             android:label="Object-Icon-Picker-Screen" />
         <dialog
-            android:id="@+id/objectMainMenuScreen"
-            android:name="com.anytypeio.anytype.ui.editor.sheets.ObjectMenuFragment"
-            android:label="Doc-Menu-Bottom-Sheet-Screen" />
-        <dialog
             android:id="@+id/objectCoverScreen"
             android:name="com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment"
             android:label="Object-Cover-Screen" />

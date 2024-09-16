@@ -11,7 +11,6 @@ import com.anytypeio.anytype.analytics.base.updateUserProperties
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds.SET
 import com.anytypeio.anytype.core_models.ObjectType
@@ -29,7 +28,6 @@ import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.LocaleProvider
-import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.page.CreateObjectByTypeAndTemplate
 import com.anytypeio.anytype.domain.spaces.GetLastOpenedSpace
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
@@ -182,21 +180,29 @@ class SplashViewModel(
                         view = EventsDictionary.View.viewHome,
                         spaceParams = provideParams(spaceId)
                     )
-                    val target = result.objectId
-                    if (type == COLLECTION || type == SET) {
-                        commands.emit(
-                            Command.NavigateToObjectSet(
-                                id = target,
-                                space = spaceId
-                            )
-                        )
-                    } else {
-                        commands.emit(
-                            Command.NavigateToObject(
-                                id = target,
-                                space = spaceId
-                            )
-                        )
+                    when (result) {
+                        CreateObjectByTypeAndTemplate.Result.ObjectTypeNotFound -> {
+                            commands.emit(Command.Toast(ERROR_CREATE_OBJECT))
+                            proceedWithDashboardNavigation()
+                        }
+                        is CreateObjectByTypeAndTemplate.Result.Success -> {
+                            val target = result.objectId
+                            if (type == COLLECTION || type == SET) {
+                                commands.emit(
+                                    Command.NavigateToObjectSet(
+                                        id = target,
+                                        space = spaceId
+                                    )
+                                )
+                            } else {
+                                commands.emit(
+                                    Command.NavigateToObject(
+                                        id = target,
+                                        space = spaceId
+                                    )
+                                )
+                            }
+                        }
                     }
                 }
             )
@@ -303,5 +309,6 @@ class SplashViewModel(
     companion object {
         const val ERROR_MESSAGE = "An error occurred while starting account"
         const val ERROR_NEED_UPDATE = "Unable to retrieve account. Please update Anytype to the latest version."
+        const val ERROR_CREATE_OBJECT = "Error while creating object: object type not found"
     }
 }

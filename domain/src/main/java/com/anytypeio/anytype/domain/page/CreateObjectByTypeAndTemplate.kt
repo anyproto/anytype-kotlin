@@ -28,15 +28,17 @@ class CreateObjectByTypeAndTemplate @Inject constructor(
     override suspend fun doWork(params: Param): Result {
         val wrapper = searchObjectType(params)
         logger.logInfo("CreateObjectByTypeAndTemplate, search object type:[$wrapper]")
-        return wrapper?.let {
+        return if (wrapper != null) {
             createObject(
                 typeKey = params.typeKey,
-                template = it.defaultTemplateId,
+                template = wrapper.defaultTemplateId,
                 internalFlags = params.internalFlags,
                 prefilled = params.prefilled,
                 space = params.space
             )
-        } ?: throw RuntimeException("Object type not found")
+        } else {
+            Result.ObjectTypeNotFound
+        }
     }
 
     @Throws(RuntimeException::class)
@@ -80,7 +82,8 @@ class CreateObjectByTypeAndTemplate @Inject constructor(
                 null
             }
         } catch (e: Exception) {
-            throw RuntimeException("Failed to search object type", e)
+            logger.logException(e, "Search object type failed")
+            return null
         }
     }
 
@@ -101,7 +104,7 @@ class CreateObjectByTypeAndTemplate @Inject constructor(
 
         val result = repo.createObject(createCommand)
 
-        return Result(
+        return Result.Success(
             objectId = result.id,
             event = result.event,
             appliedTemplate = template,
@@ -120,11 +123,15 @@ class CreateObjectByTypeAndTemplate @Inject constructor(
         val internalFlags: List<InternalFlags> = emptyList()
     )
 
-    data class Result(
-        val objectId: Id,
-        val event: Payload,
-        val appliedTemplate: String? = null,
-        val typeKey: TypeKey,
-        val obj: ObjectWrapper.Basic
-    )
+    sealed class Result {
+        data class Success(
+            val objectId: Id,
+            val event: Payload,
+            val appliedTemplate: String? = null,
+            val typeKey: TypeKey,
+            val obj: ObjectWrapper.Basic
+        ) : Result()
+
+        data object ObjectTypeNotFound : Result()
+    }
 }

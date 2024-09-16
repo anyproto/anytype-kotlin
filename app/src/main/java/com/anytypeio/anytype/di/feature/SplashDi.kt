@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.launch.SetDefaultObjectType
@@ -23,6 +24,7 @@ import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.page.CreateObjectByTypeAndTemplate
 import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
@@ -167,6 +169,15 @@ object SplashModule {
         dispatchers = dispatchers
     )
 
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideCreateObjectByType(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers,
+        logger: Logger
+    ): CreateObjectByTypeAndTemplate = CreateObjectByTypeAndTemplate(repo, logger, dispatchers)
+
     @Module
     interface Declarations {
         @PerScreen
@@ -196,4 +207,5 @@ interface SplashDependencies : ComponentDependencies {
     fun userPermissionProvider(): UserPermissionProvider
     fun analyticSpaceHelperDelegate(): AnalyticSpaceHelperDelegate
     fun globalSubscriptionManager(): GlobalSubscriptionManager
+    fun logger(): Logger
 }

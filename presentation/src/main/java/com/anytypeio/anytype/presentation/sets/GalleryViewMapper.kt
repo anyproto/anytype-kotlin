@@ -152,10 +152,23 @@ private suspend fun getCoverContainer(
     storeOfRelations: StoreOfRelations,
     isLargeSize: Boolean
 ): CoverContainer {
-    return if (obj.coverType != CoverType.NONE) {
-        BasicObjectCoverWrapper(obj).getCover(urlBuilder, coverImageHashProvider)
-    } else {
-        getCoverFromRelationOrLayout(obj, dvViewer, urlBuilder, store.getAll(), storeOfRelations, isLargeSize)
+    val coverRelationKey = dvViewer.coverRelationKey
+    return when (coverRelationKey) {
+        Relations.PAGE_COVER -> {
+            BasicObjectCoverWrapper(obj).getCover(
+                urlBuilder = urlBuilder,
+                coverImageHashProvider = coverImageHashProvider)
+        }
+        else -> {
+            getCoverFromRelationOrLayout(
+                obj = obj,
+                dvViewer = dvViewer,
+                urlBuilder = urlBuilder,
+                dependedObjects = store.getAll(),
+                storeOfRelations = storeOfRelations,
+                isLargeSize = isLargeSize
+            )
+        }
     }
 }
 

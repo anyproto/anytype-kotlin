@@ -369,7 +369,8 @@ class ObjectSetViewModel(
                         )
                         viewerLayoutWidgetState.value = viewerLayoutWidgetState.value.updateState(
                             viewer = pair.first,
-                            storeOfRelations = storeOfRelations
+                            storeOfRelations = storeOfRelations,
+                            relationLinks = dataView.dataViewContent.relationLinks
                         )
                     } else {
                         viewerEditWidgetState.value = ViewerEditWidgetUi.Init
@@ -2801,22 +2802,39 @@ class ObjectSetViewModel(
                     }
                 }
             }
-            is ViewerLayoutWidgetUi.Action.Cover -> {
-                when (action.cover) {
-                    ViewerLayoutWidgetUi.State.ImagePreview.Cover -> {
-                        proceedWithUpdateViewer(
-                            viewerId = viewerLayoutWidgetState.value.viewer
-                        ) { it.copy(coverRelationKey = Relations.PAGE_COVER) }
+            is ViewerLayoutWidgetUi.Action.ImagePreviewUpdate -> {
+                when (action.item) {
+                    is ViewerLayoutWidgetUi.State.ImagePreview.PageCover -> {
+                        val itemIsChecked = action.item.isChecked
+                        if (!itemIsChecked) {
+                            proceedWithUpdateViewer(
+                                viewerId = viewerLayoutWidgetState.value.viewer
+                            ) { it.copy(coverRelationKey = action.item.relationKey.key) }
+                        } else {
+                            Timber.i("Page cover is already set")
+                        }
                     }
+
                     is ViewerLayoutWidgetUi.State.ImagePreview.Custom -> {
-                        proceedWithUpdateViewer(
-                            viewerId = viewerLayoutWidgetState.value.viewer
-                        ) { it.copy(coverRelationKey = action.cover.name) }
+                        val itemIsChecked = action.item.isChecked
+                        if (!itemIsChecked) {
+                            proceedWithUpdateViewer(
+                                viewerId = viewerLayoutWidgetState.value.viewer
+                            ) { it.copy(coverRelationKey = action.item.relationKey.key) }
+                        } else {
+                            Timber.i("Custom cover [${action.item.relationKey.key}] is already set")
+                        }
                     }
-                    ViewerLayoutWidgetUi.State.ImagePreview.None -> {
-                        proceedWithUpdateViewer(
-                            viewerId = viewerLayoutWidgetState.value.viewer
-                        ) { it.copy(coverRelationKey = null) }
+
+                    is ViewerLayoutWidgetUi.State.ImagePreview.None -> {
+                        val itemIsChecked = action.item.isChecked
+                        if (!itemIsChecked) {
+                            proceedWithUpdateViewer(
+                                viewerId = viewerLayoutWidgetState.value.viewer
+                            ) { it.copy(coverRelationKey = null) }
+                        } else {
+                            Timber.i("No cover is already set")
+                        }
                     }
                 }
             }

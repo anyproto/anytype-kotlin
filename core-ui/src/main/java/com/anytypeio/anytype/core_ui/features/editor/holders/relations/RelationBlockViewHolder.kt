@@ -5,10 +5,9 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.view.updateLayoutParams
-import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.core_ui.BuildConfig
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationCheckboxBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationDefaultBinding
@@ -33,6 +32,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationDeletedBinding
 import com.anytypeio.anytype.core_ui.extensions.clearDrawable
 import com.anytypeio.anytype.core_ui.extensions.setDrawable
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
+import com.anytypeio.anytype.core_utils.ext.readableFileSize
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
@@ -169,8 +169,15 @@ sealed class RelationBlockViewHolder(
 
         override fun applyRelationValue(item: ObjectRelationView) {
             tvValue.apply {
-                text = item.value
                 if (item is ObjectRelationView.Default) {
+                    if (item.format == Relation.Format.NUMBER &&
+                        item.key == Relations.SIZE_IN_BYTES
+                    ) {
+                        val sizeInBytes = item.value?.toLongOrNull() ?: 0L
+                        text = sizeInBytes.readableFileSize()
+                    } else {
+                        text = item.value
+                    }
                     when (item.format) {
                         Relation.Format.SHORT_TEXT -> setHint(R.string.enter_text)
                         Relation.Format.LONG_TEXT -> setHint(R.string.enter_text)

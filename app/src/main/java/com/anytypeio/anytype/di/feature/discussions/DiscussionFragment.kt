@@ -92,8 +92,7 @@ class DiscussionFragment : BaseComposeFragment() {
                             val searchViewModel = daggerViewModel {
                                 component.get(
                                     params = GlobalSearchViewModel.VmParams(
-                                        initialQuery = "",
-                                        space = SpaceId("TODO")
+                                        space = SpaceId(space)
                                     )
                                 ).getViewModel()
                             }

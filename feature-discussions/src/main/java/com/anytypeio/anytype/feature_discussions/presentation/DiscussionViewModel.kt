@@ -138,9 +138,18 @@ class DiscussionViewModel(
                     addChatMessage.async(
                         params = Command.ChatCommand.AddMessage(
                             chat = chat,
-                            message = Chat.Message.new(msg)
+                            message = Chat.Message.new(
+                                text = msg,
+                                attachments = attachments.value.map { a ->
+                                    Chat.Message.Attachment(
+                                        target = a.id,
+                                        type = Chat.Message.Attachment.Type.Link
+                                    )
+                                }
+                            )
                         )
                     ).onSuccess { (id, payload) ->
+                        attachments.value = emptyList()
                         chatContainer.onPayload(payload)
                         delay(JUMP_TO_BOTTOM_DELAY)
                         commands.emit(UXCommand.JumpToBottom)

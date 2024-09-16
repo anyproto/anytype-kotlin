@@ -40,12 +40,13 @@ sealed class Chat {
              * New message builder.
              */
             fun new(
-                text: String
+                text: String,
+                attachments: List<Attachment> = emptyList()
             ) : Message = Chat.Message(
                 id = "",
                 createdAt = 0L,
                 modifiedAt = 0L,
-                attachments = emptyList(),
+                attachments = attachments,
                 reactions = emptyMap(),
                 creator = "",
                 replyToMessageId = "",

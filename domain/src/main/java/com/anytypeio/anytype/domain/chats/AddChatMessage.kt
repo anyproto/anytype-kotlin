@@ -16,9 +16,4 @@ class AddChatMessage @Inject constructor(
     override suspend fun doWork(params: Command.ChatCommand.AddMessage): Pair<Id, List<Event.Command.Chats>> {
         return repo.addChatMessage(params)
     }
-
-    data class Result(
-        val msg: Id,
-        val payload: List<Event.Command.Chats>
-    )
 }

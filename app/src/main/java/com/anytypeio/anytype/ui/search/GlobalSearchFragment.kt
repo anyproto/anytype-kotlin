@@ -37,7 +37,6 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
 
     private val vm by viewModels<GlobalSearchViewModel> { factory }
 
-    private val initialQuery get() = argString(ARG_INITIAL_STATE)
     private val space get() = argString(ARG_SPACE)
 
     override fun onCreateView(
@@ -107,7 +106,6 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
 
     override fun injectDependencies() {
         val params = GlobalSearchViewModel.VmParams(
-            initialQuery = initialQuery,
             space = SpaceId(space)
         )
         componentManager().globalSearchComponent.get(params).inject(this)
@@ -120,9 +118,7 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
     companion object {
         const val KEYBOARD_HIDE_DELAY = 300L
 
-        const val ARG_INITIAL_STATE = "arg.global.search.initial_state"
         const val ARG_SPACE = "arg.global.search.space"
-        fun args(initialQuery: String, space: Id): Bundle =
-            bundleOf(ARG_INITIAL_STATE to initialQuery, ARG_SPACE to space)
+        fun args(space: Id): Bundle = bundleOf(ARG_SPACE to space)
     }
 }

@@ -58,7 +58,6 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
-import com.anytypeio.anytype.domain.search.GetLastSearchQuery
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
@@ -197,7 +196,6 @@ class HomeScreenViewModel(
     private val createBlock: CreateBlock,
     private val dateProvider: DateProvider,
     private val addObjectToCollection: AddObjectToCollection,
-    private val getLastSearchQuery: GetLastSearchQuery,
     private val clearLastOpenedSpace: ClearLastOpenedSpace
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
@@ -1697,26 +1695,8 @@ class HomeScreenViewModel(
 
     fun onSearchIconClicked() {
         viewModelScope.launch {
-            val space = spaceManager.get()
-            val params = GetLastSearchQuery.Params(space = SpaceId(space))
-            getLastSearchQuery.async(params).fold(
-                onSuccess = { query ->
-                    commands.emit(
-                        Command.OpenGlobalSearchScreen(
-                            initialQuery = query,
-                            space = space
-                        )
-                    )
-                },
-                onFailure = {
-                    Timber.e(it, "Error while getting last search query")
-                    commands.emit(
-                        Command.OpenGlobalSearchScreen(
-                            initialQuery = "",
-                            space = space
-                        )
-                    )
-                }
+            commands.emit(
+                Command.OpenGlobalSearchScreen(space = spaceManager.get())
             )
         }
         viewModelScope.sendEvent(
@@ -2097,7 +2077,6 @@ class HomeScreenViewModel(
         private val dateProvider: DateProvider,
         private val coverImageHashProvider: CoverImageHashProvider,
         private val addObjectToCollection: AddObjectToCollection,
-        private val getLastSearchQuery: GetLastSearchQuery,
         private val clearLastOpenedSpace: ClearLastOpenedSpace
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
@@ -2146,7 +2125,6 @@ class HomeScreenViewModel(
             createBlock = createBlock,
             dateProvider = dateProvider,
             addObjectToCollection = addObjectToCollection,
-            getLastSearchQuery = getLastSearchQuery,
             clearLastOpenedSpace = clearLastOpenedSpace
         ) as T
     }
@@ -2190,7 +2168,7 @@ sealed class Command {
 
     data class OpenObjectCreateDialog(val space: SpaceId) : Command()
 
-    data class OpenGlobalSearchScreen(val initialQuery: String, val space: Id) : Command()
+    data class OpenGlobalSearchScreen(val space: Id) : Command()
 
     data object OpenVault: Command()
 

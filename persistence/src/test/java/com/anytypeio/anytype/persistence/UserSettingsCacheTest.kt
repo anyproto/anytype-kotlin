@@ -3,6 +3,7 @@ package com.anytypeio.anytype.persistence
 import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
+import com.anytypeio.anytype.core_models.GlobalSearchHistory
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
@@ -268,6 +269,49 @@ class UserSettingsCacheTest {
         assertEquals(
             expected = type2,
             actual = cache.getDefaultObjectType(space2)
+        )
+    }
+
+    @Test
+    fun `should save global search for given space and then clear it`() = runTest {
+
+        val cache = DefaultUserSettingsCache(
+            prefs = defaultPrefs,
+            context = ApplicationProvider.getApplicationContext()
+        )
+
+        val space = SpaceId(MockDataFactory.randomUuid())
+        val globalSearch = GlobalSearchHistory(
+            query = MockDataFactory.randomString(),
+            relatedObject = MockDataFactory.randomUuid()
+        )
+
+        // Settings are empty before we save anything
+
+        assertEquals(
+            expected = null,
+            actual = cache.getDefaultObjectType(space)
+        )
+
+        // Saving global search for given space
+
+        cache.setGlobalSearchHistory(
+            globalSearchHistory = globalSearch,
+            space = space
+        )
+
+        // Making sure global search is saved
+
+        assertEquals(
+            expected = globalSearch,
+            actual = cache.getGlobalSearchHistory(space)
+        )
+
+        cache.clearGlobalSearchHistory(space)
+
+        assertEquals(
+            expected = null,
+            actual = cache.getGlobalSearchHistory(space)
         )
     }
 }

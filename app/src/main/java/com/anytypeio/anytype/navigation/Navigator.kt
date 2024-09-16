@@ -135,14 +135,10 @@ class Navigator : AppNavigation {
         }
     }
 
-    override fun openPageSearch(initialQuery: String, space: Id) {
-        // Old search
-//        navController?.navigate(R.id.pageSearchFragment)
-        // Uncomment to use new search
+    override fun openGlobalSearch(space: Id) {
         navController?.navigate(
-            R.id.globalSearchScreen,
-            GlobalSearchFragment.args(
-                initialQuery = initialQuery,
+            resId = R.id.globalSearchScreen,
+            args = GlobalSearchFragment.args(
                 space = space
             )
         )

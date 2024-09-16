@@ -1190,7 +1190,7 @@
     <string name="multiplayer_delete_link">Excluir link</string>
     <string name="multiplayer_delete_link_description">Novos membros não poderão entrar no espaço. Você pode gerar um novo link a qualquer momento.</string>
     <string name="multiplayer_already_space_member">Você já é membro deste espaço</string>
-    <string name="multiplayer_open_space">Open space</string>
+    <string name="multiplayer_open_space">Abrir espaço</string>
     <string name="multiplayer_error_space_deleted">Espaço excluído</string>
     <string name="multiplayer_error_space_not_found">Espaço não encontrado</string>
     <string name="multiplayer_read_only_access_error">Acesso somente à leitura. Contacte o dono do espaço para mudanças.</string>
@@ -1212,12 +1212,12 @@
     <string name="multiplayer_notification_go_to_space">Ir para espaço</string>
     <string name="multiplayer_toast_permission_not_allowed">Não é permitido alterar as permissões</string>
     <string name="multiplayer_toast_share_limit_reached">Limite de compartilhamento atingido</string>
-    <string name="multiplayer_deeplink_to_your_object">Deeplink to your object</string>
+    <string name="multiplayer_deeplink_to_your_object">Desenvolver o seu objeto</string>
     <string name="multiplayer_deeplink_to_your_object_error">Este deeplink não está funcionando. Objeto pode ser apagado ou pode haver problemas com o acesso ao espaço.</string>
-    <string name="multiplayer_collaborate_on_spaces">Collaborate on spaces</string>
-    <string name="multiplayer_collaborate_step_1">1.  Tap the Space widget to access settings</string>
-    <string name="multiplayer_collaborate_step_2">2.  Open Share section</string>
-    <string name="multiplayer_collaborate_step_3">3.  Generate an invite link and share it</string>
+    <string name="multiplayer_collaborate_on_spaces">Colaborar em espaços</string>
+    <string name="multiplayer_collaborate_step_1">Toque no espaço para acessar as configurações</string>
+    <string name="multiplayer_collaborate_step_2">Abrir a seção de Compartilhamento</string>
+    <string name="multiplayer_collaborate_step_3">Gerar um link de convite e compartilhá-lo</string>
     <plurals name="multiplayer_number_of_space_members">
         <item quantity="one">%1$d member</item>
         <item quantity="other">%1$d members</item>
@@ -1226,35 +1226,35 @@
         <item quantity="one">%1$d request</item>
         <item quantity="other">%1$d requests</item>
     </plurals>
-    <string name="multiplayer_you_as_member">you</string>
+    <string name="multiplayer_you_as_member">você</string>
     <string name="multiplayer_spaces">Espaços</string>
     <string name="multiplayer_space_status_joining">Entrando</string>
     <string name="multiplayer_space_status_active">Ativo</string>
-    <string name="multiplayer_space_status_removing">Removed</string>
-    <string name="multiplayer_cancel_join_request">Cancel join request</string>
-    <string name="multiplayer_cancel_join_request_msg">You will have to send join request again</string>
-    <string name="multiplayer_do_not_cancel_join_request">Do not cancel</string>
-    <string name="multiplayer_error_invite_not_found">The invitation does not exist. Please ensure that your devices are synchronized.</string>
-    <string name="multiplayer_error_invite_bad_content">The invitation link could not be parsed. It may contain errors in the format or invalid data.</string>
-    <string name="multiplayer_error_space_is_deleted">It looks like the space has been deleted. Please ensure that your devices are synchronized.</string>
-    <string name="multiplayer_error_limit_reached">Limit reached for this space. Please upgrade your membership or contact support for assistance.</string>
+    <string name="multiplayer_space_status_removing">Removido</string>
+    <string name="multiplayer_cancel_join_request">Cancelar solicitação de adesão</string>
+    <string name="multiplayer_cancel_join_request_msg">Você terá que enviar o acesso da solicitação novamente</string>
+    <string name="multiplayer_do_not_cancel_join_request">Não cancelar</string>
+    <string name="multiplayer_error_invite_not_found">O convite não existe. Por favor, verifique se seus dispositivos estão sincronizados.</string>
+    <string name="multiplayer_error_invite_bad_content">O link do convite não pôde ser analisado. Ele pode conter erros no formato ou dados inválidos.</string>
+    <string name="multiplayer_error_space_is_deleted">Parece que o espaço foi excluído. Certifique-se de que seus dispositivos estejam sincronizados.</string>
+    <string name="multiplayer_error_limit_reached">Limite atingido para este espaço. Por favor, atualize seu membro ou entre em contato com o suporte para assistência.</string>
     <string name="multiplayer_error_not_shareable">It looks like the space is no longer shared. Please ensure that your devices are synchronized.</string>
-    <string name="multiplayer_error_request_failed">Oops! The request failed. Please check your Internet connection and try again.</string>
-    <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">This link does not seem to work</string>
-    <string name="multiplayer_invite_link_space_not_found">This invite link is no longer valid because the space was not found.</string>
+    <string name="multiplayer_error_request_failed">Opa! A solicitação falhou. Por favor, verifique sua conexão com a Internet e tente novamente.</string>
+    <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">Este link parece não funcionar</string>
+    <string name="multiplayer_invite_link_space_not_found">Este link de convite não é mais válido porque o espaço não foi encontrado.</string>
     <string name="multiplayer_invite_link_request_already_sent">Solicitação enviada</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Associação</string>
     <string name="payments_subheader">Juntar-se a rede Anytype representa contribuir para essa história</string>
-    <string name="payments_card_text_1">Co-create the Vision</string>
-    <string name="payments_card_description_1">As a valued member your voice matters! Engage in exclusive events, shape strategic choices, and influence our roadmap.</string>
-    <string name="payments_card_text_2">Unlock Member Benefits</string>
-    <string name="payments_card_description_2">Members enjoy higher backup storage &amp; sync limits, invitations for multiple guests to collaborate in shared spaces, and a unique identity on the Anytype Network.</string>
-    <string name="payments_card_text_3">Support Digital Independence</string>
-    <string name="payments_card_description_3">Your contribution supports our team and endorses our vision of a user-owned, secure, and collaborative digital network.</string>
+    <string name="payments_card_text_1">Co-criar a Visão</string>
+    <string name="payments_card_description_1">Como um membro valioso sua voz importa! Envolva-se em eventos exclusivos, forme escolhas estratégicas e influencie nosso roteiro.</string>
+    <string name="payments_card_text_2">Desbloquear benefícios para membros</string>
+    <string name="payments_card_description_2">Membros desfrutam de maiores limites de backup e sincronização, convites para vários convidados para colaborar em espaços compartilhados e uma identidade única na rede do Anytype.</string>
+    <string name="payments_card_text_3">Apoie a Independência Digital</string>
+    <string name="payments_card_description_3">Sua contribuição apoia nossa equipe independente e reforça nossa visão de um ambiente digital voltado ao usuário, seguro e colaborativo.</string>
     <string name="payments_card_text_4">Investir em Conectividade</string>
-    <string name="payments_card_description_4">Our network\'s value exceeds the sum of its parts. Your membership sustains the infrastructure for its growth which underpins this network.</string>
+    <string name="payments_card_description_4">O valor da nossa rede excede a soma de suas partes. Sua participação como membro mantém a infraestrutura para seu crescimento, que está na base dessa rede.</string>
     <string name="payments_tier_explorer">Navegador</string>
     <string name="payments_tier_explorer_description">Mergulhe na rede e aproveite a emoção da colaboração individual</string>
     <string name="payments_tier_builder">Criador</string>
@@ -1264,11 +1264,11 @@
     <string name="payments_tier_custom">Personalizado</string>
     <string name="payments_tier_custom_description">Associação feita para suas necessidades e preferências</string>
     <string name="payments_button_learn">Saiba mais</string>
-    <string name="payments_button_manage">Manage payment</string>
+    <string name="payments_button_manage">Gerenciar pagamento</string>
     <string name="payments_button_contact">Contato</string>
     <string name="payments_button_info">Mais informações</string>
     <string name="payments_button_submit">Enviar</string>
-    <string name="payments_button_pay">Pay by card</string>
+    <string name="payments_button_pay">Pagar com cartão</string>
     <string name="payments_button_change_email">Mudar e-mail</string>
     <string name="payments_member_link">Detalhes dos níveis de Associação</string>
     <string name="payments_privacy_link">Política de Privacidade</string>
@@ -1278,15 +1278,15 @@
     <string name="payments_current_label">Atual</string>
     <!-- Tier details -->
     <string name="payments_tier_details_name_title">Escolha seu nome único</string>
-    <string name="payments_tier_details_name_subtitle">This is your unique name on the Anytype network, confirming your Membership. It acts as your personal domain and cannot be changed.</string>
+    <string name="payments_tier_details_name_subtitle">Este é o seu nome exclusivo na rede Anytype, confirmando a sua Associação. Ele atua como seu domínio pessoal e não pode ser alterado.</string>
     <string name="payments_tier_details_name_hint">Eu mesmo</string>
-    <string name="payments_tier_details_name_domain">.any</string>
-    <string name="payments_tier_details_name_min">Min 7 characters</string>
-    <string name="payments_tier_details_name_error">This name is already taken!</string>
-    <string name="payments_tier_details_name_validated">This name [%1$s] is up for grabs!</string>
-    <string name="payments_tier_details_name_validating">Validating name</string>
+    <string name="payments_tier_details_name_domain">.qualquer</string>
+    <string name="payments_tier_details_name_min">Mínimo de 3 caracteres</string>
+    <string name="payments_tier_details_name_error">Este nome já está sendo usado.</string>
+    <string name="payments_tier_details_name_validated">Esse nome [%1$s] está disponível para uso!</string>
+    <string name="payments_tier_details_name_validating">Validando nome</string>
     <string name="payments_tier_details_free_forever">Para sempre</string>
-    <string name="payments_tier_details_valid_until">Valid until %1$s</string>
+    <string name="payments_tier_details_valid_until">Válido até %1$s</string>
     <string name="payments_tier_details_info_explorer">Mergulhe na rede e aproveite a emoção da colaboração individual</string>
     <string-array name="payments_benefits_explorer">
         <item>1 GB de espaço de rede</item>
@@ -1316,16 +1316,16 @@
     <string name="payments_email_checkbox_text">Gostaria de receber atualizações sobre produtos e desfrutar de vantagens gratuitas!</string>
     <string name="payments_email_hint">E-mail</string>
     <string name="payments_tier_current_title">Seu status atual:</string>
-    <string name="payments_tier_current_valid">Valid until</string>
-    <string name="payments_tier_current_paid_by">Paid by</string>
-    <string name="payments_tier_current_paid_by_card">Stripe</string>
+    <string name="payments_tier_current_valid">Válido até</string>
+    <string name="payments_tier_current_paid_by">Pago por</string>
+    <string name="payments_tier_current_paid_by_card">Faixa</string>
     <string name="payments_tier_current_paid_by_crypto">Crypto</string>
     <string name="payments_tier_current_paid_by_apple">Assinatura Apple</string>
     <string name="payments_tier_current_paid_by_google">Assinatura Google</string>
-    <string name="payments_tier_current_button">Manage payment</string>
+    <string name="payments_tier_current_button">Gerenciar pagamento</string>
     <string name="membership_manage_tier_desktop">Você pode gerenciar o nível na plataforma de Desktop</string>
-    <string name="membership_manage_tier_ios">You can manage tier on iOS platform</string>
-    <string name="membership_manage_tier_another_account">You can manage tier on another Google account</string>
+    <string name="membership_manage_tier_ios">Você pode gerenciar os níveis na plataforma iOS</string>
+    <string name="membership_manage_tier_another_account">Você pode gerenciar os níveis em outra conta do Google</string>
     <string name="payments_tier_current_change_email_button">Mudar e-mail</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Digite o código enviado para seu email</string>
@@ -1357,12 +1357,9 @@
     </string>
     <string name="payments_email_to">membership-upgrade@anytype.io</string>
     <string name="payments_email_subject">Upgrade %1$s</string>
-    <string name="payments_email_body">Hello Anytype team! I would like to extend my current membership for more (please choose an option):\n
-- Extra remote storage\n
-- More space editors\n
-- Additional shared spaces\n
-Specifically,
-Please provide specific details of your needs here.</string>
+    <string name="payments_email_body">Olá Equipe Anytype! Eu gostaria de estender minha atual assinatura para (por favor escolha uma opção):\n- Mais armazenamento remoto\n- Mais editores de espaço\n- Mais espaços compartilhados
+Especificamente,
+forneça detalhes específicos das suas necessidades aqui.</string>
     <!-- Membership name errors -->
     <string name="membership_name_bad_input">Something wrong with input, try again</string>
     <string name="membership_name_cache_error">Error on our side, try again later</string>
@@ -1386,92 +1383,92 @@ Please provide specific details of your needs here.</string>
     <string name="membership_email_code_wrong">Code is wrong</string>
     <string name="membership_email_code_success">Code is correct</string>
     <string name="membership_email_membership_not_found">Membership not found</string>
-    <string name="membership_email_membership_already_active">Membership already active</string>
+    <string name="membership_email_membership_already_active">Assinatura já ativa</string>
     <!-- Notifications -->
-    <string name="notifications_alert_error_unknown">An unknown error has occurred. Please try again later.</string>
-    <string name="notifications_alert_error_bad_input">Invalid input detected. Please check your data and try again.</string>
-    <string name="notifications_alert_error_internal">An internal error has occurred. Our team has been notified.</string>
-    <string name="notifications_alert_error_no_objects_to_import">No items found to import. Please select valid objects for import.</string>
-    <string name="notifications_alert_error_import_canceled">The import process has been canceled by the user.</string>
-    <string name="notifications_alert_error_limit_exceeded">The import limit for rows or relations has been exceeded. Please reduce the amount and try again.</string>
-    <string name="notifications_alert_error_file_load">There was an error loading the file. Please check the file and try again.</string>
-    <string name="notifications_alert_error_insufficient_permissions">You do not have the necessary permissions to perform this action. Please check your permissions and try again.</string>
+    <string name="notifications_alert_error_unknown">Um erro desconhecido ocorreu. Por favor, tente novamente mais tarde.</string>
+    <string name="notifications_alert_error_bad_input">Entrada inválida detectada. Por favor, verifique seus dados e tente novamente.</string>
+    <string name="notifications_alert_error_internal">Ocorreu um erro interno. Nossa equipe foi notificada.</string>
+    <string name="notifications_alert_error_no_objects_to_import">Nenhum item encontrado para importação. Por favor, selecione objetos válidos para importação.</string>
+    <string name="notifications_alert_error_import_canceled">O processo de importação foi cancelado pelo usuário.</string>
+    <string name="notifications_alert_error_limit_exceeded">O limite de importação para linhas ou relações foi excedido. Por favor, reduza o montante e tente novamente.</string>
+    <string name="notifications_alert_error_file_load">Houve um erro ao carregar o arquivo. Por favor, verifique o arquivo e tente novamente.</string>
+    <string name="notifications_alert_error_insufficient_permissions">Você não tem as permissões necessárias para executar esta ação. Por favor, verifique suas permissões e tente novamente.</string>
     <!-- Gallery Experience -->
-    <string name="gallery_experience_made">Made by</string>
+    <string name="gallery_experience_made">Feito por</string>
     <string name="gallery_experience_install">Instalar</string>
     <string name="gallery_experience_install_new">Instalar no novo espaço</string>
-    <string name="gallery_experience_alert_title_success">Experience was installed</string>
-    <string name="gallery_experience_alert_subtitle_success">\"%1$s\" was installed to a new space. You can now open and start using it.</string>
+    <string name="gallery_experience_alert_title_success">Experiência foi instalada</string>
+    <string name="gallery_experience_alert_subtitle_success">\"%1$s\" foi instalado em um novo espaço. Agora você pode abrir e começar a usá-lo.</string>
     <string name="gallery_experience_alert_title_error">Ops!</string>
-    <string name="gallery_experience_alert_button_space">Open space</string>
+    <string name="gallery_experience_alert_button_space">Abrir espaço</string>
     <string name="gallery_experience_alert_button_error">Fechar</string>
     <string name="membership_btn_join">Junte-se</string>
-    <string name="notifications_prompt_get_notified">Get notified</string>
-    <string name="notifications_prompt_secondary_button_text">Not now</string>
-    <string name="notifications_prompt_description">Please enable notifications to stay informed about any requests to join or leave spaces.</string>
-    <string name="notifications_prompt_primary_button_text">Enable</string>
-    <string name="clipboard_panel_create_bookmark_from_clipboard">Create bookmark from clipboard</string>
-    <string name="error_unexpected_layout">Error: unexpected layout</string>
+    <string name="notifications_prompt_get_notified">Seja notificado</string>
+    <string name="notifications_prompt_secondary_button_text">Agora não</string>
+    <string name="notifications_prompt_description">Por favor, permita que as notificações permaneçam informadas sobre quaisquer pedidos para entrar ou sair de espaços.</string>
+    <string name="notifications_prompt_primary_button_text">Habilitar</string>
+    <string name="clipboard_panel_create_bookmark_from_clipboard">Criar objeto a partir da área de transferência.</string>
+    <string name="error_unexpected_layout">Erro: layout inesperado</string>
     <string name="membership_price_pending">Pendente...</string>
-    <string name="per_period">per %1$s</string>
-    <string name="free_for">Free for %1$s</string>
-    <string name="free_for_unknown">Free until...</string>
-    <string name="free_until">Free until</string>
-    <string name="membership_valid_forever">Valid forever</string>
-    <string name="membership_valid_for_unknown">Valid until...</string>
-    <string name="membership_agree_start">By continuing you agree to our</string>
+    <string name="per_period">por  %1$s</string>
+    <string name="free_for">Livre para %1$s</string>
+    <string name="free_for_unknown">Grátis até...</string>
+    <string name="free_until">Grátis até</string>
+    <string name="membership_valid_forever">Válido para sempre</string>
+    <string name="membership_valid_for_unknown">Válido até...</string>
+    <string name="membership_agree_start">Ao continuar, você concorda com  nossos</string>
     <string name="membership_agree_terms">Termos de uso</string>
-    <string name="membership_agree_middle">and</string>
+    <string name="membership_agree_middle">e</string>
     <string name="membership_agree_privacy">Política de Privacidade</string>
-    <string name="membership_support_already_acquired">You’ve already acquired a Membership plan using another Anytype account.</string>
-    <string name="membership_support_different_subscription">Found a subscription with a different id</string>
-    <string name="membership_support_more_then_one_subscription">Found more than one subscription</string>
-    <string name="multiplayer_space_join_request_participants_error">Space participant\'s error</string>
-    <string name="multiplayer_space_join_request_new_member_error">Request\'s member error</string>
-    <string name="multiplayer_space_join_request_current_user_error">Current user status error</string>
-    <string name="multiplayer_space_join_request_membership_status_error">Current membership status error</string>
+    <string name="membership_support_already_acquired">Você já adquiriu um plano de adesão usando outra conta Anytype.</string>
+    <string name="membership_support_different_subscription">Uma assinatura com um ID diferente foi encontrada</string>
+    <string name="membership_support_more_then_one_subscription">Mais de uma assinatura encontrada</string>
+    <string name="multiplayer_space_join_request_participants_error">Erro do espaço do usuário.</string>
+    <string name="multiplayer_space_join_request_new_member_error">Erro do membro solicitado</string>
+    <string name="multiplayer_space_join_request_current_user_error">Erro atual de status do usuário</string>
+    <string name="multiplayer_space_join_request_membership_status_error">Erro atual no estado da associação</string>
     <string name="membership_upgrade_title">Atualizar assinatura</string>
     <string name="membership_upgrade_description">Entre em contato conosco para obter armazenamento extra, editores de espaço ou mais espaços compartilhados. A equipe Anytype fornecerá detalhes e condições adaptadas às suas necessidades.</string>
     <string name="membership_upgrade_button">Entrar em contato com a equipe Anytype</string>
-    <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d spaces that can be shared</string>
+    <string name="membership_space_settings_share_limit">Você atingiu o limite de espaço %1$d que pode ser compartilhado</string>
     <plurals name="period_years">
-        <item quantity="one">year</item>
-        <item quantity="other">%d years</item>
+        <item quantity="one">ano</item>
+        <item quantity="other">%d anos</item>
     </plurals>
     <plurals name="period_months">
-        <item quantity="one">month</item>
-        <item quantity="other">%d months</item>
+        <item quantity="one">mês</item>
+        <item quantity="other">%d meses</item>
     </plurals>
     <plurals name="period_weeks">
-        <item quantity="one">week</item>
-        <item quantity="other">%d weeks</item>
+        <item quantity="one">semana</item>
+        <item quantity="other">%d semanas</item>
     </plurals>
     <plurals name="period_days">
-        <item quantity="one">day</item>
-        <item quantity="other">%d days</item>
+        <item quantity="one">dia</item>
+        <item quantity="other">%d dias</item>
     </plurals>
     <string name="membership_error_button_text_action">Fale conosco</string>
     <string name="membership_error_button_text_dismiss">Ok</string>
-    <string name="error_login_network_id_mismatch">Network ID mismatch detected. Please verify your network configuration.</string>
-    <string name="error_login_select_vault_error">Select vault error.</string>
-    <string name="global_search_related_to">"Related to: "</string>
+    <string name="error_login_network_id_mismatch">Incompatibilidade de ID de rede detectada. Verifique sua configuração de rede.</string>
+    <string name="error_login_select_vault_error">Erro ao selecionar conta.</string>
+    <string name="global_search_related_to">"Relacionado a: "</string>
     <string name="global_search_no_related_objects_found">Nenhum objeto relacionado encontrado</string>
     <string name="sort_empty_values_desc">Mostrar valores vazios</string>
     <string name="sort_empty_values_bottom">Na parte inferior</string>
     <string name="sort_empty_values_top">No topo</string>
     <string name="widget_view_see_all_objects">Visualizar todos os objetos</string>
-    <string name="sync_status_get_error">Error getting sync status</string>
+    <string name="sync_status_get_error">Erro ao obter status de sincronização</string>
     <string name="sync_status_local_only_title">Somente Local</string>
     <string name="sync_status_data_backup">“Backup” de dados está desabilitado</string>
     <string name="sync_status_self_host">Host Próprio</string>
     <string name="sync_status_self_host_synced">Sincronizado</string>
     <plurals name="sync_status_self_host_syncing">
-        <item quantity="one">%1$d item syncing</item>
-        <item quantity="other">%1$d items syncing...</item>
+        <item quantity="one">%1$d sincronizando “item”</item>
+        <item quantity="other">%1$d sincronizando itens</item>
     </plurals>
     <string name="sync_status_p2p">Conexão P2P</string>
     <plurals name="sync_status_p2p_devices">
-        <item quantity="one">%1$d device connected</item>
+        <item quantity="one">%1$d dispositivo conectado</item>
         <item quantity="other">%1$d devices connected</item>
     </plurals>
     <string name="sync_status_p2p_connecting">P2P Conectando...</string>

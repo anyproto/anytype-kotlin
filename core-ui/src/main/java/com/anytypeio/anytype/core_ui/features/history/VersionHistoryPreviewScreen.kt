@@ -1,5 +1,8 @@
 package com.anytypeio.anytype.core_ui.features.history
 
+import android.view.LayoutInflater
+import android.widget.HorizontalScrollView
+import android.widget.TextView
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -39,6 +42,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridHeaderAdapter
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
@@ -55,7 +59,8 @@ fun VersionHistoryPreviewScreen(
     state: VersionHistoryPreviewScreen,
     onDismiss: () -> Unit,
     onRestore: () -> Unit,
-    editorAdapter: BlockAdapter
+    editorAdapter: BlockAdapter,
+    gridAdapter: ViewerGridHeaderAdapter
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val versionTitle = remember { mutableStateOf("") }
@@ -87,26 +92,83 @@ fun VersionHistoryPreviewScreen(
                             .padding(vertical = 6.dp)
                     )
                     Header(title = versionTitle.value, icon = versionIcon.value)
-                    AndroidView(
-                        factory = { context ->
-                            RecyclerView(context).apply {
-                                layoutParams = RecyclerView.LayoutParams(
-                                    RecyclerView.LayoutParams.MATCH_PARENT,
-                                    RecyclerView.LayoutParams.MATCH_PARENT
-                                )
-                                layoutManager = LinearLayoutManager(context)
-                                adapter = editorAdapter
-                            }
-                        },
-                        update = {
-                            editorAdapter.updateWithDiffUtil(state.blocks)
+                    when (state) {
+                        is VersionHistoryPreviewScreen.Success.Editor -> {
+                            EditorScreen(
+                                editorAdapter = editorAdapter,
+                                state = state
+                            )
                         }
-                    )
+
+                        is VersionHistoryPreviewScreen.Success.Set -> {
+                            ObjectSetScreen(
+                                editorAdapter = editorAdapter,
+                                state = state,
+                                gridAdapter = gridAdapter
+                            )
+                        }
+                    }
                 }
                 Buttons(onDismiss = onDismiss, onRestore = onRestore)
             }
         }
     }
+}
+
+@Composable
+private fun EditorScreen(
+    editorAdapter: BlockAdapter,
+    state: VersionHistoryPreviewScreen.Success.Editor
+) {
+    AndroidView(
+        factory = { context ->
+            RecyclerView(context).apply {
+                layoutParams = RecyclerView.LayoutParams(
+                    RecyclerView.LayoutParams.MATCH_PARENT,
+                    RecyclerView.LayoutParams.MATCH_PARENT
+                )
+                layoutManager = LinearLayoutManager(context)
+                adapter = editorAdapter
+            }
+        },
+        update = {
+            editorAdapter.updateWithDiffUtil(state.blocks)
+        }
+    )
+}
+
+@Composable
+private fun ObjectSetScreen(
+    editorAdapter: BlockAdapter,
+    gridAdapter: ViewerGridHeaderAdapter,
+    state: VersionHistoryPreviewScreen.Success.Set
+) {
+    AndroidView(
+        factory = { context ->
+            val view = LayoutInflater.from(context).inflate(
+                R.layout.layout_version_history_set,
+                null
+            ).apply {
+                findViewById<RecyclerView>(R.id.objectHeader).apply {
+                    layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+                    adapter = editorAdapter
+                }
+                findViewById<HorizontalScrollView>(R.id.gridContainer).apply {
+                    findViewById<RecyclerView>(R.id.rvHeader).apply {
+                        adapter = gridAdapter
+                    }
+                }
+            }
+            view
+        },
+        update = {
+            it.findViewById<TextView>(R.id.tvCurrentViewerName).apply {
+                text = state.viewer?.name
+            }
+            editorAdapter.updateWithDiffUtil(state.blocks)
+            gridAdapter.submitList(state.viewer?.columns)
+        }
+    )
 }
 
 @Composable
@@ -165,14 +227,18 @@ private fun BoxScope.Buttons(
             text = stringResource(id = R.string.cancel),
             onClick = onDismiss,
             size = ButtonSize.LargeSecondary,
-            modifier = Modifier.padding(top = 16.dp, bottom = 32.dp).weight(1.0f)
+            modifier = Modifier
+                .padding(top = 16.dp, bottom = 32.dp)
+                .weight(1.0f)
         )
         Spacer(modifier = Modifier.width(9.dp))
         ButtonPrimary(
             text = stringResource(id = R.string.restore),
             onClick = onRestore,
             size = ButtonSize.Large,
-            modifier = Modifier.padding(top = 16.dp, bottom = 32.dp).weight(1.0f)
+            modifier = Modifier
+                .padding(top = 16.dp, bottom = 32.dp)
+                .weight(1.0f)
         )
     }
 }

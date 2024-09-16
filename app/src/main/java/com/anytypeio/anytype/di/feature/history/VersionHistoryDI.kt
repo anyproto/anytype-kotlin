@@ -4,10 +4,13 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.presentation.history.VersionHistoryVMFactory
 import com.anytypeio.anytype.presentation.history.VersionHistoryViewModel
+import com.anytypeio.anytype.presentation.sets.state.DefaultObjectStateReducer
+import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
 import com.anytypeio.anytype.ui.history.VersionHistoryFragment
 import dagger.Binds
 import dagger.BindsInstance
 import dagger.Module
+import dagger.Provides
 import dagger.Subcomponent
 
 @Subcomponent(
@@ -31,6 +34,11 @@ interface VersionHistoryComponent {
 
 @Module
 object VersionHistoryModule {
+
+    @JvmStatic
+    @Provides
+    @PerModal
+    fun provideObjectStateReducer(): ObjectStateReducer = DefaultObjectStateReducer()
 
     @Module
     interface Declarations {

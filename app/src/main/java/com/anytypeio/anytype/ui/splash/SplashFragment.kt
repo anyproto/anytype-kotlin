@@ -194,6 +194,10 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                     vm.onIntentActionNotFound()
                 }
             }
+
+            is SplashViewModel.Command.Toast -> {
+                toast(command.message)
+            }
         }
     }
 

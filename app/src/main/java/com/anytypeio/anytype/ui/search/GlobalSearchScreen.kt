@@ -27,6 +27,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.selection.LocalTextSelectionColors
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -35,6 +37,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -118,6 +121,13 @@ fun GlobalSearchScreen(
     focusOnStart: Boolean = true
 ) {
 
+    val selectionColors = TextSelectionColors(
+        backgroundColor = colorResource(id = R.color.cursor_color).copy(
+            alpha = 0.2f
+        ),
+        handleColor = colorResource(id = R.color.cursor_color),
+    )
+
     var showLoading by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(state.isLoading) {
@@ -133,7 +143,17 @@ fun GlobalSearchScreen(
     var query by remember { mutableStateOf(TextFieldValue()) }
 
     if (state is GlobalSearchViewModel.ViewState.Init) {
-        query = TextFieldValue(text = state.query, selection = TextRange(start = 0, end = state.query.length))
+        query = TextFieldValue(
+            text = state.query,
+            selection = TextRange(start = 0, end = state.query.length)
+        )
+    }
+
+    if (state is GlobalSearchViewModel.ViewState.RelatedInit) {
+        query = TextFieldValue(
+            text = state.query,
+            selection = TextRange(start = 0, end = state.query.length)
+        )
     }
 
     Column(
@@ -177,54 +197,57 @@ fun GlobalSearchScreen(
                         start = 11.dp
                     )
             )
-            BasicTextField(
-                value = query,
-                modifier = Modifier
-                    .weight(1.0f)
-                    .padding(start = 6.dp)
-                    .align(Alignment.CenterVertically)
-                    .focusRequester(focusRequester)
-                ,
-                textStyle = BodyRegular.copy(
-                    color = colorResource(id = R.color.text_primary)
-                ),
-                onValueChange = { input ->
-                    query = input.also {
-                        onQueryChanged(input.text)
-                    }
-                },
-                singleLine = true,
-                maxLines = 1,
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        focus.clearFocus(true)
-                    }
-                ),
-                decorationBox = @Composable { innerTextField ->
-                    TextFieldDefaults.OutlinedTextFieldDecorationBox(
-                        value = query.text,
-                        innerTextField = innerTextField,
-                        enabled = true,
-                        singleLine = true,
-                        visualTransformation = VisualTransformation.None,
-                        interactionSource = interactionSource,
-                        placeholder = {
-                            Text(
-                                text = stringResource(id = R.string.search),
-                                style = BodyRegular.copy(
-                                    color = colorResource(id = R.color.text_tertiary)
+            CompositionLocalProvider(value = LocalTextSelectionColors provides selectionColors) {
+
+                BasicTextField(
+                    value = query,
+                    modifier = Modifier
+                        .weight(1.0f)
+                        .padding(start = 6.dp)
+                        .align(Alignment.CenterVertically)
+                        .focusRequester(focusRequester),
+                    textStyle = BodyRegular.copy(
+                        color = colorResource(id = R.color.text_primary)
+                    ),
+                    onValueChange = { input ->
+                        query = input.also {
+                            onQueryChanged(input.text)
+                        }
+                    },
+                    singleLine = true,
+                    maxLines = 1,
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            focus.clearFocus(true)
+                        }
+                    ),
+                    decorationBox = @Composable { innerTextField ->
+                        TextFieldDefaults.OutlinedTextFieldDecorationBox(
+                            value = query.text,
+                            innerTextField = innerTextField,
+                            enabled = true,
+                            singleLine = true,
+                            visualTransformation = VisualTransformation.None,
+                            interactionSource = interactionSource,
+                            placeholder = {
+                                Text(
+                                    text = stringResource(id = R.string.search),
+                                    style = BodyRegular.copy(
+                                        color = colorResource(id = R.color.text_tertiary)
+                                    )
                                 )
-                            )
-                        },
-                        colors = TextFieldDefaults.textFieldColors(
-                            backgroundColor = colorResource(id = R.color.shape_transparent)
-                        ),
-                        border = {},
-                        contentPadding = PaddingValues()
-                    )
-                },
-                cursorBrush = SolidColor(colorResource(id = R.color.palette_system_blue)),
-            )
+                            },
+                            colors = TextFieldDefaults.textFieldColors(
+                                backgroundColor = colorResource(id = R.color.shape_transparent),
+                                cursorColor = colorResource(id = R.color.cursor_color),
+                            ),
+                            border = {},
+                            contentPadding = PaddingValues()
+                        )
+                    },
+                    cursorBrush = SolidColor(colorResource(id = R.color.palette_system_blue)),
+                )
+            }
             Box(
                 modifier = Modifier.size(16.dp)
             ) {
@@ -262,55 +285,18 @@ fun GlobalSearchScreen(
         ) {
             if (state is GlobalSearchViewModel.ViewState.Related) {
                 stickyHeader {
-                    Row(
-                        modifier = Modifier
-                            .height(48.dp)
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.Bottom
-                    ) {
-                        Text(
-                            text = buildAnnotatedString {
-                                append(stringResource(R.string.global_search_related_to))
-                                withStyle(
-                                    style = SpanStyle(
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                ) {
-                                    append(state.target.title)
-                                }
-                            },
-                            style = Caption1Regular,
-                            color = colorResource(id = R.color.text_secondary),
-                            modifier = Modifier
-                                .weight(1.0f)
-                                .padding(
-                                    start = 20.dp,
-                                    bottom = 8.dp
-                                ),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text(
-                            text = stringResource(id = R.string.clear),
-                            style = Caption1Regular,
-                            color = colorResource(id = R.color.text_secondary),
-                            modifier = Modifier
-                                .padding(
-                                    start = 20.dp,
-                                    end = 20.dp,
-                                    bottom = 8.dp
-                                )
-                                .clickable {
-                                    onClearRelatedClicked().also {
-                                        query = TextFieldValue()
-                                    }
-                                }
-                        )
+                    RelatedHeader(title = state.target.title) {
+                        onClearRelatedClicked()
+                        query = TextFieldValue()
                     }
-                    Divider(
-                        paddingStart = 20.dp,
-                        paddingEnd = 20.dp
-                    )
+                }
+            }
+            if (state is GlobalSearchViewModel.ViewState.RelatedInit) {
+                stickyHeader {
+                    RelatedHeader(title = state.target.title) {
+                        onClearRelatedClicked()
+                        query = TextFieldValue()
+                    }
                 }
             }
             items(
@@ -397,6 +383,60 @@ fun GlobalSearchScreen(
     }
 }
 
+@Composable
+private fun RelatedHeader(
+    title: String,
+    onClearRelatedClicked: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .height(48.dp)
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.Bottom
+    ) {
+        Text(
+            text = buildAnnotatedString {
+                append(stringResource(R.string.global_search_related_to))
+                withStyle(
+                    style = SpanStyle(
+                        fontWeight = FontWeight.Bold
+                    )
+                ) {
+                    append(title)
+                }
+            },
+            style = Caption1Regular,
+            color = colorResource(id = R.color.text_secondary),
+            modifier = Modifier
+                .weight(1.0f)
+                .padding(
+                    start = 20.dp,
+                    bottom = 8.dp
+                ),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        Text(
+            text = stringResource(id = R.string.clear),
+            style = Caption1Regular,
+            color = colorResource(id = R.color.text_secondary),
+            modifier = Modifier
+                .padding(
+                    start = 20.dp,
+                    end = 20.dp,
+                    bottom = 8.dp
+                )
+                .clickable {
+                    onClearRelatedClicked()
+                }
+        )
+    }
+    Divider(
+        paddingStart = 20.dp,
+        paddingEnd = 20.dp
+    )
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun GlobalSearchItem(
@@ -465,7 +505,7 @@ private fun GlobalSearchItem(
                 text = globalSearchItemView.title,
                 nameMeta = globalSearchItemView.nameMeta
             )
-            when(val meta = globalSearchItemView.meta) {
+            when (val meta = globalSearchItemView.meta) {
                 is GlobalSearchItemView.Meta.Block -> {
                     if (meta.highlights.isEmpty()) {
                         Text(
@@ -480,6 +520,7 @@ private fun GlobalSearchItem(
                         )
                     }
                 }
+
                 is GlobalSearchItemView.Meta.Default -> {
                     if (meta.highlights.isEmpty()) {
                         Text(
@@ -495,6 +536,7 @@ private fun GlobalSearchItem(
                         )
                     }
                 }
+
                 is GlobalSearchItemView.Meta.Status -> {
                     DefaultMetaStatusRelation(
                         title = meta.name,
@@ -502,6 +544,7 @@ private fun GlobalSearchItem(
                         color = meta.color
                     )
                 }
+
                 is GlobalSearchItemView.Meta.Tag -> {
                     DefaultMetaTagRelation(
                         title = meta.name,
@@ -509,6 +552,7 @@ private fun GlobalSearchItem(
                         color = meta.color
                     )
                 }
+
                 is GlobalSearchItemView.Meta.None -> {
                     // Draw nothing.
                 }
@@ -719,6 +763,7 @@ fun GlobalSearchObjectIcon(
             avatarFontSize = avatarFontSize,
             avatarBackgroundColor = avatarBackgroundColor
         )
+
         is ObjectIcon.Profile.Image -> DefaultProfileIconImage(icon, modifier, iconSize)
         is ObjectIcon.Basic.Emoji -> DefaultEmojiObjectIcon(modifier, iconSize, icon)
         is ObjectIcon.Basic.Image -> DefaultObjectImageIcon(icon.hash, modifier, iconSize)
@@ -733,6 +778,7 @@ fun GlobalSearchObjectIcon(
                 iconSize = iconSize
             )
         }
+
         else -> {
             // Draw nothing.
         }

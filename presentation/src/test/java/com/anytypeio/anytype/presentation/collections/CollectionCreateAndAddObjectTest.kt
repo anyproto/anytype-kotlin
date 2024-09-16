@@ -124,8 +124,7 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
             permissions = permissions,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
-            clearLastOpenedObject = clearLastOpenedObject,
-            getLastSearchQuery = getLastSearchQuery
+            clearLastOpenedObject = clearLastOpenedObject
         )
         stubNetworkMode()
         stubObservePermissions()

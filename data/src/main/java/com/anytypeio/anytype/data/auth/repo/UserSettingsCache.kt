@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.data.auth.repo
 
+import com.anytypeio.anytype.core_models.GlobalSearchHistory
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.Wallpaper
@@ -22,9 +23,9 @@ interface UserSettingsCache {
     suspend fun getLastOpenedObject(space: SpaceId) : Id?
     suspend fun clearLastOpenedObject(space: SpaceId)
 
-    suspend fun setLastSearchQuery(query: String, space: SpaceId)
-    suspend fun getLastSearchQuery(space: SpaceId): String
-    suspend fun clearLastSearchQuery(space: SpaceId)
+    suspend fun setGlobalSearchHistory(globalSearchHistory: GlobalSearchHistory, space: SpaceId)
+    suspend fun getGlobalSearchHistory(space: SpaceId): GlobalSearchHistory?
+    suspend fun clearGlobalSearchHistory(space: SpaceId)
 
     suspend fun setWallpaper(space: Id, wallpaper: Wallpaper)
     suspend fun getWallpaper(space: Id) : Wallpaper

@@ -30,10 +30,13 @@ import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.Resultat
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.search.RestoreGlobalSearchHistory
 import com.anytypeio.anytype.domain.search.SearchWithMeta
+import com.anytypeio.anytype.domain.search.UpdateGlobalSearchHistory
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchBacklinksEvent
@@ -42,10 +45,13 @@ import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.filterObjectsByIds
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.filterSearchObjects
 import javax.inject.Inject
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -55,7 +61,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.scan
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -68,9 +73,11 @@ class GlobalSearchViewModel @Inject constructor(
     private val urlBuilder: UrlBuilder,
     private val analytics: Analytics,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val restoreGlobalSearchHistory: RestoreGlobalSearchHistory,
+    private val updateGlobalSearchHistory: UpdateGlobalSearchHistory
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
-    private val userInput = MutableStateFlow(vmParams.initialQuery)
+    private val userInput = MutableStateFlow("")
     private val searchQuery = userInput
         .take(1)
         .onCompletion {
@@ -81,51 +88,129 @@ class GlobalSearchViewModel @Inject constructor(
 
     val navigation = MutableSharedFlow<OpenObjectNavigation>()
 
-    val state = combine(
-        mode,
-        searchQuery
-    ) { mode, query ->
-        mode to query
-    }.flatMapLatest { (mode, query) ->
-        when(mode) {
-            is Mode.Default -> {
-                buildDefaultSearchFlow(query = query, space = vmParams.space)
-            }
-            is Mode.Related -> {
-                buildRelatedSearchFlow(query = query, mode = mode, space = vmParams.space)
-            }
+    private val _state: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.Init())
+    val state = _state.asStateFlow()
+
+    init {
+        Timber.d("GlobalSearchViewModel, init")
+        proceedRestoreGlobalSearch(space = vmParams.space)
+    }
+
+    private fun proceedRestoreGlobalSearch(space: SpaceId) {
+        Timber.d("restoreGlobalSearch, space $space")
+        viewModelScope.launch {
+            val params = RestoreGlobalSearchHistory.Params(spaceId = space)
+            restoreGlobalSearchHistory.async(params = params).fold(
+                onSuccess = { response ->
+                    val globalSearchHistory = response.globalSearchHistory
+                    Timber.d("restoreGlobalSearchHistory, onSuccess $globalSearchHistory")
+                    userInput.value = globalSearchHistory?.query ?: EMPTY_STRING_VALUE
+                    val relatedObjectId = globalSearchHistory?.relatedObject
+                    if (!relatedObjectId.isNullOrEmpty()) {
+                        proceedRelatedObjectSearch(
+                            query = globalSearchHistory.query,
+                            relatedObjectId = relatedObjectId
+                        )
+                    } else {
+                        val initialState =
+                            ViewState.Init(query = globalSearchHistory?.query ?: EMPTY_STRING_VALUE)
+                        proceedWithInitialState(initialState)
+                    }
+                },
+                onFailure = {
+                    Timber.e(it, "restoreGlobalSearch, onFailure")
+                    userInput.value = EMPTY_STRING_VALUE
+                    proceedWithInitialState(ViewState.Init(query = EMPTY_STRING_VALUE))
+                }
+            )
         }
-    }.scan<ViewState, ViewState>(
-        initial = ViewState.Init(
-            query = vmParams.initialQuery
+    }
+
+    private suspend fun proceedRelatedObjectSearch(query: String, relatedObjectId: Id) {
+        val params = SearchWithMeta.Params(
+            relatedObjectId = relatedObjectId,
+            command = Command.SearchWithMeta(
+                limit = 1,
+                keys = DEFAULT_KEYS,
+                filters = filterObjectsByIds(
+                    ids = listOf(relatedObjectId),
+                    spaces = listOf(vmParams.space.id)
+                ),
+                space = vmParams.space
+            )
         )
-    ) { curr, new ->
-        when(new) {
-            is ViewState.Default -> {
-                if (new.isLoading) {
-                    new.copy(
-                        views = curr.views
+        searchWithMeta.async(params).fold(
+            onSuccess = { result ->
+                Timber.d("proceedRelatedObjectSearch, onSuccess $result")
+                val relatedGlobalSearchItemView = result.firstOrNull()?.view(
+                    storeOfRelations = storeOfRelations,
+                    storeOfObjectTypes = storeOfObjectTypes,
+                    urlBuilder = urlBuilder
+                )
+                if (relatedGlobalSearchItemView != null) {
+                    mode.value = Mode.Related(target = relatedGlobalSearchItemView)
+                    proceedWithInitialState(
+                        ViewState.RelatedInit(
+                            query = query,
+                            target = relatedGlobalSearchItemView,
+                            isLoading = false
+                        )
                     )
                 } else {
-                    new
+                    proceedWithInitialState(ViewState.Init(query = query))
+                }
+            },
+            onFailure = {
+                Timber.e(it, "proceedRelatedObjectSearch, onFailure")
+                proceedWithInitialState(ViewState.Init(query = query))
+            }
+        )
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private suspend fun proceedWithInitialState(initial: ViewState) {
+        combine(
+            mode,
+            searchQuery
+        ) { mode, query ->
+            mode to query
+        }.flatMapLatest { (mode, query) ->
+            when(mode) {
+                is Mode.Default -> {
+                    buildDefaultSearchFlow(query = query, space = vmParams.space)
+                }
+                is Mode.Related -> {
+                    buildRelatedSearchFlow(query = query, mode = mode, space = vmParams.space)
                 }
             }
-            is ViewState.Related -> {
-                if (new.isLoading) {
-                    new.copy(
-                        views = curr.views
-                    )
-                } else {
-                    new
+        }.scan(
+            initial = initial
+        ) { curr, new ->
+            when(new) {
+                is ViewState.Default -> {
+                    if (new.isLoading) {
+                        new.copy(
+                            views = curr.views
+                        )
+                    } else {
+                        new
+                    }
                 }
+                is ViewState.Related -> {
+                    if (new.isLoading) {
+                        new.copy(
+                            views = curr.views
+                        )
+                    } else {
+                        new
+                    }
+                }
+                else -> new
             }
-            else -> new
+        }.collect {
+            _state.value = it
         }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(),
-        initialValue = ViewState.Init("")
-    )
+    }
 
     private suspend fun buildRelatedSearchFlow(
         query: String,
@@ -133,32 +218,12 @@ class GlobalSearchViewModel @Inject constructor(
         space: SpaceId
     ) = searchWithMeta
         .stream(
-            Command.SearchWithMeta(
+            relatedSearchFlowParams(
                 query = query,
-                limit = DEFAULT_SEARCH_LIMIT,
-                offset = 0,
-                keys = DEFAULT_KEYS,
-                filters = buildList {
-                    addAll(
-                        ObjectSearchConstants.filterSearchObjects(
-                            spaces = listOf(vmParams.space.id)
-                        )
-                    )
-                    add(
-                        DVFilter(
-                            relation = Relations.ID,
-                            value = buildSet {
-                                addAll(mode.target.links)
-                                addAll(mode.target.backlinks)
-                            }.toList(),
-                            condition = DVFilterCondition.IN
-                        )
-                    )
-                },
-                sorts = ObjectSearchConstants.sortsSearchObjects,
-                withMetaRelationDetails = false,
-                withMeta = false,
-                space = space
+                links = mode.target.links,
+                backlinks = mode.target.backlinks,
+                space = space,
+                relatedObjectId = mode.target.id
             )
         ).map { result ->
             when (result) {
@@ -191,22 +256,67 @@ class GlobalSearchViewModel @Inject constructor(
             }
         }
 
-    private suspend fun buildDefaultSearchFlow(query: String, space: SpaceId) = searchWithMeta
-        .stream(
-            Command.SearchWithMeta(
+    private fun relatedSearchFlowParams(
+        query: String,
+        links: List<Id>,
+        backlinks: List<Id>,
+        space: SpaceId,
+        relatedObjectId: Id?
+    ): SearchWithMeta.Params {
+        return SearchWithMeta.Params(
+            saveSearch = true,
+            relatedObjectId = relatedObjectId,
+            command = Command.SearchWithMeta(
                 query = query,
                 limit = DEFAULT_SEARCH_LIMIT,
                 offset = 0,
                 keys = DEFAULT_KEYS,
-                filters = ObjectSearchConstants.filterSearchObjects(
-                    // TODO add tech space?
-                    spaces = listOf(space.id)
-                ),
+                filters = buildList {
+                    addAll(
+                        filterSearchObjects(
+                            spaces = listOf(vmParams.space.id)
+                        )
+                    )
+                    add(
+                        DVFilter(
+                            relation = Relations.ID,
+                            value = buildSet {
+                                addAll(links)
+                                addAll(backlinks)
+                            }.toList(),
+                            condition = DVFilterCondition.IN
+                        )
+                    )
+                },
                 sorts = ObjectSearchConstants.sortsSearchObjects,
-                withMetaRelationDetails = true,
-                withMeta = true,
+                withMetaRelationDetails = false,
+                withMeta = false,
                 space = space
             )
+        )
+    }
+
+    private suspend fun buildDefaultSearchFlow(query: String, space: SpaceId) = searchWithMeta
+        .stream(
+            SearchWithMeta.Params(
+                saveSearch = true,
+                relatedObjectId = null,
+                command = Command.SearchWithMeta(
+                    query = query,
+                    limit = DEFAULT_SEARCH_LIMIT,
+                    offset = 0,
+                    keys = DEFAULT_KEYS,
+                    filters = ObjectSearchConstants.filterSearchObjects(
+                        // TODO add tech space?
+                        spaces = listOf(space.id)
+                    ),
+                    sorts = ObjectSearchConstants.sortsSearchObjects,
+                    withMetaRelationDetails = true,
+                    withMeta = true,
+                    space = space
+                )
+            )
+
         ).map { result ->
             when (result) {
                 is Resultat.Failure -> {
@@ -272,6 +382,10 @@ class GlobalSearchViewModel @Inject constructor(
         viewModelScope.launch {
             userInput.value = EMPTY_STRING_VALUE
             mode.value = Mode.Related(globalSearchItemView)
+            proceedUpdateGlobalSearch(
+                query = EMPTY_STRING_VALUE,
+                relatedObjectId = globalSearchItemView.id
+            )
         }
         viewModelScope.launch {
             sendAnalyticsSearchBacklinksEvent(
@@ -281,7 +395,23 @@ class GlobalSearchViewModel @Inject constructor(
         }
     }
 
-    data class VmParams(val initialQuery: String, val space: SpaceId)
+    private suspend fun proceedUpdateGlobalSearch(query: String, relatedObjectId: Id?) {
+        val params = UpdateGlobalSearchHistory.Params(
+            spaceId = vmParams.space,
+            query = query,
+            relatedObjectId = relatedObjectId
+        )
+        updateGlobalSearchHistory.async(params).fold(
+            onSuccess = {
+                Timber.i("updateGlobalSearch, onSuccess")
+            },
+            onFailure = {
+                Timber.e(it, "updateGlobalSearch, onFailure")
+            }
+        )
+    }
+
+    data class VmParams(val space: SpaceId)
 
     class Factory @Inject constructor(
         private val vmParams: VmParams,
@@ -290,7 +420,9 @@ class GlobalSearchViewModel @Inject constructor(
         private val storeOfRelations: StoreOfRelations,
         private val urlBuilder: UrlBuilder,
         private val analytics: Analytics,
-        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        private val restoreGlobalSearchHistory: RestoreGlobalSearchHistory,
+        private val updateGlobalSearchHistory: UpdateGlobalSearchHistory
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -301,7 +433,9 @@ class GlobalSearchViewModel @Inject constructor(
                 storeOfRelations = storeOfRelations,
                 urlBuilder = urlBuilder,
                 analytics = analytics,
-                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+                restoreGlobalSearchHistory = restoreGlobalSearchHistory,
+                updateGlobalSearchHistory = updateGlobalSearchHistory
             ) as T
         }
     }
@@ -338,6 +472,14 @@ class GlobalSearchViewModel @Inject constructor(
         ): ViewState()
 
         data class Related (
+            val target: GlobalSearchItemView,
+            override val views: List<GlobalSearchItemView> = emptyList(),
+            override val isLoading: Boolean
+        ): ViewState()
+
+        //ToDo: remove this state, and make Related sealed class
+        data class RelatedInit (
+            val query: String = EMPTY_STRING_VALUE,
             val target: GlobalSearchItemView,
             override val views: List<GlobalSearchItemView> = emptyList(),
             override val isLoading: Boolean

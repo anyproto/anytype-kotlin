@@ -18,13 +18,16 @@ import com.anytypeio.anytype.domain.history.ShowVersion
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.history.VersionHistoryViewModel.Companion.GROUP_DATE_FORMAT_OTHER_YEAR
 import com.anytypeio.anytype.presentation.history.VersionHistoryViewModel.Companion.VERSIONS_MAX_LIMIT
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import com.anytypeio.anytype.presentation.sets.state.DefaultObjectStateReducer
 import com.anytypeio.anytype.presentation.widgets.collection.DateProviderImpl
 import java.time.ZoneId
 import java.util.Locale
@@ -98,6 +101,12 @@ class VersionHistoryViewModelTest {
 
     @Mock
     lateinit var renderer: DefaultBlockViewRenderer
+
+    @Mock
+    lateinit var storeOfRelations: StoreOfRelations
+
+    @Mock
+    lateinit var coverImageHashProvider: CoverImageHashProvider
 
     lateinit var spaceManager: SpaceManager
 
@@ -544,7 +553,10 @@ class VersionHistoryViewModelTest {
             urlBuilder = urlBuilder,
             renderer = renderer,
             setVersion = setVersion,
-            showVersion = showVersion
+            showVersion = showVersion,
+            setStateReducer = DefaultObjectStateReducer(),
+            storeOfRelations = storeOfRelations,
+            coverImageHashProvider = coverImageHashProvider
         )
     }
 }

@@ -7,7 +7,8 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.ScrollableTabRow
 import androidx.compose.material.Tab
 import androidx.compose.material.Text
-import androidx.compose.material.ripple.LocalRippleTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.rememberCoroutineScope
@@ -18,11 +19,11 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.ui.library.LibraryListConfig
-import com.anytypeio.anytype.ui.library.views.LibraryTabsTheme
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalAnimationApi
 @ExperimentalPagerApi
 @Composable
@@ -40,7 +41,7 @@ fun LibraryListTabs(
         edgePadding = 0.dp,
         modifier = modifier.padding(start = 4.dp),
         tabs = {
-            CompositionLocalProvider(LocalRippleTheme provides LibraryTabsTheme) {
+            CompositionLocalProvider(LocalRippleConfiguration provides null) {
                 configuration.forEachIndexed { index, it ->
                     LibraryListTab(
                         config = it,

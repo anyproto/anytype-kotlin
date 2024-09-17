@@ -7,7 +7,8 @@ import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.TabRowDefaults
 import androidx.compose.material.Text
-import androidx.compose.material.ripple.LocalRippleTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
@@ -30,6 +31,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalPagerApi
 @Composable
 fun LibraryTabs(
@@ -62,7 +64,7 @@ fun LibraryTabs(
             )
         },
         tabs = {
-            CompositionLocalProvider(LocalRippleTheme provides LibraryTabsTheme) {
+            CompositionLocalProvider(LocalRippleConfiguration provides null) {
                 LibraryTab(
                     modifier = modifier,
                     config = configuration.types,

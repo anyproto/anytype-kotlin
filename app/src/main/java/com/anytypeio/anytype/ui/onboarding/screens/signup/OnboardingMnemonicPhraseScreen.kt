@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
@@ -129,7 +130,10 @@ fun MnemonicPhraseScreen(
             dragHandle = {
                 // Do nothing
             },
-            sheetState = SheetState(skipPartiallyExpanded = true)
+            sheetState = SheetState(
+                skipPartiallyExpanded = true,
+                density = Density(1.0f)
+            )
         )
     }
 }

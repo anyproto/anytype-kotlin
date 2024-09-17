@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.payments.screens
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -12,11 +11,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text2.BasicTextField2
-import androidx.compose.foundation.text2.input.TextFieldLineLimits
-import androidx.compose.foundation.text2.input.TextFieldState
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -43,7 +41,6 @@ import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.payments.R
 import com.anytypeio.anytype.payments.models.TierAnyName
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AnyNameView(
     anyNameState: TierAnyName,
@@ -111,7 +108,7 @@ fun AnyNameView(
                             color = colorResource(id = R.color.text_tertiary)
                         )
                     } else {
-                        BasicTextField2(
+                        BasicTextField(
                             modifier = Modifier
                                 .weight(1f)
                                 .wrapContentHeight()
@@ -126,7 +123,7 @@ fun AnyNameView(
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 imeAction = ImeAction.Done,
                             ),
-                            keyboardActions = KeyboardActions {
+                            onKeyboardAction = {
                                 keyboardController?.hide()
                                 focusManager.clearFocus()
                             },

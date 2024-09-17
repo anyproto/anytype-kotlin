@@ -10,7 +10,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
-import androidx.compose.material.ripple.LocalRippleTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -34,6 +35,7 @@ import com.anytypeio.anytype.core_ui.ColorButtonSecondaryText
 import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
 import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OnBoardingButtonPrimary(
     text: String = "",
@@ -51,7 +53,7 @@ fun OnBoardingButtonPrimary(
         ColorButtonPrimaryActive
     }
 
-    CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
+    CompositionLocalProvider(LocalRippleConfiguration provides null) {
         Button(
             onClick = onClick,
             interactionSource = interactionSource,
@@ -94,6 +96,7 @@ fun OnBoardingButtonPrimary(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OnBoardingButtonSecondary(
     text: String = "",
@@ -117,7 +120,7 @@ fun OnBoardingButtonSecondary(
         ColorButtonSecondaryBorder
     }
 
-    CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
+    CompositionLocalProvider(LocalRippleConfiguration provides null) {
         Button(
             onClick = onClick,
             interactionSource = interactionSource,

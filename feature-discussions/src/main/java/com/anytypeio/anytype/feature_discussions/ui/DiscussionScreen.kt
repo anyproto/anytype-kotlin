@@ -624,42 +624,21 @@ fun Messages(
                 Spacer(modifier = Modifier.height(36.dp))
             Row(
                 modifier = Modifier
-                    .padding(horizontal = 48.dp)
+                    .padding(horizontal = 8.dp)
+                    .animateItem()
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .background(
-                            colorResource(id = R.color.text_tertiary),
-                            shape = CircleShape
-                        )
-                        .align(Alignment.Bottom)
-                ) {
-                    Text(
-                        text = msg.author.take(1).uppercase().ifEmpty { stringResource(id = R.string.u) },
-                        modifier = Modifier.align(Alignment.Center),
-                        style = TextStyle(
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = colorResource(id = R.color.text_white)
-                        )
+                if (!msg.isUserAuthor) {
+                    ChatUserAvatar(
+                        msg = msg,
+                        avatar = msg.avatar,
+                        modifier = Modifier.align(Alignment.Bottom)
                     )
-                    if (msg.avatar is DiscussionView.Message.Avatar.Image) {
-                        AsyncImage(
-                            model = ImageRequest.Builder(LocalContext.current)
-                                .data(msg.avatar.hash)
-                                .crossfade(true)
-                                .build(),
-                            contentDescription = "Space member profile icon",
-                            modifier = modifier
-                                .size(32.dp)
-                                .clip(CircleShape),
-                            contentScale = ContentScale.Crop
-                        )
-                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                } else {
+                    Spacer(modifier = Modifier.width(40.dp))
                 }
-                Spacer(modifier = Modifier.width(8.dp))
                 Bubble(
+                    modifier = Modifier.weight(1.0f),
                     name = msg.author,
                     msg = msg.content,
                     timestamp = msg.timestamp,
@@ -681,6 +660,16 @@ fun Messages(
                         onEditMessage(msg)
                     }
                 )
+                if (msg.isUserAuthor) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    ChatUserAvatar(
+                        msg = msg,
+                        avatar = msg.avatar,
+                        modifier = Modifier.align(Alignment.Bottom)
+                    )
+                } else {
+                    Spacer(modifier = Modifier.width(40.dp))
+                }
             }
             if (idx == messages.lastIndex) {
                 Spacer(modifier = Modifier.height(36.dp))
@@ -700,9 +689,7 @@ fun Messages(
                         )
                     )
                     Text(
-                        text = "There is no messages yet. \n" +
-                                "Be the first to start a discussion."
-                        ,
+                        text = stringResource(R.string.chat_empty_state_message),
                         style = Caption1Regular,
                         color = colorResource(id = R.color.text_secondary),
                         textAlign = TextAlign.Center,
@@ -738,7 +725,47 @@ fun Messages(
 }
 
 @Composable
+private fun ChatUserAvatar(
+    msg: DiscussionView.Message,
+    avatar: DiscussionView.Message.Avatar,
+    modifier: Modifier
+) {
+    Box(
+        modifier = modifier
+            .size(32.dp)
+            .background(
+                color = colorResource(id = R.color.text_tertiary),
+                shape = CircleShape
+            )
+    ) {
+        Text(
+            text = msg.author.take(1).uppercase().ifEmpty { stringResource(id = R.string.u) },
+            modifier = Modifier.align(Alignment.Center),
+            style = TextStyle(
+                fontSize = 20.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = colorResource(id = R.color.text_white)
+            )
+        )
+        if (avatar is DiscussionView.Message.Avatar.Image) {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(avatar.hash)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = "Space member profile icon",
+                modifier = modifier
+                    .size(32.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
+            )
+        }
+    }
+}
+
+@Composable
 fun Bubble(
+    modifier: Modifier = Modifier,
     name: String,
     msg: String,
     timestamp: Long,
@@ -754,7 +781,7 @@ fun Bubble(
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .background(
                 color = if (isUserAuthor)
@@ -1246,4 +1273,4 @@ fun AttachmentPreview() {
 }
 
 private const val HEADER_KEY = "key.discussions.item.header"
-private val JumpToBottomThreshold = 56.dp
+private val JumpToBottomThreshold = 200.dp

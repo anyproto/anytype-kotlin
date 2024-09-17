@@ -204,7 +204,7 @@ fun DiscussionScreen(
     var textState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(""))
     }
-//    var isTitleFocused by remember { mutableStateOf(false) }
+    var isTitleFocused by remember { mutableStateOf(false) }
     val chatBoxFocusRequester = FocusRequester()
     val isHeaderVisible by remember {
         derivedStateOf {
@@ -235,7 +235,7 @@ fun DiscussionScreen(
                 onTitleChanged = onTitleChanged,
                 title = title,
                 onTitleFocusChanged = {
-//                    isTitleFocused = it
+                    isTitleFocused = it
                 },
                 onReacted = onReacted,
                 onCopyMessage = onCopyMessage,
@@ -334,7 +334,7 @@ fun DiscussionScreen(
                     lazyListState.animateScrollToItem(index = 0)
                 }
             },
-            isTitleFocused = false,
+            isTitleFocused = isTitleFocused,
             attachments = attachments,
             updateValue = {
                 textState = it

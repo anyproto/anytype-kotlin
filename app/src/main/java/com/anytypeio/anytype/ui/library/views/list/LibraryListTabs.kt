@@ -4,6 +4,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material.ScrollableTabRow
 import androidx.compose.material.Tab
 import androidx.compose.material.Text
@@ -19,13 +20,10 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.ui.library.LibraryListConfig
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.PagerState
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalAnimationApi
-@ExperimentalPagerApi
 @Composable
 fun LibraryListTabs(
     pagerState: PagerState,

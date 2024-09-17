@@ -3,6 +3,7 @@ package com.anytypeio.anytype.ui.library.views
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.LocalRippleConfiguration
 import androidx.compose.material.RippleConfiguration
@@ -30,12 +31,9 @@ import com.anytypeio.anytype.ui.library.LibraryScreenConfig
 import com.anytypeio.anytype.ui.library.ScreenState
 import com.anytypeio.anytype.ui.library.WrapWithLibraryAnimation
 import com.anytypeio.anytype.ui.library.styles.TabTitleStyle
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.PagerState
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterialApi::class)
-@ExperimentalPagerApi
 @Composable
 fun LibraryTabs(
     modifier: Modifier,

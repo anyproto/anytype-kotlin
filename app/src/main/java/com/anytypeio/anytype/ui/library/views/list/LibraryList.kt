@@ -28,9 +28,7 @@ fun LibraryListView(
 ) {
     val pagerState = rememberPagerState(
         initialPage = INITIAL_TAB,
-        pageCount = {
-            2
-        }
+        pageCount = { 2 }
     )
     val modifier = Modifier.background(
         color = colorResource(id = R.color.background_primary)

@@ -275,6 +275,6 @@ class DiscussionViewModel(
         /**
          * Delay before jump-to-bottom after adding new message to the chat.
          */
-        const val JUMP_TO_BOTTOM_DELAY = 150L
+        const val JUMP_TO_BOTTOM_DELAY = 50L
     }
 }

@@ -171,8 +171,6 @@ object Flags {
         Relations.SNIPPET,
         Relations.SYNC_DATE,
         Relations.SYNC_STATUS,
-        Relations.BACKLINKS,
-        Relations.LINKS,
         Relations.INTERNAL_FLAGS
     )
 }

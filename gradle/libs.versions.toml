@@ -12,12 +12,12 @@ composeConstraintLayoutVersion = '1.0.1'
 
 dokkaVersion = '1.9.20'
 
-activityComposeVersion = '1.9.0'
+activityComposeVersion = '1.9.2'
 composeReorderableVersion = 'e9ef693f63'
 accompanistVersion = "0.34.0"
 appcompatVersion = '1.7.0'
-androidXAnnotationVersion = '1.8.0'
-fragmentVersion = "1.8.1"
+androidXAnnotationVersion = '1.8.2'
+fragmentVersion = "1.8.3"
 exoplayerVersion = "2.19.1"
 wireVersion = "4.9.8"
 glideVersion = "4.14.2"
@@ -25,7 +25,7 @@ glideComposeVersion = "1.0.0-beta01"
 mockitoKotlinVersion = "5.3.1"
 junitVersion = '4.13.2'
 androidJunitVersion = "1.2.1"
-runnerVersion = "1.6.1"
+runnerVersion = "1.6.2"
 rulesVersion = "1.6.1"
 mockitoAndroidVersion = '5.11.0'
 kotlinCoroutinesVersion = '1.8.0'
@@ -175,8 +175,8 @@ playBilling = { module = "com.android.billingclient:billing", version = "7.0.0" 
 [bundles]
 
 [plugins]
-application = { id = "com.android.application", version = "8.5.1" }
-library = { id = "com.android.library", version = "8.5.1" }
+application = { id = "com.android.application", version = "8.5.2" }
+library = { id = "com.android.library", version = "8.5.2" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinVersion" }
 org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinVersion" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlinVersion" }

@@ -1,9 +1,9 @@
 package com.anytypeio.anytype.payments.viewmodel
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.text2.input.TextFieldState
-import androidx.compose.foundation.text2.input.clearText
-import androidx.compose.foundation.text2.input.textAsFlow
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.clearText
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.billingclient.api.BillingFlowParams
@@ -11,8 +11,13 @@ import com.android.billingclient.api.ProductDetails
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.membership.EmailVerificationStatus
+import com.anytypeio.anytype.core_models.membership.MembershipConstants.EXPLORER_ID
+import com.anytypeio.anytype.core_models.membership.MembershipConstants.MEMBERSHIP_NAME_MIN_LENGTH
+import com.anytypeio.anytype.core_models.membership.MembershipConstants.NONE_ID
 import com.anytypeio.anytype.core_models.membership.MembershipErrors
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
+import com.anytypeio.anytype.core_models.membership.MembershipStatus
+import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.payments.GetMembershipEmailStatus
@@ -20,23 +25,18 @@ import com.anytypeio.anytype.domain.payments.GetMembershipPaymentUrl
 import com.anytypeio.anytype.domain.payments.IsMembershipNameValid
 import com.anytypeio.anytype.domain.payments.SetMembershipEmail
 import com.anytypeio.anytype.domain.payments.VerifyMembershipEmailCode
-import com.anytypeio.anytype.core_models.membership.MembershipConstants.EXPLORER_ID
-import com.anytypeio.anytype.core_models.membership.MembershipConstants.MEMBERSHIP_NAME_MIN_LENGTH
-import com.anytypeio.anytype.core_models.membership.MembershipConstants.NONE_ID
 import com.anytypeio.anytype.payments.mapping.toMainView
 import com.anytypeio.anytype.payments.models.MembershipPurchase
+import com.anytypeio.anytype.payments.models.Tier
 import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierEmail
-import com.anytypeio.anytype.payments.models.Tier
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
 import com.anytypeio.anytype.payments.playbilling.BillingClientState
 import com.anytypeio.anytype.payments.playbilling.BillingPurchaseState
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsMembershipClickEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsMembershipPurchaseEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsMembershipScreenEvent
-import com.anytypeio.anytype.core_models.membership.MembershipStatus
-import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
@@ -91,10 +91,8 @@ class MembershipViewModel(
 
     val initBillingClient = MutableStateFlow(false)
 
-    @OptIn(ExperimentalFoundationApi::class)
     val anyNameState = TextFieldState(initialText = "")
 
-    @OptIn(ExperimentalFoundationApi::class)
     val anyEmailState = TextFieldState(initialText = "")
 
     init {
@@ -133,13 +131,15 @@ class MembershipViewModel(
                 viewState.value = newState
             }
         }
+
         viewModelScope.launch {
-            anyNameState.textAsFlow()
+            snapshotFlow { anyNameState.text }
                 .debounce(NAME_VALIDATION_DELAY)
                 .collectLatest {
                     proceedWithValidatingName(it.toString())
                 }
         }
+
         viewModelScope.launch {
             billingPurchases.collectLatest { billingPurchaseState ->
                 checkPurchaseStatus(billingPurchaseState)

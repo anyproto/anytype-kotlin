@@ -1,10 +1,17 @@
 package com.anytypeio.anytype.ui_settings.space
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.LocalRippleConfiguration
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -20,10 +27,10 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
-import com.anytypeio.anytype.core_ui.views.NoRippleTheme
 import com.anytypeio.anytype.presentation.settings.SpacesStorageViewModel
 import com.anytypeio.anytype.ui_settings.R
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SegmentLine(items: List<SpacesStorageViewModel.SegmentLineItem>) {
     var size by remember { mutableStateOf(IntSize.Zero) }
@@ -33,7 +40,7 @@ fun SegmentLine(items: List<SpacesStorageViewModel.SegmentLineItem>) {
             .fillMaxWidth()
             .onSizeChanged { size = it }
     ) {
-        CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
+        CompositionLocalProvider(LocalRippleConfiguration provides null) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

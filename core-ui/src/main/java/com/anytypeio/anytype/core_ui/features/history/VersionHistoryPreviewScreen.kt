@@ -77,7 +77,9 @@ fun VersionHistoryPreviewScreen(
             modifier = Modifier.fillMaxSize(),
             scrimColor = Color.Transparent,
             containerColor = colorResource(id = R.color.background_primary),
-            windowInsets = WindowInsets(top = 60.dp),
+            contentWindowInsets = {
+                WindowInsets(top = 60.dp)
+            }
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
                 Column(

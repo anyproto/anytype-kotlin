@@ -11,11 +11,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text2.BasicTextField2
-import androidx.compose.foundation.text2.input.TextFieldLineLimits
-import androidx.compose.foundation.text2.input.TextFieldState
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -91,7 +90,7 @@ fun MembershipEmailScreen(
             )
             Spacer(modifier = Modifier.height(26.dp))
             Box(modifier = Modifier) {
-                BasicTextField2(
+                BasicTextField(
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
@@ -106,7 +105,7 @@ fun MembershipEmailScreen(
                     keyboardOptions = KeyboardOptions.Default.copy(
                         imeAction = ImeAction.Done,
                     ),
-                    keyboardActions = KeyboardActions {
+                    onKeyboardAction = {
                         keyboardController?.hide()
                         focusManager.clearFocus()
                     },

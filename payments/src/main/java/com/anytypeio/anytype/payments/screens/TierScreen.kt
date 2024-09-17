@@ -15,7 +15,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.foundation.text2.input.TextFieldState
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -36,7 +36,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.membership.MembershipConstants.EXPLORER_ID
+import com.anytypeio.anytype.core_models.membership.MembershipConstants.PRIVACY_POLICY
+import com.anytypeio.anytype.core_models.membership.MembershipConstants.TERMS_OF_SERVICE
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
+import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
@@ -44,18 +48,14 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.payments.R
-import com.anytypeio.anytype.core_models.membership.MembershipConstants.EXPLORER_ID
-import com.anytypeio.anytype.core_models.membership.MembershipConstants.PRIVACY_POLICY
-import com.anytypeio.anytype.core_models.membership.MembershipConstants.TERMS_OF_SERVICE
+import com.anytypeio.anytype.payments.models.Tier
 import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierConditionInfo
 import com.anytypeio.anytype.payments.models.TierEmail
 import com.anytypeio.anytype.payments.models.TierPeriod
-import com.anytypeio.anytype.payments.models.Tier
 import com.anytypeio.anytype.payments.viewmodel.MembershipTierState
 import com.anytypeio.anytype.payments.viewmodel.TierAction
-import com.anytypeio.anytype.core_models.membership.TierId
 import timber.log.Timber
 
 

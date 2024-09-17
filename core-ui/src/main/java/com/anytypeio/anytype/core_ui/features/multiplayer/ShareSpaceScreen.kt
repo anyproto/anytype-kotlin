@@ -264,6 +264,7 @@ fun ShareSpaceScreen(
             DragValue.DRAGGED_DOWN at draggedDownAnchorTop
             DragValue.DRAGGED_UP at 0f
         }
+        // TODO https://linear.app/anytype/issue/DROID-2833/fix-anchoreddraggablestate-in-sharespacescreenkt
 //        val anchoredDraggableState = remember {
 //            AnchoredDraggableState(
 //                initialValue = DragValue.DRAGGED_UP,

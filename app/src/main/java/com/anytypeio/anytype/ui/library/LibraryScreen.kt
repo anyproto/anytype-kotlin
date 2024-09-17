@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
@@ -45,8 +46,6 @@ import com.anytypeio.anytype.presentation.library.LibraryEvent
 import com.anytypeio.anytype.presentation.library.LibraryViewModel
 import com.anytypeio.anytype.ui.library.views.LibraryTabs
 import com.anytypeio.anytype.ui.library.views.LibraryTabsContent
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.FlowPreview
 
 
@@ -54,7 +53,6 @@ import kotlinx.coroutines.FlowPreview
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
 @FlowPreview
-@ExperimentalPagerApi
 @Composable
 fun LibraryScreen(
     configuration: LibraryConfiguration,
@@ -66,7 +64,10 @@ fun LibraryScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val effects by viewModel.effects.collectAsStateWithLifecycle()
 
-    val pagerState = rememberPagerState(INITIAL_TAB)
+    val pagerState = rememberPagerState(
+        initialPage = INITIAL_TAB,
+        pageCount = { 2 }
+    )
     val modifier = Modifier
         .background(color = colorResource(id = R.color.background_primary))
 

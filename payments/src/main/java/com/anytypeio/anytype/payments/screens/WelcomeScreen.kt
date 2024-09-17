@@ -30,19 +30,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
+import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.payments.R
+import com.anytypeio.anytype.payments.models.Tier
 import com.anytypeio.anytype.payments.models.TierAnyName
 import com.anytypeio.anytype.payments.models.TierButton
 import com.anytypeio.anytype.payments.models.TierConditionInfo
 import com.anytypeio.anytype.payments.models.TierEmail
 import com.anytypeio.anytype.payments.models.TierPeriod
-import com.anytypeio.anytype.payments.models.Tier
 import com.anytypeio.anytype.payments.viewmodel.WelcomeState
-import com.anytypeio.anytype.core_models.membership.TierId
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,7 +68,9 @@ fun WelcomeScreen(state: WelcomeState, onDismiss: () -> Unit) {
             },
             shape = RoundedCornerShape(16.dp),
             dragHandle = null,
-            windowInsets = WindowInsets(0, 0, 0, 0)
+            contentWindowInsets = {
+                WindowInsets(0, 0, 0, 0)
+            }
         )
     }
 }

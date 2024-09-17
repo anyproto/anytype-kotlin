@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -29,14 +31,10 @@ import com.anytypeio.anytype.ui.library.LibraryScreenConfig
 import com.anytypeio.anytype.ui.library.ScreenState
 import com.anytypeio.anytype.ui.library.WrapWithLibraryAnimation
 import com.anytypeio.anytype.ui.library.views.list.LibraryListView
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.PagerState
 import kotlinx.coroutines.FlowPreview
 
 @ExperimentalAnimationApi
 @FlowPreview
-@ExperimentalPagerApi
 @Composable
 fun LibraryTabsContent(
     modifier: Modifier,
@@ -48,7 +46,10 @@ fun LibraryTabsContent(
     screenState: MutableState<ScreenState>,
     effects: LibraryViewModel.Effect,
 ) {
-    HorizontalPager(modifier = modifier, state = pagerState, count = 2) { page ->
+    HorizontalPager(
+        modifier = modifier,
+        state = pagerState
+    ) { page ->
         val dataTabs = when (configuration[page]) {
             is LibraryScreenConfig.Types -> {
                 state.types
@@ -71,7 +72,6 @@ fun LibraryTabsContent(
 
 @ExperimentalAnimationApi
 @FlowPreview
-@ExperimentalPagerApi
 @Composable
 fun TabContentScreen(
     modifier: Modifier,

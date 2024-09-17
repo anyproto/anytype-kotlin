@@ -170,7 +170,10 @@ object Flags {
         Relations.LAST_MODIFIED_DATE,
         Relations.SNIPPET,
         Relations.SYNC_DATE,
-        Relations.SYNC_STATUS
+        Relations.SYNC_STATUS,
+        Relations.BACKLINKS,
+        Relations.LINKS,
+        Relations.INTERNAL_FLAGS
     )
 }
 

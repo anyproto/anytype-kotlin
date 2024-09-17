@@ -21,9 +21,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
-import androidx.compose.material.ripple.LocalRippleTheme
-import androidx.compose.material.ripple.RippleAlpha
-import androidx.compose.material.ripple.RippleTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -119,6 +118,7 @@ class ButtonWarningLarge @JvmOverloads constructor(
 /**
  * Composable Buttons
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ButtonPrimary(
     text: String = "",
@@ -133,7 +133,7 @@ fun ButtonPrimary(
         if (isPressed.value) colorResource(id = R.color.glyph_button).copy(alpha = 0.15f)
         else colorResource(id = R.color.glyph_button)
 
-    CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
+    CompositionLocalProvider(LocalRippleConfiguration provides null) {
         Button(
             onClick = onClick,
             interactionSource = interactionSource,
@@ -161,6 +161,7 @@ fun ButtonPrimary(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ButtonPrimaryDarkTheme(
     text: String = "",
@@ -172,7 +173,7 @@ fun ButtonPrimaryDarkTheme(
     val interactionSource = remember { MutableInteractionSource() }
     val backgroundColor = Color(0xFFF3F2EC)
 
-    CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
+    CompositionLocalProvider(LocalRippleConfiguration provides null) {
         Button(
             onClick = onClick,
             interactionSource = interactionSource,
@@ -200,6 +201,7 @@ fun ButtonPrimaryDarkTheme(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ButtonPrimaryLoading(
     text: String = "",
@@ -220,7 +222,7 @@ fun ButtonPrimaryLoading(
         if (isPressed.value) colorResource(id = R.color.glyph_button).copy(alpha = 0.15f)
         else colorResource(id = R.color.glyph_button)
 
-    CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
+    CompositionLocalProvider(LocalRippleConfiguration provides null) {
         Box(modifier = modifierBox, contentAlignment = Alignment.Center) {
             Button(
                 onClick = { if (!loading) onClick() },
@@ -258,6 +260,7 @@ fun ButtonPrimaryLoading(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ButtonSecondary(
     text: String = "",
@@ -274,7 +277,7 @@ fun ButtonSecondary(
         id = R.color.shape_secondary
     )
 
-    CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
+    CompositionLocalProvider(LocalRippleConfiguration provides null) {
         Button(
             onClick = onClick,
             interactionSource = interactionSource,
@@ -303,6 +306,7 @@ fun ButtonSecondary(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ButtonSecondaryDarkTheme(
     text: String = "",
@@ -319,7 +323,7 @@ fun ButtonSecondaryDarkTheme(
         id = R.color.shape_secondary
     )
 
-    CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
+    CompositionLocalProvider(LocalRippleConfiguration provides null) {
         Button(
             onClick = onClick,
             interactionSource = interactionSource,
@@ -348,6 +352,7 @@ fun ButtonSecondaryDarkTheme(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ButtonSecondaryLoading(
     text: String = "",
@@ -371,7 +376,7 @@ fun ButtonSecondaryLoading(
         id = R.color.shape_secondary
     )
 
-    CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
+    CompositionLocalProvider(LocalRippleConfiguration provides null) {
         Box(modifier = modifierBox, contentAlignment = Alignment.Center) {
             Button(
                 onClick = {if (!loading) onClick()},
@@ -410,6 +415,7 @@ fun ButtonSecondaryLoading(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ButtonWarning(
     text: String = "",
@@ -425,7 +431,7 @@ fun ButtonWarning(
         )
     val borderColor = colorResource(id = R.color.shape_primary)
 
-    CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
+    CompositionLocalProvider(LocalRippleConfiguration provides null) {
         Button(
             onClick = onClick,
             interactionSource = interactionSource,
@@ -452,6 +458,7 @@ fun ButtonWarning(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ButtonWarningLoading(
     text: String = "",
@@ -473,7 +480,7 @@ fun ButtonWarningLoading(
         )
     val borderColor = colorResource(id = R.color.shape_primary)
 
-    CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
+    CompositionLocalProvider(LocalRippleConfiguration provides null) {
         Box(modifier = modifierBox, contentAlignment = Alignment.Center) {
             Button(
                 onClick = { if (!loading) onClick() },
@@ -556,14 +563,6 @@ enum class ButtonSize(
         textStyle = ButtonRegular
     )
 
-}
-
-object NoRippleTheme : RippleTheme {
-    @Composable
-    override fun defaultColor() = Color.Unspecified
-
-    @Composable
-    override fun rippleAlpha(): RippleAlpha = RippleAlpha(0.0f, 0.0f, 0.0f, 0.0f)
 }
 
 @Composable

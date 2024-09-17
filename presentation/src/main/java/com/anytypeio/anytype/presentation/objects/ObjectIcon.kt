@@ -7,7 +7,7 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 
 sealed class ObjectIcon {
-    object None : ObjectIcon()
+    data object None : ObjectIcon()
     sealed class Basic : ObjectIcon() {
         data class Avatar(val name: String) : Basic()
         data class Image(val hash: Hash) : Basic()
@@ -84,6 +84,9 @@ sealed class ObjectIcon {
                     !img.isNullOrBlank() -> Bookmark(image = builder.thumbnail(img))
                     !emoji.isNullOrBlank() -> Basic.Emoji(unicode = emoji)
                     else -> Basic.Avatar(obj.name.orEmpty())
+                }
+                ObjectType.Layout.CHAT -> {
+                    Basic.Avatar(name = obj.name.orEmpty())
                 }
                 else -> None
             }

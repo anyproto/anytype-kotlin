@@ -39,9 +39,9 @@
         android:name="com.anytypeio.anytype.ui.editor.modals.ObjectIconPickerFragment"
         android:label="Object-Icon-Picker-Screen" />
     <dialog
-        android:id="@+id/objectMainMenuScreen"
+        android:id="@+id/objectMenuScreen"
         android:name="com.anytypeio.anytype.ui.editor.sheets.ObjectMenuFragment"
-        android:label="Doc-Menu-Bottom-Sheet-Screen" />
+        android:label="Object-Menu-Screen" />
     <dialog
         android:id="@+id/objectCoverScreen"
         android:name="com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment"
@@ -66,4 +66,8 @@
         android:id="@+id/relationCreateFromScratchForObjectBlockFragment"
         android:name="com.anytypeio.anytype.ui.relations.RelationCreateFromScratchForObjectBlockFragment"
         android:label="RelationCreateFromScratchForObjectBlockFragment" />
+    <dialog
+        android:id="@+id/versionHistoryScreen"
+        android:name="com.anytypeio.anytype.ui.history.VersionHistoryFragment"
+        android:label="Object-Version_history-Screen"/>
 </navigation>

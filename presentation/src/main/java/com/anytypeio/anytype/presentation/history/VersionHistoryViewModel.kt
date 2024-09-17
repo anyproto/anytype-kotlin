@@ -6,6 +6,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.ext.asMap
@@ -22,9 +23,11 @@ import com.anytypeio.anytype.domain.history.ShowVersion
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.editor.Editor.Mode
 import com.anytypeio.anytype.presentation.editor.EditorViewModel.Companion.INITIAL_INDENT
+import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
@@ -33,9 +36,15 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenVersionPr
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsShowVersionHistoryScreen
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsVersionHistoryRestore
 import com.anytypeio.anytype.presentation.history.VersionHistoryGroup.GroupTitle
+import com.anytypeio.anytype.presentation.mapper.toViewerColumns
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.getRelationFormat
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import com.anytypeio.anytype.presentation.sets.model.Viewer
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
+import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
+import com.anytypeio.anytype.presentation.sets.viewerByIdOrFirst
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -45,6 +54,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -58,7 +69,10 @@ class VersionHistoryViewModel(
     private val urlBuilder: UrlBuilder,
     private val showVersion: ShowVersion,
     private val setVersion: SetVersion,
-    private val renderer: DefaultBlockViewRenderer
+    private val renderer: DefaultBlockViewRenderer,
+    private val setStateReducer: ObjectStateReducer,
+    private val coverImageHashProvider: CoverImageHashProvider,
+    private val storeOfRelations: StoreOfRelations
 ) : ViewModel(), BlockViewRenderer by renderer {
 
     private val _viewState = MutableStateFlow<VersionHistoryState>(VersionHistoryState.Loading)
@@ -76,8 +90,13 @@ class VersionHistoryViewModel(
     val latestVisibleVersionId = MutableStateFlow("")
     private val _versions = MutableStateFlow<List<Version>>(emptyList())
 
+    private val defaultPayloadConsumer: suspend (Payload) -> Unit = { payload ->
+        setStateReducer.dispatch(payload.events)
+    }
+
     init {
         Timber.d("VersionHistoryViewModel created")
+        viewModelScope.launch { setStateReducer.run() }
         getSpaceMembers()
         getHistoryVersions(objectId = vmParams.objectId)
         viewModelScope.launch {
@@ -94,6 +113,34 @@ class VersionHistoryViewModel(
                     handleVersionsSuccess(versions, members)
                 }
             }
+        }
+        viewModelScope.launch {
+            setStateReducer.state
+                .filterIsInstance<ObjectState.DataView>()
+                .distinctUntilChanged()
+                .collectLatest { state ->
+                    val viewer = mapToViewer(state)
+                    when (val currentState = _previewViewState.value) {
+                        VersionHistoryPreviewScreen.Loading -> {
+                            _previewViewState.value = VersionHistoryPreviewScreen.Success.Set(
+                                versionId = "",
+                                blocks = emptyList(),
+                                dateFormatted = "",
+                                timeFormatted = "",
+                                viewer = viewer,
+                                icon = null
+                            )
+                        }
+                        is VersionHistoryPreviewScreen.Success.Set -> {
+                            _previewViewState.value = currentState.copy(
+                                viewer = viewer
+                            )
+                        }
+                        else -> {
+                            Timber.d("Version preview state is not loading or success.set, skipping state update")
+                        }
+                    }
+                }
         }
     }
 
@@ -142,7 +189,9 @@ class VersionHistoryViewModel(
                     }
                 }
 
-                else -> {}
+                else -> {
+                    Timber.d("No interaction allowed with this listener type: $click")
+                }
             }
         }
     }
@@ -153,7 +202,7 @@ class VersionHistoryViewModel(
     ) {
         val currentState =
             (_previewViewState.value as? VersionHistoryPreviewScreen.Success) ?: return
-        val isSet = currentState.isSet
+        val isSet = currentState is VersionHistoryPreviewScreen.Success.Set
         when (relationFormat) {
             RelationFormat.SHORT_TEXT,
             RelationFormat.LONG_TEXT,
@@ -468,31 +517,111 @@ class VersionHistoryViewModel(
                         .first()
                     val obj =
                         ObjectWrapper.Basic(event.details.details[vmParams.objectId]?.map.orEmpty())
-                    val root = event.blocks.first { it.id == vmParams.objectId }
-                    val blocks = event.blocks.asMap().render(
-                        mode = Mode.Read,
-                        root = root,
-                        focus = Editor.Focus.empty(),
-                        anchor = vmParams.objectId,
-                        indent = INITIAL_INDENT,
-                        details = event.details,
-                        relationLinks = event.relationLinks,
-                        restrictions = event.objectRestrictions,
-                        selection = emptySet()
-                    )
                     val currentState = _previewViewState.value
                     if (currentState !is VersionHistoryPreviewScreen.Hidden) {
-                        _previewViewState.value = VersionHistoryPreviewScreen.Success(
-                            versionId = item.id,
-                            blocks = blocks,
-                            dateFormatted = item.dateFormatted,
-                            timeFormatted = item.timeFormatted,
-                            icon = item.icon,
-                            isSet = obj.layout.isDataView()
+                        parseObject(
+                            payload = payload,
+                            event = event,
+                            item = item,
+                            obj = obj
                         )
                     }
                 }
             }
+        )
+    }
+
+    private suspend fun parseObject(
+        payload: Payload,
+        //TODO: Refactoring: update ShowVersion response to include ObjectView instead of Payload
+        event: Event.Command.ShowObject,
+        item: VersionHistoryGroup.Item,
+        obj: ObjectWrapper.Basic
+    ) {
+        if (obj.layout.isDataView()) {
+            defaultPayloadConsumer(payload)
+            val root = event.blocks.first { it.id == vmParams.objectId }
+            val blocks = event.blocks.asMap().render(
+                mode = Mode.Read,
+                root = root,
+                focus = Editor.Focus.empty(),
+                anchor = vmParams.objectId,
+                indent = INITIAL_INDENT,
+                details = event.details,
+                relationLinks = event.relationLinks,
+                restrictions = event.objectRestrictions,
+                selection = emptySet()
+            ).filterNot { it is BlockView.DataView }
+            when (val currentState = _previewViewState.value) {
+                VersionHistoryPreviewScreen.Loading -> {
+                    _previewViewState.value = VersionHistoryPreviewScreen.Success.Set(
+                        versionId = item.id,
+                        blocks = blocks,
+                        dateFormatted = item.dateFormatted,
+                        timeFormatted = item.timeFormatted,
+                        viewer = null,
+                        icon = item.icon
+                    )
+                }
+                is VersionHistoryPreviewScreen.Success.Set -> {
+                    _previewViewState.value = currentState.copy(
+                        versionId = item.id,
+                        dateFormatted = item.dateFormatted,
+                        timeFormatted = item.timeFormatted,
+                        icon = item.icon,
+                        blocks = blocks
+                    )
+                }
+                else -> {
+                    Timber.d("Version preview state is not loading or success.set, skipping state update")
+                }
+            }
+        } else {
+            val root = event.blocks.first { it.id == vmParams.objectId }
+            val blocks = event.blocks.asMap().render(
+                mode = Mode.Read,
+                root = root,
+                focus = Editor.Focus.empty(),
+                anchor = vmParams.objectId,
+                indent = INITIAL_INDENT,
+                details = event.details,
+                relationLinks = event.relationLinks,
+                restrictions = event.objectRestrictions,
+                selection = emptySet()
+            )
+            _previewViewState.value = VersionHistoryPreviewScreen.Success.Editor(
+                versionId = item.id,
+                blocks = blocks,
+                dateFormatted = item.dateFormatted,
+                timeFormatted = item.timeFormatted,
+                icon = item.icon
+            )
+        }
+    }
+
+    private suspend fun mapToViewer(objectState: ObjectState.DataView): Viewer.GridView? {
+        val dvViewer = objectState.viewerByIdOrFirst(null)
+        val viewerRelations = dvViewer?.viewerRelations ?: return null
+
+        val vmap = viewerRelations.associateBy { it.key }
+
+        val dataViewRelations = objectState.dataViewContent.relationLinks.mapNotNull {
+            storeOfRelations.getByKey(it.key)
+        }
+        val visibleRelations = dataViewRelations.filter { relation ->
+            val vr = vmap[relation.key]
+            vr?.isVisible ?: false
+        }
+        val columns = viewerRelations.toViewerColumns(
+            relations = visibleRelations,
+            filterBy = listOf(ObjectSetConfig.NAME_KEY)
+        )
+
+        return Viewer.GridView(
+            id = dvViewer.id,
+            name = dvViewer.name,
+            columns = columns,
+            rows = emptyList()
         )
     }
 
@@ -536,15 +665,30 @@ sealed class VersionHistoryState {
 sealed class VersionHistoryPreviewScreen {
     data object Hidden : VersionHistoryPreviewScreen()
     data object Loading : VersionHistoryPreviewScreen()
-    data class Success(
-        val versionId: Id,
-        val blocks: List<BlockView>,
-        val dateFormatted: String,
-        val timeFormatted: String,
-        val icon: ObjectIcon?,
-        val isSet: Boolean
-    ) :
-        VersionHistoryPreviewScreen()
+    sealed class Success : VersionHistoryPreviewScreen() {
+
+        abstract val versionId: Id
+        abstract val icon: ObjectIcon?
+        abstract val dateFormatted: String
+        abstract val timeFormatted: String
+
+        data class Editor(
+            override val versionId: Id,
+            override val dateFormatted: String,
+            override val timeFormatted: String,
+            override val icon: ObjectIcon?,
+            val blocks: List<BlockView>
+        ) : Success()
+
+        data class Set(
+            override val versionId: Id,
+            override val dateFormatted: String,
+            override val timeFormatted: String,
+            override val icon: ObjectIcon?,
+            val viewer: Viewer.GridView?,
+            val blocks: List<BlockView>
+        ) : Success()
+    }
 
     data class Error(val message: String) : VersionHistoryPreviewScreen()
 }

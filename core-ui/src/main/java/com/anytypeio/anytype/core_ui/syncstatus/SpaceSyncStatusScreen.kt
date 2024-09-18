@@ -297,10 +297,10 @@ private fun getP2PCardSettings(
             )
         }
         P2PStatus.RESTRICTED -> {
-            // TODO @Konstantin
             CardSettings(
-                icon = painterResource(R.drawable.ic_sync_p2p_default),
-                mainText = stringResource(id = R.string.sync_status_p2p_connecting),
+                icon = painterResource(R.drawable.ic_sync_p2p_error),
+                mainText = stringResource(id = R.string.sync_status_p2p),
+                secondaryText = stringResource(id = R.string.sync_status_p2p_disabled)
             )
         }
     }

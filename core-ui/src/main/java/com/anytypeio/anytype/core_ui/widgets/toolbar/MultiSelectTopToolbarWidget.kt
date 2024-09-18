@@ -23,6 +23,7 @@ class MultiSelectTopToolbarWidget @JvmOverloads constructor(
         LayoutInflater.from(context), this
     )
 
+    val selectAllBlocks get() : TextView = binding.selectAll
     val selectText get() : TextView = binding.tvToolbarTitle
     val doneButton get() : View = binding.btnDone
 

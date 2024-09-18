@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -295,6 +294,13 @@ private fun getP2PCardSettings(
                     count = p2pStatus.devicesCounter.toInt(),
                     formatArgs = arrayOf(p2pStatus.devicesCounter.toInt())
                 )
+            )
+        }
+        P2PStatus.RESTRICTED -> {
+            // TODO @Konstantin
+            CardSettings(
+                icon = painterResource(R.drawable.ic_sync_p2p_default),
+                mainText = stringResource(id = R.string.sync_status_p2p_connecting),
             )
         }
     }

@@ -1105,6 +1105,7 @@ fun MP2PStatus.toCoreModel(): P2PStatus = when (this) {
     MP2PStatus.NotConnected -> P2PStatus.NOT_CONNECTED
     MP2PStatus.NotPossible -> P2PStatus.NOT_POSSIBLE
     MP2PStatus.Connected -> P2PStatus.CONNECTED
+    MP2PStatus.Restricted -> P2PStatus.RESTRICTED
 }
 
 fun MChatMessage.core(): Chat.Message = Chat.Message(

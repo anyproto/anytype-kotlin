@@ -12,13 +12,13 @@ import com.anytypeio.anytype.core_models.StubTableColumns
 import com.anytypeio.anytype.core_models.StubTableRows
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.ext.content
-import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.model.Focusable
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -111,8 +111,6 @@ class EditorFocusTest : EditorPresentationTestSetup() {
 
         val testViewStateObserver = vm.state.test()
 
-        val testFocusObserver = vm.focus.test()
-
         testViewStateObserver.assertValue { value ->
             check(value is ViewState.Success)
             val last = value.blocks.last()
@@ -127,13 +125,18 @@ class EditorFocusTest : EditorPresentationTestSetup() {
 
         advanceUntilIdle()
 
-        testFocusObserver.assertValue(block.id)
+        assertEquals(
+            block.id,
+            orchestrator.stores.focus.current().requireTarget()
+        )
 
         vm.onHideKeyboardClicked()
 
         advanceUntilIdle()
 
-        testFocusObserver.assertValue(EditorViewModel.EMPTY_FOCUS_ID)
+        assertTrue(
+            orchestrator.stores.focus.current().isEmpty
+        )
     }
 
     @Test
@@ -169,7 +172,6 @@ class EditorFocusTest : EditorPresentationTestSetup() {
         advanceUntilIdle()
 
         val testViewStateObserver = vm.state.test()
-        val testFocusObserver = vm.focus.test()
 
         testViewStateObserver.assertValue { value ->
             check(value is ViewState.Success)
@@ -178,7 +180,10 @@ class EditorFocusTest : EditorPresentationTestSetup() {
             last.isFocused
         }
 
-        testFocusObserver.assertValue(title.id)
+        assertEquals(
+            title.id,
+            orchestrator.stores.focus.current().requireTarget()
+        )
     }
 
     @Test
@@ -210,7 +215,6 @@ class EditorFocusTest : EditorPresentationTestSetup() {
         advanceUntilIdle()
 
         val testViewStateObserver = vm.state.test()
-        val testFocusObserver = vm.focus.test()
 
         testViewStateObserver.assertValue { value ->
             check(value is ViewState.Success)
@@ -219,7 +223,7 @@ class EditorFocusTest : EditorPresentationTestSetup() {
             !last.isFocused
         }
 
-        testFocusObserver.assertValue(EditorViewModel.EMPTY_FOCUS_ID)
+        assertTrue(orchestrator.stores.focus.current().isEmpty)
     }
 
     @Test

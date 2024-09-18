@@ -459,14 +459,10 @@ class EditorSlashWidgetActionsTest : EditorPresentationTestSetup() {
         vm.onSlashItemClicked(SlashItem.Actions.Paste)
         advanceUntilIdle()
 
-
-        val focus = vm.focus.value
-        assertNotNull(focus)
-
         val params = Paste.Params(
             context = root,
             range = IntRange(3, 3),
-            focus = focus,
+            focus = orchestrator.stores.focus.current().requireTarget(),
             selected = listOf()
         )
 

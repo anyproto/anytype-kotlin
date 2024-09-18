@@ -1360,6 +1360,12 @@ class EditorViewModel(
         Timber.d("onSelectionChanged, id:[$id] selection:[$selection]")
         viewModelScope.launch {
             orchestrator.stores.textSelection.update(Editor.TextSelection(id, selection))
+            orchestrator.stores.focus.update(
+                t = Editor.Focus(
+                    target = Editor.Focus.Target.Block(id),
+                    cursor = Editor.Cursor.Range(selection)
+                )
+            )
         }
         blocks.find { it.id == id }?.let { target ->
             val targetBlockType = when (val content = target.content) {

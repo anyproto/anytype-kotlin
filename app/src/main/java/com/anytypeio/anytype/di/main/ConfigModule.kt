@@ -6,7 +6,6 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.debugging.Logger
-import com.anytypeio.anytype.domain.workspace.SpaceManager
 import dagger.Module
 import dagger.Provides
 import javax.inject.Named
@@ -22,10 +21,10 @@ object ConfigModule {
     @Provides
     @Singleton
     fun provideGateway(
-        spaceManager: SpaceManager,
+        configStorage: ConfigStorage,
         logger: Logger
     ): Gateway = GatewayProvider(
-        spaceManager = spaceManager,
+        configStorage = configStorage,
         logger = logger
     )
 

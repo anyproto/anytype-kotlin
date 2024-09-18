@@ -280,7 +280,7 @@ fun ShareSpaceScreen(
                 initialValue = DragValue.DRAGGED_UP,
                 positionalThreshold = { distance: Float -> distance * 0.5f },
                 velocityThreshold = { with(density) { 100.dp.toPx() } },
-                snapAnimationSpec = tween(300),
+                snapAnimationSpec = tween(),
                 decayAnimationSpec = decayAnimation
             )
         }

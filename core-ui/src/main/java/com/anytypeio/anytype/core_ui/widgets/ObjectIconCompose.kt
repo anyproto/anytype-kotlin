@@ -30,6 +30,35 @@ import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 @Composable
+fun GlobalSearchObjectIcon(
+    icon: ObjectIcon,
+    modifier: Modifier,
+    iconSize: Dp = 48.dp,
+    onTaskIconClicked: (Boolean) -> Unit = {}
+) {
+    when (icon) {
+        is ObjectIcon.Profile.Avatar -> DefaultProfileAvatarIcon(modifier, iconSize, icon)
+        is ObjectIcon.Profile.Image -> DefaultProfileIconImage(icon, modifier, iconSize)
+        is ObjectIcon.Basic.Emoji -> DefaultEmojiObjectIcon(modifier, iconSize, icon)
+        is ObjectIcon.Basic.Image -> DefaultObjectImageIcon(icon.hash, modifier, iconSize)
+        is ObjectIcon.Basic.Avatar -> DefaultBasicAvatarIcon(modifier, iconSize, icon)
+        is ObjectIcon.Bookmark -> DefaultObjectBookmarkIcon(icon.image, modifier, iconSize)
+        is ObjectIcon.Task -> DefaultTaskObjectIcon(modifier, iconSize, icon, onTaskIconClicked)
+        is ObjectIcon.File -> {
+            DefaultFileObjectImageIcon(
+                fileName = icon.fileName.orEmpty(),
+                mime = icon.mime.orEmpty(),
+                modifier = modifier,
+                iconSize = iconSize
+            )
+        }
+        else -> {
+            // Draw nothing.
+        }
+    }
+}
+
+@Composable
 fun ListWidgetObjectIcon(
     icon: ObjectIcon,
     modifier: Modifier,
@@ -133,9 +162,12 @@ fun DefaultProfileAvatarIcon(
     modifier: Modifier,
     iconSize: Dp,
     icon: ObjectIcon.Profile.Avatar,
-    avatarFontSize: TextUnit,
-    avatarTextStyle: TextStyle,
-    avatarBackgroundColor: Int
+    avatarFontSize: TextUnit = 28.sp,
+    avatarTextStyle: TextStyle = TextStyle(
+        fontWeight = FontWeight.SemiBold,
+        color = colorResource(id = R.color.text_white)
+    ),
+    avatarBackgroundColor: Int = R.color.text_tertiary
 ) {
     Box(
         modifier = modifier

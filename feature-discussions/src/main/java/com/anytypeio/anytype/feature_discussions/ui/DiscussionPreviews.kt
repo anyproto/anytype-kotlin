@@ -1,9 +1,11 @@
 package com.anytypeio.anytype.feature_discussions.ui
 
 import android.content.res.Configuration
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.feature_discussions.R
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionView
 import kotlin.time.DurationUnit
@@ -17,23 +19,32 @@ fun DiscussionPreview() {
         messages = listOf(
             DiscussionView.Message(
                 id = "1",
-                msg = stringResource(id = R.string.default_text_placeholder),
+                content = stringResource(id = R.string.default_text_placeholder),
                 author = "Walter",
                 timestamp = System.currentTimeMillis()
             ),
             DiscussionView.Message(
                 id = "2",
-                msg = stringResource(id = R.string.default_text_placeholder),
+                content = stringResource(id = R.string.default_text_placeholder),
                 author = "Leo",
                 timestamp = System.currentTimeMillis()
             ),
             DiscussionView.Message(
                 id = "3",
-                msg = stringResource(id = R.string.default_text_placeholder),
+                content = stringResource(id = R.string.default_text_placeholder),
                 author = "Gilbert",
                 timestamp = System.currentTimeMillis()
             )
-        )
+        ),
+        scrollState = LazyListState(),
+        title = "Conversations with friends",
+        onTitleChanged = {},
+        onTitleFocusChanged = {},
+        onReacted = { a, b -> },
+        onDeleteMessage = {},
+        onCopyMessage = {},
+        onAttachmentClicked = {},
+        onEditMessage = {}
     )
 }
 
@@ -48,7 +59,7 @@ fun DiscussionScreenPreview() {
                 add(
                     DiscussionView.Message(
                         id = idx.toString(),
-                        msg = stringResource(id = R.string.default_text_placeholder),
+                        content = stringResource(id = R.string.default_text_placeholder),
                         author = "User ${idx.inc()}",
                         timestamp =
                         System.currentTimeMillis()
@@ -57,7 +68,19 @@ fun DiscussionScreenPreview() {
                     )
                 )
             }
-        }
+        }.reversed(),
+        onMessageSent = {},
+        onTitleChanged = {},
+        onAttachClicked = {},
+        attachments = emptyList(),
+        onClearAttachmentClicked = {},
+        lazyListState = LazyListState(),
+        onReacted = { a, b -> },
+        onCopyMessage = {},
+        onDeleteMessage = {},
+        onAttachmentClicked = {},
+        onEditMessage = {},
+        onExitEditMessageMode = {}
     )
 }
 
@@ -68,6 +91,52 @@ fun BubblePreview() {
     Bubble(
         name = "Leo Marx",
         msg = stringResource(id = R.string.default_text_placeholder),
-        timestamp = System.currentTimeMillis()
+        timestamp = System.currentTimeMillis(),
+        onReacted = {},
+        onDeleteMessage = {},
+        onCopyMessage = {},
+        onAttachmentClicked = {},
+        onEditMessage = {}
+    )
+}
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
+@Composable
+fun BubbleEditedPreview() {
+    Bubble(
+        name = "Leo Marx",
+        msg = stringResource(id = R.string.default_text_placeholder),
+        isEdited = true,
+        timestamp = System.currentTimeMillis(),
+        onReacted = {},
+        onDeleteMessage = {},
+        onCopyMessage = {},
+        onAttachmentClicked = {},
+        onEditMessage = {}
+    )
+}
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
+@Composable
+fun BubbleWithAttachmentPreview() {
+    Bubble(
+        name = "Leo Marx",
+        msg = stringResource(id = R.string.default_text_placeholder),
+        timestamp = System.currentTimeMillis(),
+        onReacted = {},
+        onDeleteMessage = {},
+        onCopyMessage = {},
+        attachments = buildList {
+            add(
+                Chat.Message.Attachment(
+                    target = "Walter Benjamin",
+                    type = Chat.Message.Attachment.Type.Image
+                )
+            )
+        },
+        onAttachmentClicked = {},
+        onEditMessage = {}
     )
 }

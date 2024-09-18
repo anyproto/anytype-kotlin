@@ -4381,6 +4381,9 @@ class EditorViewModel(
                     )
                 )
             }
+            is OpenObjectNavigation.OpenDiscussion -> {
+                sendToast("not implemented")
+            }
             is OpenObjectNavigation.UnexpectedLayoutError -> {
                 sendToast("Unexpected layout: ${navigation.layout}")
             }

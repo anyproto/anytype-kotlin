@@ -113,7 +113,8 @@ sealed class P2PStatusUpdate {
 enum class P2PStatus {
     NOT_CONNECTED,
     NOT_POSSIBLE,
-    CONNECTED
+    CONNECTED,
+    RESTRICTED
 }
 
 sealed class SpaceSyncAndP2PStatusState {

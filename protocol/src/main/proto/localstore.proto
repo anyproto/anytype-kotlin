@@ -62,4 +62,5 @@ message ObjectStoreChecksums {
     bool areOldFilesRemoved = 12;
     bool areDeletedObjectsReindexed = 13;
     int32 linksErase = 14;
+    int32 marketplaceForceReindexCounter = 15;
 }

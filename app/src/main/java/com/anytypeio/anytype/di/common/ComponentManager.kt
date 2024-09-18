@@ -49,6 +49,7 @@ import com.anytypeio.anytype.di.feature.ViewerFilterModule
 import com.anytypeio.anytype.di.feature.ViewerSortModule
 import com.anytypeio.anytype.di.feature.auth.DaggerDeletedAccountComponent
 import com.anytypeio.anytype.di.feature.cover.UnsplashModule
+import com.anytypeio.anytype.di.feature.discussions.DaggerDiscussionComponent
 import com.anytypeio.anytype.di.feature.gallery.DaggerGalleryInstallationComponent
 import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
 import com.anytypeio.anytype.di.feature.library.DaggerLibraryComponent
@@ -100,6 +101,7 @@ import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeModule
 import com.anytypeio.anytype.di.main.MainComponent
 import com.anytypeio.anytype.gallery_experience.viewmodel.GalleryInstallationViewModel
+import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.history.VersionHistoryViewModel
 import com.anytypeio.anytype.presentation.library.LibraryViewModel
@@ -1048,6 +1050,14 @@ class ComponentManager(
                 .vmParams(vmParams)
                 .build()
         }
+
+    val discussionComponent = ComponentMapWithParam { params: BaseViewModel.DefaultParams ->
+        DaggerDiscussionComponent
+            .builder()
+            .withDependencies(findComponentDependencies())
+            .withParams(params)
+            .build()
+    }
 
     val vaultComponent = Component {
         DaggerVaultComponent

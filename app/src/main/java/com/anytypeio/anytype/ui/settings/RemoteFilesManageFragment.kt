@@ -84,6 +84,10 @@ class RemoteFilesManageFragment : BaseBottomSheetComposeFragment() {
                 subscription = command.subscription,
                 space = command.space
             )
+            is CollectionViewModel.Command.OpenChat -> navigation.openChat(
+                space = command.space,
+                target = command.target
+            )
             is CollectionViewModel.Command.ToDesktop -> navigation.exitToDesktop()
             is CollectionViewModel.Command.ToSearch -> {
                 // Do nothing.

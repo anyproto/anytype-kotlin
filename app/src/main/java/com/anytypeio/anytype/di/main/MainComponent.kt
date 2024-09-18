@@ -19,6 +19,7 @@ import com.anytypeio.anytype.di.feature.ObjectTypeChangeSubComponent
 import com.anytypeio.anytype.di.feature.PersonalizationSettingsSubComponent
 import com.anytypeio.anytype.di.feature.SplashDependencies
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
+import com.anytypeio.anytype.di.feature.discussions.DiscussionComponentDependencies
 import com.anytypeio.anytype.di.feature.gallery.GalleryInstallationComponentDependencies
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.library.LibraryDependencies
@@ -126,7 +127,8 @@ interface MainComponent :
     NotificationDependencies,
     GlobalSearchDependencies,
     MembershipUpdateComponentDependencies,
-    VaultComponentDependencies
+    VaultComponentDependencies,
+    DiscussionComponentDependencies
 {
 
     fun inject(app: AndroidApplication)
@@ -347,6 +349,11 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(MembershipUpdateComponentDependencies::class)
     abstract fun provideMembershipUpdateComponentDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(DiscussionComponentDependencies::class)
+    abstract fun provideDiscussionComponentDependencies(component: MainComponent): ComponentDependencies
 
     @Binds
     @IntoMap

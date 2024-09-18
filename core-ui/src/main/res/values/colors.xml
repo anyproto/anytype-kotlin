@@ -121,6 +121,7 @@
     <color name="background_notification_primary">#000000</color>
     <color name="background_secondary">#FFFFFF</color>
     <color name="background_highlighted">#144F4F4F</color>
+    <color name="background_highlighted_light">#0A4F4F4F</color>
     <color name="background_multiplayer_request">#252525</color>
 
     <color name="shape_primary">#E3E3E3</color>

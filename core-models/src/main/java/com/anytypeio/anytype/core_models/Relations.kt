@@ -7,6 +7,7 @@ package com.anytypeio.anytype.core_models
 object Relations {
 
     const val ID = "id"
+    const val CHAT_ID = "chatId"
     const val COVER = "cover"
     const val COVER_TYPE = "coverType"
     const val COVER_ID = "coverId"

@@ -20,6 +20,7 @@ import com.anytypeio.anytype.core_utils.ui.BaseFragment
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.databinding.FragmentSplashBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.di.feature.discussions.DiscussionFragment
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import com.anytypeio.anytype.presentation.splash.SplashViewModelFactory
@@ -97,6 +98,13 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                     findNavController().navigate(
                         R.id.action_splashScreen_to_vaultScreen,
                         args = HomeScreenFragment.args(command.deeplink)
+                    )
+                    findNavController().navigate(
+                        R.id.discussionScreen,
+                        args = DiscussionFragment.args(
+                            space = "fake-space-id",
+                            ctx = "fake-ctx"
+                        )
                     )
                 } catch (e: Exception) {
                     Timber.e(e, "Error while opening dashboard from splash screen")

@@ -1325,6 +1325,14 @@ class HomeScreenViewModel(
                     )
                 )
             }
+            is OpenObjectNavigation.OpenDiscussion -> {
+                navigate(
+                    Navigation.OpenDiscussion(
+                        ctx = navigation.target,
+                        space = navigation.space
+                    )
+                )
+            }
             is OpenObjectNavigation.UnexpectedLayoutError -> {
                 sendToast("Unexpected layout: ${navigation.layout}")
             }
@@ -2027,6 +2035,7 @@ class HomeScreenViewModel(
 
     sealed class Navigation {
         data class OpenObject(val ctx: Id, val space: Id) : Navigation()
+        data class OpenDiscussion(val ctx: Id, val space: Id) : Navigation()
         data class OpenSet(val ctx: Id, val space: Id, val view: Id?) : Navigation()
         data class ExpandWidget(val subscription: Subscription, val space: Id) : Navigation()
         data class OpenLibrary(val space: Id) : Navigation()
@@ -2241,6 +2250,7 @@ sealed class OpenObjectNavigation {
     data class OpenEditor(val target: Id, val space: Id) : OpenObjectNavigation()
     data class OpenDataView(val target: Id, val space: Id): OpenObjectNavigation()
     data class UnexpectedLayoutError(val layout: ObjectType.Layout?): OpenObjectNavigation()
+    data class OpenDiscussion(val target: Id, val space: Id): OpenObjectNavigation()
 }
 
 fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
@@ -2282,6 +2292,12 @@ fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
                 space = requireNotNull(spaceId)
             )
         }
+        ObjectType.Layout.CHAT -> {
+            OpenObjectNavigation.OpenDiscussion(
+                target = id,
+                space = requireNotNull(spaceId)
+            )
+        }
         else -> {
             OpenObjectNavigation.UnexpectedLayoutError(layout)
         }
@@ -2318,6 +2334,12 @@ fun ObjectType.Layout.navigation(
         ObjectType.Layout.SET,
         ObjectType.Layout.COLLECTION -> {
             OpenObjectNavigation.OpenDataView(
+                target = target,
+                space = space
+            )
+        }
+        ObjectType.Layout.CHAT -> {
+            OpenObjectNavigation.OpenDiscussion(
                 target = target,
                 space = space
             )

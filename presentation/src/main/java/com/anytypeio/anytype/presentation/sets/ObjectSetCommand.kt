@@ -76,7 +76,7 @@ sealed class ObjectSetCommand {
             val selectedTypes: List<Id>
         ) : Modal()
 
-        object OpenEmptyDataViewSelectQueryScreen: Modal()
+        data object OpenEmptyDataViewSelectQueryScreen: Modal()
 
         data class EditIntrinsicTextRelation(
             val ctx: Id,

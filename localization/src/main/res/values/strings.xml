@@ -407,7 +407,7 @@
     <string name="objects">Objects</string>
     <string name="web_pages">Web pages</string>
     <string name="select_files">Select files</string>
-    <string name="u">U</string>
+    <string name="u" translatable="false">U</string>
     <string name="enter_text">Enter text</string>
     <string name="enter_number">Enter number</string>
     <string name="enter_date">Enter date</string>
@@ -1746,5 +1746,10 @@ Please provide specific details of your needs here.</string>
     <string name="version_history_error_get_members">Error getting members</string>
     <string name="new_object">New object</string>
     <string name="vault_my_spaces">My spaces</string>
+    <string name="chat">Chat</string>
+    <string name="copy">Copy</string>
+    <string name="chats_edit_message">Edit message</string>
+    <string name="chats_message_edited">edited</string>
+    <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
 
 </resources>

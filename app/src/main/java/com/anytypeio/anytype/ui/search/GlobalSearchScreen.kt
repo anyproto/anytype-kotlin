@@ -101,6 +101,7 @@ import com.anytypeio.anytype.core_ui.widgets.DefaultObjectImageIcon
 import com.anytypeio.anytype.core_ui.widgets.DefaultProfileAvatarIcon
 import com.anytypeio.anytype.core_ui.widgets.DefaultProfileIconImage
 import com.anytypeio.anytype.core_ui.widgets.DefaultTaskObjectIcon
+import com.anytypeio.anytype.core_ui.widgets.GlobalSearchObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
@@ -111,11 +112,13 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun GlobalSearchScreen(
+    modifier: Modifier = Modifier,
     state: GlobalSearchViewModel.ViewState,
     onQueryChanged: (String) -> Unit,
     onObjectClicked: (GlobalSearchItemView) -> Unit,
     onShowRelatedClicked: (GlobalSearchItemView) -> Unit,
-    onClearRelatedClicked: () -> Unit
+    onClearRelatedClicked: () -> Unit,
+    focusOnStart: Boolean = true
 ) {
 
     val selectionColors = TextSelectionColors(
@@ -154,7 +157,7 @@ fun GlobalSearchScreen(
     }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .nestedScroll(rememberNestedScrollInteropConnection())
     ) {
@@ -168,7 +171,6 @@ fun GlobalSearchScreen(
                 .padding(vertical = 6.dp)
                 .align(Alignment.CenterHorizontally)
         )
-
 
         Row(
             modifier = Modifier
@@ -374,7 +376,9 @@ fun GlobalSearchScreen(
             }
         }
         LaunchedEffect(Unit) {
-            focusRequester.requestFocus()
+            if (focusOnStart) {
+                focusRequester.requestFocus()
+            }
         }
     }
 }

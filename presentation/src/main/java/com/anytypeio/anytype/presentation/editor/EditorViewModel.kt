@@ -1050,10 +1050,10 @@ class EditorViewModel(
                 .map { events -> processEvents(events) }
                 .collect { flags ->
                     if (flags.contains(Flags.FLAG_REFRESH)) {
-                        Timber.d("Starting refresh due external payload update")
+                        Timber.d("EDITOR REFRESH, ----------Starting refresh due external payload update!--------")
                         refresh()
                     } else
-                        Timber.d("----------Refresh skipped----------")
+                        Timber.d("EDITOR REFRESH, ----------Refresh skipped----------")
                 }
         }
 

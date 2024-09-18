@@ -968,7 +968,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         isTemplate = command.isTemplate
                     )
                     if (!fr.isAdded) {
-                        fr.showChildFragment()
+                        runCatching {
+                            fr.showChildFragment()
+                        }
                     } else {
                         Timber.d("Ignoring, fragment already added.")
                     }

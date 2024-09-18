@@ -51,6 +51,9 @@ enum SmartBlockType {
 
     NotificationObject = 0x217;
     DevicesObject = 0x218;
+
+    ChatObject = 0x219; // Container for any-store based chats
+    ChatDerivedObject = 0x220; // Any-store based object for chat
 }
 
 message Search {
@@ -97,6 +100,7 @@ message Block {
         Content.TableColumn tableColumn = 27;
         Content.TableRow tableRow = 28;
         Content.Widget widget = 29;
+        Content.Chat chat = 30;
     }
 
     message Restrictions {
@@ -574,6 +578,9 @@ message Block {
                 View = 4;
             }
         }
+        message Chat {
+
+        }
     }
 }
 
@@ -751,6 +758,8 @@ message ObjectType {
         participant = 19;
 
         pdf = 20;
+        chat = 21;
+        chatDerived = 22;
     }
 }
 
@@ -1308,4 +1317,41 @@ message DeviceInfo {
     int64 addDate = 3;
     bool archived = 4;
     bool isConnected = 5;
+}
+
+message ChatMessage {
+    string id = 1;        // Unique message identifier
+    string orderId = 2;   // Used for subscriptions
+    string creator = 3;       // Identifier for the message creator
+    int64 createdAt = 4;
+    int64 modifiedAt = 9;
+    string replyToMessageId = 5;   // Identifier for the message being replied to
+    MessageContent message = 6;  // Message content
+    repeated Attachment attachments = 7;  // Attachments slice
+    Reactions reactions = 8;  // Reactions to the message
+
+    message MessageContent {
+        string text = 1;      // The text content of the message part
+        Block.Content.Text.Style style = 2;    // The style/type of the message part
+        repeated Block.Content.Text.Mark marks = 3; // List of marks applied to the text
+    }
+
+    message Attachment {
+        string target = 1;       // Identifier for the attachment object
+        AttachmentType type = 2; // Type of attachment
+
+        enum AttachmentType {
+            FILE = 0;   // File attachment
+            IMAGE = 1;  // Image attachment
+            LINK = 2;   // Link attachment
+        }
+    }
+
+    message Reactions {
+        map<string, IdentityList> reactions = 1; // Map of emoji to list of user IDs
+
+        message IdentityList {
+            repeated string ids = 1; // List of user IDs
+        }
+    }
 }

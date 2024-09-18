@@ -574,6 +574,14 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .onEach { vm.onExitMultiSelectModeClicked() }
             .launchIn(lifecycleScope)
 
+        binding.multiSelectTopToolbar
+            .selectAllBlocks
+            .clicks()
+            .throttleFirst()
+            .onEach { vm.selectAllBlocks() }
+            .launchIn(lifecycleScope)
+
+
         binding.bottomToolbar
             .backClicks()
             .onEach { vm.onBackButtonPressed() }

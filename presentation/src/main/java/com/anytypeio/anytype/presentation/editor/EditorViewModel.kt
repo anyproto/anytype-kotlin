@@ -1737,61 +1737,89 @@ class EditorViewModel(
         }
     }
 
-    private fun proceedWithEnteringActionMode(target: Id, scrollTarget: Boolean = true) {
-        val views = orchestrator.stores.views.current()
-        val view = views.find { it.id == target }
+    private fun isBlockRestricted(view: BlockView?, restrictions: Set<ObjectRestriction>): Boolean {
+        return when (view) {
+            is BlockView.Code, is BlockView.Text,
+            is BlockView.Media, is BlockView.MediaPlaceholder,
+            is BlockView.Upload -> {
+                restrictions.contains(ObjectRestriction.BLOCKS)
+            }
+            is BlockView.Relation, is BlockView.FeaturedRelation -> {
+                restrictions.contains(ObjectRestriction.RELATIONS)
+            }
+            is BlockView.Title -> {
+                restrictions.contains(ObjectRestriction.DETAILS)
+            }
+            else -> false
+        }
+    }
 
-        val restrictions = orchestrator.stores.objectRestrictions.current()
-        if (restrictions.isNotEmpty()) {
-            when (view) {
-                is BlockView.Code, is BlockView.Text,
-                is BlockView.Media, is BlockView.MediaPlaceholder,
-                is BlockView.Upload -> {
-                    if (restrictions.contains(ObjectRestriction.BLOCKS)) {
-                        sendToast(NOT_ALLOWED_FOR_OBJECT)
-                        return
-                    }
-                }
-                is BlockView.Relation, is BlockView.FeaturedRelation -> {
-                    if (restrictions.contains(ObjectRestriction.RELATIONS)) {
-                        sendToast(NOT_ALLOWED_FOR_OBJECT)
-                        return
-                    }
-                }
-                is BlockView.Title -> {
-                    if (restrictions.contains(ObjectRestriction.DETAILS)) {
-                        sendToast(NOT_ALLOWED_FOR_OBJECT)
-                        return
-                    }
-                }
-                else -> {}
+    private fun handleBlockDescendants(target: Id, selectChildren: Boolean) {
+        val descendants = blocks.asMap().descendants(parent = target)
+        descendants.forEach { child ->
+            if (selectChildren) {
+                select(child)
+            } else {
+                unselect(child)
             }
         }
+    }
 
-        toggleSelection(target)
+    private suspend fun updateSelectionUI(views: List<BlockView>, targets: Set<Id>) {
+        orchestrator.stores.focus.update(Editor.Focus.empty())
+        orchestrator.stores.views.update(
+            views.enterSAM(targets = targets)
+        )
+        renderCommand.send(Unit)
+        controlPanelInteractor.onEvent(
+            ControlPanelMachine.Event.MultiSelect.OnEnter(targets.size)
+        )
+    }
 
-        if (view !is BlockView.Table && view !is BlockView.TableOfContents) {
-            val descendants = blocks.asMap().descendants(parent = target)
-            if (isSelected(target)) {
-                descendants.forEach { child -> select(child) }
-            } else {
-                descendants.forEach { child -> unselect(child) }
+    fun selectAllBlocks() {
+        val views = orchestrator.stores.views.current()
+        val restrictions = orchestrator.stores.objectRestrictions.current().toSet()
+
+        views.forEach { view ->
+            if (isBlockRestricted(view, restrictions)) {
+                return@forEach
+            }
+            select(view.id)
+            if (view !is BlockView.Table && view !is BlockView.TableOfContents) {
+                handleBlockDescendants(view.id, selectChildren = true)
             }
         }
 
         mode = EditorMode.Select
 
         viewModelScope.launch {
-            orchestrator.stores.focus.update(Editor.Focus.empty())
-            orchestrator.stores.views.update(
-                views.enterSAM(targets = currentSelection())
-            )
-            renderCommand.send(Unit)
-            controlPanelInteractor.onEvent(
-                ControlPanelMachine.Event.MultiSelect.OnEnter(
-                    currentSelection().size
-                )
-            )
+            updateSelectionUI(views, views.map { it.id }.toSet())
+        }
+
+        proceedWithUpdatingActionsForCurrentSelection()
+    }
+
+
+    private fun proceedWithEnteringActionMode(target: Id, scrollTarget: Boolean = true) {
+        val views = orchestrator.stores.views.current()
+        val view = views.find { it.id == target }
+        val restrictions = orchestrator.stores.objectRestrictions.current().toSet()
+
+        if (isBlockRestricted(view, restrictions)) {
+            sendToast(NOT_ALLOWED_FOR_OBJECT)
+            return
+        }
+
+        toggleSelection(target)
+
+        if (view !is BlockView.Table && view !is BlockView.TableOfContents) {
+            handleBlockDescendants(target, selectChildren = isSelected(target))
+        }
+
+        mode = EditorMode.Select
+
+        viewModelScope.launch {
+            updateSelectionUI(views, currentSelection())
             if (isSelected(target) && scrollTarget) {
                 dispatch(Command.ScrollToActionMenu(target = target))
             }

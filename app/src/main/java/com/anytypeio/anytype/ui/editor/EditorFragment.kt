@@ -970,6 +970,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     if (!fr.isAdded) {
                         runCatching {
                             fr.showChildFragment()
+                        }.onFailure {
+                            Timber.e(it, "Error while opening object menu from editor")
                         }
                     } else {
                         Timber.d("Ignoring, fragment already added.")

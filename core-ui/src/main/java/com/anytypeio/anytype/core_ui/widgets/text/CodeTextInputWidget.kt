@@ -61,8 +61,12 @@ class CodeTextInputWidget : AppCompatEditText, SyntaxHighlighter {
     }
 
     private fun setupSyntaxHighlighter() {
-        addRules(context.obtainSyntaxRules(Syntaxes.KOTLIN))
-        highlight()
+        runCatching {
+            addRules(context.obtainSyntaxRules(Syntaxes.KOTLIN))
+            highlight()
+        }.onFailure {
+            Timber.e(it, "Error while setting up syntax highlighter")
+        }
         super.addTextChangedListener(syntaxTextWatcher)
     }
 
@@ -129,17 +133,21 @@ class CodeTextInputWidget : AppCompatEditText, SyntaxHighlighter {
     }
 
     override fun setupSyntax(lang: String?) {
-        if (lang == null) {
-            rules.clear()
-            clearHighlights()
-        } else {
-            val result = context.obtainSyntaxRules(lang)
-            if (result.isEmpty()) {
-                addRules(context.obtainGenericSyntaxRules())
+        runCatching {
+            if (lang == null) {
+                rules.clear()
+                clearHighlights()
             } else {
-                addRules(result)
+                val result = context.obtainSyntaxRules(lang)
+                if (result.isEmpty()) {
+                    addRules(context.obtainGenericSyntaxRules())
+                } else {
+                    addRules(result)
+                }
+                highlight()
             }
-            highlight()
+        }.onFailure {
+            Timber.e(it, "Error while setting syntax rules.")
         }
     }
 

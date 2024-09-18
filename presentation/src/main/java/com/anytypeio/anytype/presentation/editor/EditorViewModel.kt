@@ -566,7 +566,6 @@ class EditorViewModel(
                         }
                     }
                 }
-                _focus.postValue(focus.targetOrNull().orEmpty())
             }
         }
     }

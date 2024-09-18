@@ -168,7 +168,10 @@ object Flags {
     val skipRefreshKeys = listOf(
         Relations.NAME,
         Relations.LAST_MODIFIED_DATE,
-        Relations.SNIPPET
+        Relations.SNIPPET,
+        Relations.SYNC_DATE,
+        Relations.SYNC_STATUS,
+        Relations.INTERNAL_FLAGS
     )
 }
 

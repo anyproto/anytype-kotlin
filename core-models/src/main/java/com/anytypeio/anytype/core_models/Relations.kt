@@ -52,6 +52,8 @@ object Relations {
     const val FILE_SYNC_STATUS = "fileSyncStatus"
     const val CREATED_DATE = "createdDate"
     const val CREATOR = "creator"
+    const val SYNC_DATE = "syncDate"
+    const val SYNC_STATUS = "syncStatus"
 
     const val PAGE_COVER = "pageCover"
 

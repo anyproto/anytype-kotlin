@@ -41,8 +41,8 @@ interface Editor {
         }
 
         sealed class Target {
-            object None: Target()
-            object FirstTextBlock : Target()
+            data object None: Target()
+            data object FirstTextBlock : Target()
             data class Block(val id: Id) : Target()
         }
     }

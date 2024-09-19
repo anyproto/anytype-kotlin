@@ -3698,7 +3698,7 @@ class EditorViewModel(
                         onBookmarkClicked(clicked.item)
                         viewModelScope.sendAnalyticsBookmarkOpen(analytics)
                     }
-                    EditorMode.Locked -> onBookmarkClicked(clicked.item)
+                    EditorMode.Locked, EditorMode.Read -> onBookmarkClicked(clicked.item)
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.item.id)
                     else -> Unit
                 }
@@ -3727,7 +3727,7 @@ class EditorViewModel(
             is ListenerType.File.View -> {
                 when (mode) {
                     EditorMode.Edit -> onFileClicked(clicked.target)
-                    EditorMode.Locked -> onFileClicked(clicked.target)
+                    EditorMode.Locked, EditorMode.Read -> onFileClicked(clicked.target)
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                     else -> Unit
                 }
@@ -3755,7 +3755,7 @@ class EditorViewModel(
             }
             is ListenerType.Picture.View -> {
                 when (mode) {
-                    EditorMode.Edit, EditorMode.Locked -> {
+                    EditorMode.Edit, EditorMode.Locked, EditorMode.Read -> {
                         val fileBlock = blocks.find { it.id == clicked.target }
                         val url = urlBuilder.getUrlForFileBlock(
                             fileBlock = fileBlock,
@@ -3847,7 +3847,7 @@ class EditorViewModel(
             is ListenerType.LinkToObject -> {
                 when (mode) {
                     EditorMode.Edit -> onPageClicked(blockLinkId = clicked.target)
-                    EditorMode.Locked -> onPageClicked(blockLinkId = clicked.target)
+                    EditorMode.Locked, EditorMode.Read -> onPageClicked(blockLinkId = clicked.target)
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                     else -> Unit
                 }
@@ -3890,7 +3890,7 @@ class EditorViewModel(
             }
             is ListenerType.Mention -> {
                 when (mode) {
-                    EditorMode.Edit, EditorMode.Locked -> {
+                    EditorMode.Edit, EditorMode.Locked, EditorMode.Read -> {
                         viewModelScope.launch {
                             orchestrator.stores.focus.update(Editor.Focus.empty())
                         }
@@ -3943,7 +3943,7 @@ class EditorViewModel(
                     return
                 }
                 when (mode) {
-                    EditorMode.Edit, EditorMode.Locked -> {
+                    EditorMode.Edit, EditorMode.Locked, EditorMode.Read -> {
                         when (clicked.value) {
                             is BlockView.Relation.Placeholder -> {
                                 Timber.d("Clicked in BlockView.Relation.Placeholder")
@@ -3964,7 +3964,7 @@ class EditorViewModel(
             }
             is ListenerType.Relation.Featured -> {
                 when (mode) {
-                    EditorMode.Edit, EditorMode.Locked -> {
+                    EditorMode.Edit, EditorMode.Locked, EditorMode.Read -> {
                         viewModelScope.launch {
                             val relation = storeOfRelations.getByKey(clicked.relation.key)
                             if (relation != null) {
@@ -3985,7 +3985,8 @@ class EditorViewModel(
             is ListenerType.TableOfContentsItem -> {
                 when (mode) {
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
-                    EditorMode.Edit, EditorMode.Locked -> {
+                    EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
+                    EditorMode.Edit, EditorMode.Locked, EditorMode.Read -> {
                         val block = views.find { it.id == clicked.item }
                         val pos = views.indexOf(block)
                         if (pos != NO_SCROLL_POSITION) {
@@ -4059,7 +4060,7 @@ class EditorViewModel(
             is ListenerType.DataViewClick -> {
                 when (mode) {
                     EditorMode.Edit -> onPageClicked(blockLinkId = clicked.target)
-                    EditorMode.Locked -> onPageClicked(blockLinkId = clicked.target)
+                    EditorMode.Locked, EditorMode.Read -> onPageClicked(blockLinkId = clicked.target)
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                     else -> Unit
                 }
@@ -4114,7 +4115,7 @@ class EditorViewModel(
     }
 
     fun onChangeObjectTypeClicked() {
-        if (mode != EditorMode.Locked) {
+        if (mode != EditorMode.Locked && mode != EditorMode.Read) {
             val restrictions = orchestrator.stores.objectRestrictions.current()
             if (restrictions.contains(ObjectRestriction.TYPE_CHANGE)) {
                 sendToast(NOT_ALLOWED_FOR_OBJECT)
@@ -7385,7 +7386,7 @@ class EditorViewModel(
     //endregion
 
     private fun isReadOnlyValue(objRestrictions: List<ObjectRestriction>): Boolean {
-        return mode == EditorMode.Locked || objRestrictions.contains(ObjectRestriction.DETAILS)
+        return mode == EditorMode.Locked || mode == EditorMode.Read || objRestrictions.contains(ObjectRestriction.DETAILS)
     }
 
     //region SYNC STATUS

@@ -23,37 +23,37 @@ interface Editor {
         /**
          * Default mode of interaction with the editor: content editing is fully enabled.
          */
-        object Edit : Mode()
+        data object Edit : Mode()
 
         /**
          * Editor in preview state.
          * Currently used for templates, which can't be edited.
          */
-        object Read : Mode()
+        data object Read : Mode()
 
         /**
          * Editor in locked state.
          * Locked mode is toggled in object menu.
          */
-        object Locked: Mode()
+        data object Locked: Mode()
 
         /**
          * Editor in select mode: when one or multiple blocks are selected.
          * To enter this mode, user long-clicks a block.
          */
-        object Select : Mode()
+        data object Select : Mode()
 
         /**
          * Editor in scroll-and-move mode: one or multiple blocks are selected, then moved to new position by scrolling.
          * @see [ActionItemType.SAM]
          */
-        object SAM : Mode()
+        data object SAM : Mode()
 
         /**
          * Editor in search-on-page state: searching plain text through blocks.
          * @see [Block.Content.Text.Style]
          */
-        object Search : Mode()
+        data object Search : Mode()
 
         /**
          * Editor in text styling mode.

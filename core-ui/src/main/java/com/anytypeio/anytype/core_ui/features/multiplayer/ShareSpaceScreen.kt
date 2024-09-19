@@ -2,6 +2,7 @@ package com.anytypeio.anytype.core_ui.features.multiplayer
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.animation.slideInVertically
@@ -44,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
@@ -82,6 +84,8 @@ import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.core_ui.views.Relations3
+import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
+import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceMemberView
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel.ShareLinkViewState
@@ -90,6 +94,7 @@ import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ShareSpaceScreen(
+    isLoadingInProgress: Boolean,
     spaceAccessType: SpaceAccessType?,
     isCurrentUserOwner: Boolean,
     members: List<ShareSpaceMemberView>,
@@ -323,6 +328,17 @@ fun ShareSpaceScreen(
                     onGenerateInviteLinkClicked = onGenerateInviteLinkClicked
                 )
             }
+        }
+        val loadingAlpha by animateFloatAsState(targetValue = if (isLoadingInProgress) 1f else 0f)
+
+        if (isLoadingInProgress) {
+            DotsLoadingIndicator(
+                animating = true,
+                modifier = Modifier.graphicsLayer { alpha = loadingAlpha }.align(Alignment.Center),
+                animationSpecs = FadeAnimationSpecs(itemCount = 3),
+                color = colorResource(id = R.color.text_primary),
+                size = ButtonSize.Large
+            )
         }
     }
 }
@@ -821,7 +837,8 @@ fun ShareSpaceScreenPreview() {
         onDeleteLinkClicked = {},
         spaceAccessType = null,
         incentiveState = ShareSpaceViewModel.ShareSpaceIncentiveState.VisibleSpaceReaders,
-        onIncentiveClicked = {}
+        onIncentiveClicked = {},
+        isLoadingInProgress = false
     )
 }
 

@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -274,13 +273,14 @@ private fun getP2PCardSettings(
         P2PStatus.NOT_CONNECTED -> {
             CardSettings(
                 icon = painterResource(R.drawable.ic_sync_p2p_default),
-                mainText = stringResource(id = R.string.sync_status_p2p_connecting),
+                mainText = stringResource(id = R.string.sync_status_p2p),
+                secondaryText = stringResource(id = R.string.sync_status_p2p_not_connected)
             )
         }
 
         P2PStatus.NOT_POSSIBLE, P2PStatus.RESTRICTED -> {
             CardSettings(
-                icon = painterResource(R.drawable.ic_sync_p2p_error),
+                icon = painterResource(R.drawable.ic_sync_p2p_default),
                 mainText = stringResource(id = R.string.sync_status_p2p),
                 secondaryText = stringResource(id = R.string.sync_status_p2p_disabled)
             )
@@ -557,7 +557,7 @@ fun SpaceSyncStatusPreview10() {
     P2PStatusItem(p2pStatus = p2pStatus)
 }
 
-@Preview(name = "P2PNotPossible", showBackground = true)
+@Preview(name = "P2PNotPossible and P2PRestricted", showBackground = true)
 @Composable
 fun SpaceSyncStatusPreview11() {
     val p2pStatus = P2PStatusUpdate.Update(

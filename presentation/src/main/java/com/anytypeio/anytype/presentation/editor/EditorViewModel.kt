@@ -3716,7 +3716,7 @@ class EditorViewModel(
                         onBookmarkClicked(clicked.item)
                         viewModelScope.sendAnalyticsBookmarkOpen(analytics)
                     }
-                    EditorMode.Locked -> onBookmarkClicked(clicked.item)
+                    EditorMode.Locked, EditorMode.Read -> onBookmarkClicked(clicked.item)
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.item.id)
                     else -> Unit
                 }

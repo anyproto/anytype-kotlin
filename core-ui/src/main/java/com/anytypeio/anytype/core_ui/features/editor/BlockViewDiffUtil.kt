@@ -93,7 +93,7 @@ class BlockViewDiffUtil(
         }
 
         if (newBlock is BlockView.Cursor && oldBlock is BlockView.Cursor) {
-            if (newBlock.cursor != null && newBlock.cursor != oldBlock.cursor) {
+            if (newBlock.cursor != oldBlock.cursor) {
                 Timber.d("DROID-2826 cursor changed: ${newBlock.cursor}")
                 changes.add(CURSOR_CHANGED)
             }

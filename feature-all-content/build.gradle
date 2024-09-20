@@ -38,6 +38,7 @@ dependencies {
     implementation libs.composeFoundation
     implementation libs.composeToolingPreview
     implementation libs.composeMaterial3
+    implementation libs.navigationCompose
 
     debugImplementation libs.composeTooling
 

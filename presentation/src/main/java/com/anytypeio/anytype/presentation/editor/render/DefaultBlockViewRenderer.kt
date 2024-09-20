@@ -52,6 +52,8 @@ class DefaultBlockViewRenderer @Inject constructor(
     private val storeOfObjectTypes: StoreOfObjectTypes
 ) : BlockViewRenderer, ToggleStateHolder by toggleStateHolder {
 
+    var flags = 1
+
     override suspend fun Map<Id, List<Block>>.render(
         mode: EditorMode,
         root: Block,
@@ -801,6 +803,15 @@ class DefaultBlockViewRenderer @Inject constructor(
         )
         val isFocused = resolveIsFocused(focus, block)
 
+        val cursor = if (isFocused)
+            setCursor(focus, content)
+        else
+            null
+
+        if (isFocused) {
+            Timber.d("DROID-2826 focused block in renderer, setting cursor: $cursor")
+        }
+
         return BlockView.Text.Paragraph(
             mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
             id = block.id,
@@ -811,7 +822,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             background = block.parseThemeBackgroundColor(),
             indent = indent,
             alignment = content.align?.toView(),
-            cursor = if (isFocused) setCursor(focus, content) else null,
+            cursor = cursor,
             isSelected = checkIfSelected(
                 mode = mode,
                 block = block,
@@ -2203,6 +2214,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         focus: Focus,
         content: Content.Text
     ): Int? = focus.cursor?.let { cursor ->
+        Timber.d("DROID-2826 BLOCK-RENDERER setting cursor: $cursor")
         when (cursor) {
             is Cursor.Start -> 0
             is Cursor.End -> content.text.length

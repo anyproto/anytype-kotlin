@@ -7,13 +7,13 @@ interface Editor {
 
     /**
      * @property id id of the focused block
-     * @property cursor optional cursor/carriage associated with this focus
+     * @property cursor pending (!) cursor/carriage associated with this focus
      * @property isEmpty defines whether focus has target or not
      * @property isPending focus is pending if we do not know whether the target widget has gained focus.
      */
     data class Focus(
         var target: Target,
-        val cursor: Cursor?,
+        var cursor: Cursor?,
         val isPending: Boolean = true
     ) : Editor {
 

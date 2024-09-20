@@ -93,8 +93,10 @@ class BlockViewDiffUtil(
         }
 
         if (newBlock is BlockView.Cursor && oldBlock is BlockView.Cursor) {
-            if (newBlock.cursor != oldBlock.cursor)
+            if (newBlock.cursor != null && newBlock.cursor != oldBlock.cursor) {
+                Timber.d("DROID-2826 cursor changed: ${newBlock.cursor}")
                 changes.add(CURSOR_CHANGED)
+            }
         }
 
         if (newBlock is Indentable && oldBlock is Indentable) {
@@ -275,9 +277,12 @@ class BlockViewDiffUtil(
         }
 
         return if (changes.isNotEmpty())
-            Payload(changes).also { Timber.d("Returning payload: $it") }
-        else
-            super.getChangePayload(oldItemPosition, newItemPosition)
+            Payload(changes).also { Timber.d("DROID-2826 DIFF UTIL Returning payload: $it") }
+        else {
+            super.getChangePayload(oldItemPosition, newItemPosition).also {
+                Timber.d("DROID-2826 DIFF UTIL found no changes. onBindViewHolder will be called")
+            }
+        }
     }
 
     /**

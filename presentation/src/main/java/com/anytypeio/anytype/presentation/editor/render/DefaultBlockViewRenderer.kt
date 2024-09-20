@@ -2215,6 +2215,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         content: Content.Text
     ): Int? = focus.cursor?.let { cursor ->
         Timber.d("DROID-2826 BLOCK-RENDERER setting cursor: $cursor")
+        focus.cursor = null
         when (cursor) {
             is Cursor.Start -> 0
             is Cursor.End -> content.text.length

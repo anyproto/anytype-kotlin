@@ -72,6 +72,7 @@ coilComposeVersion = '2.6.0'
 sentryVersion = '7.6.0'
 
 composeQrCodeVersion = '1.0.1'
+fragmentComposeVersion = "1.8.3"
 
 [libraries]
 middleware = { module = "io.anyproto:anytype-heart-android", version.ref = "middlewareVersion" }
@@ -171,6 +172,7 @@ navigationCompose = { module = "androidx.navigation:navigation-compose", version
 appUpdater = { module = "com.github.PLPsiSoft:AndroidAppUpdater", version = "9913ce80da7871c84af24b9adc2bf2414ca294f0" }
 composeQrCode = { module = "com.lightspark:compose-qr-code", version.ref = "composeQrCodeVersion" }
 playBilling = { module = "com.android.billingclient:billing", version = "7.0.0" }
+fragmentCompose = { group = "androidx.fragment", name = "fragment-compose", version.ref = "fragmentComposeVersion" }
 
 [bundles]
 

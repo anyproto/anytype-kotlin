@@ -2,6 +2,7 @@ package com.anytypeio.anytype.feature_allcontent.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -21,13 +22,22 @@ fun AllContentScreenWrapper() {
         composable(
             route = ALL_CONTENT_MAIN
         ) {
-            Surface(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(color = colorResource(id = R.color.background_primary))
-            ) {
-                //AllContentScreenPreview()
-            }
+            AllContentMainScreen()
+        }
+    }
+}
+
+@Composable
+private fun AllContentMainScreen() {
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = colorResource(id = R.color.background_primary))
+    ) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            item { AllContentTitle() }
         }
     }
 }

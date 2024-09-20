@@ -50,6 +50,8 @@ interface AppNavigation {
 
     fun openTemplatesModal(typeId: Id)
 
+    fun openAllContent(space: Id)
+
     sealed class Command {
 
         object Exit : Command()

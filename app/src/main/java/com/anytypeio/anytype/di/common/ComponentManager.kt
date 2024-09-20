@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.di.feature.CreateBookmarkModule
 import com.anytypeio.anytype.di.feature.CreateObjectModule
+import com.anytypeio.anytype.di.feature.DaggerAllContentComponent
 import com.anytypeio.anytype.di.feature.DaggerAppPreferencesComponent
 import com.anytypeio.anytype.di.feature.DaggerBacklinkOrAddToObjectComponent
 import com.anytypeio.anytype.di.feature.DaggerSplashComponent
@@ -99,6 +100,7 @@ import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeModule
 import com.anytypeio.anytype.di.main.MainComponent
+import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.gallery_experience.viewmodel.GalleryInstallationViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.history.VersionHistoryViewModel
@@ -325,6 +327,12 @@ class ComponentManager(
 
     val globalSearchComponent = ComponentWithParams { params: GlobalSearchViewModel.VmParams ->
         DaggerGlobalSearchComponent
+            .factory()
+            .create(params, findComponentDependencies())
+    }
+
+    val allContentComponent = ComponentWithParams { params: AllContentViewModel.VmParams ->
+        DaggerAllContentComponent
             .factory()
             .create(params, findComponentDependencies())
     }

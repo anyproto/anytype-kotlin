@@ -14,7 +14,7 @@
     <string name="debug_sync_report">Relatório de Depuração de Sincronização</string>
     <string name="debug">Depuração</string>
     <string name="account">Cofre</string>
-    <string name="reset_account">Reset vault</string>
+    <string name="reset_account">Redefinir o cofre</string>
     <string name="delete_account">Excluir cofre</string>
     <string name="space_debug">Depuração do Espaço</string>
     <string name="data">Dados</string>
@@ -923,7 +923,7 @@
     <!--region WIDGETS -->
     <string name="create_widget">Criar um componente</string>
     <string name="edit_widgets">Editar componentes</string>
-    <string name="add_widget">Add widget</string>
+    <string name="add_widget">Adicionar aba</string>
     <string name="widget_source">Fonte do widget</string>
     <string name="widget_type">Tipo de widget</string>
     <string name="widget_add_below">Adicionar abaixo</string>
@@ -1070,10 +1070,10 @@
     <!--endregion-->
     <plurals name="backlinks_count">
         <item quantity="one">%d backlink</item>
-        <item quantity="other">%d backlinks</item>
+        <item quantity="other">%d backlink</item>
     </plurals>
     <plurals name="links_from_count">
-        <item quantity="one">%d link</item>
+        <item quantity="one">U%d link</item>
         <item quantity="other">%d links</item>
     </plurals>
     <!--region ORIGIN RELATION VALUES -->
@@ -1219,12 +1219,12 @@
     <string name="multiplayer_collaborate_step_2">Abrir a seção de Compartilhamento</string>
     <string name="multiplayer_collaborate_step_3">Gerar um link de convite e compartilhá-lo</string>
     <plurals name="multiplayer_number_of_space_members">
-        <item quantity="one">%1$d member</item>
-        <item quantity="other">%1$d members</item>
+        <item quantity="one">%1$d membro</item>
+        <item quantity="other">%1$d membros</item>
     </plurals>
     <plurals name="multiplayer_number_of_join_requests">
-        <item quantity="one">%1$d request</item>
-        <item quantity="other">%1$d requests</item>
+        <item quantity="one">%1$d solicitação</item>
+        <item quantity="other">%1$d solicitações</item>
     </plurals>
     <string name="multiplayer_you_as_member">você</string>
     <string name="multiplayer_spaces">Espaços</string>
@@ -1330,14 +1330,14 @@
     <!-- Payments Code -->
     <string name="payments_code_title">Digite o código enviado para seu email</string>
     <string name="payments_code_resend">Reenviar</string>
-    <string name="payments_code_resend_in">Resend in %1$d sec</string>
+    <string name="payments_code_resend_in">Reenviar em %1$d seg</string>
     <!-- Membership Welcome -->
-    <string name="payments_welcome_title">Welcome to the network,\n%1$s</string>
+    <string name="payments_welcome_title">Bem-vindo à rede,\n%1$s</string>
     <string name="payments_welcome_subtitle">Um grande aplauso por sua curiosidade!</string>
-    <string name="payments_welcome_button">Continue</string>
+    <string name="payments_welcome_button">Continuar</string>
     <!-- Membership Email -->
     <string name="membership_support_email">support@anytype.io</string>
-    <string name="membership_support_subject">Membership Screen Error Report - %1$s</string>
+    <string name="membership_support_subject">Erro na Tela de Inscrição — %1$s</string>
     <string name="membership_support_body">        Hi Anytype Support Team,\n\n
 
         I encountered an error on the Membership Screen in the app. Below are the details:\n
@@ -1356,7 +1356,7 @@
         Best regards,       \n
     </string>
     <string name="payments_email_to">membership-upgrade@anytype.io</string>
-    <string name="payments_email_subject">Upgrade %1$s</string>
+    <string name="payments_email_subject">Atualizar %1$s</string>
     <string name="payments_email_body">Olá Equipe Anytype! Eu gostaria de estender minha atual assinatura para (por favor escolha uma opção):\n- Mais armazenamento remoto\n- Mais editores de espaço\n- Mais espaços compartilhados
 Especificamente,
 forneça detalhes específicos das suas necessidades aqui.</string>
@@ -1372,17 +1372,17 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="membership_name_too_long">Name is too long</string>
     <string name="membership_name_too_short">Name is too short</string>
     <string name="membership_any_name_not_reserved">This name cannot be reserved</string>
-    <string name="membership_any_name_null_error">Empty error</string>
+    <string name="membership_any_name_null_error">Erro em branco</string>
     <string name="membership_any_name_unknown">Erro desconhecido</string>
-    <string name="membership_email_wrong_format">Email has wrong format</string>
-    <string name="membership_email_already_verified">Email is already verified</string>
-    <string name="membership_email_already_sent">Email is already sent, try again after 1 minute</string>
-    <string name="membership_email_failed_to_send">Email failed to send</string>
-    <string name="membership_email_membership_already_exists">Membership already exists</string>
-    <string name="membership_email_code_expired">Code expired</string>
-    <string name="membership_email_code_wrong">Code is wrong</string>
-    <string name="membership_email_code_success">Code is correct</string>
-    <string name="membership_email_membership_not_found">Membership not found</string>
+    <string name="membership_email_wrong_format">Endereço eletrônico tem um formato errado</string>
+    <string name="membership_email_already_verified">O e-mail já foi verificado</string>
+    <string name="membership_email_already_sent">O e-mail já foi enviado, tente novamente depois de 1 minuto</string>
+    <string name="membership_email_failed_to_send">O endereço eletrônico falhou ao enviar</string>
+    <string name="membership_email_membership_already_exists">Inscrição já existe</string>
+    <string name="membership_email_code_expired">Código expirado</string>
+    <string name="membership_email_code_wrong">Código incorreto</string>
+    <string name="membership_email_code_success">O código está correto</string>
+    <string name="membership_email_membership_not_found">Associação não encontrada</string>
     <string name="membership_email_membership_already_active">Assinatura já ativa</string>
     <!-- Notifications -->
     <string name="notifications_alert_error_unknown">Um erro desconhecido ocorreu. Por favor, tente novamente mais tarde.</string>
@@ -1469,10 +1469,10 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="sync_status_p2p">Conexão P2P</string>
     <plurals name="sync_status_p2p_devices">
         <item quantity="one">%1$d dispositivo conectado</item>
-        <item quantity="other">%1$d devices connected</item>
+        <item quantity="other">%1$d dispositivos conectados</item>
     </plurals>
     <string name="sync_status_p2p_connecting">P2P Conectando...</string>
-    <string name="sync_status_p2p_disabled">Disabled</string>
+    <string name="sync_status_p2p_disabled">Desabilitado</string>
     <string name="sync_status_p2p_restricted">Restricted. Check device settings.</string>
     <string name="sync_status_anytype_network">Rede Anytype</string>
     <string name="sync_status_anytype_end_to_end">Criptografia de ponta a ponta</string>

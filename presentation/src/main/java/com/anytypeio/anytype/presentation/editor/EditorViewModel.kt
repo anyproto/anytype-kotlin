@@ -981,6 +981,7 @@ class EditorViewModel(
     }
 
     private fun dispatchToUI(views: List<BlockView>) {
+        syncBlockUpdateMultiSelectMode()
         stateData.postValue(
             ViewState.Success(
                 blocks = views
@@ -1772,8 +1773,27 @@ class EditorViewModel(
         )
         renderCommand.send(Unit)
         controlPanelInteractor.onEvent(
-            ControlPanelMachine.Event.MultiSelect.OnEnter(targets.size)
+            ControlPanelMachine.Event.MultiSelect.OnEnter(
+                targets.size,
+                isSelectAllVisible = isNotAllBlocksSelected(
+                    allBlocks = orchestrator.stores.views.current(),
+                    selected = currentSelection()
+
+                )
+            )
         )
+    }
+
+    private fun isNotAllBlocksSelected(allBlocks: List<BlockView>, selected: Set<Id>): Boolean {
+        val myCollection = allBlocks.toMutableList()
+        val iterator = myCollection.iterator()
+        while (iterator.hasNext()) {
+            val item = iterator.next()
+            if (selected.contains(item.id)) {
+                    iterator.remove()
+                }
+        }
+        return myCollection.isNotEmpty()
     }
 
     fun selectAllBlocks() {
@@ -4349,7 +4369,11 @@ class EditorViewModel(
     private fun onMultiSelectModeBlockClicked() {
         controlPanelInteractor.onEvent(
             ControlPanelMachine.Event.MultiSelect.OnBlockClick(
-                count = currentSelection().size
+                count = currentSelection().size,
+                isSelectAllVisible = isNotAllBlocksSelected(
+                    allBlocks = orchestrator.stores.views.current(),
+                    selected = currentSelection()
+                )
             )
         )
     }
@@ -5919,14 +5943,38 @@ class EditorViewModel(
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnExit)
     }
 
+    @Deprecated("Not used in production code")
     fun onEnterMultiSelectModeClicked() {
         Timber.d("onEnterMultiSelectModeClicked, ")
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnEnter())
+        controlPanelInteractor.onEvent(
+            ControlPanelMachine.Event.MultiSelect.OnEnter(
+                count = currentSelection().size,
+                isSelectAllVisible = isNotAllBlocksSelected(
+                    allBlocks = orchestrator.stores.views.current(),
+                    selected = currentSelection()
+                )
+            )
+        )
         mode = EditorMode.Select
         viewModelScope.launch { orchestrator.stores.focus.update(Editor.Focus.empty()) }
         viewModelScope.launch {
             delay(DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE)
             refresh()
+        }
+    }
+
+    fun syncBlockUpdateMultiSelectMode() {
+        Timber.d("syncBlockUpdateMultiSelectMode, ")
+        if (mode == EditorMode.Select) {
+            controlPanelInteractor.onEvent(
+                ControlPanelMachine.Event.MultiSelect.SyncBlockUpdate(
+                    count = currentSelection().size,
+                    isSelectAllVisible = isNotAllBlocksSelected(
+                        allBlocks = orchestrator.stores.views.current(),
+                        selected = currentSelection()
+                    )
+                )
+            )
         }
     }
 

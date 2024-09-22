@@ -1460,6 +1460,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     visible()
                 }
 
+               binding.multiSelectTopToolbar.selectAllBlocks.isVisible = isSelectAllVisible
+
                 binding.recycler.apply {
                     if (itemAnimator == null) itemAnimator = DefaultItemAnimator()
                 }

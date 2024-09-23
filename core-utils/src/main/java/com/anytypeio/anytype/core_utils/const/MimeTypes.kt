@@ -17,22 +17,26 @@ object MimeTypes {
         "image/gif",
         "image/avif",
         "image/apng",
-        "image/bmp"
+        "image/bmp",
+        "image/tiff", // Added TIFF image type
+        "image/vnd.adobe.photoshop", // Added PSD type
+        "application/x-dwg" // Added DWG type
     )
 
     private val TEXTS = listOf(
-        "text/plain",
+        "text/plain", // .txt
         "text/csv",
-        "text/html",
-        "application/msword",
+        "text/html",  // .html
+        "application/msword",  // .doc
         "text/css",
         "application/x-csh",
         "application/msword",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",  // .docx
         "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
-        "application/json",
+        "application/json", // .json
         "application/ld+json",
-        "text/comma-separated-values"
+        "text/comma-separated-values",
+        "application/xml" // Added XML type
     )
 
     private val VIDEOS = listOf(
@@ -43,7 +47,10 @@ object MimeTypes {
         "video/H263",
         "video/mpv",
         "video/ogg",
-        "video/x-msvideo"
+        "video/x-msvideo",
+        "video/x-flv", // Added FLV type
+        "video/x-ms-wmv", // Added WMV type
+        "video/quicktime" // Added MOV type
     )
 
     private val AUDIOS = listOf(
@@ -61,7 +68,8 @@ object MimeTypes {
         "audio/m4a",
         "audio/mp3",
         "audio/x-flac",
-        "audio/flac"
+        "audio/flac",
+        "audio/x-aiff" // Added AIFF type
     )
 
     private val ARCHIVE = listOf(
@@ -81,17 +89,21 @@ object MimeTypes {
     )
 
     private val TABLE = listOf(
-        "application/vnd.ms-excel",
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        "application/vnd.ms-excel", // .xls
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xlsx
+        "text/csv" // Added CSV to table
     )
 
     private val PRESENTATION = listOf(
-        "application/vnd.ms-powerpoint",
-        "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+        "application/vnd.ms-powerpoint", // .ppt
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation", // .pptx
+        "application/vnd.openxmlformats-officedocument.presentationml.template", // Added PPTX Template
+        "application/vnd.ms-powerpoint.template.macroEnabled.12", // Added PPT Template
+        "application/vnd.ms-powerpoint.addin.macroEnabled.12" // Added PPT Addin
     )
 
     enum class Category {
-        IMAGE, PDF, TEXT, AUDIO, VIDEO, ARCHIVE, OTHER, TABLE, PRESENTATION
+        IMAGE, PDF, TEXT, AUDIO, VIDEO, ARCHIVE, OTHER, TABLE, PRESENTATION, PHOTO, BROKEN
     }
 
     fun category(mime: String?): Category = when {

@@ -270,10 +270,10 @@
     <string name="sync_status_toast_unknown">Инициализация синхронизации</string>
     <string name="sync_status_toast_offline">Узел Anytype не подключен</string>
     <string name="sync_status_toast_syncing">Загрузка или выгрузка данных в узел</string>
-    <string name="sync_status_toast_synced">Резервное копирование в сети Anytype</string>
-    <string name="sync_status_toast_synced_staging">Резервное копирование в сети Anytype</string>
+    <string name="sync_status_toast_synced">Синхронизировано с сетью Anytype</string>
+    <string name="sync_status_toast_synced_staging">Синхронизировано с сетью Anytype (Staging)</string>
     <string name="sync_status_toast_synced_local">Только локально</string>
-    <string name="sync_status_toast_synced_self_hosted">Резервное копирование в вашей сети</string>
+    <string name="sync_status_toast_synced_self_hosted">Синхронизировано с вашей сетью</string>
     <string name="sync_status_toast_failed">Не удалось синхронизироваться, попробуйте еще раз</string>
     <string name="sync_status_toast_incompatible">Версия устарела. Пожалуйста, обновите Anytype</string>
     <string name="relation_format_description">Описание</string>

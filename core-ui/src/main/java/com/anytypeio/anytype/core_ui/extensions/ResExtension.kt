@@ -254,6 +254,8 @@ fun String?.getMimeIcon(extension: String?): Int {
         MimeTypes.Category.TABLE -> R.drawable.ic_mime_table
         MimeTypes.Category.PRESENTATION -> R.drawable.ic_mime_presentation
         MimeTypes.Category.OTHER -> R.drawable.ic_mime_other
+        MimeTypes.Category.BROKEN -> R.drawable.ic_mime_broken
+        MimeTypes.Category.PHOTO -> TODO()
     }
 }
 

@@ -1747,4 +1747,14 @@ Please provide specific details of your needs here.</string>
     <string name="new_object">New object</string>
     <string name="vault_my_spaces">My spaces</string>
 
+    <string name="all_content_title_all_content">All content</string>
+    <string name="all_content_title_only_unlinked">Only unlinked</string>
+
+    <string name="all_content_title_tab_objetcs">Objects</string>
+    <string name="all_content_title_tab_media">Media</string>
+    <string name="all_content_title_tab_bookmarks">Bookmarks</string>
+    <string name="all_content_title_tab_files">Files</string>
+    <string name="all_content_title_tab_objetc_types">Object Types</string>
+    <string name="all_content_title_tab_relations">Relations</string>
+
 </resources>

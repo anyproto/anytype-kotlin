@@ -83,6 +83,8 @@ class SyncAndP2PStatusEventsStoreImplTest {
 
             store.start()
 
+            dispatcher.scheduler.advanceTimeBy(100)
+
             store.p2pStatus.test {
                 val firstItem = awaitItem()
                 assertEquals(mapOf(), firstItem)
@@ -199,6 +201,8 @@ class SyncAndP2PStatusEventsStoreImplTest {
             )
 
             store.start()
+
+            dispatcher.scheduler.advanceTimeBy(100)
 
             store.syncStatus.test {
                 val firstItem = awaitItem()

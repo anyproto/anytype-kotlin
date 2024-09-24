@@ -252,7 +252,8 @@ private fun SpaceSyncStatusItem(
                 )
             }
         }
-        if (spaceSyncUpdate.status == SpaceSyncStatus.NETWORK_UPDATE_NEEDED)  {
+        if (spaceSyncUpdate.status == SpaceSyncStatus.NETWORK_UPDATE_NEEDED
+            && spaceSyncUpdate.error == SpaceSyncError.NULL) {
             Image(
                 modifier = Modifier
                     .padding(end = 20.dp)
@@ -621,6 +622,19 @@ fun SpaceSyncStatusPreview13() {
         status = SpaceSyncStatus.NETWORK_UPDATE_NEEDED,
         network = SpaceSyncNetwork.ANYTYPE,
         error = SpaceSyncError.NULL,
+        syncingObjectsCounter = 0
+    )
+    SpaceSyncStatusItem(spaceSyncUpdate = spaceSyncUpdate)
+}
+
+@Preview(name = "AnytypeNetworkNeedUpdate, Error", showBackground = true)
+@Composable
+fun SpaceSyncStatusPreview14() {
+    val spaceSyncUpdate = SpaceSyncUpdate.Update(
+        id = "1",
+        status = SpaceSyncStatus.NETWORK_UPDATE_NEEDED,
+        network = SpaceSyncNetwork.SELF_HOST,
+        error = SpaceSyncError.STORAGE_LIMIT_EXCEED,
         syncingObjectsCounter = 0
     )
     SpaceSyncStatusItem(spaceSyncUpdate = spaceSyncUpdate)

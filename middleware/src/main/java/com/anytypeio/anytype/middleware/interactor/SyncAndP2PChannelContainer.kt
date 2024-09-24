@@ -62,8 +62,7 @@ class SyncAndP2PStatusEventsStoreImpl(
             devicesCounter = update.devicesCounter
         )
         _p2pStatus.update { currentMap ->
-            currentMap[update.spaceId] = p2pUpdate
-            currentMap
+            currentMap + (update.spaceId to p2pUpdate)
         }
     }
 
@@ -77,8 +76,7 @@ class SyncAndP2PStatusEventsStoreImpl(
         )
 
         _syncStatus.update { currentMap ->
-            currentMap[update.id] = syncUpdate
-            currentMap
+            currentMap + (update.id to syncUpdate)
         }
     }
 }

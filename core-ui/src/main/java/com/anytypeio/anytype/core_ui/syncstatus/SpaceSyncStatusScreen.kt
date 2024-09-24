@@ -230,7 +230,7 @@ private fun SpaceSyncStatusItem(
                 .padding(start = 16.dp)
                 .align(Alignment.CenterStart),
             painter = networkCardSettings.icon,
-            contentDescription = "dfas",
+            contentDescription = "sync status icon",
             alpha = networkCardSettings.alpha
         )
         Column(
@@ -307,54 +307,78 @@ private fun getNetworkCardSettings(
     error: SpaceSyncError,
     syncingObjectsCounter: Long
 ): CardSettings {
-    return when (network) {
-        SpaceSyncNetwork.ANYTYPE -> when (syncStatus) {
-            SpaceSyncStatus.SYNCED -> {
-                CardSettings(
-                    icon = painterResource(R.drawable.ic_sync_net_connected),
-                    mainText = stringResource(id = R.string.sync_status_anytype_network),
-                    secondaryText = stringResource(id = R.string.sync_status_anytype_end_to_end)
-                )
-            }
-            SpaceSyncStatus.SYNCING -> {
-                CardSettings(
-                    icon = painterResource(R.drawable.ic_sync_net_connected),
-                    alpha = 0.5f,
-                    withAnimation = true,
-                    mainText = stringResource(id = R.string.sync_status_anytype_network),
-                    secondaryText = pluralStringResource(
-                        id = R.plurals.sync_status_network_items,
-                        count = syncingObjectsCounter.toInt(),
-                        formatArgs = arrayOf(syncingObjectsCounter.toInt())
-                    )
-                )
-            }
-            SpaceSyncStatus.ERROR -> {
-                val errorText = getErrorText(error)
-                CardSettings(
+    when (network) {
+        SpaceSyncNetwork.ANYTYPE -> {
+
+            if (error != SpaceSyncError.NULL) {
+                return CardSettings(
                     icon = painterResource(R.drawable.ic_sync_net_error),
                     mainText = stringResource(id = R.string.sync_status_anytype_network),
-                    secondaryText = stringResource(id = errorText)
+                    secondaryText = stringResource(id = getErrorText(error))
                 )
             }
-            SpaceSyncStatus.OFFLINE -> {
-                CardSettings(
-                    icon = painterResource(R.drawable.ic_sync_net_default),
-                    mainText = stringResource(id = R.string.sync_status_anytype_network),
-                    secondaryText = stringResource(id = R.string.sync_status_anytype_network_no_connecting)
-                )
-            }
-            SpaceSyncStatus.NETWORK_UPDATE_NEEDED -> {
-                CardSettings(
-                    icon = painterResource(R.drawable.ic_sync_limitations),
-                    mainText = stringResource(id = R.string.sync_status_anytype_network),
-                    secondaryText = stringResource(id = R.string.sync_status_anytype_sync_slow)
-                )
+
+            return when (syncStatus) {
+                SpaceSyncStatus.SYNCED -> {
+                    CardSettings(
+                        icon = painterResource(R.drawable.ic_sync_net_connected),
+                        mainText = stringResource(id = R.string.sync_status_anytype_network),
+                        secondaryText = stringResource(id = R.string.sync_status_anytype_end_to_end)
+                    )
+                }
+
+                SpaceSyncStatus.SYNCING -> {
+                    CardSettings(
+                        icon = painterResource(R.drawable.ic_sync_net_connected),
+                        alpha = 0.5f,
+                        withAnimation = true,
+                        mainText = stringResource(id = R.string.sync_status_anytype_network),
+                        secondaryText = pluralStringResource(
+                            id = R.plurals.sync_status_network_items,
+                            count = syncingObjectsCounter.toInt(),
+                            formatArgs = arrayOf(syncingObjectsCounter.toInt())
+                        )
+                    )
+                }
+
+                SpaceSyncStatus.ERROR -> {
+                    val errorText = getErrorText(error)
+                    CardSettings(
+                        icon = painterResource(R.drawable.ic_sync_net_error),
+                        mainText = stringResource(id = R.string.sync_status_anytype_network),
+                        secondaryText = stringResource(id = errorText)
+                    )
+                }
+
+                SpaceSyncStatus.OFFLINE -> {
+                    CardSettings(
+                        icon = painterResource(R.drawable.ic_sync_net_default),
+                        mainText = stringResource(id = R.string.sync_status_anytype_network),
+                        secondaryText = stringResource(id = R.string.sync_status_anytype_network_no_connecting)
+                    )
+                }
+
+                SpaceSyncStatus.NETWORK_UPDATE_NEEDED -> {
+                    CardSettings(
+                        icon = painterResource(R.drawable.ic_sync_limitations),
+                        mainText = stringResource(id = R.string.sync_status_anytype_network),
+                        secondaryText = stringResource(id = R.string.sync_status_anytype_sync_slow)
+                    )
+                }
             }
         }
 
         SpaceSyncNetwork.SELF_HOST -> {
-            when (syncStatus) {
+
+            if (error != SpaceSyncError.NULL) {
+                return CardSettings(
+                    icon = painterResource(R.drawable.ic_sync_net_error),
+                    mainText = stringResource(id = R.string.sync_status_self_host),
+                    secondaryText = stringResource(id = getErrorText(error))
+                )
+            }
+
+            return when (syncStatus) {
                 SpaceSyncStatus.SYNCED -> {
                     CardSettings(
                         icon = painterResource(R.drawable.ic_sync_self_connected),
@@ -402,8 +426,18 @@ private fun getNetworkCardSettings(
                 }
             }
         }
+
         SpaceSyncNetwork.LOCAL_ONLY -> {
-            CardSettings(
+
+            if (error != SpaceSyncError.NULL) {
+                return CardSettings(
+                    icon = painterResource(R.drawable.ic_sync_net_error),
+                    mainText = stringResource(id = R.string.sync_status_local_only_title),
+                    secondaryText = stringResource(id = getErrorText(error))
+                )
+            }
+
+            return CardSettings(
                 icon = painterResource(R.drawable.ic_sync_local_only),
                 mainText = stringResource(id = R.string.sync_status_local_only_title),
                 secondaryText = stringResource(id = R.string.sync_status_data_backup)

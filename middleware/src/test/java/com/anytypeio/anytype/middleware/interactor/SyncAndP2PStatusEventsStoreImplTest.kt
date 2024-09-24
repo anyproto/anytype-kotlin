@@ -23,7 +23,7 @@ class SyncAndP2PStatusEventsStoreImplTest {
     private val spaceId2 = "spaceId2"
     private val spaceId3 = "spaceId3"
 
-    lateinit var channel: EventHandlerChannelImpl
+    private lateinit var channel: EventHandlerChannelImpl
 
     @Before
     fun setUp() {

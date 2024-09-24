@@ -1498,9 +1498,9 @@
         <item quantity="many">%1$d прылад падключана</item>
         <item quantity="other">%1$d прылад падключана</item>
     </plurals>
-    <string name="sync_status_p2p_connecting">P2P-злучэнне...</string>
-    <string name="sync_status_p2p_disabled">Адключана</string>
+    <string name="sync_status_p2p_disabled">Падключэнне немагчыма</string>
     <string name="sync_status_p2p_restricted">Абмежаваны. Праверце налады прылады.</string>
+    <string name="sync_status_p2p_not_connected">Падлучэнне адсутнічае</string>
     <string name="sync_status_anytype_network">Сетка Anytype</string>
     <string name="sync_status_anytype_end_to_end">Зашыфравана скразным метадам</string>
     <plurals name="sync_status_network_items">

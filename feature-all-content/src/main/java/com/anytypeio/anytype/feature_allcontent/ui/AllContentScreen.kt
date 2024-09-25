@@ -23,6 +23,7 @@ import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
 import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
 import com.anytypeio.anytype.feature_allcontent.R
+import com.anytypeio.anytype.feature_allcontent.models.AllContentMode
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentUiState
 import com.anytypeio.anytype.feature_allcontent.ui.AllContentNavigation.ALL_CONTENT_MAIN
 
@@ -76,8 +77,7 @@ private fun ContentState(uiState: AllContentUiState.Content) {
     LazyColumn(
         modifier = Modifier.fillMaxSize()
     ) {
-        item { AllContentTitle() }
-        item { Text(text = "Number of Items:${uiState.items.size}", style = Title1) }
+        
     }
 }
 

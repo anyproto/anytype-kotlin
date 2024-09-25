@@ -2337,7 +2337,7 @@ class EditorViewModel(
 
     fun onToggleClicked(target: Id) {
         Timber.d("onToggleClicked, target:[$target]")
-        if (mode is EditorMode.Edit || mode is EditorMode.Locked) {
+        if (mode is EditorMode.Edit || mode is EditorMode.Locked || mode is EditorMode.Read) {
             onToggleChanged(target)
             viewModelScope.launch { refresh() }
         }

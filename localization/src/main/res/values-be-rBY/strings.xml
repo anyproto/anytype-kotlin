@@ -885,6 +885,7 @@
     <string name="slash_widget_media_file">Файл</string>
     <string name="slash_widget_media_file_subtitle">Захаваць файл у першапачатковым стане</string>
     <string name="slash_widget_media_picture">Відарыс</string>
+    <string name="slash_widget_media_image">Відарыс</string>
     <string name="slash_widget_media_picture_subtitle">Узбагаціце сваю старонку відарысам</string>
     <string name="slash_widget_media_video">Відэа</string>
     <string name="slash_widget_media_video_subtitle">Запампаваць прайграванае відэа</string>

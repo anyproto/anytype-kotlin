@@ -40,7 +40,7 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:background="@drawable/ic_mime_image" />
 
-        <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
+        <TextView
             android:id="@+id/text"
             style="@style/TextView.ContentStyle.Body.Regular"
             android:layout_width="0dp"

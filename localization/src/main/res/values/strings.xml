@@ -1749,6 +1749,9 @@ Please provide specific details of your needs here.</string>
 
     <string name="all_content_title_all_content">All content</string>
     <string name="all_content_title_only_unlinked">Only unlinked</string>
+    <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
+
+    <string name="all_content_view_bin">View Bin</string>
 
     <string name="all_content_title_tab_objetcs">Objects</string>
     <string name="all_content_title_tab_media">Media</string>
@@ -1756,5 +1759,11 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_title_tab_files">Files</string>
     <string name="all_content_title_tab_objetc_types">Object Types</string>
     <string name="all_content_title_tab_relations">Relations</string>
+    <string name="all_content_sort_by">Sort by</string>
+
+    <string name="all_content_sort_name_desc">Z → A</string>
+    <string name="all_content_sort_name_asc">A → Z</string>
+    <string name="all_content_sort_date_desc">Newest first</string>
+    <string name="all_content_sort_date_asc">Oldest first</string>
 
 </resources>

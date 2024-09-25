@@ -154,7 +154,7 @@ fun HomeScreen(
             visible = mode !is InteractionMode.Edit,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 20.dp),
+                .padding(bottom = 0.dp),
             enter = fadeIn() + slideInVertically { it },
             exit = fadeOut() + slideOutVertically { it }
         ) {
@@ -820,7 +820,7 @@ fun HomeScreenBottomToolbar(
     Row(
         modifier = modifier
             .height(52.dp)
-            .width(216.dp)
+            .width(288.dp)
             .background(
                 shape = RoundedCornerShape(16.dp),
                 color = colorResource(id = R.color.home_screen_button)

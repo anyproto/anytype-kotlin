@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -24,7 +26,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -53,13 +54,8 @@ import com.anytypeio.anytype.ui.library.views.list.items.LibTypeItem
 import com.anytypeio.anytype.ui.library.views.list.items.LibraryObjectEmptyItem
 import com.anytypeio.anytype.ui.library.views.list.items.MyRelationItem
 import com.anytypeio.anytype.ui.library.views.list.items.MyTypeItem
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.PagerState
 
-@OptIn(ExperimentalComposeUiApi::class)
 @ExperimentalAnimationApi
-@ExperimentalPagerApi
 @Composable
 fun LibraryListTabsContent(
     modifier: Modifier,
@@ -82,7 +78,6 @@ fun LibraryListTabsContent(
     HorizontalPager(
         modifier = modifier,
         state = pagerState,
-        count = configuration.size,
         userScrollEnabled = screenState.value == ScreenState.CONTENT
     ) { index ->
         val data = when (configuration[index]) {
@@ -145,7 +140,6 @@ fun LibraryListTabsContent(
     attachAnalytics(pagerState, configuration, vmAnalyticsStream)
 }
 
-@OptIn(ExperimentalPagerApi::class)
 @Composable
 private fun attachAnalytics(
     pagerState: PagerState,

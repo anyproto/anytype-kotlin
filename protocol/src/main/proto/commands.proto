@@ -1592,6 +1592,28 @@ message Rpc {
             }
         }
 
+        message ChatAdd {
+            message Request {
+                string objectId = 1;
+            }
+
+            message Response {
+                Error error = 1;
+                string chatId = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
         message BookmarkFetch {
             message Request {
                 string contextId = 1;
@@ -6405,6 +6427,7 @@ message Rpc {
         message AccountSelectTrace {
             message Request {
                 option (no_auth) = true;
+                string dir = 1; // empty means using OS-provided temp dir
             }
 
             message Response {
@@ -7227,6 +7250,198 @@ message Rpc {
                             BAD_INPUT = 2;
                             INTERNAL_ERROR = 3;
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    message Chat {
+        message AddMessage {
+            message Request {
+                string chatObjectId = 1;
+                model.ChatMessage message = 2;
+            }
+
+            message Response {
+                Error error = 1;
+                string messageId = 2;
+                ResponseEvent event = 3;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+        message EditMessageContent {
+            message Request {
+                string chatObjectId = 1;
+                string messageId = 2;
+                model.ChatMessage editedMessage = 3;
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message ToggleMessageReaction {
+            message Request {
+                string chatObjectId = 1;
+                string messageId = 2;
+                string emoji = 3;
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message DeleteMessage {
+            message Request {
+                string chatObjectId = 1;
+                string messageId = 2;
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message GetMessages {
+            message Request {
+                string chatObjectId = 1;
+                string beforeOrderId = 2; // OrderId of the message before which to get messages
+                int32 limit = 3;
+            }
+
+            message Response {
+                Error error = 1;
+                repeated model.ChatMessage messages = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message GetMessagesByIds {
+            message Request {
+                string chatObjectId = 1;
+                repeated string messageIds = 2;
+            }
+
+            message Response {
+                Error error = 1;
+                repeated model.ChatMessage messages = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message SubscribeLastMessages {
+            message Request {
+                string chatObjectId = 1;  // Identifier for the chat
+                int32 limit = 2;  // Number of max last messages to return and subscribe
+            }
+
+            message Response {
+                Error error = 1;
+                repeated model.ChatMessage messages = 2;  // List of messages
+                int32 numMessagesBefore = 3;  // Number of messages before the returned messages
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message Unsubscribe {
+            message Request {
+                string chatObjectId = 1;  // Identifier for the chat
+            }
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
                     }
                 }
             }

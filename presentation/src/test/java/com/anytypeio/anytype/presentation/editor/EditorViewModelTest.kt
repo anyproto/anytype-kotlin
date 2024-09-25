@@ -366,6 +366,8 @@ open class EditorViewModelTest {
 
     lateinit var vm: EditorViewModel
 
+    lateinit var orchestrator: Orchestrator
+
     private lateinit var builder: UrlBuilder
     private lateinit var downloadUnsplashImage: DownloadUnsplashImage
     private lateinit var setDocCoverImage: SetDocCoverImage
@@ -3083,16 +3085,17 @@ open class EditorViewModelTest {
 
         stubDuplicateBlock(newBlockId, root)
 
-        val focus = vm.focus.test()
-
-        focus.assertValue { id -> id.isEmpty() }
+        assertTrue { orchestrator.stores.focus.current().isEmpty }
 
         vm.onBlockFocusChanged(
             id = paragraph.id,
             hasFocus = true
         )
 
-        focus.assertValue { id -> id == paragraph.id }
+        assertEquals(
+            paragraph.id,
+            orchestrator.stores.focus.current().requireTarget()
+        )
 
         vm.onBlockToolbarBlockActionsClicked()
         vm.onBlockFocusChanged(id = paragraph.id, hasFocus = false)
@@ -3112,7 +3115,10 @@ open class EditorViewModelTest {
 
         verifyNoMoreInteractions(duplicateBlock)
 
-        focus.assertValue { id -> id == newBlockId }
+        assertEquals(
+            newBlockId,
+            orchestrator.stores.focus.current().requireTarget()
+        )
 
         coroutineTestRule.advanceTime(200)
     }
@@ -3862,6 +3868,52 @@ open class EditorViewModelTest {
 
         getObjectTypes = GetObjectTypes(repo, dispatchers)
 
+        orchestrator = Orchestrator(
+            createBlock = createBlock,
+            replaceBlock = replaceBlock,
+            updateTextColor = updateTextColor,
+            duplicateBlock = duplicateBlock,
+            downloadFile = downloadFile,
+            documentFileShareDownloader = documentFileShareDownloader,
+            undo = undo,
+            redo = redo,
+            updateText = updateText,
+            updateCheckbox = updateCheckbox,
+            updateTextStyle = updateTextStyle,
+            updateBackgroundColor = updateBackgroundColor,
+            mergeBlocks = mergeBlocks,
+            uploadBlock = uploadBlock,
+            splitBlock = splitBlock,
+            unlinkBlocks = unlinkBlocks,
+            updateDivider = updateDivider,
+            memory = memory,
+            stores = storage,
+            proxies = proxies,
+            textInteractor = Interactor.TextInteractor(
+                proxies = proxies,
+                stores = storage,
+                matcher = DefaultPatternMatcher()
+            ),
+            updateAlignment = updateAlignment,
+            setupBookmark = setupBookmark,
+            createBookmarkBlock = createBookmarkBlock,
+            paste = paste,
+            copy = copy,
+            move = move,
+            turnIntoDocument = turnIntoDocument,
+            analytics = analytics,
+            updateFields = updateFields,
+            setRelationKey = setRelationKey,
+            turnIntoStyle = turnIntoStyle,
+            updateBlocksMark = updateBlocksMark,
+            createTable = createTable,
+            fillTableRow = fillTableRow,
+            clearBlockContent = clearBlockContent,
+            clearBlockStyle = clearBlockStyle,
+            analyticsSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            spaceManager = spaceManager,
+        )
+
         vm = EditorViewModel(
             openPage = openPage,
             closePage = closePage,
@@ -3879,51 +3931,7 @@ open class EditorViewModelTest {
                 storeOfRelations = storeOfRelations,
                 storeOfObjectTypes = storeOfObjectTypes
             ),
-            orchestrator = Orchestrator(
-                createBlock = createBlock,
-                replaceBlock = replaceBlock,
-                updateTextColor = updateTextColor,
-                duplicateBlock = duplicateBlock,
-                downloadFile = downloadFile,
-                documentFileShareDownloader = documentFileShareDownloader,
-                undo = undo,
-                redo = redo,
-                updateText = updateText,
-                updateCheckbox = updateCheckbox,
-                updateTextStyle = updateTextStyle,
-                updateBackgroundColor = updateBackgroundColor,
-                mergeBlocks = mergeBlocks,
-                uploadBlock = uploadBlock,
-                splitBlock = splitBlock,
-                unlinkBlocks = unlinkBlocks,
-                updateDivider = updateDivider,
-                memory = memory,
-                stores = storage,
-                proxies = proxies,
-                textInteractor = Interactor.TextInteractor(
-                    proxies = proxies,
-                    stores = storage,
-                    matcher = DefaultPatternMatcher()
-                ),
-                updateAlignment = updateAlignment,
-                setupBookmark = setupBookmark,
-                createBookmarkBlock = createBookmarkBlock,
-                paste = paste,
-                copy = copy,
-                move = move,
-                turnIntoDocument = turnIntoDocument,
-                analytics = analytics,
-                updateFields = updateFields,
-                setRelationKey = setRelationKey,
-                turnIntoStyle = turnIntoStyle,
-                updateBlocksMark = updateBlocksMark,
-                createTable = createTable,
-                fillTableRow = fillTableRow,
-                clearBlockContent = clearBlockContent,
-                clearBlockStyle = clearBlockStyle,
-                analyticsSpaceHelperDelegate = analyticSpaceHelperDelegate,
-                spaceManager = spaceManager,
-            ),
+            orchestrator = orchestrator,
             analytics = analytics,
             dispatcher = Dispatcher.Default(),
             delegator = delegator,

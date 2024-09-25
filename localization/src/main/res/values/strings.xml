@@ -1722,9 +1722,9 @@ Please provide specific details of your needs here.</string>
         <item quantity="one">%1$d device connected</item>
         <item quantity="other">%1$d devices connected</item>
     </plurals>
-    <string name="sync_status_p2p_connecting">P2P Connecting...</string>
-    <string name="sync_status_p2p_disabled">Disabled</string>
+    <string name="sync_status_p2p_disabled">Connection not possible</string>
     <string name="sync_status_p2p_restricted">Restricted. Check device settings.</string>
+    <string name="sync_status_p2p_not_connected">Not connected</string>
 
     <string name="sync_status_anytype_network">Anytype Network</string>
     <string name="sync_status_anytype_end_to_end">End-to-end encrypted</string>

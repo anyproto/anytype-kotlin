@@ -694,6 +694,8 @@ fun MOTypeLayout.toCoreModels(): ObjectType.Layout = when (this) {
     MOTypeLayout.relationOptionsList -> ObjectType.Layout.RELATION_OPTION_LIST
     MOTypeLayout.spaceView -> ObjectType.Layout.SPACE_VIEW
     MOTypeLayout.pdf -> ObjectType.Layout.PDF
+    MOTypeLayout.chat -> ObjectType.Layout.CHAT
+    MOTypeLayout.chatDerived -> ObjectType.Layout.CHAT_DERIVED
 }
 
 fun MRelationDataSource.source(): Relation.Source = when (this) {
@@ -1102,6 +1104,7 @@ fun MP2PStatus.toCoreModel(): P2PStatus = when (this) {
     MP2PStatus.NotConnected -> P2PStatus.NOT_CONNECTED
     MP2PStatus.NotPossible -> P2PStatus.NOT_POSSIBLE
     MP2PStatus.Connected -> P2PStatus.CONNECTED
+    MP2PStatus.Restricted -> P2PStatus.RESTRICTED
 }
 
 fun Rpc.History.Version.toCoreModel(): Version {

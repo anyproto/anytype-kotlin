@@ -23,6 +23,8 @@ dependencies {
     testImplementation libs.junit
     testImplementation libs.kotlinTest
     testImplementation libs.mockitoKotlin
+    testImplementation libs.coroutineTesting
+    testImplementation libs.turbine
 }
 
 android {

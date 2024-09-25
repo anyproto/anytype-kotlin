@@ -3,11 +3,15 @@ package com.anytypeio.anytype.ui.library.views
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.LocalRippleConfiguration
+import androidx.compose.material.RippleConfiguration
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.TabRowDefaults
 import androidx.compose.material.Text
-import androidx.compose.material.ripple.LocalRippleTheme
+import androidx.compose.material.ripple.RippleAlpha
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
@@ -15,6 +19,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -26,11 +31,9 @@ import com.anytypeio.anytype.ui.library.LibraryScreenConfig
 import com.anytypeio.anytype.ui.library.ScreenState
 import com.anytypeio.anytype.ui.library.WrapWithLibraryAnimation
 import com.anytypeio.anytype.ui.library.styles.TabTitleStyle
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.PagerState
 import kotlinx.coroutines.launch
 
-@ExperimentalPagerApi
+@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun LibraryTabs(
     modifier: Modifier,
@@ -62,7 +65,7 @@ fun LibraryTabs(
             )
         },
         tabs = {
-            CompositionLocalProvider(LocalRippleTheme provides LibraryTabsTheme) {
+            CompositionLocalProvider(LocalRippleConfiguration provides LibraryRippleTheme) {
                 LibraryTab(
                     modifier = modifier,
                     config = configuration.types,
@@ -92,8 +95,10 @@ fun LibraryTabs(
             }
         }
     )
-
 }
+
+@OptIn(ExperimentalMaterialApi::class)
+private val LibraryRippleTheme = RippleConfiguration(color = Color.Unspecified, rippleAlpha = RippleAlpha(0f, 0f, 0f, 0f))
 
 @Composable
 fun LibraryTab(

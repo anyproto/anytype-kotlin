@@ -151,7 +151,11 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
             )
         }
 
-        vm.focus.test().assertValue(parent.id)
+
+        assertEquals(
+            parent.id,
+            orchestrator.stores.focus.current().requireTarget()
+        )
 
         coroutineTestRule.advanceUntilIdle()
 
@@ -275,7 +279,10 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
 
         coroutineTestRule.advanceUntilIdle()
 
-        vm.focus.test().assertValue(child1.id)
+        assertEquals(
+            child1.id,
+            orchestrator.stores.focus.current().requireTarget()
+        )
         vm.state.test().assertValue(
             ViewState.Success(
                 listOf(
@@ -408,7 +415,10 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
             )
         }
 
-        vm.focus.test().assertValue(child1.id)
+        assertEquals(
+            child1.id,
+            orchestrator.stores.focus.current().requireTarget()
+        )
 
         coroutineTestRule.advanceUntilIdle()
 
@@ -515,7 +525,10 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
             )
         }
 
-        vm.focus.test().assertValue(paragraph.id)
+        assertEquals(
+            paragraph.id,
+            orchestrator.stores.focus.current().requireTarget()
+        )
 
         coroutineTestRule.advanceUntilIdle()
 
@@ -619,7 +632,10 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
             )
         }
 
-        vm.focus.test().assertValue(paragraph.id)
+        assertEquals(
+            paragraph.id,
+            orchestrator.stores.focus.current().requireTarget()
+        )
 
         coroutineTestRule.advanceUntilIdle()
 

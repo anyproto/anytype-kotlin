@@ -3,6 +3,7 @@ package com.anytypeio.anytype.ui.library.views.list
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
@@ -14,11 +15,8 @@ import com.anytypeio.anytype.presentation.library.LibraryScreenState
 import com.anytypeio.anytype.presentation.library.LibraryViewModel
 import com.anytypeio.anytype.ui.library.LibraryListConfig
 import com.anytypeio.anytype.ui.library.ScreenState
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.rememberPagerState
 
 @ExperimentalAnimationApi
-@ExperimentalPagerApi
 @Composable
 fun LibraryListView(
     libraryListConfig: List<LibraryListConfig>,
@@ -28,7 +26,10 @@ fun LibraryListView(
     screenState: MutableState<ScreenState>,
     effects: LibraryViewModel.Effect,
 ) {
-    val pagerState = rememberPagerState(INITIAL_TAB)
+    val pagerState = rememberPagerState(
+        initialPage = INITIAL_TAB,
+        pageCount = { 2 }
+    )
     val modifier = Modifier.background(
         color = colorResource(id = R.color.background_primary)
     )

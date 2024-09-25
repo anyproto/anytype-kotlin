@@ -1,12 +1,11 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.media
 
 import android.text.Spannable
-import android.text.SpannableString
+import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
 import android.view.View
 import android.widget.FrameLayout
-import android.widget.TextView
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
@@ -42,14 +41,13 @@ class File(val binding: ItemBlockFileBinding) : Media(binding.root), Decoratable
 
     fun bind(item: BlockView.Media.File, clicked: (ListenerType) -> Unit) {
         super.bind(item, clicked)
-        name.enableReadMode()
-        if (item.size != null && item.name != null) {
-            val size = item.size!!.readableFileSize()
 
+        if (item.size != null && item.name != null) {
+            val size = item.size?.readableFileSize() ?: ""
             val spannable = if (item.fileExt.isNullOrBlank()) {
-                SpannableString("${item.name}  $size")
+                SpannableStringBuilder("${item.name}  $size")
             } else {
-                SpannableString("${item.name}.${item.fileExt}  $size")
+                SpannableStringBuilder("${item.name}.${item.fileExt}  $size")
             }
             val start = if (item.fileExt.isNullOrBlank()) {
                 item.name!!.length + 2
@@ -73,9 +71,9 @@ class File(val binding: ItemBlockFileBinding) : Media(binding.root), Decoratable
                 end,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
-            name.setText(spannable, TextView.BufferType.SPANNABLE)
+            name.setText(spannable)
         } else {
-            name.setText(item.name, TextView.BufferType.SPANNABLE)
+            name.setText(item.name)
         }
 
         applySearchHighlight(item)
@@ -89,15 +87,16 @@ class File(val binding: ItemBlockFileBinding) : Media(binding.root), Decoratable
     private fun applySearchHighlight(item: BlockView.Searchable) {
         item.searchFields.find { it.key == BlockView.Searchable.Field.DEFAULT_SEARCH_FIELD_KEY }
             ?.let { field ->
-                applySearchHighlight(field, name)
+                applySearchHighlight(field)
             } ?: clearSearchHighlights()
     }
 
-    private fun applySearchHighlight(field: BlockView.Searchable.Field, input: TextView) {
-        input.editableText.removeSpans<SearchHighlightSpan>()
-        input.editableText.removeSpans<SearchTargetHighlightSpan>()
+    private fun applySearchHighlight(field: BlockView.Searchable.Field) {
+        val spannableText = SpannableStringBuilder("${name.text}")
+        spannableText.removeSpans<SearchHighlightSpan>()
+        spannableText.removeSpans<SearchTargetHighlightSpan>()
         field.highlights.forEach { highlight ->
-            input.editableText.setSpan(
+            spannableText.setSpan(
                 SearchHighlightSpan(),
                 highlight.first,
                 highlight.last,
@@ -105,18 +104,21 @@ class File(val binding: ItemBlockFileBinding) : Media(binding.root), Decoratable
             )
         }
         if (field.isTargeted) {
-            input.editableText.setSpan(
+            spannableText.setSpan(
                 SearchTargetHighlightSpan(),
                 field.target.first,
                 field.target.last,
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
             )
         }
+        name.text = spannableText
     }
 
     private fun clearSearchHighlights() {
-        name.editableText.removeSpans<SearchHighlightSpan>()
-        name.editableText.removeSpans<SearchTargetHighlightSpan>()
+        val spannableText = SpannableStringBuilder("${name.text}")
+        spannableText.removeSpans<SearchHighlightSpan>()
+        spannableText.removeSpans<SearchTargetHighlightSpan>()
+        name.text = spannableText
     }
 
     override fun onMediaBlockClicked(item: BlockView.Media, clicked: (ListenerType) -> Unit) {

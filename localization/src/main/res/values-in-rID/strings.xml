@@ -1462,9 +1462,9 @@ Please provide specific details of your needs here.</string>
     <plurals name="sync_status_p2p_devices">
         <item quantity="other">%1$d perangkat terhubung</item>
     </plurals>
-    <string name="sync_status_p2p_connecting">P2P Connecting...</string>
-    <string name="sync_status_p2p_disabled">Nonaktif</string>
+    <string name="sync_status_p2p_disabled">Connection not possible</string>
     <string name="sync_status_p2p_restricted">Restricted. Check device settings.</string>
+    <string name="sync_status_p2p_not_connected">Tidak terhubung</string>
     <string name="sync_status_anytype_network">Jaringan Anytype</string>
     <string name="sync_status_anytype_end_to_end">Terenkripsi end-to-end</string>
     <plurals name="sync_status_network_items">

@@ -14,6 +14,7 @@ object SlashConst {
 
     const val SLASH_MEDIA_FILE = "File"
     const val SLASH_MEDIA_PICTURE = "Picture"
+    const val SLASH_MEDIA_IMAGE = "Image"
     const val SLASH_MEDIA_VIDEO = "Video"
     const val SLASH_MEDIA_BOOKMARK = "Bookmark"
     const val SLASH_MEDIA_CODE = "Code"

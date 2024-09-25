@@ -30,7 +30,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
@@ -85,13 +84,13 @@ fun AllContentMenu(
                             .clickable {
                                 sortingExpanded = !sortingExpanded
                             },
-                        subtitle = item.sort.text()
+                        subtitle = item.sort.title()
                     )
                 }
 
                 is MenuSortsItem.Sort -> {
                     MenuItem(
-                        title = item.sort.text(),
+                        title = item.sort.title(),
                         isSelected = item.sort.isSelected,
                         modifier = Modifier
                             .animateItem()
@@ -107,7 +106,7 @@ fun AllContentMenu(
 
                 is MenuSortsItem.SortType -> {
                     MenuItem(
-                        title = GetSortTypeName(item.sort, item.sortType),
+                        title = item.sortType.title(item.sort),
                         isSelected = item.isSelected,
                         modifier = Modifier
                             .animateItem()
@@ -118,33 +117,6 @@ fun AllContentMenu(
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun GetSortTypeName(sort: AllContentSort, type: DVSortType): String {
-    return when (type) {
-        Block.Content.DataView.Sort.Type.ASC -> {
-            when (sort) {
-                is AllContentSort.ByDateCreated, is AllContentSort.ByDateUpdated -> stringResource(
-                    id = R.string.all_content_sort_date_asc
-                )
-
-                is AllContentSort.ByName -> stringResource(id = R.string.all_content_sort_name_asc)
-            }
-        }
-
-        Block.Content.DataView.Sort.Type.DESC -> {
-            when (sort) {
-                is AllContentSort.ByDateCreated, is AllContentSort.ByDateUpdated -> stringResource(
-                    id = R.string.all_content_sort_date_desc
-                )
-
-                is AllContentSort.ByName -> stringResource(id = R.string.all_content_sort_name_desc)
-            }
-        }
-
-        Block.Content.DataView.Sort.Type.CUSTOM -> ""
     }
 }
 
@@ -211,14 +183,49 @@ private fun LazyItemScope.MenuItem(modifier: Modifier, title: String, isSelected
     }
 }
 
+//region RESOURCES
 @Composable
-private fun getModeTitle(mode: AllContentMode): String {
-    return when (mode) {
-        is AllContentMode.AllContent -> stringResource(id = R.string.all_content_title_all_content)
-        is AllContentMode.Unlinked -> stringResource(id = R.string.all_content_title_only_unlinked)
+private fun getModeTitle(mode: AllContentMode): String = stringResource(
+    when (mode) {
+        is AllContentMode.AllContent -> R.string.all_content_title_all_content
+        is AllContentMode.Unlinked -> R.string.all_content_title_only_unlinked
     }
-}
+)
 
+@Composable
+private fun AllContentSort.title(): String = stringResource(
+    when (this) {
+        is AllContentSort.ByDateCreated -> R.string.all_content_sort_date_created
+        is AllContentSort.ByDateUpdated -> R.string.all_content_sort_date_updated
+        is AllContentSort.ByName -> R.string.all_content_sort_name
+    }
+)
+
+@Composable
+private fun DVSortType.title(sort: AllContentSort): String = when (this) {
+    DVSortType.ASC -> {
+        when (sort) {
+            is AllContentSort.ByDateCreated, is AllContentSort.ByDateUpdated -> stringResource(
+                id = R.string.all_content_sort_date_asc
+            )
+
+            is AllContentSort.ByName -> stringResource(id = R.string.all_content_sort_name_asc)
+        }
+    }
+    DVSortType.DESC -> {
+        when (sort) {
+            is AllContentSort.ByDateCreated, is AllContentSort.ByDateUpdated -> stringResource(
+                id = R.string.all_content_sort_date_desc
+            )
+
+            is AllContentSort.ByName -> stringResource(id = R.string.all_content_sort_name_desc)
+        }
+    }
+    DVSortType.CUSTOM -> ""
+}
+//endregion
+
+//region PREVIEW
 @DefaultPreviews
 @Composable
 fun AllContentMenuPreview() {
@@ -257,3 +264,4 @@ fun AllContentMenuPreview() {
         )
     )
 }
+//endregion

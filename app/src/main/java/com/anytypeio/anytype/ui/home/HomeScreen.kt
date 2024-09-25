@@ -830,7 +830,7 @@ fun HomeScreenBottomToolbar(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxSize()
-                .noRippleClickable { onSearchClicked() }
+                .noRippleClickable { onVaultClicked() }
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_nav_panel_back),

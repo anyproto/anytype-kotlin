@@ -881,6 +881,7 @@
     <string name="slash_widget_media_file">Bestand</string>
     <string name="slash_widget_media_file_subtitle">Sla bestand op in oorspronkelijke staat</string>
     <string name="slash_widget_media_picture">Afbeelding</string>
+    <string name="slash_widget_media_image">Afbeelding</string>
     <string name="slash_widget_media_picture_subtitle">Verrijk je pagina met een afbeelding</string>
     <string name="slash_widget_media_video">Video</string>
     <string name="slash_widget_media_video_subtitle">Upload afspeelbare video</string>

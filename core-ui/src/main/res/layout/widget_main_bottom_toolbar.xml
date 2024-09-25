@@ -39,6 +39,7 @@
     <FrameLayout
         android:id="@+id/btnSearch"
         android:layout_width="0dp"
+        android:visibility="visible"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:background="@drawable/default_ripple">

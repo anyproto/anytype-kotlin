@@ -4186,7 +4186,7 @@ class EditorViewModel(
 
     fun onObjectIconClicked() {
         Timber.d("onPageIconClicked, ")
-        if (mode == EditorMode.Locked) {
+        if (mode == EditorMode.Locked || mode == EditorMode.Read) {
             sendToast("Unlock your object to change its icon")
             return
         }

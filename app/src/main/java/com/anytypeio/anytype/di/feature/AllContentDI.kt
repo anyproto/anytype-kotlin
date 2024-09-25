@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.domain.all_content.RestoreAllContentState
+import com.anytypeio.anytype.domain.all_content.UpdateAllContentState
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
@@ -61,6 +63,28 @@ object AllContentModule {
         channel = channel,
         dispatchers = dispatchers,
         logger = logger
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideUpdateAllContentState(
+        dispatchers: AppCoroutineDispatchers,
+        userSettingsRepository: UserSettingsRepository
+    ): UpdateAllContentState = UpdateAllContentState(
+        dispatchers = dispatchers,
+        settings = userSettingsRepository
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideRestoreAllContentState(
+        dispatchers: AppCoroutineDispatchers,
+        userSettingsRepository: UserSettingsRepository
+    ): RestoreAllContentState = RestoreAllContentState(
+        dispatchers = dispatchers,
+        settings = userSettingsRepository
     )
 
     @Module

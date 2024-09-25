@@ -5,11 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.domain.all_content.RestoreAllContentState
+import com.anytypeio.anytype.domain.all_content.UpdateAllContentState
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.feature_allcontent.models.AllContentMode
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel.Companion.DEFAULT_DEBOUNCE_DURATION
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -46,7 +49,9 @@ class AllContentViewModel(
     private val urlBuilder: UrlBuilder,
     private val analytics: Analytics,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    @Named("AllContent") private val storelessSubscriptionContainer: StorelessSubscriptionContainer
+    @Named("AllContent") private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
+    private val updateAllContentState: UpdateAllContentState,
+    private val restoreAllContentState: RestoreAllContentState
 ) : ViewModel() {
 
     val data: StateFlow<String> = MutableStateFlow("")

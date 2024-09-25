@@ -881,6 +881,7 @@
     <string name="slash_widget_media_file">Datei</string>
     <string name="slash_widget_media_file_subtitle">Datei im Originalzustand speichern</string>
     <string name="slash_widget_media_picture">Bild</string>
+    <string name="slash_widget_media_image">Bild</string>
     <string name="slash_widget_media_picture_subtitle">Seite mit einem Bild bereichern</string>
     <string name="slash_widget_media_video">Video</string>
     <string name="slash_widget_media_video_subtitle">Video hochladen</string>

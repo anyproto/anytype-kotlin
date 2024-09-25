@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -51,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.core_models.primitives.TimeInSeconds
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Header
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
@@ -464,18 +464,7 @@ private fun SpaceListScreenPreview() {
 
 const val MEMBERS_ICONS_MAX_SIZE = 3
 
-@Preview(
-    showBackground = true,
-    backgroundColor = 0xFFFFFF,
-    uiMode = Configuration.UI_MODE_NIGHT_NO,
-    name = "Light Mode"
-)
-@Preview(
-    showBackground = true,
-    backgroundColor = 0x000000,
-    uiMode = Configuration.UI_MODE_NIGHT_YES,
-    name = "Dark Mode"
-)
+@DefaultPreviews
 @Composable
 private fun SpaceListScreenPreviewLoading() {
     VersionHistoryMainScreen(

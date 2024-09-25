@@ -1,7 +1,5 @@
 package com.anytypeio.anytype.ui.search
 
-import android.content.res.Configuration.UI_MODE_NIGHT_NO
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -69,7 +67,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.TextUnit
@@ -79,6 +76,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
@@ -781,16 +779,7 @@ fun GlobalSearchObjectIcon(
     }
 }
 
-@Preview(
-    name = "Dark Mode",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    name = "Light Mode",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@DefaultPreviews
 @Composable
 private fun DefaultGlobalSearchItemViewPreview() {
     GlobalSearchItem(
@@ -809,16 +798,7 @@ private fun DefaultGlobalSearchItemViewPreview() {
     )
 }
 
-@Preview(
-    name = "Dark Mode",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    name = "Light Mode",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@DefaultPreviews
 @Composable
 private fun DefaultGlobalSearchItemViewWithLongTitlePreview() {
     GlobalSearchItem(
@@ -837,16 +817,7 @@ private fun DefaultGlobalSearchItemViewWithLongTitlePreview() {
     )
 }
 
-@Preview(
-    name = "Dark Mode",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    name = "Light Mode",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@DefaultPreviews
 @Composable
 private fun DefaultGlobalSearchItemViewWithBlockMetaPreview() {
     GlobalSearchItem(
@@ -868,16 +839,7 @@ private fun DefaultGlobalSearchItemViewWithBlockMetaPreview() {
     )
 }
 
-@Preview(
-    name = "Dark Mode",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    name = "Light Mode",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@DefaultPreviews
 @Composable
 private fun DefaultGlobalSearchItemViewBlockTwoHighlightsMetaPreview() {
     GlobalSearchItem(
@@ -902,16 +864,7 @@ private fun DefaultGlobalSearchItemViewBlockTwoHighlightsMetaPreview() {
     )
 }
 
-@Preview(
-    name = "Dark Mode",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    name = "Light Mode",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@DefaultPreviews
 @Composable
 private fun DefaultGlobalSearchItemViewRelationTwoHighlightsMetaPreview() {
     GlobalSearchItem(
@@ -937,16 +890,7 @@ private fun DefaultGlobalSearchItemViewRelationTwoHighlightsMetaPreview() {
     )
 }
 
-@Preview(
-    name = "Dark Mode",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    name = "Light Mode",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@DefaultPreviews
 @Composable
 private fun DefaultGlobalSearchItemViewTagRelationPreview() {
     GlobalSearchItem(
@@ -969,16 +913,7 @@ private fun DefaultGlobalSearchItemViewTagRelationPreview() {
     )
 }
 
-@Preview(
-    name = "Dark Mode",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    name = "Light Mode",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@DefaultPreviews
 @Composable
 private fun DefaultGlobalSearchItemViewStatusRelationPreview() {
     GlobalSearchItem(
@@ -1001,16 +936,7 @@ private fun DefaultGlobalSearchItemViewStatusRelationPreview() {
     )
 }
 
-@Preview(
-    name = "Dark Mode",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    name = "Light Mode",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@DefaultPreviews
 @Composable
 private fun DefaultGlobalSearchItemViewStatusRelationScreenPreview() {
 
@@ -1090,16 +1016,7 @@ private fun DefaultGlobalSearchItemViewStatusRelationScreenPreview() {
     )
 }
 
-@Preview(
-    name = "Dark Mode",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    name = "Light Mode",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@DefaultPreviews
 @Composable
 private fun DefaultGlobalSearchItemViewWithRelatedScreenPreview() {
     GlobalSearchScreen(
@@ -1187,16 +1104,7 @@ private fun DefaultGlobalSearchItemViewWithRelatedScreenPreview() {
     )
 }
 
-@Preview(
-    name = "Dark Mode",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_YES
-)
-@Preview(
-    name = "Light Mode",
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
+@DefaultPreviews
 @Composable
 private fun DefaultGlobalSearchEmptyStatePreview() {
     GlobalSearchScreen(

@@ -2337,7 +2337,7 @@ class EditorViewModel(
 
     fun onToggleClicked(target: Id) {
         Timber.d("onToggleClicked, target:[$target]")
-        if (mode is EditorMode.Edit || mode is EditorMode.Locked) {
+        if (mode is EditorMode.Edit || mode is EditorMode.Locked || mode is EditorMode.Read) {
             onToggleChanged(target)
             viewModelScope.launch { refresh() }
         }
@@ -4186,7 +4186,7 @@ class EditorViewModel(
 
     fun onObjectIconClicked() {
         Timber.d("onPageIconClicked, ")
-        if (mode == EditorMode.Locked) {
+        if (mode == EditorMode.Locked || mode == EditorMode.Read) {
             sendToast("Unlock your object to change its icon")
             return
         }

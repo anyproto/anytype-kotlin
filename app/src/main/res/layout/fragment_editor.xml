@@ -145,17 +145,17 @@
     <FrameLayout
         android:id="@+id/bottomToolbarContainer"
         android:layout_width="match_parent"
-        android:layout_height="52dp"
+        android:layout_height="@dimen/default_nav_panel_height"
         android:layout_gravity="bottom"
         android:background="@color/defaultCanvasColor"
         android:clickable="true"
         android:focusable="true"
-        android:visibility="visible"
+        android:visibility="invisible"
         app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
         tools:visibility="visible">
         <com.anytypeio.anytype.core_ui.widgets.toolbar.MainBottomToolbar
             android:id="@+id/bottomToolbar"
-            android:layout_width="288dp"
+            android:layout_width="@dimen/default_nav_panel_width"
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:background="@color/defaultCanvasColor"

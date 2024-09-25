@@ -1581,10 +1581,10 @@ class ObjectSetViewModel(
         viewModelScope.launch {
             clearLastOpenedObject(ClearLastOpenedObject.Params(vmParams.space))
             closeBlock.async(context).fold(
-                onSuccess = { dispatch(AppNavigation.Command.ExitToDesktop) },
+                onSuccess = { dispatch(AppNavigation.Command.ExitToVault) },
                 onFailure = {
                     Timber.e(it, "Error while closing object set: $context").also {
-                        dispatch(AppNavigation.Command.ExitToDesktop)
+                        dispatch(AppNavigation.Command.ExitToVault)
                     }
                 }
             )

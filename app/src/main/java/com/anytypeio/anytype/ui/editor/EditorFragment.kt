@@ -1416,9 +1416,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         if (state.navigationToolbar.isVisible) {
             binding.placeholder.requestFocus()
             binding.placeholder.hideKeyboard()
-            binding.bottomToolbar.visible()
+            binding.bottomToolbarContainer.visible()
         } else {
-            binding.bottomToolbar.gone()
+            binding.bottomToolbarContainer.gone()
         }
 
         if (state.mainToolbar.isVisible) {

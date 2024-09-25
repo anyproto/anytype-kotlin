@@ -19,6 +19,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridHeaderAdapter
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
 import com.anytypeio.anytype.core_ui.features.editor.DragAndDropAdapterDelegate
 import com.anytypeio.anytype.core_ui.features.history.VersionHistoryPreviewScreen
@@ -71,6 +72,7 @@ class VersionHistoryFragment : BaseBottomSheetComposeFragment() {
             vm.proceedWithClick(it)
         }
     )
+    private val viewerGridHeaderAdapter by lazy { ViewerGridHeaderAdapter() }
 
     @OptIn(ExperimentalMaterialNavigationApi::class)
     override fun onCreateView(
@@ -120,7 +122,8 @@ class VersionHistoryFragment : BaseBottomSheetComposeFragment() {
                     state = vm.previewViewState.collectAsStateWithLifecycle().value,
                     editorAdapter = editorAdapter,
                     onDismiss = vm::proceedWithHidePreview,
-                    onRestore = vm::proceedWithRestore
+                    onRestore = vm::proceedWithRestore,
+                    gridAdapter = viewerGridHeaderAdapter
                 )
             }
         }

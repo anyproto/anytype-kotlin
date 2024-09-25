@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.presentation.editor
 
 import android.net.Uri
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
@@ -98,7 +97,6 @@ import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
-import com.anytypeio.anytype.domain.search.GetLastSearchQuery
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.templates.ApplyTemplate
@@ -332,8 +330,7 @@ class EditorViewModel(
     private val getNetworkMode: GetNetworkMode,
     private val clearLastOpenedObject: ClearLastOpenedObject,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
-    private val getLastSearchQuery: GetLastSearchQuery
+    private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -398,9 +395,6 @@ class EditorViewModel(
      * Current document
      */
     val blocks: Document get() = orchestrator.stores.document.get()
-
-    private val _focus: MutableLiveData<Id> = MutableLiveData()
-    val focus: LiveData<Id> = _focus
 
     private val _toasts = MutableSharedFlow<String>()
     val toasts: SharedFlow<String> = _toasts
@@ -571,7 +565,6 @@ class EditorViewModel(
                         }
                     }
                 }
-                _focus.postValue(focus.targetOrNull().orEmpty())
             }
         }
     }
@@ -1051,10 +1044,10 @@ class EditorViewModel(
                 .map { events -> processEvents(events) }
                 .collect { flags ->
                     if (flags.contains(Flags.FLAG_REFRESH)) {
-                        Timber.d("Starting refresh due external payload update")
+                        Timber.d("EDITOR REFRESH, ----------Starting refresh due external payload update!--------")
                         refresh()
                     } else
-                        Timber.d("----------Refresh skipped----------")
+                        Timber.d("EDITOR REFRESH, ----------Refresh skipped----------")
                 }
         }
 
@@ -3646,19 +3639,27 @@ class EditorViewModel(
     }
 
     fun onCopy(range: IntRange?) {
-        Timber.d("onCopy, ")
+        Timber.d("onCopy, range:[$range]")
         viewModelScope.launch {
-            val target = blocks.find { it.id == focus.value }
-            if (target != null) {
-                orchestrator.proxies.intents.send(
-                    Intent.Clipboard.Copy(
-                        context = context,
-                        range = range,
-                        blocks = listOf(target)
+            val focus = orchestrator.stores.focus.current()
+            if (!focus.isEmpty) {
+                val target = focus.requireTarget()
+                val block = blocks.find { it.id == target }
+                if (block != null) {
+                    orchestrator.proxies.intents.send(
+                        Intent.Clipboard.Copy(
+                            context = context,
+                            range = range,
+                            blocks = listOf(block)
+                        )
                     )
-                )
+                } else {
+                    Timber.e("Error while copying: target not found").also {
+                        sendToast("Something went wrong. Please try again.")
+                    }
+                }
             } else {
-                Timber.e("Error while copying: target not found").also {
+                Timber.e("Error while copying: focus is empty").also {
                     sendToast("Something went wrong. Please try again.")
                 }
             }
@@ -4305,29 +4306,12 @@ class EditorViewModel(
         )
 
         viewModelScope.launch {
-            val params = GetLastSearchQuery.Params(space = vmParams.space)
-            getLastSearchQuery.async(params).fold(
-                onSuccess = { query ->
-                    navigation.postValue(
-                        EventWrapper(
-                            AppNavigation.Command.OpenPageSearch(
-                                initialQuery = query,
-                                space = vmParams.space.id
-                            )
-                        )
+            navigation.postValue(
+                EventWrapper(
+                    AppNavigation.Command.OpenGlobalSearch(
+                        space = vmParams.space.id
                     )
-                },
-                onFailure = {
-                    Timber.e(it, "Error while getting last search query")
-                    navigation.postValue(
-                        EventWrapper(
-                            AppNavigation.Command.OpenPageSearch(
-                                initialQuery = "",
-                                space = vmParams.space.id
-                            )
-                        )
-                    )
-                }
+                )
             )
         }
     }
@@ -6048,7 +6032,20 @@ class EditorViewModel(
 
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.Mentions.OnMentionClicked)
 
-        val target = blocks.find { it.id == focus.value }
+        val focus = orchestrator.stores.focus.current()
+        val focusedBlockId = if (!focus.isEmpty) {
+            focus.requireTarget()
+        } else {
+            null
+        }
+
+        if (focusedBlockId == null) {
+            sendToast("Error while creating mention, focused block is null")
+            Timber.e("Error while creating mention, focused block is null")
+            return
+        }
+
+        val target = blocks.find { it.id == focusedBlockId }
 
         if (target == null) {
             sendToast("Error while creating mention, target block is null")
@@ -7412,6 +7409,10 @@ class EditorViewModel(
 
     fun onSyncWidgetDismiss() {
         syncStatusWidget.value = SyncStatusWidgetState.Hidden
+    }
+
+    fun onUpdateAppClick() {
+        dispatch(command = Command.OpenAppStore)
     }
     //endregion
 

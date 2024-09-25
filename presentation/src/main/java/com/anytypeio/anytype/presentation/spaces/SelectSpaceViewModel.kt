@@ -144,9 +144,14 @@ class SelectSpaceViewModel(
                         add(SelectSpaceView.Create)
                     }
                 }
-            }.collect { results ->
-                views.value = results
             }
+                .catch {
+                    Timber.e(it, "Error in building UI for select space screen")
+                    emit(emptyList())
+                }
+                .collect { results ->
+                    views.value = results
+                }
         }
     }
 

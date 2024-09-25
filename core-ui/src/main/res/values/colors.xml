@@ -248,4 +248,6 @@
 
     <color name="object_number_background">#F2F2F2</color>
 
+    <color name="object_search_cursor_color">#007AFF</color>
+
 </resources>

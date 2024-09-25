@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
+import com.anytypeio.anytype.core_models.GlobalSearchHistory
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NO_VALUE
 import com.anytypeio.anytype.core_models.ThemeMode
@@ -12,6 +13,7 @@ import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.data.auth.repo.UserSettingsCache
+import com.anytypeio.anytype.persistence.GlobalSearchHistoryProto
 import com.anytypeio.anytype.persistence.SpacePreference
 import com.anytypeio.anytype.persistence.SpacePreferences
 import com.anytypeio.anytype.persistence.common.JsonString
@@ -49,6 +51,12 @@ class DefaultUserSettingsCache(
             null
         else
             SpaceId(value)
+    }
+
+    override suspend fun clearCurrentSpace() {
+        prefs.edit()
+            .putString(CURRENT_SPACE_KEY, "")
+            .apply()
     }
 
     override suspend fun setDefaultObjectType(space: SpaceId, type: TypeId) {
@@ -312,7 +320,7 @@ class DefaultUserSettingsCache(
         }
     }
 
-    override suspend fun setLastSearchQuery(query: String, space: SpaceId) {
+    override suspend fun setGlobalSearchHistory(globalSearchHistory: GlobalSearchHistory, space: SpaceId) {
         context.spacePrefsStore.updateData { existingPreferences ->
             val givenSpacePreference = existingPreferences
                 .preferences
@@ -321,7 +329,10 @@ class DefaultUserSettingsCache(
                     defaultValue = SpacePreference()
                 )
             val updated = givenSpacePreference.copy(
-                lastSearchQuery = query
+                globalSearchHistory = GlobalSearchHistoryProto(
+                    lastSearchQuery = globalSearchHistory.query,
+                    lastSearchRelatedObjectId = globalSearchHistory.relatedObject
+                )
             )
             val result = buildMap {
                 putAll(existingPreferences.preferences)
@@ -331,24 +342,33 @@ class DefaultUserSettingsCache(
         }
     }
 
-    override suspend fun getLastSearchQuery(space: SpaceId): String {
+    override suspend fun getGlobalSearchHistory(space: SpaceId): GlobalSearchHistory? {
         return context.spacePrefsStore
             .data
             .map { preferences ->
-                preferences
+                val result = preferences
                     .preferences[space.id]
-                    ?.lastSearchQuery.orEmpty()
+                    ?.globalSearchHistory
+
+                if (result == null)  {
+                    return@map null
+                } else {
+                    GlobalSearchHistory(
+                        query = result.lastSearchQuery.orEmpty(),
+                        relatedObject = result.lastSearchRelatedObjectId
+                    )
+                }
             }
             .first()
     }
 
-    override suspend fun clearLastSearchQuery(space: SpaceId) {
+    override suspend fun clearGlobalSearchHistory(space: SpaceId) {
         context.spacePrefsStore.updateData { existingPreferences ->
             val givenSpacePreference = existingPreferences
                 .preferences
                 .getOrDefault(key = space.id, defaultValue = SpacePreference())
             val updated = givenSpacePreference.copy(
-                lastSearchQuery  = null
+                globalSearchHistory  = null
             )
             val result = buildMap {
                 putAll(existingPreferences.preferences)

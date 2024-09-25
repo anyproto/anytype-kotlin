@@ -270,10 +270,10 @@
     <string name="sync_status_toast_unknown">Инициализация синхронизации</string>
     <string name="sync_status_toast_offline">Узел Anytype не подключен</string>
     <string name="sync_status_toast_syncing">Загрузка или выгрузка данных в узел</string>
-    <string name="sync_status_toast_synced">Резервное копирование в сети Anytype</string>
-    <string name="sync_status_toast_synced_staging">Резервное копирование в сети Anytype</string>
+    <string name="sync_status_toast_synced">Синхронизировано с сетью Anytype</string>
+    <string name="sync_status_toast_synced_staging">Синхронизировано с сетью Anytype (Staging)</string>
     <string name="sync_status_toast_synced_local">Только локально</string>
-    <string name="sync_status_toast_synced_self_hosted">Резервное копирование в вашей сети</string>
+    <string name="sync_status_toast_synced_self_hosted">Синхронизировано с вашей сетью</string>
     <string name="sync_status_toast_failed">Не удалось синхронизироваться, попробуйте еще раз</string>
     <string name="sync_status_toast_incompatible">Версия устарела. Пожалуйста, обновите Anytype</string>
     <string name="relation_format_description">Описание</string>
@@ -1346,7 +1346,7 @@
     <!-- Membership Welcome -->
     <string name="payments_welcome_title">Добро пожаловать в сеть,\n%1$s</string>
     <string name="payments_welcome_subtitle">Большое спасибо за Ваше любопытство!</string>
-    <string name="payments_welcome_button">Далее</string>
+    <string name="payments_welcome_button">Продолжить</string>
     <!-- Membership Email -->
     <string name="membership_support_email">support@anytype.io</string>
     <string name="membership_support_subject">Отчет об ошибке на экране членства - %1$s</string>
@@ -1501,9 +1501,9 @@
         <item quantity="many">%1$d устройств подключено</item>
         <item quantity="other">%1$d устройств подключено</item>
     </plurals>
-    <string name="sync_status_p2p_connecting">Соединение P2P...</string>
-    <string name="sync_status_p2p_disabled">Отключено</string>
+    <string name="sync_status_p2p_disabled">Соединение невозможно</string>
     <string name="sync_status_p2p_restricted">Есть ограничения. Проверьте настройки устройства.</string>
+    <string name="sync_status_p2p_not_connected">Не подключено</string>
     <string name="sync_status_anytype_network">Сеть Anytype</string>
     <string name="sync_status_anytype_end_to_end">Сквозное шифрование</string>
     <plurals name="sync_status_network_items">
@@ -1514,6 +1514,7 @@
     </plurals>
     <string name="sync_status_anytype_network_connecting">Сетевое подключение...</string>
     <string name="sync_status_anytype_network_no_connecting">Нет соединения</string>
+    <string name="sync_status_anytype_sync_slow">Синхронизация может быть медленной. Обновите приложение.</string>
     <string name="sync_status_storage_limit_exceed">Достигнут предел хранилища.</string>
     <string name="sync_status_incompatible_version">Несовместимая версия</string>
     <string name="sync_status_network_error">Нет доступа к пространству</string>

@@ -5,7 +5,6 @@ import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
@@ -15,8 +14,8 @@ import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.misc.LocaleProvider
-import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
-import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.page.CreateObjectByTypeAndTemplate
+import com.anytypeio.anytype.domain.spaces.GetLastOpenedSpace
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -65,12 +64,7 @@ class SplashViewModelTest {
     private lateinit var getLastOpenedObject: GetLastOpenedObject
 
     @Mock
-    lateinit var createObject: CreateObject
-
-    @Mock
     lateinit var globalSubscriptionManager: GlobalSubscriptionManager
-
-    @Mock lateinit var featureToggles: FeatureToggles
 
     @Mock
     private lateinit var crashReporter: CrashReporter
@@ -82,14 +76,17 @@ class SplashViewModelTest {
     lateinit var spaceManager: SpaceManager
 
     @Mock
-    lateinit var userPermissionProvider: UserPermissionProvider
+    lateinit var analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
 
     @Mock
-    lateinit var analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    lateinit var getLastOpenedSpace: GetLastOpenedSpace
+
+    @Mock
+    lateinit var createObjectByTypeAndTemplate: CreateObjectByTypeAndTemplate
 
     lateinit var vm: SplashViewModel
 
-    val defaultSpaceConfig = StubConfig()
+    private val defaultSpaceConfig = StubConfig()
 
     @Before
     fun setup() {
@@ -109,12 +106,13 @@ class SplashViewModelTest {
             launchWallet = launchWallet,
             analytics = analytics,
             getLastOpenedObject = getLastOpenedObject,
-            createObject = createObject,
             crashReporter = crashReporter,
             localeProvider = localeProvider,
             spaceManager = spaceManager,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-            globalSubscriptionManager = globalSubscriptionManager
+            globalSubscriptionManager = globalSubscriptionManager,
+            getLastOpenedSpace = getLastOpenedSpace,
+            createObjectByTypeAndTemplate = createObjectByTypeAndTemplate
         )
     }
 

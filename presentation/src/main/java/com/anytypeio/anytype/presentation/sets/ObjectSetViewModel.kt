@@ -57,7 +57,6 @@ import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.DataViewState
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
-import com.anytypeio.anytype.domain.search.GetLastSearchQuery
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.templates.CreateTemplate
@@ -109,7 +108,6 @@ import com.anytypeio.anytype.presentation.templates.TemplateView
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUI
 import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUIAction
-import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command
 import com.anytypeio.anytype.presentation.widgets.enterEditing
 import com.anytypeio.anytype.presentation.widgets.exitEditing
 import com.anytypeio.anytype.presentation.widgets.hideMoreMenu
@@ -182,7 +180,6 @@ class ObjectSetViewModel(
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val clearLastOpenedObject: ClearLastOpenedObject,
-    private val getLastSearchQuery: GetLastSearchQuery
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>,
     ViewerDelegate by viewerDelegate,
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate
@@ -370,7 +367,8 @@ class ObjectSetViewModel(
                         )
                         viewerLayoutWidgetState.value = viewerLayoutWidgetState.value.updateState(
                             viewer = pair.first,
-                            storeOfRelations = storeOfRelations
+                            storeOfRelations = storeOfRelations,
+                            relationLinks = dataView.dataViewContent.relationLinks
                         )
                     } else {
                         viewerEditWidgetState.value = ViewerEditWidgetUi.Init
@@ -1655,25 +1653,10 @@ class ObjectSetViewModel(
             props = Props(mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.navigation))
         )
         viewModelScope.launch {
-            val params = GetLastSearchQuery.Params(space = vmParams.space)
-            getLastSearchQuery.async(params).fold(
-                onSuccess = { query ->
-                    dispatch(
-                        AppNavigation.Command.OpenPageSearch(
-                            initialQuery = query,
-                            space = vmParams.space.id
-                        )
-                    )
-                },
-                onFailure = {
-                    Timber.e(it, "Error while getting last search query")
-                    dispatch(
-                        AppNavigation.Command.OpenPageSearch(
-                            initialQuery = "",
-                            space = vmParams.space.id
-                        )
-                    )
-                }
+            dispatch(
+                AppNavigation.Command.OpenGlobalSearch(
+                    space = vmParams.space.id
+                )
             )
         }
     }
@@ -2072,6 +2055,9 @@ class ObjectSetViewModel(
 
                         is TypeTemplatesWidgetUI.Init -> emptyList()
                     }
+                }
+                .catch {
+                    Timber.e(it, "Error while processing templates")
                 }
                 .collect{ templateViews ->
                     typeTemplatesWidgetState.value =
@@ -2774,22 +2760,39 @@ class ObjectSetViewModel(
                     }
                 }
             }
-            is ViewerLayoutWidgetUi.Action.Cover -> {
-                when (action.cover) {
-                    ViewerLayoutWidgetUi.State.ImagePreview.Cover -> {
-                        proceedWithUpdateViewer(
-                            viewerId = viewerLayoutWidgetState.value.viewer
-                        ) { it.copy(coverRelationKey = Relations.PAGE_COVER) }
+            is ViewerLayoutWidgetUi.Action.ImagePreviewUpdate -> {
+                when (action.item) {
+                    is ViewerLayoutWidgetUi.State.ImagePreview.PageCover -> {
+                        val itemIsChecked = action.item.isChecked
+                        if (!itemIsChecked) {
+                            proceedWithUpdateViewer(
+                                viewerId = viewerLayoutWidgetState.value.viewer
+                            ) { it.copy(coverRelationKey = action.item.relationKey.key) }
+                        } else {
+                            Timber.i("Page cover is already set")
+                        }
                     }
+
                     is ViewerLayoutWidgetUi.State.ImagePreview.Custom -> {
-                        proceedWithUpdateViewer(
-                            viewerId = viewerLayoutWidgetState.value.viewer
-                        ) { it.copy(coverRelationKey = action.cover.name) }
+                        val itemIsChecked = action.item.isChecked
+                        if (!itemIsChecked) {
+                            proceedWithUpdateViewer(
+                                viewerId = viewerLayoutWidgetState.value.viewer
+                            ) { it.copy(coverRelationKey = action.item.relationKey.key) }
+                        } else {
+                            Timber.i("Custom cover [${action.item.relationKey.key}] is already set")
+                        }
                     }
-                    ViewerLayoutWidgetUi.State.ImagePreview.None -> {
-                        proceedWithUpdateViewer(
-                            viewerId = viewerLayoutWidgetState.value.viewer
-                        ) { it.copy(coverRelationKey = null) }
+
+                    is ViewerLayoutWidgetUi.State.ImagePreview.None -> {
+                        val itemIsChecked = action.item.isChecked
+                        if (!itemIsChecked) {
+                            proceedWithUpdateViewer(
+                                viewerId = viewerLayoutWidgetState.value.viewer
+                            ) { it.copy(coverRelationKey = null) }
+                        } else {
+                            Timber.i("No cover is already set")
+                        }
                     }
                 }
             }
@@ -2864,6 +2867,10 @@ class ObjectSetViewModel(
 
     fun onSyncWidgetDismiss() {
         syncStatusWidget.value = SyncStatusWidgetState.Hidden
+    }
+
+    fun onUpdateAppClick() {
+        dispatch(command = ObjectSetCommand.Intent.OpenAppStore)
     }
     //endregion
 

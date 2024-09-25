@@ -41,10 +41,6 @@
             android:name="com.anytypeio.anytype.ui.editor.modals.ObjectIconPickerFragment"
             android:label="Object-Icon-Picker-Screen" />
         <dialog
-            android:id="@+id/objectMainMenuScreen"
-            android:name="com.anytypeio.anytype.ui.editor.sheets.ObjectMenuFragment"
-            android:label="Doc-Menu-Bottom-Sheet-Screen" />
-        <dialog
             android:id="@+id/objectCoverScreen"
             android:name="com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment"
             android:label="Object-Cover-Screen" />
@@ -202,8 +198,7 @@
         android:name="com.anytypeio.anytype.ui.vault.VaultFragment">
         <action
             android:id="@+id/openSpace"
-            app:destination="@id/homeScreen"
-            app:enterAnim="@anim/slide_in_right" />
+            app:destination="@id/homeScreen" />
     </fragment>
 
     <dialog

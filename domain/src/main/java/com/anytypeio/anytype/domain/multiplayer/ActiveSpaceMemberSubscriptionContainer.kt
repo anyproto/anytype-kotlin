@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -17,6 +18,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -35,7 +37,8 @@ interface ActiveSpaceMemberSubscriptionContainer {
         private val container: StorelessSubscriptionContainer,
         private val scope: CoroutineScope,
         private val dispatchers: AppCoroutineDispatchers,
-        private val awaitAccountStart: AwaitAccountStartManager
+        private val awaitAccountStart: AwaitAccountStartManager,
+        private val logger: Logger
     ) : ActiveSpaceMemberSubscriptionContainer {
 
         private val data = MutableStateFlow<Store>(Store.Empty)
@@ -43,11 +46,18 @@ interface ActiveSpaceMemberSubscriptionContainer {
 
         init {
             scope.launch {
-                awaitAccountStart.isStarted().collect { isStarted ->
-                    if (isStarted)
-                        start()
-                    else
-                        stop()
+                awaitAccountStart.state().collect { state ->
+                    when(state) {
+                        AwaitAccountStartManager.State.Init -> {
+                            // Do nothing
+                        }
+                        AwaitAccountStartManager.State.Started -> {
+                            start()
+                        }
+                        AwaitAccountStartManager.State.Stopped -> {
+                            stop()
+                        }
+                    }
                 }
             }
         }
@@ -122,7 +132,14 @@ interface ActiveSpaceMemberSubscriptionContainer {
                                 config = config
                             )
                         }
-                    }.collect {
+                    }
+                    .catch { error ->
+                        logger.logException(
+                            e = error,
+                            msg = "Failed to subscribe to active-space-members"
+                        )
+                    }
+                    .collect {
                         data.value = it
                     }
             }

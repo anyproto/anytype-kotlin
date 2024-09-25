@@ -1474,9 +1474,9 @@ En concreto,
         <item quantity="one">%1$d dispositivo conectado</item>
         <item quantity="other">%1$d dispositivos conectados</item>
     </plurals>
-    <string name="sync_status_p2p_connecting">Conectando P2P</string>
-    <string name="sync_status_p2p_disabled">Deshabilitado</string>
+    <string name="sync_status_p2p_disabled">No es posible conectar.</string>
     <string name="sync_status_p2p_restricted">Restringido. Comprueba los ajustes del dispositivo.</string>
+    <string name="sync_status_p2p_not_connected">No conectado.</string>
     <string name="sync_status_anytype_network">Red de Anytype</string>
     <string name="sync_status_anytype_end_to_end">Cifrado de extremo a extremo</string>
     <plurals name="sync_status_network_items">
@@ -1485,6 +1485,7 @@ En concreto,
     </plurals>
     <string name="sync_status_anytype_network_connecting">Conectando a la red…</string>
     <string name="sync_status_anytype_network_no_connecting">No hay conexión</string>
+    <string name="sync_status_anytype_sync_slow">La sincronización puede ser lenta. Actualiza tu aplicación.</string>
     <string name="sync_status_storage_limit_exceed">Límite de almacenamiento alcanzado</string>
     <string name="sync_status_incompatible_version">Versión incompatible</string>
     <string name="sync_status_network_error">Sin acceso al espacio</string>

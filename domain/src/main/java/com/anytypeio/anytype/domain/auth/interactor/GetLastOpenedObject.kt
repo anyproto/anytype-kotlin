@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.domain.auth.interactor
 
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
@@ -50,7 +49,7 @@ class GetLastOpenedObject(
         /**
          * There was no information about the last opened object.
          */
-        object Empty : Response()
+        data object Empty : Response()
 
         /**
          * The last opened object could not be found. It might have been deleted.

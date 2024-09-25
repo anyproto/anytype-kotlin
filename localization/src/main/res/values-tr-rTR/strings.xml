@@ -158,7 +158,7 @@
     <string name="hint_profile_title">Ad Soyad</string>
     <string name="hint_header_one">Başlık</string>
     <string name="hint_quote">Alıntı</string>
-    <string name="hint_header_two">Başlık</string>
+    <string name="hint_header_two">Başlık </string>
     <string name="hint_header_three">Alt başlık</string>
     <string name="hint_checkbox">Onay kutusu</string>
     <string name="hint_upload_video">Video yükle</string>
@@ -292,7 +292,7 @@
     <string name="ityem_relations">İlişkiler</string>
     <string name="add_sort">Bir sıralama ekleyin</string>
     <string name="apply">Uygula</string>
-    <string name="add_filter">Bir filtre ekleyin</string>
+    <string name="add_filter">Bir filtre ekleyin </string>
     <string name="relation_format_tag">Çoklu seçim</string>
     <string name="unknown_number_of_objects">Bilinmeyen sayıda nesne</string>
     <string name="sort_ascending">Artan</string>
@@ -332,7 +332,7 @@
     <string name="callout">Belirteç</string>
     <string name="highlight">Vurgula</string>
     <string name="title">Başlık</string>
-    <string name="heading">Başlık</string>
+    <string name="heading">Başlık </string>
     <string name="subheading">Alt başlık</string>
     <string name="create_from_scratch">Sıfırdan oluşturun</string>
     <string name="create_relation_with_name">\"%1$s\" ilişkisi oluşturun</string>
@@ -393,7 +393,7 @@
     <string name="no_data">Veri Yok</string>
     <string name="no_source">Kaynak yok</string>
     <string name="deleted_object">Silinen nesne</string>
-    <string name="open_set">Küme aç</string>
+    <string name="open_set">Set aç</string>
     <string name="deleted">Silindi</string>
     <string name="paste_link_or_search">Bağlantıyı yapıştır veya nesneleri ara</string>
     <string name="paste_from_clipboard">Panodan yapıştır</string>
@@ -421,7 +421,7 @@
     <string name="card">Kart</string>
     <string name="inline">Satır içi</string>
     <string name="set_view">Yeni görünüm</string>
-    <string name="inline_set">Satır içi küme</string>
+    <string name="inline_set">Satır içi set</string>
     <string name="inline_collection">Satır içi koleksiyon</string>
     <string name="fit_image">Resmi sığdır</string>
     <string name="image_preview">Resim önizlemesi</string>
@@ -487,13 +487,13 @@
     <string name="type_added">\"%1$s\" türü kitaplığınıza eklendi</string>
     <string name="block_data_view_content_description_title">Satır içi setin kaynak setinin adı</string>
     <string name="block_data_view_content_description_no_source">Satır içi setin kaynağı yok</string>
-    <string name="block_data_view_content_description_no_data">Satır içi kümenin kaynağının türü yok</string>
+    <string name="block_data_view_content_description_no_data">Satır içi setin kaynağının türü yok</string>
     <string name="object_search_recently_opened_section_title">Yakın zamanda açıldı</string>
     <string name="widget_source_anytype_library">Anytype Kitaplığı</string>
     <string name="widget_source_default_lists">Varsayılan listeler</string>
     <string name="your_favorite_objects">Favori nesneleriniz</string>
     <string name="on_this_device">Bu cihazda</string>
-    <string name="sets_of_objects">Çalışma alanınızdan nesne kümeleri</string>
+    <string name="sets_of_objects">Çalışma alanınızdan nesne setleri</string>
     <string name="content_description_customize_view_button">Özelleştir-görünüm düğmesi</string>
     <string name="collection_no_items_title">Nesne yok</string>
     <string name="collection_no_items_description">Devam etmek için ilk nesneyi oluştur</string>
@@ -504,8 +504,8 @@
     <string name="set_no_items_title">Nesne yok</string>
     <string name="set_no_items_description">Devam etmek için ilk nesneyi oluştur</string>
     <string name="set_no_items_button">Nesne oluştur</string>
-    <string name="set_collection_view_not_present">Görünüm kümede veya koleksiyonda mevcut değil. Lütfen nesneyi yeniden oluşturun.</string>
-    <string name="menu_turn_to_collection">Kümeyi Koleksiyona dönüştür</string>
+    <string name="set_collection_view_not_present">Görünüm sette veya koleksiyonda mevcut değil. Lütfen nesneyi yeniden oluşturun.</string>
+    <string name="menu_turn_to_collection">Seti koleksiyona dönüştür</string>
     <string name="menu_change_query">Sorguyu değiştir</string>
     <string name="collections">Koleksiyonlar</string>
     <string name="collection_widget_description">Nesne koleksiyonlarınız</string>
@@ -522,8 +522,8 @@
     <string name="file_delete_cancel">İptal</string>
     <string name="file_delete_delete">Sil</string>
     <string name="menu_type_change">Türü değiştir</string>
-    <string name="menu_type_open_set">%1$s kümesini aç</string>
-    <string name="menu_type_create_set">%1$s kümesi oluşturun</string>
+    <string name="menu_type_open_set">%1$s setini aç</string>
+    <string name="menu_type_create_set">%1$s setini oluşturun</string>
     <string name="toast_active_view_delete">Mevcut görünüm silinemez</string>
     <string name="type_templates_widget_title">Nesne oluştur</string>
     <string name="view_layout_widget_title">Düzen</string>
@@ -833,7 +833,7 @@
     <string name="create_object_section_objects">Nesneler</string>
     <string name="edit">Düzenle</string>
     <string name="unselect_all">Tüm seçimi kaldır</string>
-    <string name="sets">Küme</string>
+    <string name="sets">Setler</string>
     <string name="favorites">Favoriler</string>
     <string name="recent">Yakın zamanda düzenlendi</string>
     <string name="recently_opened">Yakın zamanda açıldı</string>
@@ -856,7 +856,7 @@
     <string name="slash_widget_style_text_subtitle">Düz bir metinle yazmaya başlayın</string>
     <string name="slash_widget_style_title">Başlık</string>
     <string name="slash_widget_style_title_subtitle">Büyük bölüm başlığı</string>
-    <string name="slash_widget_style_heading">Başlık</string>
+    <string name="slash_widget_style_heading">Başlık </string>
     <string name="slash_widget_style_heading_subtitle">Düz bir metinle yazmaya başlayın</string>
     <string name="slash_widget_style_subheading">Alt başlık</string>
     <string name="slash_widget_style_subheading_subtitle">Düz bir metinle yazmaya başlayın</string>
@@ -1021,7 +1021,7 @@
     <string name="content_description_duplicate_button">Çoğalt düğmesi</string>
     <string name="content_description_edit_view_button">Düzenle-görünüm düğmesi</string>
     <string name="content_description_open_to_edit_view_button">İlişki düğmesini düzenlemek için dokunun</string>
-    <string name="content_description_remove_from_set_button">İlişkiyi bu kümeden kaldırın</string>
+    <string name="content_description_remove_from_set_button">İlişkiyi bu setten kaldırın</string>
     <string name="content_desc_page_toolbar_search">Sayfalarda ara</string>
     <string name="content_desc_page_toolbar_navigation">Sayfalar arasında gezinme</string>
     <string name="content_desc_page_toolbar_add_doc">Yeni sayfa ekle</string>
@@ -1474,9 +1474,9 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
         <item quantity="one">%1$d cihaz bağlandı</item>
         <item quantity="other">%1$d cihaz bağlandı</item>
     </plurals>
-    <string name="sync_status_p2p_connecting">P2P bağlanıyor...</string>
-    <string name="sync_status_p2p_disabled">Devre dışı</string>
+    <string name="sync_status_p2p_disabled">Bağlantı mümkün değil</string>
     <string name="sync_status_p2p_restricted">Kısıtlanmış. Cihaz ayarlarını kontrol edin.</string>
+    <string name="sync_status_p2p_not_connected">Bağlı değil</string>
     <string name="sync_status_anytype_network">Anytype Ağı</string>
     <string name="sync_status_anytype_end_to_end">Uçtan uca şifrelenmiş</string>
     <plurals name="sync_status_network_items">
@@ -1485,6 +1485,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     </plurals>
     <string name="sync_status_anytype_network_connecting">Ağa bağlanılıyor...</string>
     <string name="sync_status_anytype_network_no_connecting">Bağlantı yok</string>
+    <string name="sync_status_anytype_sync_slow">Senkronizasyon yavaş olabilir. Uygulamayı güncelleyin.</string>
     <string name="sync_status_storage_limit_exceed">Depolama sınırına ulaşıldı</string>
     <string name="sync_status_incompatible_version">Uyumsuz sürüm</string>
     <string name="sync_status_network_error">Alana erişim yok</string>

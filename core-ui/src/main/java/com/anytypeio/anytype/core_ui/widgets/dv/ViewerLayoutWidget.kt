@@ -32,6 +32,7 @@ import androidx.compose.material.rememberSwipeableState
 import androidx.compose.material.swipeable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -122,6 +123,14 @@ fun ViewerLayoutWidget(
             mutableStateOf(androidx.compose.ui.geometry.Rect.Zero)
         }
 
+        var currentCoverItem by remember {
+            mutableStateOf(uiState.getActiveImagePreviewItem())
+        }
+
+        LaunchedEffect(key1 = uiState) {
+            currentCoverItem = uiState.getActiveImagePreviewItem()
+        }
+
         AnimatedVisibility(
             visible = currentState.showWidget,
             enter = slideInVertically { it },
@@ -151,6 +160,7 @@ fun ViewerLayoutWidget(
                         .padding(bottom = 20.dp)
                 ) {
                     WidgetHeader(title = stringResource(R.string.view_layout_widget_title))
+                    Spacer(modifier = Modifier.height(12.dp))
                     LayoutIcons(uiState = currentState, action = action)
                     Spacer(modifier = Modifier.height(8.dp))
                     LayoutSwitcherItem(
@@ -190,11 +200,7 @@ fun ViewerLayoutWidget(
                             .padding(start = 20.dp, end = 20.dp)
                             .alpha(if (isGallery) 1f else 0f),
                         title = stringResource(id = R.string.cover),
-                        value = when (val cover = currentState.cover) {
-                            ViewerLayoutWidgetUi.State.ImagePreview.Cover -> stringResource(id = R.string.cover)
-                            is ViewerLayoutWidgetUi.State.ImagePreview.Custom -> cover.name
-                            ViewerLayoutWidgetUi.State.ImagePreview.None -> stringResource(id = R.string.none)
-                        },
+                        value = currentCoverItem.getTitle(),
                         onClick = {
                             action(ViewerLayoutWidgetUi.Action.CoverMenu)
                         },
@@ -220,6 +226,19 @@ fun ViewerLayoutWidget(
             action = action,
             scope = scope
         )
+    }
+}
+
+private fun ViewerLayoutWidgetUi.getActiveImagePreviewItem() =
+    imagePreviewItems.firstOrNull { it.isChecked }
+        ?: ViewerLayoutWidgetUi.State.ImagePreview.None(isChecked = true)
+
+@Composable
+fun ViewerLayoutWidgetUi.State.ImagePreview.getTitle(): String {
+    return when (this) {
+        is ViewerLayoutWidgetUi.State.ImagePreview.None -> stringResource(id = R.string.none)
+        is ViewerLayoutWidgetUi.State.ImagePreview.PageCover -> stringResource(id = R.string.page_cover)
+        is ViewerLayoutWidgetUi.State.ImagePreview.Custom -> name
     }
 }
 
@@ -410,10 +429,10 @@ fun PreviewLayoutScreen() {
                 toggled = false
             ),
             cardSize = ViewerLayoutWidgetUi.State.CardSize.Small,
-            cover = ViewerLayoutWidgetUi.State.ImagePreview.Cover,
             showCardSize = false,
             viewer = "",
-            showCoverMenu = false
+            showCoverMenu = false,
+            imagePreviewItems = emptyList()
         ),
         action = {},
         scope = CoroutineScope(

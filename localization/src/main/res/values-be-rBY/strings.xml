@@ -1417,7 +1417,6 @@
     <string name="gallery_experience_alert_title_error">Упс!</string>
     <string name="gallery_experience_alert_button_space">Адкрыць прастору</string>
     <string name="gallery_experience_alert_button_error">Закрыць</string>
-    <string name="three_dots_text_placeholder">...</string>
     <string name="membership_btn_join">Далучыцца</string>
     <string name="notifications_prompt_get_notified">Атрыманне апавяшчэнняў</string>
     <string name="notifications_prompt_secondary_button_text">Не зараз</string>
@@ -1499,9 +1498,9 @@
         <item quantity="many">%1$d прылад падключана</item>
         <item quantity="other">%1$d прылад падключана</item>
     </plurals>
-    <string name="sync_status_p2p_connecting">P2P-злучэнне...</string>
-    <string name="sync_status_p2p_disabled">Адключана</string>
+    <string name="sync_status_p2p_disabled">Падключэнне немагчыма</string>
     <string name="sync_status_p2p_restricted">Абмежаваны. Праверце налады прылады.</string>
+    <string name="sync_status_p2p_not_connected">Падлучэнне адсутнічае</string>
     <string name="sync_status_anytype_network">Сетка Anytype</string>
     <string name="sync_status_anytype_end_to_end">Зашыфравана скразным метадам</string>
     <plurals name="sync_status_network_items">
@@ -1512,14 +1511,15 @@
     </plurals>
     <string name="sync_status_anytype_network_connecting">Падключэнне да сеткі...</string>
     <string name="sync_status_anytype_network_no_connecting">Няма злучэння</string>
+    <string name="sync_status_anytype_sync_slow">Сінхранізацыя можа быць павольнай. Абнавіце праграму.</string>
     <string name="sync_status_storage_limit_exceed">Дасягнута мяжа захоўвання даных</string>
     <string name="sync_status_incompatible_version">Несумяшчальная версія</string>
     <string name="sync_status_network_error">Няма доступу да прасторы</string>
     <string name="sync_status_unrecognized">Невядомая памылка</string>
     <string name="version_history_title">Гісторыя версій</string>
-    <string name="version_history_error_no_versions">No versions found</string>
-    <string name="version_history_error_get_version">Error getting version history</string>
-    <string name="version_history_error_get_members">Error getting members</string>
+    <string name="version_history_error_no_versions">Версій не знойдзена</string>
+    <string name="version_history_error_get_version">Памылка пры атрыманні гісторыі версій</string>
+    <string name="version_history_error_get_members">Памылка атрымання ўдзельнікаў</string>
     <string name="new_object">Новы аб\'ект</string>
-    <string name="vault_my_spaces">My spaces</string>
+    <string name="vault_my_spaces">Мае прасторы</string>
 </resources>

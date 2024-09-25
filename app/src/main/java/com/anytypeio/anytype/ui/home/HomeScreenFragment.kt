@@ -18,7 +18,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
-import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
@@ -103,15 +102,7 @@ class HomeScreenFragment : BaseComposeFragment() {
                         onClick = { vm.onCreateNewObjectLongClicked() }
                     ),
                     onProfileClicked = throttledClick(
-                        onClick = {
-                            runCatching {
-                                if (BuildConfig.DEBUG) {
-                                    findNavController().navigate(R.id.action_open_vault)
-                                } else {
-                                    findNavController().navigate(R.id.action_open_spaces)
-                                }
-                            }
-                        }
+                        onClick = vm::onVaultClicked
                     ),
                     onSpaceWidgetClicked = throttledClick(
                         onClick = vm::onSpaceSettingsClicked
@@ -321,12 +312,18 @@ class HomeScreenFragment : BaseComposeFragment() {
             }
             is Command.OpenGlobalSearchScreen -> {
                 runCatching {
-                    navigation().openPageSearch(
-                        initialQuery = command.initialQuery,
+                    navigation().openGlobalSearch(
                         space = command.space
                     )
                 }.onFailure {
                     Timber.e(it, "Error while opening global search screen")
+                }
+            }
+            is Command.OpenVault -> {
+                runCatching {
+                    findNavController().navigate(R.id.action_open_vault)
+                }.onFailure {
+                    Timber.e(it, "Error while opening vault from home screen")
                 }
             }
         }

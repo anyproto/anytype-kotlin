@@ -57,6 +57,8 @@ sealed class Command {
         val url: Url
     ) : Command()
 
+    data object OpenAppStore: Command()
+
     data class OpenDocumentMenu(
         val ctx: Id,
         val space: Id,

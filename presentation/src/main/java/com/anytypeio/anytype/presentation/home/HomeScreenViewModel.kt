@@ -58,8 +58,8 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
-import com.anytypeio.anytype.domain.search.GetLastSearchQuery
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.domain.types.GetPinnedObjectTypes
 import com.anytypeio.anytype.domain.widgets.CreateWidget
@@ -196,7 +196,7 @@ class HomeScreenViewModel(
     private val createBlock: CreateBlock,
     private val dateProvider: DateProvider,
     private val addObjectToCollection: AddObjectToCollection,
-    private val getLastSearchQuery: GetLastSearchQuery
+    private val clearLastOpenedSpace: ClearLastOpenedSpace
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -397,9 +397,13 @@ class HomeScreenViewModel(
                 } else {
                     widgets
                 }
-            }.flowOn(appCoroutineDispatchers.io).collect {
-                views.value = it
             }
+                .catch {
+                    Timber.e(it, "Error while rendering widgets")
+                }
+                .flowOn(appCoroutineDispatchers.io).collect {
+                    views.value = it
+                }
         }
     }
 
@@ -1478,11 +1482,15 @@ class HomeScreenViewModel(
                             .map { ObjectWrapper.Type(it.map) }
                             .sortedBy { keys.indexOf(it.uniqueKey) }
 
-                        val actions = types.map { type ->
-                            AppActionManager.Action.CreateNew(
-                                type = TypeKey(type.uniqueKey),
-                                name = type.name.orEmpty()
-                            )
+                        val actions = types.mapNotNull { type ->
+                            if (type.map.containsKey(Relations.UNIQUE_KEY)) {
+                                AppActionManager.Action.CreateNew(
+                                    type = TypeKey(type.uniqueKey),
+                                    name = type.name.orEmpty()
+                                )
+                            } else {
+                                null
+                            }
                         }
                         appActionManager.setup(actions = actions)
                     },
@@ -1639,6 +1647,21 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onVaultClicked() {
+        viewModelScope.launch {
+            spaceManager.clear()
+            clearLastOpenedSpace.async(Unit).fold(
+                onSuccess = {
+                    Timber.d("Cleared last opened space before opening vault")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while clearing last opened space before opening vault")
+                }
+            )
+            commands.emit(Command.OpenVault)
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         Timber.d("onCleared")
@@ -1672,26 +1695,8 @@ class HomeScreenViewModel(
 
     fun onSearchIconClicked() {
         viewModelScope.launch {
-            val space = spaceManager.get()
-            val params = GetLastSearchQuery.Params(space = SpaceId(space))
-            getLastSearchQuery.async(params).fold(
-                onSuccess = { query ->
-                    commands.emit(
-                        Command.OpenGlobalSearchScreen(
-                            initialQuery = query,
-                            space = space
-                        )
-                    )
-                },
-                onFailure = {
-                    Timber.e(it, "Error while getting last search query")
-                    commands.emit(
-                        Command.OpenGlobalSearchScreen(
-                            initialQuery = "",
-                            space = space
-                        )
-                    )
-                }
+            commands.emit(
+                Command.OpenGlobalSearchScreen(space = spaceManager.get())
             )
         }
         viewModelScope.sendEvent(
@@ -2072,7 +2077,7 @@ class HomeScreenViewModel(
         private val dateProvider: DateProvider,
         private val coverImageHashProvider: CoverImageHashProvider,
         private val addObjectToCollection: AddObjectToCollection,
-        private val getLastSearchQuery: GetLastSearchQuery
+        private val clearLastOpenedSpace: ClearLastOpenedSpace
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -2120,7 +2125,7 @@ class HomeScreenViewModel(
             createBlock = createBlock,
             dateProvider = dateProvider,
             addObjectToCollection = addObjectToCollection,
-            getLastSearchQuery = getLastSearchQuery
+            clearLastOpenedSpace = clearLastOpenedSpace
         ) as T
     }
 
@@ -2163,7 +2168,9 @@ sealed class Command {
 
     data class OpenObjectCreateDialog(val space: SpaceId) : Command()
 
-    data class OpenGlobalSearchScreen(val initialQuery: String, val space: Id) : Command()
+    data class OpenGlobalSearchScreen(val space: Id) : Command()
+
+    data object OpenVault: Command()
 
     data class SelectWidgetType(
         val ctx: Id,

@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapNotNull
@@ -61,6 +62,9 @@ class SpaceDeletedStatusWatcher @Inject constructor(
                             spaceManager.clear()
                         }
                     }
+                }
+                .catch {
+                    logger.logException(it, "Failed to observe space deletion status.")
                 }
                 .collect()
         }

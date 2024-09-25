@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.features.multiplayer
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -24,7 +25,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
@@ -272,13 +272,16 @@ fun ShareSpaceScreen(
             DragValue.DRAGGED_DOWN at draggedDownAnchorTop
             DragValue.DRAGGED_UP at 0f
         }
+
+        val decayAnimation = rememberSplineBasedDecay<Float>()
+
         val anchoredDraggableState = remember {
             AnchoredDraggableState(
                 initialValue = DragValue.DRAGGED_UP,
-                anchors = anchors,
                 positionalThreshold = { distance: Float -> distance * 0.5f },
                 velocityThreshold = { with(density) { 100.dp.toPx() } },
-                animationSpec = tween()
+                snapAnimationSpec = tween(),
+                decayAnimationSpec = decayAnimation
             )
         }
         val offset =

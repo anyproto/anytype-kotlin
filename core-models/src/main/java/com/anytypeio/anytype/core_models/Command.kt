@@ -514,14 +514,14 @@ sealed class Command {
     }
 
     data class SearchWithMeta(
-        val query: String,
-        val limit: Int,
-        val offset: Int,
+        val query: String = EMPTY_QUERY,
+        val limit: Int = 0,
+        val offset: Int = 0,
         val keys: List<Key>,
-        val sorts: List<DVSort>,
+        val sorts: List<DVSort> = emptyList(),
         val filters: List<DVFilter>,
-        val withMeta: Boolean,
-        val withMetaRelationDetails: Boolean,
+        val withMeta: Boolean = false,
+        val withMetaRelationDetails: Boolean = false,
         val space: SpaceId
     ) {
         data class Result(

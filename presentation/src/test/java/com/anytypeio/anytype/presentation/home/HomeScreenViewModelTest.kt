@@ -56,8 +56,8 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
-import com.anytypeio.anytype.domain.search.GetLastSearchQuery
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.domain.types.GetPinnedObjectTypes
 import com.anytypeio.anytype.domain.widgets.CreateWidget
@@ -245,7 +245,7 @@ class HomeScreenViewModelTest {
     lateinit var addObjectToCollection: AddObjectToCollection
 
     @Mock
-    lateinit var getLastSearchQuery: GetLastSearchQuery
+    lateinit var clearLastOpenedSpace: ClearLastOpenedSpace
 
     lateinit var userPermissionProvider: UserPermissionProvider
 
@@ -2944,7 +2944,7 @@ class HomeScreenViewModelTest {
         createDataViewObject = createDataViewObject,
         dateProvider = dateProvider,
         addObjectToCollection = addObjectToCollection,
-        getLastSearchQuery = getLastSearchQuery
+        clearLastOpenedSpace = clearLastOpenedSpace
     )
 
     companion object {

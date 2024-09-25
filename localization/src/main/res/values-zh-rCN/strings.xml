@@ -1462,9 +1462,9 @@ Please provide specific details of your needs here.</string>
     <plurals name="sync_status_p2p_devices">
         <item quantity="other">%1$d 设备已连接</item>
     </plurals>
-    <string name="sync_status_p2p_connecting">P2P 连接中…</string>
-    <string name="sync_status_p2p_disabled">已禁用</string>
+    <string name="sync_status_p2p_disabled">Connection not possible</string>
     <string name="sync_status_p2p_restricted">受限制。请检查设备设置。</string>
+    <string name="sync_status_p2p_not_connected">Not connected</string>
     <string name="sync_status_anytype_network">Anytype 网络</string>
     <string name="sync_status_anytype_end_to_end">端到端加密</string>
     <plurals name="sync_status_network_items">
@@ -1472,6 +1472,7 @@ Please provide specific details of your needs here.</string>
     </plurals>
     <string name="sync_status_anytype_network_connecting">网络连接中...</string>
     <string name="sync_status_anytype_network_no_connecting">没有连接</string>
+    <string name="sync_status_anytype_sync_slow">Sync might be slow. Update the app.</string>
     <string name="sync_status_storage_limit_exceed">已达到储存限制</string>
     <string name="sync_status_incompatible_version">不兼容版本</string>
     <string name="sync_status_network_error">没有访问空间的权限</string>

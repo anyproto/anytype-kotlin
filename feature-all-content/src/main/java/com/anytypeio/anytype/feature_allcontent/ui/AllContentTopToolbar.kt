@@ -59,7 +59,9 @@ import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.feature_allcontent.R
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
+import com.anytypeio.anytype.feature_allcontent.models.AllContentTitleViewState
 import com.anytypeio.anytype.feature_allcontent.models.MenuButtonViewState
+import com.anytypeio.anytype.feature_allcontent.models.TabViewState
 import com.anytypeio.anytype.feature_allcontent.models.TabsViewState
 import com.anytypeio.anytype.feature_allcontent.models.TopBarViewState
 
@@ -90,11 +92,6 @@ private fun AllContentTopBarContainerPreview() {
 //endregion
 
 //region AllContentTitle
-sealed class AllContentTitleViewState {
-    data object Hidden : AllContentTitleViewState()
-    data object AllContent : AllContentTitleViewState()
-    data object OnlyUnlinked : AllContentTitleViewState()
-}
 
 @Composable
 fun BoxScope.AllContentTitle(state: AllContentTitleViewState) {
@@ -149,14 +146,14 @@ fun BoxScope.AllContentMenuButton(state: MenuButtonViewState) {
 @Composable
 fun AllContentTabs(state: TabsViewState, onClick: () -> Unit) {
     val scrollState = rememberLazyListState()
-    var selectedTab by remember { mutableStateOf<AllContentTab?>(null) }
+    var selectedTab by remember { mutableStateOf<TabViewState?>(null) }
 
     when (state) {
         is TabsViewState.Hidden -> return
         is TabsViewState.Visible -> {
-            LaunchedEffect(onClick) {
-                scrollState.animateScrollToItem(state.tabs.indexOf(selectedTab))
-            }
+//            LaunchedEffect(onClick) {
+//                scrollState.animateScrollToItem(state.tabs.indexOf(selectedTab))
+//            }
             val snapFlingBehavior = rememberSnapFlingBehavior(scrollState)
             LazyRow(
                 state = scrollState,
@@ -170,12 +167,12 @@ fun AllContentTabs(state: TabsViewState, onClick: () -> Unit) {
             ) {
                 items(
                     count = state.tabs.size,
-                    key = { index -> state.tabs[index].ordinal },
+                    key = { index -> state.tabs[index].tab.ordinal },
                 ) { index ->
                     val tab = state.tabs[index]
                     AllContentTabText(
-                        tab = tab,
-                        isSelected = tab == selectedTab,
+                        tab = tab.tab,
+                        isSelected = tab.isSelected,
                         onClick = {
                             selectedTab = tab
                             onClick()
@@ -222,12 +219,12 @@ private fun AllContentTabsPreview() {
     AllContentTabs(
         state = TabsViewState.Visible(
             tabs = listOf(
-                AllContentTab.OBJECTS,
-                AllContentTab.FILES,
-                AllContentTab.MEDIA,
-                AllContentTab.BOOKMARKS,
-                AllContentTab.TYPES,
-                AllContentTab.RELATIONS
+                TabViewState(AllContentTab.OBJECTS, isSelected = true),
+                TabViewState(AllContentTab.FILES, isSelected = false),
+                TabViewState(AllContentTab.MEDIA, isSelected = false),
+                TabViewState(AllContentTab.BOOKMARKS, isSelected = false),
+                TabViewState(AllContentTab.TYPES, isSelected = false),
+                TabViewState(AllContentTab.RELATIONS, isSelected = false)
             )
         ),
         onClick = {}
@@ -235,6 +232,8 @@ private fun AllContentTabsPreview() {
 }
 
 //endregion
+
+//region SearchBar
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AllContentSearchBar() {
@@ -361,6 +360,4 @@ fun AllContentSearchBar() {
 private fun AllContentSearchBarPreview() {
     AllContentSearchBar()
 }
-//region SearchBar
-
 //endregion

@@ -4,6 +4,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,12 +19,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.anytypeio.anytype.core_ui.views.ButtonSize
-import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
 import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
 import com.anytypeio.anytype.feature_allcontent.R
-import com.anytypeio.anytype.feature_allcontent.models.AllContentMode
+import com.anytypeio.anytype.feature_allcontent.models.TopBarViewState
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentUiState
 import com.anytypeio.anytype.feature_allcontent.ui.AllContentNavigation.ALL_CONTENT_MAIN
 
@@ -43,16 +43,26 @@ fun AllContentScreenWrapper(uiState: AllContentUiState) {
 
 @Composable
 private fun AllContentMainScreen(uiState: AllContentUiState) {
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(color = colorResource(id = R.color.background_primary))
     ) {
         when (uiState) {
-            is AllContentUiState.Content -> ContentState(uiState)
-            is AllContentUiState.Error -> ErrorState(message = uiState.message)
             AllContentUiState.Idle -> {}
-            AllContentUiState.Loading -> LoadingState()
+            is AllContentUiState.Content -> {
+                AllContentTopBarContainer(uiState.topToolbarState)
+                AllContentTabs(uiState.tabs) {}
+                //ContentState(uiState)
+            }
+            is AllContentUiState.Error -> {
+                AllContentTopBarContainer(uiState.topToolbarState)
+                //ErrorState(message = uiState.message)
+            }
+            is AllContentUiState.Loading -> {
+                AllContentTopBarContainer(uiState.topToolbarState)
+                //LoadingState()
+            }
         }
     }
 }
@@ -60,7 +70,6 @@ private fun AllContentMainScreen(uiState: AllContentUiState) {
 @Composable
 private fun BoxScope.LoadingState() {
     val loadingAlpha by animateFloatAsState(targetValue = 1f, label = "")
-
     DotsLoadingIndicator(
         animating = true,
         modifier = Modifier
@@ -77,7 +86,7 @@ private fun ContentState(uiState: AllContentUiState.Content) {
     LazyColumn(
         modifier = Modifier.fillMaxSize()
     ) {
-        
+
     }
 }
 

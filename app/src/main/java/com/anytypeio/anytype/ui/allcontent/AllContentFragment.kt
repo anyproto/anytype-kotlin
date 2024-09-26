@@ -36,10 +36,6 @@ class AllContentFragment : BaseComposeFragment() {
         )
     }
 
-    override fun onStart() {
-        super.onStart()
-        vm.onStart()
-    }
 
     override fun injectDependencies() {
         val vmParams = AllContentViewModel.VmParams(spaceId = SpaceId(space))

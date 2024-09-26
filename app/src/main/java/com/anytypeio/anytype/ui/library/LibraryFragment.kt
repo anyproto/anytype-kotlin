@@ -50,6 +50,7 @@ import com.anytypeio.anytype.ui.types.edit.TypeEditFragment
 import com.google.accompanist.pager.ExperimentalPagerApi
 import javax.inject.Inject
 import kotlinx.coroutines.FlowPreview
+import timber.log.Timber
 
 class LibraryFragment : BaseComposeFragment() {
 
@@ -162,10 +163,14 @@ class LibraryFragment : BaseComposeFragment() {
                     )
                 }
                 is LibraryViewModel.Navigation.ExitToVault -> {
-                    findNavController().popBackStack(
-                        R.id.vaultScreen,
-                        true
-                    )
+                    runCatching {
+                        findNavController().popBackStack(
+                            R.id.vaultScreen,
+                            true
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Error while exiting to vault from space library")
+                    }
                 }
 
                 is LibraryViewModel.Navigation.OpenSetOrCollection -> {

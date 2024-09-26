@@ -155,7 +155,6 @@ import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.ui.relations.value.ObjectValueFragment
 import com.anytypeio.anytype.ui.relations.value.TagOrStatusValueFragment
-import com.anytypeio.anytype.ui.spaces.SelectSpaceFragment
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TEMPLATE_ID
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
@@ -586,16 +585,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .launchIn(lifecycleScope)
 
         binding.bottomToolbar
-            .profileClicks()
-            .onEach {
-                findNavController().navigate(
-                    R.id.selectSpaceScreen,
-                    args = SelectSpaceFragment.args(exitHomeWhenSpaceIsSelected = true)
-                )
-            }
-            .launchIn(lifecycleScope)
-
-        binding.bottomToolbar
             .searchClicks()
             .onEach { vm.onPageSearchClicked() }
             .launchIn(lifecycleScope)
@@ -864,9 +853,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         behavior.state = BottomSheetBehavior.STATE_HIDDEN
                     }
                 }
-            }
-            subscribe(vm.icon) { icon ->
-                if (hasBinding) binding.bottomToolbar.bind(icon)
             }
         }
     }
@@ -1430,9 +1416,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         if (state.navigationToolbar.isVisible) {
             binding.placeholder.requestFocus()
             binding.placeholder.hideKeyboard()
-            binding.bottomToolbar.visible()
+            binding.bottomToolbarContainer.visible()
         } else {
-            binding.bottomToolbar.gone()
+            binding.bottomToolbarContainer.gone()
         }
 
         if (state.mainToolbar.isVisible) {

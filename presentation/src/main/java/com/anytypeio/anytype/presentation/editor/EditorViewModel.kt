@@ -1254,9 +1254,10 @@ class EditorViewModel(
         }
     }
 
+    // TODO DROID-2731 rename the method
     fun navigateToDesktop() {
         Timber.d("navigateToDesktop, ")
-        navigation.postValue(EventWrapper(AppNavigation.Command.ExitToDesktop))
+        navigation.postValue(EventWrapper(AppNavigation.Command.ExitToVault))
     }
 
     @Deprecated("replace by onTextBlockTextChanged")

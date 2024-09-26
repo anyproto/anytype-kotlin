@@ -126,6 +126,7 @@ class WallpaperSelectAdapter(
             } else {
                 itemView.tint(Color.WHITE)
             }
+            itemView.background.alpha = WallpaperView.WALLPAPER_DEFAULT_ALPHA
         }
     }
 
@@ -145,6 +146,7 @@ class WallpaperSelectAdapter(
                 CoverGradient.GREEN_ORANGE -> setBackgroundResource(R.drawable.wallpaper_gradient_3)
                 CoverGradient.SKY -> setBackgroundResource(R.drawable.wallpaper_gradient_4)
             }
+            binding.gradient.background.alpha = WallpaperView.WALLPAPER_DEFAULT_ALPHA
         }
     }
 }

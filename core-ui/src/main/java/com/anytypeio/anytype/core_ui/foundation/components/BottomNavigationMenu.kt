@@ -6,9 +6,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationDefaults.Height
+import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationDefaults.Width
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleCombinedClickable
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
@@ -48,7 +49,7 @@ fun BottomNavigationMenu(
     Row(
         modifier = modifier
             .height(Height)
-            .fillMaxWidth()
+            .width(Width)
             .background(color = colorResource(id = R.color.background_primary))
             /**
              * Workaround for clicks through the bottom navigation menu.
@@ -58,16 +59,12 @@ fun BottomNavigationMenu(
         verticalAlignment = Alignment.CenterVertically
     ) {
         MenuItem(BottomNavigationItem.BACK.res, onClick = backClick)
-        MenuItem(BottomNavigationItem.HOME.res, onClick = homeClick)
+        MenuItem(BottomNavigationItem.HOME.res, onClick = onProfileClicked)
+        MenuItem(BottomNavigationItem.SEARCH.res, onClick = searchClick)
         MenuItem(
             BottomNavigationItem.ADD_DOC.res,
             onClick = addDocClick,
             onLongClick = onCreateObjectLongClicked
-        )
-        MenuItem(BottomNavigationItem.SEARCH.res, onClick = searchClick)
-        ProfileMenuItem(
-            icon = profileIcon,
-            onClick = onProfileClicked
         )
     }
 }
@@ -152,13 +149,14 @@ private fun ProfileMenuItem(
 
 
 private enum class BottomNavigationItem(@DrawableRes val res: Int) {
-    BACK(R.drawable.ic_main_toolbar_back),
-    HOME(R.drawable.ic_main_toolbar_home),
-    SEARCH(R.drawable.ic_page_toolbar_search),
-    ADD_DOC(R.drawable.ic_page_toolbar_add_doc)
+    BACK(R.drawable.ic_nav_panel_back),
+    HOME(R.drawable.ic_nav_panel_vault),
+    SEARCH(R.drawable.ic_nav_panel_search),
+    ADD_DOC(R.drawable.ic_nav_panel_plus)
 }
 
 @Immutable
-private object BottomNavigationDefaults {
-    val Height = 48.dp
+object BottomNavigationDefaults {
+    val Height = 52.dp
+    val Width = 288.dp
 }

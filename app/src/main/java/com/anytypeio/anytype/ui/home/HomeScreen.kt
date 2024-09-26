@@ -23,13 +23,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -37,25 +34,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
+import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationDefaults
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleCombinedClickable
 import com.anytypeio.anytype.core_ui.views.UXBody
-import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
@@ -80,7 +73,6 @@ import org.burnoutcrew.reorderable.ReorderableLazyListState
 import org.burnoutcrew.reorderable.detectReorderAfterLongPress
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 import org.burnoutcrew.reorderable.reorderable
-import timber.log.Timber
 
 @Composable
 fun HomeScreen(
@@ -168,10 +160,9 @@ fun HomeScreen(
             exit = fadeOut() + slideOutVertically { it }
         ) {
             HomeScreenBottomToolbar(
-                profileIcon = profileIcon,
                 onSearchClicked = throttledClick(onSearchClicked),
                 onCreateNewObjectClicked = throttledClick(onCreateNewObjectClicked),
-                onProfileClicked = throttledClick(onProfileClicked),
+                onVaultClicked = throttledClick(onProfileClicked),
                 onCreateNewObjectLongClicked = onCreateNewObjectLongClicked,
                 modifier = Modifier,
                 isReadOnlyAccess = mode is InteractionMode.ReadOnly
@@ -817,19 +808,18 @@ fun HomeScreenButton(
 
 @Composable
 fun HomeScreenBottomToolbar(
-    profileIcon: ProfileIconView,
     modifier: Modifier,
     onSearchClicked: () -> Unit,
     onCreateNewObjectClicked: () -> Unit,
     onCreateNewObjectLongClicked: () -> Unit,
-    onProfileClicked: () -> Unit,
+    onVaultClicked: () -> Unit,
     isReadOnlyAccess: Boolean
 ) {
     val haptic = LocalHapticFeedback.current
     Row(
         modifier = modifier
-            .height(52.dp)
-            .width(216.dp)
+            .height(BottomNavigationDefaults.Height)
+            .width(BottomNavigationDefaults.Width)
             .background(
                 shape = RoundedCornerShape(16.dp),
                 color = colorResource(id = R.color.home_screen_button)
@@ -839,10 +829,34 @@ fun HomeScreenBottomToolbar(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxSize()
+                .noRippleClickable { onVaultClicked() }
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_nav_panel_back),
+                contentDescription = "Search icon",
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxSize()
+                .noRippleClickable { onVaultClicked() }
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_nav_panel_vault),
+                contentDescription = "Search icon",
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxSize()
                 .noRippleClickable { onSearchClicked() }
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_home_widget_search),
+                painter = painterResource(id = R.drawable.ic_nav_panel_search),
                 contentDescription = "Search icon",
                 modifier = Modifier.align(Alignment.Center)
             )
@@ -871,74 +885,10 @@ fun HomeScreenBottomToolbar(
                 )
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_home_widget_plus),
+                painter = painterResource(id = R.drawable.ic_nav_panel_plus),
                 contentDescription = "Plus icon",
                 modifier = Modifier.align(Alignment.Center)
             )
-        }
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxSize()
-                .noRippleClickable { onProfileClicked() }
-        ) {
-            Timber.d("Binding icon: $profileIcon")
-            when(profileIcon) {
-                is ProfileIconView.Emoji -> {
-                    Image(
-                        painter = rememberAsyncImagePainter(
-                            model = Emojifier.safeUri(profileIcon.unicode),
-                            error = painterResource(id = R.drawable.ic_home_widget_space)
-                        ),
-                        contentDescription = "Emoji space icon",
-                        modifier = Modifier
-                            .size(24.dp)
-                            .align(Alignment.Center)
-                    )
-                }
-                is ProfileIconView.Image -> {
-                    Image(
-                        painter = rememberAsyncImagePainter(
-                            model = profileIcon.url,
-                            error = painterResource(id = R.drawable.ic_home_widget_space)
-                        ),
-                        contentDescription = "Custom image space icon",
-                        modifier = Modifier
-                            .size(24.dp)
-                            .clip(CircleShape)
-                            .align(Alignment.Center),
-                        contentScale = ContentScale.Crop
-                    )
-                }
-                is ProfileIconView.Placeholder -> {
-                    val name = profileIcon.name
-                    val nameFirstChar = if (name.isNullOrBlank()) {
-                        stringResource(id = R.string.account_default_name)
-                    } else {
-                        name.first().uppercaseChar().toString()
-                    }
-                    Box(
-                        modifier = Modifier
-                            .size(24.dp)
-                            .clip(CircleShape)
-                            .background(colorResource(id = R.color.text_tertiary))
-                            .noRippleClickable { onProfileClicked() }
-                            .align(Alignment.Center)
-                    ) {
-                        Text(
-                            text = nameFirstChar,
-                            style = MaterialTheme.typography.h3.copy(
-                                color = colorResource(id = R.color.text_white),
-                                fontSize = 10.sp
-                            ),
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
-                }
-                else -> {
-                    // Draw nothing.
-                }
-            }
         }
     }
 }

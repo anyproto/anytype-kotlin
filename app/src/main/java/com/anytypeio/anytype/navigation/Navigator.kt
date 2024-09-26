@@ -135,6 +135,13 @@ class Navigator : AppNavigation {
         }
     }
 
+    override fun exitToVault() {
+        val popped = navController?.popBackStack(R.id.vaultScreen, false)
+        if (popped == false) {
+            navController?.navigate(R.id.vaultScreen)
+        }
+    }
+
     override fun openGlobalSearch(space: Id) {
         navController?.navigate(
             resId = R.id.globalSearchScreen,

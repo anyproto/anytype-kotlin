@@ -373,7 +373,7 @@ private fun getNetworkCardSettings(
 
             if (error != SpaceSyncError.NULL) {
                 return CardSettings(
-                    icon = painterResource(R.drawable.ic_sync_net_error),
+                    icon = painterResource(R.drawable.ic_sync_self_error),
                     mainText = stringResource(id = R.string.sync_status_self_host),
                     secondaryText = stringResource(id = getErrorText(error))
                 )

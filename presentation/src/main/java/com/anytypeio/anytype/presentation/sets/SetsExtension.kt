@@ -100,6 +100,7 @@ suspend fun List<ColumnView>.buildGridRow(
                                             icon = ObjectIcon.File(
                                                 mime = wrapper.fileMimeType.orEmpty(),
                                                 fileName = wrapper.name.orEmpty(),
+                                                extensions = wrapper.fileExt.orEmpty(),
                                             )
                                         )
                                     )
@@ -259,6 +260,7 @@ private fun ObjectWrapper.File.toView() : FileView {
         icon = ObjectIcon.File(
             mime = fileMimeType.orEmpty(),
             fileName = name.orEmpty(),
+            extensions = fileExt.orEmpty(),
         )
     )
 }

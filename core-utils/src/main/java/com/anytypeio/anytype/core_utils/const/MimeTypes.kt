@@ -37,7 +37,7 @@ object MimeTypes {
         "application/json",
         "application/ld+json",
         "text/comma-separated-values",
-        "application/xml"
+        "text/xml"
     )
 
     private val VIDEOS = listOf(
@@ -92,7 +92,7 @@ object MimeTypes {
     private val TABLE = listOf(
         "application/vnd.ms-excel",
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "text/csv"
+        "application/csv"
     )
 
     private val PRESENTATION = listOf(

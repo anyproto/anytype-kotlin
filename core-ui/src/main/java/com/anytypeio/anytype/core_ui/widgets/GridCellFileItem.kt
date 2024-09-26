@@ -17,12 +17,12 @@ class GridCellFileItem @JvmOverloads constructor(
         LayoutInflater.from(context), this, true
     )
 
-    fun setup(name: String, mime: String?) = with(binding) {
+    fun setup(name: String, mime: String?, extension: String?) = with(binding) {
         tvName.visible()
         tvName.text = name
         if (mime != null) {
             ivIcon.visible()
-            val mimeIcon = mime.getMimeIcon(name)
+            val mimeIcon = mime.getMimeIcon(extension)
             ivIcon.setImageResource(mimeIcon)
         } else {
             ivIcon.gone()

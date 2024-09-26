@@ -98,9 +98,9 @@ object MimeTypes {
     private val PRESENTATION = listOf(
         "application/vnd.ms-powerpoint",
         "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-        "application/vnd.openxmlformats-officedocument.presentationml.template", // Added PPTX Template
-        "application/vnd.ms-powerpoint.template.macroEnabled.12", // Added PPT Template
-        "application/vnd.ms-powerpoint.addin.macroEnabled.12" // Added PPT Addin
+        "application/vnd.openxmlformats-officedocument.presentationml.template",
+        "application/vnd.ms-powerpoint.template.macroEnabled.12",
+        "application/vnd.ms-powerpoint.addin.macroEnabled.12"
     )
 
     enum class Category {

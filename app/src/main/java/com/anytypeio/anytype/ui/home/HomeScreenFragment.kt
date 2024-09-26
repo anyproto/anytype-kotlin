@@ -353,11 +353,14 @@ class HomeScreenFragment : BaseComposeFragment() {
                 )
             }
             is Navigation.OpenLibrary -> runCatching {
-                findNavController().navigate(
-                    R.id.libraryFragment,
-                    args = LibraryFragment.args(destination.space)
-                )
-//                navigation().openLibrary(destination.space)
+                runCatching {
+                    findNavController().navigate(
+                        R.id.libraryFragment,
+                        args = LibraryFragment.args(destination.space)
+                    )
+                }.onFailure { e ->
+                    Timber.e(e, "Error while opening space library from widgets")
+                }
             }
         }
     }

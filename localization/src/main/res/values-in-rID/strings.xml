@@ -879,6 +879,7 @@
     <string name="slash_widget_media_file">Berkas</string>
     <string name="slash_widget_media_file_subtitle">Simpan berkas sebagaimana aslinya</string>
     <string name="slash_widget_media_picture">Gambar</string>
+    <string name="slash_widget_media_image">Gambar</string>
     <string name="slash_widget_media_picture_subtitle">Enrich your page with an image</string>
     <string name="slash_widget_media_video">Video</string>
     <string name="slash_widget_media_video_subtitle">Unggah video yang dapat diputar</string>

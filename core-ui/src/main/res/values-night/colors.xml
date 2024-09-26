@@ -14,6 +14,7 @@
     <color name="background_notification_primary">#FFFFFF</color>
     <color name="background_secondary">#1F1E1D</color>
     <color name="background_highlighted">#24DAD7CA</color>
+    <color name="background_highlighted_medium">#DAD7CA</color>
     <color name="background_multiplayer_request">#F3F2EC</color>
 
     <color name="shape_primary">#3A3935</color>

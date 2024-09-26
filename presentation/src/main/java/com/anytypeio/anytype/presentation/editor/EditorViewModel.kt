@@ -6586,6 +6586,9 @@ class EditorViewModel(
         return getObjectTypeUniqueKeyFromDetails() == ObjectTypeIds.TEMPLATE
     }
 
+    fun Struct?.isObjectParticipant(): Boolean =
+        this?.getOrDefault(Relations.LAYOUT, null) == ObjectType.Layout.PARTICIPANT.code.toDouble()
+
     fun onSelectTemplateClicked() {
         viewModelScope.launch {
             sendAnalyticsSelectTemplateEvent(analytics)
@@ -7396,15 +7399,20 @@ class EditorViewModel(
 
     private fun proceedWithCollectingSyncStatus() {
         jobs += viewModelScope.launch {
-            spaceSyncAndP2PStatusProvider
-                .observe()
-                .catch {
-                    Timber.e(it, "Error while observing sync status")
-                }
-                .collect { syncAndP2pState ->
+            combine(
+                spaceSyncAndP2PStatusProvider.observe(),
+                orchestrator.stores.details.stream()
+            ) { state, details ->
+                state to details.details[context]?.map
+            }.catch {
+                Timber.e(it, "Error while observing sync status")
+            }.collect { (syncAndP2pState, struct) ->
+                if (!struct.isNullOrEmpty() && !struct.isObjectParticipant()) {
                     spaceSyncStatus.value = syncAndP2pState
-                    syncStatusWidget.value = syncStatusWidget.value.updateStatus(syncAndP2pState)
+                    syncStatusWidget.value =
+                        syncStatusWidget.value.updateStatus(syncAndP2pState)
                 }
+            }
         }
     }
 

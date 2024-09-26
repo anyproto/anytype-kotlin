@@ -272,7 +272,10 @@ sealed class SlashItem {
 
         object Picture : Media() {
             override fun getSearchName(): String = SlashConst.SLASH_MEDIA_PICTURE
-            override fun getAbbreviation(): List<String>? = null
+            override fun getAbbreviation(): List<String> = listOf(
+                SlashConst.SLASH_MEDIA_PICTURE,
+                SlashConst.SLASH_MEDIA_IMAGE
+            )
         }
 
         object Video : Media() {

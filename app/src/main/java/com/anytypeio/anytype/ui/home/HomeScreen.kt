@@ -154,12 +154,11 @@ fun HomeScreen(
             visible = mode !is InteractionMode.Edit,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 0.dp),
+                .padding(bottom = 20.dp),
             enter = fadeIn() + slideInVertically { it },
             exit = fadeOut() + slideOutVertically { it }
         ) {
             HomeScreenBottomToolbar(
-                profileIcon = profileIcon,
                 onSearchClicked = throttledClick(onSearchClicked),
                 onCreateNewObjectClicked = throttledClick(onCreateNewObjectClicked),
                 onVaultClicked = throttledClick(onProfileClicked),
@@ -808,7 +807,6 @@ fun HomeScreenButton(
 
 @Composable
 fun HomeScreenBottomToolbar(
-    profileIcon: ProfileIconView,
     modifier: Modifier,
     onSearchClicked: () -> Unit,
     onCreateNewObjectClicked: () -> Unit,

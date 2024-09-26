@@ -542,6 +542,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                 container.setBackgroundResource(R.color.default_dashboard_background_color)
             }
         }
+        container.background.alpha = 76
     }
 
     override fun onResume() {

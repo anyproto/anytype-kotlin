@@ -983,6 +983,7 @@
     <string name="slash_widget_media_file">File</string>
     <string name="slash_widget_media_file_subtitle">Store file in original state</string>
     <string name="slash_widget_media_picture">Picture</string>
+    <string name="slash_widget_media_image">Image</string>
     <string name="slash_widget_media_picture_subtitle">Enrich your page with an image</string>
     <string name="slash_widget_media_video">Video</string>
     <string name="slash_widget_media_video_subtitle">Upload playable video</string>

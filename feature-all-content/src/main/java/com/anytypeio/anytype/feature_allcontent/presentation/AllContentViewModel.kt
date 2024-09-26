@@ -18,7 +18,6 @@ import com.anytypeio.anytype.feature_allcontent.models.AllContentState
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTitleViewState
 import com.anytypeio.anytype.feature_allcontent.models.MenuButtonViewState
-import com.anytypeio.anytype.feature_allcontent.models.TabViewState
 import com.anytypeio.anytype.feature_allcontent.models.TabsViewState
 import com.anytypeio.anytype.feature_allcontent.models.TopBarViewState
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -32,6 +31,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
@@ -48,7 +48,7 @@ import timber.log.Timber
 /**
  * ViewState: @see [AllContentUiState]
  * Factory: @see [AllContentViewModelFactory]
- * Screen: @see [com.anytypeio.anytype.feature_allcontent.ui.AllContentMainScreen]
+ * Screen: @see [com.anytypeio.anytype.feature_allcontent.ui.AllContentWrapperScreen]
  */
 
 class AllContentViewModel(
@@ -63,18 +63,11 @@ class AllContentViewModel(
     private val restoreAllContentState: RestoreAllContentState
 ) : ViewModel() {
 
-    // Initial state
-    private val _state = MutableStateFlow<AllContentState>(
-        AllContentState.Default(
-            activeTab = AllContentTab.OBJECTS,
-            activeMode = AllContentMode.AllContent,
-            activeSort = AllContentSort.ByName(),
-            filter = "",
-            limit = 50
-        )
-    )
-    val state: StateFlow<AllContentState> = _state.asStateFlow()
-
+    // Initial states
+    private val _tabsState = MutableStateFlow<AllContentTab>(AllContentTab.OBJECTS)
+    private val _modeState = MutableStateFlow<AllContentMode>(AllContentMode.AllContent)
+    private val _sortState = MutableStateFlow<AllContentSort>(AllContentSort.ByName())
+    private val _limitState = MutableStateFlow(0)
     private val userInput = MutableStateFlow("")
     private val searchQuery = userInput
         .take(1)
@@ -83,95 +76,69 @@ class AllContentViewModel(
         }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val uiState: StateFlow<AllContentUiState> = _state
-        .filterIsInstance<AllContentState.Default>()
-        .flatMapLatest { currentState ->
-            loadData(currentState)
-        }
+    val uiState: StateFlow<AllContentUiState> = combine(
+        _modeState,
+        _tabsState,
+        _sortState,
+        searchQuery,
+        _limitState
+    ) { mode, tab, sort, query, limit ->
+        Result(mode, tab, sort, query, limit)
+    }.flatMapLatest { currentState ->
+        Timber.d("AllContentNewState:$currentState")
+        loadData(currentState)
+    }
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             initialUiState()
         )
 
-    // Initial UI state when the ViewModel is created
-    private fun initialUiState(): AllContentUiState {
-        val currentState = _state.value as AllContentState.Default
-        return AllContentUiState.Loading(
-            tab = currentState.activeTab,
-            menuMode = getMenuMode(currentState.activeMode),
-            topToolbarState = getTopToolbarViewState()
+    private fun initialUiState(): AllContentUiState.Initial {
+        return AllContentUiState.Initial(
+            tabsViewState = TabsViewState.Default(
+                tabs = AllContentTab.entries,
+                selectedTab = _tabsState.value
+            ),
+            topToolbarState = TopBarViewState.Default(
+                titleState = AllContentTitleViewState.AllContent,
+                menuButtonState = MenuButtonViewState.Visible
+            )
         )
     }
 
-    private fun loadData(currentState: AllContentState.Default): Flow<AllContentUiState> = flow {
-        emit(
-            AllContentUiState.Loading(
-                tab = currentState.activeTab,
-                menuMode = getMenuMode(currentState.activeMode),
-                topToolbarState = getTopToolbarViewState()
-            )
-        )
+    private fun loadData(
+        result: Result
+    ): Flow<AllContentUiState> = flow {
+        emit(AllContentUiState.Loading)
 
-        // Build search parameters based on the current state
-        val searchParams = createSearchParams(currentState)
+        val searchParams = createSearchParams()
 
-        // Fetch data from the repository, which returns a Flow
         val dataFlow = storelessSubscriptionContainer.subscribe(searchParams)
 
-        // Map the data flow to UI states
         emitAll(
             dataFlow
                 .map { items ->
                     Timber.d("Loaded data: ${items.size}")
                     AllContentUiState.Content(
-                        tab = currentState.activeTab,
-                        mode = currentState.activeMode,
-                        menuMode = getMenuMode(currentState.activeMode),
-                        items = items,
-                        topToolbarState = getTopToolbarViewState(),
-                        tabs = getTabsViewState()
+                        mode = result.mode,
+                        menuMode = getMenuMode(result.mode),
+                        items = items
                     )
                 }
                 .catch { e ->
                     emit(
                         AllContentUiState.Error(
-                            tab = currentState.activeTab,
-                            menuMode = getMenuMode(currentState.activeMode),
-                            message = e.message ?: "Error loading data",
-                            topToolbarState = getTopToolbarViewState()
+                            menuMode = getMenuMode(result.mode),
+                            message = e.message ?: "Error loading data"
                         )
                     )
                 }
         )
     }
 
-    private fun getTopToolbarViewState(): TopBarViewState {
-        val currentState = _state.value as AllContentState.Default
-        val mode = getMenuMode(currentState.activeMode)
-        return TopBarViewState(
-            titleState = when (mode) {
-                is AllContentMenuMode.AllContent -> AllContentTitleViewState.AllContent
-                is AllContentMenuMode.Unlinked -> AllContentTitleViewState.OnlyUnlinked
-            },
-            menuButtonState = MenuButtonViewState.Visible
-        )
-    }
-
-    private fun getTabsViewState(): TabsViewState {
-        val currentState = _state.value as AllContentState.Default
-        return TabsViewState.Visible(
-            tabs = AllContentTab.entries.map { tab ->
-                TabViewState(
-                    tab = tab,
-                    isSelected = tab == currentState.activeTab
-                )
-            }
-        )
-    }
-
     // Function to create search parameters
-    private fun createSearchParams(state: AllContentState.Default): StoreSearchParams {
+    private fun createSearchParams(): StoreSearchParams {
         // Implement logic to create search parameters based on the state
         return StoreSearchParams(
             filters = ObjectSearchConstants.filterSearchObjects(
@@ -192,31 +159,34 @@ class AllContentViewModel(
     }
 
     fun onTabClicked(tab: AllContentTab) {
-        val state = _state.value as? AllContentState.Default ?: return
-        _state.value = state.copy(activeTab = tab)
+        _tabsState.value = tab
     }
 
     fun onAllContentModeClicked(mode: AllContentMode) {
-        val state = _state.value as? AllContentState.Default ?: return
-        _state.value = state.copy(activeMode = mode)
+        _modeState.value = mode
     }
 
     fun onSortClicked(sort: AllContentSort) {
-        val state = _state.value as? AllContentState.Default ?: return
-        _state.value = state.copy(activeSort = sort)
+        _sortState.value = sort
     }
 
     fun onFilterChanged(filter: String) {
-        val state = _state.value as? AllContentState.Default ?: return
-        _state.value = state.copy(filter = filter)
+        userInput.value = filter
     }
 
     fun onLimitUpdated(limit: Int) {
-        val state = _state.value as? AllContentState.Default ?: return
-        _state.value = state.copy(limit = limit)
+        _limitState.value = limit
     }
 
     data class VmParams(
         val spaceId: SpaceId
+    )
+
+    internal data class Result(
+        val mode: AllContentMode,
+        val tab: AllContentTab,
+        val sort: AllContentSort,
+        val query: String,
+        val limit: Int
     )
 }

@@ -48,6 +48,7 @@ import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.notifications.NotificationAction
 import com.anytypeio.anytype.presentation.notifications.NotificationCommand
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
+import com.anytypeio.anytype.presentation.wallpaper.WallpaperView
 import com.anytypeio.anytype.ui.editor.CreateObjectFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
@@ -542,7 +543,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                 container.setBackgroundResource(R.color.default_dashboard_background_color)
             }
         }
-        container.background.alpha = 76
+        container.background.alpha = WallpaperView.WALLPAPER_DEFAULT_ALPHA
     }
 
     override fun onResume() {

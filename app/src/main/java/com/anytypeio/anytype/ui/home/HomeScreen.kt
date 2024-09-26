@@ -822,7 +822,7 @@ fun HomeScreenBottomToolbar(
             .width(BottomNavigationDefaults.Width)
             .background(
                 shape = RoundedCornerShape(16.dp),
-                color = colorResource(id = R.color.home_screen_button)
+                color = colorResource(id = R.color.shape_tertiary)
             )
     ) {
         Box(

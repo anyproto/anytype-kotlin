@@ -5,18 +5,14 @@
     android:viewportHeight="32">
   <path
       android:pathData="M6,23.998V13.998L16,5.998L26,13.998V23.998"
-      android:strokeAlpha="0.4"
       android:strokeWidth="1.5"
       android:fillColor="#00000000"
-      android:strokeColor="#000000"
-      android:fillAlpha="0.4"
+      android:strokeColor="@color/glyph_active"
       android:strokeLineCap="round"/>
   <path
       android:pathData="M13.5,23.998V18.498C13.5,17.117 14.619,15.998 16,15.998V15.998C17.381,15.998 18.5,17.117 18.5,18.498V23.998"
-      android:strokeAlpha="0.4"
       android:strokeWidth="1.5"
       android:fillColor="#00000000"
-      android:strokeColor="#000000"
-      android:fillAlpha="0.4"
+      android:strokeColor="@color/glyph_active"
       android:strokeLineCap="round"/>
 </vector>

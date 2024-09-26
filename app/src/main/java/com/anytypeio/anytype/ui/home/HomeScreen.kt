@@ -822,7 +822,7 @@ fun HomeScreenBottomToolbar(
             .width(BottomNavigationDefaults.Width)
             .background(
                 shape = RoundedCornerShape(16.dp),
-                color = colorResource(id = R.color.home_screen_button)
+                color = colorResource(id = R.color.shape_tertiary)
             )
     ) {
         Box(
@@ -885,7 +885,7 @@ fun HomeScreenBottomToolbar(
                 )
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_nav_panel_plus),
+                painter = painterResource(id = R.drawable.ic_nav_panel_plusu),
                 contentDescription = "Plus icon",
                 modifier = Modifier.align(Alignment.Center)
             )

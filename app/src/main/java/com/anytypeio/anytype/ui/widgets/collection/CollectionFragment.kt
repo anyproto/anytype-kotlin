@@ -28,6 +28,7 @@ import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.dashboard.DeleteAlertFragment
 import com.anytypeio.anytype.ui.objects.creation.SelectObjectTypeFragment
 import javax.inject.Inject
+import timber.log.Timber
 
 class CollectionFragment : BaseComposeFragment() {
 
@@ -107,11 +108,14 @@ class CollectionFragment : BaseComposeFragment() {
                 space = command.space
             )
             is Command.Vault -> {
-                // DROID-2731 Fix navigation
-                findNavController().navigate(
-                    R.id.vaultScreen,
-                    args = null
-                )
+                runCatching {
+                    findNavController().popBackStack(
+                        R.id.vaultScreen,
+                        true
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while exiting to vault")
+                }
             }
         }
     }

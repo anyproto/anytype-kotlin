@@ -23,26 +23,13 @@ import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
 import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
 import com.anytypeio.anytype.feature_allcontent.R
+import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
 import com.anytypeio.anytype.feature_allcontent.models.TopBarViewState
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentUiState
 import com.anytypeio.anytype.feature_allcontent.ui.AllContentNavigation.ALL_CONTENT_MAIN
 
 @Composable
-fun AllContentScreenWrapper(uiState: AllContentUiState) {
-    NavHost(
-        navController = rememberNavController(),
-        startDestination = ALL_CONTENT_MAIN
-    ) {
-        composable(
-            route = ALL_CONTENT_MAIN
-        ) {
-            AllContentMainScreen(uiState)
-        }
-    }
-}
-
-@Composable
-private fun AllContentMainScreen(uiState: AllContentUiState) {
+fun AllContentMainScreen(uiState: AllContentUiState, onTabClick: (AllContentTab) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()

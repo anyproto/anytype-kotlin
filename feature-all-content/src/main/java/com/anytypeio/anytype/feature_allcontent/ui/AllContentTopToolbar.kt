@@ -144,7 +144,7 @@ fun BoxScope.AllContentMenuButton(state: MenuButtonViewState) {
 
 //region AllContentTabs
 @Composable
-fun AllContentTabs(state: TabsViewState, onClick: () -> Unit) {
+fun AllContentTabs(state: TabsViewState, onClick: (AllContentTab) -> Unit) {
     val scrollState = rememberLazyListState()
     var selectedTab by remember { mutableStateOf<TabViewState?>(null) }
 
@@ -175,7 +175,7 @@ fun AllContentTabs(state: TabsViewState, onClick: () -> Unit) {
                         isSelected = tab.isSelected,
                         onClick = {
                             selectedTab = tab
-                            onClick()
+                            onClick(tab.tab)
                         }
                     )
                 }

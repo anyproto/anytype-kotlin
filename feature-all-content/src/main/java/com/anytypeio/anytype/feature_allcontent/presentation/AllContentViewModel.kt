@@ -48,7 +48,7 @@ import timber.log.Timber
 /**
  * ViewState: @see [AllContentUiState]
  * Factory: @see [AllContentViewModelFactory]
- * Screen: @see [com.anytypeio.anytype.feature_allcontent.ui.AllContentScreenWrapper]
+ * Screen: @see [com.anytypeio.anytype.feature_allcontent.ui.AllContentMainScreen]
  */
 
 class AllContentViewModel(
@@ -189,29 +189,6 @@ class AllContentViewModel(
             AllContentMode.AllContent -> AllContentMenuMode.AllContent(isSelected = true)
             AllContentMode.Unlinked -> AllContentMenuMode.Unlinked(isSelected = true)
         }
-    }
-
-//    @OptIn(ExperimentalCoroutinesApi::class)
-//    val uiState: StateFlow<AllContentUiState> =
-//        screenState
-//        .filterIsInstance<AllContentState.Default>()
-//        .flatMapLatest { result -> subscribe(result) }
-//        .catch {
-//            Timber.e(it, "Error parsing data")
-//            AllContentUiState.Error(message = it.message ?: "Error parsing data")
-//        }
-//        .map { items ->
-//            AllContentUiState.Content(items)
-//        }
-//        .stateIn(
-//            scope = viewModelScope,
-//            started = SharingStarted.WhileSubscribed(5_000),
-//            initialValue = AllContentUiState.Loading
-//        )
-//
-//
-    init {
-        Timber.d("AllContentViewModel created with params: $vmParams")
     }
 
     fun onTabClicked(tab: AllContentTab) {

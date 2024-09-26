@@ -34,6 +34,7 @@ import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
+import com.anytypeio.anytype.ui.library.LibraryFragment
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.creation.SelectObjectTypeFragment
@@ -352,7 +353,11 @@ class HomeScreenFragment : BaseComposeFragment() {
                 )
             }
             is Navigation.OpenLibrary -> runCatching {
-                navigation().openLibrary(destination.space)
+                findNavController().navigate(
+                    R.id.libraryFragment,
+                    args = LibraryFragment.args(destination.space)
+                )
+//                navigation().openLibrary(destination.space)
             }
         }
     }

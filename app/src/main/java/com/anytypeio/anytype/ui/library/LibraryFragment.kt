@@ -39,7 +39,6 @@ import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchForObjectFrag
 import com.anytypeio.anytype.ui.relations.RelationEditFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.typography
-import com.anytypeio.anytype.ui.spaces.SelectSpaceFragment
 import com.anytypeio.anytype.ui.types.create.CreateObjectTypeFragment
 import com.anytypeio.anytype.ui.types.create.REQUEST_CREATE_OBJECT
 import com.anytypeio.anytype.ui.types.edit.REQUEST_KEY_MODIFY_TYPE
@@ -162,10 +161,10 @@ class LibraryFragment : BaseComposeFragment() {
                         )
                     )
                 }
-                is LibraryViewModel.Navigation.SelectSpace -> {
-                    findNavController().navigate(
-                        R.id.selectSpaceScreen,
-                        args = SelectSpaceFragment.args(exitHomeWhenSpaceIsSelected = true)
+                is LibraryViewModel.Navigation.ExitToVault -> {
+                    findNavController().popBackStack(
+                        R.id.vaultScreen,
+                        true
                     )
                 }
 

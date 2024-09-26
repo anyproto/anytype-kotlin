@@ -82,9 +82,13 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
     private fun observe(command: SplashViewModel.Command) {
         when (command) {
             is SplashViewModel.Command.NavigateToDashboard -> {
+                findNavController().navigate(
+                    R.id.action_splashScreen_to_vaultScreen,
+                    args = HomeScreenFragment.args(command.deeplink)
+                )
                 try {
                     findNavController().navigate(
-                        R.id.action_splashScreen_to_homeScreen,
+                        R.id.openSpace,
                         args = HomeScreenFragment.args(command.deeplink)
                     )
                 } catch (e: Exception) {

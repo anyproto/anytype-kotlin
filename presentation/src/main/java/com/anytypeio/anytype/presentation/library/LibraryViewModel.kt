@@ -192,7 +192,7 @@ class LibraryViewModel(
             is LibraryEvent.BottomMenu.Back -> navigate(Navigation.Back())
             is LibraryEvent.BottomMenu.Search -> navigate(Navigation.Search())
             is LibraryEvent.BottomMenu.CreateObject -> proceedWithCreateDoc()
-            is LibraryEvent.BottomMenu.OpenProfile -> navigate(Navigation.SelectSpace)
+            is LibraryEvent.BottomMenu.OpenProfile -> navigate(Navigation.ExitToVault)
         }
     }
 
@@ -547,7 +547,7 @@ class LibraryViewModel(
             val view: LibraryView.MyRelationView
         ) : Navigation()
 
-        object SelectSpace: Navigation()
+        object ExitToVault: Navigation()
 
         class Back : Navigation()
 

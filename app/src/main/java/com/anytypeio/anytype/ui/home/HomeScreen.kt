@@ -885,7 +885,7 @@ fun HomeScreenBottomToolbar(
                 )
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_nav_panel_plusu),
+                painter = painterResource(id = R.drawable.ic_nav_panel_plus),
                 contentDescription = "Plus icon",
                 modifier = Modifier.align(Alignment.Center)
             )

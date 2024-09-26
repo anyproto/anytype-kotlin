@@ -208,7 +208,7 @@ sealed class ListRelationViewHolder(
                     in 0..MAX_VISIBLE_FILES_INDEX -> {
                         getViewByIndex(index)?.let { view ->
                             view.visible()
-                            view.setup(name = fileView.name, mime = fileView.mime)
+                            view.setup(name = fileView.name, mime = fileView.mime, extension = fileView.ext)
                         }
                     }
                 }

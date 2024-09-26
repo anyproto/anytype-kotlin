@@ -239,8 +239,7 @@ fun DVSortType.text(format: RelationFormat): Int = when (format) {
     }
 }
 
-fun String?.getMimeIcon(name: String?): Int {
-    val extension = MimeTypeMap.getFileExtensionFromUrl(name)
+fun String?.getMimeIcon(extension: String?): Int {
     var mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
     if (mime.isNullOrBlank()) {
         mime = this

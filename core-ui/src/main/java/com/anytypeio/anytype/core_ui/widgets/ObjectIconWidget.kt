@@ -145,7 +145,8 @@ class ObjectIconWidget @JvmOverloads constructor(
             is ObjectIcon.None -> removeIcon()
             is ObjectIcon.File -> setFileImage(
                 mime = icon.mime,
-                fileName = icon.fileName
+                fileName = icon.fileName,
+                extension = icon.extensions
             )
             ObjectIcon.Deleted -> setDeletedIcon()
             is ObjectIcon.Checkbox -> setCheckbox(icon.isChecked)
@@ -238,8 +239,8 @@ class ObjectIconWidget @JvmOverloads constructor(
         }
     }
 
-    private fun setFileImage(mime: String?, fileName: String?) {
-        val icon = mime.getMimeIcon(fileName)
+    private fun setFileImage(mime: String?, fileName: String?, extension: String?) {
+        val icon = mime.getMimeIcon(extension)
         with(binding) {
             ivImage.visible()
             ivImage.scaleType = ImageView.ScaleType.CENTER_CROP

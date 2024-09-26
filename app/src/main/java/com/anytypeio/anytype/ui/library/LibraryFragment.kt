@@ -168,8 +168,8 @@ class LibraryFragment : BaseComposeFragment() {
                             R.id.vaultScreen,
                             true
                         )
-                    }.onFailure {
-                        Timber.e(it, "Error while exiting to vault from space library")
+                    }.onFailure { e ->
+                        Timber.e(e, "Error while exiting to vault from space library")
                     }
                 }
 

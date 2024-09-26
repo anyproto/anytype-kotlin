@@ -136,7 +136,7 @@ class Navigator : AppNavigation {
     }
 
     override fun exitToVault() {
-        val popped = navController?.popBackStack(R.id.vaultScreen, false)
+        val popped = navController?.popBackStack(R.id.vaultScreen, true)
         if (popped == false) {
             navController?.navigate(R.id.vaultScreen)
         }

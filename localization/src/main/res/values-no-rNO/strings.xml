@@ -881,6 +881,7 @@
     <string name="slash_widget_media_file">Fil</string>
     <string name="slash_widget_media_file_subtitle">Lagre fil i original tilstand</string>
     <string name="slash_widget_media_picture">Bilde</string>
+    <string name="slash_widget_media_image">Image</string>
     <string name="slash_widget_media_picture_subtitle">Enrich your page with an image</string>
     <string name="slash_widget_media_video">Video</string>
     <string name="slash_widget_media_video_subtitle">Last opp spillbar video</string>

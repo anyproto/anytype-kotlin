@@ -879,6 +879,7 @@
     <string name="slash_widget_media_file">文件</string>
     <string name="slash_widget_media_file_subtitle">以原始状态存储文件</string>
     <string name="slash_widget_media_picture">图像</string>
+    <string name="slash_widget_media_image">图片</string>
     <string name="slash_widget_media_picture_subtitle">用图片丰富你的页面</string>
     <string name="slash_widget_media_video">视频</string>
     <string name="slash_widget_media_video_subtitle">上传可播放的视频</string>

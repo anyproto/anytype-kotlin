@@ -881,6 +881,7 @@
     <string name="slash_widget_media_file">Dosya</string>
     <string name="slash_widget_media_file_subtitle">Dosyayı orijinal halinde sakla</string>
     <string name="slash_widget_media_picture">Resim</string>
+    <string name="slash_widget_media_image">Görsel</string>
     <string name="slash_widget_media_picture_subtitle">Sayfanızı bir görselle zenginleştirin</string>
     <string name="slash_widget_media_video">Video</string>
     <string name="slash_widget_media_video_subtitle">Oynatılabilir video yükle</string>

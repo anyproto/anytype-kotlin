@@ -885,6 +885,7 @@
     <string name="slash_widget_media_file">Файл</string>
     <string name="slash_widget_media_file_subtitle">Сохранить файл в исходном состоянии</string>
     <string name="slash_widget_media_picture">Изображение</string>
+    <string name="slash_widget_media_image">Image</string>
     <string name="slash_widget_media_picture_subtitle">Пополнить страницу изображением</string>
     <string name="slash_widget_media_video">Видео</string>
     <string name="slash_widget_media_video_subtitle">Загрузить воспроизводимое видео</string>

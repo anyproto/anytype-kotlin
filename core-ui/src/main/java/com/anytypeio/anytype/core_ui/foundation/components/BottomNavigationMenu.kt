@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationDefaults.Height
+import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationDefaults.Width
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleCombinedClickable
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
@@ -48,7 +49,7 @@ fun BottomNavigationMenu(
     Row(
         modifier = modifier
             .height(Height)
-            .width(288.dp)
+            .width(Width)
             .background(color = colorResource(id = R.color.background_primary))
             /**
              * Workaround for clicks through the bottom navigation menu.
@@ -155,6 +156,7 @@ private enum class BottomNavigationItem(@DrawableRes val res: Int) {
 }
 
 @Immutable
-private object BottomNavigationDefaults {
+object BottomNavigationDefaults {
     val Height = 52.dp
+    val Width = 288.dp
 }

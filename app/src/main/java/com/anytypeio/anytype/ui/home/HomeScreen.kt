@@ -45,6 +45,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
+import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationDefaults
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleCombinedClickable
 import com.anytypeio.anytype.core_ui.views.UXBody
@@ -817,8 +818,8 @@ fun HomeScreenBottomToolbar(
     val haptic = LocalHapticFeedback.current
     Row(
         modifier = modifier
-            .height(52.dp)
-            .width(288.dp)
+            .height(BottomNavigationDefaults.Height)
+            .width(BottomNavigationDefaults.Width)
             .background(
                 shape = RoundedCornerShape(16.dp),
                 color = colorResource(id = R.color.home_screen_button)

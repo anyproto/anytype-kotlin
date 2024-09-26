@@ -197,7 +197,7 @@
         android:id="@+id/vaultScreen"
         android:name="com.anytypeio.anytype.ui.vault.VaultFragment">
         <action
-            android:id="@+id/openSpace"
+            android:id="@+id/actionOpenSpaceFromVault"
             app:destination="@id/homeScreen" />
     </fragment>
 
@@ -282,7 +282,7 @@
             app:popUpTo="@+id/splashScreen"
             app:popUpToInclusive="true" />
         <action
-            android:id="@+id/action_splashScreen_to_vaultScreen"
+            android:id="@+id/actionOpenVaultFromSplash"
             app:destination="@id/vaultScreen"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim"

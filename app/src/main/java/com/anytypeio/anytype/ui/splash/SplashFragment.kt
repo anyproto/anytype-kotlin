@@ -83,12 +83,12 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
         when (command) {
             is SplashViewModel.Command.NavigateToDashboard -> {
                 findNavController().navigate(
-                    R.id.action_splashScreen_to_vaultScreen,
+                    R.id.actionOpenVaultFromSplash,
                     args = HomeScreenFragment.args(command.deeplink)
                 )
                 try {
                     findNavController().navigate(
-                        R.id.openSpace,
+                        R.id.actionOpenSpaceFromVault,
                         args = HomeScreenFragment.args(command.deeplink)
                     )
                 } catch (e: Exception) {
@@ -99,7 +99,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
             is SplashViewModel.Command.NavigateToVault -> {
                 try {
                     findNavController().navigate(
-                        R.id.action_splashScreen_to_vaultScreen,
+                        R.id.actionOpenVaultFromSplash,
                         args = HomeScreenFragment.args(command.deeplink)
                     )
                 } catch (e: Exception) {
@@ -108,8 +108,8 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                 }
             }
             is SplashViewModel.Command.NavigateToObject -> {
-                findNavController().navigate(R.id.action_splashScreen_to_vaultScreen)
-                findNavController().navigate(R.id.homeScreen)
+                findNavController().navigate(R.id.actionOpenVaultFromSplash)
+                findNavController().navigate(R.id.actionOpenSpaceFromVault)
                 findNavController().navigate(
                     R.id.objectNavigation,
                     EditorFragment.args(
@@ -119,8 +119,8 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                 )
             }
             is SplashViewModel.Command.NavigateToObjectSet -> {
-                findNavController().navigate(R.id.action_splashScreen_to_vaultScreen)
-                findNavController().navigate(R.id.homeScreen)
+                findNavController().navigate(R.id.actionOpenVaultFromSplash)
+                findNavController().navigate(R.id.actionOpenSpaceFromVault)
                 findNavController().navigate(
                     R.id.dataViewNavigation,
                     ObjectSetFragment.args(

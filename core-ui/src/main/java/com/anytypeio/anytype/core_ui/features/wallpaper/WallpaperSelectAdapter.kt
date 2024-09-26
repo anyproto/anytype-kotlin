@@ -126,7 +126,7 @@ class WallpaperSelectAdapter(
             } else {
                 itemView.tint(Color.WHITE)
             }
-            itemView.background.alpha = 76
+            itemView.background.alpha = WallpaperView.WALLPAPER_DEFAULT_ALPHA
         }
     }
 

@@ -128,4 +128,6 @@
 
     <color name="object_number_background">#393835</color>
 
+    <color name="home_screen_button">#F2222222</color>
+
 </resources>

@@ -1771,4 +1771,6 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_sort_date_created">Date created</string>
     <string name="all_content_sort_name">Name</string>
 
+    <string name="all_content">All content</string>
+
 </resources>

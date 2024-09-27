@@ -15,7 +15,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:contentDescription="@string/content_desc_back_button"
-            app:srcCompat="@drawable/ic_main_toolbar_back" />
+            app:srcCompat="@drawable/ic_nav_panel_back" />
 
     </FrameLayout>
 
@@ -32,7 +32,25 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:contentDescription="@string/content_desc_home_button"
-            app:srcCompat="@drawable/ic_main_toolbar_home" />
+            app:srcCompat="@drawable/ic_nav_panel_vault" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/btnSearch"
+        android:layout_width="0dp"
+        android:visibility="visible"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@drawable/default_ripple">
+
+        <ImageView
+            android:id="@+id/icSearch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:contentDescription="@string/content_desc_search_button"
+            app:srcCompat="@drawable/ic_nav_panel_search" />
 
     </FrameLayout>
 
@@ -49,50 +67,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:contentDescription="@string/content_desc_add_doc_button"
-            app:srcCompat="@drawable/ic_page_toolbar_add_doc" />
-
-    </FrameLayout>
-
-    <FrameLayout
-        android:id="@+id/btnSearch"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="@drawable/default_ripple">
-
-        <ImageView
-            android:id="@+id/icSearch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:contentDescription="@string/content_desc_search_button"
-            app:srcCompat="@drawable/ic_page_toolbar_search" />
-
-    </FrameLayout>
-
-    <FrameLayout
-        android:id="@+id/btnProfile"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="@drawable/default_ripple">
-
-        <ImageView
-            android:id="@+id/ivProfile"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:layout_gravity="center"
-            android:contentDescription="Profile icon"
-            app:srcCompat="@drawable/ic_nav_profile_icon_placeholder_circle" />
-
-        <TextView
-            android:id="@+id/tvProfileInitial"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textColor="@color/white"
-            android:textAllCaps="true"
-            android:contentDescription="Profile icon initial" />
+            app:srcCompat="@drawable/ic_nav_panel_plus" />
 
     </FrameLayout>
 

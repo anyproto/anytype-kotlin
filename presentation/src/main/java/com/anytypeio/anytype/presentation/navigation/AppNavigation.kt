@@ -36,6 +36,7 @@ interface AppNavigation {
 
     fun exit()
     fun exitToDesktop()
+    fun exitToVault()
     fun openGlobalSearch(space: Id)
     fun openUpdateAppScreen()
     fun openRemoteFilesManageScreen(subscription: Id)
@@ -54,10 +55,11 @@ interface AppNavigation {
 
     sealed class Command {
 
-        object Exit : Command()
-        object ExitToDesktop : Command()
+        data object Exit : Command()
+        data object ExitToDesktop : Command()
+        data object ExitToVault : Command()
 
-        object ExitFromMigrationScreen : Command()
+        data object ExitFromMigrationScreen : Command()
 
         data class OpenObject(val target: Id, val space: Id) : Command()
         data class LaunchDocument(val target: Id, val space: Id) : Command()

@@ -23,7 +23,11 @@ sealed class ObjectIcon {
 
     data class Bookmark(val image: Url) : ObjectIcon()
 
-    data class File(val mime: String?, val fileName: String?) : ObjectIcon()
+    data class File(
+        val mime: String?,
+        val fileName: String?,
+        val extensions: String? = null
+    ) : ObjectIcon()
 
     object Deleted : ObjectIcon()
     data class Checkbox(val isChecked: Boolean) : ObjectIcon()
@@ -75,7 +79,7 @@ sealed class ObjectIcon {
                 ObjectType.Layout.VIDEO,
                 ObjectType.Layout.PDF -> {
                     if (img.isNullOrBlank()) {
-                        File(mime = obj.fileMimeType, fileName = obj.name)
+                        File(mime = obj.fileMimeType, fileName = obj.name, extensions = obj.fileExt)
                     } else {
                         Basic.Image(hash = builder.thumbnail(img))
                     }

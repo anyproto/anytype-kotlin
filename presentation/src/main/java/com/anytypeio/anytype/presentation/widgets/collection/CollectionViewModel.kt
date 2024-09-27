@@ -812,7 +812,7 @@ class CollectionViewModel(
     fun onHomeClicked() {
         launch {
             analytics.sendScreenHomeEvent()
-            commands.emit(Command.ToDesktop)
+            commands.emit(Command.Vault)
         }
     }
 
@@ -838,7 +838,7 @@ class CollectionViewModel(
 
     fun onProfileClicked() {
         viewModelScope.launch {
-            commands.emit(Command.SelectSpace)
+            commands.emit(Command.Vault)
         }
     }
 
@@ -985,7 +985,7 @@ class CollectionViewModel(
 
         data object ToDesktop : Command()
         data class ToSearch(val space: Id) : Command()
-        data object SelectSpace : Command()
+        data object Vault : Command()
         data object Exit : Command()
     }
 }

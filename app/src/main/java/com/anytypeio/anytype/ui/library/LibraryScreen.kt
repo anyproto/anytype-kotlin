@@ -17,8 +17,10 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.systemBars
@@ -32,6 +34,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -75,17 +78,24 @@ fun LibraryScreen(
 
     Scaffold(
         bottomBar = {
-            Menu(
-                viewModel,
-                modifier = modifier.then(
-                    if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
-                        Modifier.windowInsetsPadding(WindowInsets.navigationBars)
-                    else
-                        Modifier
-                ),
-                screenState = screenState,
-                onCreateObjectLongClicked = onCreateObjectLongClicked
-            )
+            Box(
+                modifier = modifier
+                    .then(
+                        if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
+                            Modifier
+                                .windowInsetsPadding(WindowInsets.navigationBars)
+                        else
+                            Modifier
+                    )
+                    .fillMaxWidth()
+            ) {
+                Menu(
+                    viewModel,
+                    modifier = Modifier.align(Alignment.BottomCenter),
+                    screenState = screenState,
+                    onCreateObjectLongClicked = onCreateObjectLongClicked
+                )
+            }
         }
     ) {
         println(it)

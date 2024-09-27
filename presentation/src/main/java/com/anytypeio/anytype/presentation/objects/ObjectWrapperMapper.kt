@@ -305,7 +305,8 @@ private fun ObjectWrapper.Basic.getFileObjectIcon(): ObjectIcon {
         ObjectType.Layout.FILE, ObjectType.Layout.IMAGE ->
             ObjectIcon.File(
                 mime = fileMimeType,
-                fileName = getProperName()
+                fileName = getProperName(),
+                extensions = fileExt
             )
 
         else -> ObjectIcon.None

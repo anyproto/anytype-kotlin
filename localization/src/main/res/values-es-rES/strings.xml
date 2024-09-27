@@ -881,6 +881,7 @@
     <string name="slash_widget_media_file">Archivo</string>
     <string name="slash_widget_media_file_subtitle">Almacenar el archivo en su estado original</string>
     <string name="slash_widget_media_picture">Imagen</string>
+    <string name="slash_widget_media_image">Imagen</string>
     <string name="slash_widget_media_picture_subtitle">Enriquece tu página con una imagen</string>
     <string name="slash_widget_media_video">Vídeo</string>
     <string name="slash_widget_media_video_subtitle">Cargar un vídeo reproducible</string>

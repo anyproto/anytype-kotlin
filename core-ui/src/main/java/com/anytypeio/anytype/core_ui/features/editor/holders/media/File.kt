@@ -78,7 +78,7 @@ class File(val binding: ItemBlockFileBinding) : Media(binding.root), Decoratable
 
         applySearchHighlight(item)
 
-        val mimeIcon = item.mime.getMimeIcon(item.name)
+        val mimeIcon = item.mime.getMimeIcon(item.fileExt)
         icon.setImageResource(mimeIcon)
 
         applyBackground(item.background)

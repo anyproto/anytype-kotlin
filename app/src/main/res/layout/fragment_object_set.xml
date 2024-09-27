@@ -131,14 +131,24 @@
         app:layout_constraintTop_toBottomOf="@+id/dataViewHeader"
         tools:visibility="visible" />
 
-    <com.anytypeio.anytype.core_ui.widgets.toolbar.MainBottomToolbar
-        android:id="@+id/bottomToolbar"
+    <FrameLayout
+        android:id="@+id/bottomToolbarСontainer"
         android:layout_width="0dp"
-        android:layout_height="@dimen/default_toolbar_height"
+        android:layout_height="@dimen/default_nav_panel_height"
         app:layout_constraintBottom_toTopOf="@+id/bottomPanel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:visibility="visible" />
+        tools:visibility="visible">
+        <com.anytypeio.anytype.core_ui.widgets.toolbar.MainBottomToolbar
+            android:id="@+id/bottomToolbar"
+            android:layout_width="@dimen/default_nav_panel_width"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toTopOf="@+id/bottomPanel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_gravity="center"
+            tools:visibility="visible" />
+    </FrameLayout>
 
     <include
         android:id="@+id/initState"

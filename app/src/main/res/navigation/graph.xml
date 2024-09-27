@@ -171,7 +171,13 @@
     <fragment
         android:id="@+id/homeScreenWidgets"
         android:name="com.anytypeio.anytype.ui.widgets.collection.CollectionFragment"
-        android:label="Home screen" />
+        android:label="Home screen">
+        <action
+            android:id="@+id/actionOpenVault"
+            app:destination="@id/vaultScreen"
+            app:popUpTo="@id/vaultScreen"
+            app:popUpToInclusive="true" />
+    </fragment>
 
     <dialog
         android:id="@+id/selectWidgetSourceScreen"
@@ -203,18 +209,20 @@
         android:id="@+id/vaultScreen"
         android:name="com.anytypeio.anytype.ui.vault.VaultFragment">
         <action
-            android:id="@+id/openSpace"
+            android:id="@+id/actionOpenSpaceFromVault"
             app:destination="@id/homeScreen" />
+        <action
+            android:id="@+id/actionCreateSpaceFromVault"
+            app:destination="@id/createSpaceScreen" />
     </fragment>
 
     <dialog
         android:id="@+id/createSpaceScreen"
         android:name="com.anytypeio.anytype.ui.spaces.CreateSpaceFragment">
         <action
-            android:id="@+id/switchSpaceAction"
-            app:popUpTo="@+id/homeScreen"
-            app:popUpToInclusive="false"
-            app:enterAnim="@anim/anim_switch_space_enter" />
+            android:id="@+id/exitToVaultAction"
+            app:popUpTo="@+id/vaultScreen"
+            app:popUpToInclusive="false" />
     </dialog>
 
     <dialog
@@ -288,7 +296,7 @@
             app:popUpTo="@+id/splashScreen"
             app:popUpToInclusive="true" />
         <action
-            android:id="@+id/action_splashScreen_to_vaultScreen"
+            android:id="@+id/actionOpenVaultFromSplash"
             app:destination="@id/vaultScreen"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim"
@@ -406,6 +414,11 @@
         <action
             android:id="@+id/openRelationEditingScreen"
             app:destination="@id/relationEditingFragment" />
+        <action
+            android:id="@+id/actionOpenVault"
+            app:destination="@id/vaultScreen"
+            app:popUpTo="@id/vaultScreen"
+            app:popUpToInclusive="true" />
     </fragment>
     <dialog
         android:id="@+id/typeCreationFragment"

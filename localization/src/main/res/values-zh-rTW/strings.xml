@@ -879,6 +879,7 @@
     <string name="slash_widget_media_file">檔案</string>
     <string name="slash_widget_media_file_subtitle">以原始狀態儲存檔案</string>
     <string name="slash_widget_media_picture">圖片</string>
+    <string name="slash_widget_media_image">圖像</string>
     <string name="slash_widget_media_picture_subtitle">使用圖片豐富您的頁面</string>
     <string name="slash_widget_media_video">影片</string>
     <string name="slash_widget_media_video_subtitle">上傳可播放的影片</string>

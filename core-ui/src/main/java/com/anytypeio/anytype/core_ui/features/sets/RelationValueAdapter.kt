@@ -303,7 +303,7 @@ class RelationValueAdapter(
             DragAndDropViewHolder {
             fun bind(item: RelationValueView.File) = with(binding) {
                 tvTitle.text = "${item.name}.${item.ext}"
-                val mimeIcon = item.mime.getMimeIcon(item.name)
+                val mimeIcon = item.mime.getMimeIcon(item.ext)
                 iconMime.setImageResource(mimeIcon)
                 if (!item.removable) {
                     btnRemoveFile.gone()

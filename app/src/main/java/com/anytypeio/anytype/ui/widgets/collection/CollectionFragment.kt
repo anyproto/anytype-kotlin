@@ -27,8 +27,8 @@ import com.anytypeio.anytype.presentation.widgets.collection.SubscriptionMapper
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.dashboard.DeleteAlertFragment
 import com.anytypeio.anytype.ui.objects.creation.SelectObjectTypeFragment
-import com.anytypeio.anytype.ui.spaces.SelectSpaceFragment
 import javax.inject.Inject
+import timber.log.Timber
 
 class CollectionFragment : BaseComposeFragment() {
 
@@ -107,11 +107,12 @@ class CollectionFragment : BaseComposeFragment() {
             is Command.ToSearch -> navigation.openGlobalSearch(
                 space = command.space
             )
-            is Command.SelectSpace -> {
-                findNavController().navigate(
-                    R.id.selectSpaceScreen,
-                    args = SelectSpaceFragment.args(exitHomeWhenSpaceIsSelected = true)
-                )
+            is Command.Vault -> {
+                runCatching {
+                    findNavController().navigate(R.id.actionOpenVault)
+                }.onFailure {
+                    Timber.e(it, "Error while exiting to vault")
+                }
             }
         }
     }

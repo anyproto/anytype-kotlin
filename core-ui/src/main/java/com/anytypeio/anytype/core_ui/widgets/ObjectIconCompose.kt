@@ -61,7 +61,8 @@ fun ListWidgetObjectIcon(
                 fileName = icon.fileName.orEmpty(),
                 mime = icon.mime.orEmpty(),
                 modifier = modifier,
-                iconSize = iconSize
+                iconSize = iconSize,
+                extension = icon.extensions
             )
         }
         else -> {
@@ -243,9 +244,10 @@ fun DefaultFileObjectImageIcon(
     fileName: String,
     mime: String,
     modifier: Modifier,
-    iconSize: Dp
+    iconSize: Dp,
+    extension: String?,
 ) {
-    val mimeIcon = mime.getMimeIcon(fileName)
+    val mimeIcon = mime.getMimeIcon(extension)
     Image(
         painter = painterResource(id = mimeIcon),
         contentDescription = "File icon",

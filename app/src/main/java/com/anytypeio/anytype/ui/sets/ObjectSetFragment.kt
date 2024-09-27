@@ -122,7 +122,6 @@ import com.anytypeio.anytype.ui.relations.value.TagOrStatusValueFragment
 import com.anytypeio.anytype.ui.sets.modals.ObjectSetSettingsFragment
 import com.anytypeio.anytype.ui.sets.modals.SetObjectCreateRecordFragmentBase
 import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
-import com.anytypeio.anytype.ui.spaces.SelectSpaceFragment
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TARGET_TYPE_ID
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TARGET_TYPE_KEY
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TEMPLATE_ID
@@ -305,16 +304,6 @@ open class ObjectSetFragment :
             subscribe(
                 binding.bottomToolbar.addDocClicks().throttleFirst()
             ) { vm.onAddNewDocumentClicked() }
-
-            binding.bottomToolbar
-                .profileClicks()
-                .onEach {
-                    findNavController().navigate(
-                        R.id.selectSpaceScreen,
-                        args = SelectSpaceFragment.args(exitHomeWhenSpaceIsSelected = true)
-                    )
-                }
-                .launchIn(lifecycleScope)
 
             binding
                 .bottomToolbar
@@ -1332,10 +1321,6 @@ open class ObjectSetFragment :
         jobs += lifecycleScope.subscribe(vm.toasts) { toast(it) }
 
         jobs += lifecycleScope.subscribe(vm.spaceSyncStatus) { setStatus(it) }
-
-        subscribe(vm.icon) { icon ->
-            binding.bottomToolbar.bind(icon)
-        }
 
         vm.onStart(ctx = ctx, space = space, view = view)
     }

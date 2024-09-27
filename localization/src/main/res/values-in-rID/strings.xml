@@ -879,6 +879,7 @@
     <string name="slash_widget_media_file">Berkas</string>
     <string name="slash_widget_media_file_subtitle">Simpan berkas sebagaimana aslinya</string>
     <string name="slash_widget_media_picture">Gambar</string>
+    <string name="slash_widget_media_image">Gambar</string>
     <string name="slash_widget_media_picture_subtitle">Enrich your page with an image</string>
     <string name="slash_widget_media_video">Video</string>
     <string name="slash_widget_media_video_subtitle">Unggah video yang dapat diputar</string>
@@ -1358,7 +1359,7 @@
 Specifically,
 Please provide specific details of your needs here.</string>
     <!-- Membership name errors -->
-    <string name="membership_name_bad_input">Something wrong with input, try again</string>
+    <string name="membership_name_bad_input">Ada yang salah dengan masukan, coba lagi</string>
     <string name="membership_name_cache_error">Error on our side, try again later</string>
     <string name="membership_name_cant_connect">Can not connect, check your internet connection</string>
     <string name="membership_name_invalid_chars">Nama mengandung karakter tidak valid</string>

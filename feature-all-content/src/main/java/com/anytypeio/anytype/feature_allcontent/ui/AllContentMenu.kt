@@ -35,14 +35,14 @@ import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.feature_allcontent.R
+import com.anytypeio.anytype.feature_allcontent.models.AllContentMenuMode
 import com.anytypeio.anytype.feature_allcontent.models.MenuSortsItem
-import com.anytypeio.anytype.feature_allcontent.models.AllContentMode
 import com.anytypeio.anytype.feature_allcontent.models.AllContentSort
 
 @Composable
 fun AllContentMenu(
-    mode: List<AllContentMode>,
-    onModeClick: (AllContentMode) -> Unit = {},
+    mode: List<AllContentMenuMode>,
+    onModeClick: (AllContentMenuMode) -> Unit = {},
     sortsItems: List<MenuSortsItem>
 ) {
     val scrollState = rememberLazyListState()
@@ -185,10 +185,10 @@ private fun LazyItemScope.MenuItem(modifier: Modifier, title: String, isSelected
 
 //region RESOURCES
 @Composable
-private fun getModeTitle(mode: AllContentMode): String = stringResource(
+private fun getModeTitle(mode: AllContentMenuMode): String = stringResource(
     when (mode) {
-        is AllContentMode.AllContent -> R.string.all_content_title_all_content
-        is AllContentMode.Unlinked -> R.string.all_content_title_only_unlinked
+        is AllContentMenuMode.AllContent -> R.string.all_content_title_all_content
+        is AllContentMenuMode.Unlinked -> R.string.all_content_title_only_unlinked
     }
 )
 
@@ -231,8 +231,8 @@ private fun DVSortType.title(sort: AllContentSort): String = when (this) {
 fun AllContentMenuPreview() {
     AllContentMenu(
         mode = listOf(
-            AllContentMode.AllContent(isSelected = true),
-            AllContentMode.Unlinked(isSelected = false)
+            AllContentMenuMode.AllContent(isSelected = true),
+            AllContentMenuMode.Unlinked(isSelected = false)
         ),
         sortsItems = listOf(
             MenuSortsItem.Container(

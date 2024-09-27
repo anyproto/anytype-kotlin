@@ -6,7 +6,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -43,6 +42,7 @@ import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
@@ -59,6 +59,7 @@ import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.feature_allcontent.R
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
+import com.anytypeio.anytype.feature_allcontent.models.AllContentTitleViewState
 import com.anytypeio.anytype.feature_allcontent.models.MenuButtonViewState
 import com.anytypeio.anytype.feature_allcontent.models.TabsViewState
 import com.anytypeio.anytype.feature_allcontent.models.TopBarViewState
@@ -66,7 +67,7 @@ import com.anytypeio.anytype.feature_allcontent.models.TopBarViewState
 //region AllContentTopBarContainer
 
 @Composable
-fun AllContentTopBarContainer(state: TopBarViewState) {
+fun AllContentTopBarContainer(state: TopBarViewState.Default) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -81,7 +82,7 @@ fun AllContentTopBarContainer(state: TopBarViewState) {
 @Composable
 private fun AllContentTopBarContainerPreview() {
     AllContentTopBarContainer(
-        state = TopBarViewState(
+        state = TopBarViewState.Default(
             titleState = AllContentTitleViewState.OnlyUnlinked,
             menuButtonState = MenuButtonViewState.Visible
         )
@@ -90,11 +91,6 @@ private fun AllContentTopBarContainerPreview() {
 //endregion
 
 //region AllContentTitle
-sealed class AllContentTitleViewState {
-    data object Hidden : AllContentTitleViewState()
-    data object AllContent : AllContentTitleViewState()
-    data object OnlyUnlinked : AllContentTitleViewState()
-}
 
 @Composable
 fun BoxScope.AllContentTitle(state: AllContentTitleViewState) {
@@ -147,42 +143,41 @@ fun BoxScope.AllContentMenuButton(state: MenuButtonViewState) {
 
 //region AllContentTabs
 @Composable
-fun AllContentTabs(state: TabsViewState, onClick: () -> Unit) {
+fun AllContentTabs(
+    tabsViewState: TabsViewState.Default,
+    onClick: (AllContentTab) -> Unit
+) {
     val scrollState = rememberLazyListState()
-    var selectedTab by remember { mutableStateOf<AllContentTab?>(null) }
+    var selectedTab by remember { mutableStateOf(tabsViewState.selectedTab) }
 
-    when (state) {
-        is TabsViewState.Hidden -> return
-        is TabsViewState.Visible -> {
-            LaunchedEffect(onClick) {
-                scrollState.animateScrollToItem(state.tabs.indexOf(selectedTab))
-            }
-            val snapFlingBehavior = rememberSnapFlingBehavior(scrollState)
-            LazyRow(
-                state = scrollState,
-                flingBehavior = snapFlingBehavior,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(40.dp),
-                horizontalArrangement = Arrangement.spacedBy(20.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                contentPadding = PaddingValues(start = 20.dp, end = 20.dp)
-            ) {
-                items(
-                    count = state.tabs.size,
-                    key = { index -> state.tabs[index].ordinal },
-                ) { index ->
-                    val tab = state.tabs[index]
-                    AllContentTabText(
-                        tab = tab,
-                        isSelected = tab == selectedTab,
-                        onClick = {
-                            selectedTab = tab
-                            onClick()
-                        }
-                    )
+    LaunchedEffect(onClick) {
+//                scrollState.animateScrollToItem(state.tabs.indexOf(selectedTab))
+    }
+    val snapFlingBehavior = rememberSnapFlingBehavior(scrollState)
+
+    LazyRow(
+        state = scrollState,
+        flingBehavior = snapFlingBehavior,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(40.dp),
+        horizontalArrangement = Arrangement.spacedBy(20.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        contentPadding = PaddingValues(start = 20.dp, end = 20.dp)
+    ) {
+        items(
+            count = tabsViewState.tabs.size,
+            key = { index -> tabsViewState.tabs[index].ordinal },
+        ) { index ->
+            val tab = tabsViewState.tabs[index]
+            AllContentTabText(
+                tab = tab,
+                isSelected = tab == selectedTab,
+                onClick = {
+                    selectedTab = tab
+                    onClick(tab)
                 }
-            }
+            )
         }
     }
 }
@@ -196,7 +191,7 @@ private fun AllContentTabText(
     Text(
         modifier = Modifier
             .wrapContentSize()
-            .clickable { onClick() },
+            .noRippleClickable { onClick() },
         text = getTabText(tab),
         style = Title2,
         color = if (isSelected) colorResource(id = R.color.glyph_button) else colorResource(id = R.color.glyph_active),
@@ -207,37 +202,41 @@ private fun AllContentTabText(
 @Composable
 private fun getTabText(tab: AllContentTab): String {
     return when (tab) {
-        AllContentTab.OBJECTS -> stringResource(id = R.string.all_content_title_tab_objetcs)
+        AllContentTab.PAGES -> stringResource(id = R.string.all_content_title_tab_pages)
         AllContentTab.FILES -> stringResource(id = R.string.all_content_title_tab_files)
         AllContentTab.MEDIA -> stringResource(id = R.string.all_content_title_tab_media)
         AllContentTab.BOOKMARKS -> stringResource(id = R.string.all_content_title_tab_bookmarks)
         AllContentTab.TYPES -> stringResource(id = R.string.all_content_title_tab_objetc_types)
         AllContentTab.RELATIONS -> stringResource(id = R.string.all_content_title_tab_relations)
+        AllContentTab.LISTS -> stringResource(id = R.string.all_content_title_tab_lists)
     }
 }
 
-@DefaultPreviews
-@Composable
-private fun AllContentTabsPreview() {
-    AllContentTabs(
-        state = TabsViewState.Visible(
-            tabs = listOf(
-                AllContentTab.OBJECTS,
-                AllContentTab.FILES,
-                AllContentTab.MEDIA,
-                AllContentTab.BOOKMARKS,
-                AllContentTab.TYPES,
-                AllContentTab.RELATIONS
-            )
-        ),
-        onClick = {}
-    )
-}
+//@DefaultPreviews
+//@Composable
+//private fun AllContentTabsPreview() {
+//    AllContentTabs(
+//        state = TabsViewState(
+//            tabs = listOf(
+//                AllContentTab.OBJECTS,
+//                AllContentTab.FILES,
+//                AllContentTab.MEDIA,
+//                AllContentTab.BOOKMARKS,
+//                AllContentTab.TYPES,
+//                AllContentTab.RELATIONS
+//            ),
+//            selectedTab = AllContentTab.MEDIA
+//        ),
+//        onClick = {}
+//    )
+//}
 
 //endregion
+
+//region SearchBar
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun AllContentSearchBar() {
+fun AllContentSearchBar(onQueryChanged: (String) -> Unit) {
 
     val interactionSource = remember { MutableInteractionSource() }
     val focus = LocalFocusManager.current
@@ -287,7 +286,7 @@ fun AllContentSearchBar() {
                 ),
                 onValueChange = { input ->
                     query = input.also {
-                        //onQueryChanged(input.text)
+                        onQueryChanged(input.text)
                     }
                 },
                 singleLine = true,
@@ -314,7 +313,7 @@ fun AllContentSearchBar() {
                             )
                         },
                         colors = TextFieldDefaults.textFieldColors(
-                            backgroundColor = colorResource(id = R.color.shape_transparent),
+                            backgroundColor = Color.Transparent,
                             cursorColor = colorResource(id = R.color.cursor_color),
                         ),
                         border = {},
@@ -348,7 +347,7 @@ fun AllContentSearchBar() {
                     .padding(end = 9.dp)
                     .noRippleClickable {
                         query = TextFieldValue().also {
-                            //onQueryChanged("")
+                            onQueryChanged("")
                         }
                     }
             )
@@ -359,8 +358,6 @@ fun AllContentSearchBar() {
 @DefaultPreviews
 @Composable
 private fun AllContentSearchBarPreview() {
-    AllContentSearchBar()
+    AllContentSearchBar() {}
 }
-//region SearchBar
-
 //endregion

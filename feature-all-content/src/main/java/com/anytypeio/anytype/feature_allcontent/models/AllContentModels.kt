@@ -1,24 +1,41 @@
 package com.anytypeio.anytype.feature_allcontent.models
 
+import androidx.compose.runtime.Immutable
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.RelationKey
-import com.anytypeio.anytype.feature_allcontent.ui.AllContentTitleViewState
 
+sealed class AllContentState {
+    data object Initial : AllContentState()
+    data class Default(
+        val activeTab: AllContentTab,
+        val activeMode: AllContentMode,
+        val activeSort: AllContentSort,
+        val filter: String,
+        val limit: Int
+    ) : AllContentState()
+}
+
+@Immutable
 enum class AllContentTab {
-    OBJECTS, FILES, MEDIA, BOOKMARKS, TYPES, RELATIONS
+    PAGES, LISTS, MEDIA, BOOKMARKS, FILES, TYPES, RELATIONS
 }
 
 sealed class AllContentMode {
+    data object AllContent : AllContentMode()
+    data object Unlinked : AllContentMode()
+}
+
+sealed class AllContentMenuMode {
     abstract val isSelected: Boolean
 
     data class AllContent(
         override val isSelected: Boolean = false
-    ) : AllContentMode()
+    ) : AllContentMenuMode()
 
     data class Unlinked(
         override val isSelected: Boolean = false
-    ) : AllContentMode()
+    ) : AllContentMenuMode()
 }
 
 sealed class AllContentSort {
@@ -51,19 +68,38 @@ sealed class AllContentSort {
 
 
 //region VIEW STATES
-data class TopBarViewState(
-    val titleState: AllContentTitleViewState,
-    val menuButtonState: MenuButtonViewState
-)
+sealed class AllContentTitleViewState {
+    data object Hidden : AllContentTitleViewState()
+    data object AllContent : AllContentTitleViewState()
+    data object OnlyUnlinked : AllContentTitleViewState()
+}
+
+@Immutable
+sealed class TopBarViewState {
+
+    data object Hidden : TopBarViewState()
+
+    @Immutable
+    data class Default(
+        val titleState: AllContentTitleViewState,
+        val menuButtonState: MenuButtonViewState
+    ) : TopBarViewState()
+}
 
 sealed class MenuButtonViewState {
     data object Hidden : MenuButtonViewState()
     data object Visible : MenuButtonViewState()
 }
 
+@Immutable
 sealed class TabsViewState {
-    data class Hidden(val hidden: Boolean) : TabsViewState()
-    data class Visible(val tabs: List<AllContentTab>) : TabsViewState()
+    data object Hidden : TabsViewState()
+
+    @Immutable
+    data class Default(
+        val tabs: List<AllContentTab>,
+        val selectedTab: AllContentTab
+    ) : TabsViewState()
 }
 
 sealed class MenuSortsItem {
@@ -90,6 +126,4 @@ sealed class MenuSortsItem {
         const val SPACER_ID = "spacer_id"
     }
 }
-
-
 //endregion

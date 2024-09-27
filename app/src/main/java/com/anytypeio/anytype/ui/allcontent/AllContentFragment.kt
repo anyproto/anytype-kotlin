@@ -3,10 +3,15 @@ package com.anytypeio.anytype.ui.allcontent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.Composable
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.fragment.compose.content
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.argString
@@ -14,7 +19,9 @@ import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModelFactory
-import com.anytypeio.anytype.feature_allcontent.ui.AllContentScreenWrapper
+import com.anytypeio.anytype.feature_allcontent.ui.AllContentWrapperScreen
+import com.anytypeio.anytype.feature_allcontent.ui.AllContentNavigation.ALL_CONTENT_MAIN
+import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 
 class AllContentFragment : BaseComposeFragment() {
@@ -31,14 +38,32 @@ class AllContentFragment : BaseComposeFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ) = content {
-        AllContentScreenWrapper(
-            uiState = vm.uiState.collectAsStateWithLifecycle().value
-        )
+        MaterialTheme(
+            typography = typography
+        ) {
+            AllContentScreenWrapper()
+        }
     }
 
-    override fun onStart() {
-        super.onStart()
-        vm.onStart()
+    @Composable
+    fun AllContentScreenWrapper() {
+        NavHost(
+            navController = rememberNavController(),
+            startDestination = ALL_CONTENT_MAIN
+        ) {
+            composable(route = ALL_CONTENT_MAIN) {
+                AllContentWrapperScreen(
+                    uiState = vm.uiState.collectAsStateWithLifecycle().value,
+                    onTabClick = vm::onTabClicked,
+                    onQueryChanged = vm::onFilterChanged,
+                )
+            }
+        }
+    }
+
+    override fun onStop() {
+        vm.onStop()
+        super.onStop()
     }
 
     override fun injectDependencies() {

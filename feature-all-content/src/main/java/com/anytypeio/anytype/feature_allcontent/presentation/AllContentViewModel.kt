@@ -3,6 +3,7 @@ package com.anytypeio.anytype.feature_allcontent.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.all_content.RestoreAllContentState
 import com.anytypeio.anytype.domain.all_content.UpdateAllContentState
@@ -11,38 +12,41 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.feature_allcontent.models.AllContentMenuMode
 import com.anytypeio.anytype.feature_allcontent.models.AllContentMode
 import com.anytypeio.anytype.feature_allcontent.models.AllContentSort
-import com.anytypeio.anytype.feature_allcontent.models.AllContentState
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTitleViewState
 import com.anytypeio.anytype.feature_allcontent.models.MenuButtonViewState
 import com.anytypeio.anytype.feature_allcontent.models.TabsViewState
 import com.anytypeio.anytype.feature_allcontent.models.TopBarViewState
+import com.anytypeio.anytype.feature_allcontent.models.filtersForSearch
+import com.anytypeio.anytype.feature_allcontent.models.filtersForSubscribe
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
-import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel.Companion.DEFAULT_DEBOUNCE_DURATION
+import com.anytypeio.anytype.presentation.objects.toView
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import javax.inject.Named
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 /**
@@ -60,15 +64,22 @@ class AllContentViewModel(
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     @Named("AllContent") private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val updateAllContentState: UpdateAllContentState,
-    private val restoreAllContentState: RestoreAllContentState
+    private val restoreAllContentState: RestoreAllContentState,
+    private val searchObjects: SearchObjects
 ) : ViewModel() {
+
+    private val susbcriptionId = "all_content_subscription_${this@AllContentViewModel}"
+    private val _limitedObjectIds: MutableStateFlow<List<String>> =
+        MutableStateFlow(emptyList<String>())
 
     // Initial states
     private val _tabsState = MutableStateFlow<AllContentTab>(AllContentTab.OBJECTS)
     private val _modeState = MutableStateFlow<AllContentMode>(AllContentMode.AllContent)
     private val _sortState = MutableStateFlow<AllContentSort>(AllContentSort.ByName())
-    private val _limitState = MutableStateFlow(0)
+    private val _limitState = MutableStateFlow(DEFAULT_SEARCH_LIMIT)
     private val userInput = MutableStateFlow("")
+
+    @OptIn(FlowPreview::class)
     private val searchQuery = userInput
         .take(1)
         .onCompletion {
@@ -80,12 +91,12 @@ class AllContentViewModel(
         _modeState,
         _tabsState,
         _sortState,
-        searchQuery,
+        _limitedObjectIds,
         _limitState
-    ) { mode, tab, sort, query, limit ->
-        Result(mode, tab, sort, query, limit)
+    ) { mode, tab, sort, limitedObjectIds, limit ->
+        Result(mode, tab, sort, limitedObjectIds, limit)
     }.flatMapLatest { currentState ->
-        Timber.d("AllContentNewState:$currentState")
+        Timber.d("AllContentNewState:$currentState, restart subscription")
         loadData(currentState)
     }
         .stateIn(
@@ -93,6 +104,32 @@ class AllContentViewModel(
             SharingStarted.WhileSubscribed(5_000),
             initialUiState()
         )
+
+    init {
+        Timber.d("AllContentViewModel: ${vmParams.spaceId.id}, viewModel:${this@AllContentViewModel}")
+        viewModelScope.launch {
+            searchQuery.collectLatest { query ->
+                Timber.d("New query: [$query]")
+                if (query.isBlank()) {
+                    _limitedObjectIds.value = emptyList()
+                } else {
+                    val searchParams = createSearchParams(
+                        activeTab = _tabsState.value,
+                        activeQuery = query
+                    )
+                    searchObjects(searchParams).process(
+                        success = { searchResults ->
+                            Timber.d("Search objects by query:[$query], size: : ${searchResults.size}")
+                            _limitedObjectIds.value = searchResults.map { it.id }
+                        },
+                        failure = {
+                            Timber.e(it, "Error searching objects by query")
+                        }
+                    )
+                }
+            }
+        }
+    }
 
     private fun initialUiState(): AllContentUiState.Initial {
         return AllContentUiState.Initial(
@@ -110,9 +147,15 @@ class AllContentViewModel(
     private fun loadData(
         result: Result
     ): Flow<AllContentUiState> = flow {
+
         emit(AllContentUiState.Loading)
 
-        val searchParams = createSearchParams()
+        val searchParams = createSubscriptionParams(
+            activeTab = result.tab,
+            activeSort = result.sort,
+            limitedObjectIds = result.limitedObjectIds,
+            limit = result.limit
+        )
 
         val dataFlow = storelessSubscriptionContainer.subscribe(searchParams)
 
@@ -121,15 +164,17 @@ class AllContentViewModel(
                 .map { items ->
                     Timber.d("Loaded data: ${items.size}")
                     AllContentUiState.Content(
-                        mode = result.mode,
-                        menuMode = getMenuMode(result.mode),
-                        items = items
+                        items = items.map {
+                            it.toView(
+                                urlBuilder = urlBuilder,
+                                objectTypes = storeOfObjectTypes.getAll(),
+                            )
+                        }
                     )
                 }
                 .catch { e ->
                     emit(
                         AllContentUiState.Error(
-                            menuMode = getMenuMode(result.mode),
                             message = e.message ?: "Error loading data"
                         )
                     )
@@ -140,14 +185,36 @@ class AllContentViewModel(
     // Function to create search parameters
     private fun createSearchParams(
         activeTab: AllContentTab,
-        activeSort: AllContentSort
+        activeQuery: String,
+    ): SearchObjects.Params {
+        val filters = activeTab.filtersForSearch(
+            spaces = listOf(vmParams.spaceId.id)
+        )
+        return SearchObjects.Params(
+            filters = filters,
+            keys = listOf(Relations.ID),
+            fulltext = activeQuery
+        )
+    }
+
+    // Function to create subscription params
+    private fun createSubscriptionParams(
+        activeTab: AllContentTab,
+        activeSort: AllContentSort,
+        limitedObjectIds: List<String>,
+        limit: Int
     ): StoreSearchParams {
-        val filters = activeTab.filtersForSubscribe(spaces = listOf(vmParams.spaceId.id))
+        val (filters, sorts) = activeTab.filtersForSubscribe(
+            spaces = listOf(vmParams.spaceId.id),
+            activeSort = activeSort,
+            limitedObjectIds = limitedObjectIds
+        )
         return StoreSearchParams(
             filters = filters,
-            sorts = listOf(activeSort.toDVSort()),
+            sorts = sorts,
             keys = ObjectSearchConstants.defaultKeys,
-            subscription = "all-content-subscription"
+            limit = limit,
+            subscription = susbcriptionId
         )
     }
 
@@ -179,6 +246,13 @@ class AllContentViewModel(
         _limitState.value = limit
     }
 
+    fun onStop() {
+        Timber.d("onStop: ${this@AllContentViewModel}")
+        viewModelScope.launch {
+            storelessSubscriptionContainer.unsubscribe(listOf(susbcriptionId))
+        }
+    }
+
     data class VmParams(
         val spaceId: SpaceId
     )
@@ -187,7 +261,17 @@ class AllContentViewModel(
         val mode: AllContentMode,
         val tab: AllContentTab,
         val sort: AllContentSort,
-        val query: String,
+        val limitedObjectIds: List<String>,
         val limit: Int
     )
+
+    companion object {
+        const val DEFAULT_DEBOUNCE_DURATION = 300L
+        const val DEFAULT_SEARCH_LIMIT = 50
+        val DEFAULT_KEYS = buildList {
+            addAll(ObjectSearchConstants.defaultKeys)
+            add(Relations.LINKS)
+            add(Relations.BACKLINKS)
+        }
+    }
 }

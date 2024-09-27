@@ -17,7 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -33,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.toColorInt
 import com.anytypeio.anytype.BuildConfig.USE_EDGE_TO_EDGE
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -85,12 +86,15 @@ fun VaultScreen(
                ),
            verticalArrangement = Arrangement.spacedBy(8.dp)
        ) {
-           items(
+           itemsIndexed(
                items = spaces,
-               key = { item ->
+               key = { idx, item ->
                    item.space.id
                }
-           ) { item ->
+           ) { idx, item ->
+               if (idx == 0) {
+                   Spacer(modifier = Modifier.height(4.dp))
+               }
                VaultSpaceCard(
                    title = item.space.name.orEmpty(),
                    subtitle = when(item.space.spaceAccessType) {
@@ -103,6 +107,9 @@ fun VaultScreen(
                    onCardClicked = { onSpaceClicked(item) },
                    icon = item.icon
                )
+               if (idx == spaces.lastIndex) {
+                   Spacer(modifier = Modifier.height(40.dp))
+               }
            }
        }
     }
@@ -164,20 +171,21 @@ fun VaultSpaceCard(
             .padding(horizontal = 8.dp)
             .clip(RoundedCornerShape(20.dp))
             .then(
-                when(wallpaper) {
+                when (wallpaper) {
                     is Wallpaper.Color -> {
                         val color = WallpaperColor.entries.find {
                             it.code == wallpaper.code
                         }
                         if (color != null) {
                             Modifier.background(
-                                color = Color(Integer.decode(color.hex)),
+                                color = Color(color.hex.toColorInt()).copy(0.3f),
                                 shape = RoundedCornerShape(20.dp)
                             )
                         } else {
                             Modifier
                         }
                     }
+
                     is Wallpaper.Gradient -> {
                         Modifier.background(
                             brush = Brush.horizontalGradient(
@@ -189,6 +197,7 @@ fun VaultSpaceCard(
                             shape = RoundedCornerShape(20.dp)
                         )
                     }
+
                     is Wallpaper.Default -> {
                         Modifier.background(
                             brush = Brush.horizontalGradient(
@@ -200,6 +209,7 @@ fun VaultSpaceCard(
                             shape = RoundedCornerShape(20.dp)
                         )
                     }
+
                     else -> Modifier
                 }
             )
@@ -215,7 +225,9 @@ fun VaultSpaceCard(
             gradientBackground = colorResource(id = R.color.default_gradient_background),
             gradientCornerRadius = 4.dp,
             mainSize = 64.dp,
-            modifier = Modifier.padding(start = 16.dp).align(Alignment.CenterStart),
+            modifier = Modifier
+                .padding(start = 16.dp)
+                .align(Alignment.CenterStart),
             gradientSize = 48.dp
         )
         Column(

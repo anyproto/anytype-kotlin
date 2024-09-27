@@ -94,6 +94,7 @@ import com.anytypeio.anytype.presentation.sets.resolveTypeAndActiveViewTemplate
 import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_DEFAULT_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.widgets.AllContentWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
 import com.anytypeio.anytype.presentation.widgets.DataViewListWidgetContainer
@@ -224,6 +225,7 @@ class HomeScreenViewModel(
 
     // Bundled widget containing archived objects
     private val bin = WidgetView.Bin(Subscriptions.SUBSCRIPTION_ARCHIVED)
+    private val allContentWidget = AllContentWidgetContainer()
 
     private val spaceWidgetView = spaceWidgetContainer.view
 
@@ -383,6 +385,7 @@ class HomeScreenViewModel(
                     combine(
                         flows = buildList<Flow<WidgetView>> {
                             add(spaceWidgetView)
+                            add(allContentWidget.view)
                             addAll(list.map { m -> m.view })
                         }
                     ) { array ->
@@ -1030,6 +1033,9 @@ class HomeScreenViewModel(
                             space = space
                         )
                     )
+                }
+                WidgetView.AllContent.ALL_CONTENT_WIDGET_ID -> {
+                    // TODO Proceed with navigation
                 }
             }
         }

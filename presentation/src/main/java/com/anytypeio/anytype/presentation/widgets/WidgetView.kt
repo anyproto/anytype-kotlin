@@ -110,6 +110,13 @@ sealed class WidgetView {
         override val isLoading: Boolean = false
     }
 
+    data class AllContent(override val id: Id = ALL_CONTENT_WIDGET_ID): WidgetView() {
+        override val isLoading: Boolean = false
+        companion object {
+            const val ALL_CONTENT_WIDGET_ID = "bundled-widget.all-content"
+        }
+    }
+
     sealed class SpaceWidget: WidgetView() {
         override val id: Id get() = SpaceWidgetContainer.SPACE_WIDGET_SUBSCRIPTION
         data class View(

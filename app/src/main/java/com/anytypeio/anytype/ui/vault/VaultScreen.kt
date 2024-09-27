@@ -108,6 +108,9 @@ fun VaultScreen(
                    icon = item.icon
                )
                if (idx == spaces.lastIndex) {
+                   VaultSpaceAddCard(
+                       onCreateSpaceClicked = onCreateSpaceClicked
+                   )
                    Spacer(modifier = Modifier.height(40.dp))
                }
            }
@@ -254,6 +257,31 @@ fun VaultSpaceCard(
                 modifier = Modifier.alpha(0.6f)
             )
         }
+    }
+}
+
+@Composable
+fun VaultSpaceAddCard(
+    onCreateSpaceClicked: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp, vertical = 8.dp)
+            .clip(RoundedCornerShape(20.dp))
+            .background(
+                color = colorResource(id = R.color.shape_tertiary),
+                shape = RoundedCornerShape(20.dp)
+            )
+            .clickable {
+                onCreateSpaceClicked()
+            }
+    ) {
+        Image(
+            modifier = Modifier.align(Alignment.Center).padding(vertical = 32.dp),
+            painter = painterResource(id = R.drawable.ic_vault_create_space_card_button_plus),
+            contentDescription = "Plus icon"
+        )
     }
 }
 

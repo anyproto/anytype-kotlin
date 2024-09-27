@@ -1494,4 +1494,5 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="version_history_error_get_members">Erro ao obter membros</string>
     <string name="new_object">Novo objeto</string>
     <string name="vault_my_spaces">Meus espaços</string>
+    <string name="all_content">All content</string>
 </resources>

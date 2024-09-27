@@ -3,6 +3,7 @@ package com.anytypeio.anytype.ui.allcontent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
@@ -18,8 +19,9 @@ import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModelFactory
-import com.anytypeio.anytype.feature_allcontent.ui.AllContentMainScreen
+import com.anytypeio.anytype.feature_allcontent.ui.AllContentWrapperScreen
 import com.anytypeio.anytype.feature_allcontent.ui.AllContentNavigation.ALL_CONTENT_MAIN
+import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 
 class AllContentFragment : BaseComposeFragment() {
@@ -36,7 +38,11 @@ class AllContentFragment : BaseComposeFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ) = content {
-        AllContentScreenWrapper()
+        MaterialTheme(
+            typography = typography
+        ) {
+            AllContentScreenWrapper()
+        }
     }
 
     @Composable
@@ -45,17 +51,20 @@ class AllContentFragment : BaseComposeFragment() {
             navController = rememberNavController(),
             startDestination = ALL_CONTENT_MAIN
         ) {
-            composable(
-                route = ALL_CONTENT_MAIN
-            ) {
-                AllContentMainScreen(
+            composable(route = ALL_CONTENT_MAIN) {
+                AllContentWrapperScreen(
                     uiState = vm.uiState.collectAsStateWithLifecycle().value,
-                    onTabClick = vm::onTabClicked
+                    onTabClick = vm::onTabClicked,
+                    onQueryChanged = vm::onFilterChanged,
                 )
             }
         }
     }
 
+    override fun onStop() {
+        vm.onStop()
+        super.onStop()
+    }
 
     override fun injectDependencies() {
         val vmParams = AllContentViewModel.VmParams(spaceId = SpaceId(space))

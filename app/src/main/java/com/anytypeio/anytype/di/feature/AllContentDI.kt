@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModelFactory
@@ -86,6 +87,13 @@ object AllContentModule {
         dispatchers = dispatchers,
         settings = userSettingsRepository
     )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun searchObjects(
+        repo: BlockRepository
+    ): SearchObjects = SearchObjects(repo = repo)
 
     @Module
     interface Declarations {

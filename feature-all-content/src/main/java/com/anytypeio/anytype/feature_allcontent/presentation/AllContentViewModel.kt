@@ -138,13 +138,14 @@ class AllContentViewModel(
     }
 
     // Function to create search parameters
-    private fun createSearchParams(): StoreSearchParams {
-        // Implement logic to create search parameters based on the state
+    private fun createSearchParams(
+        activeTab: AllContentTab,
+        activeSort: AllContentSort
+    ): StoreSearchParams {
+        val filters = activeTab.filtersForSubscribe(spaces = listOf(vmParams.spaceId.id))
         return StoreSearchParams(
-            filters = ObjectSearchConstants.filterSearchObjects(
-                spaces = listOf(vmParams.spaceId.id),
-            ),
-            sorts = emptyList(),
+            filters = filters,
+            sorts = listOf(activeSort.toDVSort()),
             keys = ObjectSearchConstants.defaultKeys,
             subscription = "all-content-subscription"
         )

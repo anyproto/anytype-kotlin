@@ -1497,4 +1497,5 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="version_history_error_get_members">Fehler beim Abrufen der Mitglieder</string>
     <string name="new_object">Neues Objekt</string>
     <string name="vault_my_spaces">Meine Spaces</string>
+    <string name="all_content">All content</string>
 </resources>

@@ -1484,4 +1484,5 @@ Please provide specific details of your needs here.</string>
     <string name="version_history_error_get_members">Galat mengambil anggota</string>
     <string name="new_object">Objek baru</string>
     <string name="vault_my_spaces">Ruangku</string>
+    <string name="all_content">All content</string>
 </resources>

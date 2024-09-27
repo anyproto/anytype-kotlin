@@ -1526,4 +1526,5 @@
     <string name="version_history_error_get_members">Ошибка при получении участников</string>
     <string name="new_object">Новый объект</string>
     <string name="vault_my_spaces">Мои пространства</string>
+    <string name="all_content">All content</string>
 </resources>

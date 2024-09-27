@@ -1484,4 +1484,5 @@ Please provide specific details of your needs here.</string>
     <string name="version_history_error_get_members">获取成员时出现错误</string>
     <string name="new_object">新对象</string>
     <string name="vault_my_spaces">我的空间</string>
+    <string name="all_content">All content</string>
 </resources>

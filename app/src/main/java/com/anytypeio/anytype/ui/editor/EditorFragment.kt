@@ -578,7 +578,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .selectAllBlocks
             .clicks()
             .throttleFirst()
-            .onEach { vm.selectAllBlocks() }
+            .onEach { vm.onSelectAllClicked() }
             .launchIn(lifecycleScope)
 
 

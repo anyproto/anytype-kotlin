@@ -207,10 +207,6 @@
             app:destination="@id/homeScreen" />
     </fragment>
 
-    <action
-        android:id="@+id/actionOpenSpaceFromVault"
-        app:destination="@id/homeScreen" />
-
     <dialog
         android:id="@+id/createSpaceScreen"
         android:name="com.anytypeio.anytype.ui.spaces.CreateSpaceFragment">

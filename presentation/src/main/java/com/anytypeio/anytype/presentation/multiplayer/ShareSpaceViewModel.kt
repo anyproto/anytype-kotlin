@@ -53,11 +53,14 @@ import com.anytypeio.anytype.presentation.objects.toSpaceView
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.getSpaceMembersSearchParams
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.getSpaceViewSearchParams
 import javax.inject.Inject
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -87,6 +90,7 @@ class ShareSpaceViewModel(
     val isCurrentUserOwner = MutableStateFlow(false)
     val spaceAccessType = MutableStateFlow<SpaceAccessType?>(null)
     val showIncentive = MutableStateFlow<ShareSpaceIncentiveState>(ShareSpaceIncentiveState.Hidden)
+    val isLoadingInProgress = MutableStateFlow(false)
 
     init {
         Timber.i("Share-space init with params: $vmParams")
@@ -150,7 +154,10 @@ class ShareSpaceViewModel(
                     it, "Error while $SHARE_SPACE_MEMBER_SUBSCRIPTION " +
                             "and $SHARE_SPACE_SPACE_SUBSCRIPTION subscription"
                 )
+            }.onStart {
+                isLoadingInProgress.value = true
             }.collect { result ->
+                isLoadingInProgress.value = false
                 val spaceView = result.spaceView
                 val spaceMembers = result.spaceMembers
                     .sortedByDescending { it.status == ParticipantStatus.JOINING || it.status == ParticipantStatus.REMOVING}

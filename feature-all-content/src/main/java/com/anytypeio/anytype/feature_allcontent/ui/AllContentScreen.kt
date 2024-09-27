@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.feature_allcontent.ui
 
-import android.util.Log
+import android.os.Build
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -8,10 +8,14 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
@@ -51,6 +55,8 @@ import com.anytypeio.anytype.core_ui.widgets.DefaultObjectImageIcon
 import com.anytypeio.anytype.core_ui.widgets.DefaultProfileAvatarIcon
 import com.anytypeio.anytype.core_ui.widgets.DefaultProfileIconImage
 import com.anytypeio.anytype.core_ui.widgets.DefaultTaskObjectIcon
+import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
+import com.anytypeio.anytype.feature_allcontent.BuildConfig
 import com.anytypeio.anytype.feature_allcontent.R
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
 import com.anytypeio.anytype.feature_allcontent.models.TabsViewState
@@ -96,12 +102,22 @@ fun AllContentMainScreen(
     onQueryChanged: (String) -> Unit,
     isLoading: Boolean
 ) {
+    val modifier = Modifier
+        .background(color = colorResource(id = R.color.background_primary))
+
     Scaffold(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize(),
         containerColor = colorResource(id = R.color.background_primary),
         topBar = {
-            Column {
+            Column(
+                modifier = if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
+                    Modifier
+                        .windowInsetsPadding(WindowInsets.statusBars)
+                        .fillMaxWidth()
+                else
+                    Modifier.fillMaxWidth()
+            ) {
                 if (titleState.value is TopBarViewState.Default) {
                     AllContentTopBarContainer(
                         state = titleState.value as TopBarViewState.Default
@@ -122,20 +138,22 @@ fun AllContentMainScreen(
             }
         },
         content = { paddingValues ->
-            if (isLoading) {
-                Box(
-                    modifier = Modifier
+            val contentModifier =
+                if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
+                    Modifier
+                        .windowInsetsPadding(WindowInsets.navigationBars)
                         .fillMaxSize()
                         .padding(paddingValues)
-                ) {
+                else
+                    Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+            if (isLoading) {
+                Box(modifier = contentModifier) {
                     LoadingState()
                 }
             } else {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                ) {
+                LazyColumn(modifier = contentModifier) {
                     items(
                         count = objects.value.size,
                         key = { index -> objects.value[index].id }

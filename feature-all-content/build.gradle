@@ -8,6 +8,7 @@ android {
 
     defaultConfig {
         buildConfigField "boolean", "USE_NEW_WINDOW_INSET_API", "true"
+        buildConfigField "boolean", "USE_EDGE_TO_EDGE", "true"
     }
 
     buildFeatures {

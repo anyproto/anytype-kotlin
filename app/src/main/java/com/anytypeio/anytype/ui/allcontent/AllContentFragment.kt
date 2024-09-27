@@ -1,7 +1,9 @@
 package com.anytypeio.anytype.ui.allcontent
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -12,9 +14,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.argString
+import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
@@ -73,6 +77,14 @@ class AllContentFragment : BaseComposeFragment() {
 
     override fun releaseDependencies() {
         componentManager().allContentComponent.release()
+    }
+
+    override fun onApplyWindowRootInsets(view: View) {
+        if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
+            // Do nothing.
+        } else {
+            super.onApplyWindowRootInsets(view)
+        }
     }
 
     companion object {

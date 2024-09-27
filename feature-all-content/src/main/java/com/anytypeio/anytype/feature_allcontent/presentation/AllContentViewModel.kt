@@ -29,6 +29,7 @@ import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import javax.inject.Named
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -68,12 +69,11 @@ class AllContentViewModel(
     private val searchObjects: SearchObjects
 ) : ViewModel() {
 
-    private val susbcriptionId = "all_content_subscription_${this@AllContentViewModel}"
-    private val _limitedObjectIds: MutableStateFlow<List<String>> =
-        MutableStateFlow(emptyList<String>())
+    private val susbcriptionId = "all_content_subscription_${vmParams.spaceId.id}"
+    private val _limitedObjectIds: MutableStateFlow<List<String>> = MutableStateFlow(emptyList())
 
     // Initial states
-    private val _tabsState = MutableStateFlow<AllContentTab>(AllContentTab.OBJECTS)
+    private val _tabsState = MutableStateFlow<AllContentTab>(AllContentTab.PAGES)
     private val _modeState = MutableStateFlow<AllContentMode>(AllContentMode.AllContent)
     private val _sortState = MutableStateFlow<AllContentSort>(AllContentSort.ByName())
     private val _limitState = MutableStateFlow(DEFAULT_SEARCH_LIMIT)
@@ -101,12 +101,12 @@ class AllContentViewModel(
     }
         .stateIn(
             viewModelScope,
-            SharingStarted.WhileSubscribed(5_000),
+            SharingStarted.WhileSubscribed(TIMEOUT),
             initialUiState()
         )
 
     init {
-        Timber.d("AllContentViewModel: ${vmParams.spaceId.id}, viewModel:${this@AllContentViewModel}")
+        Timber.d("AllContentViewModel init, spaceId:[${vmParams.spaceId.id}]")
         viewModelScope.launch {
             searchQuery.collectLatest { query ->
                 Timber.d("New query: [$query]")
@@ -150,6 +150,8 @@ class AllContentViewModel(
 
         emit(AllContentUiState.Loading)
 
+        delay(300)
+
         val searchParams = createSubscriptionParams(
             activeTab = result.tab,
             activeSort = result.sort,
@@ -162,7 +164,7 @@ class AllContentViewModel(
         emitAll(
             dataFlow
                 .map { items ->
-                    Timber.d("Loaded data: ${items.size}")
+                    Timber.d("Objects by subscription,  size:[${items.size}]")
                     AllContentUiState.Content(
                         items = items.map {
                             it.toView(
@@ -175,7 +177,7 @@ class AllContentViewModel(
                 .catch { e ->
                     emit(
                         AllContentUiState.Error(
-                            message = e.message ?: "Error loading data"
+                            message = e.message ?: "Error loading objects by subscription"
                         )
                     )
                 }
@@ -227,27 +229,32 @@ class AllContentViewModel(
     }
 
     fun onTabClicked(tab: AllContentTab) {
+        Timber.d("onTabClicked: $tab")
         _tabsState.value = tab
     }
 
     fun onAllContentModeClicked(mode: AllContentMode) {
+        Timber.d("onAllContentModeClicked: $mode")
         _modeState.value = mode
     }
 
     fun onSortClicked(sort: AllContentSort) {
+        Timber.d("onSortClicked: $sort")
         _sortState.value = sort
     }
 
     fun onFilterChanged(filter: String) {
+        Timber.d("onFilterChanged: $filter")
         userInput.value = filter
     }
 
     fun onLimitUpdated(limit: Int) {
+        Timber.d("onLimitUpdated: $limit")
         _limitState.value = limit
     }
 
     fun onStop() {
-        Timber.d("onStop: ${this@AllContentViewModel}")
+        Timber.d("onStop")
         viewModelScope.launch {
             storelessSubscriptionContainer.unsubscribe(listOf(susbcriptionId))
         }
@@ -267,7 +274,8 @@ class AllContentViewModel(
 
     companion object {
         const val DEFAULT_DEBOUNCE_DURATION = 300L
-        const val DEFAULT_SEARCH_LIMIT = 50
+        private const val DEFAULT_SEARCH_LIMIT = 50
+        private const val TIMEOUT = 5000L
         val DEFAULT_KEYS = buildList {
             addAll(ObjectSearchConstants.defaultKeys)
             add(Relations.LINKS)

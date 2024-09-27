@@ -202,12 +202,13 @@ private fun AllContentTabText(
 @Composable
 private fun getTabText(tab: AllContentTab): String {
     return when (tab) {
-        AllContentTab.OBJECTS -> stringResource(id = R.string.all_content_title_tab_objetcs)
+        AllContentTab.PAGES -> stringResource(id = R.string.all_content_title_tab_pages)
         AllContentTab.FILES -> stringResource(id = R.string.all_content_title_tab_files)
         AllContentTab.MEDIA -> stringResource(id = R.string.all_content_title_tab_media)
         AllContentTab.BOOKMARKS -> stringResource(id = R.string.all_content_title_tab_bookmarks)
         AllContentTab.TYPES -> stringResource(id = R.string.all_content_title_tab_objetc_types)
         AllContentTab.RELATIONS -> stringResource(id = R.string.all_content_title_tab_relations)
+        AllContentTab.LISTS -> stringResource(id = R.string.all_content_title_tab_lists)
     }
 }
 

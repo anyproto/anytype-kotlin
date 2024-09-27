@@ -18,7 +18,7 @@ sealed class AllContentState {
 
 @Immutable
 enum class AllContentTab {
-    OBJECTS, FILES, MEDIA, BOOKMARKS, TYPES, RELATIONS
+    PAGES, LISTS, MEDIA, BOOKMARKS, FILES, TYPES, RELATIONS
 }
 
 sealed class AllContentMode {

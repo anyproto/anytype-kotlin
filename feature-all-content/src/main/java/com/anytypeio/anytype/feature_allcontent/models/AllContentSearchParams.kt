@@ -10,11 +10,13 @@ import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 
 val allContentTabLayouts = mapOf(
-    AllContentTab.OBJECTS to listOf(
+    AllContentTab.PAGES to listOf(
         ObjectType.Layout.BASIC,
         ObjectType.Layout.PROFILE,
         ObjectType.Layout.TODO,
-        ObjectType.Layout.NOTE,
+        ObjectType.Layout.NOTE
+    ),
+    AllContentTab.LISTS to listOf(
         ObjectType.Layout.SET,
         ObjectType.Layout.COLLECTION
     ),
@@ -39,12 +41,16 @@ fun AllContentTab.filtersForSubscribe(
 ): Pair<List<DVFilter>, List<DVSort>> {
     val tab = this
     when (this) {
-        AllContentTab.OBJECTS, AllContentTab.FILES, AllContentTab.MEDIA, AllContentTab.BOOKMARKS -> {
+        AllContentTab.PAGES,
+        AllContentTab.LISTS,
+        AllContentTab.FILES,
+        AllContentTab.MEDIA,
+        AllContentTab.BOOKMARKS -> {
             val filters = buildList {
                 addAll(buildDeletedFilter())
                 add(buildLayoutFilter(layouts = allContentTabLayouts.getValue(tab)))
                 add(buildSpaceIdFilter(spaces))
-                if (tab == AllContentTab.OBJECTS) {
+                if (tab == AllContentTab.PAGES) {
                     add(buildTemplateFilter())
                 }
                 if (limitedObjectIds.isNotEmpty()) {
@@ -65,12 +71,16 @@ fun AllContentTab.filtersForSearch(
 ): List<DVFilter> {
     val tab = this
     when (this) {
-        AllContentTab.OBJECTS, AllContentTab.FILES, AllContentTab.MEDIA, AllContentTab.BOOKMARKS -> {
+        AllContentTab.PAGES,
+        AllContentTab.LISTS,
+        AllContentTab.FILES,
+        AllContentTab.MEDIA,
+        AllContentTab.BOOKMARKS -> {
             val filters = buildList {
                 addAll(buildDeletedFilter())
                 add(buildLayoutFilter(layouts = allContentTabLayouts.getValue(tab)))
                 add(buildSpaceIdFilter(spaces))
-                if (tab == AllContentTab.OBJECTS) {
+                if (tab == AllContentTab.PAGES) {
                     add(buildTemplateFilter())
                 }
             }

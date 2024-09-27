@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.feature_allcontent.models
 
+import androidx.compose.runtime.Immutable
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.RelationKey
@@ -15,6 +16,7 @@ sealed class AllContentState {
     ) : AllContentState()
 }
 
+@Immutable
 enum class AllContentTab {
     OBJECTS, FILES, MEDIA, BOOKMARKS, TYPES, RELATIONS
 }
@@ -72,24 +74,32 @@ sealed class AllContentTitleViewState {
     data object OnlyUnlinked : AllContentTitleViewState()
 }
 
-data class TopBarViewState(
-    val titleState: AllContentTitleViewState,
-    val menuButtonState: MenuButtonViewState
-)
+@Immutable
+sealed class TopBarViewState {
+
+    data object Hidden : TopBarViewState()
+
+    @Immutable
+    data class Default(
+        val titleState: AllContentTitleViewState,
+        val menuButtonState: MenuButtonViewState
+    ) : TopBarViewState()
+}
 
 sealed class MenuButtonViewState {
     data object Hidden : MenuButtonViewState()
     data object Visible : MenuButtonViewState()
 }
 
-data class TabViewState(
-    val tab: AllContentTab,
-    val isSelected: Boolean
-)
-
+@Immutable
 sealed class TabsViewState {
-    data class Hidden(val hidden: Boolean) : TabsViewState()
-    data class Visible(val tabs: List<TabViewState>) : TabsViewState()
+    data object Hidden : TabsViewState()
+
+    @Immutable
+    data class Default(
+        val tabs: List<AllContentTab>,
+        val selectedTab: AllContentTab
+    ) : TabsViewState()
 }
 
 sealed class MenuSortsItem {

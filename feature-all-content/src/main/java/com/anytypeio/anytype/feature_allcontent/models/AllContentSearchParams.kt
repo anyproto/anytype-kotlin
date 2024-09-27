@@ -13,11 +13,10 @@ val allContentTabLayouts = mapOf(
     AllContentTab.OBJECTS to listOf(
         ObjectType.Layout.BASIC,
         ObjectType.Layout.PROFILE,
-        ObjectType.Layout.PARTICIPANT,
-        ObjectType.Layout.SET,
-        ObjectType.Layout.COLLECTION,
         ObjectType.Layout.TODO,
-        ObjectType.Layout.NOTE
+        ObjectType.Layout.NOTE,
+        ObjectType.Layout.SET,
+        ObjectType.Layout.COLLECTION
     ),
     AllContentTab.FILES to listOf(
         ObjectType.Layout.FILE,
@@ -33,18 +32,27 @@ val allContentTabLayouts = mapOf(
     )
 )
 
-fun AllContentTab.filtersForSubscribe(spaces: List<Id>): List<DVFilter> {
+fun AllContentTab.filtersForSubscribe(
+    spaces: List<Id>,
+    activeSort: AllContentSort,
+    limitedObjectIds: List<Id>
+): Pair<List<DVFilter>, List<DVSort>> {
     val tab = this
-    return when (this) {
+    when (this) {
         AllContentTab.OBJECTS, AllContentTab.FILES, AllContentTab.MEDIA, AllContentTab.BOOKMARKS -> {
-            buildList {
-                addAll(getHiddenArchivedDeletedFilters())
-                add(buildLayoutFilter(allContentTabLayouts.getValue(tab)))
+            val filters = buildList {
+                addAll(buildDeletedFilter())
+                add(buildLayoutFilter(layouts = allContentTabLayouts.getValue(tab)))
                 add(buildSpaceIdFilter(spaces))
                 if (tab == AllContentTab.OBJECTS) {
-                    add(buildObjectTypeFilter())
+                    add(buildTemplateFilter())
+                }
+                if (limitedObjectIds.isNotEmpty()) {
+                    add(buildLimitedObjectIdsFilter(limitedObjectIds = limitedObjectIds))
                 }
             }
+            val sorts = listOf(activeSort.toDVSort())
+            return filters to sorts
         }
 
         AllContentTab.TYPES -> TODO()
@@ -52,31 +60,53 @@ fun AllContentTab.filtersForSubscribe(spaces: List<Id>): List<DVFilter> {
     }
 }
 
-private fun buildLayoutFilter(layouts: List<ObjectType.Layout>): DVFilter {
-    return DVFilter(
-        relation = Relations.LAYOUT,
-        condition = DVFilterCondition.IN,
-        value = layouts.map { it.code.toDouble() }
-    )
+fun AllContentTab.filtersForSearch(
+    spaces: List<Id>
+): List<DVFilter> {
+    val tab = this
+    when (this) {
+        AllContentTab.OBJECTS, AllContentTab.FILES, AllContentTab.MEDIA, AllContentTab.BOOKMARKS -> {
+            val filters = buildList {
+                addAll(buildDeletedFilter())
+                add(buildLayoutFilter(layouts = allContentTabLayouts.getValue(tab)))
+                add(buildSpaceIdFilter(spaces))
+                if (tab == AllContentTab.OBJECTS) {
+                    add(buildTemplateFilter())
+                }
+            }
+            return filters
+        }
+
+        AllContentTab.TYPES -> TODO()
+        AllContentTab.RELATIONS -> TODO()
+    }
 }
 
-private fun buildObjectTypeFilter(): DVFilter {
-    return DVFilter(
-        relation = Relations.TYPE_UNIQUE_KEY,
-        condition = DVFilterCondition.NOT_EQUAL,
-        value = ObjectTypeUniqueKeys.TEMPLATE
-    )
-}
+private fun buildLayoutFilter(layouts: List<ObjectType.Layout>): DVFilter = DVFilter(
+    relation = Relations.LAYOUT,
+    condition = DVFilterCondition.IN,
+    value = layouts.map { it.code.toDouble() }
+)
 
-private fun buildSpaceIdFilter(spaces: List<Id>): DVFilter {
-    return DVFilter(
-        relation = Relations.SPACE_ID,
-        condition = DVFilterCondition.IN,
-        value = spaces
-    )
-}
+private fun buildTemplateFilter(): DVFilter = DVFilter(
+    relation = Relations.TYPE_UNIQUE_KEY,
+    condition = DVFilterCondition.NOT_EQUAL,
+    value = ObjectTypeUniqueKeys.TEMPLATE
+)
 
-private fun getHiddenArchivedDeletedFilters(): List<DVFilter> {
+private fun buildSpaceIdFilter(spaces: List<Id>): DVFilter = DVFilter(
+    relation = Relations.SPACE_ID,
+    condition = DVFilterCondition.IN,
+    value = spaces
+)
+
+private fun buildLimitedObjectIdsFilter(limitedObjectIds: List<Id>): DVFilter = DVFilter(
+    relation = Relations.ID,
+    condition = DVFilterCondition.IN,
+    value = limitedObjectIds
+)
+
+private fun buildDeletedFilter(): List<DVFilter> {
     return listOf(
         DVFilter(
             relation = Relations.IS_ARCHIVED,

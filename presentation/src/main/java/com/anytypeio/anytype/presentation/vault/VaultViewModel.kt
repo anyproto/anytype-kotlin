@@ -40,6 +40,7 @@ class VaultViewModel(
         Timber.i("VaultViewModel, init")
         viewModelScope.launch {
             val wallpapers = getSpaceWallpapers.async(Unit).getOrNull() ?: emptyMap()
+            Timber.d("Wallpapers: ${wallpapers}")
             spaceViewSubscriptionContainer
                 .observe()
                 .map { spaces ->

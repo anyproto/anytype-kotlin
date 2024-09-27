@@ -8,7 +8,7 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
-import com.anytypeio.anytype.domain.platform.MetricsProvider
+import com.anytypeio.anytype.domain.platform.InitialParamsProvider
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
@@ -38,7 +38,7 @@ class ResumeAccountTest {
     lateinit var pathProvider: PathProvider
 
     @Mock
-    lateinit var metricsProvider: MetricsProvider
+    lateinit var initialParamsProvider: InitialParamsProvider
 
     @Mock
     lateinit var awaitAccountStartManager: AwaitAccountStartManager
@@ -54,7 +54,7 @@ class ResumeAccountTest {
             repository = repo,
             configStorage = configStorage,
             pathProvider = pathProvider,
-            metricsProvider = metricsProvider,
+            initialParamsProvider = initialParamsProvider,
             awaitAccountStartManager = awaitAccountStartManager,
             spaceManager = spaceManager,
             settings = userSettingsRepository

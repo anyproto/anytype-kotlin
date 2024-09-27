@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import com.anytypeio.anytype.app.DefaultAppActionManager
-import com.anytypeio.anytype.app.DefaultMetricsProvider
+import com.anytypeio.anytype.app.DefaultInitialParamsProvider
 import com.anytypeio.anytype.core_utils.tools.ThreadInfo
 import com.anytypeio.anytype.data.auth.repo.AuthCache
 import com.anytypeio.anytype.data.auth.repo.AuthCacheDataStore
@@ -36,7 +36,7 @@ import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.ObjectStore
-import com.anytypeio.anytype.domain.platform.MetricsProvider
+import com.anytypeio.anytype.domain.platform.InitialParamsProvider
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.UnsplashMiddleware
@@ -330,7 +330,8 @@ object DataModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideMetricsProvider(): MetricsProvider = DefaultMetricsProvider()
+    fun provideMetricsProvider(context: Context): InitialParamsProvider =
+        DefaultInitialParamsProvider(context)
 
     @JvmStatic
     @Provides

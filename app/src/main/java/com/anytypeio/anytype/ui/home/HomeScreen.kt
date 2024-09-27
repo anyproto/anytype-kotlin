@@ -60,6 +60,7 @@ import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.widgets.menu.WidgetActionButton
+import com.anytypeio.anytype.ui.widgets.types.AllContentWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.DataViewListWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.GalleryWidgetCard
@@ -416,6 +417,11 @@ private fun WidgetList(
                         },
                         onClick = { onBundledWidgetHeaderClicked(item.id) },
                         mode = mode
+                    )
+                }
+                is WidgetView.AllContent -> {
+                    AllContentWidgetCard(
+                        onWidgetClicked = { onBundledWidgetHeaderClicked(item.id) }
                     )
                 }
                 is WidgetView.Library -> {

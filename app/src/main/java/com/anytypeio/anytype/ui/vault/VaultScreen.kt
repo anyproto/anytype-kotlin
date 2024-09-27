@@ -17,7 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -86,12 +86,15 @@ fun VaultScreen(
                ),
            verticalArrangement = Arrangement.spacedBy(8.dp)
        ) {
-           items(
+           itemsIndexed(
                items = spaces,
-               key = { item ->
+               key = { idx, item ->
                    item.space.id
                }
-           ) { item ->
+           ) { idx, item ->
+               if (idx == 0) {
+                   Spacer(modifier = Modifier.height(4.dp))
+               }
                VaultSpaceCard(
                    title = item.space.name.orEmpty(),
                    subtitle = when(item.space.spaceAccessType) {
@@ -104,9 +107,9 @@ fun VaultScreen(
                    onCardClicked = { onSpaceClicked(item) },
                    icon = item.icon
                )
-           }
-           item { 
-               Spacer(modifier = Modifier.height(40.dp))
+               if (idx == spaces.lastIndex) {
+                   Spacer(modifier = Modifier.height(40.dp))
+               }
            }
        }
     }

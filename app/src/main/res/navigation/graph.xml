@@ -165,7 +165,13 @@
     <fragment
         android:id="@+id/homeScreenWidgets"
         android:name="com.anytypeio.anytype.ui.widgets.collection.CollectionFragment"
-        android:label="Home screen" />
+        android:label="Home screen">
+        <action
+            android:id="@+id/actionOpenVault"
+            app:destination="@id/vaultScreen"
+            app:popUpTo="@id/vaultScreen"
+            app:popUpToInclusive="true" />
+    </fragment>
 
     <dialog
         android:id="@+id/selectWidgetSourceScreen"
@@ -200,6 +206,10 @@
             android:id="@+id/actionOpenSpaceFromVault"
             app:destination="@id/homeScreen" />
     </fragment>
+
+    <action
+        android:id="@+id/actionOpenSpaceFromVault"
+        app:destination="@id/homeScreen" />
 
     <dialog
         android:id="@+id/createSpaceScreen"
@@ -394,6 +404,11 @@
         <action
             android:id="@+id/openRelationEditingScreen"
             app:destination="@id/relationEditingFragment" />
+        <action
+            android:id="@+id/actionOpenVault"
+            app:destination="@id/vaultScreen"
+            app:popUpTo="@id/vaultScreen"
+            app:popUpToInclusive="true" />
     </fragment>
     <dialog
         android:id="@+id/typeCreationFragment"

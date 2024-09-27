@@ -6495,12 +6495,14 @@ message Rpc {
         }
     }
 
-    message Metrics {
+    message Initial {
         message SetParameters {
             message Request {
                 option (no_auth) = true;
                 string platform = 1;
                 string version = 2;
+                string workdir = 3;
+                string logLevel = 4;
             }
 
             message Response {

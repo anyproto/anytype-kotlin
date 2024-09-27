@@ -13,7 +13,7 @@ import com.anytypeio.anytype.domain.auth.interactor.SelectAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.config.ConfigStorage
-import com.anytypeio.anytype.domain.platform.MetricsProvider
+import com.anytypeio.anytype.domain.platform.InitialParamsProvider
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -42,7 +42,7 @@ class StartAccountTest {
     lateinit var configStorage: ConfigStorage
 
     @Mock
-    lateinit var metricsProvider: MetricsProvider
+    lateinit var initialParamsProvider: InitialParamsProvider
 
     @Mock
     lateinit var awaitAccountStartManager: AwaitAccountStartManager
@@ -60,7 +60,7 @@ class StartAccountTest {
         selectAccount = SelectAccount(
             repository = repo,
             configStorage = configStorage,
-            metricsProvider = metricsProvider,
+            initialParamsProvider = initialParamsProvider,
             awaitAccountStartManager = awaitAccountStartManager
         )
     }
@@ -125,7 +125,7 @@ class StartAccountTest {
 
         verify(repo, times(1)).setCurrentAccount(account.id)
 
-        verify(repo, times(1)).setMetrics(
+        verify(repo, times(1)).setInitialParams(
             platform = platform,
             version = version
         )
@@ -360,7 +360,7 @@ class StartAccountTest {
     }
 
     private fun stubMetricsProvider(version: String, platform: String) {
-        metricsProvider.stub {
+        initialParamsProvider.stub {
             onBlocking {
                 getVersion()
             } doReturn version

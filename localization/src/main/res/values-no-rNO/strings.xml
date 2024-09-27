@@ -1497,4 +1497,5 @@ Please provide specific details of your needs here.</string>
     <string name="version_history_error_get_members">Error getting members</string>
     <string name="new_object">Nytt objekt</string>
     <string name="vault_my_spaces">My spaces</string>
+    <string name="all_content">All content</string>
 </resources>

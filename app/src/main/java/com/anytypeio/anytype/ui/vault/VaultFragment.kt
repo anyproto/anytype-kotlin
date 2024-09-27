@@ -66,7 +66,7 @@ class VaultFragment : BaseComposeFragment() {
             is Command.CreateNewSpace -> {
                 runCatching {
                     findNavController().navigate(
-                        R.id.createSpaceScreen
+                        R.id.actionCreateSpaceFromVault
                     )
                 }.onFailure {
                     Timber.e(it, "Error while opening create-space screen from vault")

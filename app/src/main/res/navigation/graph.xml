@@ -205,16 +205,18 @@
         <action
             android:id="@+id/actionOpenSpaceFromVault"
             app:destination="@id/homeScreen" />
+        <action
+            android:id="@+id/actionCreateSpaceFromVault"
+            app:destination="@id/createSpaceScreen" />
     </fragment>
 
     <dialog
         android:id="@+id/createSpaceScreen"
         android:name="com.anytypeio.anytype.ui.spaces.CreateSpaceFragment">
         <action
-            android:id="@+id/switchSpaceAction"
-            app:popUpTo="@+id/homeScreen"
-            app:popUpToInclusive="false"
-            app:enterAnim="@anim/anim_switch_space_enter" />
+            android:id="@+id/exitToVaultAction"
+            app:popUpTo="@+id/vaultScreen"
+            app:popUpToInclusive="false" />
     </dialog>
 
     <dialog

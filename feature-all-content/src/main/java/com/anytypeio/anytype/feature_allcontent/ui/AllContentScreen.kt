@@ -266,7 +266,8 @@ fun AllContentItemIcon(
                 fileName = icon.fileName.orEmpty(),
                 mime = icon.mime.orEmpty(),
                 modifier = modifier,
-                iconSize = iconSize
+                iconSize = iconSize,
+                extension = icon.extensions
             )
         }
 

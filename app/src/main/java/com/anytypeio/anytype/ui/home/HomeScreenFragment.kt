@@ -353,14 +353,17 @@ class HomeScreenFragment : BaseComposeFragment() {
                 )
             }
             is Navigation.OpenLibrary -> runCatching {
-                runCatching {
-                    findNavController().navigate(
-                        R.id.libraryFragment,
-                        args = LibraryFragment.args(destination.space)
-                    )
-                }.onFailure { e ->
-                    Timber.e(e, "Error while opening space library from widgets")
-                }
+                findNavController().navigate(
+                    R.id.libraryFragment,
+                    args = LibraryFragment.args(destination.space)
+                )
+            }.onFailure { e ->
+                Timber.e(e, "Error while opening space library from widgets")
+            }
+            is Navigation.OpenAllContent -> runCatching {
+                navigation().openAllContent(space = destination.space)
+            }.onFailure { e ->
+                Timber.e(e, "Error while opening all content from widgets")
             }
         }
     }

@@ -812,7 +812,7 @@ class CollectionViewModel(
     fun onHomeClicked() {
         launch {
             analytics.sendScreenHomeEvent()
-            commands.emit(Command.ToDesktop)
+            commands.emit(Command.Vault)
         }
     }
 

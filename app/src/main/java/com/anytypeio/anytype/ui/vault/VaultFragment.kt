@@ -20,6 +20,7 @@ import com.anytypeio.anytype.presentation.vault.VaultViewModel.Command
 import com.anytypeio.anytype.ui.settings.ProfileSettingsFragment
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
+import timber.log.Timber
 
 class VaultFragment : BaseComposeFragment() {
 
@@ -58,13 +59,17 @@ class VaultFragment : BaseComposeFragment() {
             is Command.EnterSpaceHomeScreen -> {
                 runCatching {
                     findNavController().navigate(R.id.actionOpenSpaceFromVault)
+                }.onFailure {
+                    Timber.e(it, "Error while opening space from vault")
                 }
             }
             is Command.CreateNewSpace -> {
                 runCatching {
                     findNavController().navigate(
-                        R.id.createSpaceScreen
+                        R.id.actionCreateSpaceFromVault
                     )
+                }.onFailure {
+                    Timber.e(it, "Error while opening create-space screen from vault")
                 }
             }
             is Command.OpenProfileSettings -> {
@@ -73,6 +78,8 @@ class VaultFragment : BaseComposeFragment() {
                         R.id.profileScreen,
                         bundleOf(ProfileSettingsFragment.SPACE_ID_KEY to command.space.id)
                     )
+                }.onFailure {
+                    Timber.e(it, "Error while opening profile settings from vault")
                 }
             }
         }

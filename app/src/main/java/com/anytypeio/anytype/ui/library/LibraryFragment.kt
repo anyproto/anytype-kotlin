@@ -164,15 +164,11 @@ class LibraryFragment : BaseComposeFragment() {
                 }
                 is LibraryViewModel.Navigation.ExitToVault -> {
                     runCatching {
-                        findNavController().popBackStack(
-                            R.id.vaultScreen,
-                            true
-                        )
+                        findNavController().navigate(R.id.actionOpenVault)
                     }.onFailure { e ->
                         Timber.e(e, "Error while exiting to vault from space library")
                     }
                 }
-
                 is LibraryViewModel.Navigation.OpenSetOrCollection -> {
                     findNavController().safeNavigate(
                         R.id.libraryFragment,

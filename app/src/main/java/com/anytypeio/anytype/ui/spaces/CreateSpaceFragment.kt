@@ -18,6 +18,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.spaces.CreateSpaceViewModel
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
+import timber.log.Timber
 
 class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
 
@@ -51,15 +52,25 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
                 LaunchedEffect(Unit) {
                     vm.isSucceeded.collect { isSucceeded ->
                         if (isSucceeded) {
-                            findNavController().navigate(R.id.switchSpaceAction)
+                            runCatching {
+                                findNavController().navigate(R.id.exitToVaultAction)
+                                findNavController().navigate(R.id.actionOpenSpaceFromVault)
+                            }.onFailure {
+                                Timber.e(it, "Error while exiting to vault or opening space")
+                            }
                         }
                     }
                 }
                 LaunchedEffect(Unit) {
                     vm.exitWithMultiplayerTip.collect { isSucceeded ->
                         if (isSucceeded) {
-                            findNavController().navigate(R.id.switchSpaceAction)
-                            findNavController().navigate(R.id.multiplayerFeatureDialog)
+                            runCatching {
+                                findNavController().navigate(R.id.exitToVaultAction)
+                                findNavController().navigate(R.id.actionOpenSpaceFromVault)
+                                findNavController().navigate(R.id.multiplayerFeatureDialog)
+                            }.onFailure {
+                                Timber.e(it, "Error while exiting to vault or opening space or opening introduce-multiplayer-feature dialog")
+                            }
                         }
                     }
                 }

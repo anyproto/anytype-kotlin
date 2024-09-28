@@ -12,10 +12,12 @@ import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
+import com.anytypeio.anytype.core_models.settings.VaultSettings
 import com.anytypeio.anytype.data.auth.repo.UserSettingsCache
 import com.anytypeio.anytype.persistence.GlobalSearchHistoryProto
 import com.anytypeio.anytype.persistence.SpacePreference
 import com.anytypeio.anytype.persistence.SpacePreferences
+import com.anytypeio.anytype.persistence.VaultPreferences
 import com.anytypeio.anytype.persistence.common.JsonString
 import com.anytypeio.anytype.persistence.common.deserializeWallpaperSettings
 import com.anytypeio.anytype.persistence.common.serializeWallpaperSettings
@@ -25,6 +27,8 @@ import com.anytypeio.anytype.persistence.model.asSettings
 import com.anytypeio.anytype.persistence.model.asWallpaper
 import com.anytypeio.anytype.persistence.preferences.SPACE_PREFERENCE_FILENAME
 import com.anytypeio.anytype.persistence.preferences.SpacePrefSerializer
+import com.anytypeio.anytype.persistence.preferences.VAULT_PREFERENCE_FILENAME
+import com.anytypeio.anytype.persistence.preferences.VaultPrefsSerializer
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -37,6 +41,11 @@ class DefaultUserSettingsCache(
     private val Context.spacePrefsStore: DataStore<SpacePreferences> by dataStore(
         fileName = SPACE_PREFERENCE_FILENAME,
         serializer = SpacePrefSerializer
+    )
+
+    private val Context.vaultPrefsStore: DataStore<VaultPreferences> by dataStore(
+        fileName = VAULT_PREFERENCE_FILENAME,
+        serializer = VaultPrefsSerializer
     )
 
     override suspend fun setCurrentSpace(space: SpaceId) {
@@ -376,6 +385,25 @@ class DefaultUserSettingsCache(
             }
             SpacePreferences(
                 preferences = result
+            )
+        }
+    }
+
+    override suspend fun getVaultSettings(): VaultSettings {
+        return context.vaultPrefsStore
+            .data
+            .map { prefs ->
+                VaultSettings(
+                    orderOfSpaces = prefs.orderOfSpaces
+                )
+            }
+            .first()
+    }
+
+    override suspend fun setVaultSpaceOrder(order: List<Id>) {
+        context.vaultPrefsStore.updateData { existingPreferences ->
+            existingPreferences.copy(
+                orderOfSpaces = order
             )
         }
     }

@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
+import com.anytypeio.anytype.core_models.settings.VaultSettings
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import kotlinx.coroutines.flow.Flow
 
@@ -87,5 +88,13 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
 
     override suspend fun clearGlobalSearchHistory(space: SpaceId) {
         cache.clearGlobalSearchHistory(space)
+    }
+
+    override suspend fun getVaultSettings(): VaultSettings {
+        return cache.getVaultSettings()
+    }
+
+    override suspend fun setVaultSpaceOrder(order: List<Id>) {
+        cache.setVaultSpaceOrder(order)
     }
 }

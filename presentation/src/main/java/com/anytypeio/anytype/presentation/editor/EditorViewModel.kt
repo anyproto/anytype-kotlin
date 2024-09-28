@@ -754,6 +754,7 @@ class EditorViewModel(
         renderCommand
             .stream()
             .switchToLatestFrom(orchestrator.stores.views.stream())
+            .distinctUntilChanged()
             .onEach { dispatchToUI(it) }
             .launchIn(viewModelScope)
 
@@ -795,7 +796,8 @@ class EditorViewModel(
 
                 footers.value = getFooterState(root, details)
                 val flags = mutableListOf<BlockViewRenderer.RenderFlag>()
-                Timber.d("Rendering starting...")
+                Timber.d("DROID-2826 Rendering starting... with focus: ${focus}")
+                Timber.d("DROID-2826 Cursor in vm views before rendering: ${views.filterIsInstance<BlockView.Text.Paragraph>().map { it.id to it.cursor }}")
                 val doc = models.asMap().render(
                     mode = mode,
                     root = root,
@@ -818,6 +820,7 @@ class EditorViewModel(
                 emit(emptyList())
             }
             .onEach { views ->
+                Timber.d("DROID-2826 Rendering finished with view with cursor: ${views.filterIsInstance<BlockView.Text.Paragraph>().map { it.id to it.cursor }}")
                 orchestrator.stores.views.update(views)
                 renderCommand.send(Unit)
             }
@@ -2204,6 +2207,26 @@ class EditorViewModel(
         viewModelScope.launch { refresh() }
     }
 
+    fun onCursorConsumed(
+        target: Id
+    ) {
+        viewModelScope.launch {
+            Timber.d("DROID-2826 vm.onCursorConsumed: $target")
+            val focus = orchestrator.stores.focus.current()
+            if (focus.targetOrNull() == target) {
+                orchestrator.stores.focus.update(
+                    Editor.Focus(
+                        target = Editor.Focus.Target.Block(target),
+                        cursor = null,
+                        isPending = false
+                    )
+                )
+            } else {
+                TODO()
+            }
+        }
+    }
+
     fun onDocRelationsClicked() {
         Timber.d("onDocRelationsClicked, ")
         dispatch(
@@ -3111,9 +3134,6 @@ class EditorViewModel(
     }
 
     private suspend fun refresh() {
-        if (BuildConfig.DEBUG) {
-            Timber.d("----------Blocks dispatched to render pipeline----------")
-        }
         renderizePipeline.send(blocks)
     }
 
@@ -6070,6 +6090,7 @@ class EditorViewModel(
             mentionTrigger = mentionTrigger
         )
 
+        // Replacing text domain-level block
         val update = blocks.map { block ->
             if (block.id != target.id)
                 block
@@ -6080,6 +6101,7 @@ class EditorViewModel(
         orchestrator.stores.document.update(update)
 
         viewModelScope.launch {
+            // Desired position.
             val position = mentionFrom + name.length + 1
             orchestrator.stores.focus.update(
                 t = Editor.Focus(

@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTextBinding
 import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
@@ -18,7 +19,8 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 class Paragraph(
     val binding: ItemBlockTextBinding,
     clicked: (ListenerType) -> Unit,
-) : Text<BlockView.Text.Paragraph>(binding.root, clicked), SupportNesting, DecoratableViewHolder {
+    onCursorConsumed: (Id) -> Unit
+) : Text<BlockView.Text.Paragraph>(binding.root, clicked, onCursorConsumed), SupportNesting, DecoratableViewHolder {
 
     override val root: View = binding.root
     override val content: TextInputWidget = binding.textContent

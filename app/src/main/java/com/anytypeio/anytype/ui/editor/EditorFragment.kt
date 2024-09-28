@@ -335,7 +335,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             onDragListener = dndDelegate.dndListener,
             lifecycle = lifecycle,
             dragAndDropSelector = DragAndDropAdapterDelegate(),
-            onCellSelectionChanged = vm::onCellSelectionChanged
+            onCellSelectionChanged = vm::onCellSelectionChanged,
+            onCursorConsumed = vm::onCursorConsumed
         )
     }
 

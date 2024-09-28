@@ -30,14 +30,18 @@ interface TextHolder {
 
     val selectionView: View
 
-    fun setCursor(item: BlockView.Cursor) {
-        Timber.d("Setting cursor: $item")
-        item.cursor?.let {
+    fun setCursor(item: BlockView.Cursor) : Boolean {
+        Timber.d("DROID-2826 Trying to set cursor: $item")
+        return item.cursor?.let {
             val length = content.text?.length ?: 0
             if (it in 0..length) {
+                Timber.d("DROID-2826 Setting cursor: $it")
                 content.setSelection(it)
+                true
+            } else {
+                false
             }
-        }
+        } ?: false
     }
 
     fun setAlignment(alignment: Alignment) {

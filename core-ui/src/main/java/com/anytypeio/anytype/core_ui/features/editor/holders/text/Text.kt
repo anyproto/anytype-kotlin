@@ -3,23 +3,25 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.text
 import android.text.Editable
 import android.view.View
 import androidx.annotation.CallSuper
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.applyMovementMethod
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.TextBlockHolder
 import com.anytypeio.anytype.core_ui.features.editor.performInEditMode
 import com.anytypeio.anytype.core_ui.features.editor.provide
-import com.anytypeio.anytype.core_ui.features.editor.withBlock
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.Checkable
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
+import timber.log.Timber
 
 abstract class Text<BlockTextType : BlockView.Text>(
     view: View,
-    protected val clicked: (ListenerType) -> Unit
+    protected val clicked: (ListenerType) -> Unit,
+    private val onCursorConsumed: (Id) -> Unit = {}
 ) : BlockViewHolder(view), TextBlockHolder, BlockViewHolder.IndentableHolder,
     BlockViewHolder.DragAndDropHolder {
 
@@ -28,6 +30,7 @@ abstract class Text<BlockTextType : BlockView.Text>(
     open fun bind(
         item: BlockTextType,
     ) {
+        Timber.d("DROID-2826 binding item in adapter: ${item}")
         indentize(item)
         select(item)
         inputAction(item)
@@ -53,7 +56,13 @@ abstract class Text<BlockTextType : BlockView.Text>(
             )
             setStyle(item)
 
-            if (item.isFocused) setCursor(item)
+            if (item.isFocused) {
+                val isConsumed = setCursor(item)
+                if (isConsumed) {
+                    Timber.d("DROID-2826 Cursor consumed for block ${item.id}")
+                    onCursorConsumed(item.id)
+                }
+            }
 
             setFocus(item)
         }

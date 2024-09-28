@@ -231,6 +231,7 @@ class BlockAdapter(
     private val onDragListener: View.OnDragListener,
     private val lifecycle: Lifecycle,
     private val dragAndDropSelector: DragAndDropSelector,
+    private val onCursorConsumed: (Id) -> Unit = {}
 ) : RecyclerView.Adapter<BlockViewHolder>(),
     ItemProviderAdapter<BlockView>,
     DragAndDropSelector by dragAndDropSelector {
@@ -274,7 +275,8 @@ class BlockAdapter(
             HOLDER_PARAGRAPH -> {
                 Paragraph(
                     ItemBlockTextBinding.inflate(inflater, parent, false),
-                    clicked = onClickListener
+                    clicked = onClickListener,
+                    onCursorConsumed = onCursorConsumed
                 )
             }
             HOLDER_TITLE -> {
@@ -851,6 +853,7 @@ class BlockAdapter(
                 if (pos != RecyclerView.NO_POSITION) {
                     val view = views[pos]
                     if (view is BlockView.Text) {
+                        Timber.d("DROID-2826 selectionWatcher callback, changing view cursor to: ${selection.last}")
                         view.cursor = selection.last
                     }
                     onSelectionChanged(view.id, selection)
@@ -1646,7 +1649,7 @@ class BlockAdapter(
 
     fun updateWithDiffUtil(items: List<BlockView>) {
         if (BuildConfig.DEBUG) {
-            Timber.d("----------Blocks dispatched to adapter---------------------")
+            Timber.d("DROID-2826 ----------Blocks dispatched to adapter---------------------")
         }
         val result = DiffUtil.calculateDiff(BlockViewDiffUtil(old = blocks, new = items))
         blocks = items

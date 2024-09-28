@@ -25,6 +25,7 @@ import com.anytypeio.anytype.feature_allcontent.models.MenuButtonViewState
 import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
 import com.anytypeio.anytype.feature_allcontent.models.createSubscriptionParams
 import com.anytypeio.anytype.feature_allcontent.models.filtersForSearch
+import com.anytypeio.anytype.feature_allcontent.models.mapRelationKeyToSort
 import com.anytypeio.anytype.feature_allcontent.models.view
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
@@ -80,7 +81,6 @@ class AllContentViewModel(
     private val susbcriptionId = "all_content_subscription_${vmParams.spaceId.id}"
     private val _limitedObjectIds: MutableStateFlow<List<String>> = MutableStateFlow(emptyList())
 
-    // Initial states
     private val _tabsState = MutableStateFlow<AllContentTab>(DEFAULT_INITIAL_TAB)
     private val _modeState = MutableStateFlow<AllContentMode>(DEFAULT_INITIAL_MODE)
     private val _sortState = MutableStateFlow<AllContentSort>(DEFAULT_INITIAL_SORT)
@@ -109,9 +109,14 @@ class AllContentViewModel(
 
     init {
         Timber.d("AllContentViewModel init, spaceId:[${vmParams.spaceId.id}]")
-        viewModelScope.launch {
-            setupInitialScreenParams()
-        }
+        setupInitialStateParams()
+        proceedWithUiTitleStateSetup()
+        proceedWithUiTabsStateSetup()
+        proceedWithUiStateSetup()
+        proceedWithSearchStateSetup()
+    }
+
+    private fun proceedWithUiTitleStateSetup() {
         viewModelScope.launch {
             _modeState.collectLatest { result ->
                 Timber.d("New mode: [$result]")
@@ -120,6 +125,9 @@ class AllContentViewModel(
                 _uiMenuButtonState.value = MenuButtonViewState.Visible
             }
         }
+    }
+
+    private fun proceedWithUiTabsStateSetup() {
         viewModelScope.launch {
             _tabsState.collectLatest { result ->
                 Timber.d("New tab: [$result]")
@@ -129,7 +137,26 @@ class AllContentViewModel(
                 )
             }
         }
-        proceedWithUiStateSetup()
+    }
+
+    private fun setupInitialStateParams() {
+        viewModelScope.launch {
+            if (vmParams.useHistory) {
+                runCatching {
+                    val initialParams = restoreAllContentState.run(
+                        RestoreAllContentState.Params(vmParams.spaceId)
+                    )
+                    if (initialParams.activeSort != null) {
+                        _sortState.value = initialParams.activeSort.mapRelationKeyToSort()
+                    }
+                }.onFailure { e ->
+                    Timber.e(e, "Error restoring state")
+                }
+            }
+        }
+    }
+
+    private fun proceedWithSearchStateSetup() {
         viewModelScope.launch {
             searchQuery.collectLatest { query ->
                 Timber.d("New query: [$query]")
@@ -151,28 +178,6 @@ class AllContentViewModel(
                     )
                 }
             }
-        }
-    }
-
-    private suspend fun setupInitialScreenParams() {
-        if (vmParams.useHistory) {
-            runCatching {
-                val initialParams = restoreAllContentState.run(
-                    RestoreAllContentState.Params(vmParams.spaceId)
-                )
-                _sortState.value = mapRelationKeyToSort(initialParams.activeSort?.relationKey)
-                _tabsState.value = DEFAULT_INITIAL_TAB
-            }.onFailure { e ->
-                Timber.e(e, "Error restoring state")
-            }
-        }
-    }
-
-    private fun mapRelationKeyToSort(relationKey: Key?): AllContentSort {
-        return when (relationKey) {
-            Relations.CREATED_DATE -> AllContentSort.ByDateCreated()
-            Relations.LAST_OPENED_DATE -> AllContentSort.ByDateUpdated()
-            else -> DEFAULT_INITIAL_SORT
         }
     }
 
@@ -403,7 +408,7 @@ class AllContentViewModel(
         //INITIAL STATE
         private const val DEFAULT_SEARCH_LIMIT = 50
         private val DEFAULT_INITIAL_TAB = AllContentTab.PAGES
-        private val DEFAULT_INITIAL_SORT = AllContentSort.ByName()
+        val DEFAULT_INITIAL_SORT = AllContentSort.ByName()
         private val DEFAULT_INITIAL_MODE = AllContentMode.AllContent
         private val DEFAULT_QUERY = ""
     }

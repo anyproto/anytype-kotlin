@@ -21,7 +21,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,33 +58,30 @@ import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.feature_allcontent.BuildConfig
 import com.anytypeio.anytype.feature_allcontent.R
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
-import com.anytypeio.anytype.feature_allcontent.models.TabsViewState
-import com.anytypeio.anytype.feature_allcontent.models.TopBarViewState
-import com.anytypeio.anytype.feature_allcontent.presentation.AllContentUiState
+import com.anytypeio.anytype.feature_allcontent.models.AllContentUiState
+import com.anytypeio.anytype.feature_allcontent.models.MenuButtonViewState
+import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
+import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 @Composable
 fun AllContentWrapperScreen(
+    uiTitleState: UiTitleState,
+    uiTabsState: UiTabsState,
+    uiMenuButtonViewState: MenuButtonViewState,
     uiState: AllContentUiState,
     onTabClick: (AllContentTab) -> Unit,
     onQueryChanged: (String) -> Unit,
 ) {
-    val tabsState = remember { mutableStateOf<TabsViewState>(TabsViewState.Hidden) }
-    val titleState = remember { mutableStateOf<TopBarViewState>(TopBarViewState.Hidden) }
     val objects = remember { mutableStateOf<List<DefaultObjectView>>(emptyList()) }
-    LaunchedEffect(uiState) {
-        if (uiState is AllContentUiState.Initial) {
-            tabsState.value = uiState.tabsViewState
-            titleState.value = uiState.topToolbarState
-        }
-    }
-    if (uiState is AllContentUiState.Content) {
-        objects.value = uiState.items
-    }
+//    if (uiState is AllContentUiState.Content) {
+//        objects.value = uiState.items
+//    }
     AllContentMainScreen(
-        titleState = titleState,
-        tabs = tabsState,
+        uiTitleState = uiTitleState,
+        uiTabsState = uiTabsState,
+        uiMenuButtonViewState = uiMenuButtonViewState,
         onTabClick = onTabClick,
         objects = objects,
         isLoading = uiState is AllContentUiState.Loading,
@@ -95,8 +91,9 @@ fun AllContentWrapperScreen(
 
 @Composable
 fun AllContentMainScreen(
-    titleState: MutableState<TopBarViewState>,
-    tabs: MutableState<TabsViewState>,
+    uiTitleState: UiTitleState,
+    uiTabsState: UiTabsState,
+    uiMenuButtonViewState: MenuButtonViewState,
     objects: MutableState<List<DefaultObjectView>>,
     onTabClick: (AllContentTab) -> Unit,
     onQueryChanged: (String) -> Unit,
@@ -118,16 +115,15 @@ fun AllContentMainScreen(
                 else
                     Modifier.fillMaxWidth()
             ) {
-                if (titleState.value is TopBarViewState.Default) {
+                if (uiTitleState !is UiTitleState.Hidden) {
                     AllContentTopBarContainer(
-                        state = titleState.value as TopBarViewState.Default
+                        titleState = uiTitleState,
+                        menuButtonState = uiMenuButtonViewState
                     )
                 }
 
-                if (tabs.value is TabsViewState.Default) {
-                    AllContentTabs(
-                        tabsViewState = tabs.value as TabsViewState.Default,
-                    ) { tab ->
+                if (uiTabsState is UiTabsState.Default) {
+                    AllContentTabs(tabsViewState = uiTabsState) { tab ->
                         onTabClick(tab)
                     }
                 }

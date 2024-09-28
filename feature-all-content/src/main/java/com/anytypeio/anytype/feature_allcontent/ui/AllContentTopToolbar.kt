@@ -59,22 +59,24 @@ import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.feature_allcontent.R
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
-import com.anytypeio.anytype.feature_allcontent.models.AllContentTitleViewState
+import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
 import com.anytypeio.anytype.feature_allcontent.models.MenuButtonViewState
-import com.anytypeio.anytype.feature_allcontent.models.TabsViewState
-import com.anytypeio.anytype.feature_allcontent.models.TopBarViewState
+import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
 
 //region AllContentTopBarContainer
 
 @Composable
-fun AllContentTopBarContainer(state: TopBarViewState.Default) {
+fun AllContentTopBarContainer(
+    titleState: UiTitleState,
+    menuButtonState: MenuButtonViewState
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(48.dp)
     ) {
-        AllContentTitle(state = state.titleState)
-        AllContentMenuButton(state = state.menuButtonState)
+        AllContentTitle(state = titleState)
+        AllContentMenuButton(state = menuButtonState)
     }
 }
 
@@ -82,10 +84,8 @@ fun AllContentTopBarContainer(state: TopBarViewState.Default) {
 @Composable
 private fun AllContentTopBarContainerPreview() {
     AllContentTopBarContainer(
-        state = TopBarViewState.Default(
-            titleState = AllContentTitleViewState.OnlyUnlinked,
-            menuButtonState = MenuButtonViewState.Visible
-        )
+        titleState = UiTitleState.OnlyUnlinked,
+        menuButtonState = MenuButtonViewState.Visible
     )
 }
 //endregion
@@ -93,10 +93,10 @@ private fun AllContentTopBarContainerPreview() {
 //region AllContentTitle
 
 @Composable
-fun BoxScope.AllContentTitle(state: AllContentTitleViewState) {
+fun BoxScope.AllContentTitle(state: UiTitleState) {
     when (state) {
-        AllContentTitleViewState.Hidden -> return
-        AllContentTitleViewState.AllContent -> {
+        UiTitleState.Hidden -> return
+        UiTitleState.AllContent -> {
             Text(
                 modifier = Modifier
                     .wrapContentSize()
@@ -107,7 +107,7 @@ fun BoxScope.AllContentTitle(state: AllContentTitleViewState) {
             )
         }
 
-        AllContentTitleViewState.OnlyUnlinked -> {
+        UiTitleState.OnlyUnlinked -> {
             Text(
                 modifier = Modifier
                     .wrapContentSize()
@@ -144,7 +144,7 @@ fun BoxScope.AllContentMenuButton(state: MenuButtonViewState) {
 //region AllContentTabs
 @Composable
 fun AllContentTabs(
-    tabsViewState: TabsViewState.Default,
+    tabsViewState: UiTabsState.Default,
     onClick: (AllContentTab) -> Unit
 ) {
     val scrollState = rememberLazyListState()

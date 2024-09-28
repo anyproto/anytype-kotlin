@@ -60,6 +60,9 @@ class AllContentFragment : BaseComposeFragment() {
                     uiState = vm.uiState.collectAsStateWithLifecycle().value,
                     onTabClick = vm::onTabClicked,
                     onQueryChanged = vm::onFilterChanged,
+                    uiTabsState = vm.uiTabsState.collectAsStateWithLifecycle().value,
+                    uiTitleState = vm.uiTitleState.collectAsStateWithLifecycle().value,
+                    uiMenuButtonViewState = vm.uiMenuButtonState.collectAsStateWithLifecycle().value,
                 )
             }
         }

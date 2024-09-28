@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.RelationKey
+import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 
 sealed class AllContentState {
     data object Initial : AllContentState()
@@ -67,13 +68,17 @@ sealed class AllContentSort {
 }
 
 
+
 //region VIEW STATES
-sealed class AllContentTitleViewState {
-    data object Hidden : AllContentTitleViewState()
-    data object AllContent : AllContentTitleViewState()
-    data object OnlyUnlinked : AllContentTitleViewState()
+
+//TITLE
+sealed class UiTitleState {
+    data object Hidden : UiTitleState()
+    data object AllContent : UiTitleState()
+    data object OnlyUnlinked : UiTitleState()
 }
 
+@Deprecated("to delete")
 @Immutable
 sealed class TopBarViewState {
 
@@ -81,25 +86,55 @@ sealed class TopBarViewState {
 
     @Immutable
     data class Default(
-        val titleState: AllContentTitleViewState,
+        val titleState: UiTitleState,
         val menuButtonState: MenuButtonViewState
     ) : TopBarViewState()
 }
 
+//MENU BUTTON
 sealed class MenuButtonViewState {
     data object Hidden : MenuButtonViewState()
     data object Visible : MenuButtonViewState()
 }
 
 @Immutable
-sealed class TabsViewState {
-    data object Hidden : TabsViewState()
+sealed class UiTabsState {
+    data object Hidden : UiTabsState()
 
     @Immutable
     data class Default(
         val tabs: List<AllContentTab>,
         val selectedTab: AllContentTab
-    ) : TabsViewState()
+    ) : UiTabsState()
+}
+
+sealed class AllContentUiState {
+
+    data object Hidden : AllContentUiState()
+
+    data object Loading : AllContentUiState()
+
+    data class Error(
+        val message: String,
+    ) : AllContentUiState()
+
+    @Immutable
+    data class Content(
+        val items: List<AllContentItem>,
+    ) : AllContentUiState()
+}
+
+sealed class AllContentItem {
+    abstract val id: String
+    sealed class Group : AllContentItem() {
+        data class Today(override val id: String) : Group()
+        data class Yesterday(override val id: String) : Group()
+        data class Previous7Days(override val id: String) : Group()
+        data class Previous14Days(override val id: String) : Group()
+        data class Month(override val id: String, val title: String) : Group()
+        data class MonthAndYear(override val id: String, val title: String) : Group()
+    }
+    data class Object(override val id: String, val obj: DefaultObjectView) : AllContentItem()
 }
 
 sealed class MenuSortsItem {
@@ -127,3 +162,18 @@ sealed class MenuSortsItem {
     }
 }
 //endregion
+
+//region MAPPING
+fun AllContentState.Default.toMenuMode(): AllContentMenuMode {
+    return when (activeMode) {
+        AllContentMode.AllContent -> AllContentMenuMode.AllContent(isSelected = true)
+        AllContentMode.Unlinked -> AllContentMenuMode.Unlinked(isSelected = true)
+    }
+}
+
+fun AllContentMode.view(): UiTitleState {
+    return when (this) {
+        AllContentMode.AllContent -> UiTitleState.AllContent
+        AllContentMode.Unlinked -> UiTitleState.OnlyUnlinked
+    }
+}

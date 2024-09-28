@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 
+//region STATE
 sealed class AllContentState {
     data object Initial : AllContentState()
     data class Default(
@@ -66,8 +67,7 @@ sealed class AllContentSort {
         override val isSelected: Boolean = false
     ) : AllContentSort()
 }
-
-
+//endregion
 
 //region VIEW STATES
 
@@ -78,25 +78,13 @@ sealed class UiTitleState {
     data object OnlyUnlinked : UiTitleState()
 }
 
-@Deprecated("to delete")
-@Immutable
-sealed class TopBarViewState {
-
-    data object Hidden : TopBarViewState()
-
-    @Immutable
-    data class Default(
-        val titleState: UiTitleState,
-        val menuButtonState: MenuButtonViewState
-    ) : TopBarViewState()
-}
-
 //MENU BUTTON
 sealed class MenuButtonViewState {
     data object Hidden : MenuButtonViewState()
     data object Visible : MenuButtonViewState()
 }
 
+// TABS
 @Immutable
 sealed class UiTabsState {
     data object Hidden : UiTabsState()
@@ -108,25 +96,28 @@ sealed class UiTabsState {
     ) : UiTabsState()
 }
 
-sealed class AllContentUiState {
+// CONTENT
+sealed class UiContentState {
 
-    data object Hidden : AllContentUiState()
+    data object Hidden : UiContentState()
 
-    data object Loading : AllContentUiState()
+    data object Loading : UiContentState()
 
     data class Error(
         val message: String,
-    ) : AllContentUiState()
+    ) : UiContentState()
 
     @Immutable
     data class Content(
-        val items: List<AllContentItem>,
-    ) : AllContentUiState()
+        val items: List<UiContentItem>,
+    ) : UiContentState()
 }
 
-sealed class AllContentItem {
+// ITEMS
+sealed class UiContentItem {
     abstract val id: String
-    sealed class Group : AllContentItem() {
+
+    sealed class Group : UiContentItem() {
         data class Today(override val id: String) : Group()
         data class Yesterday(override val id: String) : Group()
         data class Previous7Days(override val id: String) : Group()
@@ -134,9 +125,12 @@ sealed class AllContentItem {
         data class Month(override val id: String, val title: String) : Group()
         data class MonthAndYear(override val id: String, val title: String) : Group()
     }
-    data class Object(override val id: String, val obj: DefaultObjectView) : AllContentItem()
+
+    data class Object(override val id: String, val obj: DefaultObjectView) : UiContentItem()
 }
 
+
+// MENU
 sealed class MenuSortsItem {
     abstract val id: String
 
@@ -177,3 +171,4 @@ fun AllContentMode.view(): UiTitleState {
         AllContentMode.Unlinked -> UiTitleState.OnlyUnlinked
     }
 }
+//endregion

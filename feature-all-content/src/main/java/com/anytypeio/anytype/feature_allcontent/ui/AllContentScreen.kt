@@ -58,8 +58,9 @@ import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.feature_allcontent.BuildConfig
 import com.anytypeio.anytype.feature_allcontent.R
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
-import com.anytypeio.anytype.feature_allcontent.models.AllContentUiState
+import com.anytypeio.anytype.feature_allcontent.models.UiContentState
 import com.anytypeio.anytype.feature_allcontent.models.MenuButtonViewState
+import com.anytypeio.anytype.feature_allcontent.models.UiContentItem
 import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
 import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
@@ -70,21 +71,21 @@ fun AllContentWrapperScreen(
     uiTitleState: UiTitleState,
     uiTabsState: UiTabsState,
     uiMenuButtonViewState: MenuButtonViewState,
-    uiState: AllContentUiState,
+    uiState: UiContentState,
     onTabClick: (AllContentTab) -> Unit,
     onQueryChanged: (String) -> Unit,
 ) {
-    val objects = remember { mutableStateOf<List<DefaultObjectView>>(emptyList()) }
-//    if (uiState is AllContentUiState.Content) {
-//        objects.value = uiState.items
-//    }
+    val objects = remember { mutableStateOf<List<UiContentItem>>(emptyList()) }
+    if (uiState is UiContentState.Content) {
+        objects.value = uiState.items
+    }
     AllContentMainScreen(
         uiTitleState = uiTitleState,
         uiTabsState = uiTabsState,
         uiMenuButtonViewState = uiMenuButtonViewState,
         onTabClick = onTabClick,
         objects = objects,
-        isLoading = uiState is AllContentUiState.Loading,
+        isLoading = uiState is UiContentState.Loading,
         onQueryChanged = onQueryChanged
     )
 }
@@ -94,7 +95,7 @@ fun AllContentMainScreen(
     uiTitleState: UiTitleState,
     uiTabsState: UiTabsState,
     uiMenuButtonViewState: MenuButtonViewState,
-    objects: MutableState<List<DefaultObjectView>>,
+    objects: MutableState<List<UiContentItem>>,
     onTabClick: (AllContentTab) -> Unit,
     onQueryChanged: (String) -> Unit,
     isLoading: Boolean
@@ -149,20 +150,50 @@ fun AllContentMainScreen(
                     LoadingState()
                 }
             } else {
-                LazyColumn(modifier = contentModifier) {
-                    items(
-                        count = objects.value.size,
-                        key = { index -> objects.value[index].id }
-                    ) {
-                        Item(
-                            modifier = Modifier.animateItem(),
-                            view = objects.value[it]
-                        )
-                    }
-                }
+                ContentItems(modifier = contentModifier, items = objects.value)
+//                LazyColumn(modifier = contentModifier) {
+//                    items(
+//                        count = objects.value.size,
+//                        key = { index -> objects.value[index].id }
+//                    ) {
+//                        Item(
+//                            modifier = Modifier.animateItem(),
+//                            view = objects.value[it]
+//                        )
+//                    }
+//                }
             }
         }
     )
+}
+
+@Composable
+private fun ContentItems(modifier: Modifier, items: List<UiContentItem>) {
+    LazyColumn(modifier = modifier) {
+        items(
+            count = items.size,
+            key = { index -> items[index].id },
+            contentType = { index ->
+                when (items[index]) {
+                    is UiContentItem.Group -> "group"
+                    is UiContentItem.Object -> "object"
+                }
+            }
+        ) { index ->
+            val obj = items[index]
+            when (obj) {
+                is UiContentItem.Group -> {
+
+                }
+                is UiContentItem.Object -> {
+                    Item(
+                        modifier = Modifier.animateItem(),
+                        view = obj.obj
+                    )
+                }
+            }
+        }
+    }
 }
 
 @Composable

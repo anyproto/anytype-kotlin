@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.feature_allcontent.presentation
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
@@ -15,13 +14,13 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.search.SearchObjects
-import com.anytypeio.anytype.feature_allcontent.models.AllContentItem
+import com.anytypeio.anytype.feature_allcontent.models.UiContentItem
 import com.anytypeio.anytype.feature_allcontent.models.AllContentMenuMode
 import com.anytypeio.anytype.feature_allcontent.models.AllContentMode
 import com.anytypeio.anytype.feature_allcontent.models.AllContentSort
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
 import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
-import com.anytypeio.anytype.feature_allcontent.models.AllContentUiState
+import com.anytypeio.anytype.feature_allcontent.models.UiContentState
 import com.anytypeio.anytype.feature_allcontent.models.MenuButtonViewState
 import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
 import com.anytypeio.anytype.feature_allcontent.models.createSubscriptionParams
@@ -59,7 +58,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 /**
- * ViewState: @see [AllContentUiState]
+ * ViewState: @see [UiContentState]
  * Factory: @see [AllContentViewModelFactory]
  * Screen: @see [com.anytypeio.anytype.feature_allcontent.ui.AllContentWrapperScreen]
  */
@@ -105,8 +104,8 @@ class AllContentViewModel(
     private val _uiTabsState = MutableStateFlow<UiTabsState>(UiTabsState.Hidden)
     val uiTabsState: StateFlow<UiTabsState> = _uiTabsState.asStateFlow()
 
-    private val _uiState = MutableStateFlow<AllContentUiState>(AllContentUiState.Hidden)
-    val uiState: StateFlow<AllContentUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow<UiContentState>(UiContentState.Hidden)
+    val uiState: StateFlow<UiContentState> = _uiState.asStateFlow()
 
     init {
         Timber.d("AllContentViewModel init, spaceId:[${vmParams.spaceId.id}]")
@@ -200,9 +199,9 @@ class AllContentViewModel(
 
     private fun loadData(
         result: Result
-    ): Flow<AllContentUiState> = flow {
+    ): Flow<UiContentState> = flow {
 
-        emit(AllContentUiState.Loading)
+        emit(UiContentState.Loading)
 
         delay(300)
 
@@ -231,20 +230,20 @@ class AllContentViewModel(
                                 urlBuilder = urlBuilder,
                                 objectTypes = storeOfObjectTypes.getAll(),
                             )
-                        }
-                        val groupItems = groupItemsByDate(views)
-                        AllContentUiState.Content(
-                            items = emptyList()// groupItemsByDate(views)
+                        }.map { UiContentItem.Object(id = it.id, obj = it) }
+                        //val groupItems = groupItemsByDate(views)
+                        UiContentState.Content(
+                            items = views//emptyList()// groupItemsByDate(views)
                         )
 
                     } else {
-                        AllContentUiState.Content(
+                        UiContentState.Content(
                             items = items.map {
                                 val view = it.toView(
                                     urlBuilder = urlBuilder,
                                     objectTypes = storeOfObjectTypes.getAll(),
                                 )
-                                AllContentItem.Object(
+                                UiContentItem.Object(
                                     id = view.id,
                                     obj = view
                                 )
@@ -254,7 +253,7 @@ class AllContentViewModel(
                 }
                 .catch { e ->
                     emit(
-                        AllContentUiState.Error(
+                        UiContentState.Error(
                             message = e.message ?: "Error loading objects by subscription"
                         )
                     )
@@ -262,8 +261,8 @@ class AllContentViewModel(
         )
     }
 
-    private fun groupItemsByDate(items: List<DefaultObjectView>): List<AllContentItem> {
-        val groupedItems = mutableListOf<AllContentItem>()
+    private fun groupItemsByDate(items: List<DefaultObjectView>): List<UiContentItem> {
+        val groupedItems = mutableListOf<UiContentItem>()
         var currentGroupKey: String? = null
 
         for (item in items) {
@@ -276,7 +275,7 @@ class AllContentViewModel(
             }
 
             groupedItems.add(
-                AllContentItem.Object(
+                UiContentItem.Object(
                     id = item.id, obj = item
                 )
             )
@@ -285,7 +284,7 @@ class AllContentViewModel(
         return groupedItems
     }
 
-    private fun getDateGroup(timestamp: Long): Pair<String, AllContentItem.Group> {
+    private fun getDateGroup(timestamp: Long): Pair<String, UiContentItem.Group> {
         val itemDate = Instant.ofEpochMilli(timestamp)
             .atZone(ZoneId.systemDefault())
             .toLocalDate()
@@ -293,13 +292,13 @@ class AllContentViewModel(
         val daysAgo = ChronoUnit.DAYS.between(itemDate, today)
 
         return when {
-            daysAgo == 0L -> TODAY_ID to AllContentItem.Group.Today(TODAY_ID)
-            daysAgo == 1L -> YESTERDAY_ID to AllContentItem.Group.Yesterday(YESTERDAY_ID)
-            daysAgo in 2..7 -> PREVIOUS_7_DAYS_ID to AllContentItem.Group.Previous7Days(
+            daysAgo == 0L -> TODAY_ID to UiContentItem.Group.Today(TODAY_ID)
+            daysAgo == 1L -> YESTERDAY_ID to UiContentItem.Group.Yesterday(YESTERDAY_ID)
+            daysAgo in 2..7 -> PREVIOUS_7_DAYS_ID to UiContentItem.Group.Previous7Days(
                 PREVIOUS_7_DAYS_ID
             )
 
-            daysAgo in 8..14 -> PREVIOUS_14_DAYS_ID to AllContentItem.Group.Previous14Days(
+            daysAgo in 8..14 -> PREVIOUS_14_DAYS_ID to UiContentItem.Group.Previous14Days(
                 PREVIOUS_14_DAYS_ID
             )
 
@@ -307,7 +306,7 @@ class AllContentViewModel(
                 val monthName =
                     itemDate.month.getDisplayName(TextStyle.FULL, localeProvider.locale())
                 val id = "$MONTH_ID-$monthName"
-                id to AllContentItem.Group.Month(id = id, title = monthName)
+                id to UiContentItem.Group.Month(id = id, title = monthName)
             }
 
             else -> {
@@ -318,7 +317,7 @@ class AllContentViewModel(
                     )
                 } ${itemDate.year}"
                 val id = "$MONTH_AND_YEAR_ID-$monthAndYear"
-                id to AllContentItem.Group.MonthAndYear(id = id, title = monthAndYear)
+                id to UiContentItem.Group.MonthAndYear(id = id, title = monthAndYear)
             }
         }
     }
@@ -337,27 +336,6 @@ class AllContentViewModel(
             fulltext = activeQuery
         )
     }
-
-//    // Function to create subscription params
-//    private fun createSubscriptionParams(
-//        activeTab: AllContentTab,
-//        activeSort: AllContentSort,
-//        limitedObjectIds: List<String>,
-//        limit: Int
-//    ): StoreSearchParams {
-//        val (filters, sorts) = activeTab.filtersForSubscribe(
-//            spaces = listOf(vmParams.spaceId.id),
-//            activeSort = activeSort,
-//            limitedObjectIds = limitedObjectIds
-//        )
-//        return StoreSearchParams(
-//            filters = filters,
-//            sorts = sorts,
-//            keys = DEFAULT_KEYS,
-//            limit = limit,
-//            subscription = susbcriptionId
-//        )
-//    }
 
     // Function to get the menu mode based on the active mode
     private fun getMenuMode(mode: AllContentMode): AllContentMenuMode {

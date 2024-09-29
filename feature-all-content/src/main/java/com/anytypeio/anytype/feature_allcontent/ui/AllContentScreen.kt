@@ -29,7 +29,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -65,7 +70,6 @@ import com.anytypeio.anytype.feature_allcontent.models.MenuButtonViewState
 import com.anytypeio.anytype.feature_allcontent.models.UiContentItem
 import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
 import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
-import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 @Composable
@@ -153,17 +157,6 @@ fun AllContentMainScreen(
                 }
             } else {
                 ContentItems(modifier = contentModifier, items = objects.value)
-//                LazyColumn(modifier = contentModifier) {
-//                    items(
-//                        count = objects.value.size,
-//                        key = { index -> objects.value[index].id }
-//                    ) {
-//                        Item(
-//                            modifier = Modifier.animateItem(),
-//                            view = objects.value[it]
-//                        )
-//                    }
-//                }
             }
         }
     )
@@ -178,12 +171,11 @@ private fun ContentItems(modifier: Modifier, items: List<UiContentItem>) {
             contentType = { index ->
                 when (items[index]) {
                     is UiContentItem.Group -> "group"
-                    is UiContentItem.Object -> "object"
+                    is UiContentItem.Item -> "item"
                 }
             }
         ) { index ->
-            val obj = items[index]
-            when (obj) {
+            when (val item = items[index]) {
                 is UiContentItem.Group -> {
                     Box(
                         modifier = Modifier
@@ -192,17 +184,23 @@ private fun ContentItems(modifier: Modifier, items: List<UiContentItem>) {
                         contentAlignment = Alignment.BottomStart
                     ) {
                         Text(
-                            modifier = Modifier.wrapContentSize().padding(start = 20.dp, bottom = 8.dp),
-                            text = obj.id,
+                            modifier = Modifier
+                                .wrapContentSize()
+                                .padding(start = 20.dp, bottom = 8.dp),
+                            text = item.title(),
                             style = Caption1Regular,
                             color = colorResource(id = R.color.text_secondary),
                         )
                     }
                 }
-                is UiContentItem.Object -> {
+
+                is UiContentItem.Item -> {
                     Item(
-                        modifier = Modifier.animateItem(),
-                        view = obj.obj
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .bottomBorder()
+                            .animateItem(),
+                        item = item
                     )
                 }
             }
@@ -235,12 +233,10 @@ fun PreviewLoadingState() {
 @Composable
 private fun Item(
     modifier: Modifier,
-    view: DefaultObjectView
+    item: UiContentItem.Item
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(16.dp, 0.dp, 0.dp, 0.dp)
+        modifier = modifier.fillMaxWidth()
     ) {
         Box(
             modifier = Modifier
@@ -248,7 +244,7 @@ private fun Item(
                 .size(48.dp)
                 .align(CenterVertically)
         ) {
-            AllContentItemIcon(icon = view.icon, modifier = Modifier)
+            AllContentItemIcon(icon = item.icon, modifier = Modifier)
         }
         Column(
             modifier = Modifier
@@ -256,7 +252,7 @@ private fun Item(
                 .padding(0.dp, 0.dp, 60.dp, 0.dp)
         ) {
 
-            val name = view.name.trim().ifBlank { stringResource(R.string.untitled) }
+            val name = item.name.trim().ifBlank { stringResource(R.string.untitled) }
 
             Text(
                 text = name,
@@ -266,7 +262,7 @@ private fun Item(
                 overflow = TextOverflow.Ellipsis
             )
 
-            val description = view.description
+            val description = item.description
             if (!description.isNullOrBlank()) {
                 Text(
                     text = description,
@@ -277,7 +273,7 @@ private fun Item(
                 )
             }
 
-            val typeName = view.typeName
+            val typeName = item.typeName
             if (!typeName.isNullOrBlank()) {
                 Text(
                     text = typeName,
@@ -348,6 +344,41 @@ private fun BoxScope.ErrorState(message: String) {
     )
 }
 
+@Composable
+fun UiContentItem.Group.title(): String {
+    return when (this) {
+        is UiContentItem.Group.Today -> stringResource(R.string.allContent_group_today)
+        is UiContentItem.Group.Yesterday -> stringResource(R.string.allContent_group_yesterday)
+        is UiContentItem.Group.Previous7Days -> stringResource(R.string.allContent_group_prev_7)
+        is UiContentItem.Group.Previous14Days -> stringResource(R.string.allContent_group_prev_14)
+        is UiContentItem.Group.Month -> title
+        is UiContentItem.Group.MonthAndYear -> title
+    }
+}
+
 object AllContentNavigation {
     const val ALL_CONTENT_MAIN = "all_content_main"
 }
+
+@Composable
+fun Modifier.bottomBorder(
+    strokeWidth: Dp = 0.5.dp,
+    color: Color = colorResource(R.color.shape_primary)
+) = composed(
+    factory = {
+        val density = LocalDensity.current
+        val strokeWidthPx = density.run { strokeWidth.toPx() }
+
+        Modifier.drawBehind {
+            val width = size.width
+            val height = size.height - strokeWidthPx / 2
+
+            drawLine(
+                color = color,
+                start = Offset(x = 0f, y = height),
+                end = Offset(x = width, y = height),
+                strokeWidth = strokeWidthPx
+            )
+        }
+    }
+)

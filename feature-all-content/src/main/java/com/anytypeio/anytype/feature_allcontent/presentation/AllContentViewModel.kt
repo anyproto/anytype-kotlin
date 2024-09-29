@@ -3,6 +3,7 @@ package com.anytypeio.anytype.feature_allcontent.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.all_content.RestoreAllContentState
@@ -25,10 +26,9 @@ import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
 import com.anytypeio.anytype.feature_allcontent.models.createSubscriptionParams
 import com.anytypeio.anytype.feature_allcontent.models.filtersForSearch
 import com.anytypeio.anytype.feature_allcontent.models.mapRelationKeyToSort
+import com.anytypeio.anytype.feature_allcontent.models.toUiContentItems
 import com.anytypeio.anytype.feature_allcontent.models.view
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
-import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
-import com.anytypeio.anytype.presentation.objects.toView
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -223,38 +223,12 @@ class AllContentViewModel(
 
         emitAll(
             dataFlow
-                .map { items ->
-
-                    if (result.sort.canGroupByDate) {
-                        val views = items.map {
-                            it.toView(
-                                urlBuilder = urlBuilder,
-                                objectTypes = storeOfObjectTypes.getAll(),
-                            )
-                        }//.map { UiContentItem.Object(id = it.id, obj = it) }
-                        val groupItems = groupItemsByDate(
-                            items = views,
-                            activeSort = result.sort
-                        )
-                        Timber.d("Objects by subscription,  size:[${items.size}], groupItems:[${groupItems}]")
-                        UiContentState.Content(
-                            items = groupItems
-                        )
-
-                    } else {
-                        UiContentState.Content(
-                            items = items.map {
-                                val view = it.toView(
-                                    urlBuilder = urlBuilder,
-                                    objectTypes = storeOfObjectTypes.getAll(),
-                                )
-                                UiContentItem.Object(
-                                    id = view.id,
-                                    obj = view
-                                )
-                            }
-                        )
-                    }
+                .map { objWrappers ->
+                    val items = mapToUiContentItems(
+                        objectWrappers = objWrappers,
+                        activeSort = result.sort
+                    )
+                    UiContentState.Content(items = items)
                 }
                 .catch { e ->
                     emit(
@@ -266,8 +240,27 @@ class AllContentViewModel(
         )
     }
 
+    private suspend fun mapToUiContentItems(
+        objectWrappers: List<ObjectWrapper.Basic>,
+        activeSort: AllContentSort
+    ): List<UiContentItem> {
+        val items = objectWrappers.toUiContentItems(
+            space = vmParams.spaceId,
+            urlBuilder = urlBuilder,
+            objectTypes = storeOfObjectTypes.getAll()
+        )
+        return if (activeSort.canGroupByDate) {
+            groupItemsByDate(
+                items = items,
+                activeSort = activeSort
+            )
+        } else {
+            items
+        }
+    }
+
     private fun groupItemsByDate(
-        items: List<DefaultObjectView>,
+        items: List<UiContentItem.Item>,
         activeSort: AllContentSort
     ): List<UiContentItem> {
         val groupedItems = mutableListOf<UiContentItem>()
@@ -286,11 +279,7 @@ class AllContentViewModel(
                 currentGroupKey = groupKey
             }
 
-            groupedItems.add(
-                UiContentItem.Object(
-                    id = item.id, obj = item
-                )
-            )
+            groupedItems.add(item)
         }
 
         return groupedItems
@@ -303,24 +292,20 @@ class AllContentViewModel(
             .toLocalDate()
         val today = LocalDate.now(zoneId)
         val daysAgo = ChronoUnit.DAYS.between(itemDate, today)
+        val todayGroup = UiContentItem.Group.Today()
+        val yesterdayGroup = UiContentItem.Group.Yesterday()
+        val previous7DaysGroup = UiContentItem.Group.Previous7Days()
+        val previous14DaysGroup = UiContentItem.Group.Previous14Days()
         return when {
-            daysAgo == 0L -> TODAY_ID to UiContentItem.Group.Today(TODAY_ID)
-            daysAgo == 1L -> YESTERDAY_ID to UiContentItem.Group.Yesterday(YESTERDAY_ID)
-            daysAgo in 2..7 -> PREVIOUS_7_DAYS_ID to UiContentItem.Group.Previous7Days(
-                PREVIOUS_7_DAYS_ID
-            )
-
-            daysAgo in 8..14 -> PREVIOUS_14_DAYS_ID to UiContentItem.Group.Previous14Days(
-                PREVIOUS_14_DAYS_ID
-            )
-
+            daysAgo == 0L -> todayGroup.id to todayGroup
+            daysAgo == 1L -> yesterdayGroup.id to yesterdayGroup
+            daysAgo in 2..7 -> previous7DaysGroup.id to previous7DaysGroup
+            daysAgo in 8..14 -> previous14DaysGroup.id to previous14DaysGroup
             itemDate.year == today.year -> {
                 val monthName =
                     itemDate.month.getDisplayName(TextStyle.FULL, localeProvider.locale())
-                val id = "$MONTH_ID-$monthName"
-                id to UiContentItem.Group.Month(id = id, title = monthName)
+                monthName to UiContentItem.Group.Month(id = monthName, title = monthName)
             }
-
             else -> {
                 val monthAndYear = "${
                     itemDate.month.getDisplayName(
@@ -328,8 +313,10 @@ class AllContentViewModel(
                         localeProvider.locale()
                     )
                 } ${itemDate.year}"
-                val id = "$MONTH_AND_YEAR_ID-$monthAndYear"
-                id to UiContentItem.Group.MonthAndYear(id = id, title = monthAndYear)
+                monthAndYear to UiContentItem.Group.MonthAndYear(
+                    id = monthAndYear,
+                    title = monthAndYear
+                )
             }
         }
     }
@@ -404,13 +391,6 @@ class AllContentViewModel(
 
     companion object {
         const val DEFAULT_DEBOUNCE_DURATION = 300L
-        private const val TIMEOUT = 5000L
-        const val TODAY_ID = "Today"
-        const val YESTERDAY_ID = "Yesterday"
-        const val PREVIOUS_7_DAYS_ID = "Previous7Days"
-        const val PREVIOUS_14_DAYS_ID = "Previous14Days"
-        const val MONTH_ID = "Month"
-        const val MONTH_AND_YEAR_ID = "MonthAndYear"
 
         //INITIAL STATE
         const val DEFAULT_SEARCH_LIMIT = 50

@@ -3,10 +3,19 @@ package com.anytypeio.anytype.feature_allcontent.models
 import androidx.compose.runtime.Immutable
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.core_models.primitives.RelationKey
+import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Companion.DEFAULT_INITIAL_SORT
-import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.getProperName
+import com.anytypeio.anytype.presentation.objects.getProperType
 
 //region STATE
 sealed class AllContentState {
@@ -120,17 +129,34 @@ sealed class UiContentItem {
     abstract val id: String
 
     sealed class Group : UiContentItem() {
-        data class Today(override val id: String) : Group()
-        data class Yesterday(override val id: String) : Group()
-        data class Previous7Days(override val id: String) : Group()
-        data class Previous14Days(override val id: String) : Group()
+        data class Today(override val id: String = TODAY_ID) : Group()
+        data class Yesterday(override val id: String = YESTERDAY_ID) : Group()
+        data class Previous7Days(override val id: String = PREVIOUS_7_DAYS_ID) : Group()
+        data class Previous14Days(override val id: String = PREVIOUS_14_DAYS_ID) : Group()
         data class Month(override val id: String, val title: String) : Group()
         data class MonthAndYear(override val id: String, val title: String) : Group()
     }
 
-    data class Object(override val id: String, val obj: DefaultObjectView) : UiContentItem()
-}
+    data class Item(
+        override val id: String,
+        val name: String,
+        val space: SpaceId,
+        val type: String? = null,
+        val typeName: String? = null,
+        val description: String? = null,
+        val layout: ObjectType.Layout? = null,
+        val icon: ObjectIcon = ObjectIcon.None,
+        val lastModifiedDate: Long = 0L,
+        val createdDate: Long = 0L,
+    ) : UiContentItem()
 
+    companion object {
+        const val TODAY_ID = "TodayId"
+        const val YESTERDAY_ID = "YesterdayId"
+        const val PREVIOUS_7_DAYS_ID = "Previous7DaysId"
+        const val PREVIOUS_14_DAYS_ID = "Previous14DaysId"
+    }
+}
 
 // MENU
 sealed class MenuSortsItem {
@@ -178,8 +204,48 @@ fun Key?.mapRelationKeyToSort(): AllContentSort {
     return when (this) {
         Relations.CREATED_DATE -> AllContentSort.ByDateCreated()
         Relations.LAST_OPENED_DATE -> AllContentSort.ByDateUpdated()
-        null -> AllContentSort.ByName()
         else -> DEFAULT_INITIAL_SORT
     }
+}
+
+fun List<ObjectWrapper.Basic>.toUiContentItems(
+    space: SpaceId,
+    urlBuilder: UrlBuilder,
+    objectTypes: List<ObjectWrapper.Type>
+): List<UiContentItem.Item> {
+    return map { it.toAllContentItem(space, urlBuilder, objectTypes) }
+}
+
+fun ObjectWrapper.Basic.toAllContentItem(
+    space: SpaceId,
+    urlBuilder: UrlBuilder,
+    objectTypes: List<ObjectWrapper.Type>
+): UiContentItem.Item {
+    val obj = this
+    val typeUrl = obj.getProperType()
+    val isProfile = typeUrl == MarketplaceObjectTypeIds.PROFILE
+    val layout = layout ?: ObjectType.Layout.BASIC
+    return UiContentItem.Item(
+        id = obj.id,
+        space = space,
+        name = obj.getProperName(),
+        description = obj.description,
+        type = typeUrl,
+        typeName = objectTypes.firstOrNull { type ->
+            if (isProfile) {
+                type.uniqueKey == ObjectTypeUniqueKeys.PROFILE
+            } else {
+                type.id == typeUrl
+            }
+        }?.name,
+        layout = layout,
+        icon = ObjectIcon.from(
+            obj = obj,
+            layout = layout,
+            builder = urlBuilder
+        ),
+        lastModifiedDate = DateParser.parseInMillis(obj.lastModifiedDate) ?: 0L,
+        createdDate = DateParser.parse(obj.getValue(Relations.CREATED_DATE)) ?: 0L
+    )
 }
 //endregion

@@ -159,40 +159,34 @@ sealed class UiContentItem {
 }
 
 // MENU
-
-sealed class UiMenuState {
-    data object Hidden : UiMenuState()
-
-    @Immutable
-    data class Content(
-        val sorts: List<MenuSortsItem>,
-        val mode: List<AllContentMenuMode>,
-    ) : UiMenuState()
+@Immutable
+data class UiMenuState(
+    val mode: List<AllContentMenuMode>,
+    val container: MenuSortsItem.Container,
+    val sorts: List<MenuSortsItem.Sort>,
+    val types: List<MenuSortsItem.SortType>
+) {
+    companion object {
+        fun empty(): UiMenuState {
+            return UiMenuState(
+                mode = emptyList(),
+                container = MenuSortsItem.Container(AllContentSort.ByName()),
+                sorts = emptyList(),
+                types = emptyList()
+            )
+        }
+    }
 }
 
 sealed class MenuSortsItem {
-    abstract val id: String
-
-    data class Container(override val id: String = CONTAINER_ID, val sort: AllContentSort) :
-        MenuSortsItem()
-
-    data class Sort(override val id: String, val sort: AllContentSort) : MenuSortsItem()
-
-    data class Spacer(override val id: String = SPACER_ID) : MenuSortsItem()
-
+    data class Container(val sort: AllContentSort) : MenuSortsItem()
+    data class Sort(val sort: AllContentSort) : MenuSortsItem()
+    data object Spacer : MenuSortsItem()
     data class SortType(
         val sort: AllContentSort,
         val sortType: DVSortType,
         val isSelected: Boolean
-    ) : MenuSortsItem() {
-        override val id: String
-            get() = sortType.name
-    }
-
-    companion object {
-        const val CONTAINER_ID = "container_id"
-        const val SPACER_ID = "spacer_id"
-    }
+    ) : MenuSortsItem()
 }
 //endregion
 

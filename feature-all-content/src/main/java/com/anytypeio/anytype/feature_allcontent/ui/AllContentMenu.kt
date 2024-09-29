@@ -3,20 +3,15 @@ package com.anytypeio.anytype.feature_allcontent.ui
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyItemScope
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,95 +31,69 @@ import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.feature_allcontent.R
 import com.anytypeio.anytype.feature_allcontent.models.AllContentMenuMode
-import com.anytypeio.anytype.feature_allcontent.models.MenuSortsItem
 import com.anytypeio.anytype.feature_allcontent.models.AllContentSort
+import com.anytypeio.anytype.feature_allcontent.models.MenuSortsItem
 import com.anytypeio.anytype.feature_allcontent.models.UiMenuState
 
 @Composable
 fun AllContentMenu(
-    uiMenuState: UiMenuState.Content,
-    onModeClick: (AllContentMenuMode) -> Unit = {}
+    uiMenuState: UiMenuState,
+    onModeClick: (AllContentMenuMode) -> Unit,
+    onSortClick: (AllContentSort) -> Unit
 ) {
-    val scrollState = rememberLazyListState()
     var sortingExpanded by remember { mutableStateOf(false) }
-    LazyColumn(
-        state = scrollState,
+
+    uiMenuState.mode.forEach { item ->
+        MenuItem(
+            title = getModeTitle(item),
+            isSelected = item.isSelected,
+            modifier = Modifier.clickable {
+                onModeClick(item)
+            }
+        )
+    }
+    Spacer(modifier = Modifier.height(8.dp))
+    SortingBox(
         modifier = Modifier
-            .width(252.dp)
-            .background(
-                shape = RoundedCornerShape(size = 16.dp),
-                color = colorResource(id = R.color.shape_primary)
-            ),
-        verticalArrangement = Arrangement.spacedBy(0.5.dp),
-    ) {
-        items(
-            count = uiMenuState.mode.size
-        ) { index ->
-            val item = uiMenuState.mode[index]
+            .clickable {
+                sortingExpanded = !sortingExpanded
+            },
+        subtitle = uiMenuState.container.sort.title()
+    )
+    if (sortingExpanded) {
+        uiMenuState.sorts.forEach { item ->
             MenuItem(
-                title = getModeTitle(item),
-                isSelected = item.isSelected,
-                modifier = Modifier.clickable {
-                    onModeClick(item)
-                }
+                title = item.sort.title(),
+                isSelected = item.sort.isSelected,
+                modifier = Modifier
+                    .clickable {
+                        onSortClick(item.sort)
+                    }
             )
         }
-        item {
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-        items(
-            count = if (sortingExpanded) uiMenuState.sorts.size else 1,
-            key = { index -> uiMenuState.sorts[index].id }
-        ) { sortItemsIndex ->
-            when (val item = uiMenuState.sorts[sortItemsIndex]) {
-                is MenuSortsItem.Container -> {
-                    SortingBox(
-                        modifier = Modifier
-                            .animateItem()
-                            .clickable {
-                                sortingExpanded = !sortingExpanded
-                            },
-                        subtitle = item.sort.title()
-                    )
-                }
-
-                is MenuSortsItem.Sort -> {
-                    MenuItem(
-                        title = item.sort.title(),
-                        isSelected = item.sort.isSelected,
-                        modifier = Modifier
-                            .animateItem()
-                            .clickable {
-                                //onSortClick(item)
-                            }
-                    )
-                }
-
-                is MenuSortsItem.Spacer -> {
-                    Spacer(modifier = Modifier.height(7.5.dp))
-                }
-
-                is MenuSortsItem.SortType -> {
-                    MenuItem(
-                        title = item.sortType.title(item.sort),
-                        isSelected = item.isSelected,
-                        modifier = Modifier
-                            .animateItem()
-                            .clickable {
-                                //onSortClick(item)
-                            }
-                    )
-                }
-            }
+        uiMenuState.types.forEach { item ->
+            MenuItem(
+                title = item.sortType.title(item.sort),
+                isSelected = item.isSelected,
+                modifier = Modifier
+                    .clickable {
+                        val updatedSort = when (item.sort) {
+                            is AllContentSort.ByName -> item.sort.copy(sortType = item.sortType)
+                            is AllContentSort.ByDateCreated -> item.sort.copy(sortType = item.sortType)
+                            is AllContentSort.ByDateUpdated -> item.sort.copy(sortType = item.sortType)
+                        }
+                        onSortClick(updatedSort)
+                    }
+            )
         }
     }
 }
 
 @Composable
-private fun LazyItemScope.SortingBox(modifier: Modifier, subtitle: String) {
+private fun SortingBox(modifier: Modifier, subtitle: String) {
     Row(
         modifier = modifier
-            .fillParentMaxWidth()
+            .fillMaxWidth()
             .background(colorResource(id = R.color.background_secondary)),
         verticalAlignment = CenterVertically
     ) {
@@ -156,10 +125,10 @@ private fun LazyItemScope.SortingBox(modifier: Modifier, subtitle: String) {
 }
 
 @Composable
-private fun LazyItemScope.MenuItem(modifier: Modifier, title: String, isSelected: Boolean) {
+private fun MenuItem(modifier: Modifier, title: String, isSelected: Boolean) {
     Row(
         modifier = modifier
-            .fillParentMaxWidth()
+            .fillMaxWidth()
             .height(44.dp)
             .background(colorResource(id = R.color.background_secondary)),
         verticalAlignment = CenterVertically,
@@ -232,28 +201,23 @@ private fun DVSortType.title(sort: AllContentSort): String = when (this) {
 @Composable
 fun AllContentMenuPreview() {
     AllContentMenu(
-        uiMenuState = UiMenuState.Content(
+        uiMenuState = UiMenuState(
             mode = listOf(
                 AllContentMenuMode.AllContent(isSelected = true),
                 AllContentMenuMode.Unlinked(isSelected = false)
             ),
             sorts = listOf(
-                MenuSortsItem.Container(
+                MenuSortsItem.Sort(
                     sort = AllContentSort.ByName(isSelected = true)
                 ),
                 MenuSortsItem.Sort(
-                    id = "byName",
-                    sort = AllContentSort.ByName(isSelected = true)
-                ),
-                MenuSortsItem.Sort(
-                    id = "byDateUpdated",
                     AllContentSort.ByDateUpdated(isSelected = false)
                 ),
                 MenuSortsItem.Sort(
-                    id = "byDateCreated",
                     AllContentSort.ByDateCreated(isSelected = false)
-                ),
-                MenuSortsItem.Spacer(),
+                )
+            ),
+            types = listOf(
                 MenuSortsItem.SortType(
                     sortType = DVSortType.ASC,
                     isSelected = true,
@@ -264,8 +228,11 @@ fun AllContentMenuPreview() {
                     isSelected = false,
                     sort = AllContentSort.ByName(isSelected = false)
                 ),
-            )
-        )
+            ),
+            container = MenuSortsItem.Container(AllContentSort.ByName())
+        ),
+        onModeClick = {},
+        onSortClick = {}
     )
 }
 //endregion

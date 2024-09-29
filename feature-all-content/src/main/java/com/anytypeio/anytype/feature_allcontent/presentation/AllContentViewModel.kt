@@ -56,6 +56,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -108,7 +109,7 @@ class AllContentViewModel(
     private val _uiState = MutableStateFlow<UiContentState>(UiContentState.Hidden)
     val uiState: StateFlow<UiContentState> = _uiState.asStateFlow()
 
-    private val _uiMenu = MutableStateFlow<UiMenuState>(UiMenuState.Hidden)
+    private val _uiMenu = MutableStateFlow(UiMenuState.empty())
     val uiMenu: StateFlow<UiMenuState> = _uiMenu.asStateFlow()
 
     init {
@@ -118,13 +119,13 @@ class AllContentViewModel(
         proceedWithUiTabsStateSetup()
         proceedWithUiStateSetup()
         proceedWithSearchStateSetup()
+        proceedWithMenuSetup()
     }
 
     private fun proceedWithUiTitleStateSetup() {
         viewModelScope.launch {
             _modeState.collectLatest { result ->
                 Timber.d("New mode: [$result]")
-                val menuMode = getMenuMode(result)
                 _uiTitleState.value = result.view()
                 _uiMenuButtonState.value = MenuButtonViewState.Visible
             }
@@ -211,10 +212,9 @@ class AllContentViewModel(
     private fun loadData(
         result: Result
     ): Flow<UiContentState> = flow {
+        val loadingStartTime = System.currentTimeMillis()
 
         emit(UiContentState.Loading)
-
-        delay(300)
 
         val searchParams = createSubscriptionParams(
             activeTab = result.tab,
@@ -222,27 +222,38 @@ class AllContentViewModel(
             limitedObjectIds = result.limitedObjectIds,
             limit = result.limit,
             subscriptionId = subscriptionId(),
-            spaceId = vmParams.spaceId.id
+            spaceId = vmParams.spaceId.id,
+            activeMode = result.mode
         )
 
         val dataFlow = storelessSubscriptionContainer.subscribe(searchParams)
+            .map { objWrappers ->
+                val items = mapToUiContentItems(
+                    objectWrappers = objWrappers,
+                    activeSort = result.sort
+                )
+                UiContentState.Content(items = items)
+            }
+            .catch { e ->
+                emit(
+                    UiContentState.Error(
+                        message = e.message ?: "Error loading objects by subscription"
+                    )
+                )
+            }
+
+        var isFirstEmission = true
 
         emitAll(
-            dataFlow
-                .map { objWrappers ->
-                    val items = mapToUiContentItems(
-                        objectWrappers = objWrappers,
-                        activeSort = result.sort
-                    )
-                    UiContentState.Content(items = items)
+            dataFlow.onEach {
+                if (isFirstEmission) {
+                    val elapsedTime = System.currentTimeMillis() - loadingStartTime
+                    if (elapsedTime < DEFAULT_LOADING_DELAY) {
+                        delay(DEFAULT_LOADING_DELAY - elapsedTime)
+                    }
+                    isFirstEmission = false
                 }
-                .catch { e ->
-                    emit(
-                        UiContentState.Error(
-                            message = e.message ?: "Error loading objects by subscription"
-                        )
-                    )
-                }
+            }
         )
     }
 
@@ -312,6 +323,7 @@ class AllContentViewModel(
                     itemDate.month.getDisplayName(TextStyle.FULL, localeProvider.locale())
                 monthName to UiContentItem.Group.Month(id = monthName, title = monthName)
             }
+
             else -> {
                 val monthAndYear = "${
                     itemDate.month.getDisplayName(
@@ -350,48 +362,50 @@ class AllContentViewModel(
         }
     }
 
-    fun onMenuButtonClick() {
-        Timber.d("onMenuButtonClick")
-        val actualMode = _modeState.value
-        val actualSort = _sortState.value
-        _uiMenu.value = UiMenuState.Content(
-            sorts = listOf(
-                MenuSortsItem.Container(
-                    sort = when (actualSort) {
-                        is AllContentSort.ByDateCreated -> AllContentSort.ByDateCreated(isSelected = true)
-                        is AllContentSort.ByDateUpdated -> AllContentSort.ByDateUpdated(isSelected = true)
-                        is AllContentSort.ByName -> AllContentSort.ByName(isSelected = true)
-                    },
-                ),
-                MenuSortsItem.Sort(
-                    id = "byName",
-                    sort = AllContentSort.ByName(isSelected = actualSort is AllContentSort.ByName)
-                ),
-                MenuSortsItem.Sort(
-                    id = "byDateUpdated",
-                    AllContentSort.ByDateUpdated(isSelected = actualSort is AllContentSort.ByDateUpdated)
-                ),
-                MenuSortsItem.Sort(
-                    id = "byDateCreated",
-                    AllContentSort.ByDateCreated(isSelected = actualSort is AllContentSort.ByDateCreated)
-                ),
-                MenuSortsItem.Spacer(),
-                MenuSortsItem.SortType(
-                    sortType = DVSortType.ASC,
-                    isSelected = actualSort.sortType == DVSortType.ASC,
-                    sort = actualSort
-                ),
-                MenuSortsItem.SortType(
-                    sortType = DVSortType.DESC,
-                    isSelected = actualSort.sortType == DVSortType.DESC,
-                    sort = actualSort
-                ),
-            ),
-            mode = listOf(
-                AllContentMenuMode.AllContent(isSelected = actualMode == AllContentMode.AllContent),
-                AllContentMenuMode.Unlinked(isSelected = actualMode == AllContentMode.Unlinked)
-            )
-        )
+    private fun proceedWithMenuSetup() {
+        viewModelScope.launch {
+            combine(
+                _modeState,
+                _sortState
+            ) { mode, sort ->
+                mode to sort
+            }.collectLatest { (mode, sort) ->
+                val uiMode = listOf(
+                    AllContentMenuMode.AllContent(isSelected = mode == AllContentMode.AllContent),
+                    AllContentMenuMode.Unlinked(isSelected = mode == AllContentMode.Unlinked)
+                )
+                val container = MenuSortsItem.Container(sort = sort)
+                val uiSorts = listOf(
+                    MenuSortsItem.Sort(
+                        sort = AllContentSort.ByName(isSelected = sort is AllContentSort.ByName)
+                    ),
+                    MenuSortsItem.Sort(
+                        sort = AllContentSort.ByDateUpdated(isSelected = sort is AllContentSort.ByDateUpdated)
+                    ),
+                    MenuSortsItem.Sort(
+                        sort = AllContentSort.ByDateCreated(isSelected = sort is AllContentSort.ByDateCreated)
+                    )
+                )
+                val uiSortTypes = listOf(
+                    MenuSortsItem.SortType(
+                        sort = sort,
+                        sortType = DVSortType.ASC,
+                        isSelected = sort.sortType == DVSortType.ASC
+                    ),
+                    MenuSortsItem.SortType(
+                        sort = sort,
+                        sortType = DVSortType.DESC,
+                        isSelected = sort.sortType == DVSortType.DESC
+                    )
+                )
+                _uiMenu.value = UiMenuState(
+                    mode = uiMode,
+                    container = container,
+                    sorts = uiSorts,
+                    types = uiSortTypes
+                )
+            }
+        }
     }
 
     fun onTabClicked(tab: AllContentTab) {
@@ -399,9 +413,12 @@ class AllContentViewModel(
         _tabsState.value = tab
     }
 
-    fun onAllContentModeClicked(mode: AllContentMode) {
+    fun onAllContentModeClicked(mode: AllContentMenuMode) {
         Timber.d("onAllContentModeClicked: $mode")
-        _modeState.value = mode
+        _modeState.value = when (mode) {
+            is AllContentMenuMode.AllContent -> AllContentMode.AllContent
+            is AllContentMenuMode.Unlinked -> AllContentMode.Unlinked
+        }
     }
 
     fun onSortClicked(sort: AllContentSort) {
@@ -441,6 +458,7 @@ class AllContentViewModel(
 
     companion object {
         const val DEFAULT_DEBOUNCE_DURATION = 300L
+        const val DEFAULT_LOADING_DELAY = 250L
 
         //INITIAL STATE
         const val DEFAULT_SEARCH_LIMIT = 50

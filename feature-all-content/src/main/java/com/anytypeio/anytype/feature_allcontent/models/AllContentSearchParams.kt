@@ -38,6 +38,7 @@ val allContentTabLayouts = mapOf(
 // Function to create subscription params
 fun createSubscriptionParams(
     spaceId: Id,
+    activeMode: AllContentMode,
     activeTab: AllContentTab,
     activeSort: AllContentSort,
     limitedObjectIds: List<String>,
@@ -47,7 +48,8 @@ fun createSubscriptionParams(
     val (filters, sorts) = activeTab.filtersForSubscribe(
         spaces = listOf(spaceId),
         activeSort = activeSort,
-        limitedObjectIds = limitedObjectIds
+        limitedObjectIds = limitedObjectIds,
+        activeMode = activeMode
     )
     return StoreSearchParams(
         filters = filters,
@@ -87,7 +89,8 @@ fun createSubscriptionParams(
 fun AllContentTab.filtersForSubscribe(
     spaces: List<Id>,
     activeSort: AllContentSort,
-    limitedObjectIds: List<Id>
+    limitedObjectIds: List<Id>,
+    activeMode: AllContentMode
 ): Pair<List<DVFilter>, List<DVSort>> {
     val tab = this
     when (this) {
@@ -105,6 +108,9 @@ fun AllContentTab.filtersForSubscribe(
                 }
                 if (limitedObjectIds.isNotEmpty()) {
                     add(buildLimitedObjectIdsFilter(limitedObjectIds = limitedObjectIds))
+                }
+                if (activeMode == AllContentMode.Unlinked) {
+                    addAll(buildUnlinkedObjectFilter())
                 }
             }
             val sorts = listOf(activeSort.toDVSort())
@@ -158,6 +164,17 @@ private fun buildSpaceIdFilter(spaces: List<Id>): DVFilter = DVFilter(
     relation = Relations.SPACE_ID,
     condition = DVFilterCondition.IN,
     value = spaces
+)
+
+private fun buildUnlinkedObjectFilter(): List<DVFilter> = listOf(
+    DVFilter(
+        relation = Relations.LINKS,
+        condition = DVFilterCondition.EMPTY
+    ),
+    DVFilter(
+        relation = Relations.BACKLINKS,
+        condition = DVFilterCondition.EMPTY
+    )
 )
 
 private fun buildLimitedObjectIdsFilter(limitedObjectIds: List<Id>): DVFilter = DVFilter(

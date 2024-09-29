@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.views.ButtonSize
@@ -66,6 +67,8 @@ import com.anytypeio.anytype.core_ui.widgets.DefaultTaskObjectIcon
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.feature_allcontent.BuildConfig
 import com.anytypeio.anytype.feature_allcontent.R
+import com.anytypeio.anytype.feature_allcontent.models.AllContentMenuMode
+import com.anytypeio.anytype.feature_allcontent.models.AllContentSort
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
 import com.anytypeio.anytype.feature_allcontent.models.UiContentState
 import com.anytypeio.anytype.feature_allcontent.models.MenuButtonViewState
@@ -84,7 +87,8 @@ fun AllContentWrapperScreen(
     uiState: UiContentState,
     onTabClick: (AllContentTab) -> Unit,
     onQueryChanged: (String) -> Unit,
-    menuButtonClick: () -> Unit
+    onModeClick: (AllContentMenuMode) -> Unit,
+    onSortClick: (AllContentSort) -> Unit
 ) {
     val objects = remember { mutableStateOf<List<UiContentItem>>(emptyList()) }
     if (uiState is UiContentState.Content) {
@@ -98,8 +102,9 @@ fun AllContentWrapperScreen(
         objects = objects,
         isLoading = uiState is UiContentState.Loading,
         onQueryChanged = onQueryChanged,
-        menuButtonClick = menuButtonClick,
-        uiMenuState = uiMenuState
+        uiMenuState = uiMenuState,
+        onModeClick = onModeClick,
+        onSortClick = onSortClick
     )
 }
 
@@ -112,21 +117,17 @@ fun AllContentMainScreen(
     objects: MutableState<List<UiContentItem>>,
     onTabClick: (AllContentTab) -> Unit,
     onQueryChanged: (String) -> Unit,
-    isLoading: Boolean,
-    menuButtonClick: () -> Unit
+    onModeClick: (AllContentMenuMode) -> Unit,
+    onSortClick: (AllContentSort) -> Unit,
+    isLoading: Boolean
 ) {
     val modifier = Modifier
         .background(color = colorResource(id = R.color.background_primary))
-    
+
     Scaffold(
         modifier = modifier
             .fillMaxSize(),
         containerColor = colorResource(id = R.color.background_primary),
-        floatingActionButton = {
-            if (uiMenuState is UiMenuState.Content) {
-                AllContentMenu(uiMenuState = uiMenuState)
-            }
-        },
         topBar = {
             Column(
                 modifier = if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
@@ -140,8 +141,9 @@ fun AllContentMainScreen(
                     AllContentTopBarContainer(
                         titleState = uiTitleState,
                         menuButtonState = uiMenuButtonViewState,
-                        menuButtonClick = menuButtonClick,
-                        uiMenuState = uiMenuState
+                        uiMenuState = uiMenuState,
+                        onSortClick = onSortClick,
+                        onModeClick = onModeClick,
                     )
                 }
 

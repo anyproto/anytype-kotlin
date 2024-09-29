@@ -418,6 +418,12 @@ class AllContentViewModel(
 
     fun onTabClicked(tab: AllContentTab) {
         Timber.d("onTabClicked: $tab")
+        if (tab == AllContentTab.TYPES || tab == AllContentTab.RELATIONS) {
+            viewModelScope.launch {
+                _commands.emit(Command.SendToast("Not implemented yet"))
+            }
+            return
+        }
         _tabsState.value = tab
     }
 

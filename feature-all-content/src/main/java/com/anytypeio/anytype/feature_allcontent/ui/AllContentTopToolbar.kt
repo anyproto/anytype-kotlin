@@ -253,8 +253,7 @@ private fun AllContentTabText(
             .noRippleClickable { onClick() },
         text = getTabText(tab),
         style = Title2,
-        color = if (isSelected) colorResource(id = R.color.glyph_button)
-        else colorResource(id = R.color.glyph_active),
+        color = if (isSelected) colorResource(id = R.color.glyph_button) else colorResource(id = R.color.glyph_active),
         maxLines = 1
     )
 }

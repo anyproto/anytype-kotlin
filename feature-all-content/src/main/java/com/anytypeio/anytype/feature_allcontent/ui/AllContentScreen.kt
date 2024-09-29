@@ -3,6 +3,7 @@ package com.anytypeio.anytype.feature_allcontent.ui
 import android.os.Build
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
@@ -88,7 +89,8 @@ fun AllContentWrapperScreen(
     onTabClick: (AllContentTab) -> Unit,
     onQueryChanged: (String) -> Unit,
     onModeClick: (AllContentMenuMode) -> Unit,
-    onSortClick: (AllContentSort) -> Unit
+    onSortClick: (AllContentSort) -> Unit,
+    onItemClicked: (UiContentItem.Item) -> Unit
 ) {
     val objects = remember { mutableStateOf<List<UiContentItem>>(emptyList()) }
     if (uiState is UiContentState.Content) {
@@ -104,7 +106,8 @@ fun AllContentWrapperScreen(
         onQueryChanged = onQueryChanged,
         uiMenuState = uiMenuState,
         onModeClick = onModeClick,
-        onSortClick = onSortClick
+        onSortClick = onSortClick,
+        onItemClicked = onItemClicked
     )
 }
 
@@ -119,7 +122,8 @@ fun AllContentMainScreen(
     onQueryChanged: (String) -> Unit,
     onModeClick: (AllContentMenuMode) -> Unit,
     onSortClick: (AllContentSort) -> Unit,
-    isLoading: Boolean
+    isLoading: Boolean,
+    onItemClicked: (UiContentItem.Item) -> Unit
 ) {
     val modifier = Modifier
         .background(color = colorResource(id = R.color.background_primary))
@@ -174,14 +178,22 @@ fun AllContentMainScreen(
                     LoadingState()
                 }
             } else {
-                ContentItems(modifier = contentModifier, items = objects.value)
+                ContentItems(
+                    modifier = contentModifier,
+                    items = objects.value,
+                    onItemClicked = onItemClicked
+                )
             }
         }
     )
 }
 
 @Composable
-private fun ContentItems(modifier: Modifier, items: List<UiContentItem>) {
+private fun ContentItems(
+    modifier: Modifier,
+    items: List<UiContentItem>,
+    onItemClicked: (UiContentItem.Item) -> Unit
+) {
     LazyColumn(modifier = modifier) {
         items(
             count = items.size,
@@ -217,7 +229,10 @@ private fun ContentItems(modifier: Modifier, items: List<UiContentItem>) {
                         modifier = Modifier
                             .padding(horizontal = 16.dp)
                             .bottomBorder()
-                            .animateItem(),
+                            .animateItem()
+                            .clickable {
+                                onItemClicked(item)
+                            },
                         item = item
                     )
                 }

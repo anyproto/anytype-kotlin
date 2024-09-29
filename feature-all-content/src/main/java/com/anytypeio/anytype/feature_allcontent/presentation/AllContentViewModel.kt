@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.DVSortType
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -32,6 +33,8 @@ import com.anytypeio.anytype.feature_allcontent.models.mapRelationKeyToSort
 import com.anytypeio.anytype.feature_allcontent.models.toUiContentItems
 import com.anytypeio.anytype.feature_allcontent.models.view
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
+import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
+import com.anytypeio.anytype.presentation.home.navigation
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -42,7 +45,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
@@ -111,6 +116,9 @@ class AllContentViewModel(
 
     private val _uiMenu = MutableStateFlow(UiMenuState.empty())
     val uiMenu: StateFlow<UiMenuState> = _uiMenu.asStateFlow()
+
+    private val _commands = MutableSharedFlow<Command>()
+    val commands: SharedFlow<Command> = _commands
 
     init {
         Timber.d("AllContentViewModel init, spaceId:[${vmParams.spaceId.id}]")
@@ -436,6 +444,39 @@ class AllContentViewModel(
         _limitState.value = limit
     }
 
+    fun onItemClicked(item: UiContentItem.Item) {
+        Timber.d("onItemClicked: ${item.id}")
+        val layout = item.layout ?: return
+        viewModelScope.launch {
+            when (val navigation = layout.navigation(
+                target = item.id,
+                space = vmParams.spaceId.id
+            )) {
+                is OpenObjectNavigation.OpenDataView -> {
+                    _commands.emit(
+                        Command.NavigateToSetOrCollection(
+                            id = navigation.target,
+                            space = navigation.space
+                        )
+                    )
+                }
+
+                is OpenObjectNavigation.OpenEditor -> {
+                    _commands.emit(
+                        Command.NavigateToEditor(
+                            id = navigation.target,
+                            space = navigation.space
+                        )
+                    )
+                }
+
+                is OpenObjectNavigation.UnexpectedLayoutError -> {
+                    _commands.emit(Command.SendToast("Unexpected layout: ${navigation.layout}"))
+                }
+            }
+        }
+    }
+
     fun onStop() {
         Timber.d("onStop")
         viewModelScope.launch {
@@ -455,6 +496,12 @@ class AllContentViewModel(
         val limitedObjectIds: List<String>,
         val limit: Int
     )
+
+    sealed class Command {
+        data class NavigateToEditor(val id: Id, val space: Id) : Command()
+        data class NavigateToSetOrCollection(val id: Id, val space: Id) : Command()
+        data class SendToast(val message: String) : Command()
+    }
 
     companion object {
         const val DEFAULT_DEBOUNCE_DURATION = 300L

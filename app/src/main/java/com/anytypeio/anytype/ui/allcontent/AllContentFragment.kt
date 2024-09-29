@@ -18,6 +18,8 @@ import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.argString
+import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -25,6 +27,7 @@ import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModelFactory
 import com.anytypeio.anytype.feature_allcontent.ui.AllContentWrapperScreen
 import com.anytypeio.anytype.feature_allcontent.ui.AllContentNavigation.ALL_CONTENT_MAIN
+import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 
@@ -49,6 +52,33 @@ class AllContentFragment : BaseComposeFragment() {
         }
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        subscribe(vm.commands) { command ->
+            when (command) {
+                is AllContentViewModel.Command.NavigateToEditor -> {
+                    runCatching {
+                        navigation().openDocument(
+                            target = command.id,
+                            space = command.space
+                        )
+                    }
+                }
+                is AllContentViewModel.Command.NavigateToSetOrCollection -> {
+                    runCatching {
+                        navigation().openObjectSet(
+                            target = command.id,
+                            space = command.space,
+                        )
+                    }
+                }
+                is AllContentViewModel.Command.SendToast -> {
+                    toast(command.message)
+                }
+            }
+        }
+    }
+
     @Composable
     fun AllContentScreenWrapper() {
         NavHost(
@@ -65,7 +95,8 @@ class AllContentFragment : BaseComposeFragment() {
                     uiMenuButtonViewState = vm.uiMenuButtonState.collectAsStateWithLifecycle().value,
                     uiMenuState = vm.uiMenu.collectAsStateWithLifecycle().value,
                     onSortClick = vm::onSortClicked,
-                    onModeClick = vm::onAllContentModeClicked
+                    onModeClick = vm::onAllContentModeClicked,
+                    onItemClicked = vm::onItemClicked
                 )
             }
         }

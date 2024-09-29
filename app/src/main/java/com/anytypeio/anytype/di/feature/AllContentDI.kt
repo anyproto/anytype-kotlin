@@ -54,7 +54,6 @@ object AllContentModule {
     @JvmStatic
     @Provides
     @PerScreen
-    @Named("AllContent")
     fun provideStoreLessSubscriptionContainer(
         repo: BlockRepository,
         channel: SubscriptionEventChannel,

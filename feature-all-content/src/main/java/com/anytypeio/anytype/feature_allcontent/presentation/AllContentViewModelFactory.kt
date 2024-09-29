@@ -23,7 +23,7 @@ class AllContentViewModelFactory @Inject constructor(
     private val urlBuilder: UrlBuilder,
     private val analytics: Analytics,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    @Named("AllContent") private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
+    private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val updateAllContentState: UpdateAllContentState,
     private val restoreAllContentState: RestoreAllContentState,
     private val searchObjects: SearchObjects,

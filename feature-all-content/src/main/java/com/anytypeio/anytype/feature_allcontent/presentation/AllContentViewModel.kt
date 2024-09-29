@@ -3,6 +3,7 @@ package com.anytypeio.anytype.feature_allcontent.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -22,6 +23,8 @@ import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
 import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
 import com.anytypeio.anytype.feature_allcontent.models.UiContentState
 import com.anytypeio.anytype.feature_allcontent.models.MenuButtonViewState
+import com.anytypeio.anytype.feature_allcontent.models.MenuSortsItem
+import com.anytypeio.anytype.feature_allcontent.models.UiMenuState
 import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
 import com.anytypeio.anytype.feature_allcontent.models.createSubscriptionParams
 import com.anytypeio.anytype.feature_allcontent.models.filtersForSearch
@@ -104,6 +107,9 @@ class AllContentViewModel(
 
     private val _uiState = MutableStateFlow<UiContentState>(UiContentState.Hidden)
     val uiState: StateFlow<UiContentState> = _uiState.asStateFlow()
+
+    private val _uiMenu = MutableStateFlow<UiMenuState>(UiMenuState.Hidden)
+    val uiMenu: StateFlow<UiMenuState> = _uiMenu.asStateFlow()
 
     init {
         Timber.d("AllContentViewModel init, spaceId:[${vmParams.spaceId.id}]")
@@ -342,6 +348,50 @@ class AllContentViewModel(
             AllContentMode.AllContent -> AllContentMenuMode.AllContent(isSelected = true)
             AllContentMode.Unlinked -> AllContentMenuMode.Unlinked(isSelected = true)
         }
+    }
+
+    fun onMenuButtonClick() {
+        Timber.d("onMenuButtonClick")
+        val actualMode = _modeState.value
+        val actualSort = _sortState.value
+        _uiMenu.value = UiMenuState.Content(
+            sorts = listOf(
+                MenuSortsItem.Container(
+                    sort = when (actualSort) {
+                        is AllContentSort.ByDateCreated -> AllContentSort.ByDateCreated(isSelected = true)
+                        is AllContentSort.ByDateUpdated -> AllContentSort.ByDateUpdated(isSelected = true)
+                        is AllContentSort.ByName -> AllContentSort.ByName(isSelected = true)
+                    },
+                ),
+                MenuSortsItem.Sort(
+                    id = "byName",
+                    sort = AllContentSort.ByName(isSelected = actualSort is AllContentSort.ByName)
+                ),
+                MenuSortsItem.Sort(
+                    id = "byDateUpdated",
+                    AllContentSort.ByDateUpdated(isSelected = actualSort is AllContentSort.ByDateUpdated)
+                ),
+                MenuSortsItem.Sort(
+                    id = "byDateCreated",
+                    AllContentSort.ByDateCreated(isSelected = actualSort is AllContentSort.ByDateCreated)
+                ),
+                MenuSortsItem.Spacer(),
+                MenuSortsItem.SortType(
+                    sortType = DVSortType.ASC,
+                    isSelected = actualSort.sortType == DVSortType.ASC,
+                    sort = actualSort
+                ),
+                MenuSortsItem.SortType(
+                    sortType = DVSortType.DESC,
+                    isSelected = actualSort.sortType == DVSortType.DESC,
+                    sort = actualSort
+                ),
+            ),
+            mode = listOf(
+                AllContentMenuMode.AllContent(isSelected = actualMode == AllContentMode.AllContent),
+                AllContentMenuMode.Unlinked(isSelected = actualMode == AllContentMode.Unlinked)
+            )
+        )
     }
 
     fun onTabClicked(tab: AllContentTab) {

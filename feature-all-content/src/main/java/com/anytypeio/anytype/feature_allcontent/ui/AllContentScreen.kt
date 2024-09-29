@@ -19,8 +19,10 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -68,6 +70,7 @@ import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
 import com.anytypeio.anytype.feature_allcontent.models.UiContentState
 import com.anytypeio.anytype.feature_allcontent.models.MenuButtonViewState
 import com.anytypeio.anytype.feature_allcontent.models.UiContentItem
+import com.anytypeio.anytype.feature_allcontent.models.UiMenuState
 import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
 import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -77,9 +80,11 @@ fun AllContentWrapperScreen(
     uiTitleState: UiTitleState,
     uiTabsState: UiTabsState,
     uiMenuButtonViewState: MenuButtonViewState,
+    uiMenuState: UiMenuState,
     uiState: UiContentState,
     onTabClick: (AllContentTab) -> Unit,
     onQueryChanged: (String) -> Unit,
+    menuButtonClick: () -> Unit
 ) {
     val objects = remember { mutableStateOf<List<UiContentItem>>(emptyList()) }
     if (uiState is UiContentState.Content) {
@@ -92,7 +97,9 @@ fun AllContentWrapperScreen(
         onTabClick = onTabClick,
         objects = objects,
         isLoading = uiState is UiContentState.Loading,
-        onQueryChanged = onQueryChanged
+        onQueryChanged = onQueryChanged,
+        menuButtonClick = menuButtonClick,
+        uiMenuState = uiMenuState
     )
 }
 
@@ -101,18 +108,25 @@ fun AllContentMainScreen(
     uiTitleState: UiTitleState,
     uiTabsState: UiTabsState,
     uiMenuButtonViewState: MenuButtonViewState,
+    uiMenuState: UiMenuState,
     objects: MutableState<List<UiContentItem>>,
     onTabClick: (AllContentTab) -> Unit,
     onQueryChanged: (String) -> Unit,
-    isLoading: Boolean
+    isLoading: Boolean,
+    menuButtonClick: () -> Unit
 ) {
     val modifier = Modifier
         .background(color = colorResource(id = R.color.background_primary))
-
+    
     Scaffold(
         modifier = modifier
             .fillMaxSize(),
         containerColor = colorResource(id = R.color.background_primary),
+        floatingActionButton = {
+            if (uiMenuState is UiMenuState.Content) {
+                AllContentMenu(uiMenuState = uiMenuState)
+            }
+        },
         topBar = {
             Column(
                 modifier = if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
@@ -125,7 +139,9 @@ fun AllContentMainScreen(
                 if (uiTitleState !is UiTitleState.Hidden) {
                     AllContentTopBarContainer(
                         titleState = uiTitleState,
-                        menuButtonState = uiMenuButtonViewState
+                        menuButtonState = uiMenuButtonViewState,
+                        menuButtonClick = menuButtonClick,
+                        uiMenuState = uiMenuState
                     )
                 }
 

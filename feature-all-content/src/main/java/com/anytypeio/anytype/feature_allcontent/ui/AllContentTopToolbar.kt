@@ -53,6 +53,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.extensions.bouncingClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Title1
@@ -61,6 +62,7 @@ import com.anytypeio.anytype.feature_allcontent.R
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
 import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
 import com.anytypeio.anytype.feature_allcontent.models.MenuButtonViewState
+import com.anytypeio.anytype.feature_allcontent.models.UiMenuState
 import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
 
 //region AllContentTopBarContainer
@@ -68,7 +70,9 @@ import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
 @Composable
 fun AllContentTopBarContainer(
     titleState: UiTitleState,
-    menuButtonState: MenuButtonViewState
+    menuButtonState: MenuButtonViewState,
+    uiMenuState: UiMenuState,
+    menuButtonClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -76,7 +80,7 @@ fun AllContentTopBarContainer(
             .height(48.dp)
     ) {
         AllContentTitle(state = titleState)
-        AllContentMenuButton(state = menuButtonState)
+        AllContentMenuButton(state = menuButtonState, onClick = menuButtonClick)
     }
 }
 
@@ -85,7 +89,9 @@ fun AllContentTopBarContainer(
 private fun AllContentTopBarContainerPreview() {
     AllContentTopBarContainer(
         titleState = UiTitleState.OnlyUnlinked,
-        menuButtonState = MenuButtonViewState.Visible
+        menuButtonState = MenuButtonViewState.Visible,
+        menuButtonClick = {},
+        uiMenuState = UiMenuState.Hidden
     )
 }
 //endregion
@@ -123,7 +129,7 @@ fun BoxScope.AllContentTitle(state: UiTitleState) {
 
 //region AllContentMenuButton
 @Composable
-fun BoxScope.AllContentMenuButton(state: MenuButtonViewState) {
+fun BoxScope.AllContentMenuButton(state: MenuButtonViewState, onClick: () -> Unit) {
     when (state) {
         MenuButtonViewState.Hidden -> return
         MenuButtonViewState.Visible -> {
@@ -131,7 +137,8 @@ fun BoxScope.AllContentMenuButton(state: MenuButtonViewState) {
                 modifier = Modifier
                     .padding(end = 12.dp)
                     .size(32.dp)
-                    .align(Alignment.CenterEnd),
+                    .align(Alignment.CenterEnd)
+                    .bouncingClickable { onClick() },
                 painter = painterResource(id = R.drawable.ic_space_list_dots),
                 contentDescription = "Menu icon",
                 contentScale = ContentScale.Inside

@@ -159,6 +159,17 @@ sealed class UiContentItem {
 }
 
 // MENU
+
+sealed class UiMenuState {
+    data object Hidden : UiMenuState()
+
+    @Immutable
+    data class Content(
+        val sorts: List<MenuSortsItem>,
+        val mode: List<AllContentMenuMode>,
+    ) : UiMenuState()
+}
+
 sealed class MenuSortsItem {
     abstract val id: String
 

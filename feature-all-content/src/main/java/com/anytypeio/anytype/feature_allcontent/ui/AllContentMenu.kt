@@ -38,12 +38,12 @@ import com.anytypeio.anytype.feature_allcontent.R
 import com.anytypeio.anytype.feature_allcontent.models.AllContentMenuMode
 import com.anytypeio.anytype.feature_allcontent.models.MenuSortsItem
 import com.anytypeio.anytype.feature_allcontent.models.AllContentSort
+import com.anytypeio.anytype.feature_allcontent.models.UiMenuState
 
 @Composable
 fun AllContentMenu(
-    mode: List<AllContentMenuMode>,
-    onModeClick: (AllContentMenuMode) -> Unit = {},
-    sortsItems: List<MenuSortsItem>
+    uiMenuState: UiMenuState.Content,
+    onModeClick: (AllContentMenuMode) -> Unit = {}
 ) {
     val scrollState = rememberLazyListState()
     var sortingExpanded by remember { mutableStateOf(false) }
@@ -58,9 +58,9 @@ fun AllContentMenu(
         verticalArrangement = Arrangement.spacedBy(0.5.dp),
     ) {
         items(
-            count = mode.size
+            count = uiMenuState.mode.size
         ) { index ->
-            val item = mode[index]
+            val item = uiMenuState.mode[index]
             MenuItem(
                 title = getModeTitle(item),
                 isSelected = item.isSelected,
@@ -73,10 +73,10 @@ fun AllContentMenu(
             Spacer(modifier = Modifier.height(8.dp))
         }
         items(
-            count = if (sortingExpanded) sortsItems.size else 1,
-            key = { index -> sortsItems[index].id }
+            count = if (sortingExpanded) uiMenuState.sorts.size else 1,
+            key = { index -> uiMenuState.sorts[index].id }
         ) { sortItemsIndex ->
-            when (val item = sortsItems[sortItemsIndex]) {
+            when (val item = uiMenuState.sorts[sortItemsIndex]) {
                 is MenuSortsItem.Container -> {
                     SortingBox(
                         modifier = Modifier
@@ -212,6 +212,7 @@ private fun DVSortType.title(sort: AllContentSort): String = when (this) {
             is AllContentSort.ByName -> stringResource(id = R.string.all_content_sort_name_asc)
         }
     }
+
     DVSortType.DESC -> {
         when (sort) {
             is AllContentSort.ByDateCreated, is AllContentSort.ByDateUpdated -> stringResource(
@@ -221,6 +222,7 @@ private fun DVSortType.title(sort: AllContentSort): String = when (this) {
             is AllContentSort.ByName -> stringResource(id = R.string.all_content_sort_name_desc)
         }
     }
+
     DVSortType.CUSTOM -> ""
 }
 //endregion
@@ -230,37 +232,39 @@ private fun DVSortType.title(sort: AllContentSort): String = when (this) {
 @Composable
 fun AllContentMenuPreview() {
     AllContentMenu(
-        mode = listOf(
-            AllContentMenuMode.AllContent(isSelected = true),
-            AllContentMenuMode.Unlinked(isSelected = false)
-        ),
-        sortsItems = listOf(
-            MenuSortsItem.Container(
-                sort = AllContentSort.ByName(isSelected = true)
+        uiMenuState = UiMenuState.Content(
+            mode = listOf(
+                AllContentMenuMode.AllContent(isSelected = true),
+                AllContentMenuMode.Unlinked(isSelected = false)
             ),
-            MenuSortsItem.Sort(
-                id = "byName",
-                sort = AllContentSort.ByName(isSelected = true)
-            ),
-            MenuSortsItem.Sort(
-                id = "byDateUpdated",
-                AllContentSort.ByDateUpdated(isSelected = false)
-            ),
-            MenuSortsItem.Sort(
-                id = "byDateCreated",
-                AllContentSort.ByDateCreated(isSelected = false)
-            ),
-            MenuSortsItem.Spacer(),
-            MenuSortsItem.SortType(
-                sortType = DVSortType.ASC,
-                isSelected = true,
-                sort = AllContentSort.ByName(isSelected = true)
-            ),
-            MenuSortsItem.SortType(
-                sortType = DVSortType.DESC,
-                isSelected = false,
-                sort = AllContentSort.ByName(isSelected = false)
-            ),
+            sorts = listOf(
+                MenuSortsItem.Container(
+                    sort = AllContentSort.ByName(isSelected = true)
+                ),
+                MenuSortsItem.Sort(
+                    id = "byName",
+                    sort = AllContentSort.ByName(isSelected = true)
+                ),
+                MenuSortsItem.Sort(
+                    id = "byDateUpdated",
+                    AllContentSort.ByDateUpdated(isSelected = false)
+                ),
+                MenuSortsItem.Sort(
+                    id = "byDateCreated",
+                    AllContentSort.ByDateCreated(isSelected = false)
+                ),
+                MenuSortsItem.Spacer(),
+                MenuSortsItem.SortType(
+                    sortType = DVSortType.ASC,
+                    isSelected = true,
+                    sort = AllContentSort.ByName(isSelected = true)
+                ),
+                MenuSortsItem.SortType(
+                    sortType = DVSortType.DESC,
+                    isSelected = false,
+                    sort = AllContentSort.ByName(isSelected = false)
+                ),
+            )
         )
     )
 }

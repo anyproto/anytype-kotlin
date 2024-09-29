@@ -2,8 +2,10 @@ package com.anytypeio.anytype.feature_allcontent.models
 
 import androidx.compose.runtime.Immutable
 import com.anytypeio.anytype.core_models.DVSortType
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.RelationKey
+import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Companion.DEFAULT_INITIAL_SORT
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 
 //region STATE
@@ -169,6 +171,15 @@ fun AllContentMode.view(): UiTitleState {
     return when (this) {
         AllContentMode.AllContent -> UiTitleState.AllContent
         AllContentMode.Unlinked -> UiTitleState.OnlyUnlinked
+    }
+}
+
+fun Key?.mapRelationKeyToSort(): AllContentSort {
+    return when (this) {
+        Relations.CREATED_DATE -> AllContentSort.ByDateCreated()
+        Relations.LAST_OPENED_DATE -> AllContentSort.ByDateUpdated()
+        null -> AllContentSort.ByName()
+        else -> DEFAULT_INITIAL_SORT
     }
 }
 //endregion

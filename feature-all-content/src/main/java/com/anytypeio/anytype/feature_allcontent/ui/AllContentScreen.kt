@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -41,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.views.ButtonSize
+import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.UXBody
@@ -183,7 +185,19 @@ private fun ContentItems(modifier: Modifier, items: List<UiContentItem>) {
             val obj = items[index]
             when (obj) {
                 is UiContentItem.Group -> {
-
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp),
+                        contentAlignment = Alignment.BottomStart
+                    ) {
+                        Text(
+                            modifier = Modifier.wrapContentSize().padding(start = 20.dp, bottom = 8.dp),
+                            text = obj.id,
+                            style = Caption1Regular,
+                            color = colorResource(id = R.color.text_secondary),
+                        )
+                    }
                 }
                 is UiContentItem.Object -> {
                     Item(

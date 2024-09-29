@@ -3,7 +3,6 @@ package com.anytypeio.anytype.feature_allcontent.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.all_content.RestoreAllContentState
@@ -78,7 +77,6 @@ class AllContentViewModel(
     private val localeProvider: LocaleProvider
 ) : ViewModel() {
 
-    private val susbcriptionId = "all_content_subscription_${vmParams.spaceId.id}"
     private val _limitedObjectIds: MutableStateFlow<List<String>> = MutableStateFlow(emptyList())
 
     private val _tabsState = MutableStateFlow<AllContentTab>(DEFAULT_INITIAL_TAB)
@@ -202,6 +200,8 @@ class AllContentViewModel(
         }
     }
 
+    fun subscriptionId() = "all_content_subscription_${vmParams.spaceId.id}"
+
     private fun loadData(
         result: Result
     ): Flow<UiContentState> = flow {
@@ -215,7 +215,7 @@ class AllContentViewModel(
             activeSort = result.sort,
             limitedObjectIds = result.limitedObjectIds,
             limit = result.limit,
-            subscriptionId = susbcriptionId,
+            subscriptionId = subscriptionId(),
             spaceId = vmParams.spaceId.id
         )
 
@@ -224,21 +224,21 @@ class AllContentViewModel(
         emitAll(
             dataFlow
                 .map { items ->
-//                    items.forEach {
-//                        Log.d("Test1983", "items, : ${it.getValue<Double?>(Relations.CREATED_DATE)
-//                            ?.toLong()}")
-//                    }
-                    Timber.d("Objects by subscription,  size:[${items.size}]")
+
                     if (result.sort.canGroupByDate) {
                         val views = items.map {
                             it.toView(
                                 urlBuilder = urlBuilder,
                                 objectTypes = storeOfObjectTypes.getAll(),
                             )
-                        }.map { UiContentItem.Object(id = it.id, obj = it) }
-                        //val groupItems = groupItemsByDate(views)
+                        }//.map { UiContentItem.Object(id = it.id, obj = it) }
+                        val groupItems = groupItemsByDate(
+                            items = views,
+                            activeSort = result.sort
+                        )
+                        Timber.d("Objects by subscription,  size:[${items.size}], groupItems:[${groupItems}]")
                         UiContentState.Content(
-                            items = views//emptyList()// groupItemsByDate(views)
+                            items = groupItems
                         )
 
                     } else {
@@ -266,12 +266,19 @@ class AllContentViewModel(
         )
     }
 
-    private fun groupItemsByDate(items: List<DefaultObjectView>): List<UiContentItem> {
+    private fun groupItemsByDate(
+        items: List<DefaultObjectView>,
+        activeSort: AllContentSort
+    ): List<UiContentItem> {
         val groupedItems = mutableListOf<UiContentItem>()
         var currentGroupKey: String? = null
 
         for (item in items) {
-            val timestamp = item.lastOpenedDate
+            val timestamp = when (activeSort) {
+                is AllContentSort.ByDateCreated -> item.createdDate
+                is AllContentSort.ByDateUpdated -> item.lastModifiedDate
+                is AllContentSort.ByName -> 0L
+            }
             val (groupKey, group) = getDateGroup(timestamp)
 
             if (currentGroupKey != groupKey) {
@@ -290,12 +297,12 @@ class AllContentViewModel(
     }
 
     private fun getDateGroup(timestamp: Long): Pair<String, UiContentItem.Group> {
-        val itemDate = Instant.ofEpochMilli(timestamp)
-            .atZone(ZoneId.systemDefault())
+        val zoneId = ZoneId.systemDefault()
+        val itemDate = Instant.ofEpochSecond(timestamp)
+            .atZone(zoneId)
             .toLocalDate()
-        val today = LocalDate.now(ZoneId.systemDefault())
+        val today = LocalDate.now(zoneId)
         val daysAgo = ChronoUnit.DAYS.between(itemDate, today)
-
         return when {
             daysAgo == 0L -> TODAY_ID to UiContentItem.Group.Today(TODAY_ID)
             daysAgo == 1L -> YESTERDAY_ID to UiContentItem.Group.Yesterday(YESTERDAY_ID)
@@ -378,7 +385,7 @@ class AllContentViewModel(
     fun onStop() {
         Timber.d("onStop")
         viewModelScope.launch {
-            storelessSubscriptionContainer.unsubscribe(listOf(susbcriptionId))
+            storelessSubscriptionContainer.unsubscribe(listOf(subscriptionId()))
         }
     }
 
@@ -406,10 +413,10 @@ class AllContentViewModel(
         const val MONTH_AND_YEAR_ID = "MonthAndYear"
 
         //INITIAL STATE
-        private const val DEFAULT_SEARCH_LIMIT = 50
-        private val DEFAULT_INITIAL_TAB = AllContentTab.PAGES
-        val DEFAULT_INITIAL_SORT = AllContentSort.ByName()
-        private val DEFAULT_INITIAL_MODE = AllContentMode.AllContent
-        private val DEFAULT_QUERY = ""
+        const val DEFAULT_SEARCH_LIMIT = 50
+        val DEFAULT_INITIAL_TAB = AllContentTab.PAGES
+        val DEFAULT_INITIAL_SORT = AllContentSort.ByDateCreated()
+        val DEFAULT_INITIAL_MODE = AllContentMode.AllContent
+        val DEFAULT_QUERY = ""
     }
 }

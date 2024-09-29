@@ -1035,7 +1035,11 @@ class HomeScreenViewModel(
                     )
                 }
                 WidgetView.AllContent.ALL_CONTENT_WIDGET_ID -> {
-                    // TODO Proceed with navigation
+                    navigation(
+                        Navigation.OpenAllContent(
+                            space = space
+                        )
+                    )
                 }
             }
         }
@@ -2036,6 +2040,7 @@ class HomeScreenViewModel(
         data class OpenSet(val ctx: Id, val space: Id, val view: Id?) : Navigation()
         data class ExpandWidget(val subscription: Subscription, val space: Id) : Navigation()
         data class OpenLibrary(val space: Id) : Navigation()
+        data class OpenAllContent(val space: Id) : Navigation()
     }
 
     class Factory @Inject constructor(

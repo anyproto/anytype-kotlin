@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -117,4 +118,5 @@ interface AllContentDependencies : ComponentDependencies {
     fun userSettingsRepository(): UserSettingsRepository
     fun subEventChannel(): SubscriptionEventChannel
     fun logger(): Logger
+    fun localeProvider(): LocaleProvider
 }

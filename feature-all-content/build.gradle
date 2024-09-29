@@ -8,6 +8,7 @@ android {
 
     defaultConfig {
         buildConfigField "boolean", "USE_NEW_WINDOW_INSET_API", "true"
+        buildConfigField "boolean", "USE_EDGE_TO_EDGE", "true"
     }
 
     buildFeatures {
@@ -53,4 +54,7 @@ dependencies {
     testImplementation libs.robolectric
     testImplementation libs.androidXTestCore
     testImplementation libs.mockitoKotlin
+    testImplementation libs.coroutineTesting
+    testImplementation libs.timberJUnit
+    testImplementation libs.turbine
 }

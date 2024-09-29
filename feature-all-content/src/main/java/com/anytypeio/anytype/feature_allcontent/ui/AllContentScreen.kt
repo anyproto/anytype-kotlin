@@ -1,23 +1,30 @@
 package com.anytypeio.anytype.feature_allcontent.ui
 
-import android.util.Log
+import android.os.Build
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,7 +32,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -35,9 +47,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.views.ButtonSize
+import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.UXBody
@@ -51,67 +65,94 @@ import com.anytypeio.anytype.core_ui.widgets.DefaultObjectImageIcon
 import com.anytypeio.anytype.core_ui.widgets.DefaultProfileAvatarIcon
 import com.anytypeio.anytype.core_ui.widgets.DefaultProfileIconImage
 import com.anytypeio.anytype.core_ui.widgets.DefaultTaskObjectIcon
+import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
+import com.anytypeio.anytype.feature_allcontent.BuildConfig
 import com.anytypeio.anytype.feature_allcontent.R
+import com.anytypeio.anytype.feature_allcontent.models.AllContentMenuMode
+import com.anytypeio.anytype.feature_allcontent.models.AllContentSort
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
-import com.anytypeio.anytype.feature_allcontent.models.TabsViewState
-import com.anytypeio.anytype.feature_allcontent.models.TopBarViewState
-import com.anytypeio.anytype.feature_allcontent.presentation.AllContentUiState
-import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
+import com.anytypeio.anytype.feature_allcontent.models.UiContentState
+import com.anytypeio.anytype.feature_allcontent.models.MenuButtonViewState
+import com.anytypeio.anytype.feature_allcontent.models.UiContentItem
+import com.anytypeio.anytype.feature_allcontent.models.UiMenuState
+import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
+import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 @Composable
 fun AllContentWrapperScreen(
-    uiState: AllContentUiState,
+    uiTitleState: UiTitleState,
+    uiTabsState: UiTabsState,
+    uiMenuButtonViewState: MenuButtonViewState,
+    uiMenuState: UiMenuState,
+    uiState: UiContentState,
     onTabClick: (AllContentTab) -> Unit,
     onQueryChanged: (String) -> Unit,
+    onModeClick: (AllContentMenuMode) -> Unit,
+    onSortClick: (AllContentSort) -> Unit,
+    onItemClicked: (UiContentItem.Item) -> Unit
 ) {
-    val tabsState = remember { mutableStateOf<TabsViewState>(TabsViewState.Hidden) }
-    val titleState = remember { mutableStateOf<TopBarViewState>(TopBarViewState.Hidden) }
-    val objects = remember { mutableStateOf<List<DefaultObjectView>>(emptyList()) }
-    LaunchedEffect(uiState) {
-        if (uiState is AllContentUiState.Initial) {
-            tabsState.value = uiState.tabsViewState
-            titleState.value = uiState.topToolbarState
-        }
-    }
-    if (uiState is AllContentUiState.Content) {
+    val objects = remember { mutableStateOf<List<UiContentItem>>(emptyList()) }
+    if (uiState is UiContentState.Content) {
         objects.value = uiState.items
     }
     AllContentMainScreen(
-        titleState = titleState,
-        tabs = tabsState,
+        uiTitleState = uiTitleState,
+        uiTabsState = uiTabsState,
+        uiMenuButtonViewState = uiMenuButtonViewState,
         onTabClick = onTabClick,
         objects = objects,
-        isLoading = uiState is AllContentUiState.Loading,
-        onQueryChanged = onQueryChanged
+        isLoading = uiState is UiContentState.Loading,
+        onQueryChanged = onQueryChanged,
+        uiMenuState = uiMenuState,
+        onModeClick = onModeClick,
+        onSortClick = onSortClick,
+        onItemClicked = onItemClicked
     )
 }
 
 @Composable
 fun AllContentMainScreen(
-    titleState: MutableState<TopBarViewState>,
-    tabs: MutableState<TabsViewState>,
-    objects: MutableState<List<DefaultObjectView>>,
+    uiTitleState: UiTitleState,
+    uiTabsState: UiTabsState,
+    uiMenuButtonViewState: MenuButtonViewState,
+    uiMenuState: UiMenuState,
+    objects: MutableState<List<UiContentItem>>,
     onTabClick: (AllContentTab) -> Unit,
     onQueryChanged: (String) -> Unit,
-    isLoading: Boolean
+    onModeClick: (AllContentMenuMode) -> Unit,
+    onSortClick: (AllContentSort) -> Unit,
+    isLoading: Boolean,
+    onItemClicked: (UiContentItem.Item) -> Unit
 ) {
+    val modifier = Modifier
+        .background(color = colorResource(id = R.color.background_primary))
+
     Scaffold(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize(),
         containerColor = colorResource(id = R.color.background_primary),
         topBar = {
-            Column {
-                if (titleState.value is TopBarViewState.Default) {
+            Column(
+                modifier = if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
+                    Modifier
+                        .windowInsetsPadding(WindowInsets.statusBars)
+                        .fillMaxWidth()
+                else
+                    Modifier.fillMaxWidth()
+            ) {
+                if (uiTitleState !is UiTitleState.Hidden) {
                     AllContentTopBarContainer(
-                        state = titleState.value as TopBarViewState.Default
+                        titleState = uiTitleState,
+                        menuButtonState = uiMenuButtonViewState,
+                        uiMenuState = uiMenuState,
+                        onSortClick = onSortClick,
+                        onModeClick = onModeClick,
                     )
                 }
 
-                if (tabs.value is TabsViewState.Default) {
-                    AllContentTabs(
-                        tabsViewState = tabs.value as TabsViewState.Default,
-                    ) { tab ->
+                if (uiTabsState is UiTabsState.Default) {
+                    AllContentTabs(tabsViewState = uiTabsState) { tab ->
                         onTabClick(tab)
                     }
                 }
@@ -122,33 +163,82 @@ fun AllContentMainScreen(
             }
         },
         content = { paddingValues ->
-            if (isLoading) {
-                Box(
-                    modifier = Modifier
+            val contentModifier =
+                if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
+                    Modifier
+                        .windowInsetsPadding(WindowInsets.navigationBars)
                         .fillMaxSize()
                         .padding(paddingValues)
-                ) {
+                else
+                    Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+            if (isLoading) {
+                Box(modifier = contentModifier) {
                     LoadingState()
                 }
             } else {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                ) {
-                    items(
-                        count = objects.value.size,
-                        key = { index -> objects.value[index].id }
-                    ) {
-                        Item(
-                            modifier = Modifier.animateItem(),
-                            view = objects.value[it]
-                        )
-                    }
-                }
+                ContentItems(
+                    modifier = contentModifier,
+                    items = objects.value,
+                    onItemClicked = onItemClicked
+                )
             }
         }
     )
+}
+
+@Composable
+private fun ContentItems(
+    modifier: Modifier,
+    items: List<UiContentItem>,
+    onItemClicked: (UiContentItem.Item) -> Unit
+) {
+    LazyColumn(modifier = modifier) {
+        items(
+            count = items.size,
+            key = { index -> items[index].id },
+            contentType = { index ->
+                when (items[index]) {
+                    is UiContentItem.Group -> "group"
+                    is UiContentItem.Item -> "item"
+                }
+            }
+        ) { index ->
+            when (val item = items[index]) {
+                is UiContentItem.Group -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp),
+                        contentAlignment = Alignment.BottomStart
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .wrapContentSize()
+                                .padding(start = 20.dp, bottom = 8.dp),
+                            text = item.title(),
+                            style = Caption1Regular,
+                            color = colorResource(id = R.color.text_secondary),
+                        )
+                    }
+                }
+
+                is UiContentItem.Item -> {
+                    Item(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .bottomBorder()
+                            .animateItem()
+                            .clickable {
+                                onItemClicked(item)
+                            },
+                        item = item
+                    )
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -176,12 +266,10 @@ fun PreviewLoadingState() {
 @Composable
 private fun Item(
     modifier: Modifier,
-    view: DefaultObjectView
+    item: UiContentItem.Item
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(16.dp, 0.dp, 0.dp, 0.dp)
+        modifier = modifier.fillMaxWidth()
     ) {
         Box(
             modifier = Modifier
@@ -189,7 +277,7 @@ private fun Item(
                 .size(48.dp)
                 .align(CenterVertically)
         ) {
-            AllContentItemIcon(icon = view.icon, modifier = Modifier)
+            AllContentItemIcon(icon = item.icon, modifier = Modifier)
         }
         Column(
             modifier = Modifier
@@ -197,7 +285,7 @@ private fun Item(
                 .padding(0.dp, 0.dp, 60.dp, 0.dp)
         ) {
 
-            val name = view.name.trim().ifBlank { stringResource(R.string.untitled) }
+            val name = item.name.trim().ifBlank { stringResource(R.string.untitled) }
 
             Text(
                 text = name,
@@ -207,7 +295,7 @@ private fun Item(
                 overflow = TextOverflow.Ellipsis
             )
 
-            val description = view.description
+            val description = item.description
             if (!description.isNullOrBlank()) {
                 Text(
                     text = description,
@@ -218,7 +306,7 @@ private fun Item(
                 )
             }
 
-            val typeName = view.typeName
+            val typeName = item.typeName
             if (!typeName.isNullOrBlank()) {
                 Text(
                     text = typeName,
@@ -266,7 +354,8 @@ fun AllContentItemIcon(
                 fileName = icon.fileName.orEmpty(),
                 mime = icon.mime.orEmpty(),
                 modifier = modifier,
-                iconSize = iconSize
+                iconSize = iconSize,
+                extension = icon.extensions
             )
         }
 
@@ -288,6 +377,41 @@ private fun BoxScope.ErrorState(message: String) {
     )
 }
 
+@Composable
+fun UiContentItem.Group.title(): String {
+    return when (this) {
+        is UiContentItem.Group.Today -> stringResource(R.string.allContent_group_today)
+        is UiContentItem.Group.Yesterday -> stringResource(R.string.allContent_group_yesterday)
+        is UiContentItem.Group.Previous7Days -> stringResource(R.string.allContent_group_prev_7)
+        is UiContentItem.Group.Previous14Days -> stringResource(R.string.allContent_group_prev_14)
+        is UiContentItem.Group.Month -> title
+        is UiContentItem.Group.MonthAndYear -> title
+    }
+}
+
 object AllContentNavigation {
     const val ALL_CONTENT_MAIN = "all_content_main"
 }
+
+@Composable
+fun Modifier.bottomBorder(
+    strokeWidth: Dp = 0.5.dp,
+    color: Color = colorResource(R.color.shape_primary)
+) = composed(
+    factory = {
+        val density = LocalDensity.current
+        val strokeWidthPx = density.run { strokeWidth.toPx() }
+
+        Modifier.drawBehind {
+            val width = size.width
+            val height = size.height - strokeWidthPx / 2
+
+            drawLine(
+                color = color,
+                start = Offset(x = 0f, y = height),
+                end = Offset(x = width, y = height),
+                strokeWidth = strokeWidthPx
+            )
+        }
+    }
+)

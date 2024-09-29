@@ -1,7 +1,9 @@
 package com.anytypeio.anytype.ui.allcontent
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -12,15 +14,20 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.argString
+import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModelFactory
 import com.anytypeio.anytype.feature_allcontent.ui.AllContentWrapperScreen
 import com.anytypeio.anytype.feature_allcontent.ui.AllContentNavigation.ALL_CONTENT_MAIN
+import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 
@@ -45,6 +52,33 @@ class AllContentFragment : BaseComposeFragment() {
         }
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        subscribe(vm.commands) { command ->
+            when (command) {
+                is AllContentViewModel.Command.NavigateToEditor -> {
+                    runCatching {
+                        navigation().openDocument(
+                            target = command.id,
+                            space = command.space
+                        )
+                    }
+                }
+                is AllContentViewModel.Command.NavigateToSetOrCollection -> {
+                    runCatching {
+                        navigation().openObjectSet(
+                            target = command.id,
+                            space = command.space,
+                        )
+                    }
+                }
+                is AllContentViewModel.Command.SendToast -> {
+                    toast(command.message)
+                }
+            }
+        }
+    }
+
     @Composable
     fun AllContentScreenWrapper() {
         NavHost(
@@ -56,6 +90,13 @@ class AllContentFragment : BaseComposeFragment() {
                     uiState = vm.uiState.collectAsStateWithLifecycle().value,
                     onTabClick = vm::onTabClicked,
                     onQueryChanged = vm::onFilterChanged,
+                    uiTabsState = vm.uiTabsState.collectAsStateWithLifecycle().value,
+                    uiTitleState = vm.uiTitleState.collectAsStateWithLifecycle().value,
+                    uiMenuButtonViewState = vm.uiMenuButtonState.collectAsStateWithLifecycle().value,
+                    uiMenuState = vm.uiMenu.collectAsStateWithLifecycle().value,
+                    onSortClick = vm::onSortClicked,
+                    onModeClick = vm::onAllContentModeClicked,
+                    onItemClicked = vm::onItemClicked
                 )
             }
         }
@@ -73,6 +114,14 @@ class AllContentFragment : BaseComposeFragment() {
 
     override fun releaseDependencies() {
         componentManager().allContentComponent.release()
+    }
+
+    override fun onApplyWindowRootInsets(view: View) {
+        if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
+            // Do nothing.
+        } else {
+            super.onApplyWindowRootInsets(view)
+        }
     }
 
     companion object {

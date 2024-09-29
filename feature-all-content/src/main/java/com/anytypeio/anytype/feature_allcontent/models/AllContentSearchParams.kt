@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.domain.library.StoreSearchParams
 
 val allContentTabLayouts = mapOf(
     AllContentTab.PAGES to listOf(
@@ -34,10 +35,62 @@ val allContentTabLayouts = mapOf(
     )
 )
 
+// Function to create subscription params
+fun createSubscriptionParams(
+    spaceId: Id,
+    activeMode: AllContentMode,
+    activeTab: AllContentTab,
+    activeSort: AllContentSort,
+    limitedObjectIds: List<String>,
+    limit: Int,
+    subscriptionId: String
+): StoreSearchParams {
+    val (filters, sorts) = activeTab.filtersForSubscribe(
+        spaces = listOf(spaceId),
+        activeSort = activeSort,
+        limitedObjectIds = limitedObjectIds,
+        activeMode = activeMode
+    )
+    return StoreSearchParams(
+        filters = filters,
+        sorts = sorts,
+        keys = listOf(
+            Relations.ID,
+            Relations.SPACE_ID,
+            Relations.TARGET_SPACE_ID,
+            Relations.UNIQUE_KEY,
+            Relations.NAME,
+            Relations.ICON_IMAGE,
+            Relations.ICON_EMOJI,
+            Relations.ICON_OPTION,
+            Relations.TYPE,
+            Relations.LAYOUT,
+            Relations.IS_ARCHIVED,
+            Relations.IS_DELETED,
+            Relations.IS_HIDDEN,
+            Relations.SNIPPET,
+            Relations.DONE,
+            Relations.IDENTITY_PROFILE_LINK,
+            Relations.RESTRICTIONS,
+            Relations.SIZE_IN_BYTES,
+            Relations.FILE_MIME_TYPE,
+            Relations.FILE_EXT,
+            Relations.LAST_OPENED_DATE,
+            Relations.LAST_MODIFIED_DATE,
+            Relations.CREATED_DATE,
+            Relations.LINKS,
+            Relations.BACKLINKS
+        ),
+        limit = limit,
+        subscription = subscriptionId
+    )
+}
+
 fun AllContentTab.filtersForSubscribe(
     spaces: List<Id>,
     activeSort: AllContentSort,
-    limitedObjectIds: List<Id>
+    limitedObjectIds: List<Id>,
+    activeMode: AllContentMode
 ): Pair<List<DVFilter>, List<DVSort>> {
     val tab = this
     when (this) {
@@ -55,6 +108,9 @@ fun AllContentTab.filtersForSubscribe(
                 }
                 if (limitedObjectIds.isNotEmpty()) {
                     add(buildLimitedObjectIdsFilter(limitedObjectIds = limitedObjectIds))
+                }
+                if (activeMode == AllContentMode.Unlinked) {
+                    addAll(buildUnlinkedObjectFilter())
                 }
             }
             val sorts = listOf(activeSort.toDVSort())
@@ -108,6 +164,17 @@ private fun buildSpaceIdFilter(spaces: List<Id>): DVFilter = DVFilter(
     relation = Relations.SPACE_ID,
     condition = DVFilterCondition.IN,
     value = spaces
+)
+
+private fun buildUnlinkedObjectFilter(): List<DVFilter> = listOf(
+    DVFilter(
+        relation = Relations.LINKS,
+        condition = DVFilterCondition.EMPTY
+    ),
+    DVFilter(
+        relation = Relations.BACKLINKS,
+        condition = DVFilterCondition.EMPTY
+    )
 )
 
 private fun buildLimitedObjectIdsFilter(limitedObjectIds: List<Id>): DVFilter = DVFilter(

@@ -9,8 +9,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,16 +27,18 @@ import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -52,66 +52,128 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.extensions.bouncingClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.feature_allcontent.R
+import com.anytypeio.anytype.feature_allcontent.models.AllContentMenuMode
+import com.anytypeio.anytype.feature_allcontent.models.AllContentSort
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
-import com.anytypeio.anytype.feature_allcontent.models.AllContentTitleViewState
 import com.anytypeio.anytype.feature_allcontent.models.MenuButtonViewState
-import com.anytypeio.anytype.feature_allcontent.models.TabsViewState
-import com.anytypeio.anytype.feature_allcontent.models.TopBarViewState
+import com.anytypeio.anytype.feature_allcontent.models.MenuSortsItem
+import com.anytypeio.anytype.feature_allcontent.models.UiMenuState
+import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
+import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
 
 //region AllContentTopBarContainer
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AllContentTopBarContainer(state: TopBarViewState.Default) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(48.dp)
-    ) {
-        AllContentTitle(state = state.titleState)
-        AllContentMenuButton(state = state.menuButtonState)
-    }
+fun AllContentTopBarContainer(
+    titleState: UiTitleState,
+    menuButtonState: MenuButtonViewState,
+    uiMenuState: UiMenuState,
+    onModeClick: (AllContentMenuMode) -> Unit,
+    onSortClick: (AllContentSort) -> Unit
+) {
+    var isMenuExpanded by remember { mutableStateOf(false) }
+
+    CenterAlignedTopAppBar(
+        modifier = Modifier.fillMaxWidth(),
+        expandedHeight = 48.dp,
+        title = { AllContentTitle(state = titleState) },
+        actions = {
+            AllContentMenuButton(
+                state = menuButtonState,
+                onClick = { isMenuExpanded = true }
+            )
+            DropdownMenu(
+                modifier = Modifier.width(252.dp),
+                expanded = isMenuExpanded,
+                onDismissRequest = { isMenuExpanded = false },
+                shape = RoundedCornerShape(size = 16.dp),
+                containerColor = colorResource(id = R.color.background_primary),
+                shadowElevation = 20.dp,
+            ) {
+                AllContentMenu(
+                    uiMenuState = uiMenuState,
+                    onModeClick = {
+                        onModeClick(it)
+                        isMenuExpanded = false
+                    },
+                    onSortClick = {
+                        onSortClick(it)
+                        isMenuExpanded = false
+                    }
+                )
+            }
+        },
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = colorResource(id = R.color.background_primary)
+        ),
+    )
 }
 
 @DefaultPreviews
 @Composable
 private fun AllContentTopBarContainerPreview() {
     AllContentTopBarContainer(
-        state = TopBarViewState.Default(
-            titleState = AllContentTitleViewState.OnlyUnlinked,
-            menuButtonState = MenuButtonViewState.Visible
-        )
+        titleState = UiTitleState.OnlyUnlinked,
+        menuButtonState = MenuButtonViewState.Visible,
+        uiMenuState = UiMenuState(
+            mode = listOf(
+                AllContentMenuMode.AllContent(isSelected = true),
+                AllContentMenuMode.Unlinked()
+            ),
+            container = MenuSortsItem.Container(
+                sort = AllContentSort.ByName(isSelected = true)
+            ),
+            sorts = listOf(
+                MenuSortsItem.Sort(
+                    sort = AllContentSort.ByName(isSelected = true)
+                ),
+            ),
+            types = listOf(
+                MenuSortsItem.SortType(
+                    sort = AllContentSort.ByName(isSelected = true),
+                    sortType = DVSortType.DESC,
+                    isSelected = true
+                ),
+                MenuSortsItem.SortType(
+                    sort = AllContentSort.ByDateCreated(isSelected = false),
+                    sortType = DVSortType.ASC,
+                    isSelected = false
+                ),
+            )
+        ),
+        onModeClick = {},
+        onSortClick = {}
     )
 }
 //endregion
 
 //region AllContentTitle
-
 @Composable
-fun BoxScope.AllContentTitle(state: AllContentTitleViewState) {
+fun AllContentTitle(state: UiTitleState) {
     when (state) {
-        AllContentTitleViewState.Hidden -> return
-        AllContentTitleViewState.AllContent -> {
+        UiTitleState.Hidden -> return
+        UiTitleState.AllContent -> {
             Text(
                 modifier = Modifier
-                    .wrapContentSize()
-                    .align(Center),
+                    .wrapContentSize(),
                 text = stringResource(id = R.string.all_content_title_all_content),
                 style = Title1,
                 color = colorResource(id = R.color.text_primary)
             )
         }
 
-        AllContentTitleViewState.OnlyUnlinked -> {
+        UiTitleState.OnlyUnlinked -> {
             Text(
                 modifier = Modifier
-                    .wrapContentSize()
-                    .align(Center),
+                    .wrapContentSize(),
                 text = stringResource(id = R.string.all_content_title_only_unlinked),
                 style = Title1,
                 color = colorResource(id = R.color.text_primary)
@@ -123,7 +185,7 @@ fun BoxScope.AllContentTitle(state: AllContentTitleViewState) {
 
 //region AllContentMenuButton
 @Composable
-fun BoxScope.AllContentMenuButton(state: MenuButtonViewState) {
+fun AllContentMenuButton(state: MenuButtonViewState, onClick: () -> Unit) {
     when (state) {
         MenuButtonViewState.Hidden -> return
         MenuButtonViewState.Visible -> {
@@ -131,7 +193,7 @@ fun BoxScope.AllContentMenuButton(state: MenuButtonViewState) {
                 modifier = Modifier
                     .padding(end = 12.dp)
                     .size(32.dp)
-                    .align(Alignment.CenterEnd),
+                    .bouncingClickable { onClick() },
                 painter = painterResource(id = R.drawable.ic_space_list_dots),
                 contentDescription = "Menu icon",
                 contentScale = ContentScale.Inside
@@ -144,15 +206,12 @@ fun BoxScope.AllContentMenuButton(state: MenuButtonViewState) {
 //region AllContentTabs
 @Composable
 fun AllContentTabs(
-    tabsViewState: TabsViewState.Default,
+    tabsViewState: UiTabsState.Default,
     onClick: (AllContentTab) -> Unit
 ) {
     val scrollState = rememberLazyListState()
     var selectedTab by remember { mutableStateOf(tabsViewState.selectedTab) }
 
-    LaunchedEffect(onClick) {
-//                scrollState.animateScrollToItem(state.tabs.indexOf(selectedTab))
-    }
     val snapFlingBehavior = rememberSnapFlingBehavior(scrollState)
 
     LazyRow(
@@ -212,24 +271,24 @@ private fun getTabText(tab: AllContentTab): String {
     }
 }
 
-//@DefaultPreviews
-//@Composable
-//private fun AllContentTabsPreview() {
-//    AllContentTabs(
-//        state = TabsViewState(
-//            tabs = listOf(
-//                AllContentTab.OBJECTS,
-//                AllContentTab.FILES,
-//                AllContentTab.MEDIA,
-//                AllContentTab.BOOKMARKS,
-//                AllContentTab.TYPES,
-//                AllContentTab.RELATIONS
-//            ),
-//            selectedTab = AllContentTab.MEDIA
-//        ),
-//        onClick = {}
-//    )
-//}
+@DefaultPreviews
+@Composable
+private fun AllContentTabsPreview() {
+    AllContentTabs(
+        tabsViewState = UiTabsState.Default(
+            tabs = listOf(
+                AllContentTab.PAGES,
+                AllContentTab.FILES,
+                AllContentTab.MEDIA,
+                AllContentTab.BOOKMARKS,
+                AllContentTab.TYPES,
+                AllContentTab.RELATIONS
+            ),
+            selectedTab = AllContentTab.MEDIA
+        ),
+        onClick = {}
+    )
+}
 
 //endregion
 
@@ -323,17 +382,6 @@ fun AllContentSearchBar(onQueryChanged: (String) -> Unit) {
                 cursorBrush = SolidColor(colorResource(id = R.color.palette_system_blue)),
             )
         }
-//        Box(
-//            modifier = Modifier.size(16.dp)
-//        ) {
-//            if (showLoading) {
-//                CircularProgressIndicator(
-//                    modifier = Modifier.fillMaxSize(),
-//                    color = colorResource(id = R.color.glyph_active),
-//                    strokeWidth = 2.dp
-//                )
-//            }
-//        }
         Spacer(Modifier.width(9.dp))
         AnimatedVisibility(
             visible = query.text.isNotEmpty(),

@@ -6,6 +6,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.all_content.RestoreAllContentState
 import com.anytypeio.anytype.domain.all_content.UpdateAllContentState
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -25,7 +26,8 @@ class AllContentViewModelFactory @Inject constructor(
     @Named("AllContent") private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val updateAllContentState: UpdateAllContentState,
     private val restoreAllContentState: RestoreAllContentState,
-    private val searchObjects: SearchObjects
+    private val searchObjects: SearchObjects,
+    private val localeProvider: LocaleProvider
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
@@ -39,6 +41,7 @@ class AllContentViewModelFactory @Inject constructor(
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             restoreAllContentState = restoreAllContentState,
             updateAllContentState = updateAllContentState,
-            searchObjects = searchObjects
+            searchObjects = searchObjects,
+            localeProvider = localeProvider
         ) as T
 }

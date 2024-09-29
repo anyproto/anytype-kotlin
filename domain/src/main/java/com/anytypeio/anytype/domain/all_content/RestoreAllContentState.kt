@@ -15,8 +15,7 @@ class RestoreAllContentState @Inject constructor(
 ) {
 
     override suspend fun doWork(params: Params): Response {
-        //todo: implement
-        return Response(null)
+        return Response(activeSort = null)
     }
 
     data class Params(
@@ -24,6 +23,6 @@ class RestoreAllContentState @Inject constructor(
     )
 
     data class Response(
-        val state: DVSort?
+        val activeSort: String?
     )
 }

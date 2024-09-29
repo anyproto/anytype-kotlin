@@ -15,6 +15,7 @@ class RestoreAllContentState @Inject constructor(
 ) {
 
     override suspend fun doWork(params: Params): Response {
+        //todo: implement
         return Response(activeSort = null)
     }
 

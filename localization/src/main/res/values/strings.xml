@@ -1773,4 +1773,10 @@ Please provide specific details of your needs here.</string>
 
     <string name="all_content">All objects</string>
 
+    <string name="allContent_group_today">Today</string>
+    <string name="allContent_group_yesterday">Yesterday</string>
+    <string name="allContent_group_prev_7">Previous 7 days</string>
+    <string name="allContent_group_prev_14">Previous 14 days</string>
+
+
 </resources>

@@ -1497,4 +1497,5 @@ En concreto,
     <string name="version_history_error_get_members">Error al obtener los miembros</string>
     <string name="new_object">Nuevo objeto</string>
     <string name="vault_my_spaces">Mis espacios</string>
+    <string name="all_content">All content</string>
 </resources>

@@ -19,7 +19,7 @@ import com.anytypeio.anytype.presentation.objects.getProperType
 
 //region STATE
 sealed class AllContentState {
-    data object Initial : AllContentState()
+    data object Init : AllContentState()
     data class Default(
         val activeTab: AllContentTab,
         val activeMode: AllContentMode,

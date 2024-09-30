@@ -51,6 +51,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
@@ -96,7 +97,7 @@ fun AllContentTopBarContainer(
                 onDismissRequest = { isMenuExpanded = false },
                 shape = RoundedCornerShape(size = 16.dp),
                 containerColor = colorResource(id = R.color.background_primary),
-                shadowElevation = 20.dp,
+                shadowElevation = 5.dp
             ) {
                 AllContentMenu(
                     uiMenuState = uiMenuState,

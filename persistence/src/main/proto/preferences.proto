@@ -9,6 +9,11 @@ message SpacePreferences {
 }
 
 message VaultPreferences {
+  // maps account id to vault preference
+  map <string, VaultPreference> preferences = 1;
+}
+
+message VaultPreference {
   repeated string orderOfSpaces = 1;
 }
 

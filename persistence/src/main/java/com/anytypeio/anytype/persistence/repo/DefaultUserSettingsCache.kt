@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
+import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.GlobalSearchHistory
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NO_VALUE
@@ -17,6 +18,7 @@ import com.anytypeio.anytype.data.auth.repo.UserSettingsCache
 import com.anytypeio.anytype.persistence.GlobalSearchHistoryProto
 import com.anytypeio.anytype.persistence.SpacePreference
 import com.anytypeio.anytype.persistence.SpacePreferences
+import com.anytypeio.anytype.persistence.VaultPreference
 import com.anytypeio.anytype.persistence.VaultPreferences
 import com.anytypeio.anytype.persistence.common.JsonString
 import com.anytypeio.anytype.persistence.common.deserializeWallpaperSettings
@@ -389,21 +391,45 @@ class DefaultUserSettingsCache(
         }
     }
 
-    override suspend fun getVaultSettings(): VaultSettings {
+    override suspend fun getVaultSettings(account: Account): VaultSettings {
         return context.vaultPrefsStore
             .data
             .map { prefs ->
                 VaultSettings(
-                    orderOfSpaces = prefs.orderOfSpaces
+                    orderOfSpaces = prefs.preferences.getOrDefault(
+                        key = account.id,
+                        defaultValue = VaultPreference()
+                    ).orderOfSpaces
                 )
             }
             .first()
     }
 
-    override suspend fun setVaultSpaceOrder(order: List<Id>) {
+    override suspend fun observeVaultSettings(account: Account): Flow<VaultSettings> {
+        return context.vaultPrefsStore
+            .data
+            .map { prefs ->
+                VaultSettings(
+                    orderOfSpaces = prefs.preferences.getOrDefault(
+                        key = account.id,
+                        defaultValue = VaultPreference()
+                    ).orderOfSpaces
+                )
+            }
+    }
+
+    override suspend fun setVaultSpaceOrder(account: Account, order: List<Id>) {
         context.vaultPrefsStore.updateData { existingPreferences ->
+            val curr = existingPreferences.preferences.getOrDefault(
+                key = account.id,
+                defaultValue = VaultPreference()
+            )
             existingPreferences.copy(
-                orderOfSpaces = order
+                preferences = existingPreferences.preferences + mapOf(
+                    account.id to curr.copy(
+                        orderOfSpaces = order
+                    )
+                )
             )
         }
     }

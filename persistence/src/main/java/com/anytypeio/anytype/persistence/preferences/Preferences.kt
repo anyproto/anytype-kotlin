@@ -23,7 +23,7 @@ object SpacePrefSerializer : Serializer<SpacePreferences> {
 
 object VaultPrefsSerializer : Serializer<VaultPreferences> {
     override val defaultValue: VaultPreferences = VaultPreferences(
-        orderOfSpaces = emptyList()
+        preferences = emptyMap()
     )
 
     override suspend fun readFrom(input: InputStream): VaultPreferences {

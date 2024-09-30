@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.domain.config
 
+import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.GlobalSearchHistory
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ThemeMode
@@ -12,8 +13,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface UserSettingsRepository {
 
-    suspend fun getVaultSettings(): VaultSettings
-    suspend fun setVaultSpaceOrder(order: List<Id>)
+    suspend fun getVaultSettings(account: Account): VaultSettings
+    suspend fun observeVaultSettings(account: Account): Flow<VaultSettings>
+    suspend fun setVaultSpaceOrder(account: Account, order: List<Id>)
 
     suspend fun setCurrentSpace(space: SpaceId)
     suspend fun getCurrentSpace(): SpaceId?

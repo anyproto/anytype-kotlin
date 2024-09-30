@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.data.auth.repo
 
+import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.GlobalSearchHistory
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ThemeMode
@@ -90,11 +91,18 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
         cache.clearGlobalSearchHistory(space)
     }
 
-    override suspend fun getVaultSettings(): VaultSettings {
-        return cache.getVaultSettings()
+    override suspend fun getVaultSettings(account: Account): VaultSettings {
+        return cache.getVaultSettings(account)
     }
 
-    override suspend fun setVaultSpaceOrder(order: List<Id>) {
-        cache.setVaultSpaceOrder(order)
+    override suspend fun observeVaultSettings(account: Account): Flow<VaultSettings> {
+        return cache.observeVaultSettings(account)
+    }
+
+    override suspend fun setVaultSpaceOrder(account: Account, order: List<Id>) {
+        cache.setVaultSpaceOrder(
+            account = account,
+            order = order
+        )
     }
 }

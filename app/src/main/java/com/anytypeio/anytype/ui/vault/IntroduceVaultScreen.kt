@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.ui.multiplayer
+package com.anytypeio.anytype.ui.vault
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -37,7 +37,7 @@ import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import kotlinx.coroutines.launch
 
 @Composable
-fun IntroduceSpaceSharingScreen(
+fun IntroduceVaultScreen(
     onDoneClicked: () -> Unit
 ) {
     val configuration = LocalConfiguration.current
@@ -93,7 +93,7 @@ fun IntroduceSpaceSharingScreen(
                 0 -> {
                     Box(modifier = Modifier.fillMaxSize()) {
                         Image(
-                            painter = painterResource(id = R.drawable.ic_sharing_step_first),
+                            painter = painterResource(id = R.drawable.img_introduce_vault_1),
                             contentDescription = "Screenshot 1",
                             modifier = Modifier.align(Alignment.BottomCenter)
                         )
@@ -102,7 +102,7 @@ fun IntroduceSpaceSharingScreen(
                 1 -> {
                     Box(modifier = Modifier.fillMaxSize()) {
                         Image(
-                            painter = painterResource(id = R.drawable.ic_sharing_step_second),
+                            painter = painterResource(id = R.drawable.img_introduce_vault_1),
                             contentDescription = "Screenshot 2",
                             modifier = Modifier.align(Alignment.BottomCenter)
                         )
@@ -144,34 +144,34 @@ fun IntroduceSpaceSharingScreen(
         }
 
         Text(
-            text = stringResource(R.string.multiplayer_collaborate_step_1),
+            text = stringResource(R.string.introduce_vault_text_1),
             style = BodyRegular,
             color = colorResource(id = R.color.text_primary),
             modifier = Modifier
                 .padding(bottom = 8.dp, start = 24.dp, end = 24.dp)
                 .constrainAs(first) {
-                    bottom.linkTo(second.top)
+                    bottom.linkTo(btn.top)
                 }
         )
 
         Text(
-            text = stringResource(R.string.multiplayer_collaborate_step_2),
+            text = stringResource(R.string.introduce_vault_text_2),
             style = BodyRegular,
             color = colorResource(id = R.color.text_primary),
             modifier = Modifier
                 .padding(bottom = 8.dp, start = 24.dp, end = 24.dp)
-                .constrainAs(second) {
-                    bottom.linkTo(third.top)
+                .constrainAs(first) {
+                    bottom.linkTo(btn.top)
                 }
         )
 
         Text(
-            text = stringResource(R.string.multiplayer_collaborate_step_3),
+            text = stringResource(R.string.introduce_vault_text_3),
             style = BodyRegular,
             color = colorResource(id = R.color.text_primary),
             modifier = Modifier
-                .padding(start = 24.dp, end = 24.dp, bottom = 30.dp)
-                .constrainAs(third) {
+                .padding(bottom = 8.dp, start = 24.dp, end = 24.dp)
+                .constrainAs(first) {
                     bottom.linkTo(btn.top)
                 }
         )
@@ -209,7 +209,7 @@ fun IntroduceSpaceSharingScreen(
 @DefaultPreviews
 @Composable
 private fun ScreenPreview() {
-    IntroduceSpaceSharingScreen(
+    IntroduceVaultScreen(
         onDoneClicked = {}
     )
 }

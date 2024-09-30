@@ -835,7 +835,8 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                 styleTextToolbar = ControlPanelState.Toolbar.Styling.reset(),
                 multiSelect = ControlPanelState.Toolbar.MultiSelect(
                     isVisible = true,
-                    count = 1
+                    count = 1,
+                    isSelectAllVisible = true
                 )
             )
         )
@@ -853,7 +854,8 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                 styleTextToolbar = ControlPanelState.Toolbar.Styling.reset(),
                 multiSelect = ControlPanelState.Toolbar.MultiSelect(
                     isVisible = false,
-                    count = 0
+                    count = 0,
+                    isSelectAllVisible = true
                 )
             )
         )
@@ -924,7 +926,8 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                 styleTextToolbar = ControlPanelState.Toolbar.Styling.reset(),
                 multiSelect = ControlPanelState.Toolbar.MultiSelect(
                     isVisible = true,
-                    count = 3
+                    count = 3,
+                    isSelectAllVisible = false
                 )
             )
         )

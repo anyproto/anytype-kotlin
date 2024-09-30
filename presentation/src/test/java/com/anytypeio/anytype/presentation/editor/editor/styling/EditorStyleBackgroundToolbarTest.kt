@@ -84,7 +84,8 @@ class EditorStyleBackgroundToolbarTest : EditorPresentationTestSetup() {
             ),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = true,
-                count = 1
+                count = 1,
+                isSelectAllVisible = false
             )
         )
 
@@ -188,7 +189,8 @@ class EditorStyleBackgroundToolbarTest : EditorPresentationTestSetup() {
             ),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
                 isVisible = true,
-                count = 2
+                count = 2,
+                isSelectAllVisible = false
             )
         )
 

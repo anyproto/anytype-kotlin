@@ -6,7 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -42,7 +41,8 @@ import com.anytypeio.anytype.feature_allcontent.models.UiMenuState
 fun AllContentMenu(
     uiMenuState: UiMenuState,
     onModeClick: (AllContentMenuMode) -> Unit,
-    onSortClick: (AllContentSort) -> Unit
+    onSortClick: (AllContentSort) -> Unit,
+    onBinClick: () -> Unit
 ) {
     var sortingExpanded by remember { mutableStateOf(false) }
 
@@ -97,6 +97,14 @@ fun AllContentMenu(
                 Divider(0.5.dp)
             }
         }
+    }
+    if (uiMenuState.showBin && !sortingExpanded) {
+        Divider(7.5.dp)
+        MenuItem(
+            title = stringResource(id = R.string.all_content_view_bin),
+            isSelected = false,
+            modifier = Modifier.clickable { onBinClick() }
+        )
     }
 }
 
@@ -256,7 +264,8 @@ fun AllContentMenuPreview() {
             container = MenuSortsItem.Container(AllContentSort.ByName())
         ),
         onModeClick = {},
-        onSortClick = {}
+        onSortClick = {},
+        onBinClick = {}
     )
 }
 //endregion

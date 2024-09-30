@@ -164,7 +164,8 @@ data class UiMenuState(
     val mode: List<AllContentMenuMode>,
     val container: MenuSortsItem.Container,
     val sorts: List<MenuSortsItem.Sort>,
-    val types: List<MenuSortsItem.SortType>
+    val types: List<MenuSortsItem.SortType>,
+    val showBin: Boolean = true
 ) {
     companion object {
         fun empty(): UiMenuState {

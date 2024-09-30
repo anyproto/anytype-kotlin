@@ -450,6 +450,12 @@ class AllContentViewModel(
         _limitState.value = limit
     }
 
+    fun onViewBinClicked() {
+        viewModelScope.launch {
+            _commands.emit(Command.NavigateToBin(vmParams.spaceId.id))
+        }
+    }
+
     fun onItemClicked(item: UiContentItem.Item) {
         Timber.d("onItemClicked: ${item.id}")
         val layout = item.layout ?: return
@@ -506,6 +512,7 @@ class AllContentViewModel(
     sealed class Command {
         data class NavigateToEditor(val id: Id, val space: Id) : Command()
         data class NavigateToSetOrCollection(val id: Id, val space: Id) : Command()
+        data class NavigateToBin(val space: Id) : Command()
         data class SendToast(val message: String) : Command()
     }
 

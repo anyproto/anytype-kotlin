@@ -90,7 +90,8 @@ fun AllContentWrapperScreen(
     onQueryChanged: (String) -> Unit,
     onModeClick: (AllContentMenuMode) -> Unit,
     onSortClick: (AllContentSort) -> Unit,
-    onItemClicked: (UiContentItem.Item) -> Unit
+    onItemClicked: (UiContentItem.Item) -> Unit,
+    onBinClick: () -> Unit
 ) {
     val objects = remember { mutableStateOf<List<UiContentItem>>(emptyList()) }
     if (uiState is UiContentState.Content) {
@@ -107,7 +108,8 @@ fun AllContentWrapperScreen(
         uiMenuState = uiMenuState,
         onModeClick = onModeClick,
         onSortClick = onSortClick,
-        onItemClicked = onItemClicked
+        onItemClicked = onItemClicked,
+        onBinClick = onBinClick
     )
 }
 
@@ -123,7 +125,8 @@ fun AllContentMainScreen(
     onModeClick: (AllContentMenuMode) -> Unit,
     onSortClick: (AllContentSort) -> Unit,
     isLoading: Boolean,
-    onItemClicked: (UiContentItem.Item) -> Unit
+    onItemClicked: (UiContentItem.Item) -> Unit,
+    onBinClick: () -> Unit
 ) {
     val modifier = Modifier
         .background(color = colorResource(id = R.color.background_primary))
@@ -148,6 +151,7 @@ fun AllContentMainScreen(
                         uiMenuState = uiMenuState,
                         onSortClick = onSortClick,
                         onModeClick = onModeClick,
+                        onBinClick = onBinClick
                     )
                 }
 

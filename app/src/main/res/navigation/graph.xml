@@ -160,6 +160,12 @@
             app:popUpTo="@id/vaultScreen"
             app:popUpToInclusive="true"
             />
+        <action
+            android:id="@+id/action_open_all_content"
+            app:destination="@id/allContentScreen"
+            app:enterAnim="@anim/enter_from_right"
+            app:exitAnim="@anim/exit_to_left"
+            />
     </fragment>
 
     <fragment
@@ -386,6 +392,12 @@
         android:id="@+id/globalSearchScreen"
         android:name="com.anytypeio.anytype.ui.search.GlobalSearchFragment"
         android:label="GlobalSearchScreen" />
+
+    <fragment
+        android:id="@+id/allContentScreen"
+        android:name="com.anytypeio.anytype.ui.allcontent.AllContentFragment"
+        android:label="AllContentScreen" />
+
     <fragment
         android:id="@+id/libraryFragment"
         android:name="com.anytypeio.anytype.ui.library.LibraryFragment"

@@ -65,8 +65,18 @@ fun IntroduceVaultScreen(
         val coroutineScope = rememberCoroutineScope()
         val (title, first, second, third, pager, dots, btn) = createRefs()
 
+        val pagerState = rememberPagerState(pageCount = { 2 })
+
         Text(
-            text = stringResource(R.string.multiplayer_collaborate_on_spaces),
+            text = when(val page = pagerState.currentPage) {
+                0 -> {
+                    stringResource(R.string.introduce_vault_welcome_to_the_vault)
+                }
+                1 -> {
+                    stringResource(R.string.introduce_vault_simple_flexible)
+                }
+                else -> ""
+            },
             style = HeadlineHeading,
             textAlign = TextAlign.Center,
             color = colorResource(id = R.color.text_primary),
@@ -75,8 +85,6 @@ fun IntroduceVaultScreen(
                 .constrainAs(title) {}
                 .fillMaxWidth()
         )
-
-        val pagerState = rememberPagerState(pageCount = { 3 })
 
         HorizontalPager(
             state = pagerState,
@@ -144,29 +152,15 @@ fun IntroduceVaultScreen(
         }
 
         Text(
-            text = stringResource(R.string.introduce_vault_text_1),
-            style = BodyRegular,
-            color = colorResource(id = R.color.text_primary),
-            modifier = Modifier
-                .padding(bottom = 8.dp, start = 24.dp, end = 24.dp)
-                .constrainAs(first) {
-                    bottom.linkTo(btn.top)
+            text =  when(val page = pagerState.currentPage) {
+                0 -> {
+                    stringResource(R.string.introduce_vault_text_1)
                 }
-        )
-
-        Text(
-            text = stringResource(R.string.introduce_vault_text_2),
-            style = BodyRegular,
-            color = colorResource(id = R.color.text_primary),
-            modifier = Modifier
-                .padding(bottom = 8.dp, start = 24.dp, end = 24.dp)
-                .constrainAs(first) {
-                    bottom.linkTo(btn.top)
+                1 -> {
+                    stringResource(R.string.introduce_vault_text_2)
                 }
-        )
-
-        Text(
-            text = stringResource(R.string.introduce_vault_text_3),
+                else -> ""
+            },
             style = BodyRegular,
             color = colorResource(id = R.color.text_primary),
             modifier = Modifier
@@ -179,7 +173,7 @@ fun IntroduceVaultScreen(
         ButtonSecondary(
             onClick = {
                 coroutineScope.launch {
-                    if (pagerState.currentPage == 2) {
+                    if (pagerState.currentPage == 1) {
                         onDoneClicked()
                     } else {
                         pagerState.animateScrollToPage(pagerState.currentPage.inc(), 0f)
@@ -187,7 +181,7 @@ fun IntroduceVaultScreen(
                 }
             },
             size = ButtonSize.LargeSecondary,
-            text = if (pagerState.currentPage == 2)
+            text = if (pagerState.currentPage == 1)
                 stringResource(id = R.string.done)
             else
                 stringResource(id = R.string.next),

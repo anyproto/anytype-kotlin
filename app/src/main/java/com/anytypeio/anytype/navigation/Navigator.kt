@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
+import com.anytypeio.anytype.ui.allcontent.AllContentFragment
 import com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.editor.EditorModalFragment
@@ -237,6 +238,13 @@ class Navigator : AppNavigation {
             bundleOf(
                 TemplateSelectFragment.ARG_TYPE_ID to typeId
             )
+        )
+    }
+
+    override fun openAllContent(space: Id) {
+        navController?.navigate(
+            resId = R.id.action_open_all_content,
+            args = AllContentFragment.args(space)
         )
     }
 }

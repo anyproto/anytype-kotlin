@@ -1792,8 +1792,7 @@ class EditorViewModel(
                 ControlPanelMachine.Event.MultiSelect.OnEnter(
                     currentSelection().size,
                     isSelectAllVisible = isNotAllBlocksSelected(
-                        allBlocks = orchestrator.stores.views.current(),
-                        selected = currentSelection()
+
                 )
             ))
             if (isSelected(target) && scrollTarget) {
@@ -1804,11 +1803,14 @@ class EditorViewModel(
         proceedWithUpdatingActionsForCurrentSelection()
     }
 
-    private fun isNotAllBlocksSelected(allBlocks: List<BlockView>, selected: Set<Id>): Boolean {
+    private fun isNotAllBlocksSelected(): Boolean {
+        val allBlocks = orchestrator.stores.views.current().filter { it is BlockView.Selectable }
+        val selected = currentSelection()
         return allBlocks.any { !selected.contains(it.id) }
     }
 
-    private suspend fun updateSelectionUI(views: List<BlockView>, targets: Set<Id>) {
+    private suspend fun updateSelectionUI(views: List<BlockView>) {
+        val targets = views.map { it.id }.toSet()
         orchestrator.stores.focus.update(Editor.Focus.empty())
         orchestrator.stores.views.update(
             views.enterSAM(targets = targets)
@@ -1817,11 +1819,7 @@ class EditorViewModel(
         controlPanelInteractor.onEvent(
             ControlPanelMachine.Event.MultiSelect.OnEnter(
                 targets.size,
-                isSelectAllVisible = isNotAllBlocksSelected(
-                    allBlocks = orchestrator.stores.views.current(),
-                    selected = currentSelection()
-
-                )
+                isSelectAllVisible = isNotAllBlocksSelected()
             )
         )
     }
@@ -1840,7 +1838,7 @@ class EditorViewModel(
         mode = EditorMode.Select
 
         viewModelScope.launch {
-            updateSelectionUI(views, views.map { it.id }.toSet())
+            updateSelectionUI(views)
         }
     }
 
@@ -4367,10 +4365,7 @@ class EditorViewModel(
         controlPanelInteractor.onEvent(
             ControlPanelMachine.Event.MultiSelect.OnBlockClick(
                 count = currentSelection().size,
-                isSelectAllVisible = isNotAllBlocksSelected(
-                    allBlocks = orchestrator.stores.views.current(),
-                    selected = currentSelection()
-                )
+                isSelectAllVisible = isNotAllBlocksSelected()
             )
         )
     }
@@ -5946,10 +5941,7 @@ class EditorViewModel(
         controlPanelInteractor.onEvent(
             ControlPanelMachine.Event.MultiSelect.OnEnter(
                 count = currentSelection().size,
-                isSelectAllVisible = isNotAllBlocksSelected(
-                    allBlocks = orchestrator.stores.views.current(),
-                    selected = currentSelection()
-                )
+                isSelectAllVisible = isNotAllBlocksSelected()
             )
         )
         mode = EditorMode.Select
@@ -5966,10 +5958,7 @@ class EditorViewModel(
             controlPanelInteractor.onEvent(
                 ControlPanelMachine.Event.MultiSelect.SyncBlockUpdate(
                     count = currentSelection().size,
-                    isSelectAllVisible = isNotAllBlocksSelected(
-                        allBlocks = orchestrator.stores.views.current(),
-                        selected = currentSelection()
-                    )
+                    isSelectAllVisible = isNotAllBlocksSelected()
                 )
             )
         }

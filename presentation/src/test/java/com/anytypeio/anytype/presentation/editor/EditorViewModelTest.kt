@@ -4389,6 +4389,7 @@ open class EditorViewModelTest {
                 state = StyleToolbarState.Text(Block.Content.Text.Style.P)
             ),
             multiSelect = ControlPanelState.Toolbar.MultiSelect(
+                isSelectAllVisible = true,
                 isVisible = true,
                 count = 1
             ),

@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.settings.VaultSettings
 import com.anytypeio.anytype.data.auth.repo.UserSettingsCache
+import com.anytypeio.anytype.persistence.AllContentSettings
 import com.anytypeio.anytype.persistence.GlobalSearchHistoryProto
 import com.anytypeio.anytype.persistence.SpacePreference
 import com.anytypeio.anytype.persistence.SpacePreferences
@@ -431,6 +432,40 @@ class DefaultUserSettingsCache(
                     )
                 )
             )
+        }
+    }
+
+    override suspend fun getAllContentSort(space: SpaceId): Id {
+        return context.spacePrefsStore
+            .data
+            .map { preferences ->
+                preferences
+                    .preferences[space.id]
+                    ?.allContent
+                    ?.sortKey
+                    .orEmpty()
+            }
+            .first()
+    }
+
+    override suspend fun setAllContentSort(space: SpaceId, sort: Id) {
+        context.spacePrefsStore.updateData { existingPreferences ->
+            val givenSpacePreference = existingPreferences
+                .preferences
+                .getOrDefault(
+                    key = space.id,
+                    defaultValue = SpacePreference()
+                )
+            val updated = givenSpacePreference.copy(
+                allContent = AllContentSettings(
+                    sortKey = sort
+                )
+            )
+            val result = buildMap {
+                putAll(existingPreferences.preferences)
+                put(key = space.id, updated)
+            }
+            SpacePreferences(preferences = result)
         }
     }
 

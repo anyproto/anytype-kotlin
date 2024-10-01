@@ -42,4 +42,7 @@ interface UserSettingsCache {
     suspend fun getWidgetSession() : WidgetSession
     suspend fun saveWidgetSession(session: WidgetSession)
     suspend fun clear()
+
+    suspend fun getAllContentSort(space: SpaceId): Id
+    suspend fun setAllContentSort(space: SpaceId, sort: Id)
 }

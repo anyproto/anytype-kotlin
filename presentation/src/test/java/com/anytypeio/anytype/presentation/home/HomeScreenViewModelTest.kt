@@ -300,7 +300,7 @@ class HomeScreenViewModelTest {
     }
 
     @Test
-    fun `should emit bin, library and actions and space view if there is no block`() = runTest {
+    fun `should emit actions and space view if there is no block`() = runTest {
 
         // SETUP
 
@@ -313,8 +313,6 @@ class HomeScreenViewModelTest {
             root = WIDGET_OBJECT_ID,
             blocks = listOf(smartBlock)
         )
-
-        val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_ARCHIVED)
 
         val events: Flow<List<Event>> = emptyFlow()
 
@@ -351,8 +349,6 @@ class HomeScreenViewModelTest {
                 actual = secondTimeState,
                 expected = buildList {
                     add(defaultSpaceWidgetView)
-                    add(WidgetView.Library)
-                    add(binWidget)
                     addAll(HomeScreenViewModel.actions)
                 }
             )
@@ -360,7 +356,7 @@ class HomeScreenViewModelTest {
     }
 
     @Test
-    fun `should emit only bin and actions when home screen has no associated widgets except the default ones`() =
+    fun `should emit only actions when home screen has no associated widgets except the default ones`() =
         runTest {
 
             // SETUP
@@ -404,8 +400,6 @@ class HomeScreenViewModelTest {
                 assertEquals(
                     expected = buildList {
                         add(defaultSpaceWidgetView)
-                        add(WidgetView.Library)
-                        add(binWidget)
                         addAll(HomeScreenViewModel.actions)
                     },
                     actual = secondTimeItem
@@ -421,7 +415,7 @@ class HomeScreenViewModelTest {
         }
 
     @Test
-    fun `should emit tree-widget with empty elements and bin when source has no links`() = runTest {
+    fun `should emit tree-widget with empty elements when source has no links`() = runTest {
 
         // SETUP
 
@@ -457,8 +451,6 @@ class HomeScreenViewModelTest {
                 sourceObject.id to sourceObject.map
             )
         )
-
-        val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_ARCHIVED)
 
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
@@ -505,8 +497,6 @@ class HomeScreenViewModelTest {
                             isExpanded = true
                         )
                     )
-                    add(WidgetView.Library)
-                    add(binWidget)
                     addAll(HomeScreenViewModel.actions)
                 },
                 actual = secondTimeState
@@ -522,7 +512,7 @@ class HomeScreenViewModelTest {
     }
 
     @Test
-    fun `should emit tree-widget with 2 elements, library and bin`() = runTest {
+    fun `should emit tree-widget with 2 elements`() = runTest {
 
         // SETUP
 
@@ -567,8 +557,6 @@ class HomeScreenViewModelTest {
                 sourceObject.id to sourceObject.map
             )
         )
-
-        val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_ARCHIVED)
 
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
@@ -633,8 +621,6 @@ class HomeScreenViewModelTest {
                             isExpanded = true
                         )
                     )
-                    add(WidgetView.Library)
-                    add(binWidget)
                     addAll(HomeScreenViewModel.actions)
                 },
                 actual = secondTimeState
@@ -643,7 +629,7 @@ class HomeScreenViewModelTest {
     }
 
     @Test
-    fun `should emit list without elements, library and bin`() = runTest {
+    fun `should emit list without elements`() = runTest {
 
         // SETUP
 
@@ -688,8 +674,6 @@ class HomeScreenViewModelTest {
                 sourceObject.id to sourceObject.map
             )
         )
-
-        val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_ARCHIVED)
 
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
@@ -741,8 +725,6 @@ class HomeScreenViewModelTest {
                             tabs = emptyList()
                         )
                     )
-                    add(WidgetView.Library)
-                    add(binWidget)
                     addAll(HomeScreenViewModel.actions)
                 },
                 actual = secondTimeState
@@ -751,7 +733,7 @@ class HomeScreenViewModelTest {
     }
 
     @Test
-    fun `should emit compact list without elements, library and bin`() = runTest {
+    fun `should emit compact list without elements`() = runTest {
 
         // SETUP
 
@@ -796,8 +778,6 @@ class HomeScreenViewModelTest {
                 sourceObject.id to sourceObject.map
             )
         )
-
-        val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_ARCHIVED)
 
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
@@ -849,8 +829,6 @@ class HomeScreenViewModelTest {
                             tabs = emptyList()
                         )
                     )
-                    add(WidgetView.Library)
-                    add(binWidget)
                     addAll(HomeScreenViewModel.actions)
                 },
                 actual = secondTimeState
@@ -859,7 +837,7 @@ class HomeScreenViewModelTest {
     }
 
     @Test
-    fun `should emit three bundled widgets with tree layout, each having 2 elements, library and bin`() =
+    fun `should emit three bundled widgets with tree layout, each having 2 elements`() =
         runTest {
 
             // SETUP
@@ -923,8 +901,6 @@ class HomeScreenViewModelTest {
                     setsLink
                 )
             )
-
-            val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_ARCHIVED)
 
             stubConfig()
             stubInterceptEvents(events = emptyFlow())
@@ -1142,8 +1118,6 @@ class HomeScreenViewModelTest {
                                 isExpanded = true
                             )
                         )
-                        add(WidgetView.Library)
-                        add(binWidget)
                         addAll(HomeScreenViewModel.actions)
                     },
                     actual = secondTimeState
@@ -1152,7 +1126,7 @@ class HomeScreenViewModelTest {
         }
 
     @Test
-    fun `should emit link-widget, library, bin and actions`() = runTest {
+    fun `should emit link-widget and actions`() = runTest {
 
         // SETUP
 
@@ -1229,8 +1203,6 @@ class HomeScreenViewModelTest {
                             source = Widget.Source.Default(sourceObject),
                         )
                     )
-                    add(WidgetView.Library)
-                    add(binWidget)
                     addAll(HomeScreenViewModel.actions)
                 },
                 actual = secondTimeState
@@ -1987,8 +1959,6 @@ class HomeScreenViewModelTest {
                 actual = secondTimeState,
                 expected = buildList {
                     add(defaultSpaceWidgetView)
-                    add(WidgetView.Library)
-                    add(binWidget)
                     addAll(HomeScreenViewModel.actions)
                 }
             )

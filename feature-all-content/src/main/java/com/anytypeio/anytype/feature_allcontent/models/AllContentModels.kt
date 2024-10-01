@@ -31,7 +31,7 @@ sealed class AllContentState {
 
 @Immutable
 enum class AllContentTab {
-    PAGES, LISTS, MEDIA, BOOKMARKS, FILES, TYPES, RELATIONS
+    PAGES, LISTS, MEDIA, BOOKMARKS, FILES, TYPES
 }
 
 sealed class AllContentMode {
@@ -164,7 +164,8 @@ data class UiMenuState(
     val mode: List<AllContentMenuMode>,
     val container: MenuSortsItem.Container,
     val sorts: List<MenuSortsItem.Sort>,
-    val types: List<MenuSortsItem.SortType>
+    val types: List<MenuSortsItem.SortType>,
+    val showBin: Boolean = true
 ) {
     companion object {
         fun empty(): UiMenuState {
@@ -208,7 +209,8 @@ fun AllContentMode.view(): UiTitleState {
 fun Key?.mapRelationKeyToSort(): AllContentSort {
     return when (this) {
         Relations.CREATED_DATE -> AllContentSort.ByDateCreated()
-        Relations.LAST_OPENED_DATE -> AllContentSort.ByDateUpdated()
+        Relations.LAST_MODIFIED_DATE -> AllContentSort.ByDateUpdated()
+        Relations.NAME -> AllContentSort.ByName()
         else -> DEFAULT_INITIAL_SORT
     }
 }
@@ -249,7 +251,7 @@ fun ObjectWrapper.Basic.toAllContentItem(
             layout = layout,
             builder = urlBuilder
         ),
-        lastModifiedDate = DateParser.parseInMillis(obj.lastModifiedDate) ?: 0L,
+        lastModifiedDate = DateParser.parse(obj.getValue(Relations.LAST_MODIFIED_DATE)) ?: 0L,
         createdDate = DateParser.parse(obj.getValue(Relations.CREATED_DATE)) ?: 0L
     )
 }

@@ -105,4 +105,12 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
             order = order
         )
     }
+
+    override suspend fun getAllContentSort(space: SpaceId): Id {
+        return cache.getAllContentSort(space)
+    }
+
+    override suspend fun setAllContentSort(space: SpaceId, sort: Id) {
+        cache.setAllContentSort(space, sort)
+    }
 }

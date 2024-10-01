@@ -77,7 +77,8 @@ fun AllContentTopBarContainer(
     menuButtonState: MenuButtonViewState,
     uiMenuState: UiMenuState,
     onModeClick: (AllContentMenuMode) -> Unit,
-    onSortClick: (AllContentSort) -> Unit
+    onSortClick: (AllContentSort) -> Unit,
+    onBinClick: () -> Unit
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
 
@@ -96,7 +97,7 @@ fun AllContentTopBarContainer(
                 onDismissRequest = { isMenuExpanded = false },
                 shape = RoundedCornerShape(size = 16.dp),
                 containerColor = colorResource(id = R.color.background_primary),
-                shadowElevation = 20.dp,
+                shadowElevation = 5.dp
             ) {
                 AllContentMenu(
                     uiMenuState = uiMenuState,
@@ -107,7 +108,8 @@ fun AllContentTopBarContainer(
                     onSortClick = {
                         onSortClick(it)
                         isMenuExpanded = false
-                    }
+                    },
+                    onBinClick = onBinClick
                 )
             }
         },
@@ -150,7 +152,8 @@ private fun AllContentTopBarContainerPreview() {
             )
         ),
         onModeClick = {},
-        onSortClick = {}
+        onSortClick = {},
+        onBinClick = {}
     )
 }
 //endregion
@@ -266,7 +269,6 @@ private fun getTabText(tab: AllContentTab): String {
         AllContentTab.MEDIA -> stringResource(id = R.string.all_content_title_tab_media)
         AllContentTab.BOOKMARKS -> stringResource(id = R.string.all_content_title_tab_bookmarks)
         AllContentTab.TYPES -> stringResource(id = R.string.all_content_title_tab_objetc_types)
-        AllContentTab.RELATIONS -> stringResource(id = R.string.all_content_title_tab_relations)
         AllContentTab.LISTS -> stringResource(id = R.string.all_content_title_tab_lists)
     }
 }
@@ -281,8 +283,7 @@ private fun AllContentTabsPreview() {
                 AllContentTab.FILES,
                 AllContentTab.MEDIA,
                 AllContentTab.BOOKMARKS,
-                AllContentTab.TYPES,
-                AllContentTab.RELATIONS
+                AllContentTab.TYPES
             ),
             selectedTab = AllContentTab.MEDIA
         ),

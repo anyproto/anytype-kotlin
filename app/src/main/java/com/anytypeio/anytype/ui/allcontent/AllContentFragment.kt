@@ -27,9 +27,11 @@ import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModelFactory
 import com.anytypeio.anytype.feature_allcontent.ui.AllContentWrapperScreen
 import com.anytypeio.anytype.feature_allcontent.ui.AllContentNavigation.ALL_CONTENT_MAIN
+import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
+import timber.log.Timber
 
 class AllContentFragment : BaseComposeFragment() {
 
@@ -62,6 +64,9 @@ class AllContentFragment : BaseComposeFragment() {
                             target = command.id,
                             space = command.space
                         )
+                    }.onFailure {
+                        toast("Failed to open document")
+                        Timber.e(it, "Failed to open document")
                     }
                 }
                 is AllContentViewModel.Command.NavigateToSetOrCollection -> {
@@ -70,10 +75,24 @@ class AllContentFragment : BaseComposeFragment() {
                             target = command.id,
                             space = command.space,
                         )
+                    }.onFailure {
+                        toast("Failed to open object set")
+                        Timber.e(it, "Failed to open object set")
                     }
                 }
                 is AllContentViewModel.Command.SendToast -> {
                     toast(command.message)
+                }
+                is AllContentViewModel.Command.NavigateToBin -> {
+                    runCatching {
+                        navigation().launchCollections(
+                            subscription = Subscription.Bin,
+                            space = command.space
+                        )
+                    }.onFailure {
+                        toast("Failed to open bin")
+                        Timber.e(it, "Failed to open bin")
+                    }
                 }
             }
         }
@@ -96,7 +115,8 @@ class AllContentFragment : BaseComposeFragment() {
                     uiMenuState = vm.uiMenu.collectAsStateWithLifecycle().value,
                     onSortClick = vm::onSortClicked,
                     onModeClick = vm::onAllContentModeClicked,
-                    onItemClicked = vm::onItemClicked
+                    onItemClicked = vm::onItemClicked,
+                    onBinClick = vm::onViewBinClicked
                 )
             }
         }

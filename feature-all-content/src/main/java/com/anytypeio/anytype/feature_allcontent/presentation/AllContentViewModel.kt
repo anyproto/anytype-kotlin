@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.all_content.RestoreAllContentState
 import com.anytypeio.anytype.domain.all_content.UpdateAllContentState
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -40,7 +41,6 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.TextStyle
 import java.time.temporal.ChronoUnit
-import javax.inject.Named
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
@@ -159,7 +159,7 @@ class AllContentViewModel(
                     val initialParams = restoreAllContentState.run(
                         RestoreAllContentState.Params(vmParams.spaceId)
                     )
-                    if (initialParams.activeSort != null) {
+                    if (!initialParams.activeSort.isNullOrEmpty()) {
                         _sortState.value = initialParams.activeSort.mapRelationKeyToSort()
                     }
                 }.onFailure { e ->
@@ -418,7 +418,7 @@ class AllContentViewModel(
 
     fun onTabClicked(tab: AllContentTab) {
         Timber.d("onTabClicked: $tab")
-        if (tab == AllContentTab.TYPES || tab == AllContentTab.RELATIONS) {
+        if (tab == AllContentTab.TYPES) {
             viewModelScope.launch {
                 _commands.emit(Command.SendToast("Not implemented yet"))
             }
@@ -438,6 +438,24 @@ class AllContentViewModel(
     fun onSortClicked(sort: AllContentSort) {
         Timber.d("onSortClicked: $sort")
         _sortState.value = sort
+        proceedWithSortSaving(sort)
+    }
+
+    private fun proceedWithSortSaving(sort: AllContentSort) {
+        viewModelScope.launch {
+            val params = UpdateAllContentState.Params(
+                spaceId = vmParams.spaceId,
+                sort = sort.relationKey.key
+            )
+            updateAllContentState.async(params).fold(
+                onSuccess = {
+                    Timber.d("Sort updated")
+                },
+                onFailure = {
+                    Timber.e(it, "Error updating sort")
+                }
+            )
+        }
     }
 
     fun onFilterChanged(filter: String) {
@@ -448,6 +466,12 @@ class AllContentViewModel(
     fun onLimitUpdated(limit: Int) {
         Timber.d("onLimitUpdated: $limit")
         _limitState.value = limit
+    }
+
+    fun onViewBinClicked() {
+        viewModelScope.launch {
+            _commands.emit(Command.NavigateToBin(vmParams.spaceId.id))
+        }
     }
 
     fun onItemClicked(item: UiContentItem.Item) {
@@ -506,6 +530,7 @@ class AllContentViewModel(
     sealed class Command {
         data class NavigateToEditor(val id: Id, val space: Id) : Command()
         data class NavigateToSetOrCollection(val id: Id, val space: Id) : Command()
+        data class NavigateToBin(val space: Id) : Command()
         data class SendToast(val message: String) : Command()
     }
 
@@ -516,7 +541,7 @@ class AllContentViewModel(
         //INITIAL STATE
         const val DEFAULT_SEARCH_LIMIT = 50
         val DEFAULT_INITIAL_TAB = AllContentTab.PAGES
-        val DEFAULT_INITIAL_SORT = AllContentSort.ByDateCreated()
+        val DEFAULT_INITIAL_SORT = AllContentSort.ByName()
         val DEFAULT_INITIAL_MODE = AllContentMode.AllContent
         val DEFAULT_QUERY = ""
     }

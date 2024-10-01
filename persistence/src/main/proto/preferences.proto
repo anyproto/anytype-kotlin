@@ -22,9 +22,14 @@ message SpacePreference {
   repeated string pinnedObjectTypeIds = 2;
   optional string lastOpenedObject = 3;
   optional GlobalSearchHistoryProto globalSearchHistory = 5;
+  optional AllContentSettings allContent = 6;
 }
 
 message GlobalSearchHistoryProto {
   optional string lastSearchQuery = 1;
   optional string lastSearchRelatedObjectId = 2;
+}
+
+message AllContentSettings {
+  optional string sortKey = 1;
 }

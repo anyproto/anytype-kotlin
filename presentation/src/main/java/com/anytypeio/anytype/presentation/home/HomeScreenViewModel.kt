@@ -395,11 +395,7 @@ class HomeScreenViewModel(
                     spaceWidgetView.map { view -> listOf(view) }
                 }
             }.combine(hasEditAccess) { widgets, hasEditAccess ->
-                if (hasEditAccess) {
-                    widgets + listOf(WidgetView.Library, bin) + actions
-                } else {
-                    widgets
-                }
+                getListOfWidgets(hasEditAccess, widgets)
             }
                 .catch {
                     Timber.e(it, "Error while rendering widgets")
@@ -407,6 +403,18 @@ class HomeScreenViewModel(
                 .flowOn(appCoroutineDispatchers.io).collect {
                     views.value = it
                 }
+        }
+    }
+
+    private fun getListOfWidgets(
+        hasEditAccess: Boolean,
+        widgets: List<WidgetView>
+    ): List<WidgetView> {
+        return buildList {
+            addAll(widgets)
+            if (hasEditAccess) {
+                addAll(actions)
+            }
         }
     }
 

@@ -22,6 +22,8 @@ object MimeTypes {
         "image/x-dwg",
         "image/tiff",
         "image/vnd.adobe.photoshop",
+        "application/postscript",
+        "application/illustrator"
     )
 
     private val TEXTS = listOf(
@@ -100,7 +102,8 @@ object MimeTypes {
         "application/vnd.openxmlformats-officedocument.presentationml.presentation",
         "application/vnd.openxmlformats-officedocument.presentationml.template",
         "application/vnd.ms-powerpoint.template.macroEnabled.12",
-        "application/vnd.ms-powerpoint.addin.macroEnabled.12"
+        "application/vnd.ms-powerpoint.addin.macroEnabled.12",
+        "application/pgp-keys"
     )
 
     enum class Category {

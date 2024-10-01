@@ -31,7 +31,7 @@ sealed class AllContentState {
 
 @Immutable
 enum class AllContentTab {
-    PAGES, LISTS, MEDIA, BOOKMARKS, FILES, TYPES, RELATIONS
+    PAGES, LISTS, MEDIA, BOOKMARKS, FILES, TYPES
 }
 
 sealed class AllContentMode {

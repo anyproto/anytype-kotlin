@@ -269,7 +269,6 @@ private fun getTabText(tab: AllContentTab): String {
         AllContentTab.MEDIA -> stringResource(id = R.string.all_content_title_tab_media)
         AllContentTab.BOOKMARKS -> stringResource(id = R.string.all_content_title_tab_bookmarks)
         AllContentTab.TYPES -> stringResource(id = R.string.all_content_title_tab_objetc_types)
-        AllContentTab.RELATIONS -> stringResource(id = R.string.all_content_title_tab_relations)
         AllContentTab.LISTS -> stringResource(id = R.string.all_content_title_tab_lists)
     }
 }
@@ -284,8 +283,7 @@ private fun AllContentTabsPreview() {
                 AllContentTab.FILES,
                 AllContentTab.MEDIA,
                 AllContentTab.BOOKMARKS,
-                AllContentTab.TYPES,
-                AllContentTab.RELATIONS
+                AllContentTab.TYPES
             ),
             selectedTab = AllContentTab.MEDIA
         ),

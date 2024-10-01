@@ -118,7 +118,6 @@ fun AllContentTab.filtersForSubscribe(
         }
 
         AllContentTab.TYPES -> TODO()
-        AllContentTab.RELATIONS -> TODO()
     }
 }
 
@@ -144,7 +143,6 @@ fun AllContentTab.filtersForSearch(
         }
 
         AllContentTab.TYPES -> TODO()
-        AllContentTab.RELATIONS -> TODO()
     }
 }
 

@@ -1522,4 +1522,9 @@ Please provide specific details of your needs here.</string>
     <string name="allContent_group_yesterday">Ieri</string>
     <string name="allContent_group_prev_7">Ultimi 7 giorni</string>
     <string name="allContent_group_prev_14">Ultimi 14 giorni</string>
+    <string name="introduce_vault_text_1">Vault is the new home for all your Spaces.\nCreate, join, or share Spaces – everything is securely stored here.</string>
+    <string name="introduce_vault_text_2">Ora puoi facilmente riordinare i tuoi Spazi usando il drag and drop e navigarli più facilmente.</string>
+    <string name="introduce_vault_text_3">Per impostazione predefinita, sfumiamo l\'icona del tuo spazio come sfondo. Se necessario, puoi modificarla nelle impostazioni dello spazio.</string>
+    <string name="introduce_vault_welcome_to_the_vault">Benvenuto nella Cassaforte</string>
+    <string name="introduce_vault_simple_flexible"><![CDATA[Semplice & Flessibile]]></string>
 </resources>

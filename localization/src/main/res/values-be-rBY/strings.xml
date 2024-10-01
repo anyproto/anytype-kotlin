@@ -1547,4 +1547,9 @@
     <string name="allContent_group_yesterday">Учора</string>
     <string name="allContent_group_prev_7">Папярэднія 7 дзён</string>
     <string name="allContent_group_prev_14">Папярэднія 14 дзён</string>
+    <string name="introduce_vault_text_1">Vault is the new home for all your Spaces.\nCreate, join, or share Spaces – everything is securely stored here.</string>
+    <string name="introduce_vault_text_2">Цяпер вы можаце лёгка змяняць парадак размяшчэння прастор з дапамогай перацягвання і зручнейшай навігацыі па іх.</string>
+    <string name="introduce_vault_text_3">Прадвызначана ў якасці фону размываецца значок вашай прасторы. Пры неабходнасці вы можаце змяніць гэта ў наладах прасторы.</string>
+    <string name="introduce_vault_welcome_to_the_vault">Вітаем у сховішчы</string>
+    <string name="introduce_vault_simple_flexible"><![CDATA[Просты і гнуткі]]></string>
 </resources>

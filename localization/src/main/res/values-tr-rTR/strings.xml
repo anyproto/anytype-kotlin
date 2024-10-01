@@ -1507,7 +1507,6 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="all_content_title_tab_bookmarks">Yer işaretleri</string>
     <string name="all_content_title_tab_files">Dosyalar</string>
     <string name="all_content_title_tab_objetc_types">Nesne Türleri</string>
-    <string name="all_content_title_tab_relations">İlişkiler</string>
     <string name="all_content_sort_by">Şuna göre sırala</string>
     <string name="all_content_sort_name_desc">Z → A</string>
     <string name="all_content_sort_name_asc">A → Z</string>
@@ -1526,4 +1525,9 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="introduce_vault_text_3">Alanınızın simgesini arka plan şeklinde varsayılan olarak bulanıklaştırırız. Gerekirse bunu alan ayarlarından değiştirebilirsiniz.</string>
     <string name="introduce_vault_welcome_to_the_vault">Kasaya Hoşgeldiniz</string>
     <string name="introduce_vault_simple_flexible"><![CDATA[Basit & Esnek]]></string>
+    <string name="allContent_empty_state_title">It’s empty here.</string>
+    <string name="allContent_empty_state_description">Create your first objects to get started.</string>
+    <string name="all_content_no_results_title">No results found.</string>
+    <string name="all_content_no_results_description">Try searching with different keywords.</string>
+    <string name="all_content_error_title">Something went wrong.</string>
 </resources>

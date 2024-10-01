@@ -595,34 +595,39 @@ sealed class Command {
         data class AddMessage(
             val chat: Id,
             val message: Chat.Message
-        ): ChatCommand()
+        ) : ChatCommand()
+
         data class DeleteMessage(
             val chat: Id,
             val msg: Id
-        ): ChatCommand()
+        ) : ChatCommand()
+
         data class EditMessage(
             val chat: Id,
             val message: Chat.Message
-        ): ChatCommand()
+        ) : ChatCommand()
+
         data class GetMessages(
             val chat: Id,
             val beforeMessageId: Id,
             val limit: Int
-        ): ChatCommand()
+        ) : ChatCommand()
+
         data class SubscribeLastMessages(
             val chat: Id,
             val limit: Int
-        ): ChatCommand() {
+        ) : ChatCommand() {
             data class Response(
                 val messages: List<Chat.Message>,
                 val messageCountBefore: Int
             )
         }
+
         data class ToggleMessageReaction(
             val chat: Id,
             val msg: Id,
             val emoji: String
-        ): ChatCommand()
+        ) : ChatCommand()
     }
 
     /**

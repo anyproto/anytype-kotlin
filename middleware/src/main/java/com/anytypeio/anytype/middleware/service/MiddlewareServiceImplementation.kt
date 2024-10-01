@@ -1152,7 +1152,7 @@ class MiddlewareServiceImplementation @Inject constructor(
 
     override fun setInitialParams(request: Rpc.Initial.SetParameters.Request): Rpc.Initial.SetParameters.Response {
         val encoded =
-            Service.setInitialParams(Rpc.Initial.SetParameters.Request.ADAPTER.encode(request))
+            Service.initialSetParameters(Rpc.Initial.SetParameters.Request.ADAPTER.encode(request))
         val response = Rpc.Initial.SetParameters.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Initial.SetParameters.Response.Error.Code.NULL) {

@@ -250,7 +250,7 @@ fun ObjectWrapper.Basic.toAllContentItem(
             layout = layout,
             builder = urlBuilder
         ),
-        lastModifiedDate = DateParser.parseInMillis(obj.lastModifiedDate) ?: 0L,
+        lastModifiedDate = DateParser.parse(obj.lastModifiedDate) ?: 0L,
         createdDate = DateParser.parse(obj.getValue(Relations.CREATED_DATE)) ?: 0L
     )
 }

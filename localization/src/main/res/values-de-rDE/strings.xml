@@ -1521,4 +1521,9 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="allContent_group_yesterday">Gestern</string>
     <string name="allContent_group_prev_7">Letzte 7 Tage</string>
     <string name="allContent_group_prev_14">Letzte 14 Tage</string>
+    <string name="introduce_vault_text_1">Vault is the new home for all your Spaces.\nCreate, join, or share Spaces – everything is securely stored here.</string>
+    <string name="introduce_vault_text_2">You can now easily reorder your Spaces using drag and drop and navigate them more easily.</string>
+    <string name="introduce_vault_text_3">By default, we blur the icon of your space as a background. If needed, you can change it in the space-settings.</string>
+    <string name="introduce_vault_welcome_to_the_vault">Willkommen im Tresor</string>
+    <string name="introduce_vault_simple_flexible"><![CDATA[Einfach & flexibel]]></string>
 </resources>

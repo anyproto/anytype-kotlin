@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.all_content.RestoreAllContentState
 import com.anytypeio.anytype.domain.all_content.UpdateAllContentState
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -40,7 +41,6 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.TextStyle
 import java.time.temporal.ChronoUnit
-import javax.inject.Named
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
@@ -159,7 +159,7 @@ class AllContentViewModel(
                     val initialParams = restoreAllContentState.run(
                         RestoreAllContentState.Params(vmParams.spaceId)
                     )
-                    if (initialParams.activeSort != null) {
+                    if (!initialParams.activeSort.isNullOrEmpty()) {
                         _sortState.value = initialParams.activeSort.mapRelationKeyToSort()
                     }
                 }.onFailure { e ->
@@ -438,6 +438,24 @@ class AllContentViewModel(
     fun onSortClicked(sort: AllContentSort) {
         Timber.d("onSortClicked: $sort")
         _sortState.value = sort
+        proceedWithSortSaving(sort)
+    }
+
+    private fun proceedWithSortSaving(sort: AllContentSort) {
+        viewModelScope.launch {
+            val params = UpdateAllContentState.Params(
+                spaceId = vmParams.spaceId,
+                sort = sort.relationKey.key
+            )
+            updateAllContentState.async(params).fold(
+                onSuccess = {
+                    Timber.d("Sort updated")
+                },
+                onFailure = {
+                    Timber.e(it, "Error updating sort")
+                }
+            )
+        }
     }
 
     fun onFilterChanged(filter: String) {
@@ -523,7 +541,7 @@ class AllContentViewModel(
         //INITIAL STATE
         const val DEFAULT_SEARCH_LIMIT = 50
         val DEFAULT_INITIAL_TAB = AllContentTab.PAGES
-        val DEFAULT_INITIAL_SORT = AllContentSort.ByDateCreated()
+        val DEFAULT_INITIAL_SORT = AllContentSort.ByName()
         val DEFAULT_INITIAL_MODE = AllContentMode.AllContent
         val DEFAULT_QUERY = ""
     }

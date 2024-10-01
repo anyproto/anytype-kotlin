@@ -209,7 +209,8 @@ fun AllContentMode.view(): UiTitleState {
 fun Key?.mapRelationKeyToSort(): AllContentSort {
     return when (this) {
         Relations.CREATED_DATE -> AllContentSort.ByDateCreated()
-        Relations.LAST_OPENED_DATE -> AllContentSort.ByDateUpdated()
+        Relations.LAST_MODIFIED_DATE -> AllContentSort.ByDateUpdated()
+        Relations.NAME -> AllContentSort.ByName()
         else -> DEFAULT_INITIAL_SORT
     }
 }

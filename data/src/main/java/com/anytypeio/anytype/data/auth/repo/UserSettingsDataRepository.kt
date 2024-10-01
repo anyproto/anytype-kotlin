@@ -88,4 +88,12 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
     override suspend fun clearGlobalSearchHistory(space: SpaceId) {
         cache.clearGlobalSearchHistory(space)
     }
+
+    override suspend fun getAllContentSort(space: SpaceId): String {
+        return cache.getAllContentSort(space)
+    }
+
+    override suspend fun setAllContentSort(space: SpaceId, sort: Id) {
+        cache.setAllContentSort(space, sort)
+    }
 }

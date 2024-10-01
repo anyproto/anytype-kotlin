@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.history
 
-import android.util.Log
 import app.cash.turbine.turbineScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.StubSpaceMember
@@ -40,11 +39,11 @@ import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.bytebuddy.utility.RandomString
-import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
+import org.mockito.MockedStatic
+import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -60,14 +59,6 @@ class VersionHistoryViewModelTest {
     )
 
     private val dispatcher = StandardTestDispatcher(TestCoroutineScheduler())
-
-    @get:Rule
-    val timberTestRule: TimberTestRule = TimberTestRule.builder()
-        .minPriority(Log.DEBUG)
-        .showThread(true)
-        .showTimestamp(false)
-        .onlyLogWhenTestFails(false)
-        .build()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val dispatchers = AppCoroutineDispatchers(
@@ -111,6 +102,8 @@ class VersionHistoryViewModelTest {
     lateinit var spaceManager: SpaceManager
 
     lateinit var vm: VersionHistoryViewModel
+
+    lateinit var lockedZoneIdMocked: MockedStatic<ZoneId>
 
     private val user1 = StubSpaceMember(
         space = spaceId,
@@ -278,6 +271,10 @@ class VersionHistoryViewModelTest {
     fun before() {
         MockitoAnnotations.openMocks(this)
         spaceManager = mock(verboseLogging = true)
+        lockedZoneIdMocked = Mockito.mockStatic(ZoneId::class.java, Mockito.CALLS_REAL_METHODS)
+        val zoneId = ZoneId.of("Europe/Berlin")
+        lockedZoneIdMocked.`when`<ZoneId> { ZoneId.systemDefault() }
+            .thenReturn(zoneId)
         stubLocale(locale = Locale.CANADA)
     }
 

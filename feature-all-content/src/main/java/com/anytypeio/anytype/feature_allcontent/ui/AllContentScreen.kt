@@ -23,7 +23,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -92,38 +91,32 @@ fun AllContentWrapperScreen(
     onItemClicked: (UiContentItem.Item) -> Unit,
     onBinClick: () -> Unit
 ) {
-    val objects = remember { mutableStateOf<List<UiContentItem>>(emptyList()) }
-    if (uiState is UiContentState.Content) {
-        objects.value = uiState.items
-    }
     AllContentMainScreen(
         uiTitleState = uiTitleState,
         uiTabsState = uiTabsState,
         uiMenuButtonViewState = uiMenuButtonViewState,
         onTabClick = onTabClick,
-        objects = objects,
-        isLoading = uiState is UiContentState.Loading,
         onQueryChanged = onQueryChanged,
         uiMenuState = uiMenuState,
         onModeClick = onModeClick,
         onSortClick = onSortClick,
         onItemClicked = onItemClicked,
-        onBinClick = onBinClick
+        onBinClick = onBinClick,
+        uiState = uiState
     )
 }
 
 @Composable
 fun AllContentMainScreen(
+    uiState: UiContentState,
     uiTitleState: UiTitleState,
     uiTabsState: UiTabsState,
     uiMenuButtonViewState: MenuButtonViewState,
     uiMenuState: UiMenuState,
-    objects: MutableState<List<UiContentItem>>,
     onTabClick: (AllContentTab) -> Unit,
     onQueryChanged: (String) -> Unit,
     onModeClick: (AllContentMenuMode) -> Unit,
     onSortClick: (AllContentSort) -> Unit,
-    isLoading: Boolean,
     onItemClicked: (UiContentItem.Item) -> Unit,
     onBinClick: () -> Unit
 ) {
@@ -181,21 +174,34 @@ fun AllContentMainScreen(
                     Modifier
                         .fillMaxSize()
                         .padding(paddingValues)
-            if (isLoading) {
-                Box(modifier = contentModifier) {
-                    LoadingState()
-                }
-            } else {
-                if (objects.value.isEmpty()) {
-                    Box(modifier = contentModifier, contentAlignment = Alignment.Center) {
-                        EmptyState(isSearchEmpty = isSearchEmpty)
+
+            when (uiState) {
+                is UiContentState.Content -> {
+                    if (uiState.items.isEmpty()) {
+                        Box(modifier = contentModifier, contentAlignment = Alignment.Center) {
+                            EmptyState(isSearchEmpty = isSearchEmpty)
+                        }
+                    } else {
+                        ContentItems(
+                            modifier = contentModifier,
+                            items = uiState.items,
+                            onItemClicked = onItemClicked
+                        )
                     }
-                } else {
-                    ContentItems(
+                }
+                is UiContentState.Error -> {
+                    Box(
                         modifier = contentModifier,
-                        items = objects.value,
-                        onItemClicked = onItemClicked
-                    )
+                        contentAlignment = Alignment.Center
+                    ) {
+                        ErrorState(uiState.message)
+                    }
+                }
+                UiContentState.Hidden -> {}
+                UiContentState.Loading -> {
+                    Box(modifier = contentModifier) {
+                        LoadingState()
+                    }
                 }
             }
         }
@@ -384,7 +390,8 @@ private fun BoxScope.ErrorState(message: String) {
     Column {
         Text(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp),
             text = stringResource(id = R.string.all_content_error_title),
             color = colorResource(id = R.color.text_primary),
             style = UXBody,
@@ -392,7 +399,8 @@ private fun BoxScope.ErrorState(message: String) {
         )
         Text(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp),
             text = message,
             color = colorResource(id = R.color.palette_system_red),
             style = UXBody,
@@ -404,7 +412,7 @@ private fun BoxScope.ErrorState(message: String) {
 
 @Composable
 private fun EmptyState(isSearchEmpty: Boolean) {
-    val (title, description ) = if (!isSearchEmpty) {
+    val (title, description) = if (!isSearchEmpty) {
         stringResource(R.string.all_content_no_results_title) to stringResource(R.string.all_content_no_results_description)
     } else {
         stringResource(R.string.allContent_empty_state_title) to stringResource(R.string.allContent_empty_state_description)

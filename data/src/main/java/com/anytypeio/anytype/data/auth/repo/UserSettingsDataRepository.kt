@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.data.auth.repo
 
+import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.GlobalSearchHistory
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ThemeMode
@@ -7,6 +8,7 @@ import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
+import com.anytypeio.anytype.core_models.settings.VaultSettings
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import kotlinx.coroutines.flow.Flow
 
@@ -87,6 +89,21 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
 
     override suspend fun clearGlobalSearchHistory(space: SpaceId) {
         cache.clearGlobalSearchHistory(space)
+    }
+
+    override suspend fun getVaultSettings(account: Account): VaultSettings {
+        return cache.getVaultSettings(account)
+    }
+
+    override suspend fun observeVaultSettings(account: Account): Flow<VaultSettings> {
+        return cache.observeVaultSettings(account)
+    }
+
+    override suspend fun setVaultSpaceOrder(account: Account, order: List<Id>) {
+        cache.setVaultSpaceOrder(
+            account = account,
+            order = order
+        )
     }
 
     override suspend fun getAllContentSort(space: SpaceId): Id {

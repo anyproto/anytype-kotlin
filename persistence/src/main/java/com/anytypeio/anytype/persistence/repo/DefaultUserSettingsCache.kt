@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
+import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.GlobalSearchHistory
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NO_VALUE
@@ -12,11 +13,14 @@ import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
+import com.anytypeio.anytype.core_models.settings.VaultSettings
 import com.anytypeio.anytype.data.auth.repo.UserSettingsCache
-import com.anytypeio.anytype.persistence.AllContentProto
+import com.anytypeio.anytype.persistence.AllContentSettings
 import com.anytypeio.anytype.persistence.GlobalSearchHistoryProto
 import com.anytypeio.anytype.persistence.SpacePreference
 import com.anytypeio.anytype.persistence.SpacePreferences
+import com.anytypeio.anytype.persistence.VaultPreference
+import com.anytypeio.anytype.persistence.VaultPreferences
 import com.anytypeio.anytype.persistence.common.JsonString
 import com.anytypeio.anytype.persistence.common.deserializeWallpaperSettings
 import com.anytypeio.anytype.persistence.common.serializeWallpaperSettings
@@ -26,6 +30,8 @@ import com.anytypeio.anytype.persistence.model.asSettings
 import com.anytypeio.anytype.persistence.model.asWallpaper
 import com.anytypeio.anytype.persistence.preferences.SPACE_PREFERENCE_FILENAME
 import com.anytypeio.anytype.persistence.preferences.SpacePrefSerializer
+import com.anytypeio.anytype.persistence.preferences.VAULT_PREFERENCE_FILENAME
+import com.anytypeio.anytype.persistence.preferences.VaultPrefsSerializer
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -38,6 +44,11 @@ class DefaultUserSettingsCache(
     private val Context.spacePrefsStore: DataStore<SpacePreferences> by dataStore(
         fileName = SPACE_PREFERENCE_FILENAME,
         serializer = SpacePrefSerializer
+    )
+
+    private val Context.vaultPrefsStore: DataStore<VaultPreferences> by dataStore(
+        fileName = VAULT_PREFERENCE_FILENAME,
+        serializer = VaultPrefsSerializer
     )
 
     override suspend fun setCurrentSpace(space: SpaceId) {
@@ -381,6 +392,49 @@ class DefaultUserSettingsCache(
         }
     }
 
+    override suspend fun getVaultSettings(account: Account): VaultSettings {
+        return context.vaultPrefsStore
+            .data
+            .map { prefs ->
+                VaultSettings(
+                    orderOfSpaces = prefs.preferences.getOrDefault(
+                        key = account.id,
+                        defaultValue = VaultPreference()
+                    ).orderOfSpaces
+                )
+            }
+            .first()
+    }
+
+    override suspend fun observeVaultSettings(account: Account): Flow<VaultSettings> {
+        return context.vaultPrefsStore
+            .data
+            .map { prefs ->
+                VaultSettings(
+                    orderOfSpaces = prefs.preferences.getOrDefault(
+                        key = account.id,
+                        defaultValue = VaultPreference()
+                    ).orderOfSpaces
+                )
+            }
+    }
+
+    override suspend fun setVaultSpaceOrder(account: Account, order: List<Id>) {
+        context.vaultPrefsStore.updateData { existingPreferences ->
+            val curr = existingPreferences.preferences.getOrDefault(
+                key = account.id,
+                defaultValue = VaultPreference()
+            )
+            existingPreferences.copy(
+                preferences = existingPreferences.preferences + mapOf(
+                    account.id to curr.copy(
+                        orderOfSpaces = order
+                    )
+                )
+            )
+        }
+    }
+
     override suspend fun getAllContentSort(space: SpaceId): Id {
         return context.spacePrefsStore
             .data
@@ -403,7 +457,7 @@ class DefaultUserSettingsCache(
                     defaultValue = SpacePreference()
                 )
             val updated = givenSpacePreference.copy(
-                allContent = AllContentProto(
+                allContent = AllContentSettings(
                     sortKey = sort
                 )
             )

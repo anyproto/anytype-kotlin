@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.ui.multiplayer
+package com.anytypeio.anytype.ui.vault
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -37,7 +37,7 @@ import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import kotlinx.coroutines.launch
 
 @Composable
-fun IntroduceSpaceSharingScreen(
+fun IntroduceVaultScreen(
     onDoneClicked: () -> Unit
 ) {
     val configuration = LocalConfiguration.current
@@ -65,8 +65,18 @@ fun IntroduceSpaceSharingScreen(
         val coroutineScope = rememberCoroutineScope()
         val (title, first, second, third, pager, dots, btn) = createRefs()
 
+        val pagerState = rememberPagerState(pageCount = { 2 })
+
         Text(
-            text = stringResource(R.string.multiplayer_collaborate_on_spaces),
+            text = when(val page = pagerState.currentPage) {
+                0 -> {
+                    stringResource(R.string.introduce_vault_welcome_to_the_vault)
+                }
+                1 -> {
+                    stringResource(R.string.introduce_vault_simple_flexible)
+                }
+                else -> ""
+            },
             style = HeadlineHeading,
             textAlign = TextAlign.Center,
             color = colorResource(id = R.color.text_primary),
@@ -75,8 +85,6 @@ fun IntroduceSpaceSharingScreen(
                 .constrainAs(title) {}
                 .fillMaxWidth()
         )
-
-        val pagerState = rememberPagerState(pageCount = { 3 })
 
         HorizontalPager(
             state = pagerState,
@@ -93,7 +101,7 @@ fun IntroduceSpaceSharingScreen(
                 0 -> {
                     Box(modifier = Modifier.fillMaxSize()) {
                         Image(
-                            painter = painterResource(id = R.drawable.ic_sharing_step_first),
+                            painter = painterResource(id = R.drawable.img_introduce_vault_1),
                             contentDescription = "Screenshot 1",
                             modifier = Modifier.align(Alignment.BottomCenter)
                         )
@@ -102,7 +110,7 @@ fun IntroduceSpaceSharingScreen(
                 1 -> {
                     Box(modifier = Modifier.fillMaxSize()) {
                         Image(
-                            painter = painterResource(id = R.drawable.ic_sharing_step_second),
+                            painter = painterResource(id = R.drawable.img_introduce_vault_1),
                             contentDescription = "Screenshot 2",
                             modifier = Modifier.align(Alignment.BottomCenter)
                         )
@@ -144,34 +152,20 @@ fun IntroduceSpaceSharingScreen(
         }
 
         Text(
-            text = stringResource(R.string.multiplayer_collaborate_step_1),
+            text =  when(val page = pagerState.currentPage) {
+                0 -> {
+                    stringResource(R.string.introduce_vault_text_1)
+                }
+                1 -> {
+                    stringResource(R.string.introduce_vault_text_2)
+                }
+                else -> ""
+            },
             style = BodyRegular,
             color = colorResource(id = R.color.text_primary),
             modifier = Modifier
                 .padding(bottom = 8.dp, start = 24.dp, end = 24.dp)
                 .constrainAs(first) {
-                    bottom.linkTo(second.top)
-                }
-        )
-
-        Text(
-            text = stringResource(R.string.multiplayer_collaborate_step_2),
-            style = BodyRegular,
-            color = colorResource(id = R.color.text_primary),
-            modifier = Modifier
-                .padding(bottom = 8.dp, start = 24.dp, end = 24.dp)
-                .constrainAs(second) {
-                    bottom.linkTo(third.top)
-                }
-        )
-
-        Text(
-            text = stringResource(R.string.multiplayer_collaborate_step_3),
-            style = BodyRegular,
-            color = colorResource(id = R.color.text_primary),
-            modifier = Modifier
-                .padding(start = 24.dp, end = 24.dp, bottom = 30.dp)
-                .constrainAs(third) {
                     bottom.linkTo(btn.top)
                 }
         )
@@ -179,7 +173,7 @@ fun IntroduceSpaceSharingScreen(
         ButtonSecondary(
             onClick = {
                 coroutineScope.launch {
-                    if (pagerState.currentPage == 2) {
+                    if (pagerState.currentPage == 1) {
                         onDoneClicked()
                     } else {
                         pagerState.animateScrollToPage(pagerState.currentPage.inc(), 0f)
@@ -187,7 +181,7 @@ fun IntroduceSpaceSharingScreen(
                 }
             },
             size = ButtonSize.LargeSecondary,
-            text = if (pagerState.currentPage == 2)
+            text = if (pagerState.currentPage == 1)
                 stringResource(id = R.string.done)
             else
                 stringResource(id = R.string.next),
@@ -209,7 +203,7 @@ fun IntroduceSpaceSharingScreen(
 @DefaultPreviews
 @Composable
 private fun ScreenPreview() {
-    IntroduceSpaceSharingScreen(
+    IntroduceVaultScreen(
         onDoneClicked = {}
     )
 }

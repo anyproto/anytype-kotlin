@@ -20,15 +20,14 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -42,12 +41,12 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.views.ButtonSize
@@ -131,6 +130,8 @@ fun AllContentMainScreen(
     val modifier = Modifier
         .background(color = colorResource(id = R.color.background_primary))
 
+    var isSearchEmpty by remember { mutableStateOf(true) }
+
     Scaffold(
         modifier = modifier
             .fillMaxSize(),
@@ -161,7 +162,10 @@ fun AllContentMainScreen(
                     }
                 }
                 Spacer(modifier = Modifier.size(10.dp))
-                AllContentSearchBar(onQueryChanged)
+                AllContentSearchBar(onQueryChanged = {
+                    isSearchEmpty = it.isEmpty()
+                    onQueryChanged(it)
+                })
                 Spacer(modifier = Modifier.size(10.dp))
                 Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
             }
@@ -182,11 +186,17 @@ fun AllContentMainScreen(
                     LoadingState()
                 }
             } else {
-                ContentItems(
-                    modifier = contentModifier,
-                    items = objects.value,
-                    onItemClicked = onItemClicked
-                )
+                if (objects.value.isEmpty()) {
+                    Box(modifier = contentModifier, contentAlignment = Alignment.Center) {
+                        EmptyState(isSearchEmpty = isSearchEmpty)
+                    }
+                } else {
+                    ContentItems(
+                        modifier = contentModifier,
+                        items = objects.value,
+                        onItemClicked = onItemClicked
+                    )
+                }
             }
         }
     )
@@ -371,14 +381,52 @@ fun AllContentItemIcon(
 
 @Composable
 private fun BoxScope.ErrorState(message: String) {
-    Text(
-        modifier = Modifier
-            .wrapContentSize()
-            .align(Alignment.Center),
-        text = "Error : message",
-        color = colorResource(id = R.color.palette_system_red),
-        style = UXBody
-    )
+    Column {
+        Text(
+            modifier = Modifier
+                .fillMaxWidth(),
+            text = stringResource(id = R.string.all_content_error_title),
+            color = colorResource(id = R.color.text_primary),
+            style = UXBody,
+            textAlign = TextAlign.Center
+        )
+        Text(
+            modifier = Modifier
+                .fillMaxWidth(),
+            text = message,
+            color = colorResource(id = R.color.palette_system_red),
+            style = UXBody,
+            textAlign = TextAlign.Center,
+            maxLines = 3
+        )
+    }
+}
+
+@Composable
+private fun EmptyState(isSearchEmpty: Boolean) {
+    val (title, description ) = if (!isSearchEmpty) {
+        stringResource(R.string.all_content_no_results_title) to stringResource(R.string.all_content_no_results_description)
+    } else {
+        stringResource(R.string.allContent_empty_state_title) to stringResource(R.string.allContent_empty_state_description)
+    }
+    Column {
+        Text(
+            modifier = Modifier
+                .fillMaxWidth(),
+            text = title,
+            color = colorResource(id = R.color.text_primary),
+            style = UXBody,
+            textAlign = TextAlign.Center
+        )
+        Text(
+            modifier = Modifier
+                .fillMaxWidth(),
+            text = description,
+            color = colorResource(id = R.color.text_secondary),
+            style = UXBody,
+            textAlign = TextAlign.Center
+        )
+    }
 }
 
 @Composable

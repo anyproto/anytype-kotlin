@@ -1777,5 +1777,12 @@ Please provide specific details of your needs here.</string>
     <string name="allContent_group_prev_7">Previous 7 days</string>
     <string name="allContent_group_prev_14">Previous 14 days</string>
 
+    <string name="allContent_empty_state_title">It’s empty here.</string>
+    <string name="allContent_empty_state_description">Create your first objects to get started.</string>
+
+    <string name="all_content_no_results_title">No results found.</string>
+    <string name="all_content_no_results_description">Try searching with different keywords.</string>
+
+    <string name="all_content_error_title">Something went wrong.</string>
 
 </resources>

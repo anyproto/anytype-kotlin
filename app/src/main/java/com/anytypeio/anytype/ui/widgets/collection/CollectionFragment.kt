@@ -109,10 +109,7 @@ class CollectionFragment : BaseComposeFragment() {
             )
             is Command.Vault -> {
                 runCatching {
-                    findNavController().popBackStack(
-                        R.id.vaultScreen,
-                        true
-                    )
+                    findNavController().navigate(R.id.actionOpenVault)
                 }.onFailure {
                     Timber.e(it, "Error while exiting to vault")
                 }

@@ -581,7 +581,7 @@
     <string name="other_settings">Pengaturan lainnya</string>
     <string name="your_page">Halaman publikmu</string>
     <string name="updates">Pembaruan</string>
-    <string name="recovery_phrase_text">You\'ll need it to sign in. Keep it in a safe place. If you lose it, you can no longer access your vault.</string>
+    <string name="recovery_phrase_text">Kamu membutuhkannya untuk masuk. Simpanlah di tempat yang aman. Jika kamu kehilangan frasa ini, kamu tidak akan bisa mengakses brankasmu.</string>
     <string name="back_up_your_recovery_phrase">Cadangkan Kuncimu</string>
     <string name="i_ve_written_it_down">i\'ve written it down</string>
     <string name="keychain_mock">witch collapse practice feed shame open despair creek road again ice least lake tree young address brain envelope</string>
@@ -727,7 +727,7 @@
     <string name="shortcut_create_new_object_of_type">%1$s baru</string>
     <string name="close">Tutup</string>
     <string name="go_to_settings">Go to settings</string>
-    <string name="do_not_forget_mnemonic_phrase">Don\'t forget to take and save your Key</string>
+    <string name="do_not_forget_mnemonic_phrase">Jangan lupa menyimpan kuncimu</string>
     <string name="you_can_always_find_mnemonic_in_settings">You can always find the phrase in the settings on the dashboard screen.</string>
     <string name="if_you_lose_recovery_phrase_warning">Jika kamu kehilangan Kunci lalu keluar log, kamu tidak akan bisa mengakses datamu lagi. Simpanlah Kunci ini di luar Anytype untuk pemulihan data.</string>
     <string name="card_size">Ukuran kartu</string>
@@ -753,7 +753,7 @@
     <string name="swipe_to_choose">Use swipe to choose</string>
     <string name="without_template">Without template</string>
     <string name="unsplash_generic_error">Error while searching for images on Unsplash. Please try again later.</string>
-    <string name="do_not_forget_to_save_recovery_phrase_msg">Don\'t forget to take and save your Key from settings</string>
+    <string name="do_not_forget_to_save_recovery_phrase_msg">Jangan lupa menyimpan kuncimu dari pengaturan</string>
     <string name="unlock_your_object_to_add_new_relation">Unlock your object to add new relation</string>
     <string name="unlock_your_object_to_edit_relations">Unlock your object to edit relations</string>
     <string name="fragment_relation_create_from_scratch_title">Pilih jenis relasi</string>
@@ -819,7 +819,7 @@
     <string name="created_by_id_copied_toast_msg">Created-by ID copied</string>
     <string name="anytype_update_alert_description">Some of your data was managed in a newer version of Anytype. Please update the app to work with all your docs and the latest features.</string>
     <string name="anytype_update_alert_title">Waktunya memperbarui</string>
-    <string name="space_type_default">Entry</string>
+    <string name="space_type_default">Entri</string>
     <string name="space_type_default_space">Ruang bawaan</string>
     <string name="space_type_private">Pribadi</string>
     <string name="space_type_private_space">Ruang pribadi</string>
@@ -922,7 +922,7 @@
     <!--region WIDGETS -->
     <string name="create_widget">Create a widget</string>
     <string name="edit_widgets">Edit widgets</string>
-    <string name="add_widget">Tambah gawit</string>
+    <string name="add_widget">Tambah widget</string>
     <string name="widget_source">Sumber widget</string>
     <string name="widget_type">Jenis widget</string>
     <string name="widget_add_below">Tambah di bawah</string>
@@ -969,7 +969,7 @@
     <!--region ONBOARDING -->
     <string name="onboarding_auth_title">the everything app</string>
     <string name="onboarding_auth_subtitle">for those\nwho celebrate\ntrust &amp; autonomy</string>
-    <string name="onboarding_auth_description">Create &amp; collaborate in spaces you own. Encrypted, offline &amp; open.</string>
+    <string name="onboarding_auth_description">Buat dan berkolaborasilah di ruang milikmu. Terenkripsi, offline, dan terbuka.</string>
     <string name="onboarding_terms_and_policy_prefix">"By continuing you agree to "</string>
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
     <string name="onboarding_terms_and_policy_infix">" dan "</string>
@@ -977,13 +977,13 @@
     <string name="onboarding_new_vault_button_text">Brankas baru</string>
     <string name="onboarding_enter_my_vault">Get my Key</string>
     <string name="onboarding_have_key_button_text">I have a Key</string>
-    <string name="onboarding_get_my_key_button_text">Get my Key</string>
+    <string name="onboarding_get_my_key_button_text">Ambil Kunciku</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
     <string name="onboarding_this_is_your_key_title">Ini Kuncimu</string>
-    <string name="onboarding_key_description">It gives you full ownership over your vault. It cannot be recovered.</string>
+    <string name="onboarding_key_description">Ini memberi kamu kepemilikan penuh atas brankasmu. Kunci ini tidak bisa dipulihkan.</string>
     <string name="onboarding_show_my_key">Tampilkan Kunciku</string>
     <string name="onboarding_key_skip">Lewati</string>
     <string name="onboarding_key_copy">Salin ke papan klip</string>
@@ -999,11 +999,11 @@
     <string name="onboarding_key_additional_info">Kamu bisa menemukan kunci ini di setelan Anytype</string>
     <string name="onboarding_what_is_the_key">Apa itu Kunci?</string>
     <string name="onboarding_recovery_phrase_description">It is represented by a recovery phrase – 12 random words from which your vault is magically generated on this device.</string>
-    <string name="onboarding_recovery_phrase_description_2">Whomever knows the combination of these words owns your vault. </string>
-    <string name="onboarding_recovery_phrase_description_3">Right now, you are the only person in the world who knows it.</string>
+    <string name="onboarding_recovery_phrase_description_2">Siapapun yang mengetahui kombinasi kata-kata ini memiliki kontrol penuh terhadap brankasmu.</string>
+    <string name="onboarding_recovery_phrase_description_3">Saat ini, hanya kamu satu-satunya di dunia yang mengetahuinya.</string>
     <string name="onboarding_recovery_phrase_description_4">All computational resources on Earth are not enough to break in. If you lose it, it cannot be recovered. So, store it somewhere safe!</string>
-    <string name="onboarding_how_to_save_my_phrase">How to save my Key?</string>
-    <string name="onboarding_how_to_save_my_phrase_2">The easiest way to store your Key is to save it in your password manager.</string>
+    <string name="onboarding_how_to_save_my_phrase">Bagaimana cara menyimpan kunciku?</string>
+    <string name="onboarding_how_to_save_my_phrase_2">Cara termudah untuk menyimpan kuncimu adalah dengan menyimpannya di aplikasi pengelola sandi.</string>
     <string name="onboarding_how_to_save_my_phrase_3">Sedangkan, cara yang paling aman adalah dengan menuliskannya pada secarik kertas dan menyimpan kertas itu di tempat yang aman.</string>
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
@@ -1484,5 +1484,28 @@ Please provide specific details of your needs here.</string>
     <string name="version_history_error_get_members">Galat mengambil anggota</string>
     <string name="new_object">Objek baru</string>
     <string name="vault_my_spaces">Ruangku</string>
-    <string name="all_content">All content</string>
+    <string name="all_content_title_all_content">All objects</string>
+    <string name="all_content_title_only_unlinked">Hanya objek nirtaut</string>
+    <string name="all_content_title_only_unlinked_description">Objek yang tidak memiliki tautan langsung atau tautan balik ke objek lain di grafik.</string>
+    <string name="all_content_view_bin">Lihat Bak Sampah</string>
+    <string name="all_content_title_tab_pages">Pages</string>
+    <string name="all_content_title_tab_lists">Grup</string>
+    <string name="all_content_title_tab_media">Media</string>
+    <string name="all_content_title_tab_bookmarks">Markah</string>
+    <string name="all_content_title_tab_files">Berkas</string>
+    <string name="all_content_title_tab_objetc_types">Object Types</string>
+    <string name="all_content_title_tab_relations">Relasi</string>
+    <string name="all_content_sort_by">Sort by</string>
+    <string name="all_content_sort_name_desc">Z → A</string>
+    <string name="all_content_sort_name_asc">A → Z</string>
+    <string name="all_content_sort_date_desc">Newest first</string>
+    <string name="all_content_sort_date_asc">Oldest first</string>
+    <string name="all_content_sort_date_updated">Tanggal diperbarui</string>
+    <string name="all_content_sort_date_created">Tanggal dibuat</string>
+    <string name="all_content_sort_name">Nama</string>
+    <string name="all_content">All objects</string>
+    <string name="allContent_group_today">Hari ini</string>
+    <string name="allContent_group_yesterday">Kemarin</string>
+    <string name="allContent_group_prev_7">7 hari terakhir</string>
+    <string name="allContent_group_prev_14">14 hari terakhir</string>
 </resources>

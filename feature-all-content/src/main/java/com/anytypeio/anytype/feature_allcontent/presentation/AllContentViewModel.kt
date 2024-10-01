@@ -539,7 +539,7 @@ class AllContentViewModel(
         const val DEFAULT_LOADING_DELAY = 250L
 
         //INITIAL STATE
-        const val DEFAULT_SEARCH_LIMIT = 50
+        const val DEFAULT_SEARCH_LIMIT = 100
         val DEFAULT_INITIAL_TAB = AllContentTab.PAGES
         val DEFAULT_INITIAL_SORT = AllContentSort.ByName()
         val DEFAULT_INITIAL_MODE = AllContentMode.AllContent

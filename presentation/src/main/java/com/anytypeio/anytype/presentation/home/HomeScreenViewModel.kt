@@ -395,7 +395,7 @@ class HomeScreenViewModel(
                     spaceWidgetView.map { view -> listOf(view) }
                 }
             }.combine(hasEditAccess) { widgets, hasEditAccess ->
-                getListOfWidgets(hasEditAccess, widgets)
+                buildListOfWidgets(hasEditAccess, widgets)
             }
                 .catch {
                     Timber.e(it, "Error while rendering widgets")
@@ -406,7 +406,7 @@ class HomeScreenViewModel(
         }
     }
 
-    private fun getListOfWidgets(
+    private fun buildListOfWidgets(
         hasEditAccess: Boolean,
         widgets: List<WidgetView>
     ): List<WidgetView> {

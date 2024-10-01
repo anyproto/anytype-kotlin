@@ -381,7 +381,7 @@ class DefaultUserSettingsCache(
         }
     }
 
-    override suspend fun getAllContentSort(space: SpaceId): String {
+    override suspend fun getAllContentSort(space: SpaceId): Id {
         return context.spacePrefsStore
             .data
             .map { preferences ->

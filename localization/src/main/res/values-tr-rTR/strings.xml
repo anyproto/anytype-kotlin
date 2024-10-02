@@ -1530,4 +1530,5 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="all_content_no_results_title">Hiçbir sonuç bulunamadı.</string>
     <string name="all_content_no_results_description">Farklı anahtar kelimelerle aramayı deneyin.</string>
     <string name="all_content_error_title">Bir şeyler ters gitti.</string>
+    <string name="onboarding_my_first_space">Benim İlk Alanım</string>
 </resources>

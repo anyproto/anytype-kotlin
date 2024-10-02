@@ -45,8 +45,14 @@ fun SetProfileNameWrapper(
     viewModel: OnboardingSetProfileNameViewModel,
     onBackClicked: () -> Unit,
 ) {
+    val defaultSpaceName = stringResource(id = R.string.onboarding_my_first_space)
     SetProfileNameScreen(
-        onNextClicked = viewModel::onNextClicked,
+        onNextClicked = { name ->
+            viewModel.onNextClicked(
+                name = name,
+                spaceName = defaultSpaceName
+            )
+        },
         isLoading = viewModel.state
             .collectAsStateWithLifecycle()
             .value is OnboardingSetProfileNameViewModel.ScreenState.Loading,

@@ -73,7 +73,6 @@ import timber.log.Timber
 class AllContentViewModel(
     private val vmParams: VmParams,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val storeOfRelations: StoreOfRelations,
     private val urlBuilder: UrlBuilder,
     private val analytics: Analytics,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,

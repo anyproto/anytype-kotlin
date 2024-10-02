@@ -46,7 +46,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="@+id/galleryView"
-        app:layout_constraintBottom_toTopOf="@id/bottomToolbar"
+        app:layout_constraintBottom_toTopOf="@id/bottomToolbarСontainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/controlDivider2" />
@@ -89,7 +89,7 @@
         android:id="@+id/paginatorToolbar"
         android:layout_width="0dp"
         android:layout_height="@dimen/default_toolbar_height"
-        app:layout_constraintBottom_toTopOf="@id/bottomToolbar"
+        app:layout_constraintBottom_toTopOf="@id/bottomToolbarСontainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

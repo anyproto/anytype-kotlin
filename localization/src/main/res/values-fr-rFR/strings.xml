@@ -1527,4 +1527,5 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="all_content_no_results_title">Aucun résultat trouvé.</string>
     <string name="all_content_no_results_description">Essayez de rechercher avec différents mots-clés.</string>
     <string name="all_content_error_title">Un problème est survenu.</string>
+    <string name="onboarding_my_first_space">Mon premier espace</string>
 </resources>

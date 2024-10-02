@@ -1522,9 +1522,9 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="introduce_vault_text_3">Par défaut, nous utilisons une icône floutée de votre espace en tant qu\'arrière-plan. Vous pouvez changer cela dans les paramètres de l\'espace.</string>
     <string name="introduce_vault_welcome_to_the_vault">Bienvenue dans le coffre-fort</string>
     <string name="introduce_vault_simple_flexible"><![CDATA[Simple & Flexible]]></string>
-    <string name="allContent_empty_state_title">It’s empty here.</string>
-    <string name="allContent_empty_state_description">Create your first objects to get started.</string>
-    <string name="all_content_no_results_title">No results found.</string>
-    <string name="all_content_no_results_description">Try searching with different keywords.</string>
-    <string name="all_content_error_title">Something went wrong.</string>
+    <string name="allContent_empty_state_title">C\'est vide ici.</string>
+    <string name="allContent_empty_state_description">Créez vos premiers objets pour commencer.</string>
+    <string name="all_content_no_results_title">Aucun résultat trouvé.</string>
+    <string name="all_content_no_results_description">Essayez de rechercher avec différents mots-clés.</string>
+    <string name="all_content_error_title">Un problème est survenu.</string>
 </resources>

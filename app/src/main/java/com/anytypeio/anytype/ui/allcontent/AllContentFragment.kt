@@ -25,7 +25,6 @@ import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModelFactory
-import com.anytypeio.anytype.feature_allcontent.ui.AllContentMainScreen
 import com.anytypeio.anytype.feature_allcontent.ui.AllContentNavigation.ALL_CONTENT_MAIN
 import com.anytypeio.anytype.feature_allcontent.ui.AllContentWrapperScreen
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
@@ -118,7 +117,7 @@ class AllContentFragment : BaseComposeFragment() {
                     onModeClick = vm::onAllContentModeClicked,
                     onItemClicked = vm::onItemClicked,
                     onBinClick = vm::onViewBinClicked,
-                    listState = vm.listState.collectAsStateWithLifecycle().value,
+                    contentListState = vm.listState.collectAsStateWithLifecycle().value,
                     canPaginate = vm.canPaginate.collectAsStateWithLifecycle().value,
                     onUpdateLimitSearch = vm::updateLimit,
                 )

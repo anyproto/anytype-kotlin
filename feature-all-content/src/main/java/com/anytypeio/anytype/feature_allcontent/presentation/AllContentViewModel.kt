@@ -241,6 +241,8 @@ class AllContentViewModel(
 
         val dataFlow = storelessSubscriptionContainer.subscribe(searchParams)
             .map { objWrappers ->
+                canPaginate.value = objWrappers.size == result.limit
+                listState.value = ListState.IDLE
                 val items = mapToUiContentItems(
                     objectWrappers = objWrappers,
                     activeSort = result.sort
@@ -248,6 +250,7 @@ class AllContentViewModel(
                 UiContentState.Content(items = items)
             }
             .catch { e ->
+                listState.value = ListState.ERROR
                 emit(
                     UiContentState.Error(
                         message = e.message ?: "Error loading objects by subscription"
@@ -516,7 +519,8 @@ class AllContentViewModel(
 
     fun updateLimit() {
         Timber.d("Update limit, canPaginate: ${canPaginate.value}")
-        if (canPaginate.value) {
+        if (canPaginate.value && listState.value == ListState.IDLE) {
+            listState.value = ListState.LOADING
             _limitState.value += DEFAULT_SEARCH_LIMIT
         }
     }

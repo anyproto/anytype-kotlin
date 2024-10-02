@@ -32,7 +32,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -83,8 +82,6 @@ import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
 import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 
 
 @Composable
@@ -102,30 +99,28 @@ fun AllContentWrapperScreen(
     onBinClick: () -> Unit,
     canPaginate: Boolean,
     onUpdateLimitSearch: () -> Unit,
-    listState: AllContentViewModel.ListState
+    contentListState: AllContentViewModel.ListState
 ) {
-
     val lazyListState = rememberLazyListState()
 
-    val _listState = remember { mutableStateOf(listState) }
+    val canPaginateState = remember { mutableStateOf(false) }
+    LaunchedEffect(key1 = canPaginate) {
+        canPaginateState.value = canPaginate
+    }
+
+    val listState = remember { mutableStateOf(contentListState) }
 
     val shouldStartPaging = remember {
         derivedStateOf {
-            canPaginate &&
-                    (lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
-                        ?: -9) >= lazyListState.layoutInfo.totalItemsCount - 6
+            canPaginateState.value && (lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+                ?: -9) >= (lazyListState.layoutInfo.totalItemsCount - 4)
         }
     }
 
     LaunchedEffect(key1 = shouldStartPaging.value) {
-        snapshotFlow { shouldStartPaging.value }
-            .distinctUntilChanged()
-            .filter { it }
-            .collect {
-                if (_listState.value == AllContentViewModel.ListState.IDLE) {
-                    onUpdateLimitSearch()
-                }
-            }
+        if (shouldStartPaging.value && listState.value == AllContentViewModel.ListState.IDLE) {
+            onUpdateLimitSearch()
+        }
     }
 
     AllContentMainScreen(
@@ -141,7 +136,7 @@ fun AllContentWrapperScreen(
         onBinClick = onBinClick,
         uiState = uiState,
         lazyListState = lazyListState,
-        listState = _listState
+        listState = listState
     )
 }
 

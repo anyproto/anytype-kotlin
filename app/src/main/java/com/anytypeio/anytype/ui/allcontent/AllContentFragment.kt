@@ -106,7 +106,7 @@ class AllContentFragment : BaseComposeFragment() {
         ) {
             composable(route = ALL_CONTENT_MAIN) {
                 AllContentWrapperScreen(
-                    uiState = vm.uiState.collectAsStateWithLifecycle().value,
+                    uiItemsState = vm.uiItemsState.collectAsStateWithLifecycle().value,
                     onTabClick = vm::onTabClicked,
                     onQueryChanged = vm::onFilterChanged,
                     uiTabsState = vm.uiTabsState.collectAsStateWithLifecycle().value,
@@ -117,9 +117,9 @@ class AllContentFragment : BaseComposeFragment() {
                     onModeClick = vm::onAllContentModeClicked,
                     onItemClicked = vm::onItemClicked,
                     onBinClick = vm::onViewBinClicked,
-                    contentListState = vm.listState.collectAsStateWithLifecycle().value,
                     canPaginate = vm.canPaginate.collectAsStateWithLifecycle().value,
                     onUpdateLimitSearch = vm::updateLimit,
+                    uiContentState = vm.uiContentState.collectAsStateWithLifecycle().value,
                 )
             }
         }

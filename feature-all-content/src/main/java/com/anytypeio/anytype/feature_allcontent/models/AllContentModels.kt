@@ -109,18 +109,12 @@ sealed class UiTabsState {
 
 // CONTENT
 sealed class UiContentState {
-
-    data object Hidden : UiContentState()
-
-    data object Loading : UiContentState()
-
+    data object Idle : UiContentState()
+    data object InitLoading : UiContentState()
+    data object Paging : UiContentState()
+    data object Empty : UiContentState()
     data class Error(
         val message: String,
-    ) : UiContentState()
-
-    @Immutable
-    data class Content(
-        val items: List<UiContentItem>,
     ) : UiContentState()
 }
 
@@ -192,13 +186,6 @@ sealed class MenuSortsItem {
 //endregion
 
 //region MAPPING
-fun AllContentState.Default.toMenuMode(): AllContentMenuMode {
-    return when (activeMode) {
-        AllContentMode.AllContent -> AllContentMenuMode.AllContent(isSelected = true)
-        AllContentMode.Unlinked -> AllContentMenuMode.Unlinked(isSelected = true)
-    }
-}
-
 fun AllContentMode.view(): UiTitleState {
     return when (this) {
         AllContentMode.AllContent -> UiTitleState.AllContent

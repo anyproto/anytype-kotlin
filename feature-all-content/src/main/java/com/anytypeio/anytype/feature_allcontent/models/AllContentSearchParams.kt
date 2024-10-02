@@ -133,7 +133,6 @@ fun AllContentTab.filtersForSearch(
         AllContentTab.BOOKMARKS -> {
             val filters = buildList {
                 addAll(buildDeletedFilter())
-                add(buildLayoutFilter(layouts = allContentTabLayouts.getValue(tab)))
                 add(buildSpaceIdFilter(spaces))
                 if (tab == AllContentTab.PAGES) {
                     add(buildTemplateFilter())

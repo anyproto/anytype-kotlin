@@ -7,7 +7,6 @@ import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.history.Version
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.all_content.RestoreAllContentState
 import com.anytypeio.anytype.domain.all_content.UpdateAllContentState
@@ -92,15 +91,6 @@ class AllContentViewModel(
     private val _tabsState = MutableStateFlow<AllContentTab>(DEFAULT_INITIAL_TAB)
     private val _modeState = MutableStateFlow<AllContentMode>(DEFAULT_INITIAL_MODE)
     private val _sortState = MutableStateFlow<AllContentSort>(DEFAULT_INITIAL_SORT)
-    private val _limitState = MutableStateFlow(DEFAULT_SEARCH_LIMIT)
-    private val userInput = MutableStateFlow(DEFAULT_QUERY)
-
-    @OptIn(FlowPreview::class)
-    private val searchQuery = userInput
-        .take(1)
-        .onCompletion {
-            emitAll(userInput.drop(1).debounce(DEFAULT_DEBOUNCE_DURATION).distinctUntilChanged())
-        }
 
     private val _uiTitleState = MutableStateFlow<UiTitleState>(UiTitleState.Hidden)
     val uiTitleState: StateFlow<UiTitleState> = _uiTitleState.asStateFlow()
@@ -112,18 +102,36 @@ class AllContentViewModel(
     private val _uiTabsState = MutableStateFlow<UiTabsState>(UiTabsState.Hidden)
     val uiTabsState: StateFlow<UiTabsState> = _uiTabsState.asStateFlow()
 
-    private val _uiState = MutableStateFlow<UiContentState>(UiContentState.Hidden)
-    val uiState: StateFlow<UiContentState> = _uiState.asStateFlow()
+    private val _uiItemsState = MutableStateFlow<List<UiContentItem>>(emptyList())
+    val uiItemsState: StateFlow<List<UiContentItem>> = _uiItemsState.asStateFlow()
 
     private val _uiMenu = MutableStateFlow(UiMenuState.empty())
     val uiMenu: StateFlow<UiMenuState> = _uiMenu.asStateFlow()
 
+    private val _uiContentState = MutableStateFlow<UiContentState>(UiContentState.Idle)
+    val uiContentState: StateFlow<UiContentState> = _uiContentState.asStateFlow()
+
     private val _commands = MutableSharedFlow<Command>()
     val commands: SharedFlow<Command> = _commands
 
-    //Paging
+    /**
+     * Search query
+     */
+    private val userInput = MutableStateFlow(DEFAULT_QUERY)
+    @OptIn(FlowPreview::class)
+    private val searchQuery = userInput
+        .take(1)
+        .onCompletion {
+            emitAll(userInput.drop(1).debounce(DEFAULT_DEBOUNCE_DURATION).distinctUntilChanged())
+        }
+
+    /**
+     * Paging and subscription limit. If true, we can paginate after reaching bottom items.
+     * Could be true only after the first subscription results
+     */
     val canPaginate = MutableStateFlow(false)
-    val listState = MutableStateFlow(ListState.IDLE)
+    private var subscriptionLimit = DEFAULT_SEARCH_LIMIT
+    private val limitUpdateTrigger = MutableStateFlow(0)
 
     init {
         Timber.d("AllContentViewModel init, spaceId:[${vmParams.spaceId.id}]")
@@ -181,6 +189,7 @@ class AllContentViewModel(
                 if (query.isBlank()) {
                     _limitedObjectIds.value = emptyList()
                 } else {
+                    resetLimit()
                     val searchParams = createSearchParams(
                         activeTab = _tabsState.value,
                         activeQuery = query
@@ -207,15 +216,15 @@ class AllContentViewModel(
                 _tabsState,
                 _sortState,
                 _limitedObjectIds,
-                _limitState
-            ) { mode, tab, sort, limitedObjectIds, limit ->
-                Result(mode, tab, sort, limitedObjectIds, limit)
+                limitUpdateTrigger
+            ) { mode, tab, sort, limitedObjectIds, _ ->
+                Result(mode, tab, sort, limitedObjectIds)
             }
                 .flatMapLatest { currentState ->
-                    Timber.d("AllContentNewState:$currentState, restart subscription")
+                    Timber.d("New params:$currentState, restart subscription")
                     loadData(currentState)
                 }.collect {
-                    _uiState.value = it
+                    this@AllContentViewModel._uiItemsState.value = it
                 }
         }
     }
@@ -224,16 +233,20 @@ class AllContentViewModel(
 
     private fun loadData(
         result: Result
-    ): Flow<UiContentState> = flow {
+    ): Flow<List<UiContentItem>> = flow {
         val loadingStartTime = System.currentTimeMillis()
 
-        emit(UiContentState.Loading)
+        if (subscriptionLimit == DEFAULT_SEARCH_LIMIT) {
+            _uiContentState.value = UiContentState.InitLoading
+        } else {
+            _uiContentState.value = UiContentState.Paging
+        }
 
         val searchParams = createSubscriptionParams(
             activeTab = result.tab,
             activeSort = result.sort,
             limitedObjectIds = result.limitedObjectIds,
-            limit = result.limit,
+            limit = subscriptionLimit,
             subscriptionId = subscriptionId(),
             spaceId = vmParams.spaceId.id,
             activeMode = result.mode
@@ -241,31 +254,33 @@ class AllContentViewModel(
 
         val dataFlow = storelessSubscriptionContainer.subscribe(searchParams)
             .map { objWrappers ->
-                canPaginate.value = objWrappers.size == result.limit
-                listState.value = ListState.IDLE
+                canPaginate.value = objWrappers.size == subscriptionLimit
                 val items = mapToUiContentItems(
                     objectWrappers = objWrappers,
                     activeSort = result.sort
                 )
-                UiContentState.Content(items = items)
+                items
             }
             .catch { e ->
-                listState.value = ListState.ERROR
-                emit(
-                    UiContentState.Error(
-                        message = e.message ?: "Error loading objects by subscription"
-                    )
+                _uiContentState.value = UiContentState.Error(
+                    message = e.message ?: "Error loading objects by subscription"
                 )
+                emit(emptyList())
             }
 
         var isFirstEmission = true
 
         emitAll(
-            dataFlow.onEach {
+            dataFlow.onEach { items ->
                 if (isFirstEmission) {
                     val elapsedTime = System.currentTimeMillis() - loadingStartTime
                     if (elapsedTime < DEFAULT_LOADING_DELAY) {
                         delay(DEFAULT_LOADING_DELAY - elapsedTime)
+                    }
+                    _uiContentState.value = if (items.isEmpty()) {
+                        UiContentState.Empty
+                    } else {
+                        UiContentState.Idle
                     }
                     isFirstEmission = false
                 }
@@ -424,11 +439,14 @@ class AllContentViewModel(
             }
             return
         }
+        resetLimit()
+        _uiItemsState.value = emptyList()
         _tabsState.value = tab
     }
 
     fun onAllContentModeClicked(mode: AllContentMenuMode) {
         Timber.d("onAllContentModeClicked: $mode")
+        _uiItemsState.value = emptyList()
         _modeState.value = when (mode) {
             is AllContentMenuMode.AllContent -> AllContentMode.AllContent
             is AllContentMenuMode.Unlinked -> AllContentMode.Unlinked
@@ -437,6 +455,7 @@ class AllContentViewModel(
 
     fun onSortClicked(sort: AllContentSort) {
         Timber.d("onSortClicked: $sort")
+        _uiItemsState.value = emptyList()
         _sortState.value = sort
         proceedWithSortSaving(sort)
     }
@@ -510,16 +529,22 @@ class AllContentViewModel(
     }
 
     fun updateLimit() {
-        Timber.d("Update limit, canPaginate: ${canPaginate.value}")
-        if (canPaginate.value && listState.value == ListState.IDLE) {
-            listState.value = ListState.LOADING
-            _limitState.value += DEFAULT_SEARCH_LIMIT
+        Timber.d("Update limit, canPaginate: ${canPaginate.value} uiContentState: ${_uiContentState.value}")
+        if (canPaginate.value && _uiContentState.value == UiContentState.Idle) {
+            subscriptionLimit += DEFAULT_SEARCH_LIMIT
+            limitUpdateTrigger.value++
         }
     }
 
-    fun resetLimit() {
+    override fun onCleared() {
+        super.onCleared()
+        _uiItemsState.value = emptyList()
+        resetLimit()
+    }
+
+    private fun resetLimit() {
         Timber.d("Reset limit")
-        _limitState.value = DEFAULT_SEARCH_LIMIT
+        subscriptionLimit = DEFAULT_SEARCH_LIMIT
     }
 
     data class VmParams(
@@ -531,8 +556,7 @@ class AllContentViewModel(
         val mode: AllContentMode,
         val tab: AllContentTab,
         val sort: AllContentSort,
-        val limitedObjectIds: List<String>,
-        val limit: Int
+        val limitedObjectIds: List<String>
     )
 
     sealed class Command {
@@ -552,13 +576,5 @@ class AllContentViewModel(
         val DEFAULT_INITIAL_SORT = AllContentSort.ByName()
         val DEFAULT_INITIAL_MODE = AllContentMode.AllContent
         val DEFAULT_QUERY = ""
-    }
-
-    enum class ListState {
-        IDLE,
-        LOADING,
-        PAGINATING,
-        ERROR,
-        PAGINATION_EXHAUST,
     }
 }

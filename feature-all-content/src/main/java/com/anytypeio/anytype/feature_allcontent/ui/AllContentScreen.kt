@@ -26,7 +26,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -74,13 +73,12 @@ import com.anytypeio.anytype.feature_allcontent.R
 import com.anytypeio.anytype.feature_allcontent.models.AllContentMenuMode
 import com.anytypeio.anytype.feature_allcontent.models.AllContentSort
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
-import com.anytypeio.anytype.feature_allcontent.models.UiContentState
 import com.anytypeio.anytype.feature_allcontent.models.MenuButtonViewState
 import com.anytypeio.anytype.feature_allcontent.models.UiContentItem
+import com.anytypeio.anytype.feature_allcontent.models.UiContentState
 import com.anytypeio.anytype.feature_allcontent.models.UiMenuState
 import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
 import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
-import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 
@@ -90,7 +88,7 @@ fun AllContentWrapperScreen(
     uiTabsState: UiTabsState,
     uiMenuButtonViewState: MenuButtonViewState,
     uiMenuState: UiMenuState,
-    uiState: UiContentState,
+    uiItemsState: List<UiContentItem>,
     onTabClick: (AllContentTab) -> Unit,
     onQueryChanged: (String) -> Unit,
     onModeClick: (AllContentMenuMode) -> Unit,
@@ -99,7 +97,7 @@ fun AllContentWrapperScreen(
     onBinClick: () -> Unit,
     canPaginate: Boolean,
     onUpdateLimitSearch: () -> Unit,
-    contentListState: AllContentViewModel.ListState
+    uiContentState: UiContentState
 ) {
     val lazyListState = rememberLazyListState()
 
@@ -107,8 +105,6 @@ fun AllContentWrapperScreen(
     LaunchedEffect(key1 = canPaginate) {
         canPaginateState.value = canPaginate
     }
-
-    val listState = remember { mutableStateOf(contentListState) }
 
     val shouldStartPaging = remember {
         derivedStateOf {
@@ -118,7 +114,7 @@ fun AllContentWrapperScreen(
     }
 
     LaunchedEffect(key1 = shouldStartPaging.value) {
-        if (shouldStartPaging.value && listState.value == AllContentViewModel.ListState.IDLE) {
+        if (shouldStartPaging.value && uiContentState == UiContentState.Idle) {
             onUpdateLimitSearch()
         }
     }
@@ -134,16 +130,16 @@ fun AllContentWrapperScreen(
         onSortClick = onSortClick,
         onItemClicked = onItemClicked,
         onBinClick = onBinClick,
-        uiState = uiState,
+        uiItemsState = uiItemsState,
         lazyListState = lazyListState,
-        listState = listState
+        uiContentState = uiContentState
     )
 }
 
 
 @Composable
 fun AllContentMainScreen(
-    uiState: UiContentState,
+    uiItemsState: List<UiContentItem>,
     uiTitleState: UiTitleState,
     uiTabsState: UiTabsState,
     uiMenuButtonViewState: MenuButtonViewState,
@@ -154,8 +150,8 @@ fun AllContentMainScreen(
     onSortClick: (AllContentSort) -> Unit,
     onItemClicked: (UiContentItem.Item) -> Unit,
     onBinClick: () -> Unit,
-    listState: State<AllContentViewModel.ListState>,
-    lazyListState: LazyListState
+    lazyListState: LazyListState,
+    uiContentState: UiContentState
 ) {
     val modifier = Modifier
         .background(color = colorResource(id = R.color.background_primary))
@@ -212,36 +208,33 @@ fun AllContentMainScreen(
                         .fillMaxSize()
                         .padding(paddingValues)
 
-            when (uiState) {
-                is UiContentState.Content -> {
-                    if (uiState.items.isEmpty()) {
-                        Box(modifier = contentModifier, contentAlignment = Alignment.Center) {
-                            EmptyState(isSearchEmpty = isSearchEmpty)
+            Box(
+                modifier = contentModifier,
+                contentAlignment = Alignment.Center
+            ) {
+                when {
+                    uiItemsState.isEmpty() -> {
+                        when (uiContentState) {
+                            is UiContentState.Error -> {
+                                ErrorState(uiContentState.message)
+                            }
+                            UiContentState.Idle -> {}
+                            UiContentState.InitLoading -> {
+                                LoadingState()
+                            }
+                            UiContentState.Paging -> {}
+                            UiContentState.Empty -> {
+                                EmptyState(isSearchEmpty = isSearchEmpty)
+                            }
                         }
-                    } else {
+                    }
+                    else -> {
                         ContentItems(
-                            modifier = contentModifier,
-                            items = uiState.items,
+                            uiItemsState = uiItemsState,
                             onItemClicked = onItemClicked,
-                            listState = listState,
+                            uiContentState = uiContentState,
                             lazyListState = lazyListState
                         )
-                    }
-                }
-
-                is UiContentState.Error -> {
-                    Box(
-                        modifier = contentModifier,
-                        contentAlignment = Alignment.Center
-                    ) {
-                        ErrorState(uiState.message)
-                    }
-                }
-
-                UiContentState.Hidden -> {}
-                UiContentState.Loading -> {
-                    Box(modifier = contentModifier) {
-                        LoadingState()
                     }
                 }
             }
@@ -251,32 +244,32 @@ fun AllContentMainScreen(
 
 @Composable
 private fun ContentItems(
-    modifier: Modifier,
-    items: List<UiContentItem>,
+    uiItemsState: List<UiContentItem>,
     onItemClicked: (UiContentItem.Item) -> Unit,
-    listState: State<AllContentViewModel.ListState>,
+    uiContentState: UiContentState,
     lazyListState: LazyListState
 ) {
     LazyColumn(
-        modifier = modifier,
+        modifier = Modifier.fillMaxSize(),
         state = lazyListState
     ) {
         items(
-            count = items.size,
-            key = { index -> items[index].id },
+            count = uiItemsState.size,
+            key = { index -> uiItemsState[index].id },
             contentType = { index ->
-                when (items[index]) {
+                when (uiItemsState[index]) {
                     is UiContentItem.Group -> "group"
                     is UiContentItem.Item -> "item"
                 }
             }
         ) { index ->
-            when (val item = items[index]) {
+            when (val item = uiItemsState[index]) {
                 is UiContentItem.Group -> {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(52.dp),
+                            .height(52.dp)
+                            .animateItem(),
                         contentAlignment = Alignment.BottomStart
                     ) {
                         Text(
@@ -304,6 +297,18 @@ private fun ContentItems(
                 }
             }
         }
+        if (uiContentState is UiContentState.Paging) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillParentMaxWidth()
+                        .height(52.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    LoadingState()
+                }
+            }
+        }
     }
 }
 
@@ -327,6 +332,26 @@ fun PreviewLoadingState() {
     Box(modifier = Modifier.fillMaxSize()) {
         LoadingState()
     }
+}
+
+@DefaultPreviews
+@Composable
+fun PreviewMainScreen() {
+    AllContentMainScreen(
+        uiItemsState = emptyList(),
+        uiTitleState = UiTitleState.AllContent,
+        uiTabsState = UiTabsState.Default(tabs = listOf(AllContentTab.PAGES, AllContentTab.TYPES, AllContentTab.LISTS), selectedTab = AllContentTab.LISTS),
+        uiMenuButtonViewState = MenuButtonViewState.Visible,
+        uiMenuState = UiMenuState.empty(),
+        onTabClick = {},
+        onQueryChanged = {},
+        onModeClick = {},
+        onSortClick = {},
+        onItemClicked = {},
+        onBinClick = {},
+        lazyListState = rememberLazyListState(),
+        uiContentState = UiContentState.Error("Error message")
+    )
 }
 
 @Composable

@@ -88,26 +88,28 @@ fun AllContentTopBarContainer(
             AllContentMenuButton(
                 onClick = { isMenuExpanded = true }
             )
-            DropdownMenu(
-                modifier = Modifier.width(252.dp),
-                expanded = isMenuExpanded,
-                onDismissRequest = { isMenuExpanded = false },
-                shape = RoundedCornerShape(size = 16.dp),
-                containerColor = colorResource(id = R.color.background_primary),
-                shadowElevation = 5.dp
-            ) {
-                AllContentMenu(
-                    uiMenuState = uiMenuState,
-                    onModeClick = {
-                        onModeClick(it)
-                        isMenuExpanded = false
-                    },
-                    onSortClick = {
-                        onSortClick(it)
-                        isMenuExpanded = false
-                    },
-                    onBinClick = onBinClick
-                )
+            if (uiMenuState is UiMenuState.Visible) {
+                DropdownMenu(
+                    modifier = Modifier.width(252.dp),
+                    expanded = isMenuExpanded,
+                    onDismissRequest = { isMenuExpanded = false },
+                    shape = RoundedCornerShape(size = 16.dp),
+                    containerColor = colorResource(id = R.color.background_primary),
+                    shadowElevation = 5.dp
+                ) {
+                    AllContentMenu(
+                        uiMenuState = uiMenuState,
+                        onModeClick = {
+                            onModeClick(it)
+                            isMenuExpanded = false
+                        },
+                        onSortClick = {
+                            onSortClick(it)
+                            isMenuExpanded = false
+                        },
+                        onBinClick = onBinClick
+                    )
+                }
             }
         },
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
@@ -121,7 +123,7 @@ fun AllContentTopBarContainer(
 private fun AllContentTopBarContainerPreview() {
     AllContentTopBarContainer(
         titleState = UiTitleState.OnlyUnlinked,
-        uiMenuState = UiMenuState(
+        uiMenuState = UiMenuState.Visible(
             mode = listOf(
                 AllContentMenuMode.AllContent(isSelected = true),
                 AllContentMenuMode.Unlinked()

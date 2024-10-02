@@ -17,7 +17,6 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.feature_allcontent.models.AllContentMenuMode
-import com.anytypeio.anytype.feature_allcontent.models.AllContentMode
 import com.anytypeio.anytype.feature_allcontent.models.AllContentSort
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
 import com.anytypeio.anytype.feature_allcontent.models.MenuSortsItem
@@ -30,7 +29,6 @@ import com.anytypeio.anytype.feature_allcontent.models.createSubscriptionParams
 import com.anytypeio.anytype.feature_allcontent.models.filtersForSearch
 import com.anytypeio.anytype.feature_allcontent.models.mapRelationKeyToSort
 import com.anytypeio.anytype.feature_allcontent.models.toUiContentItems
-import com.anytypeio.anytype.feature_allcontent.models.view
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
@@ -44,9 +42,6 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
@@ -82,27 +77,16 @@ class AllContentViewModel(
     private val localeProvider: LocaleProvider
 ) : ViewModel() {
 
-    private val _limitedObjectIds: MutableStateFlow<List<String>> = MutableStateFlow(emptyList())
+    private val limitedObjectIds = MutableStateFlow<List<Id>>(emptyList())
+    private val sortState = MutableStateFlow<AllContentSort>(DEFAULT_INITIAL_SORT)
 
-    private val _modeState = MutableStateFlow<AllContentMode>(DEFAULT_INITIAL_MODE)
-    private val _sortState = MutableStateFlow<AllContentSort>(DEFAULT_INITIAL_SORT)
-
-    private val _uiTitleState = MutableStateFlow<UiTitleState>(UiTitleState.Hidden)
-    val uiTitleState: StateFlow<UiTitleState> = _uiTitleState.asStateFlow()
-
+    val uiTitleState = MutableStateFlow<UiTitleState>(UiTitleState.Hidden)
     val uiTabsState = MutableStateFlow<UiTabsState>(UiTabsState.Hidden)
+    val uiMenu = MutableStateFlow<UiMenuState>(UiMenuState.Hidden)
+    val uiItemsState = MutableStateFlow<List<UiContentItem>>(emptyList())
+    val uiContentState = MutableStateFlow<UiContentState>(UiContentState.Idle())
 
-    private val _uiItemsState = MutableStateFlow<List<UiContentItem>>(emptyList())
-    val uiItemsState: StateFlow<List<UiContentItem>> = _uiItemsState.asStateFlow()
-
-    private val _uiMenu = MutableStateFlow(UiMenuState.empty())
-    val uiMenu: StateFlow<UiMenuState> = _uiMenu.asStateFlow()
-
-    private val _uiContentState = MutableStateFlow<UiContentState>(UiContentState.Idle())
-    val uiContentState: StateFlow<UiContentState> = _uiContentState.asStateFlow()
-
-    private val _commands = MutableSharedFlow<Command>()
-    val commands: SharedFlow<Command> = _commands
+    val commands = MutableSharedFlow<Command>()
 
     /**
      * Search query
@@ -118,34 +102,25 @@ class AllContentViewModel(
 
     /**
      * Paging and subscription limit. If true, we can paginate after reaching bottom items.
-     * Could be true only after the first subscription results
+     * Could be true only after the first subscription results (if results size == limit)
      */
     val canPaginate = MutableStateFlow(false)
     private var subscriptionLimit = DEFAULT_SEARCH_LIMIT
     private val limitUpdateTrigger = MutableStateFlow(0)
 
-    private var shouldScrollToTop = false
+    private var shouldScrollToTopItems = false
 
     init {
         Timber.d("AllContentViewModel init, spaceId:[${vmParams.spaceId.id}]")
         setupInitialStateParams()
-        proceedWithUiTitleStateSetup()
         proceedWithUiStateSetup()
         proceedWithSearchStateSetup()
         proceedWithMenuSetup()
     }
 
-    private fun proceedWithUiTitleStateSetup() {
-        viewModelScope.launch {
-            _modeState.collectLatest { result ->
-                Timber.d("New mode: [$result]")
-                _uiTitleState.value = result.view()
-            }
-        }
-    }
-
     private fun setupInitialStateParams() {
         viewModelScope.launch {
+            uiTitleState.value = UiTitleState.AllContent
             uiTabsState.value = UiTabsState.Default(
                 tabs = AllContentTab.entries,
                 selectedTab = DEFAULT_INITIAL_TAB
@@ -157,7 +132,7 @@ class AllContentViewModel(
                         RestoreAllContentState.Params(vmParams.spaceId)
                     )
                     if (!initialParams.activeSort.isNullOrEmpty()) {
-                        _sortState.value = initialParams.activeSort.mapRelationKeyToSort()
+                        sortState.value = initialParams.activeSort.mapRelationKeyToSort()
                     }
                 }.onFailure { e ->
                     Timber.e(e, "Error restoring state")
@@ -171,9 +146,10 @@ class AllContentViewModel(
             searchQuery.collectLatest { query ->
                 Timber.d("New query: [$query]")
                 if (query.isBlank()) {
-                    _limitedObjectIds.value = emptyList()
+                    limitedObjectIds.value = emptyList()
                 } else {
-                    val activeTab = uiTabsState.value as? UiTabsState.Default ?: return@collectLatest
+                    val activeTab =
+                        uiTabsState.value as? UiTabsState.Default ?: return@collectLatest
                     resetLimit()
                     val searchParams = createSearchParams(
                         activeTab = activeTab.selectedTab,
@@ -182,7 +158,7 @@ class AllContentViewModel(
                     searchObjects(searchParams).process(
                         success = { searchResults ->
                             Timber.d("Search objects by query:[$query], size: : ${searchResults.size}")
-                            _limitedObjectIds.value = searchResults.map { it.id }
+                            limitedObjectIds.value = searchResults.map { it.id }
                         },
                         failure = {
                             Timber.e(it, "Error searching objects by query")
@@ -197,10 +173,10 @@ class AllContentViewModel(
     private fun proceedWithUiStateSetup() {
         viewModelScope.launch {
             combine(
-                _modeState,
+                uiTitleState,
                 uiTabsState.filterIsInstance<UiTabsState.Default>(),
-                _sortState,
-                _limitedObjectIds,
+                sortState,
+                limitedObjectIds,
                 limitUpdateTrigger
             ) { mode, tab, sort, limitedObjectIds, _ ->
                 Result(mode, tab, sort, limitedObjectIds)
@@ -209,7 +185,7 @@ class AllContentViewModel(
                     Timber.d("New params:$currentState, restart subscription")
                     loadData(currentState)
                 }.collect {
-                    this@AllContentViewModel._uiItemsState.value = it
+                    this@AllContentViewModel.uiItemsState.value = it
                 }
         }
     }
@@ -221,9 +197,9 @@ class AllContentViewModel(
     ): Flow<List<UiContentItem>> = flow {
 
         if (subscriptionLimit == DEFAULT_SEARCH_LIMIT) {
-            _uiContentState.value = UiContentState.InitLoading
+            uiContentState.value = UiContentState.InitLoading
         } else {
-            _uiContentState.value = UiContentState.Paging
+            uiContentState.value = UiContentState.Paging
         }
 
         val searchParams = createSubscriptionParams(
@@ -244,16 +220,16 @@ class AllContentViewModel(
                     objectWrappers = objWrappers,
                     activeSort = result.sort
                 )
-                _uiContentState.value = if (items.isEmpty()) {
+                uiContentState.value = if (items.isEmpty()) {
                     UiContentState.Empty
                 } else {
-                    UiContentState.Idle(scrollToTop = shouldScrollToTop).also {
-                        shouldScrollToTop = false
+                    UiContentState.Idle(scrollToTop = shouldScrollToTopItems).also {
+                        shouldScrollToTopItems = false
                     }
                 }
                 items
             }.catch { e ->
-                _uiContentState.value = UiContentState.Error(
+                uiContentState.value = UiContentState.Error(
                     message = e.message ?: "Error loading objects by subscription"
                 )
                 emit(emptyList())
@@ -361,14 +337,14 @@ class AllContentViewModel(
     private fun proceedWithMenuSetup() {
         viewModelScope.launch {
             combine(
-                _modeState,
-                _sortState
+                uiTitleState,
+                sortState
             ) { mode, sort ->
                 mode to sort
             }.collectLatest { (mode, sort) ->
                 val uiMode = listOf(
-                    AllContentMenuMode.AllContent(isSelected = mode == AllContentMode.AllContent),
-                    AllContentMenuMode.Unlinked(isSelected = mode == AllContentMode.Unlinked)
+                    AllContentMenuMode.AllContent(isSelected = mode == UiTitleState.AllContent),
+                    AllContentMenuMode.Unlinked(isSelected = mode == UiTitleState.OnlyUnlinked)
                 )
                 val container = MenuSortsItem.Container(sort = sort)
                 val uiSorts = listOf(
@@ -394,7 +370,7 @@ class AllContentViewModel(
                         isSelected = sort.sortType == DVSortType.DESC
                     )
                 )
-                _uiMenu.value = UiMenuState(
+                uiMenu.value = UiMenuState.Visible(
                     mode = uiMode,
                     container = container,
                     sorts = uiSorts,
@@ -408,13 +384,13 @@ class AllContentViewModel(
         Timber.d("onTabClicked: $tab")
         if (tab == AllContentTab.TYPES) {
             viewModelScope.launch {
-                _commands.emit(Command.SendToast("Not implemented yet"))
+                commands.emit(Command.SendToast("Not implemented yet"))
             }
             return
         }
-        shouldScrollToTop = true
+        shouldScrollToTopItems = true
         resetLimit()
-        _uiItemsState.value = emptyList()
+        uiItemsState.value = emptyList()
         uiTabsState.value = UiTabsState.Default(
             tabs = AllContentTab.entries,
             selectedTab = tab
@@ -423,19 +399,19 @@ class AllContentViewModel(
 
     fun onAllContentModeClicked(mode: AllContentMenuMode) {
         Timber.d("onAllContentModeClicked: $mode")
-        shouldScrollToTop = true
-        _uiItemsState.value = emptyList()
-        _modeState.value = when (mode) {
-            is AllContentMenuMode.AllContent -> AllContentMode.AllContent
-            is AllContentMenuMode.Unlinked -> AllContentMode.Unlinked
+        shouldScrollToTopItems = true
+        uiItemsState.value = emptyList()
+        uiTitleState.value = when (mode) {
+            is AllContentMenuMode.AllContent -> UiTitleState.AllContent
+            is AllContentMenuMode.Unlinked -> UiTitleState.OnlyUnlinked
         }
     }
 
     fun onSortClicked(sort: AllContentSort) {
         Timber.d("onSortClicked: $sort")
-        shouldScrollToTop = true
-        _uiItemsState.value = emptyList()
-        _sortState.value = sort
+        shouldScrollToTopItems = true
+        uiItemsState.value = emptyList()
+        sortState.value = sort
         proceedWithSortSaving(sort)
     }
 
@@ -463,7 +439,7 @@ class AllContentViewModel(
 
     fun onViewBinClicked() {
         viewModelScope.launch {
-            _commands.emit(Command.NavigateToBin(vmParams.spaceId.id))
+            commands.emit(Command.NavigateToBin(vmParams.spaceId.id))
         }
     }
 
@@ -476,7 +452,7 @@ class AllContentViewModel(
                 space = vmParams.spaceId.id
             )) {
                 is OpenObjectNavigation.OpenDataView -> {
-                    _commands.emit(
+                    commands.emit(
                         Command.NavigateToSetOrCollection(
                             id = navigation.target,
                             space = navigation.space
@@ -485,7 +461,7 @@ class AllContentViewModel(
                 }
 
                 is OpenObjectNavigation.OpenEditor -> {
-                    _commands.emit(
+                    commands.emit(
                         Command.NavigateToEditor(
                             id = navigation.target,
                             space = navigation.space
@@ -494,7 +470,7 @@ class AllContentViewModel(
                 }
 
                 is OpenObjectNavigation.UnexpectedLayoutError -> {
-                    _commands.emit(Command.SendToast("Unexpected layout: ${navigation.layout}"))
+                    commands.emit(Command.SendToast("Unexpected layout: ${navigation.layout}"))
                 }
             }
         }
@@ -508,8 +484,8 @@ class AllContentViewModel(
     }
 
     fun updateLimit() {
-        Timber.d("Update limit, canPaginate: ${canPaginate.value} uiContentState: ${_uiContentState.value}")
-        if (canPaginate.value && _uiContentState.value is UiContentState.Idle) {
+        Timber.d("Update limit, canPaginate: ${canPaginate.value} uiContentState: ${uiContentState.value}")
+        if (canPaginate.value && uiContentState.value is UiContentState.Idle) {
             subscriptionLimit += DEFAULT_SEARCH_LIMIT
             limitUpdateTrigger.value++
         }
@@ -517,7 +493,7 @@ class AllContentViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        _uiItemsState.value = emptyList()
+        uiItemsState.value = emptyList()
         resetLimit()
     }
 
@@ -532,7 +508,7 @@ class AllContentViewModel(
     )
 
     internal data class Result(
-        val mode: AllContentMode,
+        val mode: UiTitleState,
         val tab: UiTabsState.Default,
         val sort: AllContentSort,
         val limitedObjectIds: List<String>
@@ -552,7 +528,6 @@ class AllContentViewModel(
         const val DEFAULT_SEARCH_LIMIT = 100
         val DEFAULT_INITIAL_TAB = AllContentTab.PAGES
         val DEFAULT_INITIAL_SORT = AllContentSort.ByName()
-        val DEFAULT_INITIAL_MODE = AllContentMode.AllContent
         val DEFAULT_QUERY = ""
     }
 }

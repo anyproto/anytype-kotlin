@@ -352,7 +352,7 @@ fun PreviewMainScreen() {
         uiItemsState = emptyList(),
         uiTitleState = UiTitleState.AllContent,
         uiTabsState = UiTabsState.Default(tabs = listOf(AllContentTab.PAGES, AllContentTab.TYPES, AllContentTab.LISTS), selectedTab = AllContentTab.LISTS),
-        uiMenuState = UiMenuState.empty(),
+        uiMenuState = UiMenuState.Hidden,
         onTabClick = {},
         onQueryChanged = {},
         onModeClick = {},

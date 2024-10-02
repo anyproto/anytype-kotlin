@@ -39,7 +39,7 @@ import com.anytypeio.anytype.feature_allcontent.models.UiMenuState
 
 @Composable
 fun AllContentMenu(
-    uiMenuState: UiMenuState,
+    uiMenuState: UiMenuState.Visible,
     onModeClick: (AllContentMenuMode) -> Unit,
     onSortClick: (AllContentSort) -> Unit,
     onBinClick: () -> Unit
@@ -233,7 +233,7 @@ private fun DVSortType.title(sort: AllContentSort): String = when (this) {
 @Composable
 fun AllContentMenuPreview() {
     AllContentMenu(
-        uiMenuState = UiMenuState(
+        uiMenuState = UiMenuState.Visible(
             mode = listOf(
                 AllContentMenuMode.AllContent(isSelected = true),
                 AllContentMenuMode.Unlinked(isSelected = false)

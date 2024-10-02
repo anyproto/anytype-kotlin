@@ -398,11 +398,13 @@ class DefaultUserSettingsCache(
             .map { prefs ->
                 val curr = prefs.preferences.getOrDefault(
                     key = account.id,
-                    defaultValue = VaultPreference()
+                    defaultValue = VaultPreference(
+                        showIntroduceVault = true
+                    )
                 )
                 VaultSettings(
                     orderOfSpaces = curr.orderOfSpaces,
-                    showIntroduceVault = true
+                    showIntroduceVault = curr.showIntroduceVault
                 )
             }
             .first()
@@ -415,12 +417,12 @@ class DefaultUserSettingsCache(
                 val curr = prefs.preferences.getOrDefault(
                     key = account.id,
                     defaultValue = VaultPreference(
-
+                        showIntroduceVault = true
                     )
                 )
                 VaultSettings(
                     orderOfSpaces = curr.orderOfSpaces,
-                    showIntroduceVault = true
+                    showIntroduceVault = curr.showIntroduceVault
                 )
             }
     }
@@ -445,7 +447,9 @@ class DefaultUserSettingsCache(
         context.vaultPrefsStore.updateData { existingPreferences ->
             val curr = existingPreferences.preferences.getOrDefault(
                 key = account.id,
-                defaultValue = VaultPreference()
+                defaultValue = VaultPreference(
+                    showIntroduceVault = true
+                )
             )
             existingPreferences.copy(
                 preferences = existingPreferences.preferences + mapOf(

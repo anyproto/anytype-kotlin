@@ -431,7 +431,9 @@ class DefaultUserSettingsCache(
         context.vaultPrefsStore.updateData { existingPreferences ->
             val curr = existingPreferences.preferences.getOrDefault(
                 key = account.id,
-                defaultValue = VaultPreference()
+                defaultValue = VaultPreference(
+                    showIntroduceVault = true
+                )
             )
             existingPreferences.copy(
                 preferences = existingPreferences.preferences + mapOf(
@@ -445,12 +447,6 @@ class DefaultUserSettingsCache(
 
     override suspend fun setVaultSettings(account: Account, settings: VaultSettings) {
         context.vaultPrefsStore.updateData { existingPreferences ->
-            val curr = existingPreferences.preferences.getOrDefault(
-                key = account.id,
-                defaultValue = VaultPreference(
-                    showIntroduceVault = true
-                )
-            )
             existingPreferences.copy(
                 preferences = existingPreferences.preferences + mapOf(
                     account.id to VaultPreference(

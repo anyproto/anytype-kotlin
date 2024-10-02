@@ -38,7 +38,7 @@ val allContentTabLayouts = mapOf(
 // Function to create subscription params
 fun createSubscriptionParams(
     spaceId: Id,
-    activeMode: AllContentMode,
+    activeMode: UiTitleState,
     activeTab: AllContentTab,
     activeSort: AllContentSort,
     limitedObjectIds: List<String>,
@@ -90,7 +90,7 @@ fun AllContentTab.filtersForSubscribe(
     spaces: List<Id>,
     activeSort: AllContentSort,
     limitedObjectIds: List<Id>,
-    activeMode: AllContentMode
+    activeMode: UiTitleState
 ): Pair<List<DVFilter>, List<DVSort>> {
     val tab = this
     when (this) {
@@ -109,7 +109,7 @@ fun AllContentTab.filtersForSubscribe(
                 if (limitedObjectIds.isNotEmpty()) {
                     add(buildLimitedObjectIdsFilter(limitedObjectIds = limitedObjectIds))
                 }
-                if (activeMode == AllContentMode.Unlinked) {
+                if (activeMode == UiTitleState.OnlyUnlinked) {
                     addAll(buildUnlinkedObjectFilter())
                 }
             }
@@ -133,7 +133,6 @@ fun AllContentTab.filtersForSearch(
         AllContentTab.BOOKMARKS -> {
             val filters = buildList {
                 addAll(buildDeletedFilter())
-                add(buildLayoutFilter(layouts = allContentTabLayouts.getValue(tab)))
                 add(buildSpaceIdFilter(spaces))
                 if (tab == AllContentTab.PAGES) {
                     add(buildTemplateFilter())

@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.history.Version
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.all_content.RestoreAllContentState
 import com.anytypeio.anytype.domain.all_content.UpdateAllContentState
@@ -119,6 +120,10 @@ class AllContentViewModel(
 
     private val _commands = MutableSharedFlow<Command>()
     val commands: SharedFlow<Command> = _commands
+
+    //Paging
+    val canPaginate = MutableStateFlow(false)
+    val listState = MutableStateFlow(ListState.IDLE)
 
     init {
         Timber.d("AllContentViewModel init, spaceId:[${vmParams.spaceId.id}]")
@@ -463,11 +468,6 @@ class AllContentViewModel(
         userInput.value = filter
     }
 
-    fun onLimitUpdated(limit: Int) {
-        Timber.d("onLimitUpdated: $limit")
-        _limitState.value = limit
-    }
-
     fun onViewBinClicked() {
         viewModelScope.launch {
             _commands.emit(Command.NavigateToBin(vmParams.spaceId.id))
@@ -514,6 +514,18 @@ class AllContentViewModel(
         }
     }
 
+    fun updateLimit() {
+        Timber.d("Update limit, canPaginate: ${canPaginate.value}")
+        if (canPaginate.value) {
+            _limitState.value += DEFAULT_SEARCH_LIMIT
+        }
+    }
+
+    fun resetLimit() {
+        Timber.d("Reset limit")
+        _limitState.value = DEFAULT_SEARCH_LIMIT
+    }
+
     data class VmParams(
         val spaceId: SpaceId,
         val useHistory: Boolean = true
@@ -544,5 +556,13 @@ class AllContentViewModel(
         val DEFAULT_INITIAL_SORT = AllContentSort.ByName()
         val DEFAULT_INITIAL_MODE = AllContentMode.AllContent
         val DEFAULT_QUERY = ""
+    }
+
+    enum class ListState {
+        IDLE,
+        LOADING,
+        PAGINATING,
+        ERROR,
+        PAGINATION_EXHAUST,
     }
 }

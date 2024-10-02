@@ -113,7 +113,7 @@ fun AllContentWrapperScreen(
     val shouldStartPaging = remember {
         derivedStateOf {
             canPaginateState.value && (lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
-                ?: -9) >= (lazyListState.layoutInfo.totalItemsCount - 4)
+                ?: -9) >= (lazyListState.layoutInfo.totalItemsCount - 2)
         }
     }
 

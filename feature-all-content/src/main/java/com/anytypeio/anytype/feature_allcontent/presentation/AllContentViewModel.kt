@@ -370,14 +370,6 @@ class AllContentViewModel(
         )
     }
 
-    // Function to get the menu mode based on the active mode
-    private fun getMenuMode(mode: AllContentMode): AllContentMenuMode {
-        return when (mode) {
-            AllContentMode.AllContent -> AllContentMenuMode.AllContent(isSelected = true)
-            AllContentMode.Unlinked -> AllContentMenuMode.Unlinked(isSelected = true)
-        }
-    }
-
     private fun proceedWithMenuSetup() {
         viewModelScope.launch {
             combine(

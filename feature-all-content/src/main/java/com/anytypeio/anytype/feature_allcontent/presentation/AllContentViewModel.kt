@@ -82,7 +82,7 @@ class AllContentViewModel(
 
     val uiTitleState = MutableStateFlow<UiTitleState>(UiTitleState.Hidden)
     val uiTabsState = MutableStateFlow<UiTabsState>(UiTabsState.Hidden)
-    val uiMenu = MutableStateFlow<UiMenuState>(UiMenuState.Hidden)
+    val uiMenuState = MutableStateFlow<UiMenuState>(UiMenuState.Hidden)
     val uiItemsState = MutableStateFlow<List<UiContentItem>>(emptyList())
     val uiContentState = MutableStateFlow<UiContentState>(UiContentState.Idle())
 
@@ -232,7 +232,7 @@ class AllContentViewModel(
                 items
             }.catch { e ->
                 uiContentState.value = UiContentState.Error(
-                    message = e.message ?: "Error loading objects by subscription"
+                    message = e.message ?: "An error occurred while loading data."
                 )
                 emit(emptyList())
             }
@@ -248,28 +248,31 @@ class AllContentViewModel(
             urlBuilder = urlBuilder,
             objectTypes = storeOfObjectTypes.getAll()
         )
-        return if (activeSort.canGroupByDate) {
-            groupItemsByDate(
-                items = items,
-                activeSort = activeSort
-            )
-        } else {
-            items
+        return when (activeSort) {
+            is AllContentSort.ByDateCreated -> {
+                groupItemsByDate(items = items, isSortByDateCreated = true)
+            }
+            is AllContentSort.ByDateUpdated -> {
+                groupItemsByDate(items = items, isSortByDateCreated = false)
+            }
+            is AllContentSort.ByName -> {
+                items
+            }
         }
     }
 
     private fun groupItemsByDate(
         items: List<UiContentItem.Item>,
-        activeSort: AllContentSort
+        isSortByDateCreated: Boolean
     ): List<UiContentItem> {
         val groupedItems = mutableListOf<UiContentItem>()
         var currentGroupKey: String? = null
 
         for (item in items) {
-            val timestamp = when (activeSort) {
-                is AllContentSort.ByDateCreated -> item.createdDate
-                is AllContentSort.ByDateUpdated -> item.lastModifiedDate
-                is AllContentSort.ByName -> 0L
+            val timestamp = if (isSortByDateCreated) {
+                item.createdDate
+            } else {
+                item.lastModifiedDate
             }
             val (groupKey, group) = getDateGroup(timestamp)
 
@@ -372,7 +375,7 @@ class AllContentViewModel(
                         isSelected = sort.sortType == DVSortType.DESC
                     )
                 )
-                uiMenu.value = UiMenuState.Visible(
+                uiMenuState.value = UiMenuState.Visible(
                     mode = uiMode,
                     container = container,
                     sorts = uiSorts,
@@ -485,6 +488,9 @@ class AllContentViewModel(
         }
     }
 
+    /**
+     * Updates the limit for the number of items fetched and triggers data reload.
+     */
     fun updateLimit() {
         Timber.d("Update limit, canPaginate: ${canPaginate.value} uiContentState: ${uiContentState.value}")
         if (canPaginate.value && uiContentState.value is UiContentState.Idle) {

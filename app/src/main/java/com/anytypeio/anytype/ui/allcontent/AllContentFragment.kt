@@ -111,7 +111,7 @@ class AllContentFragment : BaseComposeFragment() {
                     onQueryChanged = vm::onFilterChanged,
                     uiTabsState = vm.uiTabsState.collectAsStateWithLifecycle().value,
                     uiTitleState = vm.uiTitleState.collectAsStateWithLifecycle().value,
-                    uiMenuState = vm.uiMenu.collectAsStateWithLifecycle().value,
+                    uiMenuState = vm.uiMenuState.collectAsStateWithLifecycle().value,
                     onSortClick = vm::onSortClicked,
                     onModeClick = vm::onAllContentModeClicked,
                     onItemClicked = vm::onItemClicked,

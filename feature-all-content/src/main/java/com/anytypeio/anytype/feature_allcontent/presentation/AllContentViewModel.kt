@@ -187,7 +187,7 @@ class AllContentViewModel(
                     Timber.d("New params:$currentState, restart subscription")
                     loadData(currentState)
                 }.collect {
-                    this@AllContentViewModel.uiItemsState.value = it
+                    uiItemsState.value = it
                 }
         }
     }
@@ -324,7 +324,6 @@ class AllContentViewModel(
         }
     }
 
-    // Function to create search parameters
     private fun createSearchParams(
         activeTab: AllContentTab,
         activeQuery: String,

@@ -1530,4 +1530,5 @@ En concreto,
     <string name="all_content_no_results_title">No se encuentran resultados.</string>
     <string name="all_content_no_results_description">Prueba a buscar otros términos.</string>
     <string name="all_content_error_title">Se ha producido un error.</string>
+    <string name="onboarding_my_first_space">Mi Primer Espacio</string>
 </resources>

@@ -17,17 +17,17 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.search.SearchObjects
-import com.anytypeio.anytype.feature_allcontent.models.UiContentItem
 import com.anytypeio.anytype.feature_allcontent.models.AllContentMenuMode
 import com.anytypeio.anytype.feature_allcontent.models.AllContentMode
 import com.anytypeio.anytype.feature_allcontent.models.AllContentSort
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
-import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
-import com.anytypeio.anytype.feature_allcontent.models.UiContentState
 import com.anytypeio.anytype.feature_allcontent.models.MenuButtonViewState
 import com.anytypeio.anytype.feature_allcontent.models.MenuSortsItem
+import com.anytypeio.anytype.feature_allcontent.models.UiContentItem
+import com.anytypeio.anytype.feature_allcontent.models.UiContentState
 import com.anytypeio.anytype.feature_allcontent.models.UiMenuState
 import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
+import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
 import com.anytypeio.anytype.feature_allcontent.models.createSubscriptionParams
 import com.anytypeio.anytype.feature_allcontent.models.filtersForSearch
 import com.anytypeio.anytype.feature_allcontent.models.mapRelationKeyToSort
@@ -43,7 +43,6 @@ import java.time.format.TextStyle
 import java.time.temporal.ChronoUnit
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -61,7 +60,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -108,7 +106,7 @@ class AllContentViewModel(
     private val _uiMenu = MutableStateFlow(UiMenuState.empty())
     val uiMenu: StateFlow<UiMenuState> = _uiMenu.asStateFlow()
 
-    private val _uiContentState = MutableStateFlow<UiContentState>(UiContentState.Idle)
+    private val _uiContentState = MutableStateFlow<UiContentState>(UiContentState.Idle())
     val uiContentState: StateFlow<UiContentState> = _uiContentState.asStateFlow()
 
     private val _commands = MutableSharedFlow<Command>()
@@ -118,6 +116,7 @@ class AllContentViewModel(
      * Search query
      */
     private val userInput = MutableStateFlow(DEFAULT_QUERY)
+
     @OptIn(FlowPreview::class)
     private val searchQuery = userInput
         .take(1)
@@ -132,6 +131,8 @@ class AllContentViewModel(
     val canPaginate = MutableStateFlow(false)
     private var subscriptionLimit = DEFAULT_SEARCH_LIMIT
     private val limitUpdateTrigger = MutableStateFlow(0)
+
+    private var shouldScrollToTop = false
 
     init {
         Timber.d("AllContentViewModel init, spaceId:[${vmParams.spaceId.id}]")
@@ -234,7 +235,6 @@ class AllContentViewModel(
     private fun loadData(
         result: Result
     ): Flow<List<UiContentItem>> = flow {
-        val loadingStartTime = System.currentTimeMillis()
 
         if (subscriptionLimit == DEFAULT_SEARCH_LIMIT) {
             _uiContentState.value = UiContentState.InitLoading
@@ -253,37 +253,26 @@ class AllContentViewModel(
         )
 
         val dataFlow = storelessSubscriptionContainer.subscribe(searchParams)
-            .map { objWrappers ->
+        emitAll(
+            dataFlow.map { objWrappers ->
                 canPaginate.value = objWrappers.size == subscriptionLimit
                 val items = mapToUiContentItems(
                     objectWrappers = objWrappers,
                     activeSort = result.sort
                 )
+                _uiContentState.value = if (items.isEmpty()) {
+                    UiContentState.Empty
+                } else {
+                    UiContentState.Idle(scrollToTop = shouldScrollToTop).also {
+                        shouldScrollToTop = false
+                    }
+                }
                 items
-            }
-            .catch { e ->
+            }.catch { e ->
                 _uiContentState.value = UiContentState.Error(
                     message = e.message ?: "Error loading objects by subscription"
                 )
                 emit(emptyList())
-            }
-
-        var isFirstEmission = true
-
-        emitAll(
-            dataFlow.onEach { items ->
-                if (isFirstEmission) {
-                    val elapsedTime = System.currentTimeMillis() - loadingStartTime
-                    if (elapsedTime < DEFAULT_LOADING_DELAY) {
-                        delay(DEFAULT_LOADING_DELAY - elapsedTime)
-                    }
-                    _uiContentState.value = if (items.isEmpty()) {
-                        UiContentState.Empty
-                    } else {
-                        UiContentState.Idle
-                    }
-                    isFirstEmission = false
-                }
             }
         )
     }
@@ -439,6 +428,7 @@ class AllContentViewModel(
             }
             return
         }
+        shouldScrollToTop = true
         resetLimit()
         _uiItemsState.value = emptyList()
         _tabsState.value = tab
@@ -446,6 +436,7 @@ class AllContentViewModel(
 
     fun onAllContentModeClicked(mode: AllContentMenuMode) {
         Timber.d("onAllContentModeClicked: $mode")
+        shouldScrollToTop = true
         _uiItemsState.value = emptyList()
         _modeState.value = when (mode) {
             is AllContentMenuMode.AllContent -> AllContentMode.AllContent
@@ -455,6 +446,7 @@ class AllContentViewModel(
 
     fun onSortClicked(sort: AllContentSort) {
         Timber.d("onSortClicked: $sort")
+        shouldScrollToTop = true
         _uiItemsState.value = emptyList()
         _sortState.value = sort
         proceedWithSortSaving(sort)
@@ -530,7 +522,7 @@ class AllContentViewModel(
 
     fun updateLimit() {
         Timber.d("Update limit, canPaginate: ${canPaginate.value} uiContentState: ${_uiContentState.value}")
-        if (canPaginate.value && _uiContentState.value == UiContentState.Idle) {
+        if (canPaginate.value && _uiContentState.value is UiContentState.Idle) {
             subscriptionLimit += DEFAULT_SEARCH_LIMIT
             limitUpdateTrigger.value++
         }
@@ -568,7 +560,6 @@ class AllContentViewModel(
 
     companion object {
         const val DEFAULT_DEBOUNCE_DURATION = 300L
-        const val DEFAULT_LOADING_DELAY = 250L
 
         //INITIAL STATE
         const val DEFAULT_SEARCH_LIMIT = 100

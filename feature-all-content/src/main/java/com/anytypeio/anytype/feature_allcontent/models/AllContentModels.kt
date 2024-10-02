@@ -109,7 +109,7 @@ sealed class UiTabsState {
 
 // CONTENT
 sealed class UiContentState {
-    data object Idle : UiContentState()
+    data class Idle(val scrollToTop: Boolean = false) : UiContentState()
     data object InitLoading : UiContentState()
     data object Paging : UiContentState()
     data object Empty : UiContentState()

@@ -30,6 +30,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -80,6 +81,7 @@ import com.anytypeio.anytype.feature_allcontent.models.UiMenuState
 import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
 import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -114,7 +116,7 @@ fun AllContentWrapperScreen(
     }
 
     LaunchedEffect(key1 = shouldStartPaging.value) {
-        if (shouldStartPaging.value && uiContentState == UiContentState.Idle) {
+        if (shouldStartPaging.value && uiContentState is UiContentState.Idle) {
             onUpdateLimitSearch()
         }
     }
@@ -218,7 +220,9 @@ fun AllContentMainScreen(
                             is UiContentState.Error -> {
                                 ErrorState(uiContentState.message)
                             }
-                            UiContentState.Idle -> {}
+                            is UiContentState.Idle -> {
+                                // Do nothing.
+                            }
                             UiContentState.InitLoading -> {
                                 LoadingState()
                             }
@@ -249,6 +253,8 @@ private fun ContentItems(
     uiContentState: UiContentState,
     lazyListState: LazyListState
 ) {
+    val scope = rememberCoroutineScope()
+
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         state = lazyListState
@@ -306,6 +312,16 @@ private fun ContentItems(
                     contentAlignment = Alignment.Center
                 ) {
                     LoadingState()
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(key1 = uiContentState) {
+        if (uiContentState is UiContentState.Idle) {
+            if (uiContentState.scrollToTop)  {
+                scope.launch {
+                    lazyListState.scrollToItem(0)
                 }
             }
         }

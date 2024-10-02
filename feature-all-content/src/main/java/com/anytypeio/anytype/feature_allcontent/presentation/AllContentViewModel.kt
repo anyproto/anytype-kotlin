@@ -77,7 +77,7 @@ class AllContentViewModel(
     private val localeProvider: LocaleProvider
 ) : ViewModel() {
 
-    private val limitedObjectIds = MutableStateFlow<List<Id>>(emptyList())
+    private val searchResultIds = MutableStateFlow<List<Id>>(emptyList())
     private val sortState = MutableStateFlow<AllContentSort>(DEFAULT_INITIAL_SORT)
 
     val uiTitleState = MutableStateFlow<UiTitleState>(UiTitleState.Hidden)
@@ -105,7 +105,7 @@ class AllContentViewModel(
      * Could be true only after the first subscription results (if results size == limit)
      */
     val canPaginate = MutableStateFlow(false)
-    private var subscriptionLimit = DEFAULT_SEARCH_LIMIT
+    private var itemsLimit = DEFAULT_SEARCH_LIMIT
     private val limitUpdateTrigger = MutableStateFlow(0)
 
     private var shouldScrollToTopItems = false
@@ -113,19 +113,18 @@ class AllContentViewModel(
     init {
         Timber.d("AllContentViewModel init, spaceId:[${vmParams.spaceId.id}]")
         setupInitialStateParams()
-        proceedWithUiStateSetup()
-        proceedWithSearchStateSetup()
-        proceedWithMenuSetup()
+        setupUiStateFlow()
+        setupSearchStateFlow()
+        setupMenuFlow()
     }
 
     private fun setupInitialStateParams() {
+        uiTitleState.value = UiTitleState.AllContent
+        uiTabsState.value = UiTabsState.Default(
+            tabs = AllContentTab.entries,
+            selectedTab = DEFAULT_INITIAL_TAB
+        )
         viewModelScope.launch {
-            uiTitleState.value = UiTitleState.AllContent
-            uiTabsState.value = UiTabsState.Default(
-                tabs = AllContentTab.entries,
-                selectedTab = DEFAULT_INITIAL_TAB
-            )
-
             if (vmParams.useHistory) {
                 runCatching {
                     val initialParams = restoreAllContentState.run(
@@ -141,42 +140,45 @@ class AllContentViewModel(
         }
     }
 
-    private fun proceedWithSearchStateSetup() {
+    private fun setupSearchStateFlow() {
         viewModelScope.launch {
             searchQuery.collectLatest { query ->
                 Timber.d("New query: [$query]")
                 if (query.isBlank()) {
-                    limitedObjectIds.value = emptyList()
+                    searchResultIds.value = emptyList()
                 } else {
-                    val activeTab =
-                        uiTabsState.value as? UiTabsState.Default ?: return@collectLatest
-                    resetLimit()
-                    val searchParams = createSearchParams(
-                        activeTab = activeTab.selectedTab,
-                        activeQuery = query
-                    )
-                    searchObjects(searchParams).process(
-                        success = { searchResults ->
-                            Timber.d("Search objects by query:[$query], size: : ${searchResults.size}")
-                            limitedObjectIds.value = searchResults.map { it.id }
-                        },
-                        failure = {
-                            Timber.e(it, "Error searching objects by query")
-                        }
-                    )
+                    val activeTab = uiTabsState.value
+                    if (activeTab is UiTabsState.Default) {
+                        resetLimit()
+                        val searchParams = createSearchParams(
+                            activeTab = activeTab.selectedTab,
+                            activeQuery = query
+                        )
+                        searchObjects(searchParams).process(
+                            success = { searchResults ->
+                                Timber.d("Search objects by query:[$query], size: : ${searchResults.size}")
+                                searchResultIds.value = searchResults.map { it.id }
+                            },
+                            failure = {
+                                Timber.e(it, "Error searching objects by query")
+                            }
+                        )
+                    } else {
+                        Timber.w("Unexpected tabs state: $activeTab")
+                    }
                 }
             }
         }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private fun proceedWithUiStateSetup() {
+    private fun setupUiStateFlow() {
         viewModelScope.launch {
             combine(
                 uiTitleState,
                 uiTabsState.filterIsInstance<UiTabsState.Default>(),
                 sortState,
-                limitedObjectIds,
+                searchResultIds,
                 limitUpdateTrigger
             ) { mode, tab, sort, limitedObjectIds, _ ->
                 Result(mode, tab, sort, limitedObjectIds)
@@ -190,13 +192,13 @@ class AllContentViewModel(
         }
     }
 
-    fun subscriptionId() = "all_content_subscription_${vmParams.spaceId.id}"
+    private fun subscriptionId() = "all_content_subscription_${vmParams.spaceId.id}"
 
     private fun loadData(
         result: Result
     ): Flow<List<UiContentItem>> = flow {
 
-        if (subscriptionLimit == DEFAULT_SEARCH_LIMIT) {
+        if (itemsLimit == DEFAULT_SEARCH_LIMIT) {
             uiContentState.value = UiContentState.InitLoading
         } else {
             uiContentState.value = UiContentState.Paging
@@ -206,7 +208,7 @@ class AllContentViewModel(
             activeTab = result.tab.selectedTab,
             activeSort = result.sort,
             limitedObjectIds = result.limitedObjectIds,
-            limit = subscriptionLimit,
+            limit = itemsLimit,
             subscriptionId = subscriptionId(),
             spaceId = vmParams.spaceId.id,
             activeMode = result.mode
@@ -215,7 +217,7 @@ class AllContentViewModel(
         val dataFlow = storelessSubscriptionContainer.subscribe(searchParams)
         emitAll(
             dataFlow.map { objWrappers ->
-                canPaginate.value = objWrappers.size == subscriptionLimit
+                canPaginate.value = objWrappers.size == itemsLimit
                 val items = mapToUiContentItems(
                     objectWrappers = objWrappers,
                     activeSort = result.sort
@@ -334,7 +336,7 @@ class AllContentViewModel(
         )
     }
 
-    private fun proceedWithMenuSetup() {
+    private fun setupMenuFlow() {
         viewModelScope.launch {
             combine(
                 uiTitleState,
@@ -486,7 +488,7 @@ class AllContentViewModel(
     fun updateLimit() {
         Timber.d("Update limit, canPaginate: ${canPaginate.value} uiContentState: ${uiContentState.value}")
         if (canPaginate.value && uiContentState.value is UiContentState.Idle) {
-            subscriptionLimit += DEFAULT_SEARCH_LIMIT
+            itemsLimit += DEFAULT_SEARCH_LIMIT
             limitUpdateTrigger.value++
         }
     }
@@ -499,7 +501,7 @@ class AllContentViewModel(
 
     private fun resetLimit() {
         Timber.d("Reset limit")
-        subscriptionLimit = DEFAULT_SEARCH_LIMIT
+        itemsLimit = DEFAULT_SEARCH_LIMIT
     }
 
     data class VmParams(

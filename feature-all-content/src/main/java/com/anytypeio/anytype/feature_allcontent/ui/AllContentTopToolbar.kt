@@ -63,7 +63,6 @@ import com.anytypeio.anytype.feature_allcontent.R
 import com.anytypeio.anytype.feature_allcontent.models.AllContentMenuMode
 import com.anytypeio.anytype.feature_allcontent.models.AllContentSort
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
-import com.anytypeio.anytype.feature_allcontent.models.MenuButtonViewState
 import com.anytypeio.anytype.feature_allcontent.models.MenuSortsItem
 import com.anytypeio.anytype.feature_allcontent.models.UiMenuState
 import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
@@ -74,7 +73,6 @@ import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
 @Composable
 fun AllContentTopBarContainer(
     titleState: UiTitleState,
-    menuButtonState: MenuButtonViewState,
     uiMenuState: UiMenuState,
     onModeClick: (AllContentMenuMode) -> Unit,
     onSortClick: (AllContentSort) -> Unit,
@@ -88,7 +86,6 @@ fun AllContentTopBarContainer(
         title = { AllContentTitle(state = titleState) },
         actions = {
             AllContentMenuButton(
-                state = menuButtonState,
                 onClick = { isMenuExpanded = true }
             )
             DropdownMenu(
@@ -124,7 +121,6 @@ fun AllContentTopBarContainer(
 private fun AllContentTopBarContainerPreview() {
     AllContentTopBarContainer(
         titleState = UiTitleState.OnlyUnlinked,
-        menuButtonState = MenuButtonViewState.Visible,
         uiMenuState = UiMenuState(
             mode = listOf(
                 AllContentMenuMode.AllContent(isSelected = true),
@@ -188,21 +184,16 @@ fun AllContentTitle(state: UiTitleState) {
 
 //region AllContentMenuButton
 @Composable
-fun AllContentMenuButton(state: MenuButtonViewState, onClick: () -> Unit) {
-    when (state) {
-        MenuButtonViewState.Hidden -> return
-        MenuButtonViewState.Visible -> {
-            Image(
-                modifier = Modifier
-                    .padding(end = 12.dp)
-                    .size(32.dp)
-                    .bouncingClickable { onClick() },
-                painter = painterResource(id = R.drawable.ic_space_list_dots),
-                contentDescription = "Menu icon",
-                contentScale = ContentScale.Inside
-            )
-        }
-    }
+fun AllContentMenuButton(onClick: () -> Unit) {
+    Image(
+        modifier = Modifier
+            .padding(end = 12.dp)
+            .size(32.dp)
+            .bouncingClickable { onClick() },
+        painter = painterResource(id = R.drawable.ic_space_list_dots),
+        contentDescription = "Menu icon",
+        contentScale = ContentScale.Inside
+    )
 }
 //endregion
 

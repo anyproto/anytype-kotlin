@@ -15,13 +15,11 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
-import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.feature_allcontent.models.AllContentMenuMode
 import com.anytypeio.anytype.feature_allcontent.models.AllContentMode
 import com.anytypeio.anytype.feature_allcontent.models.AllContentSort
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
-import com.anytypeio.anytype.feature_allcontent.models.MenuButtonViewState
 import com.anytypeio.anytype.feature_allcontent.models.MenuSortsItem
 import com.anytypeio.anytype.feature_allcontent.models.UiContentItem
 import com.anytypeio.anytype.feature_allcontent.models.UiContentState
@@ -56,6 +54,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -85,19 +84,13 @@ class AllContentViewModel(
 
     private val _limitedObjectIds: MutableStateFlow<List<String>> = MutableStateFlow(emptyList())
 
-    private val _tabsState = MutableStateFlow<AllContentTab>(DEFAULT_INITIAL_TAB)
     private val _modeState = MutableStateFlow<AllContentMode>(DEFAULT_INITIAL_MODE)
     private val _sortState = MutableStateFlow<AllContentSort>(DEFAULT_INITIAL_SORT)
 
     private val _uiTitleState = MutableStateFlow<UiTitleState>(UiTitleState.Hidden)
     val uiTitleState: StateFlow<UiTitleState> = _uiTitleState.asStateFlow()
 
-    private val _uiMenuButtonState =
-        MutableStateFlow<MenuButtonViewState>(MenuButtonViewState.Hidden)
-    val uiMenuButtonState: StateFlow<MenuButtonViewState> = _uiMenuButtonState.asStateFlow()
-
-    private val _uiTabsState = MutableStateFlow<UiTabsState>(UiTabsState.Hidden)
-    val uiTabsState: StateFlow<UiTabsState> = _uiTabsState.asStateFlow()
+    val uiTabsState = MutableStateFlow<UiTabsState>(UiTabsState.Hidden)
 
     private val _uiItemsState = MutableStateFlow<List<UiContentItem>>(emptyList())
     val uiItemsState: StateFlow<List<UiContentItem>> = _uiItemsState.asStateFlow()
@@ -137,7 +130,6 @@ class AllContentViewModel(
         Timber.d("AllContentViewModel init, spaceId:[${vmParams.spaceId.id}]")
         setupInitialStateParams()
         proceedWithUiTitleStateSetup()
-        proceedWithUiTabsStateSetup()
         proceedWithUiStateSetup()
         proceedWithSearchStateSetup()
         proceedWithMenuSetup()
@@ -148,25 +140,17 @@ class AllContentViewModel(
             _modeState.collectLatest { result ->
                 Timber.d("New mode: [$result]")
                 _uiTitleState.value = result.view()
-                _uiMenuButtonState.value = MenuButtonViewState.Visible
-            }
-        }
-    }
-
-    private fun proceedWithUiTabsStateSetup() {
-        viewModelScope.launch {
-            _tabsState.collectLatest { result ->
-                Timber.d("New tab: [$result]")
-                _uiTabsState.value = UiTabsState.Default(
-                    tabs = AllContentTab.entries,
-                    selectedTab = result
-                )
             }
         }
     }
 
     private fun setupInitialStateParams() {
         viewModelScope.launch {
+            uiTabsState.value = UiTabsState.Default(
+                tabs = AllContentTab.entries,
+                selectedTab = DEFAULT_INITIAL_TAB
+            )
+
             if (vmParams.useHistory) {
                 runCatching {
                     val initialParams = restoreAllContentState.run(
@@ -189,9 +173,10 @@ class AllContentViewModel(
                 if (query.isBlank()) {
                     _limitedObjectIds.value = emptyList()
                 } else {
+                    val activeTab = uiTabsState.value as? UiTabsState.Default ?: return@collectLatest
                     resetLimit()
                     val searchParams = createSearchParams(
-                        activeTab = _tabsState.value,
+                        activeTab = activeTab.selectedTab,
                         activeQuery = query
                     )
                     searchObjects(searchParams).process(
@@ -213,7 +198,7 @@ class AllContentViewModel(
         viewModelScope.launch {
             combine(
                 _modeState,
-                _tabsState,
+                uiTabsState.filterIsInstance<UiTabsState.Default>(),
                 _sortState,
                 _limitedObjectIds,
                 limitUpdateTrigger
@@ -242,7 +227,7 @@ class AllContentViewModel(
         }
 
         val searchParams = createSubscriptionParams(
-            activeTab = result.tab,
+            activeTab = result.tab.selectedTab,
             activeSort = result.sort,
             limitedObjectIds = result.limitedObjectIds,
             limit = subscriptionLimit,
@@ -430,7 +415,10 @@ class AllContentViewModel(
         shouldScrollToTop = true
         resetLimit()
         _uiItemsState.value = emptyList()
-        _tabsState.value = tab
+        uiTabsState.value = UiTabsState.Default(
+            tabs = AllContentTab.entries,
+            selectedTab = tab
+        )
     }
 
     fun onAllContentModeClicked(mode: AllContentMenuMode) {
@@ -545,7 +533,7 @@ class AllContentViewModel(
 
     internal data class Result(
         val mode: AllContentMode,
-        val tab: AllContentTab,
+        val tab: UiTabsState.Default,
         val sort: AllContentSort,
         val limitedObjectIds: List<String>
     )

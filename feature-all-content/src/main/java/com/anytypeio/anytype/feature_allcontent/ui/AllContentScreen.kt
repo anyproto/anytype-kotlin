@@ -74,7 +74,6 @@ import com.anytypeio.anytype.feature_allcontent.R
 import com.anytypeio.anytype.feature_allcontent.models.AllContentMenuMode
 import com.anytypeio.anytype.feature_allcontent.models.AllContentSort
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
-import com.anytypeio.anytype.feature_allcontent.models.MenuButtonViewState
 import com.anytypeio.anytype.feature_allcontent.models.UiContentItem
 import com.anytypeio.anytype.feature_allcontent.models.UiContentState
 import com.anytypeio.anytype.feature_allcontent.models.UiMenuState
@@ -88,7 +87,6 @@ import kotlinx.coroutines.launch
 fun AllContentWrapperScreen(
     uiTitleState: UiTitleState,
     uiTabsState: UiTabsState,
-    uiMenuButtonViewState: MenuButtonViewState,
     uiMenuState: UiMenuState,
     uiItemsState: List<UiContentItem>,
     onTabClick: (AllContentTab) -> Unit,
@@ -124,7 +122,6 @@ fun AllContentWrapperScreen(
     AllContentMainScreen(
         uiTitleState = uiTitleState,
         uiTabsState = uiTabsState,
-        uiMenuButtonViewState = uiMenuButtonViewState,
         onTabClick = onTabClick,
         onQueryChanged = onQueryChanged,
         uiMenuState = uiMenuState,
@@ -144,7 +141,6 @@ fun AllContentMainScreen(
     uiItemsState: List<UiContentItem>,
     uiTitleState: UiTitleState,
     uiTabsState: UiTabsState,
-    uiMenuButtonViewState: MenuButtonViewState,
     uiMenuState: UiMenuState,
     onTabClick: (AllContentTab) -> Unit,
     onQueryChanged: (String) -> Unit,
@@ -176,7 +172,6 @@ fun AllContentMainScreen(
                 if (uiTitleState !is UiTitleState.Hidden) {
                     AllContentTopBarContainer(
                         titleState = uiTitleState,
-                        menuButtonState = uiMenuButtonViewState,
                         uiMenuState = uiMenuState,
                         onSortClick = onSortClick,
                         onModeClick = onModeClick,
@@ -357,7 +352,6 @@ fun PreviewMainScreen() {
         uiItemsState = emptyList(),
         uiTitleState = UiTitleState.AllContent,
         uiTabsState = UiTabsState.Default(tabs = listOf(AllContentTab.PAGES, AllContentTab.TYPES, AllContentTab.LISTS), selectedTab = AllContentTab.LISTS),
-        uiMenuButtonViewState = MenuButtonViewState.Visible,
         uiMenuState = UiMenuState.empty(),
         onTabClick = {},
         onQueryChanged = {},

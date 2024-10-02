@@ -89,12 +89,6 @@ sealed class UiTitleState {
     data object OnlyUnlinked : UiTitleState()
 }
 
-//MENU BUTTON
-sealed class MenuButtonViewState {
-    data object Hidden : MenuButtonViewState()
-    data object Visible : MenuButtonViewState()
-}
-
 // TABS
 @Immutable
 sealed class UiTabsState {

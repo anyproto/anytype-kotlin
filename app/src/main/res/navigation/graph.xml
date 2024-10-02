@@ -214,6 +214,9 @@
         <action
             android:id="@+id/actionCreateSpaceFromVault"
             app:destination="@id/createSpaceScreen" />
+        <action
+            android:id="@+id/actionShowIntroduceVaultScreen"
+            app:destination="@id/introduceVaultScreen" />
     </fragment>
 
     <dialog
@@ -224,6 +227,11 @@
             app:popUpTo="@+id/vaultScreen"
             app:popUpToInclusive="false" />
     </dialog>
+
+    <dialog
+        android:id="@+id/introduceVaultScreen"
+        android:name="com.anytypeio.anytype.ui.vault.IntroduceVaultFragment"
+        android:label="IntroduceVaultScreen"/>
 
     <dialog
         android:id="@+id/spaceSettingsScreen"

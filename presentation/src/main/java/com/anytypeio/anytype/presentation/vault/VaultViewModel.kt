@@ -19,6 +19,7 @@ import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import javax.inject.Inject
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -109,6 +110,13 @@ class VaultViewModel(
         }
     }
 
+    fun onResume() {
+        viewModelScope.launch {
+            delay(300)
+            commands.emit(Command.ShowIntroduceVault)
+        }
+    }
+
     private suspend fun proceedWithSavingCurrentSpace(targetSpace: String) {
         saveCurrentSpace.async(
             SaveCurrentSpace.Params(SpaceId(targetSpace))
@@ -151,5 +159,6 @@ class VaultViewModel(
         data object EnterSpaceHomeScreen: Command()
         data object CreateNewSpace: Command()
         data class OpenProfileSettings(val space: SpaceId): Command()
+        data object ShowIntroduceVault : Command()
     }
 }

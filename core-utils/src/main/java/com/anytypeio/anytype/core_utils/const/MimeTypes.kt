@@ -88,7 +88,8 @@ object MimeTypes {
         "application/vnd.rar",
         "application/java-archive",
         "application/x-tar",
-        "application/x-7z-compressed"
+        "application/x-7z-compressed",
+        "application/rar"
     )
 
     private val TABLE = listOf(

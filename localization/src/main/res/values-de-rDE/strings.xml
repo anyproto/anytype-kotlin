@@ -1506,8 +1506,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="all_content_title_tab_media">Medien</string>
     <string name="all_content_title_tab_bookmarks">Lesezeichen</string>
     <string name="all_content_title_tab_files">Dateien</string>
-    <string name="all_content_title_tab_objetc_types">Object Types</string>
-    <string name="all_content_title_tab_relations">Verknüpfungen</string>
+    <string name="all_content_title_tab_objetc_types">Objekttypen</string>
     <string name="all_content_sort_by">Sortiere nach</string>
     <string name="all_content_sort_name_desc">Z → A</string>
     <string name="all_content_sort_name_asc">A → Z</string>
@@ -1526,4 +1525,9 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="introduce_vault_text_3">By default, we blur the icon of your space as a background. If needed, you can change it in the space-settings.</string>
     <string name="introduce_vault_welcome_to_the_vault">Willkommen im Tresor</string>
     <string name="introduce_vault_simple_flexible"><![CDATA[Einfach & flexibel]]></string>
+    <string name="allContent_empty_state_title">Hier ist es leer.</string>
+    <string name="allContent_empty_state_description">Erstelle deine ersten Objekte, um loszulegen.</string>
+    <string name="all_content_no_results_title">Keine Ergebnisse gefunden.</string>
+    <string name="all_content_no_results_description">Versuche mit anderen Schlüsselwörtern zu suchen.</string>
+    <string name="all_content_error_title">Etwas ist schiefgelaufen.</string>
 </resources>

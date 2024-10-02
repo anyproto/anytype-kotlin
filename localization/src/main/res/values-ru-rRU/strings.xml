@@ -1536,7 +1536,6 @@
     <string name="all_content_title_tab_bookmarks">Закладки</string>
     <string name="all_content_title_tab_files">Files</string>
     <string name="all_content_title_tab_objetc_types">Типы объектов</string>
-    <string name="all_content_title_tab_relations">Свойства</string>
     <string name="all_content_sort_by">Сортировать по</string>
     <string name="all_content_sort_name_desc">Я → А</string>
     <string name="all_content_sort_name_asc">А → Я</string>
@@ -1550,9 +1549,14 @@
     <string name="allContent_group_yesterday">Вчера</string>
     <string name="allContent_group_prev_7">За последние 7 дней</string>
     <string name="allContent_group_prev_14">За последние 14 дней</string>
-    <string name="introduce_vault_text_1">Vault is the new home for all your Spaces.\nCreate, join, or share Spaces – everything is securely stored here.</string>
+    <string name="introduce_vault_text_1">Хранилище является новым домом для всех ваших пространств. Создавайте, присоединяйтесь  или делитесь пространствами – все безопасно хранится здесь.</string>
     <string name="introduce_vault_text_2">Теперь вы можете легко изменять порядок ваших пространств, перетаскивая их и перемещаясь по ним легче.</string>
     <string name="introduce_vault_text_3">По умолчанию мы размываем иконку вашего пространства в фоновом режиме. При необходимости вы можете изменить ее в настройках пространства.</string>
     <string name="introduce_vault_welcome_to_the_vault">Добро пожаловать в Хранилище</string>
     <string name="introduce_vault_simple_flexible"><![CDATA[Просто и гибко]]></string>
+    <string name="allContent_empty_state_title">Здесь пусто.</string>
+    <string name="allContent_empty_state_description">Здесь пусто. Создайте свои первые объекты, чтобы начать работу.</string>
+    <string name="all_content_no_results_title">Результаты не найдены.</string>
+    <string name="all_content_no_results_description">Попробуйте искать по другим ключевым словам.</string>
+    <string name="all_content_error_title">Что-то пошло не так.</string>
 </resources>

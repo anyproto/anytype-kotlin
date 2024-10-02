@@ -1508,7 +1508,6 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_title_tab_bookmarks">Segnalibri</string>
     <string name="all_content_title_tab_files">File</string>
     <string name="all_content_title_tab_objetc_types">Tipi di Oggetto</string>
-    <string name="all_content_title_tab_relations">Relazioni</string>
     <string name="all_content_sort_by">Sort by</string>
     <string name="all_content_sort_name_desc">Z → A</string>
     <string name="all_content_sort_name_asc">A → Z</string>
@@ -1527,4 +1526,9 @@ Please provide specific details of your needs here.</string>
     <string name="introduce_vault_text_3">Per impostazione predefinita, sfumiamo l\'icona del tuo spazio come sfondo. Se necessario, puoi modificarla nelle impostazioni dello spazio.</string>
     <string name="introduce_vault_welcome_to_the_vault">Benvenuto nella Cassaforte</string>
     <string name="introduce_vault_simple_flexible"><![CDATA[Semplice & Flessibile]]></string>
+    <string name="allContent_empty_state_title">It’s empty here.</string>
+    <string name="allContent_empty_state_description">Create your first objects to get started.</string>
+    <string name="all_content_no_results_title">No results found.</string>
+    <string name="all_content_no_results_description">Try searching with different keywords.</string>
+    <string name="all_content_error_title">Something went wrong.</string>
 </resources>

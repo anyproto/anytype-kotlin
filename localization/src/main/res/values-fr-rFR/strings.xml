@@ -1324,7 +1324,7 @@
     <string name="payments_tier_current_paid_by_apple">Abonnement Apple</string>
     <string name="payments_tier_current_paid_by_google">Abonnement Google</string>
     <string name="payments_tier_current_button">Gérer un paiement</string>
-    <string name="membership_manage_tier_desktop">You can manage tier on Desktop platform</string>
+    <string name="membership_manage_tier_desktop">Vous pouvez gérer l\'offre à partir de l\'application de bureau</string>
     <string name="membership_manage_tier_ios">Vous pouvez gérer le niveau sur la plateforme iOS</string>
     <string name="membership_manage_tier_another_account">Vous pouvez gérer le niveau sur un autre compte Google</string>
     <string name="payments_tier_current_change_email_button">Modifier l\'adresse e-mail</string>
@@ -1504,7 +1504,6 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="all_content_title_tab_bookmarks">Signets</string>
     <string name="all_content_title_tab_files">Fichiers</string>
     <string name="all_content_title_tab_objetc_types">Types d\'objets</string>
-    <string name="all_content_title_tab_relations">Relations</string>
     <string name="all_content_sort_by">Sort by</string>
     <string name="all_content_sort_name_desc">Z → A</string>
     <string name="all_content_sort_name_asc">A → Z</string>
@@ -1520,7 +1519,12 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="allContent_group_prev_14">14 jours précédents</string>
     <string name="introduce_vault_text_1">Vault is the new home for all your Spaces.\nCreate, join, or share Spaces – everything is securely stored here.</string>
     <string name="introduce_vault_text_2">Vous pouvez maintenant facilement réorganiser vos espaces en utilisant glisser-déposer et les naviguer plus facilement.</string>
-    <string name="introduce_vault_text_3">By default, we blur the icon of your space as a background. If needed, you can change it in the space-settings.</string>
-    <string name="introduce_vault_welcome_to_the_vault">Welcome to the Vault</string>
+    <string name="introduce_vault_text_3">Par défaut, nous utilisons une icône floutée de votre espace en tant qu\'arrière-plan. Vous pouvez changer cela dans les paramètres de l\'espace.</string>
+    <string name="introduce_vault_welcome_to_the_vault">Bienvenue dans le coffre-fort</string>
     <string name="introduce_vault_simple_flexible"><![CDATA[Simple & Flexible]]></string>
+    <string name="allContent_empty_state_title">C\'est vide ici.</string>
+    <string name="allContent_empty_state_description">Créez vos premiers objets pour commencer.</string>
+    <string name="all_content_no_results_title">Aucun résultat trouvé.</string>
+    <string name="all_content_no_results_description">Essayez de rechercher avec différents mots-clés.</string>
+    <string name="all_content_error_title">Un problème est survenu.</string>
 </resources>

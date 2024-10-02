@@ -396,11 +396,13 @@ class DefaultUserSettingsCache(
         return context.vaultPrefsStore
             .data
             .map { prefs ->
+                val curr = prefs.preferences.getOrDefault(
+                    key = account.id,
+                    defaultValue = VaultPreference()
+                )
                 VaultSettings(
-                    orderOfSpaces = prefs.preferences.getOrDefault(
-                        key = account.id,
-                        defaultValue = VaultPreference()
-                    ).orderOfSpaces
+                    orderOfSpaces = curr.orderOfSpaces,
+                    showIntroduceVault = true
                 )
             }
             .first()
@@ -410,11 +412,15 @@ class DefaultUserSettingsCache(
         return context.vaultPrefsStore
             .data
             .map { prefs ->
+                val curr = prefs.preferences.getOrDefault(
+                    key = account.id,
+                    defaultValue = VaultPreference(
+
+                    )
+                )
                 VaultSettings(
-                    orderOfSpaces = prefs.preferences.getOrDefault(
-                        key = account.id,
-                        defaultValue = VaultPreference()
-                    ).orderOfSpaces
+                    orderOfSpaces = curr.orderOfSpaces,
+                    showIntroduceVault = true
                 )
             }
     }
@@ -429,6 +435,23 @@ class DefaultUserSettingsCache(
                 preferences = existingPreferences.preferences + mapOf(
                     account.id to curr.copy(
                         orderOfSpaces = order
+                    )
+                )
+            )
+        }
+    }
+
+    override suspend fun setVaultSettings(account: Account, settings: VaultSettings) {
+        context.vaultPrefsStore.updateData { existingPreferences ->
+            val curr = existingPreferences.preferences.getOrDefault(
+                key = account.id,
+                defaultValue = VaultPreference()
+            )
+            existingPreferences.copy(
+                preferences = existingPreferences.preferences + mapOf(
+                    account.id to VaultPreference(
+                        orderOfSpaces = settings.orderOfSpaces,
+                        showIntroduceVault = settings.showIntroduceVault
                     )
                 )
             )

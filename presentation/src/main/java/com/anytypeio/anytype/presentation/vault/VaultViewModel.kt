@@ -9,9 +9,12 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
+import com.anytypeio.anytype.domain.vault.GetVaultSettings
+import com.anytypeio.anytype.domain.vault.SetVaultSettings
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -19,7 +22,6 @@ import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import javax.inject.Inject
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -32,6 +34,8 @@ class VaultViewModel(
     private val getSpaceWallpapers: GetSpaceWallpapers,
     private val spaceManager: SpaceManager,
     private val saveCurrentSpace: SaveCurrentSpace,
+    private val getVaultSettings: GetVaultSettings,
+    private val setVaultSettings: SetVaultSettings
 ) : BaseViewModel() {
 
     val spaces = MutableStateFlow<List<VaultSpaceView>>(emptyList())
@@ -112,8 +116,16 @@ class VaultViewModel(
 
     fun onResume() {
         viewModelScope.launch {
-            delay(300)
-            commands.emit(Command.ShowIntroduceVault)
+            getVaultSettings.async(Unit).onSuccess { settings ->
+                if (settings.showIntroduceVault) {
+                    commands.emit(Command.ShowIntroduceVault)
+                    setVaultSettings.async(
+                        params = settings.copy(
+                            showIntroduceVault = false
+                        )
+                    )
+                }
+            }
         }
     }
 
@@ -136,6 +148,8 @@ class VaultViewModel(
         private val urlBuilder: UrlBuilder,
         private val spaceManager: SpaceManager,
         private val saveCurrentSpace: SaveCurrentSpace,
+        private val getVaultSettings: GetVaultSettings,
+        private val setVaultSettings: SetVaultSettings
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -145,7 +159,9 @@ class VaultViewModel(
             getSpaceWallpapers = getSpaceWallpapers,
             urlBuilder = urlBuilder,
             spaceManager = spaceManager,
-            saveCurrentSpace = saveCurrentSpace
+            saveCurrentSpace = saveCurrentSpace,
+            getVaultSettings = getVaultSettings,
+            setVaultSettings = setVaultSettings
         ) as T
     }
 

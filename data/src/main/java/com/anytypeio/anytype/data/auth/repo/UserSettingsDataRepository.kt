@@ -95,6 +95,10 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
         return cache.getVaultSettings(account)
     }
 
+    override suspend fun setVaultSettings(account: Account, settings: VaultSettings) {
+        cache.setVaultSettings(account, settings)
+    }
+
     override suspend fun observeVaultSettings(account: Account): Flow<VaultSettings> {
         return cache.observeVaultSettings(account)
     }

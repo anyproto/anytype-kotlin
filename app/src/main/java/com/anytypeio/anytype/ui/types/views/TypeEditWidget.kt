@@ -36,7 +36,8 @@ fun TypeEditWidget(
     onLeadingIconClick: () -> Unit,
     imeOptions: ImeOptions = ImeOptions.Default,
     onImeDoneClick: (name: String) -> Unit = {},
-    shouldMoveCursor: Boolean
+    shouldMoveCursor: Boolean,
+    isReadOnly: Boolean
 ) {
 
     val focusRequester = remember { FocusRequester() }
@@ -59,6 +60,7 @@ fun TypeEditWidget(
                 nameValid.value = this.isNotEmpty()
             }
         },
+        enabled = !isReadOnly,
         modifier = Modifier
             .focusRequester(focusRequester)
             .offset(OffsetX)

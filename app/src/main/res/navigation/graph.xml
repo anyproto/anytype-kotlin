@@ -404,7 +404,11 @@
     <fragment
         android:id="@+id/allContentScreen"
         android:name="com.anytypeio.anytype.ui.allcontent.AllContentFragment"
-        android:label="AllContentScreen" />
+        android:label="AllContentScreen">
+        <action
+            android:id="@+id/openTypeEditingScreen"
+            app:destination="@id/typeEditingFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/libraryFragment"

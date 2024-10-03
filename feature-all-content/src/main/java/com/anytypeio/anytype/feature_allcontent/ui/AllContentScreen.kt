@@ -55,6 +55,7 @@ import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.PreviewTitle1Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.UXBody
@@ -94,6 +95,7 @@ fun AllContentWrapperScreen(
     onModeClick: (AllContentMenuMode) -> Unit,
     onSortClick: (AllContentSort) -> Unit,
     onItemClicked: (UiContentItem.Item) -> Unit,
+    onTypeClicked: (UiContentItem.Type) -> Unit,
     onBinClick: () -> Unit,
     canPaginate: Boolean,
     onUpdateLimitSearch: () -> Unit,
@@ -131,7 +133,8 @@ fun AllContentWrapperScreen(
         onBinClick = onBinClick,
         uiItemsState = uiItemsState,
         lazyListState = lazyListState,
-        uiContentState = uiContentState
+        uiContentState = uiContentState,
+        onTypeClicked = onTypeClicked
     )
 }
 
@@ -147,6 +150,7 @@ fun AllContentMainScreen(
     onModeClick: (AllContentMenuMode) -> Unit,
     onSortClick: (AllContentSort) -> Unit,
     onItemClicked: (UiContentItem.Item) -> Unit,
+    onTypeClicked: (UiContentItem.Type) -> Unit,
     onBinClick: () -> Unit,
     lazyListState: LazyListState,
     uiContentState: UiContentState
@@ -169,20 +173,15 @@ fun AllContentMainScreen(
                 else
                     Modifier.fillMaxWidth()
             ) {
-                if (uiTitleState !is UiTitleState.Hidden) {
-                    AllContentTopBarContainer(
-                        titleState = uiTitleState,
-                        uiMenuState = uiMenuState,
-                        onSortClick = onSortClick,
-                        onModeClick = onModeClick,
-                        onBinClick = onBinClick
-                    )
-                }
-
-                if (uiTabsState is UiTabsState.Default) {
-                    AllContentTabs(tabsViewState = uiTabsState) { tab ->
-                        onTabClick(tab)
-                    }
+                AllContentTopBarContainer(
+                    titleState = uiTitleState,
+                    uiMenuState = uiMenuState,
+                    onSortClick = onSortClick,
+                    onModeClick = onModeClick,
+                    onBinClick = onBinClick
+                )
+                AllContentTabs(tabsViewState = uiTabsState) { tab ->
+                    onTabClick(tab)
                 }
                 Spacer(modifier = Modifier.size(10.dp))
                 AllContentSearchBar(onQueryChanged = {
@@ -231,6 +230,7 @@ fun AllContentMainScreen(
                         ContentItems(
                             uiItemsState = uiItemsState,
                             onItemClicked = onItemClicked,
+                            onTypeClicked = onTypeClicked,
                             uiContentState = uiContentState,
                             lazyListState = lazyListState
                         )
@@ -245,6 +245,7 @@ fun AllContentMainScreen(
 private fun ContentItems(
     uiItemsState: List<UiContentItem>,
     onItemClicked: (UiContentItem.Item) -> Unit,
+    onTypeClicked: (UiContentItem.Type) -> Unit,
     uiContentState: UiContentState,
     lazyListState: LazyListState
 ) {
@@ -261,6 +262,7 @@ private fun ContentItems(
                 when (uiItemsState[index]) {
                     is UiContentItem.Group -> "group"
                     is UiContentItem.Item -> "item"
+                    is UiContentItem.Type -> "type"
                 }
             }
         ) { index ->
@@ -292,6 +294,19 @@ private fun ContentItems(
                             .animateItem()
                             .clickable {
                                 onItemClicked(item)
+                            },
+                        item = item
+                    )
+                }
+
+                is UiContentItem.Type -> {
+                    Type(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .bottomBorder()
+                            .animateItem()
+                            .clickable {
+                                onTypeClicked(item)
                             },
                         item = item
                     )
@@ -351,7 +366,7 @@ fun PreviewMainScreen() {
     AllContentMainScreen(
         uiItemsState = emptyList(),
         uiTitleState = UiTitleState.AllContent,
-        uiTabsState = UiTabsState.Default(tabs = listOf(AllContentTab.PAGES, AllContentTab.TYPES, AllContentTab.LISTS), selectedTab = AllContentTab.LISTS),
+        uiTabsState = UiTabsState(tabs = listOf(AllContentTab.PAGES, AllContentTab.TYPES, AllContentTab.LISTS), selectedTab = AllContentTab.LISTS),
         uiMenuState = UiMenuState.Hidden,
         onTabClick = {},
         onQueryChanged = {},
@@ -360,7 +375,8 @@ fun PreviewMainScreen() {
         onItemClicked = {},
         onBinClick = {},
         lazyListState = rememberLazyListState(),
-        uiContentState = UiContentState.Error("Error message")
+        uiContentState = UiContentState.Error("Error message"),
+        onTypeClicked = {}
     )
 }
 
@@ -422,8 +438,36 @@ private fun Item(
 }
 
 @Composable
+private fun Type(
+    modifier: Modifier,
+    item: UiContentItem.Type
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(start = 0.dp, top = 14.dp, end = 14.dp, bottom = 14.dp)
+                .wrapContentSize()
+        ) {
+            AllContentItemIcon(icon = item.icon, modifier = Modifier, iconSize = 24.dp)
+        }
+        val name = item.name.trim().ifBlank { stringResource(R.string.untitled) }
+
+        Text(
+            text = name,
+            style = PreviewTitle1Medium,
+            color = colorResource(id = R.color.text_primary),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+@Composable
 fun AllContentItemIcon(
-    icon: ObjectIcon,
+    icon: ObjectIcon?,
     modifier: Modifier,
     iconSize: Dp = 48.dp,
     onTaskIconClicked: (Boolean) -> Unit = {},

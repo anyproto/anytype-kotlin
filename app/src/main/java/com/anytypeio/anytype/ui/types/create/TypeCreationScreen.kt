@@ -38,7 +38,8 @@ fun TypeCreationScreen(vm: CreateObjectTypeViewModel, preparedName: String) {
             objectIcon = state.objectIcon,
             onLeadingIconClick = vm::openEmojiPicker,
             shouldMoveCursor = preparedName.trim().isNotEmpty(),
-            onImeDoneClick = vm::createType
+            onImeDoneClick = vm::createType,
+            isReadOnly = false
         )
     }
 

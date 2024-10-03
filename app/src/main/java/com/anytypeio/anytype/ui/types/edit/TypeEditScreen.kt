@@ -38,7 +38,8 @@ fun TypeEditScreen(vm: TypeEditViewModel, preparedName: String, readOnly: Boolea
             onLeadingIconClick = vm::openEmojiPicker,
             onImeDoneClick = vm::updateObjectDetails,
             imeOptions = ImeOptions.Done,
-            shouldMoveCursor = preparedName.trim().isNotEmpty()
+            shouldMoveCursor = preparedName.trim().isNotEmpty(),
+            isReadOnly = readOnly
         )
     }
 

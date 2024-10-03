@@ -160,7 +160,6 @@ private fun AllContentTopBarContainerPreview() {
 @Composable
 fun AllContentTitle(state: UiTitleState) {
     when (state) {
-        UiTitleState.Hidden -> return
         UiTitleState.AllContent -> {
             Text(
                 modifier = Modifier
@@ -202,7 +201,7 @@ fun AllContentMenuButton(onClick: () -> Unit) {
 //region AllContentTabs
 @Composable
 fun AllContentTabs(
-    tabsViewState: UiTabsState.Default,
+    tabsViewState: UiTabsState,
     onClick: (AllContentTab) -> Unit
 ) {
     val scrollState = rememberLazyListState()
@@ -270,7 +269,7 @@ private fun getTabText(tab: AllContentTab): String {
 @Composable
 private fun AllContentTabsPreview() {
     AllContentTabs(
-        tabsViewState = UiTabsState.Default(
+        tabsViewState = UiTabsState(
             tabs = listOf(
                 AllContentTab.PAGES,
                 AllContentTab.FILES,

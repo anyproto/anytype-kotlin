@@ -25,8 +25,8 @@ import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModelFactory
-import com.anytypeio.anytype.feature_allcontent.ui.AllContentWrapperScreen
 import com.anytypeio.anytype.feature_allcontent.ui.AllContentNavigation.ALL_CONTENT_MAIN
+import com.anytypeio.anytype.feature_allcontent.ui.AllContentWrapperScreen
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.settings.typography
@@ -106,17 +106,19 @@ class AllContentFragment : BaseComposeFragment() {
         ) {
             composable(route = ALL_CONTENT_MAIN) {
                 AllContentWrapperScreen(
-                    uiState = vm.uiState.collectAsStateWithLifecycle().value,
+                    uiItemsState = vm.uiItemsState.collectAsStateWithLifecycle().value,
                     onTabClick = vm::onTabClicked,
                     onQueryChanged = vm::onFilterChanged,
                     uiTabsState = vm.uiTabsState.collectAsStateWithLifecycle().value,
                     uiTitleState = vm.uiTitleState.collectAsStateWithLifecycle().value,
-                    uiMenuButtonViewState = vm.uiMenuButtonState.collectAsStateWithLifecycle().value,
-                    uiMenuState = vm.uiMenu.collectAsStateWithLifecycle().value,
+                    uiMenuState = vm.uiMenuState.collectAsStateWithLifecycle().value,
                     onSortClick = vm::onSortClicked,
                     onModeClick = vm::onAllContentModeClicked,
                     onItemClicked = vm::onItemClicked,
-                    onBinClick = vm::onViewBinClicked
+                    onBinClick = vm::onViewBinClicked,
+                    canPaginate = vm.canPaginate.collectAsStateWithLifecycle().value,
+                    onUpdateLimitSearch = vm::updateLimit,
+                    uiContentState = vm.uiContentState.collectAsStateWithLifecycle().value,
                 )
             }
         }

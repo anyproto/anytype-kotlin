@@ -15,6 +15,7 @@ message VaultPreferences {
 
 message VaultPreference {
   repeated string orderOfSpaces = 1;
+  bool showIntroduceVault = 2;
 }
 
 message SpacePreference {

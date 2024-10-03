@@ -18,25 +18,9 @@ import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.objects.getProperType
 
 //region STATE
-sealed class AllContentState {
-    data object Init : AllContentState()
-    data class Default(
-        val activeTab: AllContentTab,
-        val activeMode: AllContentMode,
-        val activeSort: AllContentSort,
-        val filter: String,
-        val limit: Int
-    ) : AllContentState()
-}
-
 @Immutable
 enum class AllContentTab {
     PAGES, LISTS, MEDIA, BOOKMARKS, FILES, TYPES
-}
-
-sealed class AllContentMode {
-    data object AllContent : AllContentMode()
-    data object Unlinked : AllContentMode()
 }
 
 sealed class AllContentMenuMode {
@@ -89,12 +73,6 @@ sealed class UiTitleState {
     data object OnlyUnlinked : UiTitleState()
 }
 
-//MENU BUTTON
-sealed class MenuButtonViewState {
-    data object Hidden : MenuButtonViewState()
-    data object Visible : MenuButtonViewState()
-}
-
 // TABS
 @Immutable
 sealed class UiTabsState {
@@ -109,18 +87,12 @@ sealed class UiTabsState {
 
 // CONTENT
 sealed class UiContentState {
-
-    data object Hidden : UiContentState()
-
-    data object Loading : UiContentState()
-
+    data class Idle(val scrollToTop: Boolean = false) : UiContentState()
+    data object InitLoading : UiContentState()
+    data object Paging : UiContentState()
+    data object Empty : UiContentState()
     data class Error(
         val message: String,
-    ) : UiContentState()
-
-    @Immutable
-    data class Content(
-        val items: List<UiContentItem>,
     ) : UiContentState()
 }
 
@@ -160,24 +132,20 @@ sealed class UiContentItem {
 
 // MENU
 @Immutable
-data class UiMenuState(
-    val mode: List<AllContentMenuMode>,
-    val container: MenuSortsItem.Container,
-    val sorts: List<MenuSortsItem.Sort>,
-    val types: List<MenuSortsItem.SortType>,
-    val showBin: Boolean = true
-) {
-    companion object {
-        fun empty(): UiMenuState {
-            return UiMenuState(
-                mode = emptyList(),
-                container = MenuSortsItem.Container(AllContentSort.ByName()),
-                sorts = emptyList(),
-                types = emptyList()
-            )
-        }
-    }
+sealed class UiMenuState{
+
+    data object Hidden : UiMenuState()
+
+    @Immutable
+    data class Visible(
+        val mode: List<AllContentMenuMode>,
+        val container: MenuSortsItem.Container,
+        val sorts: List<MenuSortsItem.Sort>,
+        val types: List<MenuSortsItem.SortType>,
+        val showBin: Boolean = true
+    ) : UiMenuState()
 }
+
 
 sealed class MenuSortsItem {
     data class Container(val sort: AllContentSort) : MenuSortsItem()
@@ -192,20 +160,6 @@ sealed class MenuSortsItem {
 //endregion
 
 //region MAPPING
-fun AllContentState.Default.toMenuMode(): AllContentMenuMode {
-    return when (activeMode) {
-        AllContentMode.AllContent -> AllContentMenuMode.AllContent(isSelected = true)
-        AllContentMode.Unlinked -> AllContentMenuMode.Unlinked(isSelected = true)
-    }
-}
-
-fun AllContentMode.view(): UiTitleState {
-    return when (this) {
-        AllContentMode.AllContent -> UiTitleState.AllContent
-        AllContentMode.Unlinked -> UiTitleState.OnlyUnlinked
-    }
-}
-
 fun Key?.mapRelationKeyToSort(): AllContentSort {
     return when (this) {
         Relations.CREATED_DATE -> AllContentSort.ByDateCreated()

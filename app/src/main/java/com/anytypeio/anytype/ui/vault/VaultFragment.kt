@@ -82,11 +82,23 @@ class VaultFragment : BaseComposeFragment() {
                     Timber.e(it, "Error while opening profile settings from vault")
                 }
             }
+            is Command.ShowIntroduceVault -> {
+                runCatching {
+                    findNavController().navigate(R.id.actionShowIntroduceVaultScreen)
+                }.onFailure {
+                    Timber.e(it, "Error while opening introduce-vault-screen from vault")
+                }
+            }
         }
     }
 
     override fun onApplyWindowRootInsets(view: View) {
         // TODO Do nothing ?
+    }
+
+    override fun onResume() {
+        super.onResume()
+        vm.onResume()
     }
 
     override fun injectDependencies() {

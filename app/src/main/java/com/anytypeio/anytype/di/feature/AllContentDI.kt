@@ -14,7 +14,6 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
-import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
@@ -26,7 +25,6 @@ import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 import dagger.Provides
-import javax.inject.Named
 
 @Component(
     dependencies = [AllContentDependencies::class],
@@ -112,7 +110,6 @@ interface AllContentDependencies : ComponentDependencies {
     fun urlBuilder(): UrlBuilder
     fun dispatchers(): AppCoroutineDispatchers
     fun storeOfObjectTypes(): StoreOfObjectTypes
-    fun storeOfRelations(): StoreOfRelations
     fun analyticsHelper(): AnalyticSpaceHelperDelegate
     fun userSettingsRepository(): UserSettingsRepository
     fun subEventChannel(): SubscriptionEventChannel

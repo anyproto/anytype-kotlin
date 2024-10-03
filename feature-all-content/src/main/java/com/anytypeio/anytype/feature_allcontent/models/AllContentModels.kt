@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Companion.DEFAULT_INITIAL_SORT
+import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Companion.DEFAULT_INITIAL_TAB
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.objects.getProperType
@@ -68,22 +69,16 @@ sealed class AllContentSort {
 
 //TITLE
 sealed class UiTitleState {
-    data object Hidden : UiTitleState()
     data object AllContent : UiTitleState()
     data object OnlyUnlinked : UiTitleState()
 }
 
 // TABS
 @Immutable
-sealed class UiTabsState {
-    data object Hidden : UiTabsState()
-
-    @Immutable
-    data class Default(
-        val tabs: List<AllContentTab>,
-        val selectedTab: AllContentTab
-    ) : UiTabsState()
-}
+data class UiTabsState(
+    val tabs: List<AllContentTab> = AllContentTab.entries,
+    val selectedTab: AllContentTab = DEFAULT_INITIAL_TAB
+)
 
 // CONTENT
 sealed class UiContentState {

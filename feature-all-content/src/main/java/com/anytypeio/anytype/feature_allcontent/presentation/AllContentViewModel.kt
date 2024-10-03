@@ -141,6 +141,7 @@ class AllContentViewModel(
                 Timber.d("New query: [$query]")
                 if (query.isBlank()) {
                     searchResultIds.value = emptyList()
+                    restartSubscription.value++
                 } else {
                     val activeTab = uiTabsState.value
                     resetLimit()

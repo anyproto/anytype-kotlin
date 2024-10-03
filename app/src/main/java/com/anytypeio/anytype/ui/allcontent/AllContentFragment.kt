@@ -103,6 +103,9 @@ class AllContentFragment : BaseComposeFragment() {
                             icon = (command.item.icon as? ObjectIcon.Basic.Emoji)?.unicode ?: "",
                             readOnly = command.item.readOnly
                         )
+                    }.onFailure {
+                        toast("Failed to open type editing screen")
+                        Timber.e(it, "Failed to open type editing screen")
                     }
                 }
             }

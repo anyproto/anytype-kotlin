@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.feature_allcontent.presentation
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
@@ -176,6 +175,7 @@ class AllContentViewModel(
         }
     }
 
+    //todo discuss with someone
     private fun loadData(): Flow<List<UiContentItem>> = flow {
 
         uiContentState.value = if (itemsLimit == DEFAULT_SEARCH_LIMIT) {
@@ -261,7 +261,6 @@ class AllContentViewModel(
         items: List<UiContentItem.Item>,
         isSortByDateCreated: Boolean
     ): List<UiContentItem> {
-        Log.d("Test1983", "groupItemsByDate ")
         val groupedItems = mutableListOf<UiContentItem>()
         var currentGroupKey: String? = null
 

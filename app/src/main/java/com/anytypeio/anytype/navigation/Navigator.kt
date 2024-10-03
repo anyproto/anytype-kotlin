@@ -19,6 +19,7 @@ import com.anytypeio.anytype.ui.settings.RemoteFilesManageFragment
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.TYPE_TEMPLATE_EDIT
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.TYPE_TEMPLATE_SELECT
 import com.anytypeio.anytype.ui.templates.TemplateSelectFragment
+import com.anytypeio.anytype.ui.types.edit.TypeEditFragment
 import com.anytypeio.anytype.ui.widgets.collection.CollectionFragment
 import timber.log.Timber
 
@@ -245,6 +246,18 @@ class Navigator : AppNavigation {
         navController?.navigate(
             resId = R.id.action_open_all_content,
             args = AllContentFragment.args(space)
+        )
+    }
+
+    override fun openTypeEditingScreen(id: Id, name: String, icon: String, readOnly: Boolean) {
+        navController?.navigate(
+            resId = R.id.openTypeEditingScreen,
+            args = TypeEditFragment.args(
+                typeName = name,
+                id = id,
+                iconUnicode = icon,
+                readOnly = readOnly
+            )
         )
     }
 }

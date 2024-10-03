@@ -95,6 +95,7 @@ fun AllContentWrapperScreen(
     onModeClick: (AllContentMenuMode) -> Unit,
     onSortClick: (AllContentSort) -> Unit,
     onItemClicked: (UiContentItem.Item) -> Unit,
+    onTypeClicked: (UiContentItem.Type) -> Unit,
     onBinClick: () -> Unit,
     canPaginate: Boolean,
     onUpdateLimitSearch: () -> Unit,
@@ -132,7 +133,8 @@ fun AllContentWrapperScreen(
         onBinClick = onBinClick,
         uiItemsState = uiItemsState,
         lazyListState = lazyListState,
-        uiContentState = uiContentState
+        uiContentState = uiContentState,
+        onTypeClicked = onTypeClicked
     )
 }
 
@@ -148,6 +150,7 @@ fun AllContentMainScreen(
     onModeClick: (AllContentMenuMode) -> Unit,
     onSortClick: (AllContentSort) -> Unit,
     onItemClicked: (UiContentItem.Item) -> Unit,
+    onTypeClicked: (UiContentItem.Type) -> Unit,
     onBinClick: () -> Unit,
     lazyListState: LazyListState,
     uiContentState: UiContentState
@@ -227,6 +230,7 @@ fun AllContentMainScreen(
                         ContentItems(
                             uiItemsState = uiItemsState,
                             onItemClicked = onItemClicked,
+                            onTypeClicked = onTypeClicked,
                             uiContentState = uiContentState,
                             lazyListState = lazyListState
                         )
@@ -241,6 +245,7 @@ fun AllContentMainScreen(
 private fun ContentItems(
     uiItemsState: List<UiContentItem>,
     onItemClicked: (UiContentItem.Item) -> Unit,
+    onTypeClicked: (UiContentItem.Type) -> Unit,
     uiContentState: UiContentState,
     lazyListState: LazyListState
 ) {
@@ -301,7 +306,7 @@ private fun ContentItems(
                             .bottomBorder()
                             .animateItem()
                             .clickable {
-                                //onItemClicked(item)
+                                onTypeClicked(item)
                             },
                         item = item
                     )
@@ -370,7 +375,8 @@ fun PreviewMainScreen() {
         onItemClicked = {},
         onBinClick = {},
         lazyListState = rememberLazyListState(),
-        uiContentState = UiContentState.Error("Error message")
+        uiContentState = UiContentState.Error("Error message"),
+        onTypeClicked = {}
     )
 }
 

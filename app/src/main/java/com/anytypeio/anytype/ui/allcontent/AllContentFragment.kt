@@ -27,6 +27,7 @@ import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModelFactory
 import com.anytypeio.anytype.feature_allcontent.ui.AllContentNavigation.ALL_CONTENT_MAIN
 import com.anytypeio.anytype.feature_allcontent.ui.AllContentWrapperScreen
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.settings.typography
@@ -94,6 +95,16 @@ class AllContentFragment : BaseComposeFragment() {
                         Timber.e(it, "Failed to open bin")
                     }
                 }
+                is AllContentViewModel.Command.OpenTypeEditing -> {
+                    runCatching {
+                        navigation().openTypeEditingScreen(
+                            id = command.item.id,
+                            name = command.item.name,
+                            icon = (command.item.icon as? ObjectIcon.Basic.Emoji)?.unicode ?: "",
+                            readOnly = command.item.readOnly
+                        )
+                    }
+                }
             }
         }
     }
@@ -119,6 +130,7 @@ class AllContentFragment : BaseComposeFragment() {
                     canPaginate = vm.canPaginate.collectAsStateWithLifecycle().value,
                     onUpdateLimitSearch = vm::updateLimit,
                     uiContentState = vm.uiContentState.collectAsStateWithLifecycle().value,
+                    onTypeClicked =  vm::onTypeClicked
                 )
             }
         }

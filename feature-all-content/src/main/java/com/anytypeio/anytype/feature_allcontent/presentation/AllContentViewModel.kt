@@ -500,6 +500,13 @@ class AllContentViewModel(
         }
     }
 
+    fun onTypeClicked(item: UiContentItem.Type) {
+        Timber.d("onTypeClicked: ${item.id}")
+        viewModelScope.launch {
+            commands.emit(Command.OpenTypeEditing(item))
+        }
+    }
+
     fun onStop() {
         Timber.d("onStop")
         viewModelScope.launch {
@@ -541,7 +548,7 @@ class AllContentViewModel(
         data class NavigateToSetOrCollection(val id: Id, val space: Id) : Command()
         data class NavigateToBin(val space: Id) : Command()
         data class SendToast(val message: String) : Command()
-        data class OpenTypeEditing(val id: Id) : Command()
+        data class OpenTypeEditing(val item: UiContentItem.Type) : Command()
     }
 
     companion object {

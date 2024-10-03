@@ -1556,4 +1556,5 @@
     <string name="all_content_no_results_title">No results found.</string>
     <string name="all_content_no_results_description">Try searching with different keywords.</string>
     <string name="all_content_error_title">Something went wrong.</string>
+    <string name="onboarding_my_first_space">Мая першая прастора</string>
 </resources>

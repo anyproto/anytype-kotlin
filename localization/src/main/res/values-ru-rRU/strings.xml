@@ -1559,4 +1559,5 @@
     <string name="all_content_no_results_title">Результаты не найдены.</string>
     <string name="all_content_no_results_description">Попробуйте искать по другим ключевым словам.</string>
     <string name="all_content_error_title">Что-то пошло не так.</string>
+    <string name="onboarding_my_first_space">Моё первое пространство</string>
 </resources>

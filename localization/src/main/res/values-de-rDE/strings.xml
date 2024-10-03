@@ -1530,4 +1530,5 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="all_content_no_results_title">Keine Ergebnisse gefunden.</string>
     <string name="all_content_no_results_description">Versuche mit anderen Schlüsselwörtern zu suchen.</string>
     <string name="all_content_error_title">Etwas ist schiefgelaufen.</string>
+    <string name="onboarding_my_first_space">Mein erster Space</string>
 </resources>

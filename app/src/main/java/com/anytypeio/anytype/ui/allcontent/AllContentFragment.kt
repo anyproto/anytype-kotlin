@@ -139,6 +139,11 @@ class AllContentFragment : BaseComposeFragment() {
         }
     }
 
+    override fun onStart() {
+        vm.onStart()
+        super.onStart()
+    }
+
     override fun onStop() {
         vm.onStop()
         super.onStop()

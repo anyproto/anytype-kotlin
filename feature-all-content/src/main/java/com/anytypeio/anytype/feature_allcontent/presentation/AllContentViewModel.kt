@@ -112,7 +112,6 @@ class AllContentViewModel(
     init {
         Timber.d("AllContentViewModel init, spaceId:[${vmParams.spaceId.id}]")
         setupInitialStateParams()
-        setupUiStateFlow()
         setupSearchStateFlow()
         setupMenuFlow()
     }
@@ -504,6 +503,11 @@ class AllContentViewModel(
         viewModelScope.launch {
             commands.emit(Command.OpenTypeEditing(item))
         }
+    }
+
+    fun onStart() {
+        Timber.d("onStart")
+        setupUiStateFlow()
     }
 
     fun onStop() {

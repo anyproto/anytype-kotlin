@@ -20,9 +20,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -104,14 +104,14 @@ fun IntroduceVaultScreen(
                                 modifier = Modifier
                                     .fillMaxHeight()
                                     .width(288.dp)
+                                    .alpha(1f)
                                     .background(
                                         brush = Brush.verticalGradient(
                                             colors = listOf(
                                                 Color.Transparent,
-                                                Color.Transparent,
                                                 colorResource(id = R.color.text_primary),
                                             ),
-                                            tileMode = TileMode.Decal
+                                            startY = screenWidth.value * 1.2f,
                                         )
                                     ).align(
                                         Alignment.TopCenter

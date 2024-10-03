@@ -1790,7 +1790,7 @@ class EditorViewModel(
             renderCommand.send(Unit)
             controlPanelInteractor.onEvent(
                 ControlPanelMachine.Event.MultiSelect.OnEnter(
-                    currentSelection().size,
+                    count = currentSelection().size,
                     isSelectAllVisible = isNotAllBlocksSelected(
 
                 )

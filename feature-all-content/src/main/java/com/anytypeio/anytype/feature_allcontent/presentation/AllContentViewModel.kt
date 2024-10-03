@@ -168,7 +168,6 @@ class AllContentViewModel(
     private fun setupUiStateFlow() {
         viewModelScope.launch {
             restartSubscription.flatMapLatest {
-                Timber.d("Restart subscription: $it")
                 loadData()
             }.collect { items ->
                 uiItemsState.value = items
@@ -195,6 +194,8 @@ class AllContentViewModel(
             spaceId = vmParams.spaceId.id,
             activeMode = uiTitleState.value
         )
+
+        Timber.d("Restart subscription: with params: $searchParams")
 
         val dataFlow = storelessSubscriptionContainer.subscribe(searchParams)
         emitAll(
@@ -325,26 +326,39 @@ class AllContentViewModel(
         viewModelScope.launch {
             combine(
                 uiTitleState,
-                sortState
-            ) { mode, sort ->
-                mode to sort
-            }.collectLatest { (mode, sort) ->
-                val uiMode = listOf(
-                    AllContentMenuMode.AllContent(isSelected = mode == UiTitleState.AllContent),
-                    AllContentMenuMode.Unlinked(isSelected = mode == UiTitleState.OnlyUnlinked)
-                )
-                val container = MenuSortsItem.Container(sort = sort)
-                val uiSorts = listOf(
-                    MenuSortsItem.Sort(
-                        sort = AllContentSort.ByName(isSelected = sort is AllContentSort.ByName)
-                    ),
-                    MenuSortsItem.Sort(
-                        sort = AllContentSort.ByDateUpdated(isSelected = sort is AllContentSort.ByDateUpdated)
-                    ),
-                    MenuSortsItem.Sort(
-                        sort = AllContentSort.ByDateCreated(isSelected = sort is AllContentSort.ByDateCreated)
+                sortState,
+                uiTabsState
+            ) { mode, sort, tabs ->
+                Triple(mode, sort, tabs)
+            }.collectLatest { (mode, sort, tabs) ->
+                val uiMode = if (tabs.selectedTab == AllContentTab.TYPES) {
+                    listOf()
+                } else {
+                    listOf(
+                        AllContentMenuMode.AllContent(isSelected = mode == UiTitleState.AllContent),
+                        AllContentMenuMode.Unlinked(isSelected = mode == UiTitleState.OnlyUnlinked)
                     )
-                )
+                }
+                val container = MenuSortsItem.Container(sort = sort)
+                val uiSorts = if (tabs.selectedTab == AllContentTab.TYPES) {
+                    listOf(
+                        MenuSortsItem.Sort(
+                            sort = AllContentSort.ByName(isSelected = sort is AllContentSort.ByName)
+                        )
+                    )
+                } else {
+                    listOf(
+                        MenuSortsItem.Sort(
+                            sort = AllContentSort.ByName(isSelected = sort is AllContentSort.ByName)
+                        ),
+                        MenuSortsItem.Sort(
+                            sort = AllContentSort.ByDateUpdated(isSelected = sort is AllContentSort.ByDateUpdated)
+                        ),
+                        MenuSortsItem.Sort(
+                            sort = AllContentSort.ByDateCreated(isSelected = sort is AllContentSort.ByDateCreated)
+                        )
+                    )
+                }
                 val uiSortTypes = listOf(
                     MenuSortsItem.SortType(
                         sort = sort,
@@ -393,10 +407,21 @@ class AllContentViewModel(
 
     fun onSortClicked(sort: AllContentSort) {
         Timber.d("onSortClicked: $sort")
+        val newSort = when (sort) {
+            is AllContentSort.ByDateCreated -> {
+                sort.copy(isSelected = true)
+            }
+            is AllContentSort.ByDateUpdated -> {
+                sort.copy(isSelected = true)
+            }
+            is AllContentSort.ByName -> {
+                sort.copy(isSelected = true)
+            }
+        }
         shouldScrollToTopItems = true
         uiItemsState.value = emptyList()
-        sortState.value = sort
-        proceedWithSortSaving(sort)
+        sortState.value = newSort
+        proceedWithSortSaving(newSort)
         restartSubscription.value++
     }
 

@@ -56,7 +56,9 @@ fun AllContentMenu(
         )
         Divider(0.5.dp)
     }
-    Divider(7.5.dp)
+    if (uiMenuState.mode.isNotEmpty()) {
+        Divider(7.5.dp)
+    }
     SortingBox(
         modifier = Modifier
             .clickable {

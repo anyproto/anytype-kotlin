@@ -146,7 +146,7 @@ fun AllContentTab.filtersForSubscribe(
                     )
                 )
             }
-            val sorts = listOf(AllContentSort.ByName().toDVSort())
+            val sorts = listOf(activeSort.toDVSort())
             return filters to sorts
         }
     }

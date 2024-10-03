@@ -55,6 +55,7 @@ import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.PreviewTitle1Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.UXBody
@@ -256,6 +257,7 @@ private fun ContentItems(
                 when (uiItemsState[index]) {
                     is UiContentItem.Group -> "group"
                     is UiContentItem.Item -> "item"
+                    is UiContentItem.Type -> "type"
                 }
             }
         ) { index ->
@@ -287,6 +289,19 @@ private fun ContentItems(
                             .animateItem()
                             .clickable {
                                 onItemClicked(item)
+                            },
+                        item = item
+                    )
+                }
+
+                is UiContentItem.Type -> {
+                    Type(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .bottomBorder()
+                            .animateItem()
+                            .clickable {
+                                //onItemClicked(item)
                             },
                         item = item
                     )
@@ -417,8 +432,36 @@ private fun Item(
 }
 
 @Composable
+private fun Type(
+    modifier: Modifier,
+    item: UiContentItem.Type
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(start = 0.dp, top = 14.dp, end = 14.dp, bottom = 14.dp)
+                .wrapContentSize()
+        ) {
+            AllContentItemIcon(icon = item.icon, modifier = Modifier, iconSize = 24.dp)
+        }
+        val name = item.name.trim().ifBlank { stringResource(R.string.untitled) }
+
+        Text(
+            text = name,
+            style = PreviewTitle1Medium,
+            color = colorResource(id = R.color.text_primary),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+@Composable
 fun AllContentItemIcon(
-    icon: ObjectIcon,
+    icon: ObjectIcon?,
     modifier: Modifier,
     iconSize: Dp = 48.dp,
     onTaskIconClicked: (Boolean) -> Unit = {},

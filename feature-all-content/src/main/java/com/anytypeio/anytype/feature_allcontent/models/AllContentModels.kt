@@ -2,18 +2,22 @@ package com.anytypeio.anytype.feature_allcontent.models
 
 import androidx.compose.runtime.Immutable
 import com.anytypeio.anytype.core_models.DVSortType
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.Relations.SOURCE_OBJECT
 import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Companion.DEFAULT_INITIAL_SORT
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Companion.DEFAULT_INITIAL_TAB
+import com.anytypeio.anytype.presentation.library.DependentData
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.objects.getProperType
@@ -117,6 +121,17 @@ sealed class UiContentItem {
         val createdDate: Long = 0L,
     ) : UiContentItem()
 
+    data class Type(
+        override val id: Id,
+        val name: String,
+        val icon: ObjectIcon? = null,
+        val sourceObject: Id? = null,
+        val uniqueKey: Key? = null,
+        val readOnly: Boolean = true,
+        val editable: Boolean = true,
+        val dependentData: DependentData = DependentData.None
+    ) : UiContentItem()
+
     companion object {
         const val TODAY_ID = "TodayId"
         const val YESTERDAY_ID = "YesterdayId"
@@ -202,6 +217,32 @@ fun ObjectWrapper.Basic.toAllContentItem(
         ),
         lastModifiedDate = DateParser.parse(obj.getValue(Relations.LAST_MODIFIED_DATE)) ?: 0L,
         createdDate = DateParser.parse(obj.getValue(Relations.CREATED_DATE)) ?: 0L
+    )
+}
+
+fun List<ObjectWrapper.Basic>.toUiContentTypes(
+    urlBuilder: UrlBuilder
+): List<UiContentItem.Type> {
+    return map { it.toAllContentType(urlBuilder) }
+}
+
+fun ObjectWrapper.Basic.toAllContentType(
+    urlBuilder: UrlBuilder,
+): UiContentItem.Type {
+    val obj = this
+    val layout = layout ?: ObjectType.Layout.BASIC
+    return UiContentItem.Type(
+        id = obj.id,
+        name = obj.name.orEmpty(),
+        icon = ObjectIcon.from(
+            obj = obj,
+            layout = layout,
+            builder = urlBuilder
+        ),
+        sourceObject = obj.map[SOURCE_OBJECT]?.toString(),
+        uniqueKey = obj.uniqueKey,
+        readOnly = obj.restrictions.contains(ObjectRestriction.DELETE),
+        editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
     )
 }
 //endregion

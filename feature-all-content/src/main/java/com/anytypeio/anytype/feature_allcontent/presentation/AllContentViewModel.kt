@@ -30,6 +30,7 @@ import com.anytypeio.anytype.feature_allcontent.models.createSubscriptionParams
 import com.anytypeio.anytype.feature_allcontent.models.filtersForSearch
 import com.anytypeio.anytype.feature_allcontent.models.mapRelationKeyToSort
 import com.anytypeio.anytype.feature_allcontent.models.toUiContentItems
+import com.anytypeio.anytype.feature_allcontent.models.toUiContentTypes
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
@@ -183,10 +184,11 @@ class AllContentViewModel(
             UiContentState.Paging
         }
 
+        val activeTab = uiTabsState.value.selectedTab
         val activeSort = sortState.value
 
         val searchParams = createSubscriptionParams(
-            activeTab = uiTabsState.value.selectedTab,
+            activeTab = activeTab,
             activeSort = activeSort,
             limitedObjectIds = searchResultIds.value,
             limit = itemsLimit,
@@ -203,7 +205,8 @@ class AllContentViewModel(
                 canPaginate.value = objWrappers.size == itemsLimit
                 val items = mapToUiContentItems(
                     objectWrappers = objWrappers,
-                    activeSort = activeSort
+                    activeSort = activeSort,
+                    activeTab = activeTab
                 )
                 uiContentState.value = if (items.isEmpty()) {
                     UiContentState.Empty
@@ -224,22 +227,32 @@ class AllContentViewModel(
 
     private suspend fun mapToUiContentItems(
         objectWrappers: List<ObjectWrapper.Basic>,
-        activeSort: AllContentSort
+        activeSort: AllContentSort,
+        activeTab: AllContentTab
     ): List<UiContentItem> {
-        val items = objectWrappers.toUiContentItems(
-            space = vmParams.spaceId,
-            urlBuilder = urlBuilder,
-            objectTypes = storeOfObjectTypes.getAll()
-        )
-        return when (activeSort) {
-            is AllContentSort.ByDateCreated -> {
-                groupItemsByDate(items = items, isSortByDateCreated = true)
-            }
-            is AllContentSort.ByDateUpdated -> {
-                groupItemsByDate(items = items, isSortByDateCreated = false)
-            }
-            is AllContentSort.ByName -> {
-                items
+        if (activeTab == AllContentTab.TYPES) {
+            val items = objectWrappers.toUiContentTypes(
+                urlBuilder = urlBuilder
+            )
+            return items
+        } else {
+            val items = objectWrappers.toUiContentItems(
+                space = vmParams.spaceId,
+                urlBuilder = urlBuilder,
+                objectTypes = storeOfObjectTypes.getAll()
+            )
+            return when (activeSort) {
+                is AllContentSort.ByDateCreated -> {
+                    groupItemsByDate(items = items, isSortByDateCreated = true)
+                }
+
+                is AllContentSort.ByDateUpdated -> {
+                    groupItemsByDate(items = items, isSortByDateCreated = false)
+                }
+
+                is AllContentSort.ByName -> {
+                    items
+                }
             }
         }
     }
@@ -386,6 +399,7 @@ class AllContentViewModel(
         if (tab == AllContentTab.TYPES) {
             sortState.value = AllContentSort.ByName()
             userInput.value = DEFAULT_QUERY
+            uiTitleState.value = UiTitleState.AllContent
         }
         shouldScrollToTopItems = true
         resetLimit()
@@ -527,6 +541,7 @@ class AllContentViewModel(
         data class NavigateToSetOrCollection(val id: Id, val space: Id) : Command()
         data class NavigateToBin(val space: Id) : Command()
         data class SendToast(val message: String) : Command()
+        data class OpenTypeEditing(val id: Id) : Command()
     }
 
     companion object {

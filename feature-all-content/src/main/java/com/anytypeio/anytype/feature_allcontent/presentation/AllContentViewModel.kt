@@ -151,8 +151,13 @@ class AllContentViewModel(
                     searchObjects(searchParams).process(
                         success = { searchResults ->
                             Timber.d("Search objects by query:[$query], size: : ${searchResults.size}")
-                            searchResultIds.value = searchResults.map { it.id }
-                            restartSubscription.value++
+                            if (searchResults.isEmpty()) {
+                                uiItemsState.value = emptyList()
+                                uiContentState.value = UiContentState.Empty
+                            } else {
+                                searchResultIds.value = searchResults.map { it.id }
+                                restartSubscription.value++
+                            }
                         },
                         failure = {
                             Timber.e(it, "Error searching objects by query")
@@ -168,7 +173,7 @@ class AllContentViewModel(
         viewModelScope.launch {
             restartSubscription.flatMapLatest {
                 loadData()
-            }.collect { items ->
+            }.collectLatest { items ->
                 uiItemsState.value = items
             }
         }

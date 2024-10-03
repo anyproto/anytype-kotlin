@@ -169,20 +169,15 @@ fun AllContentMainScreen(
                 else
                     Modifier.fillMaxWidth()
             ) {
-                if (uiTitleState !is UiTitleState.Hidden) {
-                    AllContentTopBarContainer(
-                        titleState = uiTitleState,
-                        uiMenuState = uiMenuState,
-                        onSortClick = onSortClick,
-                        onModeClick = onModeClick,
-                        onBinClick = onBinClick
-                    )
-                }
-
-                if (uiTabsState is UiTabsState.Default) {
-                    AllContentTabs(tabsViewState = uiTabsState) { tab ->
-                        onTabClick(tab)
-                    }
+                AllContentTopBarContainer(
+                    titleState = uiTitleState,
+                    uiMenuState = uiMenuState,
+                    onSortClick = onSortClick,
+                    onModeClick = onModeClick,
+                    onBinClick = onBinClick
+                )
+                AllContentTabs(tabsViewState = uiTabsState) { tab ->
+                    onTabClick(tab)
                 }
                 Spacer(modifier = Modifier.size(10.dp))
                 AllContentSearchBar(onQueryChanged = {
@@ -351,7 +346,7 @@ fun PreviewMainScreen() {
     AllContentMainScreen(
         uiItemsState = emptyList(),
         uiTitleState = UiTitleState.AllContent,
-        uiTabsState = UiTabsState.Default(tabs = listOf(AllContentTab.PAGES, AllContentTab.TYPES, AllContentTab.LISTS), selectedTab = AllContentTab.LISTS),
+        uiTabsState = UiTabsState(tabs = listOf(AllContentTab.PAGES, AllContentTab.TYPES, AllContentTab.LISTS), selectedTab = AllContentTab.LISTS),
         uiMenuState = UiMenuState.Hidden,
         onTabClick = {},
         onQueryChanged = {},

@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 
 @Composable
-fun PulsatingCirclesScreen() {
+fun PulsatingCircleScreen() {
     val context = LocalContext.current
 
     var initialAnimationFinished by remember { mutableStateOf(false) }
@@ -86,7 +86,7 @@ fun PulsatingCirclesScreen() {
                 .fillMaxHeight(),
             contentAlignment = Alignment.Center
         ) {
-            SimpleCircleShape2(
+            SimpleCircleShape(
                 size = finalSize,
                 gradient = finalBrush
             )
@@ -95,7 +95,7 @@ fun PulsatingCirclesScreen() {
 }
 
 @Composable
-fun SimpleCircleShape2(
+fun SimpleCircleShape(
     size: Dp,
     gradient: Brush,
     borderWidth: Dp = 0.dp,
@@ -121,6 +121,6 @@ fun PreviewPulsatingCircles() {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        PulsatingCirclesScreen()
+        PulsatingCircleScreen()
     }
 }

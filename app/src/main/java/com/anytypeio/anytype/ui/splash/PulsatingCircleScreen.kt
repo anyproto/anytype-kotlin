@@ -31,10 +31,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 
 @Composable
 fun PulsatingCircleScreen() {
@@ -114,7 +114,7 @@ fun SimpleCircleShape(
     }
 }
 
-@Preview(showBackground = true)
+@DefaultPreviews
 @Composable
 fun PreviewPulsatingCircles() {
     Box(

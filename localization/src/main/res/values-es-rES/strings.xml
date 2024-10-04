@@ -1506,7 +1506,7 @@ En concreto,
     <string name="all_content_title_tab_media">Medios</string>
     <string name="all_content_title_tab_bookmarks">Marcadores</string>
     <string name="all_content_title_tab_files">Archivos</string>
-    <string name="all_content_title_tab_objetc_types">Tipos de objeto</string>
+    <string name="all_content_title_tab_objetc_types">Tipos</string>
     <string name="all_content_sort_by">Ordenar por</string>
     <string name="all_content_sort_name_desc">Z → A</string>
     <string name="all_content_sort_name_asc">A → Z</string>

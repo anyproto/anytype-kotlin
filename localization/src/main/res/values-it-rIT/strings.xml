@@ -1507,7 +1507,7 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_title_tab_media">Multimedia</string>
     <string name="all_content_title_tab_bookmarks">Segnalibri</string>
     <string name="all_content_title_tab_files">File</string>
-    <string name="all_content_title_tab_objetc_types">Tipi di Oggetto</string>
+    <string name="all_content_title_tab_objetc_types">Types</string>
     <string name="all_content_sort_by">Sort by</string>
     <string name="all_content_sort_name_desc">Z → A</string>
     <string name="all_content_sort_name_asc">A → Z</string>

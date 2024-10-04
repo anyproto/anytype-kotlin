@@ -1506,7 +1506,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="all_content_title_tab_media">Media</string>
     <string name="all_content_title_tab_bookmarks">Bookmarks</string>
     <string name="all_content_title_tab_files">Bestanden</string>
-    <string name="all_content_title_tab_objetc_types">Object Types</string>
+    <string name="all_content_title_tab_objetc_types">Types</string>
     <string name="all_content_sort_by">Sorteer op</string>
     <string name="all_content_sort_name_desc">Z → A</string>
     <string name="all_content_sort_name_asc">A → Z</string>

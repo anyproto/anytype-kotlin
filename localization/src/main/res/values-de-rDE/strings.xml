@@ -1506,7 +1506,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="all_content_title_tab_media">Medien</string>
     <string name="all_content_title_tab_bookmarks">Lesezeichen</string>
     <string name="all_content_title_tab_files">Dateien</string>
-    <string name="all_content_title_tab_objetc_types">Objekttypen</string>
+    <string name="all_content_title_tab_objetc_types">Typen</string>
     <string name="all_content_sort_by">Sortiere nach</string>
     <string name="all_content_sort_name_desc">Z → A</string>
     <string name="all_content_sort_name_asc">A → Z</string>

@@ -1493,7 +1493,7 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_title_tab_media">媒體</string>
     <string name="all_content_title_tab_bookmarks">Bookmarks</string>
     <string name="all_content_title_tab_files">檔案</string>
-    <string name="all_content_title_tab_objetc_types">Object Types</string>
+    <string name="all_content_title_tab_objetc_types">類型</string>
     <string name="all_content_sort_by">排序方式</string>
     <string name="all_content_sort_name_desc">Z → A</string>
     <string name="all_content_sort_name_asc">A → Z</string>

@@ -3,7 +3,6 @@ package com.anytypeio.anytype.feature_allcontent.ui
 import android.os.Build
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
@@ -53,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Divider
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Medium
@@ -292,7 +292,7 @@ private fun ContentItems(
                             .padding(horizontal = 16.dp)
                             .bottomBorder()
                             .animateItem()
-                            .clickable {
+                            .noRippleClickable {
                                 onItemClicked(item)
                             },
                         item = item
@@ -305,7 +305,7 @@ private fun ContentItems(
                             .padding(horizontal = 16.dp)
                             .bottomBorder()
                             .animateItem()
-                            .clickable {
+                            .noRippleClickable {
                                 onTypeClicked(item)
                             },
                         item = item

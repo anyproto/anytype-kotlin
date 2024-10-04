@@ -5,11 +5,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -18,7 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
@@ -46,22 +48,7 @@ fun IntroduceVaultScreen(
     val screenHeight = configuration.screenHeightDp.dp
     val screenWidth = configuration.screenWidthDp.dp
 
-    ConstraintLayout(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(
-                        Color.Transparent,
-                        Color(0xFFFEF2C6),
-                    ),
-                    start = Offset(
-                        screenWidth.value * 2,
-                        screenHeight.value * 2.2f
-                    )
-                )
-            )
-    ) {
+    ConstraintLayout(modifier = Modifier.fillMaxSize()) {
 
         val coroutineScope = rememberCoroutineScope()
         val (title, first,  pager, dots, btn) = createRefs()
@@ -102,13 +89,35 @@ fun IntroduceVaultScreen(
             when(page) {
                 0 -> {
                     Box(
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
                     ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.img_introduce_vault_1),
-                            contentDescription = "Screenshot 1",
+                        Box(
                             modifier = Modifier.align(Alignment.TopCenter)
-                        )
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.img_introduce_vault_1),
+                                contentDescription = "Screenshot 1",
+                                modifier = Modifier.align(Alignment.TopCenter)
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .width(288.dp)
+                                    .alpha(1f)
+                                    .background(
+                                        brush = Brush.verticalGradient(
+                                            colors = listOf(
+                                                Color.Transparent,
+                                                colorResource(id = R.color.text_primary),
+                                            ),
+                                            startY = screenWidth.value * 1.2f,
+                                        )
+                                    ).align(
+                                        Alignment.TopCenter
+                                    )
+                            )
+                        }
                     }
                 }
                 1 -> {

@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.vault
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
@@ -14,7 +15,9 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.vault.GetVaultSettings
+import com.anytypeio.anytype.domain.vault.ObserveVaultSettings
 import com.anytypeio.anytype.domain.vault.SetVaultSettings
+import com.anytypeio.anytype.domain.vault.SetVaultSpaceOrder
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -24,7 +27,7 @@ import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -35,7 +38,9 @@ class VaultViewModel(
     private val spaceManager: SpaceManager,
     private val saveCurrentSpace: SaveCurrentSpace,
     private val getVaultSettings: GetVaultSettings,
-    private val setVaultSettings: SetVaultSettings
+    private val setVaultSettings: SetVaultSettings,
+    private val observeVaultSettings: ObserveVaultSettings,
+    private val setVaultSpaceOrder: SetVaultSpaceOrder
 ) : BaseViewModel() {
 
     val spaces = MutableStateFlow<List<VaultSpaceView>>(emptyList())
@@ -47,7 +52,7 @@ class VaultViewModel(
             val wallpapers = getSpaceWallpapers.async(Unit).getOrNull() ?: emptyMap()
             spaceViewSubscriptionContainer
                 .observe()
-                .map { spaces ->
+                .combine(observeVaultSettings.flow()) { spaces, settings ->
                     spaces
                         .filter { space ->
                             space.spaceLocalStatus == SpaceStatus.OK
@@ -65,6 +70,15 @@ class VaultViewModel(
                                     defaultValue = Wallpaper.Default
                                 )
                             )
+                        }.sortedBy { space ->
+                            val idx = settings.orderOfSpaces.indexOf(
+                                space.space.id
+                            )
+                            if (idx == -1) {
+                                Int.MAX_VALUE
+                            } else {
+                                idx
+                            }
                         }
                 }.collect {
                     spaces.value = it
@@ -108,10 +122,16 @@ class VaultViewModel(
         }
     }
 
-    fun onCreateSpaceClicked() {
+    fun onOrderChanged(order: List<Id>) {
         viewModelScope.launch {
-            commands.emit(Command.CreateNewSpace)
+            setVaultSpaceOrder.async(
+                params = order
+            )
         }
+    }
+
+    fun onCreateSpaceClicked() {
+        viewModelScope.launch { commands.emit(Command.CreateNewSpace) }
     }
 
     fun onResume() {
@@ -149,7 +169,9 @@ class VaultViewModel(
         private val spaceManager: SpaceManager,
         private val saveCurrentSpace: SaveCurrentSpace,
         private val getVaultSettings: GetVaultSettings,
-        private val setVaultSettings: SetVaultSettings
+        private val setVaultSettings: SetVaultSettings,
+        private val setVaultSpaceOrder: SetVaultSpaceOrder,
+        private val observeVaultSettings: ObserveVaultSettings
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -161,7 +183,9 @@ class VaultViewModel(
             spaceManager = spaceManager,
             saveCurrentSpace = saveCurrentSpace,
             getVaultSettings = getVaultSettings,
-            setVaultSettings = setVaultSettings
+            setVaultSettings = setVaultSettings,
+            setVaultSpaceOrder = setVaultSpaceOrder,
+            observeVaultSettings = observeVaultSettings
         ) as T
     }
 

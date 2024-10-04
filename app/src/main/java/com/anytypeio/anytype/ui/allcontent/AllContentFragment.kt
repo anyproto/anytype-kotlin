@@ -14,7 +14,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.BuildConfig
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.argString
@@ -30,6 +32,8 @@ import com.anytypeio.anytype.feature_allcontent.ui.AllContentWrapperScreen
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.ui.base.navigation
+import com.anytypeio.anytype.ui.objects.creation.SelectObjectTypeFragment
+import com.anytypeio.anytype.ui.search.GlobalSearchFragment
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 import timber.log.Timber
@@ -59,6 +63,32 @@ class AllContentFragment : BaseComposeFragment() {
         super.onViewCreated(view, savedInstanceState)
         subscribe(vm.commands) { command ->
             when (command) {
+                is AllContentViewModel.Command.ExitToVault -> {
+                    runCatching {
+                        findNavController().navigate(R.id.actionOpenVault)
+                    }.onFailure { e ->
+                        Timber.e(e, "Error while exiting to vault from all content")
+                    }
+                }
+                is AllContentViewModel.Command.Back -> {
+                    runCatching {
+                        findNavController().popBackStack()
+                    }.onFailure { e ->
+                        Timber.e(e, "Error while exiting back from all content")
+                    }
+                }
+                is AllContentViewModel.Command.OpenGlobalSearch -> {
+                    runCatching {
+                        findNavController().navigate(
+                            resId = R.id.globalSearchScreen,
+                            args = GlobalSearchFragment.args(
+                                space = space
+                            )
+                        )
+                    }.onFailure { e ->
+                        Timber.e(e, "Error while opening global search screen from all content")
+                    }
+                }
                 is AllContentViewModel.Command.NavigateToEditor -> {
                     runCatching {
                         navigation().openDocument(
@@ -67,7 +97,7 @@ class AllContentFragment : BaseComposeFragment() {
                         )
                     }.onFailure {
                         toast("Failed to open document")
-                        Timber.e(it, "Failed to open document")
+                        Timber.e(it, "Failed to open document from all content")
                     }
                 }
                 is AllContentViewModel.Command.NavigateToSetOrCollection -> {
@@ -78,7 +108,7 @@ class AllContentFragment : BaseComposeFragment() {
                         )
                     }.onFailure {
                         toast("Failed to open object set")
-                        Timber.e(it, "Failed to open object set")
+                        Timber.e(it, "Failed to open object set from all content")
                     }
                 }
                 is AllContentViewModel.Command.SendToast -> {
@@ -92,7 +122,7 @@ class AllContentFragment : BaseComposeFragment() {
                         )
                     }.onFailure {
                         toast("Failed to open bin")
-                        Timber.e(it, "Failed to open bin")
+                        Timber.e(it, "Failed to open bin from all content")
                     }
                 }
                 is AllContentViewModel.Command.OpenTypeEditing -> {
@@ -105,7 +135,7 @@ class AllContentFragment : BaseComposeFragment() {
                         )
                     }.onFailure {
                         toast("Failed to open type editing screen")
-                        Timber.e(it, "Failed to open type editing screen")
+                        Timber.e(it, "Failed to open type editing screen from all content")
                     }
                 }
             }
@@ -133,7 +163,22 @@ class AllContentFragment : BaseComposeFragment() {
                     canPaginate = vm.canPaginate.collectAsStateWithLifecycle().value,
                     onUpdateLimitSearch = vm::updateLimit,
                     uiContentState = vm.uiContentState.collectAsStateWithLifecycle().value,
-                    onTypeClicked =  vm::onTypeClicked
+                    onTypeClicked =  vm::onTypeClicked,
+                    onHomeClicked =  vm::onHomeClicked,
+                    onGlobalSearchClicked = vm::onGlobalSearchClicked,
+                    onAddDocClicked = vm::onAddDockClicked,
+                    onCreateObjectLongClicked = {
+                        val dialog = SelectObjectTypeFragment.new(
+                            flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT,
+                            space = space
+                        ).apply {
+                            onTypeSelected = {
+                                vm.onCreateObjectOfTypeClicked(it)
+                            }
+                        }
+                        dialog.show(childFragmentManager,null)
+                    },
+                    onBackClicked = vm::onBackClicked
                 )
             }
         }

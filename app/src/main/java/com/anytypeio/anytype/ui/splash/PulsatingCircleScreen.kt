@@ -99,7 +99,7 @@ fun SimpleCircleShape(
     size: Dp,
     gradient: Brush,
     borderWidth: Dp = 0.dp,
-    borderColor: Color = Color.LightGray.copy(alpha = 0.0f)
+    borderColor: Color = Color.Transparent
 ) {
     Column(
         modifier = Modifier

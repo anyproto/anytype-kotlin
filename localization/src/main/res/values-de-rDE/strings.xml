@@ -936,7 +936,7 @@
     <string name="widget_type_compact_list_description">Widget mit einer kompakten Listenansicht</string>
     <string name="widget_type_list">Liste</string>
     <string name="widget_type_view">Ansicht</string>
-    <string name="widget_type_view_description">Widget with a Set or Collection layout</string>
+    <string name="widget_type_view_description">Widget mit einem Set oder Sammlungslayout</string>
     <string name="widget_type_compact_list">Kompakte Liste</string>
     <string name="widget_change_source">Quelle ändern</string>
     <string name="widget_change_type">Typ ändern</string>
@@ -1182,7 +1182,7 @@
     <string name="multiplayer_how_to_share_space">Wie teilt man einen Space?</string>
     <string name="multiplayer_how_to_share_space_step_1">Bitte gib den Link zu der Person an, mit der du zusammenarbeiten möchtest.</string>
     <string name="multiplayer_how_to_share_space_qr_code">Bitte teile diesen QR-Code mit der Person, mit der Du zusammenarbeiten möchtest.</string>
-    <string name="multiplayer_how_to_share_space_step_2">By clicking the link, a person requests to join the space.</string>
+    <string name="multiplayer_how_to_share_space_step_2">Durch Klick auf den Link fragt eine Person den Zugang zu dem Space an. </string>
     <string name="multiplayer_how_to_share_space_step_3">Nach der Genehmigung der Anfrage kannst du die Zugriffsrechte für diese Person festlegen.</string>
     <string name="multiplayer_how_share_one">1.</string>
     <string name="multiplayer_how_share_two">2.</string>
@@ -1464,7 +1464,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="sync_status_get_error">Fehler beim Abrufen des Synchronisationsstatus</string>
     <string name="sync_status_local_only_title">Nur lokal</string>
     <string name="sync_status_data_backup">Datensicherung ist deaktiviert</string>
-    <string name="sync_status_self_host">Self Host</string>
+    <string name="sync_status_self_host">Selbst hosten</string>
     <string name="sync_status_self_host_synced">Synchronisiert</string>
     <plurals name="sync_status_self_host_syncing">
         <item quantity="one">%1$d Element wird synchronisiert</item>
@@ -1522,7 +1522,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="allContent_group_prev_14">Letzte 14 Tage</string>
     <string name="introduce_vault_text_1">Vault is the new home for all your Spaces.\nCreate, join, or share Spaces – everything is securely stored here.</string>
     <string name="introduce_vault_text_2">You can now easily reorder your Spaces using drag and drop and navigate them more easily.</string>
-    <string name="introduce_vault_text_3">By default, we blur the icon of your space as a background. If needed, you can change it in the space-settings.</string>
+    <string name="introduce_vault_text_3">Standardmäßig wir das Icon deines Spaces verschwommen dargestellt um es als Hintergrundbild zu nutzen. Wenn notwendig, kann das in den Space Einstellungen geändert werden.</string>
     <string name="introduce_vault_welcome_to_the_vault">Willkommen im Tresor</string>
     <string name="introduce_vault_simple_flexible"><![CDATA[Einfach & flexibel]]></string>
     <string name="allContent_empty_state_title">Hier ist es leer.</string>

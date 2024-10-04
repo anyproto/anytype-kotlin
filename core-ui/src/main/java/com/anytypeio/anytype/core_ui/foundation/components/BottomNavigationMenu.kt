@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -50,7 +51,10 @@ fun BottomNavigationMenu(
         modifier = modifier
             .height(Height)
             .width(Width)
-            .background(color = colorResource(id = R.color.background_primary))
+            .background(
+                shape = RoundedCornerShape(16.dp),
+                color = colorResource(id = R.color.home_screen_button)
+            )
             /**
              * Workaround for clicks through the bottom navigation menu.
              */

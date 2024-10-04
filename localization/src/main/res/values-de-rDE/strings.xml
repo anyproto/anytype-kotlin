@@ -1499,7 +1499,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="vault_my_spaces">Meine Spaces</string>
     <string name="all_content_title_all_content">Alle Objekte</string>
     <string name="all_content_title_only_unlinked">Nur unverlinkte</string>
-    <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
+    <string name="all_content_title_only_unlinked_description"></string>
     <string name="all_content_view_bin">Papierkorb ansehen</string>
     <string name="all_content_title_tab_pages">Seiten</string>
     <string name="all_content_title_tab_lists">Gruppen</string>

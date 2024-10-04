@@ -1432,7 +1432,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="multiplayer_space_join_request_current_user_error">Current user status error</string>
     <string name="multiplayer_space_join_request_membership_status_error">Current membership status error</string>
     <string name="membership_upgrade_title">Hochstufen der Mitgliedschaft</string>
-    <string name="membership_upgrade_description">Reach us for extra storage, space editors, or more shared spaces. Anytype team will provide details and conditions tailored to your needs.</string>
+    <string name="membership_upgrade_description">Kontaktiere und bezüglich mehr Speicherplatz oder mehr geteilten Spaces. Das Anytype Team wird sich mit Informationen und den auf dich zugeschnittenen Konditionen melden. </string>
     <string name="membership_upgrade_button">Anytype-Team kontaktieren</string>
     <string name="membership_space_settings_share_limit">Du hast die Grenze von %1$d Spaces erreicht, die geteilt werden können</string>
     <plurals name="period_years">
@@ -1521,7 +1521,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="allContent_group_prev_7">Letzte 7 Tage</string>
     <string name="allContent_group_prev_14">Letzte 14 Tage</string>
     <string name="introduce_vault_text_1">Vault is the new home for all your Spaces.\nCreate, join, or share Spaces – everything is securely stored here.</string>
-    <string name="introduce_vault_text_2">You can now easily reorder your Spaces using drag and drop and navigate them more easily.</string>
+    <string name="introduce_vault_text_2">Spaces können nun einfach per Drag-and-Drop neu angeordnet werden und einfacher navigieren.</string>
     <string name="introduce_vault_text_3">Standardmäßig wir das Icon deines Spaces verschwommen dargestellt um es als Hintergrundbild zu nutzen. Wenn notwendig, kann das in den Space Einstellungen geändert werden.</string>
     <string name="introduce_vault_welcome_to_the_vault">Willkommen im Tresor</string>
     <string name="introduce_vault_simple_flexible"><![CDATA[Einfach & flexibel]]></string>

@@ -12,11 +12,14 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -52,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Divider
+import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
@@ -99,7 +103,12 @@ fun AllContentWrapperScreen(
     onBinClick: () -> Unit,
     canPaginate: Boolean,
     onUpdateLimitSearch: () -> Unit,
-    uiContentState: UiContentState
+    uiContentState: UiContentState,
+    onHomeClicked: () -> Unit,
+    onGlobalSearchClicked: () -> Unit,
+    onAddDocClicked: () -> Unit,
+    onCreateObjectLongClicked: () -> Unit,
+    onBackClicked: () -> Unit
 ) {
     val lazyListState = rememberLazyListState()
 
@@ -134,7 +143,12 @@ fun AllContentWrapperScreen(
         uiItemsState = uiItemsState,
         lazyListState = lazyListState,
         uiContentState = uiContentState,
-        onTypeClicked = onTypeClicked
+        onTypeClicked = onTypeClicked,
+        onHomeClicked = onHomeClicked,
+        onGlobalSearchClicked = onGlobalSearchClicked,
+        onAddDocClicked = onAddDocClicked,
+        onCreateObjectLongClicked = onCreateObjectLongClicked,
+        onBackClicked = onBackClicked
     )
 }
 
@@ -153,17 +167,41 @@ fun AllContentMainScreen(
     onTypeClicked: (UiContentItem.Type) -> Unit,
     onBinClick: () -> Unit,
     lazyListState: LazyListState,
-    uiContentState: UiContentState
+    uiContentState: UiContentState,
+    onHomeClicked: () -> Unit,
+    onGlobalSearchClicked: () -> Unit,
+    onAddDocClicked: () -> Unit,
+    onCreateObjectLongClicked: () -> Unit,
+    onBackClicked: () -> Unit
 ) {
-    val modifier = Modifier
-        .background(color = colorResource(id = R.color.background_primary))
-
     var isSearchEmpty by remember { mutableStateOf(true) }
 
     Scaffold(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize(),
         containerColor = colorResource(id = R.color.background_primary),
+        bottomBar = {
+            Box(
+                modifier = if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
+                    Modifier
+                        .windowInsetsPadding(WindowInsets.navigationBars)
+                        .padding(bottom = 20.dp)
+                        .fillMaxWidth()
+                else
+                    Modifier
+                        .padding(bottom = 20.dp)
+                        .fillMaxWidth()
+            ) {
+                BottomMenu(
+                    modifier = Modifier.align(Alignment.BottomCenter),
+                    onHomeClicked = onHomeClicked,
+                    onGlobalSearchClicked = onGlobalSearchClicked,
+                    onAddDocClicked = onAddDocClicked,
+                    onCreateObjectLongClicked = onCreateObjectLongClicked,
+                    onBackClicked = onBackClicked
+                )
+            }
+        },
         topBar = {
             Column(
                 modifier = if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
@@ -198,11 +236,13 @@ fun AllContentMainScreen(
                     Modifier
                         .windowInsetsPadding(WindowInsets.navigationBars)
                         .fillMaxSize()
-                        .padding(paddingValues)
+                        .padding(top = paddingValues.calculateTopPadding())
+                        .background(color = colorResource(id = R.color.background_primary))
                 else
                     Modifier
                         .fillMaxSize()
                         .padding(paddingValues)
+                        .background(color = colorResource(id = R.color.background_primary))
 
             Box(
                 modifier = contentModifier,
@@ -214,18 +254,22 @@ fun AllContentMainScreen(
                             is UiContentState.Error -> {
                                 ErrorState(uiContentState.message)
                             }
+
                             is UiContentState.Idle -> {
                                 // Do nothing.
                             }
+
                             UiContentState.InitLoading -> {
                                 LoadingState()
                             }
+
                             UiContentState.Paging -> {}
                             UiContentState.Empty -> {
                                 EmptyState(isSearchEmpty = isSearchEmpty)
                             }
                         }
                     }
+
                     else -> {
                         ContentItems(
                             uiItemsState = uiItemsState,
@@ -238,6 +282,27 @@ fun AllContentMainScreen(
                 }
             }
         }
+    )
+}
+
+@Composable
+fun BottomMenu(
+    modifier: Modifier = Modifier,
+    onHomeClicked: () -> Unit,
+    onGlobalSearchClicked: () -> Unit,
+    onAddDocClicked: () -> Unit,
+    onCreateObjectLongClicked: () -> Unit,
+    onBackClicked: () -> Unit
+) {
+    val isImeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
+    if (isImeVisible) return
+    BottomNavigationMenu(
+        modifier = modifier,
+        backClick = onBackClicked,
+        onProfileClicked = onHomeClicked,
+        searchClick = onGlobalSearchClicked,
+        addDocClick = onAddDocClicked,
+        onCreateObjectLongClicked = onCreateObjectLongClicked
     )
 }
 
@@ -329,7 +394,7 @@ private fun ContentItems(
 
     LaunchedEffect(key1 = uiContentState) {
         if (uiContentState is UiContentState.Idle) {
-            if (uiContentState.scrollToTop)  {
+            if (uiContentState.scrollToTop) {
                 scope.launch {
                     lazyListState.scrollToItem(0)
                 }
@@ -366,7 +431,13 @@ fun PreviewMainScreen() {
     AllContentMainScreen(
         uiItemsState = emptyList(),
         uiTitleState = UiTitleState.AllContent,
-        uiTabsState = UiTabsState(tabs = listOf(AllContentTab.PAGES, AllContentTab.TYPES, AllContentTab.LISTS), selectedTab = AllContentTab.LISTS),
+        uiTabsState = UiTabsState(
+            tabs = listOf(
+                AllContentTab.PAGES,
+                AllContentTab.TYPES,
+                AllContentTab.LISTS
+            ), selectedTab = AllContentTab.LISTS
+        ),
         uiMenuState = UiMenuState.Hidden,
         onTabClick = {},
         onQueryChanged = {},
@@ -376,7 +447,12 @@ fun PreviewMainScreen() {
         onBinClick = {},
         lazyListState = rememberLazyListState(),
         uiContentState = UiContentState.Error("Error message"),
-        onTypeClicked = {}
+        onTypeClicked = {},
+        onHomeClicked = {},
+        onGlobalSearchClicked = {},
+        onAddDocClicked = {},
+        onCreateObjectLongClicked = {},
+        onBackClicked = {}
     )
 }
 

@@ -178,7 +178,8 @@ class AllContentFragment : BaseComposeFragment() {
                         }
                         dialog.show(childFragmentManager,null)
                     },
-                    onBackClicked = vm::onBackClicked
+                    onBackClicked = vm::onBackClicked,
+                    moveToBin = vm::proceedWithMoveToBin
                 )
             }
         }

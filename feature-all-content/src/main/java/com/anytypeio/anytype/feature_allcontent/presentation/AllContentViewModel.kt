@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -79,7 +80,8 @@ class AllContentViewModel(
     private val restoreAllContentState: RestoreAllContentState,
     private val searchObjects: SearchObjects,
     private val localeProvider: LocaleProvider,
-    private val createObject: CreateObject
+    private val createObject: CreateObject,
+    private val setObjectListIsArchived: SetObjectListIsArchived
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val searchResultIds = MutableStateFlow<List<Id>>(emptyList())
@@ -585,6 +587,23 @@ class AllContentViewModel(
         Timber.d("onStop")
         viewModelScope.launch {
             storelessSubscriptionContainer.unsubscribe(listOf(subscriptionId()))
+        }
+    }
+
+    fun proceedWithMoveToBin(item: UiContentItem.Item) {
+        val params = SetObjectListIsArchived.Params(
+            targets = listOf(item.id),
+            isArchived = true
+        )
+        viewModelScope.launch {
+            setObjectListIsArchived.async(params).fold(
+                onSuccess = { ids ->
+                    Timber.d("Successfully archived object: $ids")
+                },
+                onFailure = { e ->
+                    Timber.e(e, "Error while archiving object")
+                }
+            )
         }
     }
 

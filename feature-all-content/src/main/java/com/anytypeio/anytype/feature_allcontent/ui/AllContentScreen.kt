@@ -1,12 +1,17 @@
 package com.anytypeio.anytype.feature_allcontent.ui
 
 import android.os.Build
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,15 +22,18 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -53,7 +61,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.foundation.DismissBackground
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
@@ -85,6 +95,7 @@ import com.anytypeio.anytype.feature_allcontent.models.UiMenuState
 import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
 import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -108,7 +119,8 @@ fun AllContentWrapperScreen(
     onGlobalSearchClicked: () -> Unit,
     onAddDocClicked: () -> Unit,
     onCreateObjectLongClicked: () -> Unit,
-    onBackClicked: () -> Unit
+    onBackClicked: () -> Unit,
+    moveToBin: (UiContentItem.Item) -> Unit
 ) {
     val lazyListState = rememberLazyListState()
 
@@ -148,7 +160,8 @@ fun AllContentWrapperScreen(
         onGlobalSearchClicked = onGlobalSearchClicked,
         onAddDocClicked = onAddDocClicked,
         onCreateObjectLongClicked = onCreateObjectLongClicked,
-        onBackClicked = onBackClicked
+        onBackClicked = onBackClicked,
+        moveToBin = moveToBin
     )
 }
 
@@ -172,7 +185,8 @@ fun AllContentMainScreen(
     onGlobalSearchClicked: () -> Unit,
     onAddDocClicked: () -> Unit,
     onCreateObjectLongClicked: () -> Unit,
-    onBackClicked: () -> Unit
+    onBackClicked: () -> Unit,
+    moveToBin: (UiContentItem.Item) -> Unit
 ) {
     var isSearchEmpty by remember { mutableStateOf(true) }
 
@@ -276,7 +290,8 @@ fun AllContentMainScreen(
                             onItemClicked = onItemClicked,
                             onTypeClicked = onTypeClicked,
                             uiContentState = uiContentState,
-                            lazyListState = lazyListState
+                            lazyListState = lazyListState,
+                            moveToBin = moveToBin
                         )
                     }
                 }
@@ -312,7 +327,8 @@ private fun ContentItems(
     onItemClicked: (UiContentItem.Item) -> Unit,
     onTypeClicked: (UiContentItem.Type) -> Unit,
     uiContentState: UiContentState,
-    lazyListState: LazyListState
+    lazyListState: LazyListState,
+    moveToBin: (UiContentItem.Item) -> Unit
 ) {
     val scope = rememberCoroutineScope()
 
@@ -352,16 +368,18 @@ private fun ContentItems(
                 }
 
                 is UiContentItem.Item -> {
-                    Item(
+                    SwipeToDismissListItems(
                         modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .bottomBorder()
+                            .fillMaxWidth()
+                            .height(72.dp)
                             .animateItem()
                             .noRippleClickable {
                                 onItemClicked(item)
                             },
-                        item = item
+                        item = item,
+                        moveToBin = { moveToBin(it) }
                     )
+                    Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
                 }
 
                 is UiContentItem.Type -> {
@@ -452,55 +470,47 @@ fun PreviewMainScreen() {
         onGlobalSearchClicked = {},
         onAddDocClicked = {},
         onCreateObjectLongClicked = {},
-        onBackClicked = {}
+        onBackClicked = {},
+        moveToBin = {}
     )
 }
 
 @Composable
-private fun Item(
-    modifier: Modifier,
+fun RowScope.Item(
     item: UiContentItem.Item
 ) {
-    Row(
-        modifier = modifier.fillMaxWidth()
-    ) {
-        Box(
-            modifier = Modifier
-                .padding(0.dp, 12.dp, 12.dp, 12.dp)
-                .size(48.dp)
-                .align(CenterVertically)
-        ) {
-            AllContentItemIcon(icon = item.icon, modifier = Modifier)
-        }
-        Column(
-            modifier = Modifier
-                .align(CenterVertically)
-                .padding(0.dp, 0.dp, 60.dp, 0.dp)
-        ) {
-
-            val name = item.name.trim().ifBlank { stringResource(R.string.untitled) }
-
-            Text(
-                text = name,
-                style = PreviewTitle2Medium,
-                color = colorResource(id = R.color.text_primary),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            val description = item.description
-            if (!description.isNullOrBlank()) {
+    val name = item.name.trim().ifBlank { stringResource(R.string.untitled) }
+    val description = item.description
+    val typeName = item.typeName
+    ListItem(
+        colors = ListItemDefaults.colors(
+            containerColor = colorResource(id = R.color.background_primary),
+        ),
+        modifier = Modifier
+            .height(72.dp)
+            .fillMaxWidth(),
+        headlineContent = {
+            Column {
                 Text(
-                    text = description,
-                    style = Relations3,
+                    text = name,
+                    style = PreviewTitle2Medium,
                     color = colorResource(id = R.color.text_primary),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
+                if (description != null) {
+                    Text(
+                        text = description,
+                        style = Relations3,
+                        color = colorResource(id = R.color.text_primary),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
-
-            val typeName = item.typeName
-            if (!typeName.isNullOrBlank()) {
+        },
+        supportingContent = {
+            if (typeName != null) {
                 Text(
                     text = typeName,
                     style = Relations3,
@@ -509,8 +519,11 @@ private fun Item(
                     overflow = TextOverflow.Ellipsis
                 )
             }
+        },
+        leadingContent = {
+            AllContentItemIcon(icon = item.icon, modifier = Modifier)
         }
-    }
+    )
 }
 
 @Composable
@@ -587,7 +600,7 @@ fun AllContentItemIcon(
 }
 
 @Composable
-private fun BoxScope.ErrorState(message: String) {
+private fun ErrorState(message: String) {
     Column {
         Text(
             modifier = Modifier
@@ -676,3 +689,68 @@ fun Modifier.bottomBorder(
         }
     }
 )
+
+@Composable
+fun SwipeToDismissListItems(
+    item: UiContentItem.Item,
+    modifier: Modifier,
+    animationDuration: Int = 500,
+    moveToBin: (UiContentItem.Item) -> Unit
+) {
+    var isRemoved by remember { mutableStateOf(false) }
+    val dismissState = rememberSwipeToDismissBoxState(
+        confirmValueChange = { value ->
+            if (value == SwipeToDismissBoxValue.EndToStart) {
+                isRemoved = true
+                true
+            } else {
+                false
+            }
+        },
+        positionalThreshold = { it * .30f }
+    )
+
+    LaunchedEffect(key1 = isRemoved) {
+        if (isRemoved) {
+            delay(animationDuration.toLong())
+            moveToBin(item)
+        }
+    }
+    AnimatedVisibility(
+        visible = !isRemoved,
+        exit = shrinkVertically(
+            animationSpec = tween(durationMillis = animationDuration),
+            shrinkTowards = Alignment.Top
+        ) + fadeOut()
+    ) {
+        SwipeToDismissBox(
+            modifier = modifier,
+            state = dismissState,
+            enableDismissFromStartToEnd = false,
+            backgroundContent = {
+                DismissBackground(
+                    actionText = stringResource(R.string.move_to_bin),
+                    dismissState = dismissState
+                )
+            },
+            content = { Item(item = item) }
+        )
+    }
+}
+
+@DefaultPreviews
+@Composable
+fun MtSwipeToDismissListItems() {
+    SwipeToDismissListItems(
+        item = UiContentItem.Item(
+            id = "1",
+            name = "Name",
+            description = "Description11",
+            typeName = "Type11",
+            icon = ObjectIcon.Basic.Emoji("📄"),
+            space = SpaceId("1"),
+        ),
+        modifier = Modifier.fillMaxWidth(),
+        moveToBin = {}
+    )
+}

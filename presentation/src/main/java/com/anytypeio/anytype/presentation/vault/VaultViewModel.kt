@@ -75,7 +75,7 @@ class VaultViewModel(
                                 space.space.id
                             )
                             if (idx == -1) {
-                                Int.MAX_VALUE
+                                Int.MIN_VALUE
                             } else {
                                 idx
                             }

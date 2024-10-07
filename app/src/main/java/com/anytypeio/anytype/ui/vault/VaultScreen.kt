@@ -18,9 +18,14 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -36,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import com.anytypeio.anytype.BuildConfig.USE_EDGE_TO_EDGE
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Wallpaper
@@ -43,6 +49,9 @@ import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.util.DraggableItem
+import com.anytypeio.anytype.core_ui.foundation.util.dragContainer
+import com.anytypeio.anytype.core_ui.foundation.util.rememberDragDropState
 import com.anytypeio.anytype.core_ui.views.BodyBold
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.Title1
@@ -59,8 +68,28 @@ fun VaultScreen(
     spaces: List<VaultSpaceView>,
     onSpaceClicked: (VaultSpaceView) -> Unit,
     onCreateSpaceClicked: () -> Unit,
-    onSettingsClicked: () -> Unit
+    onSettingsClicked: () -> Unit,
+    onOrderChanged: (List<Id>) -> Unit
 ) {
+    var spaceList by remember {
+        mutableStateOf<List<VaultSpaceView>>(spaces)
+    }
+
+    spaceList = spaces
+
+    val lazyListState = rememberLazyListState()
+    val dragDropState = rememberDragDropState(
+        lazyListState = lazyListState,
+        onDragEnd = {
+            onOrderChanged(
+                spaceList.map { it.space.id }
+            )
+        },
+        onMove = { fromIndex, toIndex ->
+            spaceList = spaceList.toMutableList().apply { add(toIndex, removeAt(fromIndex)) }
+        }
+    )
+
     Box(
         Modifier
             .fillMaxSize()
@@ -74,39 +103,44 @@ fun VaultScreen(
                     Modifier
             )
     ) {
+
        VaultScreenToolbar(
            onPlusClicked = onCreateSpaceClicked,
            onSettingsClicked = onSettingsClicked
        )
+
        LazyColumn(
            modifier = Modifier
                .fillMaxSize()
-               .padding(
-                   top = 48.dp
-               ),
+               .padding(top = 48.dp)
+               .dragContainer(dragDropState)
+           ,
+           state = lazyListState,
            verticalArrangement = Arrangement.spacedBy(8.dp)
        ) {
            itemsIndexed(
-               items = spaces,
-               key = { idx, item ->
+               items = spaceList,
+               key = { _, item ->
                    item.space.id
                }
            ) { idx, item ->
                if (idx == 0) {
                    Spacer(modifier = Modifier.height(4.dp))
                }
-               VaultSpaceCard(
-                   title = item.space.name.orEmpty(),
-                   subtitle = when(item.space.spaceAccessType) {
-                       SpaceAccessType.PRIVATE -> stringResource(id = R.string.space_type_private_space)
-                       SpaceAccessType.DEFAULT -> stringResource(id = R.string.space_type_default_space)
-                       SpaceAccessType.SHARED -> stringResource(id = R.string.space_type_shared_space)
-                       else -> EMPTY_STRING_VALUE
-                   },
-                   wallpaper = item.wallpaper,
-                   onCardClicked = { onSpaceClicked(item) },
-                   icon = item.icon
-               )
+               DraggableItem(dragDropState = dragDropState, index = idx) {
+                   VaultSpaceCard(
+                       title = item.space.name.orEmpty(),
+                       subtitle = when (item.space.spaceAccessType) {
+                           SpaceAccessType.PRIVATE -> stringResource(id = R.string.space_type_private_space)
+                           SpaceAccessType.DEFAULT -> stringResource(id = R.string.space_type_default_space)
+                           SpaceAccessType.SHARED -> stringResource(id = R.string.space_type_shared_space)
+                           else -> EMPTY_STRING_VALUE
+                       },
+                       wallpaper = item.wallpaper,
+                       onCardClicked = { onSpaceClicked(item) },
+                       icon = item.icon
+                   )
+               }
                if (idx == spaces.lastIndex) {
                    VaultSpaceAddCard(
                        onCreateSpaceClicked = onCreateSpaceClicked
@@ -278,7 +312,9 @@ fun VaultSpaceAddCard(
             }
     ) {
         Image(
-            modifier = Modifier.align(Alignment.Center).padding(vertical = 32.dp),
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(vertical = 32.dp),
             painter = painterResource(id = R.drawable.ic_vault_create_space_card_button_plus),
             contentDescription = "Plus icon"
         )
@@ -328,6 +364,7 @@ fun VaultScreenPreview() {
         },
         onSpaceClicked = {},
         onCreateSpaceClicked = {},
-        onSettingsClicked = {}
+        onSettingsClicked = {},
+        onOrderChanged = {}
     )
 }

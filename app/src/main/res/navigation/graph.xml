@@ -162,10 +162,7 @@
             />
         <action
             android:id="@+id/action_open_all_content"
-            app:destination="@id/allContentScreen"
-            app:enterAnim="@anim/enter_from_right"
-            app:exitAnim="@anim/exit_to_left"
-            />
+            app:destination="@id/allContentScreen" />
     </fragment>
 
     <fragment
@@ -214,6 +211,9 @@
         <action
             android:id="@+id/actionCreateSpaceFromVault"
             app:destination="@id/createSpaceScreen" />
+        <action
+            android:id="@+id/actionShowIntroduceVaultScreen"
+            app:destination="@id/introduceVaultScreen" />
     </fragment>
 
     <dialog
@@ -224,6 +224,11 @@
             app:popUpTo="@+id/vaultScreen"
             app:popUpToInclusive="false" />
     </dialog>
+
+    <dialog
+        android:id="@+id/introduceVaultScreen"
+        android:name="com.anytypeio.anytype.ui.vault.IntroduceVaultFragment"
+        android:label="IntroduceVaultScreen"/>
 
     <dialog
         android:id="@+id/spaceSettingsScreen"
@@ -396,7 +401,19 @@
     <fragment
         android:id="@+id/allContentScreen"
         android:name="com.anytypeio.anytype.ui.allcontent.AllContentFragment"
-        android:label="AllContentScreen" />
+        android:label="AllContentScreen">
+        <action
+            android:id="@+id/openTypeEditingScreen"
+            app:destination="@id/typeEditingFragment" />
+        <action
+            android:id="@+id/actionOpenVault"
+            app:destination="@id/vaultScreen"
+            app:popUpTo="@id/vaultScreen"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/actionOpenGlobalSearch"
+            app:destination="@id/globalSearchScreen" />
+    </fragment>
 
     <fragment
         android:id="@+id/libraryFragment"

@@ -13,12 +13,14 @@ class UpdateAllContentState @Inject constructor(
 ) : ResultInteractor<UpdateAllContentState.Params, Unit>(dispatchers.io) {
 
     override suspend fun doWork(params: Params) {
-        //todo: implement
+        settings.setAllContentSort(
+            space = params.spaceId,
+            sort = params.sort
+        )
     }
 
     data class Params(
         val spaceId: SpaceId,
-        val query: String,
-        val relatedObjectId: Id?
+        val sort: Id
     )
 }

@@ -43,7 +43,8 @@ class VaultFragment : BaseComposeFragment() {
                     spaces = vm.spaces.collectAsStateWithLifecycle().value,
                     onSpaceClicked = vm::onSpaceClicked,
                     onCreateSpaceClicked = vm::onCreateSpaceClicked,
-                    onSettingsClicked = vm::onSettingsClicked
+                    onSettingsClicked = vm::onSettingsClicked,
+                    onOrderChanged = vm::onOrderChanged
                 )
             }
             LaunchedEffect(Unit) {
@@ -82,11 +83,23 @@ class VaultFragment : BaseComposeFragment() {
                     Timber.e(it, "Error while opening profile settings from vault")
                 }
             }
+            is Command.ShowIntroduceVault -> {
+                runCatching {
+                    findNavController().navigate(R.id.actionShowIntroduceVaultScreen)
+                }.onFailure {
+                    Timber.e(it, "Error while opening introduce-vault-screen from vault")
+                }
+            }
         }
     }
 
     override fun onApplyWindowRootInsets(view: View) {
         // TODO Do nothing ?
+    }
+
+    override fun onResume() {
+        super.onResume()
+        vm.onResume()
     }
 
     override fun injectDependencies() {

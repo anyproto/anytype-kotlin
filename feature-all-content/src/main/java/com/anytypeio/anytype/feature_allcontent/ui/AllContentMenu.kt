@@ -3,9 +3,9 @@ package com.anytypeio.anytype.feature_allcontent.ui
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,10 +20,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.ColorFilter.Companion.tint
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
@@ -37,9 +39,10 @@ import com.anytypeio.anytype.feature_allcontent.models.UiMenuState
 
 @Composable
 fun AllContentMenu(
-    uiMenuState: UiMenuState,
+    uiMenuState: UiMenuState.Visible,
     onModeClick: (AllContentMenuMode) -> Unit,
-    onSortClick: (AllContentSort) -> Unit
+    onSortClick: (AllContentSort) -> Unit,
+    onBinClick: () -> Unit
 ) {
     var sortingExpanded by remember { mutableStateOf(false) }
 
@@ -51,15 +54,20 @@ fun AllContentMenu(
                 onModeClick(item)
             }
         )
+        Divider(0.5.dp)
     }
-    Spacer(modifier = Modifier.height(8.dp))
+    if (uiMenuState.mode.isNotEmpty()) {
+        Divider(7.5.dp)
+    }
     SortingBox(
         modifier = Modifier
             .clickable {
                 sortingExpanded = !sortingExpanded
             },
-        subtitle = uiMenuState.container.sort.title()
+        subtitle = uiMenuState.container.sort.title(),
+        isExpanded = sortingExpanded
     )
+    Divider(0.5.dp)
     if (sortingExpanded) {
         uiMenuState.sorts.forEach { item ->
             MenuItem(
@@ -70,8 +78,10 @@ fun AllContentMenu(
                         onSortClick(item.sort)
                     }
             )
+            Divider(0.5.dp)
         }
-        uiMenuState.types.forEach { item ->
+        Divider(7.5.dp)
+        uiMenuState.types.forEachIndexed { index, item ->
             MenuItem(
                 title = item.sortType.title(item.sort),
                 isSelected = item.isSelected,
@@ -85,12 +95,34 @@ fun AllContentMenu(
                         onSortClick(updatedSort)
                     }
             )
+            if (index < uiMenuState.types.size - 1) {
+                Divider(0.5.dp)
+            }
         }
+    }
+    if (uiMenuState.showBin && !sortingExpanded) {
+        Divider(7.5.dp)
+        MenuItem(
+            title = stringResource(id = R.string.all_content_view_bin),
+            isSelected = false,
+            modifier = Modifier.clickable { onBinClick() }
+        )
     }
 }
 
 @Composable
-private fun SortingBox(modifier: Modifier, subtitle: String) {
+private fun Divider(height: Dp) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(height)
+            .background(colorResource(id = R.color.shape_tertiary))
+    )
+}
+
+@Composable
+private fun SortingBox(modifier: Modifier, subtitle: String, isExpanded: Boolean) {
+    val rotationAngle = if (isExpanded) 90f else 0f
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -98,7 +130,9 @@ private fun SortingBox(modifier: Modifier, subtitle: String) {
         verticalAlignment = CenterVertically
     ) {
         Image(
-            modifier = Modifier.size(32.dp),
+            modifier = Modifier
+                .size(32.dp)
+                .rotate(rotationAngle),
             painter = painterResource(R.drawable.ic_menu_arrow_right),
             contentDescription = "",
             colorFilter = tint(colorResource(id = R.color.glyph_selected))
@@ -201,7 +235,7 @@ private fun DVSortType.title(sort: AllContentSort): String = when (this) {
 @Composable
 fun AllContentMenuPreview() {
     AllContentMenu(
-        uiMenuState = UiMenuState(
+        uiMenuState = UiMenuState.Visible(
             mode = listOf(
                 AllContentMenuMode.AllContent(isSelected = true),
                 AllContentMenuMode.Unlinked(isSelected = false)
@@ -232,7 +266,8 @@ fun AllContentMenuPreview() {
             container = MenuSortsItem.Container(AllContentSort.ByName())
         ),
         onModeClick = {},
-        onSortClick = {}
+        onSortClick = {},
+        onBinClick = {}
     )
 }
 //endregion

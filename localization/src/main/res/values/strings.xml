@@ -1759,8 +1759,7 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_title_tab_media">Media</string>
     <string name="all_content_title_tab_bookmarks">Bookmarks</string>
     <string name="all_content_title_tab_files">Files</string>
-    <string name="all_content_title_tab_objetc_types">Object Types</string>
-    <string name="all_content_title_tab_relations">Relations</string>
+    <string name="all_content_title_tab_objetc_types">Types</string>
     <string name="all_content_sort_by">Sort by</string>
 
     <string name="all_content_sort_name_desc">Z → A</string>
@@ -1777,6 +1776,19 @@ Please provide specific details of your needs here.</string>
     <string name="allContent_group_yesterday">Yesterday</string>
     <string name="allContent_group_prev_7">Previous 7 days</string>
     <string name="allContent_group_prev_14">Previous 14 days</string>
+    <string name="introduce_vault_text_1">Vault is the new home for all your Spaces.\nCreate, join, or share Spaces – everything is securely stored here.</string>
+    <string name="introduce_vault_text_2">You can now easily reorder your Spaces using drag and drop and navigate them more easily.</string>
+    <string name="introduce_vault_text_3">By default, we blur the icon of your space as a background. If needed, you can change it in the space-settings.</string>
+    <string name="introduce_vault_welcome_to_the_vault">Welcome to the Vault</string>
+    <string name="introduce_vault_simple_flexible"><![CDATA[Simple & Flexible]]></string>
 
+    <string name="allContent_empty_state_title">It’s empty here.</string>
+    <string name="allContent_empty_state_description">Create your first objects to get started.</string>
+
+    <string name="all_content_no_results_title">No results found.</string>
+    <string name="all_content_no_results_description">Try searching with different keywords.</string>
+
+    <string name="all_content_error_title">Something went wrong.</string>
+    <string name="onboarding_my_first_space">My First Space</string>
 
 </resources>

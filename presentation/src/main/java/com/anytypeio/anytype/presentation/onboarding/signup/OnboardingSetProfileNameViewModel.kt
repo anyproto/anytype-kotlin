@@ -59,16 +59,23 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     val state = MutableStateFlow<ScreenState>(ScreenState.Idle)
     val navigation = MutableSharedFlow<Navigation>()
 
-    fun onNextClicked(name: String) {
+    fun onNextClicked(
+        name: String,
+        spaceName: String
+    ) {
         if (state.value !is ScreenState.Loading) {
-            proceedWithCreatingWallet(name)
+            proceedWithCreatingWallet(
+                name = name,
+                spaceName = spaceName
+            )
         } else {
             sendToast(LOADING_MSG)
         }
     }
 
     private fun proceedWithCreatingWallet(
-        name: String
+        name: String,
+        spaceName: String
     ) {
         state.value = ScreenState.Loading
         setupWallet.invoke(
@@ -82,13 +89,19 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                     Timber.e(it, "Error while setting up wallet")
                 },
                 fnR = {
-                    proceedWithCreatingAccount(name)
+                    proceedWithCreatingAccount(
+                        name = name,
+                        spaceName = spaceName
+                    )
                 }
             )
         }
     }
 
-    private fun proceedWithCreatingAccount(name: String) {
+    private fun proceedWithCreatingAccount(
+        name: String,
+        spaceName: String
+    ) {
         val startTime = System.currentTimeMillis()
         val params = CreateAccount.Params(
             name = name,
@@ -121,7 +134,11 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                     if (config != null) {
                         crashReporter.setUser(config.analytics)
                         setupGlobalSubscriptions()
-                        proceedWithSettingUpMobileUseCase(config.space, name)
+                        proceedWithSettingUpMobileUseCase(
+                            space = config.space,
+                            name = name,
+                            spaceName = spaceName
+                        )
                     } else {
                         Timber.w("Config was missing after account creation")
                     }
@@ -134,7 +151,10 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         globalSubscriptionManager.onStart()
     }
 
-    private fun proceedWithSettingAccountName(name: String) {
+    private fun proceedWithSettingAccountName(
+        name: String,
+        spaceName: String
+    ) {
         val config = configStorage.getOrNull()
         if (config != null) {
             viewModelScope.launch {
@@ -142,7 +162,7 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                 setSpaceDetails.async(
                     SetSpaceDetails.Params(
                         space = SpaceId(config.space),
-                        details = mapOf(Relations.NAME to name)
+                        details = mapOf(Relations.NAME to spaceName)
                     )
                 ).fold(
                     onFailure = {
@@ -187,14 +207,24 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         }
     }
 
-    private fun proceedWithSettingUpMobileUseCase(space: Id, name: String) {
+    private fun proceedWithSettingUpMobileUseCase(
+        space: Id,
+        name: String,
+        spaceName: String
+    ) {
         viewModelScope.launch {
             importGetStartedUseCase.async(ImportGetStartedUseCase.Params(space)).fold(
                 onFailure = {
-                    proceedWithSettingAccountName(name)
+                    proceedWithSettingAccountName(
+                        name = name,
+                        spaceName = spaceName
+                    )
                 },
                 onSuccess = {
-                    proceedWithSettingAccountName(name)
+                    proceedWithSettingAccountName(
+                        name = name,
+                        spaceName = spaceName
+                    )
                 }
             )
         }

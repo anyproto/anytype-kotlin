@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
@@ -38,7 +39,7 @@ val allContentTabLayouts = mapOf(
 // Function to create subscription params
 fun createSubscriptionParams(
     spaceId: Id,
-    activeMode: AllContentMode,
+    activeMode: UiTitleState,
     activeTab: AllContentTab,
     activeSort: AllContentSort,
     limitedObjectIds: List<String>,
@@ -90,7 +91,7 @@ fun AllContentTab.filtersForSubscribe(
     spaces: List<Id>,
     activeSort: AllContentSort,
     limitedObjectIds: List<Id>,
-    activeMode: AllContentMode
+    activeMode: UiTitleState
 ): Pair<List<DVFilter>, List<DVSort>> {
     val tab = this
     when (this) {
@@ -109,16 +110,45 @@ fun AllContentTab.filtersForSubscribe(
                 if (limitedObjectIds.isNotEmpty()) {
                     add(buildLimitedObjectIdsFilter(limitedObjectIds = limitedObjectIds))
                 }
-                if (activeMode == AllContentMode.Unlinked) {
+                if (activeMode == UiTitleState.OnlyUnlinked) {
                     addAll(buildUnlinkedObjectFilter())
                 }
             }
             val sorts = listOf(activeSort.toDVSort())
             return filters to sorts
         }
-
-        AllContentTab.TYPES -> TODO()
-        AllContentTab.RELATIONS -> TODO()
+        AllContentTab.TYPES -> {
+            val filters = buildList {
+                addAll(buildDeletedFilter())
+                add(buildSpaceIdFilter(spaces))
+                if (limitedObjectIds.isNotEmpty()) {
+                    add(buildLimitedObjectIdsFilter(limitedObjectIds = limitedObjectIds))
+                }
+                add(
+                    DVFilter(
+                        relation = Relations.LAYOUT,
+                        condition = DVFilterCondition.NOT_EQUAL,
+                        value = ObjectType.Layout.PARTICIPANT.code.toDouble()
+                    )
+                )
+                add(
+                    DVFilter(
+                        relation = Relations.LAYOUT,
+                        condition = DVFilterCondition.EQUAL,
+                        value = ObjectType.Layout.OBJECT_TYPE.code.toDouble()
+                    )
+                )
+                add(
+                    DVFilter(
+                        relation = Relations.UNIQUE_KEY,
+                        condition = DVFilterCondition.NOT_EQUAL,
+                        value = ObjectTypeIds.CHAT_DERIVED
+                    )
+                )
+            }
+            val sorts = listOf(activeSort.toDVSort())
+            return filters to sorts
+        }
     }
 }
 
@@ -126,26 +156,14 @@ fun AllContentTab.filtersForSearch(
     spaces: List<Id>
 ): List<DVFilter> {
     val tab = this
-    when (this) {
-        AllContentTab.PAGES,
-        AllContentTab.LISTS,
-        AllContentTab.FILES,
-        AllContentTab.MEDIA,
-        AllContentTab.BOOKMARKS -> {
-            val filters = buildList {
-                addAll(buildDeletedFilter())
-                add(buildLayoutFilter(layouts = allContentTabLayouts.getValue(tab)))
-                add(buildSpaceIdFilter(spaces))
-                if (tab == AllContentTab.PAGES) {
-                    add(buildTemplateFilter())
-                }
-            }
-            return filters
+    val filters = buildList {
+        addAll(buildDeletedFilter())
+        add(buildSpaceIdFilter(spaces))
+        if (tab == AllContentTab.PAGES) {
+            add(buildTemplateFilter())
         }
-
-        AllContentTab.TYPES -> TODO()
-        AllContentTab.RELATIONS -> TODO()
     }
+    return filters
 }
 
 private fun buildLayoutFilter(layouts: List<ObjectType.Layout>): DVFilter = DVFilter(
@@ -197,6 +215,11 @@ private fun buildDeletedFilter(): List<DVFilter> {
         ),
         DVFilter(
             relation = Relations.IS_DELETED,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_HIDDEN_DISCOVERY,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         )

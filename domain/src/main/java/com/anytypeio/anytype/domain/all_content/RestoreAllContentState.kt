@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.domain.all_content
 
-import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
@@ -15,8 +14,8 @@ class RestoreAllContentState @Inject constructor(
 ) {
 
     override suspend fun doWork(params: Params): Response {
-        //todo: implement
-        return Response(activeSort = null)
+        val sort = settings.getAllContentSort(params.spaceId)
+        return Response(activeSort = sort)
     }
 
     data class Params(

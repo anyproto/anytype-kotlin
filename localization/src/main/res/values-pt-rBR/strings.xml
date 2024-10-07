@@ -1503,8 +1503,7 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="all_content_title_tab_media">Mídias</string>
     <string name="all_content_title_tab_bookmarks">Marca página</string>
     <string name="all_content_title_tab_files">Arquivos</string>
-    <string name="all_content_title_tab_objetc_types">Object Types</string>
-    <string name="all_content_title_tab_relations">Relações</string>
+    <string name="all_content_title_tab_objetc_types">Tipos</string>
     <string name="all_content_sort_by">Ordenar por</string>
     <string name="all_content_sort_name_desc">Z → A</string>
     <string name="all_content_sort_name_asc">A → Z</string>
@@ -1518,4 +1517,15 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="allContent_group_yesterday">Ontem</string>
     <string name="allContent_group_prev_7">Últimos 7 dias</string>
     <string name="allContent_group_prev_14">Últimos 14 dias</string>
+    <string name="introduce_vault_text_1">Vault is the new home for all your Spaces.\nCreate, join, or share Spaces – everything is securely stored here.</string>
+    <string name="introduce_vault_text_2">You can now easily reorder your Spaces using drag and drop and navigate them more easily.</string>
+    <string name="introduce_vault_text_3">By default, we blur the icon of your space as a background. If needed, you can change it in the space-settings.</string>
+    <string name="introduce_vault_welcome_to_the_vault">Welcome to the Vault</string>
+    <string name="introduce_vault_simple_flexible"><![CDATA[Simple & Flexible]]></string>
+    <string name="allContent_empty_state_title">It’s empty here.</string>
+    <string name="allContent_empty_state_description">Create your first objects to get started.</string>
+    <string name="all_content_no_results_title">No results found.</string>
+    <string name="all_content_no_results_description">Try searching with different keywords.</string>
+    <string name="all_content_error_title">Something went wrong.</string>
+    <string name="onboarding_my_first_space">Meu Primeiro Espaço</string>
 </resources>

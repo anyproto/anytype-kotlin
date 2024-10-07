@@ -2,41 +2,30 @@ package com.anytypeio.anytype.feature_allcontent.models
 
 import androidx.compose.runtime.Immutable
 import com.anytypeio.anytype.core_models.DVSortType
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.Relations.SOURCE_OBJECT
 import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Companion.DEFAULT_INITIAL_SORT
+import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Companion.DEFAULT_INITIAL_TAB
+import com.anytypeio.anytype.presentation.library.DependentData
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.objects.getProperType
 
 //region STATE
-sealed class AllContentState {
-    data object Init : AllContentState()
-    data class Default(
-        val activeTab: AllContentTab,
-        val activeMode: AllContentMode,
-        val activeSort: AllContentSort,
-        val filter: String,
-        val limit: Int
-    ) : AllContentState()
-}
-
 @Immutable
 enum class AllContentTab {
-    PAGES, LISTS, MEDIA, BOOKMARKS, FILES, TYPES, RELATIONS
-}
-
-sealed class AllContentMode {
-    data object AllContent : AllContentMode()
-    data object Unlinked : AllContentMode()
+    PAGES, LISTS, MEDIA, BOOKMARKS, FILES, TYPES
 }
 
 sealed class AllContentMenuMode {
@@ -84,43 +73,25 @@ sealed class AllContentSort {
 
 //TITLE
 sealed class UiTitleState {
-    data object Hidden : UiTitleState()
     data object AllContent : UiTitleState()
     data object OnlyUnlinked : UiTitleState()
 }
 
-//MENU BUTTON
-sealed class MenuButtonViewState {
-    data object Hidden : MenuButtonViewState()
-    data object Visible : MenuButtonViewState()
-}
-
 // TABS
 @Immutable
-sealed class UiTabsState {
-    data object Hidden : UiTabsState()
-
-    @Immutable
-    data class Default(
-        val tabs: List<AllContentTab>,
-        val selectedTab: AllContentTab
-    ) : UiTabsState()
-}
+data class UiTabsState(
+    val tabs: List<AllContentTab> = AllContentTab.entries,
+    val selectedTab: AllContentTab = DEFAULT_INITIAL_TAB
+)
 
 // CONTENT
 sealed class UiContentState {
-
-    data object Hidden : UiContentState()
-
-    data object Loading : UiContentState()
-
+    data class Idle(val scrollToTop: Boolean = false) : UiContentState()
+    data object InitLoading : UiContentState()
+    data object Paging : UiContentState()
+    data object Empty : UiContentState()
     data class Error(
         val message: String,
-    ) : UiContentState()
-
-    @Immutable
-    data class Content(
-        val items: List<UiContentItem>,
     ) : UiContentState()
 }
 
@@ -150,6 +121,17 @@ sealed class UiContentItem {
         val createdDate: Long = 0L,
     ) : UiContentItem()
 
+    data class Type(
+        override val id: Id,
+        val name: String,
+        val icon: ObjectIcon? = null,
+        val sourceObject: Id? = null,
+        val uniqueKey: Key? = null,
+        val readOnly: Boolean = true,
+        val editable: Boolean = true,
+        val dependentData: DependentData = DependentData.None
+    ) : UiContentItem()
+
     companion object {
         const val TODAY_ID = "TodayId"
         const val YESTERDAY_ID = "YesterdayId"
@@ -160,23 +142,20 @@ sealed class UiContentItem {
 
 // MENU
 @Immutable
-data class UiMenuState(
-    val mode: List<AllContentMenuMode>,
-    val container: MenuSortsItem.Container,
-    val sorts: List<MenuSortsItem.Sort>,
-    val types: List<MenuSortsItem.SortType>
-) {
-    companion object {
-        fun empty(): UiMenuState {
-            return UiMenuState(
-                mode = emptyList(),
-                container = MenuSortsItem.Container(AllContentSort.ByName()),
-                sorts = emptyList(),
-                types = emptyList()
-            )
-        }
-    }
+sealed class UiMenuState{
+
+    data object Hidden : UiMenuState()
+
+    @Immutable
+    data class Visible(
+        val mode: List<AllContentMenuMode>,
+        val container: MenuSortsItem.Container,
+        val sorts: List<MenuSortsItem.Sort>,
+        val types: List<MenuSortsItem.SortType>,
+        val showBin: Boolean = true
+    ) : UiMenuState()
 }
+
 
 sealed class MenuSortsItem {
     data class Container(val sort: AllContentSort) : MenuSortsItem()
@@ -191,24 +170,11 @@ sealed class MenuSortsItem {
 //endregion
 
 //region MAPPING
-fun AllContentState.Default.toMenuMode(): AllContentMenuMode {
-    return when (activeMode) {
-        AllContentMode.AllContent -> AllContentMenuMode.AllContent(isSelected = true)
-        AllContentMode.Unlinked -> AllContentMenuMode.Unlinked(isSelected = true)
-    }
-}
-
-fun AllContentMode.view(): UiTitleState {
-    return when (this) {
-        AllContentMode.AllContent -> UiTitleState.AllContent
-        AllContentMode.Unlinked -> UiTitleState.OnlyUnlinked
-    }
-}
-
 fun Key?.mapRelationKeyToSort(): AllContentSort {
     return when (this) {
         Relations.CREATED_DATE -> AllContentSort.ByDateCreated()
-        Relations.LAST_OPENED_DATE -> AllContentSort.ByDateUpdated()
+        Relations.LAST_MODIFIED_DATE -> AllContentSort.ByDateUpdated()
+        Relations.NAME -> AllContentSort.ByName()
         else -> DEFAULT_INITIAL_SORT
     }
 }
@@ -249,8 +215,34 @@ fun ObjectWrapper.Basic.toAllContentItem(
             layout = layout,
             builder = urlBuilder
         ),
-        lastModifiedDate = DateParser.parseInMillis(obj.lastModifiedDate) ?: 0L,
+        lastModifiedDate = DateParser.parse(obj.getValue(Relations.LAST_MODIFIED_DATE)) ?: 0L,
         createdDate = DateParser.parse(obj.getValue(Relations.CREATED_DATE)) ?: 0L
+    )
+}
+
+fun List<ObjectWrapper.Basic>.toUiContentTypes(
+    urlBuilder: UrlBuilder
+): List<UiContentItem.Type> {
+    return map { it.toAllContentType(urlBuilder) }
+}
+
+fun ObjectWrapper.Basic.toAllContentType(
+    urlBuilder: UrlBuilder,
+): UiContentItem.Type {
+    val obj = this
+    val layout = layout ?: ObjectType.Layout.BASIC
+    return UiContentItem.Type(
+        id = obj.id,
+        name = obj.name.orEmpty(),
+        icon = ObjectIcon.from(
+            obj = obj,
+            layout = layout,
+            builder = urlBuilder
+        ),
+        sourceObject = obj.map[SOURCE_OBJECT]?.toString(),
+        uniqueKey = obj.uniqueKey,
+        readOnly = obj.restrictions.contains(ObjectRestriction.DELETE),
+        editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
     )
 }
 //endregion

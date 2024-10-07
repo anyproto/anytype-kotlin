@@ -3,7 +3,6 @@ package com.anytypeio.anytype.feature_allcontent.ui
 import android.os.Build
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
@@ -13,22 +12,28 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.FabPosition
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -42,16 +47,19 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Divider
+import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.PreviewTitle1Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.UXBody
@@ -71,67 +79,129 @@ import com.anytypeio.anytype.feature_allcontent.R
 import com.anytypeio.anytype.feature_allcontent.models.AllContentMenuMode
 import com.anytypeio.anytype.feature_allcontent.models.AllContentSort
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
-import com.anytypeio.anytype.feature_allcontent.models.UiContentState
-import com.anytypeio.anytype.feature_allcontent.models.MenuButtonViewState
 import com.anytypeio.anytype.feature_allcontent.models.UiContentItem
+import com.anytypeio.anytype.feature_allcontent.models.UiContentState
 import com.anytypeio.anytype.feature_allcontent.models.UiMenuState
 import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
 import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import kotlinx.coroutines.launch
+
 
 @Composable
 fun AllContentWrapperScreen(
     uiTitleState: UiTitleState,
     uiTabsState: UiTabsState,
-    uiMenuButtonViewState: MenuButtonViewState,
     uiMenuState: UiMenuState,
-    uiState: UiContentState,
+    uiItemsState: List<UiContentItem>,
     onTabClick: (AllContentTab) -> Unit,
     onQueryChanged: (String) -> Unit,
     onModeClick: (AllContentMenuMode) -> Unit,
     onSortClick: (AllContentSort) -> Unit,
-    onItemClicked: (UiContentItem.Item) -> Unit
+    onItemClicked: (UiContentItem.Item) -> Unit,
+    onTypeClicked: (UiContentItem.Type) -> Unit,
+    onBinClick: () -> Unit,
+    canPaginate: Boolean,
+    onUpdateLimitSearch: () -> Unit,
+    uiContentState: UiContentState,
+    onHomeClicked: () -> Unit,
+    onGlobalSearchClicked: () -> Unit,
+    onAddDocClicked: () -> Unit,
+    onCreateObjectLongClicked: () -> Unit,
+    onBackClicked: () -> Unit
 ) {
-    val objects = remember { mutableStateOf<List<UiContentItem>>(emptyList()) }
-    if (uiState is UiContentState.Content) {
-        objects.value = uiState.items
+    val lazyListState = rememberLazyListState()
+
+    val canPaginateState = remember { mutableStateOf(false) }
+    LaunchedEffect(key1 = canPaginate) {
+        canPaginateState.value = canPaginate
     }
+
+    val shouldStartPaging = remember {
+        derivedStateOf {
+            canPaginateState.value && (lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+                ?: -9) >= (lazyListState.layoutInfo.totalItemsCount - 2)
+        }
+    }
+
+    LaunchedEffect(key1 = shouldStartPaging.value) {
+        if (shouldStartPaging.value && uiContentState is UiContentState.Idle) {
+            onUpdateLimitSearch()
+        }
+    }
+
     AllContentMainScreen(
         uiTitleState = uiTitleState,
         uiTabsState = uiTabsState,
-        uiMenuButtonViewState = uiMenuButtonViewState,
         onTabClick = onTabClick,
-        objects = objects,
-        isLoading = uiState is UiContentState.Loading,
         onQueryChanged = onQueryChanged,
         uiMenuState = uiMenuState,
         onModeClick = onModeClick,
         onSortClick = onSortClick,
-        onItemClicked = onItemClicked
+        onItemClicked = onItemClicked,
+        onBinClick = onBinClick,
+        uiItemsState = uiItemsState,
+        lazyListState = lazyListState,
+        uiContentState = uiContentState,
+        onTypeClicked = onTypeClicked,
+        onHomeClicked = onHomeClicked,
+        onGlobalSearchClicked = onGlobalSearchClicked,
+        onAddDocClicked = onAddDocClicked,
+        onCreateObjectLongClicked = onCreateObjectLongClicked,
+        onBackClicked = onBackClicked
     )
 }
 
+
 @Composable
 fun AllContentMainScreen(
+    uiItemsState: List<UiContentItem>,
     uiTitleState: UiTitleState,
     uiTabsState: UiTabsState,
-    uiMenuButtonViewState: MenuButtonViewState,
     uiMenuState: UiMenuState,
-    objects: MutableState<List<UiContentItem>>,
     onTabClick: (AllContentTab) -> Unit,
     onQueryChanged: (String) -> Unit,
     onModeClick: (AllContentMenuMode) -> Unit,
     onSortClick: (AllContentSort) -> Unit,
-    isLoading: Boolean,
-    onItemClicked: (UiContentItem.Item) -> Unit
+    onItemClicked: (UiContentItem.Item) -> Unit,
+    onTypeClicked: (UiContentItem.Type) -> Unit,
+    onBinClick: () -> Unit,
+    lazyListState: LazyListState,
+    uiContentState: UiContentState,
+    onHomeClicked: () -> Unit,
+    onGlobalSearchClicked: () -> Unit,
+    onAddDocClicked: () -> Unit,
+    onCreateObjectLongClicked: () -> Unit,
+    onBackClicked: () -> Unit
 ) {
-    val modifier = Modifier
-        .background(color = colorResource(id = R.color.background_primary))
+    var isSearchEmpty by remember { mutableStateOf(true) }
 
     Scaffold(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize(),
         containerColor = colorResource(id = R.color.background_primary),
+        bottomBar = {
+            Box(
+                modifier = if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
+                    Modifier
+                        .windowInsetsPadding(WindowInsets.navigationBars)
+                        .padding(bottom = 20.dp)
+                        .fillMaxWidth()
+                else
+                    Modifier
+                        .padding(bottom = 20.dp)
+                        .fillMaxWidth()
+            ) {
+                BottomMenu(
+                    modifier = Modifier.align(Alignment.BottomCenter),
+                    onHomeClicked = onHomeClicked,
+                    onGlobalSearchClicked = onGlobalSearchClicked,
+                    onAddDocClicked = onAddDocClicked,
+                    onCreateObjectLongClicked = onCreateObjectLongClicked,
+                    onBackClicked = onBackClicked
+                )
+            }
+        },
         topBar = {
             Column(
                 modifier = if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
@@ -141,23 +211,21 @@ fun AllContentMainScreen(
                 else
                     Modifier.fillMaxWidth()
             ) {
-                if (uiTitleState !is UiTitleState.Hidden) {
-                    AllContentTopBarContainer(
-                        titleState = uiTitleState,
-                        menuButtonState = uiMenuButtonViewState,
-                        uiMenuState = uiMenuState,
-                        onSortClick = onSortClick,
-                        onModeClick = onModeClick,
-                    )
-                }
-
-                if (uiTabsState is UiTabsState.Default) {
-                    AllContentTabs(tabsViewState = uiTabsState) { tab ->
-                        onTabClick(tab)
-                    }
+                AllContentTopBarContainer(
+                    titleState = uiTitleState,
+                    uiMenuState = uiMenuState,
+                    onSortClick = onSortClick,
+                    onModeClick = onModeClick,
+                    onBinClick = onBinClick
+                )
+                AllContentTabs(tabsViewState = uiTabsState) { tab ->
+                    onTabClick(tab)
                 }
                 Spacer(modifier = Modifier.size(10.dp))
-                AllContentSearchBar(onQueryChanged)
+                AllContentSearchBar(onQueryChanged = {
+                    isSearchEmpty = it.isEmpty()
+                    onQueryChanged(it)
+                })
                 Spacer(modifier = Modifier.size(10.dp))
                 Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
             }
@@ -168,49 +236,108 @@ fun AllContentMainScreen(
                     Modifier
                         .windowInsetsPadding(WindowInsets.navigationBars)
                         .fillMaxSize()
-                        .padding(paddingValues)
+                        .padding(top = paddingValues.calculateTopPadding())
+                        .background(color = colorResource(id = R.color.background_primary))
                 else
                     Modifier
                         .fillMaxSize()
                         .padding(paddingValues)
-            if (isLoading) {
-                Box(modifier = contentModifier) {
-                    LoadingState()
+                        .background(color = colorResource(id = R.color.background_primary))
+
+            Box(
+                modifier = contentModifier,
+                contentAlignment = Alignment.Center
+            ) {
+                when {
+                    uiItemsState.isEmpty() -> {
+                        when (uiContentState) {
+                            is UiContentState.Error -> {
+                                ErrorState(uiContentState.message)
+                            }
+
+                            is UiContentState.Idle -> {
+                                // Do nothing.
+                            }
+
+                            UiContentState.InitLoading -> {
+                                LoadingState()
+                            }
+
+                            UiContentState.Paging -> {}
+                            UiContentState.Empty -> {
+                                EmptyState(isSearchEmpty = isSearchEmpty)
+                            }
+                        }
+                    }
+
+                    else -> {
+                        ContentItems(
+                            uiItemsState = uiItemsState,
+                            onItemClicked = onItemClicked,
+                            onTypeClicked = onTypeClicked,
+                            uiContentState = uiContentState,
+                            lazyListState = lazyListState
+                        )
+                    }
                 }
-            } else {
-                ContentItems(
-                    modifier = contentModifier,
-                    items = objects.value,
-                    onItemClicked = onItemClicked
-                )
             }
         }
     )
 }
 
 @Composable
-private fun ContentItems(
-    modifier: Modifier,
-    items: List<UiContentItem>,
-    onItemClicked: (UiContentItem.Item) -> Unit
+fun BottomMenu(
+    modifier: Modifier = Modifier,
+    onHomeClicked: () -> Unit,
+    onGlobalSearchClicked: () -> Unit,
+    onAddDocClicked: () -> Unit,
+    onCreateObjectLongClicked: () -> Unit,
+    onBackClicked: () -> Unit
 ) {
-    LazyColumn(modifier = modifier) {
+    val isImeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
+    if (isImeVisible) return
+    BottomNavigationMenu(
+        modifier = modifier,
+        backClick = onBackClicked,
+        onProfileClicked = onHomeClicked,
+        searchClick = onGlobalSearchClicked,
+        addDocClick = onAddDocClicked,
+        onCreateObjectLongClicked = onCreateObjectLongClicked
+    )
+}
+
+@Composable
+private fun ContentItems(
+    uiItemsState: List<UiContentItem>,
+    onItemClicked: (UiContentItem.Item) -> Unit,
+    onTypeClicked: (UiContentItem.Type) -> Unit,
+    uiContentState: UiContentState,
+    lazyListState: LazyListState
+) {
+    val scope = rememberCoroutineScope()
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        state = lazyListState
+    ) {
         items(
-            count = items.size,
-            key = { index -> items[index].id },
+            count = uiItemsState.size,
+            key = { index -> uiItemsState[index].id },
             contentType = { index ->
-                when (items[index]) {
+                when (uiItemsState[index]) {
                     is UiContentItem.Group -> "group"
                     is UiContentItem.Item -> "item"
+                    is UiContentItem.Type -> "type"
                 }
             }
         ) { index ->
-            when (val item = items[index]) {
+            when (val item = uiItemsState[index]) {
                 is UiContentItem.Group -> {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(52.dp),
+                            .height(52.dp)
+                            .animateItem(),
                         contentAlignment = Alignment.BottomStart
                     ) {
                         Text(
@@ -230,11 +357,46 @@ private fun ContentItems(
                             .padding(horizontal = 16.dp)
                             .bottomBorder()
                             .animateItem()
-                            .clickable {
+                            .noRippleClickable {
                                 onItemClicked(item)
                             },
                         item = item
                     )
+                }
+
+                is UiContentItem.Type -> {
+                    Type(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .bottomBorder()
+                            .animateItem()
+                            .noRippleClickable {
+                                onTypeClicked(item)
+                            },
+                        item = item
+                    )
+                }
+            }
+        }
+        if (uiContentState is UiContentState.Paging) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillParentMaxWidth()
+                        .height(52.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    LoadingState()
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(key1 = uiContentState) {
+        if (uiContentState is UiContentState.Idle) {
+            if (uiContentState.scrollToTop) {
+                scope.launch {
+                    lazyListState.scrollToItem(0)
                 }
             }
         }
@@ -261,6 +423,37 @@ fun PreviewLoadingState() {
     Box(modifier = Modifier.fillMaxSize()) {
         LoadingState()
     }
+}
+
+@DefaultPreviews
+@Composable
+fun PreviewMainScreen() {
+    AllContentMainScreen(
+        uiItemsState = emptyList(),
+        uiTitleState = UiTitleState.AllContent,
+        uiTabsState = UiTabsState(
+            tabs = listOf(
+                AllContentTab.PAGES,
+                AllContentTab.TYPES,
+                AllContentTab.LISTS
+            ), selectedTab = AllContentTab.LISTS
+        ),
+        uiMenuState = UiMenuState.Hidden,
+        onTabClick = {},
+        onQueryChanged = {},
+        onModeClick = {},
+        onSortClick = {},
+        onItemClicked = {},
+        onBinClick = {},
+        lazyListState = rememberLazyListState(),
+        uiContentState = UiContentState.Error("Error message"),
+        onTypeClicked = {},
+        onHomeClicked = {},
+        onGlobalSearchClicked = {},
+        onAddDocClicked = {},
+        onCreateObjectLongClicked = {},
+        onBackClicked = {}
+    )
 }
 
 @Composable
@@ -321,8 +514,36 @@ private fun Item(
 }
 
 @Composable
+private fun Type(
+    modifier: Modifier,
+    item: UiContentItem.Type
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(start = 0.dp, top = 14.dp, end = 14.dp, bottom = 14.dp)
+                .wrapContentSize()
+        ) {
+            AllContentItemIcon(icon = item.icon, modifier = Modifier, iconSize = 24.dp)
+        }
+        val name = item.name.trim().ifBlank { stringResource(R.string.untitled) }
+
+        Text(
+            text = name,
+            style = PreviewTitle1Medium,
+            color = colorResource(id = R.color.text_primary),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+@Composable
 fun AllContentItemIcon(
-    icon: ObjectIcon,
+    icon: ObjectIcon?,
     modifier: Modifier,
     iconSize: Dp = 48.dp,
     onTaskIconClicked: (Boolean) -> Unit = {},
@@ -367,14 +588,54 @@ fun AllContentItemIcon(
 
 @Composable
 private fun BoxScope.ErrorState(message: String) {
-    Text(
-        modifier = Modifier
-            .wrapContentSize()
-            .align(Alignment.Center),
-        text = "Error : message",
-        color = colorResource(id = R.color.palette_system_red),
-        style = UXBody
-    )
+    Column {
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp),
+            text = stringResource(id = R.string.all_content_error_title),
+            color = colorResource(id = R.color.text_primary),
+            style = UXBody,
+            textAlign = TextAlign.Center
+        )
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp),
+            text = message,
+            color = colorResource(id = R.color.palette_system_red),
+            style = UXBody,
+            textAlign = TextAlign.Center,
+            maxLines = 3
+        )
+    }
+}
+
+@Composable
+private fun EmptyState(isSearchEmpty: Boolean) {
+    val (title, description) = if (!isSearchEmpty) {
+        stringResource(R.string.all_content_no_results_title) to stringResource(R.string.all_content_no_results_description)
+    } else {
+        stringResource(R.string.allContent_empty_state_title) to stringResource(R.string.allContent_empty_state_description)
+    }
+    Column {
+        Text(
+            modifier = Modifier
+                .fillMaxWidth(),
+            text = title,
+            color = colorResource(id = R.color.text_primary),
+            style = UXBody,
+            textAlign = TextAlign.Center
+        )
+        Text(
+            modifier = Modifier
+                .fillMaxWidth(),
+            text = description,
+            color = colorResource(id = R.color.text_secondary),
+            style = UXBody,
+            textAlign = TextAlign.Center
+        )
+    }
 }
 
 @Composable

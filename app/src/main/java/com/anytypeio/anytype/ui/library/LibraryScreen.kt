@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.pager.rememberPagerState
@@ -97,10 +98,11 @@ fun LibraryScreen(
                 )
             }
         }
-    ) {
-        println(it)
+    ) { paddingValues ->
         Column(
-            modifier = modifier.then(
+            modifier = modifier
+                .padding(paddingValues)
+                .then(
                 if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
                     Modifier.windowInsetsPadding(WindowInsets.systemBars)
                 else

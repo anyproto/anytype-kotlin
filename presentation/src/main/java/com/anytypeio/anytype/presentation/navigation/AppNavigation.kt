@@ -52,6 +52,7 @@ interface AppNavigation {
     fun openTemplatesModal(typeId: Id)
 
     fun openAllContent(space: Id)
+    fun openTypeEditingScreen(id: Id, name: String, icon: String, readOnly: Boolean)
 
     sealed class Command {
 

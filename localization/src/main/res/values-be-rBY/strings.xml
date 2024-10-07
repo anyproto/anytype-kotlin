@@ -1532,8 +1532,7 @@
     <string name="all_content_title_tab_media">Медыя</string>
     <string name="all_content_title_tab_bookmarks">Закладкі</string>
     <string name="all_content_title_tab_files">Файлы</string>
-    <string name="all_content_title_tab_objetc_types">Тыпы аб\'ектаў</string>
-    <string name="all_content_title_tab_relations">Уласцівасці</string>
+    <string name="all_content_title_tab_objetc_types">Тыпы</string>
     <string name="all_content_sort_by">Сартаваць па</string>
     <string name="all_content_sort_name_desc">Я → А</string>
     <string name="all_content_sort_name_asc">А → Я</string>
@@ -1547,4 +1546,15 @@
     <string name="allContent_group_yesterday">Учора</string>
     <string name="allContent_group_prev_7">Папярэднія 7 дзён</string>
     <string name="allContent_group_prev_14">Папярэднія 14 дзён</string>
+    <string name="introduce_vault_text_1">Сховішча - гэта новая хата для ўсіх вашых прастор.\nСтварайце прасторы, далучайцеся да іх ці дзяліцеся імі - усё будзе надзейна захавана тут.</string>
+    <string name="introduce_vault_text_2">Цяпер вы можаце лёгка змяняць парадак размяшчэння прастор з дапамогай перацягвання і зручнейшай навігацыі па іх.</string>
+    <string name="introduce_vault_text_3">Прадвызначана ў якасці фону размываецца значок вашай прасторы. Пры неабходнасці вы можаце змяніць гэта ў наладах прасторы.</string>
+    <string name="introduce_vault_welcome_to_the_vault">Вітаем у сховішчы</string>
+    <string name="introduce_vault_simple_flexible"><![CDATA[Просты і гнуткі]]></string>
+    <string name="allContent_empty_state_title">Тут пуста.</string>
+    <string name="allContent_empty_state_description">Стварыце свае першыя аб\'екты, каб пачаць працу.</string>
+    <string name="all_content_no_results_title">Вынікаў не знойдзена.</string>
+    <string name="all_content_no_results_description">Паспрабуйце шукаць па розных ключавых словах.</string>
+    <string name="all_content_error_title">Адбылася памылка.</string>
+    <string name="onboarding_my_first_space">Мая першая прастора</string>
 </resources>

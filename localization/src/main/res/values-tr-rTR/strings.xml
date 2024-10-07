@@ -1506,8 +1506,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="all_content_title_tab_media">Medya</string>
     <string name="all_content_title_tab_bookmarks">Yer işaretleri</string>
     <string name="all_content_title_tab_files">Dosyalar</string>
-    <string name="all_content_title_tab_objetc_types">Nesne Türleri</string>
-    <string name="all_content_title_tab_relations">İlişkiler</string>
+    <string name="all_content_title_tab_objetc_types">Türler</string>
     <string name="all_content_sort_by">Şuna göre sırala</string>
     <string name="all_content_sort_name_desc">Z → A</string>
     <string name="all_content_sort_name_asc">A → Z</string>
@@ -1521,4 +1520,15 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="allContent_group_yesterday">Dün</string>
     <string name="allContent_group_prev_7">Son 7 gün</string>
     <string name="allContent_group_prev_14">Önceki 14 gün</string>
+    <string name="introduce_vault_text_1">Kasa tüm alanlarınız için yeni evinizdir.\nAlanlar oluşturun, katılın veya paylaşın - her şey burada güvenli bir şekilde saklanır.</string>
+    <string name="introduce_vault_text_2">Artık sürükle ve bırak özelliğini kullanarak Alanlarınızı kolayca yeniden sıralayabilir ve daha kolay gezinebilirsiniz.</string>
+    <string name="introduce_vault_text_3">Alanınızın simgesini arka plan şeklinde varsayılan olarak bulanıklaştırırız. Gerekirse bunu alan ayarlarından değiştirebilirsiniz.</string>
+    <string name="introduce_vault_welcome_to_the_vault">Kasaya Hoşgeldiniz</string>
+    <string name="introduce_vault_simple_flexible"><![CDATA[Basit & Esnek]]></string>
+    <string name="allContent_empty_state_title">Burası boş.</string>
+    <string name="allContent_empty_state_description">Başlamak için ilk nesnelerinizi oluşturun.</string>
+    <string name="all_content_no_results_title">Hiçbir sonuç bulunamadı.</string>
+    <string name="all_content_no_results_description">Farklı anahtar kelimelerle aramayı deneyin.</string>
+    <string name="all_content_error_title">Bir şeyler ters gitti.</string>
+    <string name="onboarding_my_first_space">Benim İlk Alanım</string>
 </resources>

@@ -1686,6 +1686,7 @@ class HomeScreenViewModel(
                     space = SpaceId(spaceManager.get())
                 )
             )
+            spaceManager.clear()
             clearLastOpenedSpace.async(Unit).fold(
                 onSuccess = {
                     Timber.d("Cleared last opened space before opening vault")

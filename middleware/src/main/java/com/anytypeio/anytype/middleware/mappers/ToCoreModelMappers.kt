@@ -696,6 +696,7 @@ fun MOTypeLayout.toCoreModels(): ObjectType.Layout = when (this) {
     MOTypeLayout.pdf -> ObjectType.Layout.PDF
     MOTypeLayout.chat -> ObjectType.Layout.CHAT
     MOTypeLayout.chatDerived -> ObjectType.Layout.CHAT_DERIVED
+    MOTypeLayout.tag -> ObjectType.Layout.TAG
 }
 
 fun MRelationDataSource.source(): Relation.Source = when (this) {

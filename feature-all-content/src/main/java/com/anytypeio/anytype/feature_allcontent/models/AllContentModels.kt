@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.feature_allcontent.models
 
 import androidx.compose.runtime.Immutable
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -9,6 +8,7 @@ import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Relations.SOURCE_OBJECT
 import com.anytypeio.anytype.core_models.ext.DateParser
@@ -26,7 +26,7 @@ import com.anytypeio.anytype.presentation.objects.getProperType
 //region STATE
 @Immutable
 enum class AllContentTab {
-    PAGES, LISTS, MEDIA, BOOKMARKS, FILES, TYPES
+    PAGES, LISTS, MEDIA, BOOKMARKS, FILES, TYPES, RELATIONS
 }
 
 sealed class AllContentMenuMode {
@@ -65,6 +65,13 @@ sealed class AllContentSort {
         override val relationKey: RelationKey = RelationKey(Relations.CREATED_DATE),
         override val sortType: DVSortType = DVSortType.DESC,
         override val canGroupByDate: Boolean = true,
+        override val isSelected: Boolean = false
+    ) : AllContentSort()
+
+    data class ByDateUsed(
+        override val relationKey: RelationKey = RelationKey(Relations.LAST_USED_DATE),
+        override val sortType: DVSortType = DVSortType.DESC,
+        override val canGroupByDate: Boolean = false,
         override val isSelected: Boolean = false
     ) : AllContentSort()
 }
@@ -119,7 +126,7 @@ sealed class UiContentItem {
         val layout: ObjectType.Layout? = null,
         val icon: ObjectIcon = ObjectIcon.None,
         val lastModifiedDate: Long = 0L,
-        val createdDate: Long = 0L,
+        val createdDate: Long = 0L
     ) : UiContentItem()
 
     data class Type(
@@ -131,6 +138,15 @@ sealed class UiContentItem {
         val readOnly: Boolean = true,
         val editable: Boolean = true,
         val dependentData: DependentData = DependentData.None
+    ) : UiContentItem()
+
+    data class Relation(
+        override val id: Id,
+        val name: String,
+        val format: RelationFormat,
+        val sourceObject: Id? = null,
+        val readOnly: Boolean = true,
+        val editable: Boolean = true,
     ) : UiContentItem()
 
     companion object {
@@ -247,11 +263,29 @@ fun ObjectWrapper.Basic.toAllContentType(
     )
 }
 
+fun List<ObjectWrapper.Basic>.toUiContentRelations(): List<UiContentItem.Relation> {
+    return map { it.toAllContentRelation() }
+}
+
+fun ObjectWrapper.Basic.toAllContentRelation(): UiContentItem.Relation {
+    val relation = ObjectWrapper.Relation(map)
+    val obj = this
+    return UiContentItem.Relation(
+        id = relation.id,
+        name = obj.name.orEmpty(),
+        format = relation.format,
+        sourceObject = map[SOURCE_OBJECT]?.toString(),
+        readOnly = obj.restrictions.contains(ObjectRestriction.DELETE),
+        editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
+    )
+}
+
 fun AllContentSort.toAnalyticsSortType(): Pair<String, String> {
     return when (this) {
         is AllContentSort.ByName -> "Name" to sortType.toAnalyticsSortType()
         is AllContentSort.ByDateUpdated -> "Updated" to sortType.toAnalyticsSortType()
         is AllContentSort.ByDateCreated -> "Created" to sortType.toAnalyticsSortType()
+        is AllContentSort.ByDateUsed -> "Used" to sortType.toAnalyticsSortType()
     }
 }
 
@@ -271,6 +305,7 @@ fun AllContentTab.toAnalyticsTabType(): String {
         AllContentTab.BOOKMARKS -> "Bookmarks"
         AllContentTab.FILES -> "Files"
         AllContentTab.TYPES -> "Types"
+        AllContentTab.RELATIONS -> "Relations"
     }
 }
 

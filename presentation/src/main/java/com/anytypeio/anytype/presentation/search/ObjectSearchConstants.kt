@@ -651,7 +651,11 @@ object ObjectSearchConstants {
         Relations.FILE_MIME_TYPE,
         Relations.FILE_EXT,
         Relations.LAST_OPENED_DATE,
-        Relations.LAST_MODIFIED_DATE
+        Relations.LAST_MODIFIED_DATE,
+        Relations.CREATED_DATE,
+        Relations.LINKS,
+        Relations.BACKLINKS,
+        Relations.LAST_USED_DATE
     )
 
     val defaultOptionKeys = listOf(
@@ -711,7 +715,8 @@ object ObjectSearchConstants {
         Relations.RELATION_OPTION_COLOR,
         Relations.RELATION_DEFAULT_VALUE,
         Relations.RELATION_FORMAT_OBJECT_TYPES,
-        Relations.RELATION_READ_ONLY_VALUE
+        Relations.RELATION_READ_ONLY_VALUE,
+        Relations.LAST_USED_DATE
     )
 
     val defaultFilesKeys = defaultKeys + listOf(
@@ -927,7 +932,8 @@ object ObjectSearchConstants {
         Relations.RECOMMENDED_LAYOUT,
         Relations.DEFAULT_TEMPLATE_ID,
         Relations.SPACE_ID,
-        Relations.RESTRICTIONS
+        Relations.RESTRICTIONS,
+        Relations.LAST_USED_DATE
     )
 
     //endregion

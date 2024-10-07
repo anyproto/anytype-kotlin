@@ -421,6 +421,7 @@ private fun WidgetList(
                 }
                 is WidgetView.AllContent -> {
                     AllContentWidgetCard(
+                        mode = mode,
                         onWidgetClicked = { onBundledWidgetHeaderClicked(item.id) }
                     )
                 }

@@ -7,7 +7,7 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.config.ConfigStorage
-import com.anytypeio.anytype.domain.platform.MetricsProvider
+import com.anytypeio.anytype.domain.platform.InitialParamsProvider
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
 
@@ -18,17 +18,14 @@ open class CreateAccount @Inject constructor(
     private val repository: AuthRepository,
     // TODO rename config storage
     private val configStorage: ConfigStorage,
-    private val metricsProvider: MetricsProvider,
+    private val initialParamsProvider: InitialParamsProvider,
     private val awaitAccountStartManager: AwaitAccountStartManager,
     private val spaceManager: SpaceManager,
     dispatcher: AppCoroutineDispatchers
 ) : ResultInteractor<CreateAccount.Params, Account>(dispatcher.io) {
 
     override suspend fun doWork(params: Params): Account {
-        repository.setMetrics(
-            version = metricsProvider.getVersion(),
-            platform = metricsProvider.getPlatform()
-        )
+        repository.setInitialParams(initialParamsProvider.toCommand())
 
         val networkMode = repository.getNetworkMode()
 

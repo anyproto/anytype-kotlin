@@ -18,12 +18,6 @@ class MiddlewareServiceImplementation @Inject constructor(
     featureToggles: FeatureToggles
 ) : MiddlewareService {
 
-    init {
-        if (!featureToggles.isLogFromGoProcess) {
-            Service.setEnv("ANYTYPE_LOG_LEVEL", "*=fatal;anytype*=error")
-        }
-    }
-
     override fun accountCreate(request: Rpc.Account.Create.Request): Rpc.Account.Create.Response {
         val encoded = Service.accountCreate(Rpc.Account.Create.Request.ADAPTER.encode(request))
         val response = Rpc.Account.Create.Response.ADAPTER.decode(encoded)
@@ -1182,11 +1176,12 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
-    override fun metricsSetParameters(request: Rpc.Metrics.SetParameters.Request): Rpc.Metrics.SetParameters.Response {
-        val encoded = Service.metricsSetParameters(Rpc.Metrics.SetParameters.Request.ADAPTER.encode(request))
-        val response = Rpc.Metrics.SetParameters.Response.ADAPTER.decode(encoded)
+    override fun setInitialParams(request: Rpc.Initial.SetParameters.Request): Rpc.Initial.SetParameters.Response {
+        val encoded =
+            Service.initialSetParameters(Rpc.Initial.SetParameters.Request.ADAPTER.encode(request))
+        val response = Rpc.Initial.SetParameters.Response.ADAPTER.decode(encoded)
         val error = response.error
-        if (error != null && error.code != Rpc.Metrics.SetParameters.Response.Error.Code.NULL) {
+        if (error != null && error.code != Rpc.Initial.SetParameters.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response

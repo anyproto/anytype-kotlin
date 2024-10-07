@@ -848,18 +848,6 @@ fun HomeScreenBottomToolbar(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxSize()
-                .noRippleClickable { onVaultClicked() }
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_nav_panel_vault),
-                contentDescription = "Search icon",
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxSize()
                 .noRippleClickable { onSearchClicked() }
         ) {
             Image(

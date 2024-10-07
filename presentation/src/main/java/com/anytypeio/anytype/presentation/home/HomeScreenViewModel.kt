@@ -32,6 +32,7 @@ import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
+import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
@@ -199,7 +200,8 @@ class HomeScreenViewModel(
     private val createBlock: CreateBlock,
     private val dateProvider: DateProvider,
     private val addObjectToCollection: AddObjectToCollection,
-    private val clearLastOpenedSpace: ClearLastOpenedSpace
+    private val clearLastOpenedSpace: ClearLastOpenedSpace,
+    private val clearLastOpenedObject: ClearLastOpenedObject,
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -1679,6 +1681,11 @@ class HomeScreenViewModel(
                         Timber.e(it, "Error while closing object from history")
                     }
             }
+            clearLastOpenedObject(
+                ClearLastOpenedObject.Params(
+                    space = SpaceId(spaceManager.get())
+                )
+            )
             spaceManager.clear()
             clearLastOpenedSpace.async(Unit).fold(
                 onSuccess = {
@@ -2108,7 +2115,8 @@ class HomeScreenViewModel(
         private val dateProvider: DateProvider,
         private val coverImageHashProvider: CoverImageHashProvider,
         private val addObjectToCollection: AddObjectToCollection,
-        private val clearLastOpenedSpace: ClearLastOpenedSpace
+        private val clearLastOpenedSpace: ClearLastOpenedSpace,
+        private val clearLastOpenedObject: ClearLastOpenedObject
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -2156,7 +2164,8 @@ class HomeScreenViewModel(
             createBlock = createBlock,
             dateProvider = dateProvider,
             addObjectToCollection = addObjectToCollection,
-            clearLastOpenedSpace = clearLastOpenedSpace
+            clearLastOpenedSpace = clearLastOpenedSpace,
+            clearLastOpenedObject = clearLastOpenedObject
         ) as T
     }
 

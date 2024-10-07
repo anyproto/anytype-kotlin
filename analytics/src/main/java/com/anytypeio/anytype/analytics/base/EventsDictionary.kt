@@ -308,7 +308,7 @@ object EventsDictionary {
         const val screenSettings = "ScreenSettings"
         const val firstSession = "FirstSession"
         const val beforeLogout = "BeforeLogout"
-        const val menu = "menu"
+        const val menu = "Menu"
         const val general = "General"
         const val dataView = "dataview"
         const val block = "block"

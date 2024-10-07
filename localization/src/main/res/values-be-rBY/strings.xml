@@ -1541,7 +1541,7 @@
     <string name="all_content_sort_date_asc">Спачатку старыя</string>
     <string name="all_content_sort_date_updated">Дата змянення</string>
     <string name="all_content_sort_date_created">Дата стварэння</string>
-    <string name="all_content_sort_date_used">Date last used</string>
+    <string name="all_content_sort_date_used">Дата апошняга выкарыстання</string>
     <string name="all_content_sort_name">Назва</string>
     <string name="all_content">Усе аб\'екты</string>
     <string name="allContent_group_today">Сёння</string>

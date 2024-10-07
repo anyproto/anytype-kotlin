@@ -406,6 +406,15 @@
             android:id="@+id/openTypeEditingScreen"
             app:destination="@id/typeEditingFragment" />
         <action
+            android:id="@+id/openTypeCreationScreen"
+            app:destination="@id/typeCreationFragment" />
+        <action
+            android:id="@+id/openRelationCreationScreen"
+            app:destination="@id/relationCreationFragment" />
+        <action
+            android:id="@+id/openRelationEditingScreen"
+            app:destination="@id/relationEditingFragment" />
+        <action
             android:id="@+id/actionOpenVault"
             app:destination="@id/vaultScreen"
             app:popUpTo="@id/vaultScreen"
@@ -413,6 +422,10 @@
         <action
             android:id="@+id/actionOpenGlobalSearch"
             app:destination="@id/globalSearchScreen" />
+        <action
+            android:id="@+id/actionOpenTypeCreationScreen"
+            app:destination="@id/typeCreationFragment" />
+
     </fragment>
 
     <fragment

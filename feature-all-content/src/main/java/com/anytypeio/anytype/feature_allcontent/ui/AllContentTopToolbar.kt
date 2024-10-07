@@ -8,7 +8,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -215,7 +216,6 @@ fun AllContentTabs(
         modifier = Modifier
             .fillMaxWidth()
             .height(40.dp),
-        horizontalArrangement = Arrangement.spacedBy(20.dp),
         verticalAlignment = Alignment.CenterVertically,
         contentPadding = PaddingValues(start = 20.dp, end = 20.dp)
     ) {
@@ -242,15 +242,21 @@ private fun AllContentTabText(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    Text(
+    Box(
         modifier = Modifier
-            .wrapContentSize()
+            .wrapContentWidth()
+            .height(40.dp)
             .noRippleClickable { onClick() },
-        text = getTabText(tab),
-        style = Title2,
-        color = if (isSelected) colorResource(id = R.color.glyph_button) else colorResource(id = R.color.glyph_active),
-        maxLines = 1
-    )
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            modifier = Modifier.padding(horizontal = 10.dp),
+            text = getTabText(tab),
+            style = Title2,
+            color = if (isSelected) colorResource(id = R.color.glyph_button) else colorResource(id = R.color.glyph_active),
+            maxLines = 1
+        )
+    }
 }
 
 @Composable

@@ -651,7 +651,11 @@ object ObjectSearchConstants {
         Relations.FILE_MIME_TYPE,
         Relations.FILE_EXT,
         Relations.LAST_OPENED_DATE,
-        Relations.LAST_MODIFIED_DATE
+        Relations.LAST_MODIFIED_DATE,
+        Relations.CREATED_DATE,
+        Relations.LINKS,
+        Relations.BACKLINKS,
+        Relations.LAST_USED_DATE
     )
 
     val defaultOptionKeys = listOf(

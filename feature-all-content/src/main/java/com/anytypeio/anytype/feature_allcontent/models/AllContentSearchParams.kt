@@ -10,6 +10,9 @@ import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.library.StoreSearchParams
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeys
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeysObjectType
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultRelationKeys
 
 val allContentTabLayouts = mapOf(
     AllContentTab.PAGES to listOf(
@@ -46,6 +49,11 @@ fun createSubscriptionParams(
     limit: Int,
     subscriptionId: String
 ): StoreSearchParams {
+    val keys = when (activeTab) {
+        AllContentTab.TYPES -> defaultKeysObjectType
+        AllContentTab.RELATIONS -> defaultRelationKeys
+        else -> defaultKeys
+    }
     val (filters, sorts) = activeTab.filtersForSubscribe(
         spaces = listOf(spaceId),
         activeSort = activeSort,
@@ -55,33 +63,7 @@ fun createSubscriptionParams(
     return StoreSearchParams(
         filters = filters,
         sorts = sorts,
-        keys = listOf(
-            Relations.ID,
-            Relations.SPACE_ID,
-            Relations.TARGET_SPACE_ID,
-            Relations.UNIQUE_KEY,
-            Relations.NAME,
-            Relations.ICON_IMAGE,
-            Relations.ICON_EMOJI,
-            Relations.ICON_OPTION,
-            Relations.TYPE,
-            Relations.LAYOUT,
-            Relations.IS_ARCHIVED,
-            Relations.IS_DELETED,
-            Relations.IS_HIDDEN,
-            Relations.SNIPPET,
-            Relations.DONE,
-            Relations.IDENTITY_PROFILE_LINK,
-            Relations.RESTRICTIONS,
-            Relations.SIZE_IN_BYTES,
-            Relations.FILE_MIME_TYPE,
-            Relations.FILE_EXT,
-            Relations.LAST_OPENED_DATE,
-            Relations.LAST_MODIFIED_DATE,
-            Relations.CREATED_DATE,
-            Relations.LINKS,
-            Relations.BACKLINKS
-        ),
+        keys = keys,
         limit = limit,
         subscription = subscriptionId
     )

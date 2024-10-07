@@ -6,6 +6,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -52,6 +53,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -63,6 +65,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.core_ui.foundation.DismissBackground
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
@@ -111,6 +114,7 @@ fun AllContentWrapperScreen(
     onSortClick: (AllContentSort) -> Unit,
     onItemClicked: (UiContentItem.Item) -> Unit,
     onTypeClicked: (UiContentItem.Type) -> Unit,
+    onRelationClicked: (UiContentItem.Relation) -> Unit,
     onBinClick: () -> Unit,
     canPaginate: Boolean,
     onUpdateLimitSearch: () -> Unit,
@@ -161,7 +165,8 @@ fun AllContentWrapperScreen(
         onAddDocClicked = onAddDocClicked,
         onCreateObjectLongClicked = onCreateObjectLongClicked,
         onBackClicked = onBackClicked,
-        moveToBin = moveToBin
+        moveToBin = moveToBin,
+        onRelationClicked = onRelationClicked
     )
 }
 
@@ -178,6 +183,7 @@ fun AllContentMainScreen(
     onSortClick: (AllContentSort) -> Unit,
     onItemClicked: (UiContentItem.Item) -> Unit,
     onTypeClicked: (UiContentItem.Type) -> Unit,
+    onRelationClicked: (UiContentItem.Relation) -> Unit,
     onBinClick: () -> Unit,
     lazyListState: LazyListState,
     uiContentState: UiContentState,
@@ -291,7 +297,8 @@ fun AllContentMainScreen(
                             onTypeClicked = onTypeClicked,
                             uiContentState = uiContentState,
                             lazyListState = lazyListState,
-                            moveToBin = moveToBin
+                            moveToBin = moveToBin,
+                            onRelationClicked = onRelationClicked
                         )
                     }
                 }
@@ -326,6 +333,7 @@ private fun ContentItems(
     uiItemsState: List<UiContentItem>,
     onItemClicked: (UiContentItem.Item) -> Unit,
     onTypeClicked: (UiContentItem.Type) -> Unit,
+    onRelationClicked: (UiContentItem.Relation) -> Unit,
     uiContentState: UiContentState,
     lazyListState: LazyListState,
     moveToBin: (UiContentItem.Item) -> Unit
@@ -396,7 +404,18 @@ private fun ContentItems(
                     )
                 }
 
-                is UiContentItem.Relation -> TODO()
+                is UiContentItem.Relation -> {
+                    Relation(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .bottomBorder()
+                            .animateItem()
+                            .noRippleClickable {
+                                onRelationClicked(item)
+                            },
+                        item = item
+                    )
+                }
             }
         }
         if (uiContentState is UiContentState.Paging) {
@@ -410,6 +429,9 @@ private fun ContentItems(
                     LoadingState()
                 }
             }
+        }
+        item {
+            Spacer(modifier = Modifier.height(200.dp))
         }
     }
 
@@ -474,7 +496,8 @@ fun PreviewMainScreen() {
         onAddDocClicked = {},
         onCreateObjectLongClicked = {},
         onBackClicked = {},
-        moveToBin = {}
+        moveToBin = {},
+        onRelationClicked = {}
     )
 }
 
@@ -544,6 +567,40 @@ private fun Type(
                 .wrapContentSize()
         ) {
             AllContentItemIcon(icon = item.icon, modifier = Modifier, iconSize = 24.dp)
+        }
+        val name = item.name.trim().ifBlank { stringResource(R.string.untitled) }
+
+        Text(
+            text = name,
+            style = PreviewTitle1Medium,
+            color = colorResource(id = R.color.text_primary),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+@Composable
+private fun Relation(
+    modifier: Modifier,
+    item: UiContentItem.Relation
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(start = 0.dp, top = 14.dp, end = 12.dp, bottom = 14.dp)
+                .wrapContentSize()
+        ) {
+            item.format.simpleIcon()?.let {
+                Image(
+                    painter = painterResource(id = it),
+                    contentDescription = "Relation format icon",
+                    modifier = Modifier.size(24.dp)
+                )
+            }
         }
         val name = item.name.trim().ifBlank { stringResource(R.string.untitled) }
 
@@ -710,7 +767,7 @@ fun SwipeToDismissListItems(
                 false
             }
         },
-        positionalThreshold = { it * .30f }
+        positionalThreshold = { it * .5f }
     )
 
     LaunchedEffect(key1 = isRemoved) {

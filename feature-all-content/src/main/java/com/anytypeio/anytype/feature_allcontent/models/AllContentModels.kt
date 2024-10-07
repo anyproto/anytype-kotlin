@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.feature_allcontent.models
 
 import androidx.compose.runtime.Immutable
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -9,6 +8,7 @@ import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Relations.SOURCE_OBJECT
 import com.anytypeio.anytype.core_models.ext.DateParser
@@ -136,12 +136,10 @@ sealed class UiContentItem {
     data class Relation(
         override val id: Id,
         val name: String,
-        val icon: ObjectIcon? = null,
+        val format: RelationFormat,
         val sourceObject: Id? = null,
-        val uniqueKey: Key? = null,
         val readOnly: Boolean = true,
         val editable: Boolean = true,
-        val dependentData: DependentData = DependentData.None
     ) : UiContentItem()
 
     companion object {
@@ -253,6 +251,23 @@ fun ObjectWrapper.Basic.toAllContentType(
         ),
         sourceObject = obj.map[SOURCE_OBJECT]?.toString(),
         uniqueKey = obj.uniqueKey,
+        readOnly = obj.restrictions.contains(ObjectRestriction.DELETE),
+        editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
+    )
+}
+
+fun List<ObjectWrapper.Basic>.toUiContentRelations(): List<UiContentItem.Relation> {
+    return map { it.toAllContentRelation() }
+}
+
+fun ObjectWrapper.Basic.toAllContentRelation(): UiContentItem.Relation {
+    val relation = ObjectWrapper.Relation(map)
+    val obj = this
+    return UiContentItem.Relation(
+        id = relation.id,
+        name = obj.name.orEmpty(),
+        format = relation.format,
+        sourceObject = map[SOURCE_OBJECT]?.toString(),
         readOnly = obj.restrictions.contains(ObjectRestriction.DELETE),
         editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
     )

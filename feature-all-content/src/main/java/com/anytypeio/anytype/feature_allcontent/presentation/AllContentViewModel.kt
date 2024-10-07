@@ -129,11 +129,6 @@ class AllContentViewModel(
         setupInitialStateParams()
         setupSearchStateFlow()
         setupMenuFlow()
-        viewModelScope.launch {
-            sendAnalyticsAllContentScreen(
-                analytics = analytics
-            )
-        }
     }
 
     private fun setupInitialStateParams() {
@@ -628,6 +623,11 @@ class AllContentViewModel(
     fun onStart() {
         Timber.d("onStart")
         setupUiStateFlow()
+        viewModelScope.launch {
+            sendAnalyticsAllContentScreen(
+                analytics = analytics
+            )
+        }
     }
 
     fun onStop() {

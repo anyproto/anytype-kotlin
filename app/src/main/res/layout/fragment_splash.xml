@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black">
+    android:background="@color/background_primary">
 
     <ImageView
         android:id="@+id/logo"
@@ -39,5 +39,12 @@
         android:visibility="invisible"
         tools:ignore="SmallSp"
         tools:visibility="visible" />
+
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/loadingContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:gravity="center"/>
 
 </FrameLayout>

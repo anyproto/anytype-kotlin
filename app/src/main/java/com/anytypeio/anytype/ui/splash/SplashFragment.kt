@@ -27,6 +27,7 @@ import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.onboarding.OnboardingFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
+import com.anytypeio.anytype.ui.widgets.collection.DefaultTheme
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -66,6 +67,26 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                             else -> {
                                 binding.error.gone()
                                 binding.error.text = ""
+                            }
+                        }
+                    }
+                }
+
+                launch {
+                    vm.loadingState.collect { isLoading ->
+                        when (isLoading) {
+                            true -> {
+                                binding.loadingContainer.setContent {
+                                    DefaultTheme {
+                                        PulsatingCircleScreen()
+                                    }
+                                }
+                                binding.logo.visibility = View.GONE
+                                binding.loadingContainer.visibility = View.VISIBLE
+                            }
+                            false ->  {
+                                binding.logo.visibility = View.GONE
+                                binding.loadingContainer.visibility = View.GONE
                             }
                         }
                     }

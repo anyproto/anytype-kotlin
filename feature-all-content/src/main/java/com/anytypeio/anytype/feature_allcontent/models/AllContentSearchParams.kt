@@ -255,5 +255,12 @@ fun AllContentSort.toDVSort(): DVSort {
             relationFormat = RelationFormat.LONG_TEXT,
             includeTime = false
         )
+
+        is AllContentSort.ByDateUsed -> DVSort(
+            relationKey = relationKey.key,
+            type = sortType,
+            relationFormat = RelationFormat.DATE,
+            includeTime = true,
+        )
     }
 }

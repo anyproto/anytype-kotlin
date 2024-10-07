@@ -291,6 +291,10 @@ class AllContentViewModel(
                     is AllContentSort.ByName -> {
                         items
                     }
+
+                    is AllContentSort.ByDateUsed -> {
+                        items
+                    }
                 }
                 result
             }
@@ -383,34 +387,9 @@ class AllContentViewModel(
             ) { mode, sort, tabs ->
                 Triple(mode, sort, tabs)
             }.collectLatest { (mode, sort, tabs) ->
-                val uiMode = if (tabs.selectedTab == AllContentTab.TYPES) {
-                    listOf()
-                } else {
-                    listOf(
-                        AllContentMenuMode.AllContent(isSelected = mode == UiTitleState.AllContent),
-                        AllContentMenuMode.Unlinked(isSelected = mode == UiTitleState.OnlyUnlinked)
-                    )
-                }
+                val uiMode = tabs.selectedTab.menu(mode)
                 val container = MenuSortsItem.Container(sort = sort)
-                val uiSorts = if (tabs.selectedTab == AllContentTab.TYPES) {
-                    listOf(
-                        MenuSortsItem.Sort(
-                            sort = AllContentSort.ByName(isSelected = sort is AllContentSort.ByName)
-                        )
-                    )
-                } else {
-                    listOf(
-                        MenuSortsItem.Sort(
-                            sort = AllContentSort.ByName(isSelected = sort is AllContentSort.ByName)
-                        ),
-                        MenuSortsItem.Sort(
-                            sort = AllContentSort.ByDateUpdated(isSelected = sort is AllContentSort.ByDateUpdated)
-                        ),
-                        MenuSortsItem.Sort(
-                            sort = AllContentSort.ByDateCreated(isSelected = sort is AllContentSort.ByDateCreated)
-                        )
-                    )
-                }
+                val uiSorts = tabs.selectedTab.sorts(activeSort = sort)
                 val uiSortTypes = listOf(
                     MenuSortsItem.SortType(
                         sort = sort,
@@ -433,13 +412,72 @@ class AllContentViewModel(
         }
     }
 
+    fun AllContentTab.sorts(activeSort: AllContentSort): List<MenuSortsItem.Sort> {
+        return when (this) {
+            AllContentTab.TYPES -> {
+                listOf(
+                    MenuSortsItem.Sort(
+                        sort = AllContentSort.ByName(isSelected = activeSort is AllContentSort.ByName)
+                    ),
+                    MenuSortsItem.Sort(
+                        sort = AllContentSort.ByDateUsed(isSelected = activeSort is AllContentSort.ByDateUsed)
+                    )
+                )
+            }
+            AllContentTab.RELATIONS -> {
+                listOf(
+                    MenuSortsItem.Sort(
+                        sort = AllContentSort.ByName(isSelected = activeSort is AllContentSort.ByName)
+                    )
+                )
+            }
+            else -> {
+                listOf(
+                    MenuSortsItem.Sort(
+                        sort = AllContentSort.ByName(isSelected = activeSort is AllContentSort.ByName)
+                    ),
+                    MenuSortsItem.Sort(
+                        sort = AllContentSort.ByDateUpdated(isSelected = activeSort is AllContentSort.ByDateUpdated)
+                    ),
+                    MenuSortsItem.Sort(
+                        sort = AllContentSort.ByDateCreated(isSelected = activeSort is AllContentSort.ByDateCreated)
+                    )
+                )
+            }
+        }
+    }
+
+    fun AllContentTab.menu(uiTitleState: UiTitleState): List<AllContentMenuMode> {
+        return when (this) {
+            AllContentTab.TYPES, AllContentTab.RELATIONS -> listOf()
+            else -> {
+                listOf(
+                    AllContentMenuMode.AllContent(isSelected = uiTitleState == UiTitleState.AllContent),
+                    AllContentMenuMode.Unlinked(isSelected = uiTitleState == UiTitleState.OnlyUnlinked)
+                )
+            }
+        }
+    }
+
+    fun AllContentTab.updateInitialState() {
+        return when (this) {
+            AllContentTab.TYPES -> {
+                sortState.value = AllContentSort.ByName()
+                userInput.value = DEFAULT_QUERY
+                uiTitleState.value = UiTitleState.AllContent
+            }
+            AllContentTab.RELATIONS -> {
+                sortState.value = AllContentSort.ByName()
+                userInput.value = DEFAULT_QUERY
+                uiTitleState.value = UiTitleState.AllContent
+            }
+            else -> {}
+        }
+    }
+
     fun onTabClicked(tab: AllContentTab) {
         Timber.d("onTabClicked: $tab")
-        if (tab == AllContentTab.TYPES) {
-            sortState.value = AllContentSort.ByName()
-            userInput.value = DEFAULT_QUERY
-            uiTitleState.value = UiTitleState.AllContent
-        }
+        tab.updateInitialState()
         shouldScrollToTopItems = true
         resetLimit()
         uiItemsState.value = emptyList()
@@ -480,6 +518,9 @@ class AllContentViewModel(
                 sort.copy(isSelected = true)
             }
             is AllContentSort.ByName -> {
+                sort.copy(isSelected = true)
+            }
+            is AllContentSort.ByDateUsed -> {
                 sort.copy(isSelected = true)
             }
         }

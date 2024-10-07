@@ -67,6 +67,13 @@ sealed class AllContentSort {
         override val canGroupByDate: Boolean = true,
         override val isSelected: Boolean = false
     ) : AllContentSort()
+
+    data class ByDateUsed(
+        override val relationKey: RelationKey = RelationKey(Relations.LAST_USED_DATE),
+        override val sortType: DVSortType = DVSortType.DESC,
+        override val canGroupByDate: Boolean = false,
+        override val isSelected: Boolean = false
+    ) : AllContentSort()
 }
 //endregion
 
@@ -119,7 +126,7 @@ sealed class UiContentItem {
         val layout: ObjectType.Layout? = null,
         val icon: ObjectIcon = ObjectIcon.None,
         val lastModifiedDate: Long = 0L,
-        val createdDate: Long = 0L,
+        val createdDate: Long = 0L
     ) : UiContentItem()
 
     data class Type(
@@ -278,6 +285,7 @@ fun AllContentSort.toAnalyticsSortType(): Pair<String, String> {
         is AllContentSort.ByName -> "Name" to sortType.toAnalyticsSortType()
         is AllContentSort.ByDateUpdated -> "Updated" to sortType.toAnalyticsSortType()
         is AllContentSort.ByDateCreated -> "Created" to sortType.toAnalyticsSortType()
+        is AllContentSort.ByDateUsed -> "Used" to sortType.toAnalyticsSortType()
     }
 }
 

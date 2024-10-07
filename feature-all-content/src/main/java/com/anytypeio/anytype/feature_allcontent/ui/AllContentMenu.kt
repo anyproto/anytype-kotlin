@@ -91,6 +91,7 @@ fun AllContentMenu(
                             is AllContentSort.ByName -> item.sort.copy(sortType = item.sortType)
                             is AllContentSort.ByDateCreated -> item.sort.copy(sortType = item.sortType)
                             is AllContentSort.ByDateUpdated -> item.sort.copy(sortType = item.sortType)
+                            is AllContentSort.ByDateUsed -> item.sort.copy(sortType = item.sortType)
                         }
                         onSortClick(updatedSort)
                     }
@@ -201,6 +202,7 @@ private fun AllContentSort.title(): String = stringResource(
         is AllContentSort.ByDateCreated -> R.string.all_content_sort_date_created
         is AllContentSort.ByDateUpdated -> R.string.all_content_sort_date_updated
         is AllContentSort.ByName -> R.string.all_content_sort_name
+        is AllContentSort.ByDateUsed -> R.string.all_content_sort_date_used
     }
 )
 
@@ -208,7 +210,7 @@ private fun AllContentSort.title(): String = stringResource(
 private fun DVSortType.title(sort: AllContentSort): String = when (this) {
     DVSortType.ASC -> {
         when (sort) {
-            is AllContentSort.ByDateCreated, is AllContentSort.ByDateUpdated -> stringResource(
+            is AllContentSort.ByDateCreated, is AllContentSort.ByDateUpdated, is AllContentSort.ByDateUsed -> stringResource(
                 id = R.string.all_content_sort_date_asc
             )
 
@@ -218,7 +220,9 @@ private fun DVSortType.title(sort: AllContentSort): String = when (this) {
 
     DVSortType.DESC -> {
         when (sort) {
-            is AllContentSort.ByDateCreated, is AllContentSort.ByDateUpdated -> stringResource(
+            is AllContentSort.ByDateCreated,
+            is AllContentSort.ByDateUpdated,
+            is AllContentSort.ByDateUsed -> stringResource(
                 id = R.string.all_content_sort_date_desc
             )
 

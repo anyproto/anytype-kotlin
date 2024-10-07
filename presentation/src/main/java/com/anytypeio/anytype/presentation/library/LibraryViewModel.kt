@@ -211,7 +211,7 @@ class LibraryViewModel(
                     result -> proceedWithOpeningObject(result.obj)
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
-                        route = EventsDictionary.Routes.objCreateLibrary,
+                        route = EventsDictionary.Routes.allContentRoute,
                         startTime = startTime,
                         objType = objType ?: storeOfObjectTypes.getByKey(result.typeKey.key),
                         view = EventsDictionary.View.viewHome,

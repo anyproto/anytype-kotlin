@@ -139,13 +139,13 @@ fun HomeScreen(
                     .height(52.dp)
                     .fillMaxWidth()
             ) {
-                HomeScreenButton(
+                WidgetEditModeButton(
                     text = stringResource(id = R.string.add),
                     modifier = Modifier.weight(1f),
                     onClick = throttledClick(onCreateWidget)
                 )
                 Spacer(modifier = Modifier.width(10.dp))
-                HomeScreenButton(
+                WidgetEditModeButton(
                     text = stringResource(id = R.string.done),
                     modifier = Modifier.weight(1f),
                     onClick = throttledClick(onExitEditMode)
@@ -789,7 +789,7 @@ private fun TreeWidgetItem(
 }
 
 @Composable
-fun HomeScreenButton(
+fun WidgetEditModeButton(
     text: String,
     modifier: Modifier,
     onClick: () -> Unit
@@ -798,7 +798,7 @@ fun HomeScreenButton(
         modifier = modifier
             .height(52.dp)
             .background(
-                color = colorResource(id = R.color.home_screen_button),
+                color = colorResource(id = R.color.widgets_edit_mode_button),
                 shape = RoundedCornerShape(14.dp)
             )
             .noRippleClickable { onClick() }
@@ -828,7 +828,7 @@ fun HomeScreenBottomToolbar(
             .width(BottomNavigationDefaults.Width)
             .background(
                 shape = RoundedCornerShape(16.dp),
-                color = colorResource(id = R.color.home_screen_button)
+                color = colorResource(id = R.color.home_screen_toolbar_button)
             )
     ) {
         Box(

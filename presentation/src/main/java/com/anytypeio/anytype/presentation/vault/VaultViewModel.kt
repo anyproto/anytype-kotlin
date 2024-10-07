@@ -3,6 +3,9 @@ package com.anytypeio.anytype.presentation.vault
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Wallpaper
@@ -40,7 +43,8 @@ class VaultViewModel(
     private val getVaultSettings: GetVaultSettings,
     private val setVaultSettings: SetVaultSettings,
     private val observeVaultSettings: ObserveVaultSettings,
-    private val setVaultSpaceOrder: SetVaultSpaceOrder
+    private val setVaultSpaceOrder: SetVaultSpaceOrder,
+    private val analytics: Analytics
 ) : BaseViewModel() {
 
     val spaces = MutableStateFlow<List<VaultSpaceView>>(emptyList())
@@ -136,6 +140,11 @@ class VaultViewModel(
 
     fun onResume() {
         viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.screenVault
+            )
+        }
+        viewModelScope.launch {
             getVaultSettings.async(Unit).onSuccess { settings ->
                 if (settings.showIntroduceVault) {
                     commands.emit(Command.ShowIntroduceVault)
@@ -171,7 +180,8 @@ class VaultViewModel(
         private val getVaultSettings: GetVaultSettings,
         private val setVaultSettings: SetVaultSettings,
         private val setVaultSpaceOrder: SetVaultSpaceOrder,
-        private val observeVaultSettings: ObserveVaultSettings
+        private val observeVaultSettings: ObserveVaultSettings,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -185,7 +195,8 @@ class VaultViewModel(
             getVaultSettings = getVaultSettings,
             setVaultSettings = setVaultSettings,
             setVaultSpaceOrder = setVaultSpaceOrder,
-            observeVaultSettings = observeVaultSettings
+            observeVaultSettings = observeVaultSettings,
+            analytics = analytics
         ) as T
     }
 

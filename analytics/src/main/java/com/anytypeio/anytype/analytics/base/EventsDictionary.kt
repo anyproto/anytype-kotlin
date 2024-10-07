@@ -169,6 +169,10 @@ object EventsDictionary {
     const val clickOnboarding = "ClickOnboarding"
     const val clickLogin = "ClickLogin"
 
+    // Vault events
+
+    const val screenVault = "ScreenOnboarding"
+
     // About-app screen
 
     const val MENU_HELP = "MenuHelp"

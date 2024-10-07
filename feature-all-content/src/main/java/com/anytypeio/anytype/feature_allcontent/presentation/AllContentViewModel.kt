@@ -77,6 +77,7 @@ import timber.log.Timber
  * ViewState: @see [UiContentState]
  * Factory: @see [AllContentViewModelFactory]
  * Screen: @see [com.anytypeio.anytype.feature_allcontent.ui.AllContentWrapperScreen]
+ * Models: @see [com.anytypeio.anytype.feature_allcontent.models.UiContentState]
  */
 
 class AllContentViewModel(

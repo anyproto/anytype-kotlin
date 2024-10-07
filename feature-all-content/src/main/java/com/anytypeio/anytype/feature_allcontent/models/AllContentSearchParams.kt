@@ -149,6 +149,31 @@ fun AllContentTab.filtersForSubscribe(
             val sorts = listOf(activeSort.toDVSort())
             return filters to sorts
         }
+        AllContentTab.RELATIONS -> {
+            val filters = buildList {
+                addAll(buildDeletedFilter())
+                add(buildSpaceIdFilter(spaces))
+                if (limitedObjectIds.isNotEmpty()) {
+                    add(buildLimitedObjectIdsFilter(limitedObjectIds = limitedObjectIds))
+                }
+                add(
+                    DVFilter(
+                        relation = Relations.LAYOUT,
+                        condition = DVFilterCondition.EQUAL,
+                        value = ObjectType.Layout.RELATION.code.toDouble()
+                    ),
+                )
+                add(
+                    DVFilter(
+                        relation = Relations.UNIQUE_KEY,
+                        condition = DVFilterCondition.NOT_EQUAL,
+                        value = ObjectTypeIds.CHAT_DERIVED
+                    )
+                )
+            }
+            val sorts = listOf(activeSort.toDVSort())
+            return filters to sorts
+        }
     }
 }
 

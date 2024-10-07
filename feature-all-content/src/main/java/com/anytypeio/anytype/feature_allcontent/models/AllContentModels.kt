@@ -26,7 +26,7 @@ import com.anytypeio.anytype.presentation.objects.getProperType
 //region STATE
 @Immutable
 enum class AllContentTab {
-    PAGES, LISTS, MEDIA, BOOKMARKS, FILES, TYPES
+    PAGES, LISTS, MEDIA, BOOKMARKS, FILES, TYPES, RELATIONS
 }
 
 sealed class AllContentMenuMode {
@@ -123,6 +123,17 @@ sealed class UiContentItem {
     ) : UiContentItem()
 
     data class Type(
+        override val id: Id,
+        val name: String,
+        val icon: ObjectIcon? = null,
+        val sourceObject: Id? = null,
+        val uniqueKey: Key? = null,
+        val readOnly: Boolean = true,
+        val editable: Boolean = true,
+        val dependentData: DependentData = DependentData.None
+    ) : UiContentItem()
+
+    data class Relation(
         override val id: Id,
         val name: String,
         val icon: ObjectIcon? = null,
@@ -271,6 +282,7 @@ fun AllContentTab.toAnalyticsTabType(): String {
         AllContentTab.BOOKMARKS -> "Bookmarks"
         AllContentTab.FILES -> "Files"
         AllContentTab.TYPES -> "Types"
+        AllContentTab.RELATIONS -> "Relations"
     }
 }
 

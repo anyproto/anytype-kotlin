@@ -1760,6 +1760,7 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_title_tab_bookmarks">Bookmarks</string>
     <string name="all_content_title_tab_files">Files</string>
     <string name="all_content_title_tab_objetc_types">Types</string>
+    <string name="all_content_title_tab_relations">Relations</string>
     <string name="all_content_sort_by">Sort by</string>
 
     <string name="all_content_sort_name_desc">Z → A</string>

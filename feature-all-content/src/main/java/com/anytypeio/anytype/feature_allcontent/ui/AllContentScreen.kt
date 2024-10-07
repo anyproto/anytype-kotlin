@@ -344,6 +344,7 @@ private fun ContentItems(
                     is UiContentItem.Group -> "group"
                     is UiContentItem.Item -> "item"
                     is UiContentItem.Type -> "type"
+                    is UiContentItem.Relation -> "relation"
                 }
             }
         ) { index ->
@@ -394,6 +395,8 @@ private fun ContentItems(
                         item = item
                     )
                 }
+
+                is UiContentItem.Relation -> TODO()
             }
         }
         if (uiContentState is UiContentState.Paging) {

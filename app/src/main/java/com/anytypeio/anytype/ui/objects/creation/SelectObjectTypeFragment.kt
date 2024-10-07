@@ -200,6 +200,7 @@ class SelectObjectTypeFragment : BaseBottomSheetComposeFragment() {
         }.onFailure {
             Timber.e(it, "Error while processing clipboard")
         }
+        vm.onResume()
     }
 
     private fun proceedWithCommand(command: Command) {

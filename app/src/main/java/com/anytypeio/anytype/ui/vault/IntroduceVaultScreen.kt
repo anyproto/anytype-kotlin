@@ -5,13 +5,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -20,9 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -33,6 +27,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
@@ -51,9 +46,18 @@ fun IntroduceVaultScreen(
     ConstraintLayout(modifier = Modifier.fillMaxSize()) {
 
         val coroutineScope = rememberCoroutineScope()
-        val (title, first,  pager, dots, btn) = createRefs()
+        val (title, first,  pager, dots, btn, dragger) = createRefs()
 
         val pagerState = rememberPagerState(pageCount = { 2 })
+
+        Dragger(
+            modifier = Modifier.padding(
+                vertical = 6.dp
+            ).constrainAs(dragger) {
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            }
+        )
 
         Text(
             text = when(val page = pagerState.currentPage) {
@@ -77,11 +81,11 @@ fun IntroduceVaultScreen(
         HorizontalPager(
             state = pagerState,
             modifier = Modifier
-                .padding(bottom = 16.dp, top = 42.dp)
-                .height(452.dp)
+                .padding(bottom = 20.dp, top = 42.dp)
                 .fillMaxWidth()
                 .constrainAs(pager) {
                     top.linkTo(title.bottom)
+                    bottom.linkTo(dots.top)
                     height = Dimension.fillToConstraints
                 }
                 .fillMaxSize()
@@ -99,23 +103,6 @@ fun IntroduceVaultScreen(
                                 painter = painterResource(id = R.drawable.img_introduce_vault_1),
                                 contentDescription = "Screenshot 1",
                                 modifier = Modifier.align(Alignment.TopCenter)
-                            )
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .width(288.dp)
-                                    .alpha(1f)
-                                    .background(
-                                        brush = Brush.verticalGradient(
-                                            colors = listOf(
-                                                Color.Transparent,
-                                                colorResource(id = R.color.text_primary),
-                                            ),
-                                            startY = screenWidth.value * 1.2f,
-                                        )
-                                    ).align(
-                                        Alignment.TopCenter
-                                    )
                             )
                         }
                     }
@@ -137,9 +124,9 @@ fun IntroduceVaultScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 4.dp)
+                .padding(bottom = 40.dp)
                 .constrainAs(dots) {
-                    bottom.linkTo(pager.bottom)
+                    bottom.linkTo(first.top)
                 },
             horizontalArrangement = Arrangement.Center
         ) {

@@ -289,6 +289,13 @@ class AllContentFragment : BaseComposeFragment() {
                     },
                     onBackClicked = vm::onBackClicked,
                     moveToBin = vm::proceedWithMoveToBin,
+                    onBackLongClicked = {
+                        runCatching {
+                            findNavController().navigate(R.id.actionOpenSpaceSwitcher)
+                        }.onFailure {
+                            Timber.e(it, "Error while opening space switcher from all-content screen")
+                        }
+                    },
                     onRelationClicked = vm::onRelationClicked
                 )
             }

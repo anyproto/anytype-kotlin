@@ -149,7 +149,8 @@ fun ScreenContent(
                     addDocClick = { vm.onAddClicked(null) },
                     onCreateObjectLongClicked = onCreateObjectLongClicked,
                     onProfileClicked = vm::onProfileClicked,
-                    profileIcon = vm.icon.collectAsState().value
+                    profileIcon = vm.icon.collectAsState().value,
+                    backLongClick = vm::onBackLongClicked
                 )
             }
         }
@@ -612,7 +613,6 @@ fun CollectionScreen(
                     onCreateObjectLongClicked = onCreateObjectLongClicked,
                     onSearchClicked = onSearchClicked
                 )
-
                 LaunchedEffect(state) {
 
                         if (state.showWidget && bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
@@ -630,7 +630,6 @@ fun CollectionScreen(
                             vm.omBottomSheet(it == BottomSheetValue.Expanded)
                         }
                 }
-
                 BackHandler {
                     if (bottomSheetScaffoldState.bottomSheetState.isExpanded) {
                         coroutineScope.launch {

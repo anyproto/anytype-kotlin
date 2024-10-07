@@ -23,9 +23,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
+import com.anytypeio.anytype.presentation.home.InteractionMode
 
 @Composable
 fun AllContentWidgetCard(
+    mode: InteractionMode,
     onWidgetClicked: () -> Unit = {}
 ) {
     Box(
@@ -38,9 +40,15 @@ fun AllContentWidgetCard(
                 color = colorResource(id = R.color.dashboard_card_background)
             )
             .clip(RoundedCornerShape(16.dp))
-            .clickable {
-                onWidgetClicked()
-            }
+            .then(
+                if (mode !is InteractionMode.Edit) {
+                    Modifier.clickable {
+                        onWidgetClicked()
+                    }
+                } else {
+                    Modifier
+                }
+            )
     ) {
         Image(
             painter = painterResource(id = R.drawable.ic_widget_all_content),
@@ -77,6 +85,8 @@ fun AllContentWidgetCard(
 @Composable
 fun AllContentWidgetPreview() {
     AllContentWidgetCard(
+        onWidgetClicked = {},
+        mode = InteractionMode.Default
     )
 }
 

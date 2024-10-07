@@ -89,6 +89,13 @@ class LibraryFragment : BaseComposeFragment() {
                                 }
                             }
                             dialog.show(childFragmentManager, "library-create-object-of-type-dialog")
+                        },
+                        onBackLongPressed = {
+                            runCatching {
+                                findNavController().navigate(R.id.actionOpenSpaceSwitcher)
+                            }.onFailure {
+                                Timber.e(it, "Error while opening space switcher from library")
+                            }
                         }
                     )
                 }

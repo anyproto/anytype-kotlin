@@ -124,6 +124,7 @@ fun AllContentWrapperScreen(
     onAddDocClicked: () -> Unit,
     onCreateObjectLongClicked: () -> Unit,
     onBackClicked: () -> Unit,
+    onBackLongClicked: () -> Unit,
     moveToBin: (UiContentItem.Item) -> Unit
 ) {
     val lazyListState = rememberLazyListState()
@@ -165,6 +166,7 @@ fun AllContentWrapperScreen(
         onAddDocClicked = onAddDocClicked,
         onCreateObjectLongClicked = onCreateObjectLongClicked,
         onBackClicked = onBackClicked,
+        onBackLongClicked = onBackLongClicked,
         moveToBin = moveToBin,
         onRelationClicked = onRelationClicked
     )
@@ -192,6 +194,7 @@ fun AllContentMainScreen(
     onAddDocClicked: () -> Unit,
     onCreateObjectLongClicked: () -> Unit,
     onBackClicked: () -> Unit,
+    onBackLongClicked: () -> Unit,
     moveToBin: (UiContentItem.Item) -> Unit
 ) {
     var isSearchEmpty by remember { mutableStateOf(true) }
@@ -218,7 +221,8 @@ fun AllContentMainScreen(
                     onGlobalSearchClicked = onGlobalSearchClicked,
                     onAddDocClicked = onAddDocClicked,
                     onCreateObjectLongClicked = onCreateObjectLongClicked,
-                    onBackClicked = onBackClicked
+                    onBackClicked = onBackClicked,
+                    onBackLongClicked = onBackLongClicked
                 )
             }
         },
@@ -314,13 +318,15 @@ fun BottomMenu(
     onGlobalSearchClicked: () -> Unit,
     onAddDocClicked: () -> Unit,
     onCreateObjectLongClicked: () -> Unit,
-    onBackClicked: () -> Unit
+    onBackClicked: () -> Unit,
+    onBackLongClicked: () -> Unit,
 ) {
     val isImeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     if (isImeVisible) return
     BottomNavigationMenu(
         modifier = modifier,
         backClick = onBackClicked,
+        backLongClick = onBackLongClicked,
         onProfileClicked = onHomeClicked,
         searchClick = onGlobalSearchClicked,
         addDocClick = onAddDocClicked,
@@ -497,6 +503,7 @@ fun PreviewMainScreen() {
         onCreateObjectLongClicked = {},
         onBackClicked = {},
         moveToBin = {},
+        onBackLongClicked = {},
         onRelationClicked = {}
     )
 }

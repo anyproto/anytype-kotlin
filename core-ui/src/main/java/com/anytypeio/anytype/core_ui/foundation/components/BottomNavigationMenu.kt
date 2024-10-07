@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -40,6 +39,7 @@ import com.anytypeio.anytype.presentation.profile.ProfileIconView
 fun BottomNavigationMenu(
     modifier: Modifier = Modifier,
     backClick: () -> Unit = {},
+    backLongClick: () -> Unit = {},
     homeClick: () -> Unit = {},
     searchClick: () -> Unit = {},
     addDocClick: () -> Unit = {},
@@ -53,7 +53,7 @@ fun BottomNavigationMenu(
             .width(Width)
             .background(
                 shape = RoundedCornerShape(16.dp),
-                color = colorResource(id = R.color.home_screen_button)
+                color = colorResource(id = R.color.home_screen_toolbar_button)
             )
             /**
              * Workaround for clicks through the bottom navigation menu.
@@ -62,13 +62,19 @@ fun BottomNavigationMenu(
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        MenuItem(BottomNavigationItem.BACK.res, onClick = backClick)
-        MenuItem(BottomNavigationItem.HOME.res, onClick = onProfileClicked)
-        MenuItem(BottomNavigationItem.SEARCH.res, onClick = searchClick)
         MenuItem(
-            BottomNavigationItem.ADD_DOC.res,
+            res = BottomNavigationItem.BACK.res,
+            onClick = backClick,
+            onLongClick = backLongClick
+        )
+        MenuItem(
+            res = BottomNavigationItem.ADD_DOC.res,
             onClick = addDocClick,
             onLongClick = onCreateObjectLongClicked
+        )
+        MenuItem(
+            res = BottomNavigationItem.SEARCH.res,
+            onClick = searchClick
         )
     }
 }

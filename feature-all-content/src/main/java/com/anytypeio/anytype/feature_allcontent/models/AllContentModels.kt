@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Companion.DEFAULT_INITIAL_SORT
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Companion.DEFAULT_INITIAL_TAB
 import com.anytypeio.anytype.presentation.library.DependentData
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.objects.getProperType
@@ -210,11 +211,7 @@ fun ObjectWrapper.Basic.toAllContentItem(
             }
         }?.name,
         layout = layout,
-        icon = ObjectIcon.from(
-            obj = obj,
-            layout = layout,
-            builder = urlBuilder
-        ),
+        icon = obj.objectIcon(builder = urlBuilder),
         lastModifiedDate = DateParser.parse(obj.getValue(Relations.LAST_MODIFIED_DATE)) ?: 0L,
         createdDate = DateParser.parse(obj.getValue(Relations.CREATED_DATE)) ?: 0L
     )
@@ -234,11 +231,7 @@ fun ObjectWrapper.Basic.toAllContentType(
     return UiContentItem.Type(
         id = obj.id,
         name = obj.name.orEmpty(),
-        icon = ObjectIcon.from(
-            obj = obj,
-            layout = layout,
-            builder = urlBuilder
-        ),
+        icon = obj.objectIcon(urlBuilder),
         sourceObject = obj.map[SOURCE_OBJECT]?.toString(),
         uniqueKey = obj.uniqueKey,
         readOnly = obj.restrictions.contains(ObjectRestriction.DELETE),

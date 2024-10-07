@@ -17,9 +17,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -45,14 +43,10 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
@@ -65,14 +59,7 @@ import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
 import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
-import com.anytypeio.anytype.core_ui.widgets.DefaultBasicAvatarIcon
-import com.anytypeio.anytype.core_ui.widgets.DefaultEmojiObjectIcon
-import com.anytypeio.anytype.core_ui.widgets.DefaultFileObjectImageIcon
-import com.anytypeio.anytype.core_ui.widgets.DefaultObjectBookmarkIcon
-import com.anytypeio.anytype.core_ui.widgets.DefaultObjectImageIcon
-import com.anytypeio.anytype.core_ui.widgets.DefaultProfileAvatarIcon
-import com.anytypeio.anytype.core_ui.widgets.DefaultProfileIconImage
-import com.anytypeio.anytype.core_ui.widgets.DefaultTaskObjectIcon
+import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.feature_allcontent.BuildConfig
 import com.anytypeio.anytype.feature_allcontent.R
@@ -84,7 +71,6 @@ import com.anytypeio.anytype.feature_allcontent.models.UiContentState
 import com.anytypeio.anytype.feature_allcontent.models.UiMenuState
 import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
 import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import kotlinx.coroutines.launch
 
 
@@ -470,7 +456,11 @@ private fun Item(
                 .size(48.dp)
                 .align(CenterVertically)
         ) {
-            AllContentItemIcon(icon = item.icon, modifier = Modifier)
+            ListWidgetObjectIcon(
+                icon = item.icon,
+                iconSize = 48.dp,
+                modifier = Modifier
+            )
         }
         Column(
             modifier = Modifier
@@ -527,7 +517,8 @@ private fun Type(
                 .padding(start = 0.dp, top = 14.dp, end = 14.dp, bottom = 14.dp)
                 .wrapContentSize()
         ) {
-            AllContentItemIcon(icon = item.icon, modifier = Modifier, iconSize = 24.dp)
+            //todo delete !!
+            ListWidgetObjectIcon(icon = item.icon!!, modifier = Modifier, iconSize = 24.dp)
         }
         val name = item.name.trim().ifBlank { stringResource(R.string.untitled) }
 
@@ -538,51 +529,6 @@ private fun Type(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-    }
-}
-
-@Composable
-fun AllContentItemIcon(
-    icon: ObjectIcon?,
-    modifier: Modifier,
-    iconSize: Dp = 48.dp,
-    onTaskIconClicked: (Boolean) -> Unit = {},
-    avatarBackgroundColor: Int = R.color.shape_secondary,
-    avatarFontSize: TextUnit = 28.sp,
-    avatarTextStyle: TextStyle = TextStyle(
-        fontWeight = FontWeight.SemiBold,
-        color = colorResource(id = R.color.text_white)
-    )
-) {
-    when (icon) {
-        is ObjectIcon.Profile.Avatar -> DefaultProfileAvatarIcon(
-            modifier = modifier,
-            iconSize = iconSize,
-            icon = icon,
-            avatarTextStyle = avatarTextStyle,
-            avatarFontSize = avatarFontSize,
-            avatarBackgroundColor = avatarBackgroundColor
-        )
-
-        is ObjectIcon.Profile.Image -> DefaultProfileIconImage(icon, modifier, iconSize)
-        is ObjectIcon.Basic.Emoji -> DefaultEmojiObjectIcon(modifier, iconSize, icon)
-        is ObjectIcon.Basic.Image -> DefaultObjectImageIcon(icon.hash, modifier, iconSize)
-        is ObjectIcon.Basic.Avatar -> DefaultBasicAvatarIcon(modifier, iconSize, icon)
-        is ObjectIcon.Bookmark -> DefaultObjectBookmarkIcon(icon.image, modifier, iconSize)
-        is ObjectIcon.Task -> DefaultTaskObjectIcon(modifier, iconSize, icon, onTaskIconClicked)
-        is ObjectIcon.File -> {
-            DefaultFileObjectImageIcon(
-                fileName = icon.fileName.orEmpty(),
-                mime = icon.mime.orEmpty(),
-                modifier = modifier,
-                iconSize = iconSize,
-                extension = icon.extensions
-            )
-        }
-
-        else -> {
-            // Draw nothing.
-        }
     }
 }
 

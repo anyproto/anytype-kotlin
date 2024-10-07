@@ -1104,9 +1104,19 @@ class DefaultBlockViewRenderer @Inject constructor(
         val iconImage = content.iconImage
         val iconEmoji = content.iconEmoji
         val icon = when {
-            !iconImage.isNullOrBlank() -> ObjectIcon.Basic.Image(urlBuilder.thumbnail(iconImage))
-            !iconEmoji.isNullOrBlank() -> ObjectIcon.Basic.Emoji(iconEmoji)
-            else -> ObjectIcon.Basic.Emoji("💡")
+            !iconImage.isNullOrBlank() ->
+                ObjectIcon.Basic.Image(
+                    hash = urlBuilder.thumbnail(iconImage),
+                    emptyState = ObjectIcon.Empty.Page
+                )
+            !iconEmoji.isNullOrBlank() -> ObjectIcon.Basic.Emoji(
+                unicode = iconEmoji,
+                emptyState = ObjectIcon.Empty.Page
+            )
+            else -> ObjectIcon.Basic.Emoji(
+                unicode = "💡",
+                emptyState = ObjectIcon.Empty.Page
+            )
         }
         return BlockView.Text.Callout(
             mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,

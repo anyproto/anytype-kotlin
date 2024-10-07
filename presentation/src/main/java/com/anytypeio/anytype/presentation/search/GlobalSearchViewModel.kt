@@ -43,6 +43,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchBacklinks
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.filterObjectsByIds
@@ -558,11 +559,7 @@ suspend fun Command.SearchWithMeta.Result.view(
     val meta = metas.firstOrNull()
     return GlobalSearchItemView(
         id = obj,
-        icon = ObjectIcon.from(
-            obj = wrapper,
-            layout = wrapper.layout,
-            builder = urlBuilder
-        ),
+        icon = wrapper.objectIcon(urlBuilder),
         links = wrapper.links,
         backlinks = wrapper.backlinks,
         space = SpaceId(requireNotNull(wrapper.spaceId)),

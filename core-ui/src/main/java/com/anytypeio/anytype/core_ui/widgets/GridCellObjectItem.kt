@@ -9,7 +9,6 @@ import androidx.core.view.marginStart
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.WidgetDvGridObjectBinding
-import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
@@ -26,18 +25,10 @@ class GridCellObjectItem @JvmOverloads constructor(
         tvName.text = name
         tvName.setTextColor(context.getColor(R.color.black))
         objectIcon.setIcon(icon)
-        // Do not show basic avatar in data view cell.
-        if (icon is ObjectIcon.Basic.Avatar) {
-            objectIcon.gone()
+        objectIcon.visible()
+        if (tvName.marginStart == 0) {
             tvName.updateLayoutParams<LayoutParams> {
-                marginStart = 0
-            }
-        } else {
-            objectIcon.visible()
-            if (tvName.marginStart == 0) {
-                tvName.updateLayoutParams<LayoutParams> {
-                    marginStart = resources.getDimension(R.dimen.dp_20).toInt()
-                }
+                marginStart = resources.getDimension(R.dimen.dp_20).toInt()
             }
         }
     }

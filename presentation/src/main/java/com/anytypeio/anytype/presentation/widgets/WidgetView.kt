@@ -5,7 +5,6 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SHARED_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SpaceType
-import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
 import com.anytypeio.anytype.presentation.editor.model.Indent
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -159,65 +158,4 @@ fun ObjectWrapper.Basic.getWidgetObjectName(): String? {
     } else {
         name?.trim()?.ifEmpty { null }
     }
-}
-
-fun ObjectWrapper.Basic.widgetElementIcon(
-    builder: UrlBuilder
-) : ObjectIcon {
-    val img = iconImage
-    val emoji = iconEmoji
-    return when (layout) {
-        ObjectType.Layout.BASIC -> when {
-            !img.isNullOrBlank() -> ObjectIcon.Basic.Image(hash = builder.thumbnail(img))
-            !emoji.isNullOrBlank() -> ObjectIcon.Basic.Emoji(unicode = emoji)
-            else -> ObjectIcon.Basic.Avatar(name.orEmpty())
-        }
-        ObjectType.Layout.OBJECT_TYPE -> when {
-            !img.isNullOrBlank() -> ObjectIcon.Basic.Image(hash = builder.thumbnail(img))
-            !emoji.isNullOrBlank() -> ObjectIcon.Basic.Emoji(unicode = emoji)
-            else -> ObjectIcon.None
-        }
-        ObjectType.Layout.PROFILE, ObjectType.Layout.PARTICIPANT -> {
-            if (!img.isNullOrBlank()) {
-                ObjectIcon.Profile.Image(hash = builder.thumbnail(img))
-            } else {
-                ObjectIcon.Profile.Avatar(name = name.orEmpty())
-            }
-        }
-        ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> if (!img.isNullOrBlank()) {
-            ObjectIcon.Basic.Image(hash = builder.thumbnail(img))
-        } else if (!emoji.isNullOrBlank()) {
-            ObjectIcon.Basic.Emoji(unicode = emoji)
-        } else {
-            ObjectIcon.None
-        }
-        ObjectType.Layout.IMAGE -> if (!img.isNullOrBlank()) {
-            ObjectIcon.Basic.Image(hash = builder.thumbnail(img))
-        } else {
-            ObjectIcon.None
-        }
-        ObjectType.Layout.TODO -> ObjectIcon.Task(isChecked = done ?: false)
-        ObjectType.Layout.NOTE -> ObjectIcon.Basic.Avatar(snippet.orEmpty())
-        ObjectType.Layout.FILE -> ObjectIcon.Basic.Avatar(name.orEmpty())
-        ObjectType.Layout.BOOKMARK -> when {
-            !img.isNullOrBlank() -> ObjectIcon.Bookmark(image = builder.thumbnail(img))
-            !emoji.isNullOrBlank() -> ObjectIcon.Basic.Emoji(unicode = emoji)
-            else -> ObjectIcon.None
-        }
-        else -> ObjectIcon.None
-    }
-}
-
-fun List<WidgetView>.getActiveTabViews() : Map<Id, Id> {
-    return filterIsInstance<WidgetView.SetOfObjects>().mapNotNull { widget ->
-        if (widget.tabs.isNotEmpty()) {
-            val selected =  widget.tabs.firstOrNull { it.isSelected }
-            if (selected != null)
-                widget.id to selected.id
-            else
-                null
-        } else {
-            null
-        }
-    }.toMap()
 }

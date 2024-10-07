@@ -137,7 +137,6 @@ class ObjectIconWidget @JvmOverloads constructor(
         when (icon) {
             is ObjectIcon.Basic.Emoji -> setEmoji(icon.unicode)
             is ObjectIcon.Basic.Image -> setRectangularImage(icon.hash)
-            is ObjectIcon.Basic.Avatar -> setBasicInitials(icon.name)
             is ObjectIcon.Profile.Avatar -> setProfileInitials(icon.name)
             is ObjectIcon.Profile.Image -> setCircularImage(icon.hash)
             is ObjectIcon.Task -> setTask(icon.isChecked)
@@ -150,6 +149,11 @@ class ObjectIconWidget @JvmOverloads constructor(
             )
             ObjectIcon.Deleted -> setDeletedIcon()
             is ObjectIcon.Checkbox -> setCheckbox(icon.isChecked)
+            ObjectIcon.Empty.Bookmark -> TODO()
+            ObjectIcon.Empty.Discussion -> TODO()
+            ObjectIcon.Empty.List -> TODO()
+            ObjectIcon.Empty.ObjectType -> TODO()
+            ObjectIcon.Empty.Page -> TODO()
         }
     }
 

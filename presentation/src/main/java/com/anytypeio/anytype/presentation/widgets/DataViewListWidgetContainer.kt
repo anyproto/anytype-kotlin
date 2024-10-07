@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.cover
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -220,7 +221,7 @@ class DataViewListWidgetContainer(
                     WidgetView.SetOfObjects.Element(
                         obj = obj,
                         objectIcon = if (withIcon) {
-                            obj.widgetElementIcon(
+                            obj.objectIcon(
                                 builder = urlBuilder
                             )
                         } else {
@@ -266,7 +267,7 @@ class DataViewListWidgetContainer(
                 elements = objects.map { obj ->
                     WidgetView.SetOfObjects.Element(
                         obj = obj,
-                        objectIcon = obj.widgetElementIcon(builder = urlBuilder)
+                        objectIcon = obj.objectIcon(builder = urlBuilder)
                     )
                 },
                 isExpanded = true,

@@ -26,6 +26,7 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
+@Deprecated("Use ListWidgetObjectIcon instead")
 @Composable
 fun TreeWidgetObjectIcon(
     modifier: Modifier = Modifier,

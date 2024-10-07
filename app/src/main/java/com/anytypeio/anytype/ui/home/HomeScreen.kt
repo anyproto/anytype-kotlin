@@ -847,18 +847,6 @@ fun HomeScreenBottomToolbar(
         Box(
             modifier = Modifier
                 .weight(1f)
-                .fillMaxSize()
-                .noRippleClickable { onSearchClicked() }
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_nav_panel_search),
-                contentDescription = "Search icon",
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
-        Box(
-            modifier = Modifier
-                .weight(1f)
                 .alpha(if (isReadOnlyAccess) 0.2f else 1f)
                 .fillMaxSize()
                 .then(
@@ -882,6 +870,18 @@ fun HomeScreenBottomToolbar(
             Image(
                 painter = painterResource(id = R.drawable.ic_nav_panel_plus),
                 contentDescription = "Plus icon",
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxSize()
+                .noRippleClickable { onSearchClicked() }
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_nav_panel_search),
+                contentDescription = "Search icon",
                 modifier = Modifier.align(Alignment.Center)
             )
         }

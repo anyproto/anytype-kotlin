@@ -32,7 +32,7 @@ fun ObjectWrapper.Basic.getProperObjectName(): String? {
             snippet?.replace("\n", " ")?.take(MAX_SNIPPET_SIZE)
         }
         in SupportedLayouts.fileLayouts -> {
-            val fileName = if (name.isNullOrBlank()) "Untitled" else name!!
+            val fileName = if (name.isNullOrBlank()) "Untitled" else name.orEmpty()
             if (fileExt.isNullOrBlank()) {
                 fileName
             } else {

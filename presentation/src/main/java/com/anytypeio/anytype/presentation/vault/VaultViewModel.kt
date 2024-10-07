@@ -137,7 +137,7 @@ class VaultViewModel(
     fun onResume() {
         viewModelScope.launch {
             getVaultSettings.async(Unit).onSuccess { settings ->
-                if (settings.showIntroduceVault) {
+                if (true) {
                     commands.emit(Command.ShowIntroduceVault)
                     setVaultSettings.async(
                         params = settings.copy(

@@ -8,7 +8,9 @@ import com.anytypeio.anytype.domain.all_content.UpdateAllContentState
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.VmParams
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -24,7 +26,9 @@ class AllContentViewModelFactory @Inject constructor(
     private val updateAllContentState: UpdateAllContentState,
     private val restoreAllContentState: RestoreAllContentState,
     private val searchObjects: SearchObjects,
-    private val localeProvider: LocaleProvider
+    private val localeProvider: LocaleProvider,
+    private val createObject: CreateObject,
+    private val setObjectListIsArchived: SetObjectListIsArchived
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
@@ -38,6 +42,8 @@ class AllContentViewModelFactory @Inject constructor(
             restoreAllContentState = restoreAllContentState,
             updateAllContentState = updateAllContentState,
             searchObjects = searchObjects,
-            localeProvider = localeProvider
+            localeProvider = localeProvider,
+            createObject = createObject,
+            setObjectListIsArchived = setObjectListIsArchived
         ) as T
 }

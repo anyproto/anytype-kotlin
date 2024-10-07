@@ -3,6 +3,7 @@ package com.anytypeio.anytype.feature_allcontent.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -14,7 +15,9 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.feature_allcontent.models.AllContentMenuMode
 import com.anytypeio.anytype.feature_allcontent.models.AllContentSort
@@ -28,11 +31,23 @@ import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
 import com.anytypeio.anytype.feature_allcontent.models.createSubscriptionParams
 import com.anytypeio.anytype.feature_allcontent.models.filtersForSearch
 import com.anytypeio.anytype.feature_allcontent.models.mapRelationKeyToSort
+import com.anytypeio.anytype.feature_allcontent.models.toAnalyticsModeType
+import com.anytypeio.anytype.feature_allcontent.models.toAnalyticsSortType
+import com.anytypeio.anytype.feature_allcontent.models.toAnalyticsTabType
 import com.anytypeio.anytype.feature_allcontent.models.toUiContentItems
 import com.anytypeio.anytype.feature_allcontent.models.toUiContentTypes
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentChangeMode
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentChangeSort
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentChangeType
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentResult
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentScreen
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentSearchInput
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentToBin
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
+import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -74,8 +89,10 @@ class AllContentViewModel(
     private val updateAllContentState: UpdateAllContentState,
     private val restoreAllContentState: RestoreAllContentState,
     private val searchObjects: SearchObjects,
-    private val localeProvider: LocaleProvider
-) : ViewModel() {
+    private val localeProvider: LocaleProvider,
+    private val createObject: CreateObject,
+    private val setObjectListIsArchived: SetObjectListIsArchived
+) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val searchResultIds = MutableStateFlow<List<Id>>(emptyList())
     private val sortState = MutableStateFlow<AllContentSort>(DEFAULT_INITIAL_SORT)
@@ -409,6 +426,12 @@ class AllContentViewModel(
         uiItemsState.value = emptyList()
         uiTabsState.value = uiTabsState.value.copy(selectedTab = tab)
         restartSubscription.value++
+        viewModelScope.launch {
+            sendAnalyticsAllContentChangeType(
+                analytics = analytics,
+                type = tab.toAnalyticsTabType()
+            )
+        }
     }
 
     fun onAllContentModeClicked(mode: AllContentMenuMode) {
@@ -420,6 +443,12 @@ class AllContentViewModel(
             is AllContentMenuMode.Unlinked -> UiTitleState.OnlyUnlinked
         }
         restartSubscription.value++
+        viewModelScope.launch {
+            sendAnalyticsAllContentChangeMode(
+                analytics = analytics,
+                type = mode.toAnalyticsModeType()
+            )
+        }
     }
 
     fun onSortClicked(sort: AllContentSort) {
@@ -440,6 +469,13 @@ class AllContentViewModel(
         sortState.value = newSort
         proceedWithSortSaving(newSort)
         restartSubscription.value++
+        viewModelScope.launch {
+            sendAnalyticsAllContentChangeSort(
+                analytics = analytics,
+                type = sort.toAnalyticsSortType().first,
+                sort = sort.toAnalyticsSortType().second
+            )
+        }
     }
 
     private fun proceedWithSortSaving(sort: AllContentSort) {
@@ -461,10 +497,22 @@ class AllContentViewModel(
 
     fun onFilterChanged(filter: String) {
         Timber.d("onFilterChanged: $filter")
+        val currentFilter = userInput.value.isEmpty()
+        viewModelScope.launch {
+            if (currentFilter && filter.isNotEmpty()) {
+                sendAnalyticsAllContentSearchInput(
+                    analytics = analytics,
+                    route = EventsDictionary.Routes.allContentRoute
+                )
+            }
+        }
         userInput.value = filter
     }
 
     fun onViewBinClicked() {
+        viewModelScope.launch {
+            sendAnalyticsAllContentToBin(analytics = analytics)
+        }
         viewModelScope.launch {
             commands.emit(Command.NavigateToBin(vmParams.spaceId.id))
         }
@@ -473,11 +521,20 @@ class AllContentViewModel(
     fun onItemClicked(item: UiContentItem.Item) {
         Timber.d("onItemClicked: ${item.id}")
         val layout = item.layout ?: return
-        viewModelScope.launch {
-            when (val navigation = layout.navigation(
+        proceedWithNavigation(
+            navigation = layout.navigation(
                 target = item.id,
                 space = vmParams.spaceId.id
-            )) {
+            )
+        )
+        viewModelScope.launch {
+            sendAnalyticsAllContentResult(analytics = analytics)
+        }
+    }
+
+    private fun proceedWithNavigation(navigation: OpenObjectNavigation) {
+        viewModelScope.launch {
+            when (navigation) {
                 is OpenObjectNavigation.OpenDataView -> {
                     commands.emit(
                         Command.NavigateToSetOrCollection(
@@ -503,6 +560,61 @@ class AllContentViewModel(
         }
     }
 
+    fun onHomeClicked() {
+        Timber.d("onHomeClicked")
+        viewModelScope.launch {
+            commands.emit(Command.ExitToVault)
+        }
+    }
+
+    fun onGlobalSearchClicked() {
+        Timber.d("onGlobalSearchClicked")
+        viewModelScope.launch {
+            commands.emit(Command.OpenGlobalSearch)
+        }
+    }
+
+    fun onAddDockClicked() {
+        Timber.d("onAddDockClicked")
+        proceedWithCreateDoc()
+    }
+
+    fun onBackClicked() {
+        Timber.d("onBackClicked")
+        viewModelScope.launch {
+            commands.emit(Command.Back)
+        }
+    }
+
+    fun onCreateObjectOfTypeClicked(objType: ObjectWrapper.Type) {
+        proceedWithCreateDoc(objType)
+    }
+
+    private fun proceedWithCreateDoc(
+        objType: ObjectWrapper.Type? = null
+    ) {
+        val startTime = System.currentTimeMillis()
+        val params = objType?.uniqueKey.getCreateObjectParams(objType?.defaultTemplateId)
+        viewModelScope.launch {
+            createObject.async(params).fold(
+                onSuccess = { result ->
+                    proceedWithNavigation(
+                        navigation = result.obj.navigation()
+                    )
+                    sendAnalyticsObjectCreateEvent(
+                        analytics = analytics,
+                        route = EventsDictionary.Routes.allContentRoute,
+                        startTime = startTime,
+                        objType = objType ?: storeOfObjectTypes.getByKey(result.typeKey.key),
+                        view = EventsDictionary.View.viewHome,
+                        spaceParams = provideParams(space = vmParams.spaceId.id)
+                    )
+                },
+                onFailure = { e -> Timber.e(e, "Error while creating a new object") }
+            )
+        }
+    }
+
     fun onTypeClicked(item: UiContentItem.Type) {
         Timber.d("onTypeClicked: ${item.id}")
         viewModelScope.launch {
@@ -513,12 +625,34 @@ class AllContentViewModel(
     fun onStart() {
         Timber.d("onStart")
         setupUiStateFlow()
+        viewModelScope.launch {
+            sendAnalyticsAllContentScreen(
+                analytics = analytics
+            )
+        }
     }
 
     fun onStop() {
         Timber.d("onStop")
         viewModelScope.launch {
             storelessSubscriptionContainer.unsubscribe(listOf(subscriptionId()))
+        }
+    }
+
+    fun proceedWithMoveToBin(item: UiContentItem.Item) {
+        val params = SetObjectListIsArchived.Params(
+            targets = listOf(item.id),
+            isArchived = true
+        )
+        viewModelScope.launch {
+            setObjectListIsArchived.async(params).fold(
+                onSuccess = { ids ->
+                    Timber.d("Successfully archived object: $ids")
+                },
+                onFailure = { e ->
+                    Timber.e(e, "Error while archiving object")
+                }
+            )
         }
     }
 
@@ -557,6 +691,9 @@ class AllContentViewModel(
         data class NavigateToBin(val space: Id) : Command()
         data class SendToast(val message: String) : Command()
         data class OpenTypeEditing(val item: UiContentItem.Type) : Command()
+        data object OpenGlobalSearch : Command()
+        data object ExitToVault : Command()
+        data object Back : Command()
     }
 
     companion object {

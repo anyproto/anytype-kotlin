@@ -162,10 +162,7 @@
             />
         <action
             android:id="@+id/action_open_all_content"
-            app:destination="@id/allContentScreen"
-            app:enterAnim="@anim/enter_from_right"
-            app:exitAnim="@anim/exit_to_left"
-            />
+            app:destination="@id/allContentScreen" />
     </fragment>
 
     <fragment
@@ -408,6 +405,14 @@
         <action
             android:id="@+id/openTypeEditingScreen"
             app:destination="@id/typeEditingFragment" />
+        <action
+            android:id="@+id/actionOpenVault"
+            app:destination="@id/vaultScreen"
+            app:popUpTo="@id/vaultScreen"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/actionOpenGlobalSearch"
+            app:destination="@id/globalSearchScreen" />
     </fragment>
 
     <fragment

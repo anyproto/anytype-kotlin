@@ -141,7 +141,7 @@ fun ScreenContent(
                 SearchBar(vm, uiState)
                 ListView(vm, uiState, stringResource(id = R.string.search_no_results_try))
             }
-            Box(Modifier.align(BottomCenter)) {
+            Box(Modifier.align(BottomCenter).padding(bottom = 20.dp)) {
                 BottomNavigationMenu(
                     backClick = { vm.onPrevClicked() },
                     homeClick = { vm.onHomeClicked() },

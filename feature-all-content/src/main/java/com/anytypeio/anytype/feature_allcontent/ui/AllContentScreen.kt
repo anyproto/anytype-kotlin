@@ -793,6 +793,7 @@ fun SwipeToDismissListItems(
         SwipeToDismissBox(
             modifier = modifier,
             state = dismissState,
+            enableDismissFromEndToStart = item.isPossibleToDelete,
             enableDismissFromStartToEnd = false,
             backgroundContent = {
                 DismissBackground(

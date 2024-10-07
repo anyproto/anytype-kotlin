@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -180,4 +181,5 @@ interface AllContentDependencies : ComponentDependencies {
     fun localeProvider(): LocaleProvider
     fun spaceManager(): SpaceManager
     fun config(): ConfigStorage
+    fun userPermissionProvider(): UserPermissionProvider
 }

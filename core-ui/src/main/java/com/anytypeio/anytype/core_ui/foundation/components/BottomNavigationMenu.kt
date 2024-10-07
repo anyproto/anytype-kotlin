@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -63,13 +62,12 @@ fun BottomNavigationMenu(
         verticalAlignment = Alignment.CenterVertically
     ) {
         MenuItem(BottomNavigationItem.BACK.res, onClick = backClick)
-        MenuItem(BottomNavigationItem.HOME.res, onClick = onProfileClicked)
-        MenuItem(BottomNavigationItem.SEARCH.res, onClick = searchClick)
         MenuItem(
             BottomNavigationItem.ADD_DOC.res,
             onClick = addDocClick,
             onLongClick = onCreateObjectLongClicked
         )
+        MenuItem(BottomNavigationItem.SEARCH.res, onClick = searchClick)
     }
 }
 

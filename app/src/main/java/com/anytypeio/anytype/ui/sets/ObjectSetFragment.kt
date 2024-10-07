@@ -294,7 +294,6 @@ open class ObjectSetFragment :
 
             subscribe(binding.bottomPanel.root.touches()) { swipeDetector.onTouchEvent(it) }
 
-            subscribe(binding.bottomToolbar.homeClicks().throttleFirst()) { vm.onHomeButtonClicked() }
             subscribe(
                 binding.bottomToolbar.backClicks().throttleFirst()
             ) { vm.onBackButtonClicked() }

@@ -74,6 +74,9 @@
             android:id="@+id/versionHistoryScreen"
             android:name="com.anytypeio.anytype.ui.history.VersionHistoryFragment"
             android:label="Object-Version_history-Screen"/>
+        <action
+            android:id="@+id/actionOpenSpaceSwitcher"
+            app:destination="@id/selectSpaceScreen" />
     </navigation>
 
     <include app:graph="@navigation/nav_editor_modal" />
@@ -141,6 +144,9 @@
             android:id="@+id/versionHistoryScreen"
             android:name="com.anytypeio.anytype.ui.history.VersionHistoryFragment"
             android:label="Set-Version_history-Screen"/>
+        <action
+            android:id="@+id/actionOpenSpaceSwitcher"
+            app:destination="@id/selectSpaceScreen"/>
     </navigation>
 
     <fragment
@@ -174,6 +180,9 @@
             app:destination="@id/vaultScreen"
             app:popUpTo="@id/vaultScreen"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/actionOpenSpaceSwitcher"
+            app:destination="@id/selectSpaceScreen" />
     </fragment>
 
     <dialog
@@ -413,6 +422,9 @@
         <action
             android:id="@+id/actionOpenGlobalSearch"
             app:destination="@id/globalSearchScreen" />
+        <action
+            android:id="@+id/actionOpenSpaceSwitcher"
+            app:destination="@id/selectSpaceScreen"/>
     </fragment>
 
     <fragment

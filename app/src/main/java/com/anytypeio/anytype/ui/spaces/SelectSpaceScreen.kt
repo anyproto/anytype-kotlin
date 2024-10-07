@@ -67,7 +67,8 @@ fun SelectSpaceScreen(
         LazyVerticalGrid(
             columns = GridCells.Fixed(count = 3),
             modifier = Modifier.padding(
-                bottom = 16.dp
+                bottom = 16.dp,
+                top = 16.dp
             ),
             contentPadding = PaddingValues(horizontal = 30.dp),
             horizontalArrangement = Arrangement.spacedBy(20.dp)

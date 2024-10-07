@@ -692,6 +692,14 @@ class AllContentViewModel(
         data class NavigateToBin(val space: Id) : Command()
         data class SendToast(val message: String) : Command()
         data class OpenTypeEditing(val item: UiContentItem.Type) : Command()
+        data class OpenTypeCreation(val name: String): Command()
+        data class OpenRelationEditing(
+            val typeName: String,
+            val id: Id,
+            val iconUnicode: Int,
+            val readOnly: Boolean
+        ) : Command()
+        data class OpenRelationCreation(val id: Id, val name: String, val space: Id): Command()
         data object OpenGlobalSearch : Command()
         data object ExitToVault : Command()
         data object Back : Command()

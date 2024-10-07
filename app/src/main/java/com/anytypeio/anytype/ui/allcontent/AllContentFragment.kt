@@ -70,6 +70,7 @@ class AllContentFragment : BaseComposeFragment() {
                         Timber.e(e, "Error while exiting to vault from all content")
                     }
                 }
+
                 is AllContentViewModel.Command.Back -> {
                     runCatching {
                         findNavController().popBackStack()
@@ -77,6 +78,7 @@ class AllContentFragment : BaseComposeFragment() {
                         Timber.e(e, "Error while exiting back from all content")
                     }
                 }
+
                 is AllContentViewModel.Command.OpenGlobalSearch -> {
                     runCatching {
                         findNavController().navigate(
@@ -89,6 +91,7 @@ class AllContentFragment : BaseComposeFragment() {
                         Timber.e(e, "Error while opening global search screen from all content")
                     }
                 }
+
                 is AllContentViewModel.Command.NavigateToEditor -> {
                     runCatching {
                         navigation().openDocument(
@@ -100,6 +103,7 @@ class AllContentFragment : BaseComposeFragment() {
                         Timber.e(it, "Failed to open document from all content")
                     }
                 }
+
                 is AllContentViewModel.Command.NavigateToSetOrCollection -> {
                     runCatching {
                         navigation().openObjectSet(
@@ -111,9 +115,11 @@ class AllContentFragment : BaseComposeFragment() {
                         Timber.e(it, "Failed to open object set from all content")
                     }
                 }
+
                 is AllContentViewModel.Command.SendToast -> {
                     toast(command.message)
                 }
+
                 is AllContentViewModel.Command.NavigateToBin -> {
                     runCatching {
                         navigation().launchCollections(
@@ -125,6 +131,7 @@ class AllContentFragment : BaseComposeFragment() {
                         Timber.e(it, "Failed to open bin from all content")
                     }
                 }
+
                 is AllContentViewModel.Command.OpenTypeEditing -> {
                     runCatching {
                         navigation().openTypeEditingScreen(
@@ -136,6 +143,44 @@ class AllContentFragment : BaseComposeFragment() {
                     }.onFailure {
                         toast("Failed to open type editing screen")
                         Timber.e(it, "Failed to open type editing screen from all content")
+                    }
+                }
+
+                is AllContentViewModel.Command.OpenTypeCreation -> {
+                    runCatching {
+                        navigation().openTypeCreationScreen(
+                            name = command.name
+                        )
+                    }.onFailure {
+                        toast("Failed to open type creation screen")
+                        Timber.e(it, "Failed to open type creation screen from all content")
+                    }
+                }
+
+                is AllContentViewModel.Command.OpenRelationCreation -> {
+                    runCatching {
+                        navigation().openRelationCreationScreen(
+                            id = command.id,
+                            name = command.name,
+                            space = command.space
+                        )
+                    }.onFailure {
+                        toast("Failed to open relation creation screen")
+                        Timber.e(it, "Failed to open relation creation screen from all content")
+                    }
+                }
+
+                is AllContentViewModel.Command.OpenRelationEditing -> {
+                    runCatching {
+                        navigation().openRelationEditingScreen(
+                            typeName = command.typeName,
+                            id = command.id,
+                            iconUnicode = command.iconUnicode,
+                            readOnly = command.readOnly
+                        )
+                    }.onFailure {
+                        toast("Failed to open relation editing screen")
+                        Timber.e(it, "Failed to open relation editing screen from all content")
                     }
                 }
             }
@@ -163,8 +208,8 @@ class AllContentFragment : BaseComposeFragment() {
                     canPaginate = vm.canPaginate.collectAsStateWithLifecycle().value,
                     onUpdateLimitSearch = vm::updateLimit,
                     uiContentState = vm.uiContentState.collectAsStateWithLifecycle().value,
-                    onTypeClicked =  vm::onTypeClicked,
-                    onHomeClicked =  vm::onHomeClicked,
+                    onTypeClicked = vm::onTypeClicked,
+                    onHomeClicked = vm::onHomeClicked,
                     onGlobalSearchClicked = vm::onGlobalSearchClicked,
                     onAddDocClicked = vm::onAddDockClicked,
                     onCreateObjectLongClicked = {
@@ -176,7 +221,7 @@ class AllContentFragment : BaseComposeFragment() {
                                 vm.onCreateObjectOfTypeClicked(it)
                             }
                         }
-                        dialog.show(childFragmentManager,null)
+                        dialog.show(childFragmentManager, null)
                     },
                     onBackClicked = vm::onBackClicked,
                     moveToBin = vm::proceedWithMoveToBin

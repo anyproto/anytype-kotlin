@@ -53,7 +53,7 @@ fun BottomNavigationMenu(
             .width(Width)
             .background(
                 shape = RoundedCornerShape(16.dp),
-                color = colorResource(id = R.color.home_screen_button)
+                color = colorResource(id = R.color.home_screen_toolbar_button)
             )
             /**
              * Workaround for clicks through the bottom navigation menu.

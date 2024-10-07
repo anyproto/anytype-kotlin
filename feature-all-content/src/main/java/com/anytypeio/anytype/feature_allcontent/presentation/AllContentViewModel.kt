@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -75,6 +76,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -100,7 +102,8 @@ class AllContentViewModel(
     private val createObject: CreateObject,
     private val setObjectListIsArchived: SetObjectListIsArchived,
     private val setObjectDetails: SetObjectDetails,
-    private val removeObjectsFromWorkspace: RemoveObjectsFromWorkspace
+    private val removeObjectsFromWorkspace: RemoveObjectsFromWorkspace,
+    private val userPermissionProvider: UserPermissionProvider
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val searchResultIds = MutableStateFlow<List<Id>>(emptyList())
@@ -135,11 +138,24 @@ class AllContentViewModel(
 
     private var shouldScrollToTopItems = false
 
+    private val permission = MutableStateFlow(userPermissionProvider.get(vmParams.spaceId))
+
     init {
         Timber.d("AllContentViewModel init, spaceId:[${vmParams.spaceId.id}]")
         setupInitialStateParams()
         setupSearchStateFlow()
         setupMenuFlow()
+        proceedWithObservingPermissions()
+    }
+
+    private fun proceedWithObservingPermissions() {
+        viewModelScope.launch {
+            userPermissionProvider
+                .observe(space = vmParams.spaceId)
+                .collect {
+                    permission.value = it
+                }
+        }
     }
 
     private fun setupInitialStateParams() {
@@ -263,13 +279,16 @@ class AllContentViewModel(
         return when (activeTab) {
             AllContentTab.TYPES -> {
                 val items = objectWrappers.toUiContentTypes(
-                    urlBuilder = urlBuilder
+                    urlBuilder = urlBuilder,
+                    isOwnerOrEditor = permission.value?.isOwnerOrEditor() == true
                 )
                 items
             }
 
             AllContentTab.RELATIONS -> {
-                val items = objectWrappers.toUiContentRelations()
+                val items = objectWrappers.toUiContentRelations(
+                    isOwnerOrEditor = permission.value?.isOwnerOrEditor() == true
+                )
                 items
             }
 
@@ -277,7 +296,8 @@ class AllContentViewModel(
                 val items = objectWrappers.toUiContentItems(
                     space = vmParams.spaceId,
                     urlBuilder = urlBuilder,
-                    objectTypes = storeOfObjectTypes.getAll()
+                    objectTypes = storeOfObjectTypes.getAll(),
+                    isOwnerOrEditor = permission.value?.isOwnerOrEditor() == true
                 )
                 val result = when (activeSort) {
                     is AllContentSort.ByDateCreated -> {

@@ -127,6 +127,13 @@ fun AllContentTab.filtersForSubscribe(
                         value = ObjectTypeIds.CHAT_DERIVED
                     )
                 )
+                add(
+                    DVFilter(
+                        relation = Relations.UNIQUE_KEY,
+                        condition = DVFilterCondition.NOT_EQUAL,
+                        value = ObjectTypeIds.CHAT
+                    )
+                )
             }
             val sorts = listOf(activeSort.toDVSort())
             return filters to sorts

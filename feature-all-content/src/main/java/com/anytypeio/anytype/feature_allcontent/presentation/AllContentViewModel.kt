@@ -72,9 +72,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -205,14 +205,7 @@ class AllContentViewModel(
         }
     }
 
-    //todo discuss with someone
-    private fun loadData(): Flow<List<UiContentItem>> = flow {
-
-        uiContentState.value = if (itemsLimit == DEFAULT_SEARCH_LIMIT) {
-            UiContentState.InitLoading
-        } else {
-            UiContentState.Paging
-        }
+    private fun loadData(): Flow<List<UiContentItem>> {
 
         val activeTab = uiTabsState.value.selectedTab
         val activeSort = sortState.value
@@ -227,31 +220,50 @@ class AllContentViewModel(
             activeMode = uiTitleState.value
         )
 
-        Timber.d("Restart subscription: with params: $searchParams")
-
-        val dataFlow = storelessSubscriptionContainer.subscribe(searchParams)
-        emitAll(
-            dataFlow.map { objWrappers ->
-                canPaginate.value = objWrappers.size == itemsLimit
-                val items = mapToUiContentItems(
-                    objectWrappers = objWrappers,
-                    activeSort = activeSort,
-                    activeTab = activeTab
-                )
-                uiContentState.value = if (items.isEmpty()) {
-                    UiContentState.Empty
+        return storelessSubscriptionContainer.subscribe(searchParams)
+            .onStart {
+                uiContentState.value = if (itemsLimit == DEFAULT_SEARCH_LIMIT) {
+                    UiContentState.InitLoading
                 } else {
-                    UiContentState.Idle(scrollToTop = shouldScrollToTopItems).also {
-                        shouldScrollToTopItems = false
-                    }
+                    UiContentState.Paging
                 }
-                items
-            }.catch { e ->
-                uiContentState.value = UiContentState.Error(
-                    message = e.message ?: "An error occurred while loading data."
-                )
-                emit(emptyList())
+                Timber.d("Restart subscription: with params: $searchParams")
             }
+            .map { objWrappers ->
+                handleData(objWrappers, activeSort, activeTab)
+            }.catch { e ->
+                handleError(e)
+            }
+    }
+
+    private suspend fun handleData(
+        objWrappers: List<ObjectWrapper.Basic>,
+        activeSort: AllContentSort,
+        activeTab: AllContentTab
+    ): List<UiContentItem> {
+
+        canPaginate.value = objWrappers.size == itemsLimit
+
+        val items = mapToUiContentItems(
+            objectWrappers = objWrappers,
+            activeSort = activeSort,
+            activeTab = activeTab
+        )
+
+        uiContentState.value = if (items.isEmpty()) {
+            UiContentState.Empty
+        } else {
+            UiContentState.Idle(scrollToTop = shouldScrollToTopItems).also {
+                shouldScrollToTopItems = false
+            }
+        }
+
+        return items
+    }
+
+    private fun handleError(e: Throwable) {
+        uiContentState.value = UiContentState.Error(
+            message = e.message ?: "An error occurred while loading data."
         )
     }
 
@@ -281,11 +293,11 @@ class AllContentViewModel(
                 )
                 val result = when (activeSort) {
                     is AllContentSort.ByDateCreated -> {
-                        groupItemsByDate(items = items, isSortByDateCreated = true)
+                        groupItemsByDate(items = items, isSortByDateCreated = true, activeSort = activeSort)
                     }
 
                     is AllContentSort.ByDateUpdated -> {
-                        groupItemsByDate(items = items, isSortByDateCreated = false)
+                        groupItemsByDate(items = items, isSortByDateCreated = false, activeSort = activeSort)
                     }
 
                     is AllContentSort.ByName -> {
@@ -303,12 +315,28 @@ class AllContentViewModel(
 
     private fun groupItemsByDate(
         items: List<UiContentItem.Item>,
-        isSortByDateCreated: Boolean
+        isSortByDateCreated: Boolean,
+        activeSort: AllContentSort
     ): List<UiContentItem> {
+
         val groupedItems = mutableListOf<UiContentItem>()
         var currentGroupKey: String? = null
 
-        for (item in items) {
+        val sortedItems = if (isSortByDateCreated) {
+            if (activeSort.sortType == DVSortType.ASC) {
+                items.sortedBy { it.createdDate }
+            } else {
+                items.sortedByDescending { it.createdDate }
+            }
+        } else {
+            if (activeSort.sortType == DVSortType.ASC) {
+                items.sortedBy { it.lastModifiedDate }
+            } else {
+                items.sortedByDescending { it.lastModifiedDate }
+            }
+        }
+
+        for (item in sortedItems) {
             val timestamp = if (isSortByDateCreated) {
                 item.createdDate
             } else {
@@ -542,7 +570,8 @@ class AllContentViewModel(
         viewModelScope.launch {
             val params = UpdateAllContentState.Params(
                 spaceId = vmParams.spaceId,
-                sort = sort.relationKey.key
+                sort = sort.relationKey.key,
+                isAsc = sort.sortType == DVSortType.ASC
             )
             updateAllContentState.async(params).fold(
                 onSuccess = {

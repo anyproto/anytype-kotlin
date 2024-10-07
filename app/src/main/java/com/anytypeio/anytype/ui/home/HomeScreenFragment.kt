@@ -360,10 +360,12 @@ class HomeScreenFragment : BaseComposeFragment() {
             }.onFailure { e ->
                 Timber.e(e, "Error while opening space library from widgets")
             }
-            is Navigation.OpenAllContent -> runCatching {
-                navigation().openAllContent(space = destination.space)
-            }.onFailure { e ->
-                Timber.e(e, "Error while opening all content from widgets")
+            is Navigation.OpenAllContent -> {
+                runCatching {
+                    navigation().openAllContent(space = destination.space)
+                }.onFailure { e ->
+                    Timber.e(e, "Error while opening all content from widgets")
+                }
             }
         }
     }

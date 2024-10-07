@@ -211,6 +211,15 @@ object EventsDictionary {
     const val screenHistoryVersion = "ScreenHistoryVersion"
     const val restoreFromHistory = "RestoreFromHistory"
 
+    //All content
+    const val screenAllContent = "ScreenLibrary"//+
+    const val changeLibraryType = "ChangeLibraryType"
+    const val changeLibraryTypeLink = "ChangeLibraryTypeLink"
+    const val searchInput = "SearchInput"
+    const val libraryResult = "LibraryResult"
+    const val changeLibrarySort = "ChangeLibrarySort"//+
+    const val screenBin = "ScreenBin"//+
+
     const val searchBacklink = "SearchBacklink"
 
     object SharingSpacesTypes {
@@ -277,7 +286,7 @@ object EventsDictionary {
         const val objCreateSet = "Set"
         const val objCreateHome = "Home"
         const val objCreateCollection = "Collection"
-        const val objCreateLibrary = "Library"
+        const val allContentRoute = "Library"
         const val objCreateMention = "Mention"
         const val objPowerTool = "Powertool"
         const val objLink = "Link"
@@ -349,4 +358,5 @@ object EventsPropertiesKey {
     const val name = "name"
     const val spaceType = "spaceType"
     const val permissions = "permissions"
+    const val sort = "sort"
 }

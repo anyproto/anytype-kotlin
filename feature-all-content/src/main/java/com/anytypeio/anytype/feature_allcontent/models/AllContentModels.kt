@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.feature_allcontent.models
 
 import androidx.compose.runtime.Immutable
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -142,7 +143,7 @@ sealed class UiContentItem {
 
 // MENU
 @Immutable
-sealed class UiMenuState{
+sealed class UiMenuState {
 
     data object Hidden : UiMenuState()
 
@@ -244,5 +245,39 @@ fun ObjectWrapper.Basic.toAllContentType(
         readOnly = obj.restrictions.contains(ObjectRestriction.DELETE),
         editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
     )
+}
+
+fun AllContentSort.toAnalyticsSortType(): Pair<String, String> {
+    return when (this) {
+        is AllContentSort.ByName -> "Name" to sortType.toAnalyticsSortType()
+        is AllContentSort.ByDateUpdated -> "Updated" to sortType.toAnalyticsSortType()
+        is AllContentSort.ByDateCreated -> "Created" to sortType.toAnalyticsSortType()
+    }
+}
+
+fun DVSortType.toAnalyticsSortType(): String {
+    return when (this) {
+        DVSortType.ASC -> "Asc"
+        DVSortType.DESC -> "Desc"
+        DVSortType.CUSTOM -> "Custom"
+    }
+}
+
+fun AllContentTab.toAnalyticsTabType(): String {
+    return when (this) {
+        AllContentTab.PAGES -> "Pages"
+        AllContentTab.LISTS -> "Lists"
+        AllContentTab.MEDIA -> "Media"
+        AllContentTab.BOOKMARKS -> "Bookmarks"
+        AllContentTab.FILES -> "Files"
+        AllContentTab.TYPES -> "Types"
+    }
+}
+
+fun AllContentMenuMode.toAnalyticsModeType(): String {
+    return when (this) {
+        is AllContentMenuMode.AllContent -> "All"
+        is AllContentMenuMode.Unlinked -> "Unlinked"
+    }
 }
 //endregion

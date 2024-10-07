@@ -39,6 +39,7 @@ import com.anytypeio.anytype.presentation.profile.ProfileIconView
 fun BottomNavigationMenu(
     modifier: Modifier = Modifier,
     backClick: () -> Unit = {},
+    backLongClick: () -> Unit = {},
     homeClick: () -> Unit = {},
     searchClick: () -> Unit = {},
     addDocClick: () -> Unit = {},
@@ -61,13 +62,20 @@ fun BottomNavigationMenu(
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        MenuItem(BottomNavigationItem.BACK.res, onClick = backClick)
         MenuItem(
-            BottomNavigationItem.ADD_DOC.res,
+            res = BottomNavigationItem.BACK.res,
+            onClick = backClick,
+            onLongClick = backLongClick
+        )
+        MenuItem(
+            res = BottomNavigationItem.ADD_DOC.res,
             onClick = addDocClick,
             onLongClick = onCreateObjectLongClicked
         )
-        MenuItem(BottomNavigationItem.SEARCH.res, onClick = searchClick)
+        MenuItem(
+            res = BottomNavigationItem.SEARCH.res,
+            onClick = searchClick
+        )
     }
 }
 

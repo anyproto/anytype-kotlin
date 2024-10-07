@@ -180,6 +180,9 @@
             app:destination="@id/vaultScreen"
             app:popUpTo="@id/vaultScreen"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/actionOpenSpaceSwitcher"
+            app:destination="@id/selectSpaceScreen" />
     </fragment>
 
     <dialog
@@ -419,6 +422,9 @@
         <action
             android:id="@+id/actionOpenGlobalSearch"
             app:destination="@id/globalSearchScreen" />
+        <action
+            android:id="@+id/actionOpenSpaceSwitcher"
+            app:destination="@id/selectSpaceScreen"/>
     </fragment>
 
     <fragment

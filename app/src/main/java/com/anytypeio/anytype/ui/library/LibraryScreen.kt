@@ -62,6 +62,7 @@ fun LibraryScreen(
     configuration: LibraryConfiguration,
     viewModel: LibraryViewModel,
     onBackPressed: () -> Unit,
+    onBackLongPressed: () -> Unit,
     onCreateObjectLongClicked: () -> Unit
 ) {
 
@@ -94,7 +95,8 @@ fun LibraryScreen(
                     viewModel,
                     modifier = Modifier.align(Alignment.BottomCenter),
                     screenState = screenState,
-                    onCreateObjectLongClicked = onCreateObjectLongClicked
+                    onCreateObjectLongClicked = onCreateObjectLongClicked,
+                    onBackLongClicked = onBackLongPressed
                 )
             }
         }
@@ -143,7 +145,8 @@ fun Menu(
     viewModel: LibraryViewModel,
     modifier: Modifier = Modifier,
     screenState: MutableState<ScreenState>,
-    onCreateObjectLongClicked: () -> Unit = {}
+    onCreateObjectLongClicked: () -> Unit = {},
+    onBackLongClicked: () -> Unit
 ) {
     val isImeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     if (isImeVisible) return
@@ -155,6 +158,9 @@ fun Menu(
             } else {
                 viewModel.eventStream(LibraryEvent.BottomMenu.Back)
             }
+        },
+        backLongClick = {
+            onBackLongClicked()
         },
         homeClick = { viewModel.eventStream(LibraryEvent.BottomMenu.Back) },
         searchClick = { viewModel.eventStream(LibraryEvent.BottomMenu.Search) },

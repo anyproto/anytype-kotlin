@@ -254,7 +254,7 @@ fun Struct.buildFileViews(
 private fun ObjectWrapper.File.toView() : FileView {
     return FileView(
         id = id,
-        name = "${name.orEmpty()}.$fileExt",
+        name = name.orEmpty(),
         mime = fileMimeType.orEmpty(),
         ext = fileExt.orEmpty(),
         icon = ObjectIcon.File(

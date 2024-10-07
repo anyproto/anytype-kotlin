@@ -126,7 +126,8 @@ sealed class UiContentItem {
         val layout: ObjectType.Layout? = null,
         val icon: ObjectIcon = ObjectIcon.None,
         val lastModifiedDate: Long = 0L,
-        val createdDate: Long = 0L
+        val createdDate: Long = 0L,
+        val isPossibleToDelete: Boolean = false
     ) : UiContentItem()
 
     data class Type(
@@ -199,15 +200,17 @@ fun Key?.mapRelationKeyToSort(): AllContentSort {
 fun List<ObjectWrapper.Basic>.toUiContentItems(
     space: SpaceId,
     urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectWrapper.Type>
+    objectTypes: List<ObjectWrapper.Type>,
+    isOwnerOrEditor: Boolean
 ): List<UiContentItem.Item> {
-    return map { it.toAllContentItem(space, urlBuilder, objectTypes) }
+    return map { it.toAllContentItem(space, urlBuilder, objectTypes, isOwnerOrEditor) }
 }
 
 fun ObjectWrapper.Basic.toAllContentItem(
     space: SpaceId,
     urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectWrapper.Type>
+    objectTypes: List<ObjectWrapper.Type>,
+    isOwnerOrEditor: Boolean
 ): UiContentItem.Item {
     val obj = this
     val typeUrl = obj.getProperType()
@@ -233,18 +236,21 @@ fun ObjectWrapper.Basic.toAllContentItem(
             builder = urlBuilder
         ),
         lastModifiedDate = DateParser.parse(obj.getValue(Relations.LAST_MODIFIED_DATE)) ?: 0L,
-        createdDate = DateParser.parse(obj.getValue(Relations.CREATED_DATE)) ?: 0L
+        createdDate = DateParser.parse(obj.getValue(Relations.CREATED_DATE)) ?: 0L,
+        isPossibleToDelete = isOwnerOrEditor
     )
 }
 
 fun List<ObjectWrapper.Basic>.toUiContentTypes(
-    urlBuilder: UrlBuilder
+    urlBuilder: UrlBuilder,
+    isOwnerOrEditor: Boolean
 ): List<UiContentItem.Type> {
-    return map { it.toAllContentType(urlBuilder) }
+    return map { it.toAllContentType(urlBuilder, isOwnerOrEditor) }
 }
 
 fun ObjectWrapper.Basic.toAllContentType(
     urlBuilder: UrlBuilder,
+    isOwnerOrEditor: Boolean
 ): UiContentItem.Type {
     val obj = this
     val layout = layout ?: ObjectType.Layout.BASIC
@@ -258,16 +264,18 @@ fun ObjectWrapper.Basic.toAllContentType(
         ),
         sourceObject = obj.map[SOURCE_OBJECT]?.toString(),
         uniqueKey = obj.uniqueKey,
-        readOnly = obj.restrictions.contains(ObjectRestriction.DELETE),
+        readOnly = obj.restrictions.contains(ObjectRestriction.DELETE) || !isOwnerOrEditor,
         editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
     )
 }
 
-fun List<ObjectWrapper.Basic>.toUiContentRelations(): List<UiContentItem.Relation> {
-    return map { it.toAllContentRelation() }
+fun List<ObjectWrapper.Basic>.toUiContentRelations(isOwnerOrEditor: Boolean): List<UiContentItem.Relation> {
+    return map { it.toAllContentRelation(isOwnerOrEditor) }
 }
 
-fun ObjectWrapper.Basic.toAllContentRelation(): UiContentItem.Relation {
+fun ObjectWrapper.Basic.toAllContentRelation(
+    isOwnerOrEditor: Boolean
+): UiContentItem.Relation {
     val relation = ObjectWrapper.Relation(map)
     val obj = this
     return UiContentItem.Relation(
@@ -275,7 +283,7 @@ fun ObjectWrapper.Basic.toAllContentRelation(): UiContentItem.Relation {
         name = obj.name.orEmpty(),
         format = relation.format,
         sourceObject = map[SOURCE_OBJECT]?.toString(),
-        readOnly = obj.restrictions.contains(ObjectRestriction.DELETE),
+        readOnly = obj.restrictions.contains(ObjectRestriction.DELETE) || !isOwnerOrEditor,
         editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
     )
 }

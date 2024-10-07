@@ -94,7 +94,7 @@ fun HomeScreen(
     onLibraryClicked: () -> Unit,
     onCreateNewObjectClicked: () -> Unit,
     onCreateNewObjectLongClicked: () -> Unit,
-    onProfileClicked: () -> Unit,
+    onBackClicked: () -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onSpaceWidgetClicked: () -> Unit,
     onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
@@ -163,7 +163,7 @@ fun HomeScreen(
             HomeScreenBottomToolbar(
                 onSearchClicked = throttledClick(onSearchClicked),
                 onCreateNewObjectClicked = throttledClick(onCreateNewObjectClicked),
-                onVaultClicked = throttledClick(onProfileClicked),
+                onBackClicked = throttledClick(onBackClicked),
                 onCreateNewObjectLongClicked = onCreateNewObjectLongClicked,
                 modifier = Modifier,
                 isReadOnlyAccess = mode is InteractionMode.ReadOnly
@@ -819,7 +819,7 @@ fun HomeScreenBottomToolbar(
     onSearchClicked: () -> Unit,
     onCreateNewObjectClicked: () -> Unit,
     onCreateNewObjectLongClicked: () -> Unit,
-    onVaultClicked: () -> Unit,
+    onBackClicked: () -> Unit,
     isReadOnlyAccess: Boolean
 ) {
     val haptic = LocalHapticFeedback.current
@@ -836,7 +836,7 @@ fun HomeScreenBottomToolbar(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxSize()
-                .noRippleClickable { onVaultClicked() }
+                .noRippleClickable { onBackClicked() }
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_nav_panel_back),

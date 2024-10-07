@@ -35,6 +35,8 @@ import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.base.onFailure
+import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.bin.EmptyBin
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.Move
@@ -1665,8 +1667,18 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onVaultClicked() {
+    fun onBackClicked() {
         viewModelScope.launch {
+            openWidgetObjectsHistory.forEach { obj ->
+                closeObject
+                    .async(obj)
+                    .onSuccess {
+                        Timber.d("Closed object from widget object session history: $obj")
+                    }
+                    .onFailure {
+                        Timber.e(it, "Error while closing object from history")
+                    }
+            }
             spaceManager.clear()
             clearLastOpenedSpace.async(Unit).fold(
                 onSuccess = {

@@ -299,7 +299,6 @@ open class ObjectSetFragment :
                 binding.bottomToolbar.backClicks().throttleFirst()
             ) { vm.onBackButtonClicked() }
 
-
             binding.bottomToolbar
                 .binding
                 .btnBack

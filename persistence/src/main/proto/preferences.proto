@@ -33,4 +33,5 @@ message GlobalSearchHistoryProto {
 
 message AllContentSettings {
   optional string sortKey = 1;
+  optional bool isAscending = 2;
 }

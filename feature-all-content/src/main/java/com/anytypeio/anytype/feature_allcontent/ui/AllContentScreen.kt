@@ -531,7 +531,7 @@ fun RowScope.Item(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                if (description != null) {
+                if (!description.isNullOrBlank()) {
                     Text(
                         text = description,
                         style = Relations3,

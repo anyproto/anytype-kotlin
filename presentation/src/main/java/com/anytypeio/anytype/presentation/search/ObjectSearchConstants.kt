@@ -655,7 +655,8 @@ object ObjectSearchConstants {
         Relations.CREATED_DATE,
         Relations.LINKS,
         Relations.BACKLINKS,
-        Relations.LAST_USED_DATE
+        Relations.LAST_USED_DATE,
+        Relations.DESCRIPTION
     )
 
     val defaultOptionKeys = listOf(

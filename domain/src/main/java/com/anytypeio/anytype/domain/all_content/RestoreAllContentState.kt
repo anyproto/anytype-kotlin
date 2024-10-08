@@ -14,8 +14,8 @@ class RestoreAllContentState @Inject constructor(
 ) {
 
     override suspend fun doWork(params: Params): Response {
-        val sort = settings.getAllContentSort(params.spaceId)
-        return Response(activeSort = sort)
+        val res = settings.getAllContentSort(params.spaceId)
+        return Response(activeSort = res.first, isAsc = res.second)
     }
 
     data class Params(
@@ -23,6 +23,7 @@ class RestoreAllContentState @Inject constructor(
     )
 
     data class Response(
-        val activeSort: String?
+        val activeSort: String?,
+        val isAsc: Boolean
     )
 }

@@ -5,9 +5,9 @@ kspVersion = "2.0.0-1.0.22"
 
 androidxCoreVersion = "1.13.1"
 
-androidxComposeVersion = '1.7.2'
+androidxComposeVersion = '1.7.3'
 composeMaterial3Version = '1.3.0'
-composeMaterialVersion = '1.7.2'
+composeMaterialVersion = '1.7.3'
 composeConstraintLayoutVersion = '1.0.1'
 
 dokkaVersion = '1.9.20'
@@ -16,7 +16,7 @@ activityComposeVersion = '1.9.2'
 composeReorderableVersion = 'e9ef693f63'
 accompanistVersion = "0.34.0"
 appcompatVersion = '1.7.0'
-fragmentVersion = "1.8.3"
+fragmentVersion = "1.8.4"
 exoplayerVersion = "2.19.1"
 wireVersion = "4.9.8"
 glideVersion = "4.14.2"
@@ -37,8 +37,8 @@ recyclerviewVersion = '1.3.2'
 emojiCompatVersion = '1.1.0'
 lifecycleVersion = '2.8.6'
 lifecycleRuntimeComposeVersion = '2.8.6'
-navigationVersion = '2.8.1'
-navigationComposeVersion = '2.8.1'
+navigationVersion = '2.8.2'
+navigationComposeVersion = '2.8.2'
 shimmerLayoutVersion = '0.5.0'
 photoViewVersion = '2.3.0'
 daggerVersion = '2.51'
@@ -61,10 +61,10 @@ roomVersion = '2.6.1'
 dataStoreVersion = '1.1.1'
 amplitudeVersion = '3.35.1'
 coilComposeVersion = '2.6.0'
-sentryVersion = '7.6.0'
+sentryVersion = '7.13.0'
 
 composeQrCodeVersion = '1.0.1'
-fragmentComposeVersion = "1.8.3"
+fragmentComposeVersion = "1.8.4"
 
 [libraries]
 middleware = { module = "io.anyproto:anytype-heart-android", version.ref = "middlewareVersion" }
@@ -151,7 +151,7 @@ sentryTimber = { module = "io.sentry:sentry-android-timber", version.ref = "sent
 navigationCompose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationComposeVersion" }
 appUpdater = { module = "com.github.PLPsiSoft:AndroidAppUpdater", version = "9913ce80da7871c84af24b9adc2bf2414ca294f0" }
 composeQrCode = { module = "com.lightspark:compose-qr-code", version.ref = "composeQrCodeVersion" }
-playBilling = { module = "com.android.billingclient:billing", version = "7.0.0" }
+playBilling = { module = "com.android.billingclient:billing", version = "7.1.1" }
 fragmentCompose = { group = "androidx.fragment", name = "fragment-compose", version.ref = "fragmentComposeVersion" }
 
 [bundles]

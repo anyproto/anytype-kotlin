@@ -1,22 +1,18 @@
 package com.anytypeio.anytype.core_ui.widgets
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.R
@@ -26,7 +22,6 @@ import com.anytypeio.anytype.core_ui.widgets.objectIcon.AvatarIconView
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.DeletedIconView
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.EmojiIconView
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.EmptyIconView
-import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 @Composable
@@ -160,41 +155,6 @@ fun DefaultProfileIconImage(
             .clip(CircleShape),
         contentScale = ContentScale.Crop,
     )
-}
-
-@Deprecated("Use DefaultEmojiIconView instead")
-@Composable
-fun DefaultEmojiObjectIcon(
-    modifier: Modifier,
-    iconSize: Dp,
-    icon: ObjectIcon.Basic.Emoji
-) {
-    Box(
-        modifier = modifier
-            .size(iconSize)
-            .background(
-                shape = RoundedCornerShape(12.dp),
-                color = colorResource(id = R.color.shape_transparent)
-            )
-    ) {
-        val emoji = Emojifier.safeUri(icon.unicode)
-        if (emoji != Emojifier.Config.EMPTY_URI) {
-            Image(
-                painter = rememberAsyncImagePainter(Emojifier.safeUri(icon.unicode)),
-                contentDescription = "Icon from URI",
-                modifier = Modifier
-                    .size(24.dp)
-                    .align(Alignment.Center)
-            )
-        } else {
-            Text(
-                text = icon.unicode,
-                modifier = Modifier.align(Alignment.Center),
-                fontSize = 22.sp,
-                maxLines = 1,
-            )
-        }
-    }
 }
 
 @Composable

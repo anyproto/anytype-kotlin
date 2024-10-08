@@ -3,8 +3,6 @@ package com.anytypeio.anytype.presentation.home
 import app.cash.turbine.test
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.DVFilter
-import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -2394,21 +2392,6 @@ class HomeScreenViewModelTest {
                     ObjectSearchConstants.defaultDataViewFilters(
                         space = defaultSpaceConfig.space
                     )
-                )
-                add(
-                    DVFilter(
-                        relation = Relations.TYPE_UNIQUE_KEY,
-                        condition = DVFilterCondition.NOT_IN,
-                        value = listOf(
-                            ObjectTypeIds.OBJECT_TYPE,
-                            ObjectTypeIds.RELATION,
-                            ObjectTypeIds.TEMPLATE,
-                            ObjectTypeIds.DASHBOARD,
-                            ObjectTypeIds.RELATION_OPTION,
-                            ObjectTypeIds.DASHBOARD,
-                            ObjectTypeIds.DATE
-                        )
-                    ),
                 )
             },
             sorts = emptyList(),

@@ -7,7 +7,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ui.TextInputDialogBottomBehaviorApplier
@@ -19,7 +18,6 @@ import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.getSpaceWithTechSpace
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
@@ -247,9 +245,7 @@ open class ObjectSearchViewModel(
 
     open suspend fun getSearchObjectsParams(ignore: Id?) = SearchObjects.Params(
         limit = SEARCH_LIMIT,
-        filters = ObjectSearchConstants.filterSearchObjects(
-            spaces = spaceManager.getSpaceWithTechSpace()
-        ),
+        filters = ObjectSearchConstants.filterSearchObjects(space = spaceManager.get()),
         sorts = ObjectSearchConstants.sortsSearchObjects,
         fulltext = EMPTY_QUERY,
         keys = buildList {

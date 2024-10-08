@@ -507,7 +507,7 @@ class AllContentViewModel(
         }
     }
 
-    fun AllContentTab.updateInitialState() {
+    private fun AllContentTab.updateInitialState() {
         return when (this) {
             AllContentTab.TYPES -> {
                 sortState.value = AllContentSort.ByName()
@@ -575,7 +575,7 @@ class AllContentViewModel(
         shouldScrollToTopItems = true
         uiItemsState.value = emptyList()
         sortState.value = newSort
-        proceedWithSortSaving(newSort)
+        proceedWithSortSaving(uiTabsState.value, newSort)
         restartSubscription.value++
         viewModelScope.launch {
             sendAnalyticsAllContentChangeSort(
@@ -586,7 +586,12 @@ class AllContentViewModel(
         }
     }
 
-    private fun proceedWithSortSaving(sort: AllContentSort) {
+    private fun proceedWithSortSaving(activeTab: UiTabsState, sort: AllContentSort) {
+        if (activeTab.selectedTab == AllContentTab.TYPES
+            || activeTab.selectedTab == AllContentTab.RELATIONS
+        ) {
+            return
+        }
         viewModelScope.launch {
             val params = UpdateAllContentState.Params(
                 spaceId = vmParams.spaceId,

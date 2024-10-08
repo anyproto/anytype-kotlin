@@ -130,6 +130,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import timber.log.Timber
 
 open class ObjectSetFragment :
     NavigationFragment<FragmentObjectSetBinding>(R.layout.fragment_object_set),
@@ -294,10 +295,23 @@ open class ObjectSetFragment :
 
             subscribe(binding.bottomPanel.root.touches()) { swipeDetector.onTouchEvent(it) }
 
-            subscribe(binding.bottomToolbar.homeClicks().throttleFirst()) { vm.onHomeButtonClicked() }
             subscribe(
                 binding.bottomToolbar.backClicks().throttleFirst()
             ) { vm.onBackButtonClicked() }
+
+            binding.bottomToolbar
+                .binding
+                .btnBack
+                .longClicks(withHaptic = true)
+                .onEach {
+                    runCatching {
+                        findNavController().navigate(R.id.actionOpenSpaceSwitcher)
+                    }.onFailure {
+                        Timber.e(it, "Error while opening space switcher from editor")
+                    }
+                }
+                .launchIn(lifecycleScope)
+
             subscribe(
                 binding.bottomToolbar.searchClicks().throttleFirst()
             ) { vm.onSearchButtonClicked() }

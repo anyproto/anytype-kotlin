@@ -54,7 +54,6 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.editor.Markup
-import com.anytypeio.anytype.presentation.relations.values
 import com.anytypeio.anytype.presentation.sets.isChangingDefaultTypeAvailable
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.viewerByIdOrFirst
@@ -2122,3 +2121,93 @@ fun CoroutineScope.sendAnalyticsVersionHistoryRestore(
     )
 }
 //endregion
+
+//region AllContent
+fun CoroutineScope.sendAnalyticsAllContentScreen(
+    analytics: Analytics
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.screenAllContent
+    )
+}
+
+fun CoroutineScope.sendAnalyticsAllContentToBin(
+    analytics: Analytics
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.screenBin
+    )
+}
+
+fun CoroutineScope.sendAnalyticsAllContentChangeType(
+    analytics: Analytics,
+    type: String
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.changeLibraryType,
+        props = Props(
+            mapOf(
+                EventsPropertiesKey.type to type
+            )
+        )
+    )
+}
+
+fun CoroutineScope.sendAnalyticsAllContentChangeMode(
+    analytics: Analytics,
+    type: String
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.changeLibraryTypeLink,
+        props = Props(
+            mapOf(
+                EventsPropertiesKey.type to type
+            )
+        )
+    )
+}
+
+fun CoroutineScope.sendAnalyticsAllContentSearchInput(
+    analytics: Analytics,
+    route: String
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.searchInput,
+        props = Props(
+            mapOf(
+                EventsPropertiesKey.route to EventsDictionary.Routes.allContentRoute
+            )
+        )
+    )
+}
+
+fun CoroutineScope.sendAnalyticsAllContentResult(
+    analytics: Analytics
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.libraryResult
+    )
+}
+
+fun CoroutineScope.sendAnalyticsAllContentChangeSort(
+    analytics: Analytics,
+    type: String,
+    sort: String
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.changeLibrarySort,
+        props = Props(
+            mapOf(
+                EventsPropertiesKey.type to type,
+                EventsPropertiesKey.sort to sort
+            )
+        )
+    )
+}

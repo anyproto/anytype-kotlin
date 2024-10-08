@@ -130,6 +130,7 @@ private fun EditorScreen(
                     RecyclerView.LayoutParams.MATCH_PARENT
                 )
                 layoutManager = LinearLayoutManager(context)
+                setPadding(0, 0, 0, 350)
                 adapter = editorAdapter
             }
         },

@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Relations.SOURCE_OBJECT
 import com.anytypeio.anytype.core_models.ext.DateParser
@@ -26,7 +27,7 @@ import com.anytypeio.anytype.presentation.objects.getProperType
 //region STATE
 @Immutable
 enum class AllContentTab {
-    PAGES, LISTS, MEDIA, BOOKMARKS, FILES, TYPES
+    PAGES, LISTS, MEDIA, BOOKMARKS, FILES, TYPES, RELATIONS
 }
 
 sealed class AllContentMenuMode {
@@ -65,6 +66,13 @@ sealed class AllContentSort {
         override val relationKey: RelationKey = RelationKey(Relations.CREATED_DATE),
         override val sortType: DVSortType = DVSortType.DESC,
         override val canGroupByDate: Boolean = true,
+        override val isSelected: Boolean = false
+    ) : AllContentSort()
+
+    data class ByDateUsed(
+        override val relationKey: RelationKey = RelationKey(Relations.LAST_USED_DATE),
+        override val sortType: DVSortType = DVSortType.DESC,
+        override val canGroupByDate: Boolean = false,
         override val isSelected: Boolean = false
     ) : AllContentSort()
 }
@@ -120,6 +128,7 @@ sealed class UiContentItem {
         val icon: ObjectIcon = ObjectIcon.None,
         val lastModifiedDate: Long = 0L,
         val createdDate: Long = 0L,
+        val isPossibleToDelete: Boolean = false
     ) : UiContentItem()
 
     data class Type(
@@ -133,6 +142,15 @@ sealed class UiContentItem {
         val dependentData: DependentData = DependentData.None
     ) : UiContentItem()
 
+    data class Relation(
+        override val id: Id,
+        val name: String,
+        val format: RelationFormat,
+        val sourceObject: Id? = null,
+        val readOnly: Boolean = true,
+        val editable: Boolean = true,
+    ) : UiContentItem()
+
     companion object {
         const val TODAY_ID = "TodayId"
         const val YESTERDAY_ID = "YesterdayId"
@@ -143,7 +161,7 @@ sealed class UiContentItem {
 
 // MENU
 @Immutable
-sealed class UiMenuState{
+sealed class UiMenuState {
 
     data object Hidden : UiMenuState()
 
@@ -183,15 +201,17 @@ fun Key?.mapRelationKeyToSort(): AllContentSort {
 fun List<ObjectWrapper.Basic>.toUiContentItems(
     space: SpaceId,
     urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectWrapper.Type>
+    objectTypes: List<ObjectWrapper.Type>,
+    isOwnerOrEditor: Boolean
 ): List<UiContentItem.Item> {
-    return map { it.toAllContentItem(space, urlBuilder, objectTypes) }
+    return map { it.toAllContentItem(space, urlBuilder, objectTypes, isOwnerOrEditor) }
 }
 
 fun ObjectWrapper.Basic.toAllContentItem(
     space: SpaceId,
     urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectWrapper.Type>
+    objectTypes: List<ObjectWrapper.Type>,
+    isOwnerOrEditor: Boolean
 ): UiContentItem.Item {
     val obj = this
     val typeUrl = obj.getProperType()
@@ -213,18 +233,21 @@ fun ObjectWrapper.Basic.toAllContentItem(
         layout = layout,
         icon = obj.objectIcon(builder = urlBuilder),
         lastModifiedDate = DateParser.parse(obj.getValue(Relations.LAST_MODIFIED_DATE)) ?: 0L,
-        createdDate = DateParser.parse(obj.getValue(Relations.CREATED_DATE)) ?: 0L
+        createdDate = DateParser.parse(obj.getValue(Relations.CREATED_DATE)) ?: 0L,
+        isPossibleToDelete = isOwnerOrEditor
     )
 }
 
 fun List<ObjectWrapper.Basic>.toUiContentTypes(
-    urlBuilder: UrlBuilder
+    urlBuilder: UrlBuilder,
+    isOwnerOrEditor: Boolean
 ): List<UiContentItem.Type> {
-    return map { it.toAllContentType(urlBuilder) }
+    return map { it.toAllContentType(urlBuilder, isOwnerOrEditor) }
 }
 
 fun ObjectWrapper.Basic.toAllContentType(
     urlBuilder: UrlBuilder,
+    isOwnerOrEditor: Boolean
 ): UiContentItem.Type {
     val obj = this
     val layout = layout ?: ObjectType.Layout.BASIC
@@ -234,8 +257,63 @@ fun ObjectWrapper.Basic.toAllContentType(
         icon = obj.objectIcon(urlBuilder),
         sourceObject = obj.map[SOURCE_OBJECT]?.toString(),
         uniqueKey = obj.uniqueKey,
-        readOnly = obj.restrictions.contains(ObjectRestriction.DELETE),
+        readOnly = obj.restrictions.contains(ObjectRestriction.DELETE) || !isOwnerOrEditor,
         editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
     )
+}
+
+fun List<ObjectWrapper.Basic>.toUiContentRelations(isOwnerOrEditor: Boolean): List<UiContentItem.Relation> {
+    return map { it.toAllContentRelation(isOwnerOrEditor) }
+}
+
+fun ObjectWrapper.Basic.toAllContentRelation(
+    isOwnerOrEditor: Boolean
+): UiContentItem.Relation {
+    val relation = ObjectWrapper.Relation(map)
+    val obj = this
+    return UiContentItem.Relation(
+        id = relation.id,
+        name = obj.name.orEmpty(),
+        format = relation.format,
+        sourceObject = map[SOURCE_OBJECT]?.toString(),
+        readOnly = obj.restrictions.contains(ObjectRestriction.DELETE) || !isOwnerOrEditor,
+        editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
+    )
+}
+
+fun AllContentSort.toAnalyticsSortType(): Pair<String, String> {
+    return when (this) {
+        is AllContentSort.ByName -> "Name" to sortType.toAnalyticsSortType()
+        is AllContentSort.ByDateUpdated -> "Updated" to sortType.toAnalyticsSortType()
+        is AllContentSort.ByDateCreated -> "Created" to sortType.toAnalyticsSortType()
+        is AllContentSort.ByDateUsed -> "Used" to sortType.toAnalyticsSortType()
+    }
+}
+
+fun DVSortType.toAnalyticsSortType(): String {
+    return when (this) {
+        DVSortType.ASC -> "Asc"
+        DVSortType.DESC -> "Desc"
+        DVSortType.CUSTOM -> "Custom"
+    }
+}
+
+fun AllContentTab.toAnalyticsTabType(): String {
+    return when (this) {
+        AllContentTab.PAGES -> "Pages"
+        AllContentTab.LISTS -> "Lists"
+        AllContentTab.MEDIA -> "Media"
+        AllContentTab.BOOKMARKS -> "Bookmarks"
+        AllContentTab.FILES -> "Files"
+        AllContentTab.TYPES -> "Types"
+        AllContentTab.RELATIONS -> "Relations"
+    }
+}
+
+fun AllContentMenuMode.toAnalyticsModeType(): String {
+    return when (this) {
+        is AllContentMenuMode.AllContent -> "All"
+        is AllContentMenuMode.Unlinked -> "Unlinked"
+    }
 }
 //endregion

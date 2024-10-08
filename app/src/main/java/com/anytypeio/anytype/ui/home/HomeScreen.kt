@@ -94,7 +94,7 @@ fun HomeScreen(
     onLibraryClicked: () -> Unit,
     onCreateNewObjectClicked: () -> Unit,
     onCreateNewObjectLongClicked: () -> Unit,
-    onProfileClicked: () -> Unit,
+    onBackClicked: () -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onSpaceWidgetClicked: () -> Unit,
     onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
@@ -139,13 +139,13 @@ fun HomeScreen(
                     .height(52.dp)
                     .fillMaxWidth()
             ) {
-                HomeScreenButton(
+                WidgetEditModeButton(
                     text = stringResource(id = R.string.add),
                     modifier = Modifier.weight(1f),
                     onClick = throttledClick(onCreateWidget)
                 )
                 Spacer(modifier = Modifier.width(10.dp))
-                HomeScreenButton(
+                WidgetEditModeButton(
                     text = stringResource(id = R.string.done),
                     modifier = Modifier.weight(1f),
                     onClick = throttledClick(onExitEditMode)
@@ -163,7 +163,7 @@ fun HomeScreen(
             HomeScreenBottomToolbar(
                 onSearchClicked = throttledClick(onSearchClicked),
                 onCreateNewObjectClicked = throttledClick(onCreateNewObjectClicked),
-                onVaultClicked = throttledClick(onProfileClicked),
+                onBackClicked = throttledClick(onBackClicked),
                 onCreateNewObjectLongClicked = onCreateNewObjectLongClicked,
                 modifier = Modifier,
                 isReadOnlyAccess = mode is InteractionMode.ReadOnly
@@ -421,6 +421,7 @@ private fun WidgetList(
                 }
                 is WidgetView.AllContent -> {
                     AllContentWidgetCard(
+                        mode = mode,
                         onWidgetClicked = { onBundledWidgetHeaderClicked(item.id) }
                     )
                 }
@@ -789,7 +790,7 @@ private fun TreeWidgetItem(
 }
 
 @Composable
-fun HomeScreenButton(
+fun WidgetEditModeButton(
     text: String,
     modifier: Modifier,
     onClick: () -> Unit
@@ -798,7 +799,7 @@ fun HomeScreenButton(
         modifier = modifier
             .height(52.dp)
             .background(
-                color = colorResource(id = R.color.home_screen_button),
+                color = colorResource(id = R.color.widgets_edit_mode_button),
                 shape = RoundedCornerShape(14.dp)
             )
             .noRippleClickable { onClick() }
@@ -818,7 +819,7 @@ fun HomeScreenBottomToolbar(
     onSearchClicked: () -> Unit,
     onCreateNewObjectClicked: () -> Unit,
     onCreateNewObjectLongClicked: () -> Unit,
-    onVaultClicked: () -> Unit,
+    onBackClicked: () -> Unit,
     isReadOnlyAccess: Boolean
 ) {
     val haptic = LocalHapticFeedback.current
@@ -828,41 +829,17 @@ fun HomeScreenBottomToolbar(
             .width(BottomNavigationDefaults.Width)
             .background(
                 shape = RoundedCornerShape(16.dp),
-                color = colorResource(id = R.color.home_screen_button)
+                color = colorResource(id = R.color.home_screen_toolbar_button)
             )
     ) {
         Box(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxSize()
-                .noRippleClickable { onVaultClicked() }
+                .noRippleClickable { onBackClicked() }
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_nav_panel_back),
-                contentDescription = "Search icon",
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxSize()
-                .noRippleClickable { onVaultClicked() }
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_nav_panel_vault),
-                contentDescription = "Search icon",
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxSize()
-                .noRippleClickable { onSearchClicked() }
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_nav_panel_search),
                 contentDescription = "Search icon",
                 modifier = Modifier.align(Alignment.Center)
             )
@@ -893,6 +870,18 @@ fun HomeScreenBottomToolbar(
             Image(
                 painter = painterResource(id = R.drawable.ic_nav_panel_plus),
                 contentDescription = "Plus icon",
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxSize()
+                .noRippleClickable { onSearchClicked() }
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_nav_panel_search),
+                contentDescription = "Search icon",
                 modifier = Modifier.align(Alignment.Center)
             )
         }

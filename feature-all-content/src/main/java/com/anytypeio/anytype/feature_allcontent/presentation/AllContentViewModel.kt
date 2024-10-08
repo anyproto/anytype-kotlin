@@ -9,15 +9,21 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_ui.extensions.simpleIcon
+import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.domain.all_content.RestoreAllContentState
 import com.anytypeio.anytype.domain.all_content.UpdateAllContentState
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.workspace.RemoveObjectsFromWorkspace
 import com.anytypeio.anytype.feature_allcontent.models.AllContentMenuMode
 import com.anytypeio.anytype.feature_allcontent.models.AllContentSort
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
@@ -30,12 +36,24 @@ import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
 import com.anytypeio.anytype.feature_allcontent.models.createSubscriptionParams
 import com.anytypeio.anytype.feature_allcontent.models.filtersForSearch
 import com.anytypeio.anytype.feature_allcontent.models.mapRelationKeyToSort
+import com.anytypeio.anytype.feature_allcontent.models.toAnalyticsModeType
+import com.anytypeio.anytype.feature_allcontent.models.toAnalyticsSortType
+import com.anytypeio.anytype.feature_allcontent.models.toAnalyticsTabType
 import com.anytypeio.anytype.feature_allcontent.models.toUiContentItems
+import com.anytypeio.anytype.feature_allcontent.models.toUiContentRelations
 import com.anytypeio.anytype.feature_allcontent.models.toUiContentTypes
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentChangeMode
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentChangeSort
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentChangeType
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentResult
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentScreen
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentSearchInput
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentToBin
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
+import com.anytypeio.anytype.presentation.library.LibraryViewModel.LibraryItem
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import java.time.Instant
 import java.time.LocalDate
@@ -58,6 +76,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -66,6 +85,7 @@ import timber.log.Timber
  * ViewState: @see [UiContentState]
  * Factory: @see [AllContentViewModelFactory]
  * Screen: @see [com.anytypeio.anytype.feature_allcontent.ui.AllContentWrapperScreen]
+ * Models: @see [com.anytypeio.anytype.feature_allcontent.models.UiContentState]
  */
 
 class AllContentViewModel(
@@ -79,7 +99,11 @@ class AllContentViewModel(
     private val restoreAllContentState: RestoreAllContentState,
     private val searchObjects: SearchObjects,
     private val localeProvider: LocaleProvider,
-    private val createObject: CreateObject
+    private val createObject: CreateObject,
+    private val setObjectListIsArchived: SetObjectListIsArchived,
+    private val setObjectDetails: SetObjectDetails,
+    private val removeObjectsFromWorkspace: RemoveObjectsFromWorkspace,
+    private val userPermissionProvider: UserPermissionProvider
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val searchResultIds = MutableStateFlow<List<Id>>(emptyList())
@@ -114,11 +138,24 @@ class AllContentViewModel(
 
     private var shouldScrollToTopItems = false
 
+    private val permission = MutableStateFlow(userPermissionProvider.get(vmParams.spaceId))
+
     init {
         Timber.d("AllContentViewModel init, spaceId:[${vmParams.spaceId.id}]")
         setupInitialStateParams()
         setupSearchStateFlow()
         setupMenuFlow()
+        proceedWithObservingPermissions()
+    }
+
+    private fun proceedWithObservingPermissions() {
+        viewModelScope.launch {
+            userPermissionProvider
+                .observe(space = vmParams.spaceId)
+                .collect {
+                    permission.value = it
+                }
+        }
     }
 
     private fun setupInitialStateParams() {
@@ -239,29 +276,47 @@ class AllContentViewModel(
         activeSort: AllContentSort,
         activeTab: AllContentTab
     ): List<UiContentItem> {
-        if (activeTab == AllContentTab.TYPES) {
-            val items = objectWrappers.toUiContentTypes(
-                urlBuilder = urlBuilder
-            )
-            return items
-        } else {
-            val items = objectWrappers.toUiContentItems(
-                space = vmParams.spaceId,
-                urlBuilder = urlBuilder,
-                objectTypes = storeOfObjectTypes.getAll()
-            )
-            return when (activeSort) {
-                is AllContentSort.ByDateCreated -> {
-                    groupItemsByDate(items = items, isSortByDateCreated = true)
-                }
+        return when (activeTab) {
+            AllContentTab.TYPES -> {
+                val items = objectWrappers.toUiContentTypes(
+                    urlBuilder = urlBuilder,
+                    isOwnerOrEditor = permission.value?.isOwnerOrEditor() == true
+                )
+                items
+            }
 
-                is AllContentSort.ByDateUpdated -> {
-                    groupItemsByDate(items = items, isSortByDateCreated = false)
-                }
+            AllContentTab.RELATIONS -> {
+                val items = objectWrappers.toUiContentRelations(
+                    isOwnerOrEditor = permission.value?.isOwnerOrEditor() == true
+                )
+                items
+            }
 
-                is AllContentSort.ByName -> {
-                    items
+            else -> {
+                val items = objectWrappers.toUiContentItems(
+                    space = vmParams.spaceId,
+                    urlBuilder = urlBuilder,
+                    objectTypes = storeOfObjectTypes.getAll(),
+                    isOwnerOrEditor = permission.value?.isOwnerOrEditor() == true
+                )
+                val result = when (activeSort) {
+                    is AllContentSort.ByDateCreated -> {
+                        groupItemsByDate(items = items, isSortByDateCreated = true)
+                    }
+
+                    is AllContentSort.ByDateUpdated -> {
+                        groupItemsByDate(items = items, isSortByDateCreated = false)
+                    }
+
+                    is AllContentSort.ByName -> {
+                        items
+                    }
+
+                    is AllContentSort.ByDateUsed -> {
+                        items
+                    }
                 }
+                result
             }
         }
     }
@@ -352,34 +407,9 @@ class AllContentViewModel(
             ) { mode, sort, tabs ->
                 Triple(mode, sort, tabs)
             }.collectLatest { (mode, sort, tabs) ->
-                val uiMode = if (tabs.selectedTab == AllContentTab.TYPES) {
-                    listOf()
-                } else {
-                    listOf(
-                        AllContentMenuMode.AllContent(isSelected = mode == UiTitleState.AllContent),
-                        AllContentMenuMode.Unlinked(isSelected = mode == UiTitleState.OnlyUnlinked)
-                    )
-                }
+                val uiMode = tabs.selectedTab.menu(mode)
                 val container = MenuSortsItem.Container(sort = sort)
-                val uiSorts = if (tabs.selectedTab == AllContentTab.TYPES) {
-                    listOf(
-                        MenuSortsItem.Sort(
-                            sort = AllContentSort.ByName(isSelected = sort is AllContentSort.ByName)
-                        )
-                    )
-                } else {
-                    listOf(
-                        MenuSortsItem.Sort(
-                            sort = AllContentSort.ByName(isSelected = sort is AllContentSort.ByName)
-                        ),
-                        MenuSortsItem.Sort(
-                            sort = AllContentSort.ByDateUpdated(isSelected = sort is AllContentSort.ByDateUpdated)
-                        ),
-                        MenuSortsItem.Sort(
-                            sort = AllContentSort.ByDateCreated(isSelected = sort is AllContentSort.ByDateCreated)
-                        )
-                    )
-                }
+                val uiSorts = tabs.selectedTab.sorts(activeSort = sort)
                 val uiSortTypes = listOf(
                     MenuSortsItem.SortType(
                         sort = sort,
@@ -402,18 +432,83 @@ class AllContentViewModel(
         }
     }
 
+    fun AllContentTab.sorts(activeSort: AllContentSort): List<MenuSortsItem.Sort> {
+        return when (this) {
+            AllContentTab.TYPES -> {
+                listOf(
+                    MenuSortsItem.Sort(
+                        sort = AllContentSort.ByName(isSelected = activeSort is AllContentSort.ByName)
+                    ),
+                    MenuSortsItem.Sort(
+                        sort = AllContentSort.ByDateUsed(isSelected = activeSort is AllContentSort.ByDateUsed)
+                    )
+                )
+            }
+            AllContentTab.RELATIONS -> {
+                listOf(
+                    MenuSortsItem.Sort(
+                        sort = AllContentSort.ByName(isSelected = activeSort is AllContentSort.ByName)
+                    )
+                )
+            }
+            else -> {
+                listOf(
+                    MenuSortsItem.Sort(
+                        sort = AllContentSort.ByName(isSelected = activeSort is AllContentSort.ByName)
+                    ),
+                    MenuSortsItem.Sort(
+                        sort = AllContentSort.ByDateUpdated(isSelected = activeSort is AllContentSort.ByDateUpdated)
+                    ),
+                    MenuSortsItem.Sort(
+                        sort = AllContentSort.ByDateCreated(isSelected = activeSort is AllContentSort.ByDateCreated)
+                    )
+                )
+            }
+        }
+    }
+
+    fun AllContentTab.menu(uiTitleState: UiTitleState): List<AllContentMenuMode> {
+        return when (this) {
+            AllContentTab.TYPES, AllContentTab.RELATIONS -> listOf()
+            else -> {
+                listOf(
+                    AllContentMenuMode.AllContent(isSelected = uiTitleState == UiTitleState.AllContent),
+                    AllContentMenuMode.Unlinked(isSelected = uiTitleState == UiTitleState.OnlyUnlinked)
+                )
+            }
+        }
+    }
+
+    fun AllContentTab.updateInitialState() {
+        return when (this) {
+            AllContentTab.TYPES -> {
+                sortState.value = AllContentSort.ByName()
+                userInput.value = DEFAULT_QUERY
+                uiTitleState.value = UiTitleState.AllContent
+            }
+            AllContentTab.RELATIONS -> {
+                sortState.value = AllContentSort.ByName()
+                userInput.value = DEFAULT_QUERY
+                uiTitleState.value = UiTitleState.AllContent
+            }
+            else -> {}
+        }
+    }
+
     fun onTabClicked(tab: AllContentTab) {
         Timber.d("onTabClicked: $tab")
-        if (tab == AllContentTab.TYPES) {
-            sortState.value = AllContentSort.ByName()
-            userInput.value = DEFAULT_QUERY
-            uiTitleState.value = UiTitleState.AllContent
-        }
+        tab.updateInitialState()
         shouldScrollToTopItems = true
         resetLimit()
         uiItemsState.value = emptyList()
         uiTabsState.value = uiTabsState.value.copy(selectedTab = tab)
         restartSubscription.value++
+        viewModelScope.launch {
+            sendAnalyticsAllContentChangeType(
+                analytics = analytics,
+                type = tab.toAnalyticsTabType()
+            )
+        }
     }
 
     fun onAllContentModeClicked(mode: AllContentMenuMode) {
@@ -425,6 +520,12 @@ class AllContentViewModel(
             is AllContentMenuMode.Unlinked -> UiTitleState.OnlyUnlinked
         }
         restartSubscription.value++
+        viewModelScope.launch {
+            sendAnalyticsAllContentChangeMode(
+                analytics = analytics,
+                type = mode.toAnalyticsModeType()
+            )
+        }
     }
 
     fun onSortClicked(sort: AllContentSort) {
@@ -439,12 +540,22 @@ class AllContentViewModel(
             is AllContentSort.ByName -> {
                 sort.copy(isSelected = true)
             }
+            is AllContentSort.ByDateUsed -> {
+                sort.copy(isSelected = true)
+            }
         }
         shouldScrollToTopItems = true
         uiItemsState.value = emptyList()
         sortState.value = newSort
         proceedWithSortSaving(newSort)
         restartSubscription.value++
+        viewModelScope.launch {
+            sendAnalyticsAllContentChangeSort(
+                analytics = analytics,
+                type = sort.toAnalyticsSortType().first,
+                sort = sort.toAnalyticsSortType().second
+            )
+        }
     }
 
     private fun proceedWithSortSaving(sort: AllContentSort) {
@@ -466,10 +577,22 @@ class AllContentViewModel(
 
     fun onFilterChanged(filter: String) {
         Timber.d("onFilterChanged: $filter")
+        val currentFilter = userInput.value.isEmpty()
+        viewModelScope.launch {
+            if (currentFilter && filter.isNotEmpty()) {
+                sendAnalyticsAllContentSearchInput(
+                    analytics = analytics,
+                    route = EventsDictionary.Routes.allContentRoute
+                )
+            }
+        }
         userInput.value = filter
     }
 
     fun onViewBinClicked() {
+        viewModelScope.launch {
+            sendAnalyticsAllContentToBin(analytics = analytics)
+        }
         viewModelScope.launch {
             commands.emit(Command.NavigateToBin(vmParams.spaceId.id))
         }
@@ -484,6 +607,9 @@ class AllContentViewModel(
                 space = vmParams.spaceId.id
             )
         )
+        viewModelScope.launch {
+            sendAnalyticsAllContentResult(analytics = analytics)
+        }
     }
 
     private fun proceedWithNavigation(navigation: OpenObjectNavigation) {
@@ -508,7 +634,8 @@ class AllContentViewModel(
                 }
 
                 is OpenObjectNavigation.UnexpectedLayoutError -> {
-                    commands.emit(Command.SendToast("Unexpected layout: ${navigation.layout}"))
+                    Timber.e("Unexpected layout: ${navigation.layout}")
+                    commands.emit(Command.SendToast.UnexpectedLayout(navigation.layout?.name.orEmpty()))
                 }
             }
         }
@@ -557,7 +684,7 @@ class AllContentViewModel(
                     )
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
-                        route = EventsDictionary.Routes.objCreateLibrary,
+                        route = EventsDictionary.Routes.allContentRoute,
                         startTime = startTime,
                         objType = objType ?: storeOfObjectTypes.getByKey(result.typeKey.key),
                         view = EventsDictionary.View.viewHome,
@@ -570,21 +697,59 @@ class AllContentViewModel(
     }
 
     fun onTypeClicked(item: UiContentItem.Type) {
-        Timber.d("onTypeClicked: ${item.id}")
+        Timber.d("onTypeClicked: $item")
         viewModelScope.launch {
             commands.emit(Command.OpenTypeEditing(item))
+        }
+    }
+
+    fun onRelationClicked(item: UiContentItem.Relation) {
+        Timber.d("onRelationClicked: $item")
+        viewModelScope.launch {
+            commands.emit(
+                Command.OpenRelationEditing(
+                    typeName = item.name,
+                    id = item.id,
+                    iconUnicode = item.format.simpleIcon() ?: 0,
+                    readOnly = item.readOnly
+                )
+            )
         }
     }
 
     fun onStart() {
         Timber.d("onStart")
         setupUiStateFlow()
+        viewModelScope.launch {
+            sendAnalyticsAllContentScreen(
+                analytics = analytics
+            )
+        }
     }
 
     fun onStop() {
         Timber.d("onStop")
         viewModelScope.launch {
             storelessSubscriptionContainer.unsubscribe(listOf(subscriptionId()))
+        }
+    }
+
+    fun proceedWithMoveToBin(item: UiContentItem.Item) {
+        val params = SetObjectListIsArchived.Params(
+            targets = listOf(item.id),
+            isArchived = true
+        )
+        viewModelScope.launch {
+            setObjectListIsArchived.async(params).fold(
+                onSuccess = { ids ->
+                    Timber.d("Successfully archived object: $ids")
+                    commands.emit(Command.SendToast.ObjectArchived(item.name))
+                },
+                onFailure = { e ->
+                    Timber.e(e, "Error while archiving object")
+                    commands.emit(Command.SendToast.Error("Error while archiving object"))
+                }
+            )
         }
     }
 
@@ -617,12 +782,72 @@ class AllContentViewModel(
         val useHistory: Boolean = true
     )
 
+    //region Types and Relations action
+    fun updateObject(id: String, name: String, icon: String?) {
+        viewModelScope.launch {
+            setObjectDetails.execute(
+                SetObjectDetails.Params(
+                    ctx = id,
+                    details = mapOf(
+                        Relations.NAME to name,
+                        Relations.ICON_EMOJI to icon.orNull(),
+                    )
+                )
+            ).fold(
+                onFailure = {
+                    Timber.e(it, "Error while updating object details")
+                },
+                onSuccess = {
+                    // do nothing
+                }
+            )
+        }
+    }
+
+    fun uninstallObject(id: Id, type: LibraryItem, name: String) {
+        viewModelScope.launch {
+            removeObjectsFromWorkspace.execute(
+                RemoveObjectsFromWorkspace.Params(listOf(id))
+            ).fold(
+                onFailure = {
+                    Timber.e(it, "Error while uninstalling object")
+                    commands.emit(Command.SendToast.Error("Error while uninstalling object"))
+                },
+                onSuccess = {
+                    when (type) {
+                        LibraryItem.TYPE -> {
+                            commands.emit(Command.SendToast.TypeRemoved(name))
+                        }
+                        LibraryItem.RELATION -> {
+                            commands.emit(Command.SendToast.RelationRemoved(name))
+                        }
+                    }
+                }
+            )
+        }
+    }
+    //endregion
+
     sealed class Command {
         data class NavigateToEditor(val id: Id, val space: Id) : Command()
         data class NavigateToSetOrCollection(val id: Id, val space: Id) : Command()
         data class NavigateToBin(val space: Id) : Command()
-        data class SendToast(val message: String) : Command()
+        sealed class SendToast: Command() {
+            data class Error(val message: String) : SendToast()
+            data class RelationRemoved(val name: String) : SendToast()
+            data class TypeRemoved(val name: String) : SendToast()
+            data class UnexpectedLayout(val layout: String) : SendToast()
+            data class ObjectArchived(val name: String) : SendToast()
+        }
         data class OpenTypeEditing(val item: UiContentItem.Type) : Command()
+        data class OpenTypeCreation(val name: String): Command()
+        data class OpenRelationEditing(
+            val typeName: String,
+            val id: Id,
+            val iconUnicode: Int,
+            val readOnly: Boolean
+        ) : Command()
+        data class OpenRelationCreation(val id: Id, val name: String, val space: Id): Command()
         data object OpenGlobalSearch : Command()
         data object ExitToVault : Command()
         data object Back : Command()

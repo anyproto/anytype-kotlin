@@ -92,6 +92,9 @@ class RemoteFilesManageFragment : BaseBottomSheetComposeFragment() {
             is CollectionViewModel.Command.Vault -> {
                 // Do nothing.
             }
+            is CollectionViewModel.Command.OpenSpaceSwitcher -> {
+                // Do nothing
+            }
         }
     }
 

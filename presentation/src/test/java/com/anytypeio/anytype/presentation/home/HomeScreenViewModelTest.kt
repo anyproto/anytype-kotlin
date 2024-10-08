@@ -30,6 +30,7 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.bin.EmptyBin
@@ -246,6 +247,9 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var clearLastOpenedSpace: ClearLastOpenedSpace
+
+    @Mock
+    lateinit var clearLastOpenedObject: ClearLastOpenedObject
 
     lateinit var userPermissionProvider: UserPermissionProvider
 
@@ -2918,7 +2922,8 @@ class HomeScreenViewModelTest {
         createDataViewObject = createDataViewObject,
         dateProvider = dateProvider,
         addObjectToCollection = addObjectToCollection,
-        clearLastOpenedSpace = clearLastOpenedSpace
+        clearLastOpenedSpace = clearLastOpenedSpace,
+        clearLastOpenedObject = clearLastOpenedObject
     )
 
     companion object {

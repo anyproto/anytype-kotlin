@@ -149,11 +149,7 @@ class ObjectIconWidget @JvmOverloads constructor(
             )
             ObjectIcon.Deleted -> setDeletedIcon()
             is ObjectIcon.Checkbox -> setCheckbox(icon.isChecked)
-            ObjectIcon.Empty.Bookmark -> TODO()
-            ObjectIcon.Empty.Discussion -> TODO()
-            ObjectIcon.Empty.List -> TODO()
-            ObjectIcon.Empty.ObjectType -> TODO()
-            ObjectIcon.Empty.Page -> TODO()
+            is ObjectIcon.Empty -> icon.setEmptyIcon()
         }
     }
 
@@ -382,6 +378,27 @@ class ObjectIconWidget @JvmOverloads constructor(
 
     private fun setDeletedIcon() {
         val icon = context.drawable(R.drawable.ic_relation_deleted)
+        with(binding) {
+            ivImage.visible()
+            ivImage.scaleType = ImageView.ScaleType.CENTER_CROP
+            ivImage.setImageDrawable(icon)
+            ivCheckbox.invisible()
+            initialContainer.invisible()
+            ivBookmark.invisible()
+            emojiContainer.invisible()
+            composeView.gone()
+        }
+    }
+
+    private fun ObjectIcon.Empty.setEmptyIcon() {
+        val drawable = when (this) {
+            ObjectIcon.Empty.Bookmark -> R.drawable.ic_empty_state_link
+            ObjectIcon.Empty.Discussion -> R.drawable.ic_empty_state_chat
+            ObjectIcon.Empty.List -> R.drawable.ic_empty_state_list
+            ObjectIcon.Empty.ObjectType -> R.drawable.ic_empty_state_type
+            ObjectIcon.Empty.Page -> R.drawable.ic_empty_state_page
+        }
+        val icon = context.drawable(drawable)
         with(binding) {
             ivImage.visible()
             ivImage.scaleType = ImageView.ScaleType.CENTER_CROP

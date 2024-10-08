@@ -59,7 +59,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
@@ -544,7 +543,7 @@ fun RowScope.Item(
             }
         },
         leadingContent = {
-            AllContentItemIcon(icon = item.icon, modifier = Modifier)
+            ListWidgetObjectIcon(icon = item.icon, modifier = Modifier, iconSize = 24.dp)
         }
     )
 }
@@ -609,51 +608,6 @@ private fun Relation(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-    }
-}
-
-@Composable
-fun AllContentItemIcon(
-    icon: ObjectIcon?,
-    modifier: Modifier,
-    iconSize: Dp = 48.dp,
-    onTaskIconClicked: (Boolean) -> Unit = {},
-    avatarBackgroundColor: Int = R.color.shape_secondary,
-    avatarFontSize: TextUnit = 28.sp,
-    avatarTextStyle: TextStyle = TextStyle(
-        fontWeight = FontWeight.SemiBold,
-        color = colorResource(id = R.color.text_white)
-    )
-) {
-    when (icon) {
-        is ObjectIcon.Profile.Avatar -> DefaultProfileAvatarIcon(
-            modifier = modifier,
-            iconSize = iconSize,
-            icon = icon,
-            avatarTextStyle = avatarTextStyle,
-            avatarFontSize = avatarFontSize,
-            avatarBackgroundColor = avatarBackgroundColor
-        )
-
-        is ObjectIcon.Profile.Image -> DefaultProfileIconImage(icon, modifier, iconSize)
-        is ObjectIcon.Basic.Emoji -> DefaultEmojiObjectIcon(modifier, iconSize, icon)
-        is ObjectIcon.Basic.Image -> DefaultObjectImageIcon(icon.hash, modifier, iconSize)
-        is ObjectIcon.Basic.Avatar -> DefaultBasicAvatarIcon(modifier, iconSize, icon)
-        is ObjectIcon.Bookmark -> DefaultObjectBookmarkIcon(icon.image, modifier, iconSize)
-        is ObjectIcon.Task -> DefaultTaskObjectIcon(modifier, iconSize, icon, onTaskIconClicked)
-        is ObjectIcon.File -> {
-            DefaultFileObjectImageIcon(
-                fileName = icon.fileName.orEmpty(),
-                mime = icon.mime.orEmpty(),
-                modifier = modifier,
-                iconSize = iconSize,
-                extension = icon.extensions
-            )
-        }
-
-        else -> {
-            // Draw nothing.
-        }
     }
 }
 

@@ -458,20 +458,19 @@ class DefaultUserSettingsCache(
         }
     }
 
-    override suspend fun getAllContentSort(space: SpaceId): Id {
+    override suspend fun getAllContentSort(space: SpaceId): Pair<Id, Boolean> {
         return context.spacePrefsStore
             .data
             .map { preferences ->
-                preferences
-                    .preferences[space.id]
-                    ?.allContent
-                    ?.sortKey
-                    .orEmpty()
+                val pref = preferences.preferences[space.id]?.allContent
+                val sortKey = pref?.sortKey.orEmpty()
+                val isAsc = pref?.isAscending ?: true
+                sortKey to isAsc
             }
             .first()
     }
 
-    override suspend fun setAllContentSort(space: SpaceId, sort: Id) {
+    override suspend fun setAllContentSort(space: SpaceId, sort: Id, isAsc: Boolean) {
         context.spacePrefsStore.updateData { existingPreferences ->
             val givenSpacePreference = existingPreferences
                 .preferences
@@ -481,7 +480,8 @@ class DefaultUserSettingsCache(
                 )
             val updated = givenSpacePreference.copy(
                 allContent = AllContentSettings(
-                    sortKey = sort
+                    sortKey = sort,
+                    isAscending = isAsc
                 )
             )
             val result = buildMap {

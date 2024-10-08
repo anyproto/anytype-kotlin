@@ -22,12 +22,10 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.getSpaceWithTechSpace
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
-import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts.isEditorOrFileLayout
 import com.anytypeio.anytype.presentation.objects.toView
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
@@ -119,17 +117,16 @@ class ObjectValueViewModel(
         query: String,
         ids: List<Id>
     ): SearchObjects.Params {
-        val spaces = spaceManager.getSpaceWithTechSpace(space = viewModelParams.space.id)
         val isFileRelation = relation.format == FILE
         val searchKeys =
             if (isFileRelation) ObjectSearchConstants.defaultFilesKeys else ObjectSearchConstants.defaultKeys
         val searchFilters = when {
             isFileRelation -> {
                 if (isEditableRelation) {
-                    ObjectSearchConstants.filesFilters(spaces = spaces)
+                    ObjectSearchConstants.filesFilters(space = viewModelParams.space.id)
                 } else {
                     ObjectSearchConstants.filterObjectsByIds(
-                        spaces = spaces,
+                        space = viewModelParams.space.id,
                         ids = ids
                     )
                 }
@@ -137,12 +134,12 @@ class ObjectValueViewModel(
             else -> {
                 if (isEditableRelation) {
                     ObjectSearchConstants.filterAddObjectToRelation(
-                        spaces = spaces,
+                        space = viewModelParams.space.id,
                         targetTypes = relation.relationFormatObjectTypes
                     )
                 } else {
                     ObjectSearchConstants.filterObjectsByIds(
-                        spaces = spaces,
+                        space = viewModelParams.space.id,
                         ids = ids
                     )
                 }

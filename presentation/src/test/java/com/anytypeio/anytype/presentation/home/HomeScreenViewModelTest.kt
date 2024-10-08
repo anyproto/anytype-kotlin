@@ -3,8 +3,6 @@ package com.anytypeio.anytype.presentation.home
 import app.cash.turbine.test
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.DVFilter
-import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -926,7 +924,7 @@ class HomeScreenViewModelTest {
             stubDefaultSearch(
                 params = ListWidgetContainer.params(
                     subscription = BundledWidgetSourceIds.FAVORITE,
-                    spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                    space = defaultSpaceConfig.space,
                     keys = TreeWidgetContainer.keys,
                     limit = WidgetConfig.NO_LIMIT
                 ),
@@ -975,7 +973,7 @@ class HomeScreenViewModelTest {
             stubDefaultSearch(
                 params = ListWidgetContainer.params(
                     subscription = BundledWidgetSourceIds.RECENT,
-                    spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                    space = defaultSpaceConfig.space,
                     keys = TreeWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 ),
@@ -987,7 +985,7 @@ class HomeScreenViewModelTest {
             stubDefaultSearch(
                 params = ListWidgetContainer.params(
                     subscription = BundledWidgetSourceIds.SETS,
-                    spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                    space = defaultSpaceConfig.space,
                     keys = TreeWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 ),
@@ -1583,7 +1581,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.FAVORITE,
-                spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                space = defaultSpaceConfig.space,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1593,7 +1591,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.RECENT,
-                spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                space = defaultSpaceConfig.space,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1603,7 +1601,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.SETS,
-                spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                space = defaultSpaceConfig.space,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1784,7 +1782,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.FAVORITE,
-                spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                space = defaultSpaceConfig.space,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1794,7 +1792,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.RECENT,
-                spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                space = defaultSpaceConfig.space,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1806,7 +1804,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.SETS,
-                spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                space = defaultSpaceConfig.space,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1851,7 +1849,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = setsSource.id,
-                    spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                    space = defaultSpaceConfig.space,
                     keys = ListWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_LIST_LIMIT
                 )
@@ -1862,7 +1860,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = recentSource.id,
-                    spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                    space = defaultSpaceConfig.space,
                     keys = ListWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_LIST_LIMIT
                 )
@@ -2392,23 +2390,8 @@ class HomeScreenViewModelTest {
             filters = buildList {
                 addAll(
                     ObjectSearchConstants.defaultDataViewFilters(
-                        spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace)
+                        space = defaultSpaceConfig.space
                     )
-                )
-                add(
-                    DVFilter(
-                        relation = Relations.TYPE_UNIQUE_KEY,
-                        condition = DVFilterCondition.NOT_IN,
-                        value = listOf(
-                            ObjectTypeIds.OBJECT_TYPE,
-                            ObjectTypeIds.RELATION,
-                            ObjectTypeIds.TEMPLATE,
-                            ObjectTypeIds.DASHBOARD,
-                            ObjectTypeIds.RELATION_OPTION,
-                            ObjectTypeIds.DASHBOARD,
-                            ObjectTypeIds.DATE
-                        )
-                    ),
                 )
             },
             sorts = emptyList(),

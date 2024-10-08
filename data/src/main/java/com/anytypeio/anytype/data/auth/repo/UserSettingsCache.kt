@@ -44,6 +44,6 @@ interface UserSettingsCache {
     suspend fun saveWidgetSession(session: WidgetSession)
     suspend fun clear()
 
-    suspend fun getAllContentSort(space: SpaceId): Id
-    suspend fun setAllContentSort(space: SpaceId, sort: Id)
+    suspend fun getAllContentSort(space: SpaceId): Pair<Id, Boolean>
+    suspend fun setAllContentSort(space: SpaceId, sort: Id, isAsc: Boolean)
 }

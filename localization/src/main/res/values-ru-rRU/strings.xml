@@ -1525,7 +1525,7 @@
     <string name="version_history_error_get_version">Ошибка получения истории версий</string>
     <string name="version_history_error_get_members">Ошибка при получении участников</string>
     <string name="new_object">Новый объект</string>
-    <string name="vault_my_spaces">Мои пространства</string>
+    <string name="vault_my_spaces">My Spaces</string>
     <string name="all_content_title_all_content">Все объекты</string>
     <string name="all_content_title_only_unlinked">Только несвязанные</string>
     <string name="all_content_title_only_unlinked_description">Непривязанные объекты, не имеющие прямой связи или обратной связи с другими объектами на графике.</string>

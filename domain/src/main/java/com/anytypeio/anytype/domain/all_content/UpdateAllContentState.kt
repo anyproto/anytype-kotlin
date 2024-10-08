@@ -15,12 +15,14 @@ class UpdateAllContentState @Inject constructor(
     override suspend fun doWork(params: Params) {
         settings.setAllContentSort(
             space = params.spaceId,
-            sort = params.sort
+            sort = params.sort,
+            isAsc = params.isAsc
         )
     }
 
     data class Params(
         val spaceId: SpaceId,
-        val sort: Id
+        val sort: Id,
+        val isAsc: Boolean
     )
 }

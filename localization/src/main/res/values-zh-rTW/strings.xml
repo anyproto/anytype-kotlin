@@ -1483,7 +1483,7 @@ Please provide specific details of your needs here.</string>
     <string name="version_history_error_get_version">Error getting version history</string>
     <string name="version_history_error_get_members">Error getting members</string>
     <string name="new_object">新增物件</string>
-    <string name="vault_my_spaces">My spaces</string>
+    <string name="vault_my_spaces">My Spaces</string>
     <string name="all_content_title_all_content">All objects</string>
     <string name="all_content_title_only_unlinked">Only unlinked</string>
     <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>

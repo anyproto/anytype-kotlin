@@ -1496,7 +1496,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="version_history_error_get_version">Fehler beim Abrufen des Versionsverlaufs</string>
     <string name="version_history_error_get_members">Fehler beim Abrufen der Mitglieder</string>
     <string name="new_object">Neues Objekt</string>
-    <string name="vault_my_spaces">Meine Spaces</string>
+    <string name="vault_my_spaces">My Spaces</string>
     <string name="all_content_title_all_content">Alle Objekte</string>
     <string name="all_content_title_only_unlinked">Nur unverlinkte</string>
     <string name="all_content_title_only_unlinked_description"></string>

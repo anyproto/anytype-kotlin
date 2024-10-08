@@ -1522,7 +1522,7 @@
     <string name="version_history_error_get_version">Памылка пры атрыманні гісторыі версій</string>
     <string name="version_history_error_get_members">Памылка атрымання ўдзельнікаў</string>
     <string name="new_object">Новы аб\'ект</string>
-    <string name="vault_my_spaces">Мае прасторы</string>
+    <string name="vault_my_spaces">My Spaces</string>
     <string name="all_content_title_all_content">Усе аб\'екты</string>
     <string name="all_content_title_only_unlinked">Толькі адвязаныя</string>
     <string name="all_content_title_only_unlinked_description">Незвязаныя аб\'екты, якія не маюць прамой або зваротнай сувязі з іншымі аб\'ектамі ў графе.</string>

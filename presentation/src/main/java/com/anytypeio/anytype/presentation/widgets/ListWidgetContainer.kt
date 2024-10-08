@@ -160,10 +160,7 @@ class ListWidgetContainer(
         spaceCreationDateInSeconds: Long? = null
     ) = params(
         subscription = subscription,
-        spaces = buildList {
-            add(widget.config.space)
-            add(widget.config.techSpace)
-        },
+        space = widget.config.space,
         keys = keys,
         limit = resolveLimit(),
         customFavoritesOrder = customFavoritesOrder,
@@ -188,7 +185,7 @@ class ListWidgetContainer(
 
         fun params(
             subscription: Id,
-            spaces: List<Id>,
+            space: Id,
             keys: List<Id>,
             limit: Int,
             customFavoritesOrder: List<Id> = emptyList(),
@@ -199,7 +196,7 @@ class ListWidgetContainer(
                     subscription = subscription,
                     sorts = ObjectSearchConstants.sortTabRecent,
                     filters = ObjectSearchConstants.filterTabRecent(
-                        spaces = spaces,
+                        space = space,
                         spaceCreationDateInSeconds = spaceCreationDateInSeconds
                     ),
                     keys = keys,
@@ -210,7 +207,7 @@ class ListWidgetContainer(
                 StoreSearchParams(
                     subscription = subscription,
                     sorts = ObjectSearchConstants.sortTabRecentLocal,
-                    filters = ObjectSearchConstants.filterTabRecentLocal(spaces),
+                    filters = ObjectSearchConstants.filterTabRecentLocal(space),
                     keys = keys,
                     limit = limit
                 )
@@ -219,7 +216,7 @@ class ListWidgetContainer(
                 StoreSearchParams(
                     subscription = subscription,
                     sorts = ObjectSearchConstants.sortTabSets,
-                    filters = ObjectSearchConstants.filterTabSets(spaces),
+                    filters = ObjectSearchConstants.filterTabSets(space),
                     keys = keys,
                     limit = limit
                 )
@@ -239,7 +236,7 @@ class ListWidgetContainer(
                             )
                         }
                     },
-                    filters = ObjectSearchConstants.filterTabFavorites(spaces),
+                    filters = ObjectSearchConstants.filterTabFavorites(space),
                     keys = keys,
                     limit = limit
                 )
@@ -248,7 +245,7 @@ class ListWidgetContainer(
                 StoreSearchParams(
                     subscription = subscription,
                     sorts = collectionsSorts,
-                    filters = ObjectSearchConstants.collectionFilters(spaces),
+                    filters = ObjectSearchConstants.collectionFilters(space),
                     keys = keys,
                     limit = limit
                 )
@@ -257,7 +254,7 @@ class ListWidgetContainer(
                 StoreSearchParams(
                     subscription = subscription,
                     sorts = ObjectSearchConstants.sortTabArchive,
-                    filters = ObjectSearchConstants.filterTabArchive(spaces),
+                    filters = ObjectSearchConstants.filterTabArchive(space),
                     keys = keys,
                     limit = limit
                 )

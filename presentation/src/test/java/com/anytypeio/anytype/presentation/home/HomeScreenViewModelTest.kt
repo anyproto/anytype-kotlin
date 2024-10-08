@@ -926,7 +926,7 @@ class HomeScreenViewModelTest {
             stubDefaultSearch(
                 params = ListWidgetContainer.params(
                     subscription = BundledWidgetSourceIds.FAVORITE,
-                    spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                    space = defaultSpaceConfig.space,
                     keys = TreeWidgetContainer.keys,
                     limit = WidgetConfig.NO_LIMIT
                 ),
@@ -975,7 +975,7 @@ class HomeScreenViewModelTest {
             stubDefaultSearch(
                 params = ListWidgetContainer.params(
                     subscription = BundledWidgetSourceIds.RECENT,
-                    spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                    space = defaultSpaceConfig.space,
                     keys = TreeWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 ),
@@ -987,7 +987,7 @@ class HomeScreenViewModelTest {
             stubDefaultSearch(
                 params = ListWidgetContainer.params(
                     subscription = BundledWidgetSourceIds.SETS,
-                    spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                    space = defaultSpaceConfig.space,
                     keys = TreeWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 ),
@@ -1583,7 +1583,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.FAVORITE,
-                spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                space = defaultSpaceConfig.space,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1593,7 +1593,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.RECENT,
-                spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                space = defaultSpaceConfig.space,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1603,7 +1603,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.SETS,
-                spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                space = defaultSpaceConfig.space,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1784,7 +1784,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.FAVORITE,
-                spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                space = defaultSpaceConfig.space,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1794,7 +1794,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.RECENT,
-                spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                space = defaultSpaceConfig.space,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1806,7 +1806,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.SETS,
-                spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                space = defaultSpaceConfig.space,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1851,7 +1851,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = setsSource.id,
-                    spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                    space = defaultSpaceConfig.space,
                     keys = ListWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_LIST_LIMIT
                 )
@@ -1862,7 +1862,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = recentSource.id,
-                    spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
+                    space = defaultSpaceConfig.space,
                     keys = ListWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_LIST_LIMIT
                 )
@@ -2392,7 +2392,7 @@ class HomeScreenViewModelTest {
             filters = buildList {
                 addAll(
                     ObjectSearchConstants.defaultDataViewFilters(
-                        spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace)
+                        space = defaultSpaceConfig.space
                     )
                 )
                 add(

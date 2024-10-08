@@ -134,7 +134,7 @@ class GlobalSearchViewModel(
                 keys = DEFAULT_KEYS,
                 filters = filterObjectsByIds(
                     ids = listOf(relatedObjectId),
-                    spaces = listOf(vmParams.space.id)
+                    space = vmParams.space.id
                 ),
                 space = vmParams.space
             )
@@ -272,11 +272,7 @@ class GlobalSearchViewModel(
                 offset = 0,
                 keys = DEFAULT_KEYS,
                 filters = buildList {
-                    addAll(
-                        filterSearchObjects(
-                            spaces = listOf(vmParams.space.id)
-                        )
-                    )
+                    addAll(filterSearchObjects(vmParams.space.id))
                     add(
                         DVFilter(
                             relation = Relations.ID,
@@ -306,10 +302,7 @@ class GlobalSearchViewModel(
                     limit = DEFAULT_SEARCH_LIMIT,
                     offset = 0,
                     keys = DEFAULT_KEYS,
-                    filters = ObjectSearchConstants.filterSearchObjects(
-                        // TODO add tech space?
-                        spaces = listOf(space.id)
-                    ),
+                    filters = ObjectSearchConstants.filterSearchObjects(space.id),
                     sorts = ObjectSearchConstants.sortsSearchObjects,
                     withMetaRelationDetails = true,
                     withMeta = true,

@@ -8,7 +8,6 @@ import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
-import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
@@ -65,7 +64,6 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
         spaceManager = SpaceManager.Impl(
             repo = repo,
             dispatchers = dispatchers,
-            configStorage = ConfigStorage.CacheStorage(),
             logger = mock()
         )
         dataViewSubscriptionContainer = DataViewSubscriptionContainer(

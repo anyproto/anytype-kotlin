@@ -543,7 +543,7 @@ fun RowScope.Item(
             }
         },
         leadingContent = {
-            ListWidgetObjectIcon(icon = item.icon, modifier = Modifier, iconSize = 24.dp)
+            ListWidgetObjectIcon(icon = item.icon, modifier = Modifier, iconSize = 48.dp)
         }
     )
 }

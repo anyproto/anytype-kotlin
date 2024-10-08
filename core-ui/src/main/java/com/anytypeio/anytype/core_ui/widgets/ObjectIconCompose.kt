@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.core_ui.widgets
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -24,6 +23,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.getMimeIcon
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.AvatarIconView
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.DeletedIconView
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.EmojiIconView
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.EmptyIconView
 import com.anytypeio.anytype.emojifier.Emojifier
@@ -36,7 +36,6 @@ fun ListWidgetObjectIcon(
     iconSize: Dp = 48.dp,
     onTaskIconClicked: (Boolean) -> Unit = {}
 ) {
-    Log.d("ListWidgetObjectIcon", "icon: $icon")
     when (icon) {
         is ObjectIcon.Profile.Avatar -> {
             AvatarIconView(
@@ -69,9 +68,13 @@ fun ListWidgetObjectIcon(
                 extension = icon.extensions
             )
         }
-
-        is ObjectIcon.Checkbox -> TODO()
-        ObjectIcon.Deleted -> TODO()
+        is ObjectIcon.Checkbox -> {}
+        ObjectIcon.Deleted -> {
+            DeletedIconView(
+                modifier = modifier,
+                backgroundSize = iconSize
+            )
+        }
         is ObjectIcon.Empty -> {
             EmptyIconView(
                 modifier = modifier,

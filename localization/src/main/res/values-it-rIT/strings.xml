@@ -1497,7 +1497,7 @@ Please provide specific details of your needs here.</string>
     <string name="version_history_error_get_version">Errore nell\'ottenere la cronologia delle versioni</string>
     <string name="version_history_error_get_members">Errore nell\'ottenere i membri</string>
     <string name="new_object">Nuovo oggetto</string>
-    <string name="vault_my_spaces">I miei spazi</string>
+    <string name="vault_my_spaces">My Spaces</string>
     <string name="all_content_title_all_content">Tutti gli oggetti</string>
     <string name="all_content_title_only_unlinked">Solo non collegati</string>
     <string name="all_content_title_only_unlinked_description">Oggetti non collegati che non hanno un collegamento diretto o un backlink con altri oggetti nel grafo.</string>

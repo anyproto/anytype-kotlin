@@ -1496,7 +1496,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="version_history_error_get_version">Fout bij ophalen versiegeschiedenis</string>
     <string name="version_history_error_get_members">Fout bij ophalen deelnemers</string>
     <string name="new_object">Nieuw object</string>
-    <string name="vault_my_spaces">Mijn ruimtes</string>
+    <string name="vault_my_spaces">My Spaces</string>
     <string name="all_content_title_all_content">All objects</string>
     <string name="all_content_title_only_unlinked">Only unlinked</string>
     <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>

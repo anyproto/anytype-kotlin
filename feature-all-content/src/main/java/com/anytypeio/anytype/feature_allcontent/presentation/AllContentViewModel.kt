@@ -76,7 +76,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -454,7 +453,8 @@ class AllContentViewModel(
                     mode = uiMode,
                     container = container,
                     sorts = uiSorts,
-                    types = uiSortTypes
+                    types = uiSortTypes,
+                    showBin = permission.value?.isOwnerOrEditor() == true
                 )
             }
         }

@@ -308,7 +308,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
             ),
             BlockView.LinkToObject.Default.Text(
                 id = link.id,
-                icon = ObjectIcon.None,
+                icon = ObjectIcon.Empty.Page,
                 decorations = listOf(
                     BlockView.Decoration(
                         background = link.parseThemeBackgroundColor()

@@ -136,7 +136,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                                 name = objectCollection.obj1.getProperName(),
                                 description = objectCollection.obj1.description,
                                 hideIcon = false,
-                                icon = ObjectIcon.Profile.Avatar(name = objectCollection.obj1.name!!),
+                                icon = ObjectIcon.Empty.Page,
                                 relations = listOf(
                                     DefaultObjectRelationValueView.Empty(
                                         objectId = objectCollection.obj1.id,
@@ -157,7 +157,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                                 name = objectCollection.obj2.getProperName(),
                                 description = objectCollection.obj2.description,
                                 hideIcon = false,
-                                icon = ObjectIcon.Profile.Avatar(name = objectCollection.obj2.name!!),
+                                icon = ObjectIcon.Empty.Page,
                                 relations = listOf(
                                     DefaultObjectRelationValueView.Empty(
                                         objectId = objectCollection.obj2.id,

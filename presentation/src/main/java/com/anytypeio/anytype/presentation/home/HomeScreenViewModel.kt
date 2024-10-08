@@ -1247,6 +1247,13 @@ class HomeScreenViewModel(
 
     fun onResume(deeplink: DeepLinkResolver.Action? = null) {
         Timber.d("onResume, deeplink: ${deeplink}")
+        viewModelScope.launch {
+            clearLastOpenedObject.run(
+                ClearLastOpenedObject.Params(
+                    SpaceId(spaceManager.get())
+                )
+            )
+        }
         when (deeplink) {
             is DeepLinkResolver.Action.Import.Experience -> {
                 viewModelScope.launch {
@@ -1681,11 +1688,6 @@ class HomeScreenViewModel(
                         Timber.e(it, "Error while closing object from history")
                     }
             }
-            clearLastOpenedObject(
-                ClearLastOpenedObject.Params(
-                    space = SpaceId(spaceManager.get())
-                )
-            )
             spaceManager.clear()
             clearLastOpenedSpace.async(Unit).fold(
                 onSuccess = {

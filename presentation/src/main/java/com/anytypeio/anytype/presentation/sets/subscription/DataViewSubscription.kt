@@ -141,8 +141,7 @@ class DefaultDataViewSubscription(
     }
 
     companion object {
-        const val DATA_VIEW_SUBSCRIPTION_POSTFIX = "-dataview"
-
+        private const val DATA_VIEW_SUBSCRIPTION_POSTFIX = "-dataview"
         fun getDataViewSubscriptionId(context: Id) = "$context$DATA_VIEW_SUBSCRIPTION_POSTFIX"
     }
 }

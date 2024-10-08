@@ -3,12 +3,9 @@ package com.anytypeio.anytype.presentation.widgets
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.DV
-import com.anytypeio.anytype.core_models.DVFilter
-import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
@@ -332,21 +329,6 @@ fun ObjectView.parseDataViewStoreSearchParams(
                 ObjectSearchConstants.defaultDataViewFilters(
                     space = config.space
                 )
-            )
-            add(
-                DVFilter(
-                    relation = Relations.TYPE_UNIQUE_KEY,
-                    condition = DVFilterCondition.NOT_IN,
-                    value = listOf(
-                        ObjectTypeIds.OBJECT_TYPE,
-                        ObjectTypeIds.RELATION,
-                        ObjectTypeIds.TEMPLATE,
-                        ObjectTypeIds.DASHBOARD,
-                        ObjectTypeIds.RELATION_OPTION,
-                        ObjectTypeIds.DASHBOARD,
-                        ObjectTypeIds.DATE
-                    )
-                ),
             )
         },
         limit = limit,

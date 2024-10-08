@@ -24,7 +24,5 @@ class DefaultFeatureToggles @Inject constructor(
 
     override val isConciseLogging: Boolean = true
 
-    override val enableSpaces: Boolean = true
-
     override val enableDiscussionDemo: Boolean = false
 }

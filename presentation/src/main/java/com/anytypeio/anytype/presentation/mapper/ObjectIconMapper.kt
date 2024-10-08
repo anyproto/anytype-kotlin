@@ -16,7 +16,8 @@ fun ObjectWrapper.Basic.objectIcon(builder: UrlBuilder): ObjectIcon {
     val objectIcon = layout?.icon(
         image = iconImage,
         emoji = iconEmoji,
-        builder = builder
+        builder = builder,
+        name = name.orEmpty()
     )
 
     if (objectIcon != null) {
@@ -51,7 +52,12 @@ fun ObjectType.Layout?.emptyType(): ObjectIcon.Empty {
     }
 }
 
-fun ObjectType.Layout.icon(image: String?, emoji: String?, builder: UrlBuilder): ObjectIcon? {
+fun ObjectType.Layout.icon(
+    image: String?,
+    emoji: String?,
+    name: String,
+    builder: UrlBuilder
+): ObjectIcon? {
     return when (this) {
 
         ObjectType.Layout.BASIC,
@@ -68,7 +74,7 @@ fun ObjectType.Layout.icon(image: String?, emoji: String?, builder: UrlBuilder):
         ObjectType.Layout.PROFILE,
         ObjectType.Layout.PARTICIPANT -> profileIcon(
             image = image,
-            name = emoji.orEmpty(),
+            name = name,
             builder = builder
         )
 
@@ -81,16 +87,23 @@ fun ObjectType.Layout.icon(image: String?, emoji: String?, builder: UrlBuilder):
     }
 }
 
-private fun basicIcon(image: String?, emoji: String?, builder: UrlBuilder, layout: ObjectType.Layout): ObjectIcon? {
+private fun basicIcon(
+    image: String?,
+    emoji: String?,
+    builder: UrlBuilder,
+    layout: ObjectType.Layout
+): ObjectIcon? {
     return when {
         !image.isNullOrBlank() -> Basic.Image(
             hash = builder.thumbnail(image),
             emptyState = layout.emptyType()
         )
+
         !emoji.isNullOrBlank() -> Basic.Emoji(
             unicode = emoji,
             emptyState = layout.emptyType()
         )
+
         else -> null
     }
 }

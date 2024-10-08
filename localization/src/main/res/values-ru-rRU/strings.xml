@@ -1546,7 +1546,7 @@
     <string name="all_content_sort_date_created">Дата создания</string>
     <string name="all_content_sort_date_used">Date last used</string>
     <string name="all_content_sort_name">Название</string>
-    <string name="all_content">Все объекты</string>
+    <string name="all_content">All Objects</string>
     <string name="allContent_group_today">Сегодня</string>
     <string name="allContent_group_yesterday">Вчера</string>
     <string name="allContent_group_prev_7">За последние 7 дней</string>

@@ -22,7 +22,7 @@ interface DataViewSubscription {
 
     suspend fun startObjectSetSubscription(
         context: Id,
-        spaces: List<Id>,
+        space: Id,
         state: ObjectState.DataView.Set,
         currentViewerId: Id?,
         offset: Long,
@@ -32,7 +32,7 @@ interface DataViewSubscription {
     suspend fun startObjectCollectionSubscription(
         context: Id,
         collection: Id,
-        spaces: List<Id>,
+        space: Id,
         state: ObjectState.DataView.Collection,
         currentViewerId: Id?,
         offset: Long,
@@ -49,7 +49,7 @@ class DefaultDataViewSubscription(
     override suspend fun startObjectCollectionSubscription(
         context: Id,
         collection: Id,
-        spaces: List<Id>,
+        space: Id,
         state: ObjectState.DataView.Collection,
         currentViewerId: Id?,
         offset: Long,
@@ -66,7 +66,7 @@ class DefaultDataViewSubscription(
         }
         val filters = buildList {
             addAll(activeViewer.filters.updateFormatForSubscription(relationLinks = dataViewRelationLinks))
-            addAll(defaultDataViewFilters(spaces = spaces))
+            addAll(defaultDataViewFilters(space= space))
         }
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }
         val keys = ObjectSearchConstants.defaultDataViewKeys + dataViewLinksKeys
@@ -86,7 +86,7 @@ class DefaultDataViewSubscription(
 
     override suspend fun startObjectSetSubscription(
         context: Id,
-        spaces: List<Id>,
+        space: Id,
         state: ObjectState.DataView.Set,
         currentViewerId: Id?,
         offset: Long,
@@ -119,7 +119,7 @@ class DefaultDataViewSubscription(
 
         val filters = buildList {
             addAll(activeViewer.filters.updateFormatForSubscription(relationLinks = dataViewRelationLinks))
-            addAll(defaultDataViewFilters(spaces = spaces))
+            addAll(defaultDataViewFilters(space = space))
         }
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }
         val keys = ObjectSearchConstants.defaultDataViewKeys + dataViewLinksKeys

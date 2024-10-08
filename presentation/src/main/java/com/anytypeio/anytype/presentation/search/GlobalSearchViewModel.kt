@@ -134,7 +134,7 @@ class GlobalSearchViewModel(
                 keys = DEFAULT_KEYS,
                 filters = filterObjectsByIds(
                     ids = listOf(relatedObjectId),
-                    spaces = listOf(vmParams.space.id)
+                    space = vmParams.space.id
                 ),
                 space = vmParams.space
             )

@@ -330,10 +330,7 @@ fun ObjectView.parseDataViewStoreSearchParams(
             addAll(view.filters)
             addAll(
                 ObjectSearchConstants.defaultDataViewFilters(
-                    spaces = buildList {
-                        add(config.space)
-                        add(config.techSpace)
-                    }
+                    space = config.space
                 )
             )
             add(

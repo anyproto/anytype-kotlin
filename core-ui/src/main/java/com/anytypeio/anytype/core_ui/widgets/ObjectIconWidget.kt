@@ -378,7 +378,6 @@ class ObjectIconWidget @JvmOverloads constructor(
             ivBookmark.setImageDrawable(null)
             ivBookmark.gone()
             emojiContainer.visible()
-            ivEmpty.gone()
         }
     }
 

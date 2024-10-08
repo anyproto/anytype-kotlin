@@ -30,7 +30,6 @@ import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
-import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
@@ -248,7 +247,6 @@ open class ObjectSetViewModelTestSetup {
         spaceManager = SpaceManager.Impl(
             repo = repo,
             dispatchers = dispatchers,
-            configStorage = ConfigStorage.CacheStorage(),
             logger = mock()
         )
         dataViewSubscriptionContainer = DataViewSubscriptionContainer(

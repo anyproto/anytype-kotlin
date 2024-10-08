@@ -22,38 +22,52 @@ import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 object ObjectSearchConstants {
 
     //region SEARCH OBJECTS
-    fun filterSearchObjects(spaces: List<Id>) = listOf(
-        DVFilter(
-            relation = Relations.IS_ARCHIVED,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_HIDDEN,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_DELETED,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.TYPE_UNIQUE_KEY,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = ObjectTypeUniqueKeys.TEMPLATE
-        ),
-        DVFilter(
-            relation = Relations.LAYOUT,
-            condition = DVFilterCondition.IN,
-            value = SupportedLayouts.globalSearchLayouts.map { it.code.toDouble() }
-        ),
-        DVFilter(
-            relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.IN,
-            value = spaces
+    fun filterSearchObjects(space: Id? = null) = buildList {
+        add(
+            DVFilter(
+                relation = Relations.IS_ARCHIVED,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
         )
-    )
+        add(
+            DVFilter(
+                relation = Relations.IS_HIDDEN,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.IS_DELETED,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.TYPE_UNIQUE_KEY,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = ObjectTypeUniqueKeys.TEMPLATE
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.LAYOUT,
+                condition = DVFilterCondition.IN,
+                value = SupportedLayouts.globalSearchLayouts.map { it.code.toDouble() }
+            )
+        )
+        if (!space.isNullOrEmpty()) {
+            add(
+                DVFilter(
+                    relation = Relations.SPACE_ID,
+                    condition = DVFilterCondition.EQUAL,
+                    value = space
+                )
+            )
+        }
+    }
 
     val sortsSearchObjects = listOf(
         DVSort(

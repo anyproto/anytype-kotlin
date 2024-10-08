@@ -4,7 +4,6 @@ import com.anytypeio.anytype.data.auth.status.SyncAndP2PStatusDataChannel
 import com.anytypeio.anytype.data.auth.status.SyncAndP2PStatusEventsStore
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.SyncAndP2PStatusChannel
@@ -21,12 +20,10 @@ object WorkspaceModule {
     fun spaces(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers,
-        configStorage: ConfigStorage,
         logger: Logger
     ): SpaceManager = SpaceManager.Impl(
         dispatchers = dispatchers,
         repo = repo,
-        configStorage = configStorage,
         logger = logger
     )
 

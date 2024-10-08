@@ -761,6 +761,12 @@ class AllContentViewModel(
         viewModelScope.launch {
             storelessSubscriptionContainer.unsubscribe(listOf(subscriptionId()))
         }
+        viewModelScope.launch {
+            userInput.value = DEFAULT_QUERY
+            searchResultIds.value = emptyList()
+            uiItemsState.value = emptyList()
+            uiContentState.value = UiContentState.Empty
+        }
     }
 
     fun proceedWithMoveToBin(item: UiContentItem.Item) {

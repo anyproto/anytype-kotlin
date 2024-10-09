@@ -5,9 +5,11 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.core_models.StubObjectType
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.common.DefaultCoroutineTestRule
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionContainer
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
@@ -44,6 +46,9 @@ class ObjectTypesSubscriptionContainerTest {
     lateinit var repo: BlockRepository
 
     @Mock
+    lateinit var logger: Logger
+
+    @Mock
     lateinit var channel: SubscriptionEventChannel
 
     @Before
@@ -70,7 +75,8 @@ class ObjectTypesSubscriptionContainerTest {
             repo = repo,
             channel = channel,
             store = store,
-            dispatchers = dispatchers
+            dispatchers = dispatchers,
+            logger = logger
         )
 
         val manager = ObjectTypesSubscriptionManager(
@@ -142,6 +148,7 @@ class ObjectTypesSubscriptionContainerTest {
         repo.stub {
             onBlocking {
                 searchObjectsWithSubscription(
+                    space = SpaceId(defaultSpaceConfig.space),
                     subscription = defaultSpaceSearchParams.subscription,
                     sorts = defaultSpaceSearchParams.sorts,
                     filters = defaultSpaceSearchParams.filters,
@@ -164,6 +171,7 @@ class ObjectTypesSubscriptionContainerTest {
         repo.stub {
             onBlocking {
                 searchObjectsWithSubscription(
+                    space = SpaceId(defaultSpaceConfig.space),
                     subscription = alternativeSpaceSearchParams.subscription,
                     sorts = alternativeSpaceSearchParams.sorts,
                     filters = alternativeSpaceSearchParams.filters,

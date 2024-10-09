@@ -2386,12 +2386,11 @@ class HomeScreenViewModelTest {
         )
 
         val firstTimeParams = StoreSearchParams(
+            space = SpaceId(defaultSpaceConfig.space),
             subscription = widgetBlock.id,
             filters = buildList {
                 addAll(
-                    ObjectSearchConstants.defaultDataViewFilters(
-                        space = defaultSpaceConfig.space
-                    )
+                    ObjectSearchConstants.defaultDataViewFilters()
                 )
             },
             sorts = emptyList(),

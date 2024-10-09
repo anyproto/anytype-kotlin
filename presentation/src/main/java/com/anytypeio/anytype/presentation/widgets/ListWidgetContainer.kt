@@ -111,6 +111,7 @@ class ListWidgetContainer(
                             Timber.e(it, "Failed to load favorite objects")
                         }
                 }
+
                 BundledWidgetSourceIds.RECENT -> {
                     val spaceView = getSpaceView.async(
                         GetSpaceView.Params.BySpaceViewId(widget.config.spaceView)
@@ -128,6 +129,7 @@ class ListWidgetContainer(
                         )
                     }
                 }
+
                 else -> {
                     storage.subscribe(buildParams()).map { objects ->
                         buildWidgetViewWithElements(
@@ -192,7 +194,7 @@ class ListWidgetContainer(
             limit: Int,
             customFavoritesOrder: List<Id> = emptyList(),
             spaceCreationDateInSeconds: Long? = null
-        ) : StoreSearchParams = when (subscription) {
+        ): StoreSearchParams = when (subscription) {
             BundledWidgetSourceIds.RECENT -> {
                 StoreSearchParams(
                     space = SpaceId(space),
@@ -205,26 +207,29 @@ class ListWidgetContainer(
                     limit = limit
                 )
             }
+
             BundledWidgetSourceIds.RECENT_LOCAL -> {
                 StoreSearchParams(
                     space = SpaceId(space),
                     subscription = subscription,
                     sorts = ObjectSearchConstants.sortTabRecentLocal,
-                    filters = ObjectSearchConstants.filterTabRecentLocal(space),
+                    filters = ObjectSearchConstants.filterTabRecentLocal(),
                     keys = keys,
                     limit = limit
                 )
             }
+
             BundledWidgetSourceIds.SETS -> {
                 StoreSearchParams(
                     space = SpaceId(space),
                     subscription = subscription,
                     sorts = ObjectSearchConstants.sortTabSets,
-                    filters = ObjectSearchConstants.filterTabSets(space),
+                    filters = ObjectSearchConstants.filterTabSets(),
                     keys = keys,
                     limit = limit
                 )
             }
+
             BundledWidgetSourceIds.FAVORITE -> {
                 StoreSearchParams(
                     space = SpaceId(space),
@@ -241,31 +246,34 @@ class ListWidgetContainer(
                             )
                         }
                     },
-                    filters = ObjectSearchConstants.filterTabFavorites(space),
+                    filters = ObjectSearchConstants.filterTabFavorites(),
                     keys = keys,
                     limit = limit
                 )
             }
+
             BundledWidgetSourceIds.COLLECTIONS -> {
                 StoreSearchParams(
                     space = SpaceId(space),
                     subscription = subscription,
                     sorts = collectionsSorts,
-                    filters = ObjectSearchConstants.collectionFilters(space),
+                    filters = ObjectSearchConstants.collectionFilters(),
                     keys = keys,
                     limit = limit
                 )
             }
+
             Subscriptions.SUBSCRIPTION_ARCHIVED -> {
                 StoreSearchParams(
                     space = SpaceId(space),
                     subscription = subscription,
                     sorts = ObjectSearchConstants.sortTabArchive,
-                    filters = ObjectSearchConstants.filterTabArchive(space),
+                    filters = ObjectSearchConstants.filterTabArchive(),
                     keys = keys,
                     limit = limit
                 )
             }
+
             else -> throw IllegalStateException("Unexpected subscription: $subscription")
         }
 
@@ -276,7 +284,7 @@ class ListWidgetContainer(
     }
 }
 
-fun ObjectView.orderOfRootObjects(root: Id) : Map<Id, Int> {
+fun ObjectView.orderOfRootObjects(root: Id): Map<Id, Int> {
     val parent = blocks.find { it.id == root }
     return if (parent != null) {
         val order = parent.children.withIndex().associate { (index, id) -> id to index }

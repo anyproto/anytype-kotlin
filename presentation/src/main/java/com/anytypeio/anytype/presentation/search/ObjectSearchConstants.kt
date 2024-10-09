@@ -329,7 +329,7 @@ object ObjectSearchConstants {
     //endregion
 
     //region TAB FAVORITES
-    fun filterTabFavorites(space: Id) = listOf(
+    fun filterTabFavorites() = listOf(
         DVFilter(
             relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL ,
@@ -354,11 +354,6 @@ object ObjectSearchConstants {
             relation = Relations.TYPE_UNIQUE_KEY,
             condition = DVFilterCondition.NOT_EQUAL,
             value = ObjectTypeUniqueKeys.TEMPLATE
-        ),
-        DVFilter(
-            relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.IN,
-            value = space
         ),
         DVFilter(
             relation = Relations.IS_FAVORITE,
@@ -438,9 +433,7 @@ object ObjectSearchConstants {
         )
     )
 
-    fun filterTabRecentLocal(
-        space: Id
-    ) = listOf(
+    fun filterTabRecentLocal() = listOf(
         DVFilter(
             relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
@@ -470,11 +463,6 @@ object ObjectSearchConstants {
             relation = Relations.LAST_OPENED_DATE,
             condition = DVFilterCondition.NOT_EQUAL,
             value = null
-        ),
-        DVFilter(
-            relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.EQUAL,
-            value = space
         )
     )
 
@@ -492,7 +480,7 @@ object ObjectSearchConstants {
     //endregion
 
     //region TAB SETS
-    fun filterTabSets(space: Id) = listOf(
+    fun filterTabSets() = listOf(
         DVFilter(
             relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
@@ -512,11 +500,6 @@ object ObjectSearchConstants {
             relation = Relations.LAYOUT,
             condition = DVFilterCondition.EQUAL,
             value = ObjectType.Layout.SET.code.toDouble()
-        ),
-        DVFilter(
-            relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.EQUAL,
-            value = space
         )
     )
 
@@ -531,7 +514,7 @@ object ObjectSearchConstants {
     //endregion
 
     //region TAB ARCHIVE
-    fun filterTabArchive(space: Id) = listOf(
+    fun filterTabArchive() = listOf(
         DVFilter(
             relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.EQUAL,
@@ -546,11 +529,6 @@ object ObjectSearchConstants {
             relation = Relations.IS_HIDDEN,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
-        ),
-        DVFilter(
-            relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.EQUAL,
-            value = space
         )
     )
 
@@ -564,7 +542,7 @@ object ObjectSearchConstants {
     //endregion
 
     //region BACK LINK OR ADD TO OBJECT
-    fun filtersBackLinkOrAddToObject(ignore: Id?, spaces: List<Id>) = listOf(
+    fun filtersBackLinkOrAddToObject(ignore: Id?) = listOf(
         DVFilter(
             relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
@@ -594,11 +572,6 @@ object ObjectSearchConstants {
             relation = Relations.ID,
             condition = DVFilterCondition.NOT_EQUAL,
             value = ignore
-        ),
-        DVFilter(
-            relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.IN,
-            value = spaces
         )
     )
 
@@ -982,12 +955,7 @@ object ObjectSearchConstants {
         )
     )
 
-    fun collectionFilters(space: Id) = listOf(
-        DVFilter(
-            relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.EQUAL,
-            value = space
-        ),
+    fun collectionFilters() = listOf(
         DVFilter(
             relation = Relations.LAYOUT,
             condition = DVFilterCondition.EQUAL,

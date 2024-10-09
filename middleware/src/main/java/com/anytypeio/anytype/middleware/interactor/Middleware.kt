@@ -1253,6 +1253,7 @@ class Middleware @Inject constructor(
     @Throws(Exception::class)
     fun objectSearchWithMeta(command: Command.SearchWithMeta): List<Command.SearchWithMeta.Result>  {
         val request = Rpc.Object.SearchWithMeta.Request(
+            spaceId = command.space.id,
             sorts = command.sorts.map { it.toMiddlewareModel() },
             filters = command.filters.map { it.toMiddlewareModel() },
             fullText = command.query,

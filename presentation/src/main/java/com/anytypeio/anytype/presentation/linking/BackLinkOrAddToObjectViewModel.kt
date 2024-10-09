@@ -58,8 +58,7 @@ class BackLinkOrAddToObjectViewModel(
             space = SpaceId(spaceManager.get()),
             limit = SEARCH_LIMIT,
             filters = ObjectSearchConstants.filtersBackLinkOrAddToObject(
-                ignore = ignore,
-                spaces = emptyList()
+                ignore = ignore
             ),
             sorts = ObjectSearchConstants.sortBackLinkOrAddToObject,
             fulltext = EMPTY_QUERY,

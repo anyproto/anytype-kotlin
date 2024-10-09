@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.sets.main
 import app.cash.turbine.turbineScope
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -98,12 +99,11 @@ class ObjectSetConvertToCollectionTest : ObjectSetViewModelTestSetup() {
 
             verifyBlocking(repo, times(1)) {
                 searchObjectsWithSubscription(
+                    eq(SpaceId(mockObjectSet.space)),
                     eq(mockObjectSet.subscriptionId),
                     eq(listOf()),
                     eq(
-                        mockObjectSet.filters + ObjectSearchConstants.defaultDataViewFilters(
-                            space = mockObjectSet.space
-                        )
+                        mockObjectSet.filters + ObjectSearchConstants.defaultDataViewFilters()
                     ),
                     eq(ObjectSearchConstants.defaultDataViewKeys + mockObjectSet.dvKeys),
                     eq(listOf()),

@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubObjectType
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -132,6 +133,7 @@ class ObjectTypeChangeViewModelTest {
 
         verifyBlocking(blockRepository, times(1)) {
             searchObjects(
+                space = SpaceId(spaceId),
                 filters = expectedMyTypesFilters,
                 sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                 limit = 0,
@@ -185,6 +187,7 @@ class ObjectTypeChangeViewModelTest {
         blockRepository.stub {
             onBlocking {
                 searchObjects(
+                    space = SpaceId(spaceId),
                     filters = expectedMyTypesFilters,
                     sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                     limit = 0,
@@ -214,6 +217,7 @@ class ObjectTypeChangeViewModelTest {
 
         verifyBlocking(blockRepository, times(1)) {
             searchObjects(
+                space = SpaceId(spaceId),
                 filters = expectedMyTypesFilters,
                 sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                 limit = 0,
@@ -227,6 +231,7 @@ class ObjectTypeChangeViewModelTest {
 
         verifyBlocking(blockRepository, times(1)) {
             searchObjects(
+                space = SpaceId(spaceId),
                 filters = expectedMarketplaceTypeFilters,
                 sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                 limit = 0,
@@ -282,6 +287,7 @@ class ObjectTypeChangeViewModelTest {
         blockRepository.stub {
             onBlocking {
                 searchObjects(
+                    space = SpaceId(spaceId),
                     filters = expectedMyTypesFilters,
                     sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                     limit = 0,
@@ -297,6 +303,7 @@ class ObjectTypeChangeViewModelTest {
         blockRepository.stub {
             onBlocking {
                 searchObjects(
+                    space = SpaceId(spaceId),
                     filters = expectedMarketplaceTypeFilters,
                     sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                     limit = 0,
@@ -310,6 +317,7 @@ class ObjectTypeChangeViewModelTest {
         blockRepository.stub {
             onBlocking {
                 searchObjects(
+                    space = SpaceId(spaceId),
                     filters = expectedMyTypesFilters,
                     sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                     limit = 0,
@@ -325,6 +333,7 @@ class ObjectTypeChangeViewModelTest {
         blockRepository.stub {
             onBlocking {
                 searchObjects(
+                    space = SpaceId(spaceId),
                     filters = expectedMarketplaceTypeFilters,
                     sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                     limit = 0,
@@ -352,6 +361,7 @@ class ObjectTypeChangeViewModelTest {
 
         verifyBlocking(blockRepository, times(1)) {
             searchObjects(
+                space = SpaceId(spaceId),
                 filters = expectedMyTypesFilters,
                 sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                 limit = 0,
@@ -365,6 +375,7 @@ class ObjectTypeChangeViewModelTest {
 
         verifyBlocking(blockRepository, times(1)) {
             searchObjects(
+                space = SpaceId(spaceId),
                 filters = expectedMarketplaceTypeFilters,
                 sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                 limit = 0,
@@ -384,6 +395,7 @@ class ObjectTypeChangeViewModelTest {
 
         verifyBlocking(blockRepository, times(1)) {
             searchObjects(
+                space = SpaceId(spaceId),
                 filters = expectedMyTypesFilters,
                 sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                 limit = 0,
@@ -397,6 +409,7 @@ class ObjectTypeChangeViewModelTest {
 
         verifyBlocking(blockRepository, times(1)) {
             searchObjects(
+                space = SpaceId(spaceId),
                 filters = expectedMarketplaceTypeFilters,
                 sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                 limit = 0,
@@ -453,6 +466,7 @@ class ObjectTypeChangeViewModelTest {
         blockRepository.stub {
             onBlocking {
                 searchObjects(
+                    space = SpaceId(spaceId),
                     filters = expectedMyTypesFilters,
                     sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                     limit = 0,
@@ -468,6 +482,7 @@ class ObjectTypeChangeViewModelTest {
         blockRepository.stub {
             onBlocking {
                 searchObjects(
+                    space = SpaceId(spaceId),
                     filters = expectedMarketplaceTypeFilters,
                     sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                     limit = 0,
@@ -513,6 +528,7 @@ class ObjectTypeChangeViewModelTest {
 
         verifyBlocking(blockRepository, times(1)) {
             searchObjects(
+                space = SpaceId(spaceId),
                 filters = expectedMyTypesFilters,
                 sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                 limit = 0,
@@ -582,6 +598,7 @@ class ObjectTypeChangeViewModelTest {
 
         verifyBlocking(blockRepository, times(1)) {
             searchObjects(
+                space = SpaceId(spaceId),
                 filters = expectedMyTypesFilters,
                 sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                 limit = 0,

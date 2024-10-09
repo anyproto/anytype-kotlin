@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_SPACE_ID
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubRelationObject
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.relations.GetRelations
@@ -76,16 +77,10 @@ class RelationAddViewModelBaseTest {
         repo.stub {
             onBlocking {
                 searchObjects(
+                    space = SpaceId(spaceId),
                     sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
                     filters = buildList {
                         addAll(ObjectSearchConstants.filterMyRelations())
-                        add(
-                            DVFilter(
-                                relation = Relations.SPACE_ID,
-                                condition = DVFilterCondition.EQUAL,
-                                value = spaceId
-                            )
-                        )
                         add(
                             DVFilter(
                                 relation = Relations.RELATION_KEY,
@@ -104,6 +99,7 @@ class RelationAddViewModelBaseTest {
         repo.stub {
             onBlocking {
                 searchObjects(
+                    space = SpaceId(spaceId),
                     sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
                     filters = buildList {
                         addAll(ObjectSearchConstants.filterMarketplaceRelations())
@@ -194,16 +190,10 @@ class RelationAddViewModelBaseTest {
             repo.stub {
                 onBlocking {
                     searchObjects(
+                        space = SpaceId(spaceId),
                         sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
                         filters = buildList {
                             addAll(ObjectSearchConstants.filterMyRelations())
-                            add(
-                                DVFilter(
-                                    relation = Relations.SPACE_ID,
-                                    condition = DVFilterCondition.EQUAL,
-                                    value = spaceId
-                                )
-                            )
                             add(
                                 DVFilter(
                                     relation = Relations.RELATION_KEY,
@@ -222,6 +212,7 @@ class RelationAddViewModelBaseTest {
             repo.stub {
                 onBlocking {
                     searchObjects(
+                        space = SpaceId(spaceId),
                         sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
                         filters = buildList {
                             addAll(ObjectSearchConstants.filterMarketplaceRelations())

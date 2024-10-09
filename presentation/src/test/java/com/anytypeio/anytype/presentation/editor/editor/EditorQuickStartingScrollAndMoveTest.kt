@@ -124,6 +124,7 @@ class EditorQuickStartingScrollAndMoveTest : EditorPresentationTestSetup() {
                     count = 1,
                     isScrollAndMoveEnabled = false,
                     isQuickScrollAndMoveMode = false,
+                    isSelectAllVisible = true
                 ),
                 styleTextToolbar = Toolbar.Styling.reset(),
                 slashWidget = Toolbar.SlashWidget.reset()
@@ -232,10 +233,10 @@ class EditorQuickStartingScrollAndMoveTest : EditorPresentationTestSetup() {
                 navigationToolbar = Toolbar.Navigation(isVisible = true),
                 mainToolbar = Toolbar.Main.reset(),
                 mentionToolbar = Toolbar.MentionToolbar.reset(),
-                multiSelect = Toolbar.MultiSelect.reset(),
+                multiSelect = Toolbar.MultiSelect.reset().copy(isSelectAllVisible = true, isVisible = false),
                 styleTextToolbar = Toolbar.Styling.reset(),
                 slashWidget = Toolbar.SlashWidget.reset()
-            )
+            ),
         )
 
         coroutineTestRule.advanceTime(EditorViewModel.DELAY_REFRESH_DOCUMENT_ON_EXIT_MULTI_SELECT_MODE + 100)

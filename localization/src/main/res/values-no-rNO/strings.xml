@@ -43,7 +43,7 @@
     <string name="space">Rom</string>
     <string name="space_name">Romnavn</string>
     <string name="default_space">Entry space</string>
-    <string name="space_settings_apply_random_gradient">Bruk tilfeldig gradient</string>
+    <string name="space_settings_apply_random_gradient">Apply random solid color</string>
     <string name="space_settings_apply_upload_image">Last opp bilde</string>
     <string name="delete_space">Slett rom</string>
     <string name="you_can_store">You can store up to %1$s of your files on our encrypted backup node for free. If you reach the limit, files will be stored only locally.</string>

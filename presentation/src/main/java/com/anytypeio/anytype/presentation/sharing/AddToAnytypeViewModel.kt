@@ -74,7 +74,9 @@ class AddToAnytypeViewModel(
 
     private val selectedSpaceId = MutableStateFlow(NO_VALUE)
 
-    private val spaces: Flow<List<ObjectWrapper.SpaceView>> = getSpaceViews.asFlow(Unit)
+    private val spaces: Flow<List<ObjectWrapper.SpaceView>> = getSpaceViews.asFlow(
+        TODO("TODO DROID-2916 Provide space ID")
+    )
 
     val navigation = MutableSharedFlow<OpenObjectNavigation>()
     val spaceViews = MutableStateFlow<List<SpaceView>>(emptyList())

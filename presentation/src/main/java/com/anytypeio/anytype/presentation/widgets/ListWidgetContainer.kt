@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -194,10 +195,10 @@ class ListWidgetContainer(
         ) : StoreSearchParams = when (subscription) {
             BundledWidgetSourceIds.RECENT -> {
                 StoreSearchParams(
+                    space = SpaceId(space),
                     subscription = subscription,
                     sorts = ObjectSearchConstants.sortTabRecent,
                     filters = ObjectSearchConstants.filterTabRecent(
-                        space = space,
                         spaceCreationDateInSeconds = spaceCreationDateInSeconds
                     ),
                     keys = keys,
@@ -206,6 +207,7 @@ class ListWidgetContainer(
             }
             BundledWidgetSourceIds.RECENT_LOCAL -> {
                 StoreSearchParams(
+                    space = SpaceId(space),
                     subscription = subscription,
                     sorts = ObjectSearchConstants.sortTabRecentLocal,
                     filters = ObjectSearchConstants.filterTabRecentLocal(space),
@@ -215,6 +217,7 @@ class ListWidgetContainer(
             }
             BundledWidgetSourceIds.SETS -> {
                 StoreSearchParams(
+                    space = SpaceId(space),
                     subscription = subscription,
                     sorts = ObjectSearchConstants.sortTabSets,
                     filters = ObjectSearchConstants.filterTabSets(space),
@@ -224,6 +227,7 @@ class ListWidgetContainer(
             }
             BundledWidgetSourceIds.FAVORITE -> {
                 StoreSearchParams(
+                    space = SpaceId(space),
                     subscription = subscription,
                     sorts = buildList {
                         if (customFavoritesOrder.isNotEmpty()) {
@@ -244,6 +248,7 @@ class ListWidgetContainer(
             }
             BundledWidgetSourceIds.COLLECTIONS -> {
                 StoreSearchParams(
+                    space = SpaceId(space),
                     subscription = subscription,
                     sorts = collectionsSorts,
                     filters = ObjectSearchConstants.collectionFilters(space),
@@ -253,6 +258,7 @@ class ListWidgetContainer(
             }
             Subscriptions.SUBSCRIPTION_ARCHIVED -> {
                 StoreSearchParams(
+                    space = SpaceId(space),
                     subscription = subscription,
                     sorts = ObjectSearchConstants.sortTabArchive,
                     filters = ObjectSearchConstants.filterTabArchive(space),

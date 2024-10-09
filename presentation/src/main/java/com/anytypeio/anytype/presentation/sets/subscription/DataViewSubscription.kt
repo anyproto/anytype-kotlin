@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.search.DataViewState
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
@@ -66,12 +67,13 @@ class DefaultDataViewSubscription(
         }
         val filters = buildList {
             addAll(activeViewer.filters.updateFormatForSubscription(relationLinks = dataViewRelationLinks))
-            addAll(defaultDataViewFilters(space= space))
+            addAll(defaultDataViewFilters())
         }
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }
         val keys = ObjectSearchConstants.defaultDataViewKeys + dataViewLinksKeys
 
         val params = DataViewSubscriptionContainer.Params(
+            space = SpaceId(space),
             collection = collection,
             subscription = getDataViewSubscriptionId(context),
             sorts = activeViewer.sorts.updateWithRelationFormat(relationLinks = dataViewRelationLinks),
@@ -119,12 +121,13 @@ class DefaultDataViewSubscription(
 
         val filters = buildList {
             addAll(activeViewer.filters.updateFormatForSubscription(relationLinks = dataViewRelationLinks))
-            addAll(defaultDataViewFilters(space = space))
+            addAll(defaultDataViewFilters())
         }
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }
         val keys = ObjectSearchConstants.defaultDataViewKeys + dataViewLinksKeys
 
         val params = DataViewSubscriptionContainer.Params(
+            space = SpaceId(space),
             subscription = getDataViewSubscriptionId(context),
             sorts = activeViewer.sorts.updateWithRelationFormat(relationLinks = dataViewRelationLinks),
             filters = filters,

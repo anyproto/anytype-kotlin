@@ -23,7 +23,7 @@ import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 object ObjectSearchConstants {
 
     //region SEARCH OBJECTS
-    fun filterSearchObjects(space: Id? = null) = buildList {
+    fun filterSearchObjects() = buildList {
         add(
             DVFilter(
                 relation = Relations.IS_ARCHIVED,
@@ -59,15 +59,6 @@ object ObjectSearchConstants {
                 value = SupportedLayouts.globalSearchLayouts.map { it.code.toDouble() }
             )
         )
-        if (!space.isNullOrEmpty()) {
-            add(
-                DVFilter(
-                    relation = Relations.SPACE_ID,
-                    condition = DVFilterCondition.EQUAL,
-                    value = space
-                )
-            )
-        }
     }
 
     val sortsSearchObjects = listOf(
@@ -247,7 +238,6 @@ object ObjectSearchConstants {
 
     //region ADD OBJECT TO FILTER
     fun filterAddObjectToFilter(
-        space: Id,
         limitObjectTypes: List<Key>
     ) = buildList {
         add(
@@ -278,13 +268,6 @@ object ObjectSearchConstants {
                 value = ObjectTypeUniqueKeys.TEMPLATE
             )
         )
-        add(
-            DVFilter(
-                relation = Relations.SPACE_ID,
-                condition = DVFilterCondition.EQUAL,
-                value = space
-            )
-        )
         // TODO check these filters
         if (limitObjectTypes.isEmpty()) {
             add(
@@ -305,7 +288,7 @@ object ObjectSearchConstants {
         }
     }
 
-    fun filterAddObjectToFilterByLayout(space: Id, layouts: List<ObjectType.Layout>) = buildList {
+    fun filterAddObjectToFilterByLayout(layouts: List<ObjectType.Layout>) = buildList {
         add(
             DVFilter(
                 relation = Relations.IS_ARCHIVED,
@@ -325,13 +308,6 @@ object ObjectSearchConstants {
                 relation = Relations.IS_DELETED,
                 condition = DVFilterCondition.NOT_EQUAL,
                 value = true
-            )
-        )
-        add(
-            DVFilter(
-                relation = Relations.SPACE_ID,
-                condition = DVFilterCondition.EQUAL,
-                value = space
             )
         )
         add(
@@ -397,7 +373,6 @@ object ObjectSearchConstants {
 
     //region TAB RECENT
     fun filterTabRecent(
-        space: Id,
         spaceCreationDateInSeconds: Long? = null
     ) = buildList {
         add(
@@ -452,13 +427,6 @@ object ObjectSearchConstants {
                 )
             )
         }
-        add(
-            DVFilter(
-                relation = Relations.SPACE_ID,
-                condition = DVFilterCondition.EQUAL,
-                value = space
-            )
-        )
     }
 
     val sortTabRecent = listOf(
@@ -887,14 +855,7 @@ object ObjectSearchConstants {
         )
     }
 
-    fun defaultDataViewFilters(space: Id) = buildList {
-        add(
-            DVFilter(
-                relation = Relations.SPACE_ID,
-                condition = DVFilterCondition.EQUAL,
-                value = space
-            )
-        )
+    fun defaultDataViewFilters() = buildList {
         add(
             DVFilter(
                 relation = Relations.LAYOUT,
@@ -1120,7 +1081,7 @@ object ObjectSearchConstants {
         )
     )
 
-    fun filterRelationOptions(relationKey: Key, space: Id) : List<DVFilter> = listOf(
+    fun filterRelationOptions(relationKey: Key) : List<DVFilter> = listOf(
         DVFilter(
             relation = Relations.RELATION_KEY,
             condition = DVFilterCondition.EQUAL,
@@ -1145,11 +1106,6 @@ object ObjectSearchConstants {
             relation = Relations.IS_HIDDEN,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
-        ),
-        DVFilter(
-            relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.EQUAL,
-            value = space
         )
     )
 

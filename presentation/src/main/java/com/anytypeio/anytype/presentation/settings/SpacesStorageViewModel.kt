@@ -126,6 +126,7 @@ class SpacesStorageViewModel(
 
     private fun createStoreSearchParams(): StoreSearchParams {
         return StoreSearchParams(
+            space = TODO("DROID-2916 Provide space ID"),
             subscription = SPACES_STORAGE_SUBSCRIPTION_ID,
             keys = listOf(
                 Relations.ID,

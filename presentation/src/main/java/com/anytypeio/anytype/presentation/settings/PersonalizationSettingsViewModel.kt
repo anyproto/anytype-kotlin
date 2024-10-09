@@ -110,19 +110,14 @@ class PersonalizationSettingsViewModel(
             }
             searchObjects(
                 SearchObjects.Params(
+                    // TODO DROID-2916 Provide space id to vm params
+                    space = SpaceId(spaceManager.get()),
                     keys = buildList {
                         add(Relations.ID)
                         add(Relations.UNIQUE_KEY)
                         add(Relations.NAME)
                     },
                     filters = buildList {
-                        add(
-                            DVFilter(
-                                relation = Relations.SPACE_ID,
-                                value = spaceManager.get(),
-                                condition = DVFilterCondition.EQUAL
-                            )
-                        )
                         add(
                             DVFilter(
                                 relation = Relations.LAYOUT,

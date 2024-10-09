@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
@@ -381,10 +382,11 @@ open class FilterViewModel(
         viewModelScope.launch {
             searchObjects(
                 SearchObjects.Params(
+                    // TODO DROID-2916 Provide space id to vm params
+                    space = SpaceId(spaceManager.get()),
                     sorts = ObjectSearchConstants.sortAddObjectToFilter,
                     filters = ObjectSearchConstants.filterAddObjectToFilter(
-                        limitObjectTypes = limitObjectTypes,
-                        space = spaceManager.get()
+                        limitObjectTypes = limitObjectTypes
                     ),
                     fulltext = SearchObjects.EMPTY_TEXT,
                     offset = SearchObjects.INIT_OFFSET,
@@ -414,10 +416,11 @@ open class FilterViewModel(
         viewModelScope.launch {
             searchObjects(
                 SearchObjects.Params(
+                    // TODO DROID-2916 Provide space id to vm params
+                    space = SpaceId(spaceManager.get()),
                     sorts = ObjectSearchConstants.sortAddObjectToFilter,
                     filters = ObjectSearchConstants.filterAddObjectToFilterByLayout(
-                        layouts = layouts,
-                        space = spaceManager.get()
+                        layouts = layouts
                     ),
                     fulltext = SearchObjects.EMPTY_TEXT,
                     offset = SearchObjects.INIT_OFFSET,

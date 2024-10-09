@@ -308,3 +308,8 @@ val ModalTitle = TextStyle(
     lineHeight = 20.sp,
     letterSpacing = (-0.014).em
 )
+
+val AvatarTitle = TextStyle(
+    fontFamily = fontInterRegular,
+    fontWeight = FontWeight.W600
+)

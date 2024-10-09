@@ -33,6 +33,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsBackLinkAddEven
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsDuplicateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsMoveToBinEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRemoveFromFavoritesEvent
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
@@ -300,7 +301,7 @@ abstract class ObjectMenuViewModelBase(
                             id = addTo,
                             currentObjectName = fromName,
                             targetObjectName = obj.getProperName(),
-                            icon = ObjectIcon.from(obj, obj.layout, urlBuilder),
+                            icon = obj.objectIcon(urlBuilder),
                             space = requireNotNull(obj.spaceId)
                         )
                     )

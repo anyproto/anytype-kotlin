@@ -608,14 +608,14 @@ class HomeScreenViewModelTest {
                                 WidgetView.Tree.Element(
                                     elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                     obj = firstLink,
-                                    objectIcon = ObjectIcon.Basic.Avatar(firstLink.name.orEmpty()),
+                                    objectIcon = ObjectIcon.Empty.Page,
                                     indent = 0,
                                     path = widgetBlock.id + "/" + sourceObject.id + "/" + firstLink.id
                                 ),
                                 WidgetView.Tree.Element(
                                     elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                     obj = secondLink,
-                                    objectIcon = ObjectIcon.Basic.Avatar(secondLink.name.orEmpty()),
+                                    objectIcon = ObjectIcon.Empty.Page,
                                     indent = 0,
                                     path = widgetBlock.id + "/" + sourceObject.id + "/" + secondLink.id
                                 )
@@ -1059,14 +1059,14 @@ class HomeScreenViewModelTest {
                                     WidgetView.Tree.Element(
                                         elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                         obj = firstLink,
-                                        objectIcon = ObjectIcon.Basic.Avatar(firstLink.name.orEmpty()),
+                                        objectIcon = ObjectIcon.Empty.Page,
                                         indent = 0,
                                         path = favoriteWidgetBlock.id + "/" + favoriteSource.id + "/" + firstLink.id
                                     ),
                                     WidgetView.Tree.Element(
                                         elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                         obj = secondLink,
-                                        objectIcon = ObjectIcon.Basic.Avatar(secondLink.name.orEmpty()),
+                                        objectIcon = ObjectIcon.Empty.Page,
                                         indent = 0,
                                         path = favoriteWidgetBlock.id + "/" + favoriteSource.id + "/" + secondLink.id
                                     )
@@ -1082,14 +1082,14 @@ class HomeScreenViewModelTest {
                                     WidgetView.Tree.Element(
                                         elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                         obj = firstLink,
-                                        objectIcon = ObjectIcon.Basic.Avatar(firstLink.name.orEmpty()),
+                                        objectIcon = ObjectIcon.Empty.Page,
                                         indent = 0,
                                         path = recentWidgetBlock.id + "/" + recentSource.id + "/" + firstLink.id
                                     ),
                                     WidgetView.Tree.Element(
                                         elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                         obj = secondLink,
-                                        objectIcon = ObjectIcon.Basic.Avatar(secondLink.name.orEmpty()),
+                                        objectIcon = ObjectIcon.Empty.Page,
                                         indent = 0,
                                         path = recentWidgetBlock.id + "/" + recentSource.id + "/" + secondLink.id
                                     )
@@ -1105,14 +1105,14 @@ class HomeScreenViewModelTest {
                                     WidgetView.Tree.Element(
                                         elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                         obj = firstLink,
-                                        objectIcon = ObjectIcon.Basic.Avatar(firstLink.name.orEmpty()),
+                                        objectIcon = ObjectIcon.Empty.Page,
                                         indent = 0,
                                         path = setsWidgetBlock.id + "/" + setsSource.id + "/" + firstLink.id
                                     ),
                                     WidgetView.Tree.Element(
                                         elementIcon = WidgetView.Tree.ElementIcon.Leaf,
                                         obj = secondLink,
-                                        objectIcon = ObjectIcon.Basic.Avatar(secondLink.name.orEmpty()),
+                                        objectIcon = ObjectIcon.Empty.Page,
                                         indent = 0,
                                         path = setsWidgetBlock.id + "/" + setsSource.id + "/" + secondLink.id
                                     )

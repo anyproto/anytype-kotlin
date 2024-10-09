@@ -196,10 +196,7 @@ private fun Header(title: String, icon: ObjectIcon?) {
                     .size(24.dp)
                     .align(Alignment.CenterEnd),
                 icon = icon,
-                iconSize = 24.dp,
-                avatarFontSize = 16.sp,
-                avatarBackgroundColor = R.color.shape_tertiary,
-                avatarTextStyle = VersionHistoryAvatarTextStyle()
+                iconSize = 24.dp
             )
         }
     }

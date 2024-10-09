@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import javax.inject.Inject
@@ -40,11 +41,13 @@ class TypeEditViewModel(
         originalNameFlow
     ) { icon, name ->
         val objectIcon = icon.orNull()?.let {
-            ObjectIcon.from(
-                obj = ObjectWrapper.Basic(mapOf(Relations.ICON_EMOJI to icon)),
-                builder = urlBuilder,
-                layout = ObjectType.Layout.OBJECT_TYPE
+            val obj = ObjectWrapper.Basic(
+                mapOf(
+                    Relations.ICON_EMOJI to icon,
+                    Relations.LAYOUT to ObjectType.Layout.OBJECT_TYPE.code.toDouble()
+                )
             )
+            obj.objectIcon(urlBuilder)
         }
         TypeEditState.Data(
             typeName = name,

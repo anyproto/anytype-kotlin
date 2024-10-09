@@ -43,7 +43,7 @@
     <string name="space">Espace</string>
     <string name="space_name">Nom de l\'espace</string>
     <string name="default_space">Espace d\'entrée</string>
-    <string name="space_settings_apply_random_gradient">Appliquer un dégradé aléatoire</string>
+    <string name="space_settings_apply_random_gradient">Apply random solid color</string>
     <string name="space_settings_apply_upload_image">Upload image</string>
     <string name="delete_space">Supprimer l\'espace</string>
     <string name="you_can_store">Vous pouvez stocker gratuitement jusqu\'à %1$s de vos fichiers sur notre nœud de sauvegarde chiffré. Si vous atteignez la limite, les fichiers ne seront stockés que localement.</string>
@@ -1493,7 +1493,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="version_history_error_get_version">Erreur lors de l\'obtention de l\'historique des versions</string>
     <string name="version_history_error_get_members">Erreur lors de l\'obtention des membres</string>
     <string name="new_object">Nouvel objet</string>
-    <string name="vault_my_spaces">My Spaces</string>
+    <string name="vault_my_spaces">Mes espaces</string>
     <string name="all_content_title_all_content">Tous les objets</string>
     <string name="all_content_title_only_unlinked">Uniquement non liés</string>
     <string name="all_content_title_only_unlinked_description">Objets non liés qui n\'ont pas de lien direct ou de lien en retour avec d\'autres objets dans le graphique.</string>
@@ -1514,7 +1514,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="all_content_sort_date_created">Date de création</string>
     <string name="all_content_sort_date_used">Date de dernière utilisation</string>
     <string name="all_content_sort_name">Nom</string>
-    <string name="all_content">All Objects</string>
+    <string name="all_content">Tous les objets</string>
     <string name="allContent_group_today">Aujourd\'hui</string>
     <string name="allContent_group_yesterday">Hier</string>
     <string name="allContent_group_prev_7">7 jours précédents</string>

@@ -43,7 +43,7 @@
     <string name="space">Прастора</string>
     <string name="space_name">Назва прасторы</string>
     <string name="default_space">Ваша прастора</string>
-    <string name="space_settings_apply_random_gradient">Ужыць выпадковы градыент</string>
+    <string name="space_settings_apply_random_gradient">Apply random solid color</string>
     <string name="space_settings_apply_upload_image">Загрузіць відарыс</string>
     <string name="delete_space">Выдаліць прастору</string>
     <string name="you_can_store">Вы можаце бясплатна захоўваць да %1$s вашых файлаў на нашым зашыфраваным вузле рэзервовага капіравання. Калі вы вычарпаеце ліміт, файлы будуць захоўвацца толькі лакальна.</string>

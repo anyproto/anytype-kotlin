@@ -6108,12 +6108,7 @@ class EditorViewModel(
                 space = vmParams.space,
                 limit = ObjectSearchViewModel.SEARCH_LIMIT,
                 filters = ObjectSearchConstants.getFilterLinkTo(
-                    ignore = context,
-                    spaces = buildList {
-                        add(vmParams.space.id)
-                        val config = spaceManager.getConfig(vmParams.space)
-                        if (config != null) add(config.techSpace)
-                    },
+                    ignore = context
                 ),
                 sorts = ObjectSearchConstants.sortLinkTo,
                 fulltext = fullText,

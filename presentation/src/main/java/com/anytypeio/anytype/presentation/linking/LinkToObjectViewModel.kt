@@ -43,8 +43,7 @@ class LinkToObjectViewModel(
         space = SpaceId(spaceManager.get()),
         limit = SEARCH_LIMIT,
         filters = ObjectSearchConstants.getFilterLinkTo(
-            ignore = ignore,
-            spaces = emptyList()
+            ignore = ignore
         ),
         sorts = ObjectSearchConstants.sortLinkTo,
         fulltext = EMPTY_QUERY,

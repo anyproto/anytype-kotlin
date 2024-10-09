@@ -1504,7 +1504,7 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_sort_date_created">Date created</string>
     <string name="all_content_sort_date_used">Date last used</string>
     <string name="all_content_sort_name">名称</string>
-    <string name="all_content">All objects</string>
+    <string name="all_content">All Objects</string>
     <string name="allContent_group_today">今天</string>
     <string name="allContent_group_yesterday">昨天</string>
     <string name="allContent_group_prev_7">7天前</string>

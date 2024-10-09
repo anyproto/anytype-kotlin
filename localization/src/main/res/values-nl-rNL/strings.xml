@@ -1517,7 +1517,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="all_content_sort_date_created">Date created</string>
     <string name="all_content_sort_date_used">Date last used</string>
     <string name="all_content_sort_name">Naam</string>
-    <string name="all_content">All objects</string>
+    <string name="all_content">All Objects</string>
     <string name="allContent_group_today">Vandaag</string>
     <string name="allContent_group_yesterday">Gisteren</string>
     <string name="allContent_group_prev_7">Afgelopen 7 dagen</string>

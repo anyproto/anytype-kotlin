@@ -10,6 +10,7 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.membership.MembershipStatus
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.account.DeleteAccount
 import com.anytypeio.anytype.domain.base.BaseUseCase
@@ -25,7 +26,6 @@ import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.search.PROFILE_SUBSCRIPTION_ID
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendScreenSettingsDeleteEvent
-import com.anytypeio.anytype.core_models.membership.MembershipStatus
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon
@@ -56,7 +56,7 @@ class ProfileSettingsViewModel(
     val membershipStatusState = MutableStateFlow<MembershipStatus?>(null)
     val showMembershipState = MutableStateFlow<ShowMembership?>(null)
 
-    private val profileId = configStorage.get().profile
+    private val profileId = configStorage.getOrNull()?.profile
 
     val profileData = container.subscribe(
         StoreSearchByIdsParams(
@@ -68,7 +68,11 @@ class ProfileSettingsViewModel(
                 Relations.ICON_EMOJI,
                 Relations.ICON_OPTION
             ),
-            targets = listOf(profileId)
+            targets = if (profileId != null) {
+                listOf(profileId)
+            } else {
+                emptyList()
+            }
         )
     ).map { result ->
         val obj = result.firstOrNull()
@@ -112,7 +116,7 @@ class ProfileSettingsViewModel(
         viewModelScope.launch {
             setObjectDetails.execute(
                 SetObjectDetails.Params(
-                    ctx = profileId,
+                    ctx = profileId.orEmpty(),
                     details = mapOf(Relations.NAME to name)
                 )
             ).fold(

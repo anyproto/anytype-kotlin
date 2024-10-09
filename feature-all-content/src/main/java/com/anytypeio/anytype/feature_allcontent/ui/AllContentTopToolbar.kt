@@ -57,6 +57,7 @@ import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.extensions.bouncingClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.Title2
@@ -212,7 +213,8 @@ fun AllContentTabs(
 
     LazyRow(
         state = scrollState,
-        flingBehavior = snapFlingBehavior,
+        //todo Disabled because, after the scroll animation, the tabs sometimes don’t respond to clicks
+        //flingBehavior = snapFlingBehavior,
         modifier = Modifier
             .fillMaxWidth()
             .height(40.dp),
@@ -246,7 +248,7 @@ private fun AllContentTabText(
         modifier = Modifier
             .wrapContentWidth()
             .height(40.dp)
-            .noRippleClickable { onClick() },
+            .noRippleThrottledClickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
         Text(

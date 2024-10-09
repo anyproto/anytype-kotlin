@@ -41,14 +41,6 @@ class CheckIsUserSpaceMember @Inject constructor(
                         condition = DVFilterCondition.EQUAL
                     )
                 )
-                // TODO DROID-2916 delete this filter
-                add(
-                    DVFilter(
-                        relation = Relations.SPACE_ID,
-                        value = params.id,
-                        condition = DVFilterCondition.EQUAL
-                    )
-                )
             },
             keys = listOf(
                 Relations.ID,

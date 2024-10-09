@@ -43,7 +43,7 @@
     <string name="space">空間</string>
     <string name="space_name">空間名稱</string>
     <string name="default_space">初始空間</string>
-    <string name="space_settings_apply_random_gradient">套用隨機漸層</string>
+    <string name="space_settings_apply_random_gradient">Apply random solid color</string>
     <string name="space_settings_apply_upload_image">上傳圖片</string>
     <string name="delete_space">刪除空間</string>
     <string name="you_can_store">您目前擁有 %1$s 的加密節點儲存空間，您可以將檔案備份到我們的節點當中。 當儲存空間容量到達上限，新的檔案只能存放在您的本地儲存區中。</string>

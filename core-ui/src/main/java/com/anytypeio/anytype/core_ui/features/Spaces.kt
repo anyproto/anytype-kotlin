@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -75,15 +76,14 @@ fun SpaceIconView(
 
         }
         else -> {
-            Image(
-                painter = painterResource(id = R.drawable.ic_home_widget_space),
-                contentDescription = "Placeholder space icon",
-                contentScale = ContentScale.Crop,
+            Box(
                 modifier = modifier
                     .size(mainSize)
                     .clip(RoundedCornerShape(4.dp))
                     .noRippleClickable { onSpaceIconClick.invoke() }
-            )
+            ) {
+                Text(text = "U")
+            }
         }
     }
 }

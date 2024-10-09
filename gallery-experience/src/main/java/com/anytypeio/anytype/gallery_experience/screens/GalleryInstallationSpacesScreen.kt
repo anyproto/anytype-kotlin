@@ -193,7 +193,7 @@ private fun GallerySpacesScreenPreview() {
             listOf(
                 GallerySpaceView(
                     obj = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
-                    icon = SpaceIconView.Placeholder
+                    icon = SpaceIconView.Placeholder()
                 )
             ),
             isNewButtonVisible = true

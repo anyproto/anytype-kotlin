@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscription
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import kotlinx.coroutines.CoroutineScope
@@ -65,6 +66,7 @@ class ObjectTypesSubscriptionManager (
     companion object {
         fun buildParams(config: Config) =
             ObjectTypesSubscriptionContainer.Params(
+                space = SpaceId(config.space),
                 subscription = ObjectTypesSubscriptionContainer.SUBSCRIPTION_ID,
                 filters = listOf(
                     DVFilter(

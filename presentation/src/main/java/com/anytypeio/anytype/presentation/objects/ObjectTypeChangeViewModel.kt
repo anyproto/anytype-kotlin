@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
@@ -257,10 +258,10 @@ class ObjectTypeChangeViewModel(
         }
         val marketplaceTypes = getObjectTypes.run(
             GetObjectTypes.Params(
+                space = SpaceId(Marketplace.MARKETPLACE_SPACE_ID),
                 filters = buildList {
                     addAll(
                         ObjectSearchConstants.filterTypes(
-                            spaces = listOf(Marketplace.MARKETPLACE_SPACE_ID),
                             recommendedLayouts = SupportedLayouts.editorLayouts
                         )
                     )
@@ -288,8 +289,9 @@ class ObjectTypeChangeViewModel(
         recommendedLayouts: List<ObjectType.Layout>
     ) = getObjectTypes.run(
         GetObjectTypes.Params(
+            // TODO DROID-2916 Provide space id to vm params
+            space = SpaceId(spaceManager.get()),
             filters = ObjectSearchConstants.filterTypes(
-                spaces = listOf(spaceManager.get()),
                 recommendedLayouts = recommendedLayouts,
                 excludeParticipant = !setup.isSetSource
             ),

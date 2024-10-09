@@ -83,6 +83,7 @@ class DefaultUserPermissionProvider @Inject constructor(
             val account = repo.getCurrentAccountId()
             container.subscribe(
                 StoreSearchParams(
+                    space = TODO(),
                     subscription = GLOBAL_SUBSCRIPTION,
                     filters = buildList {
                         add(

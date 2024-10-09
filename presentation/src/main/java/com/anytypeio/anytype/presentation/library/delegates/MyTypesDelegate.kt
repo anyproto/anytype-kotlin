@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.library.delegates
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -57,6 +58,7 @@ class MyTypesDelegate @Inject constructor(
 
     private fun buildSearchParams(space: Id): StoreSearchParams {
         return StoreSearchParams(
+            space = SpaceId(space),
             subscription = SUB_LIBRARY_MY_TYPES,
             keys = ObjectSearchConstants.defaultKeys + listOf(
                 Relations.SOURCE_OBJECT,

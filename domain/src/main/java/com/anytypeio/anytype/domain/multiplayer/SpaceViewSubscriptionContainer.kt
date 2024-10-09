@@ -92,6 +92,7 @@ interface SpaceViewSubscriptionContainer {
             jobs += scope.launch(dispatchers.io) {
                 container.subscribe(
                     StoreSearchParams(
+                        space = TODO(),
                         subscription = GLOBAL_SUBSCRIPTION,
                         keys = listOf(
                             Relations.ID,
@@ -148,10 +149,9 @@ interface SpaceViewSubscriptionContainer {
                         e = error,
                         msg = "Failed to subscribe to space-views"
                     )
-                }
-                    .collect {
+                }.collect {
                         data.value = it
-                    }
+                }
             }
         }
 

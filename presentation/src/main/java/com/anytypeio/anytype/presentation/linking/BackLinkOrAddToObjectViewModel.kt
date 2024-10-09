@@ -5,6 +5,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -52,12 +53,13 @@ class BackLinkOrAddToObjectViewModel(
     )
 
     override suspend fun getSearchObjectsParams(ignore: Id?): SearchObjects.Params {
-        val spaces = spaceManager.getSpaceWithTechSpace()
+        // TODO DROID-2916 Provide space id to vm params
         return SearchObjects.Params(
+            space = SpaceId(spaceManager.get()),
             limit = SEARCH_LIMIT,
             filters = ObjectSearchConstants.filtersBackLinkOrAddToObject(
                 ignore = ignore,
-                spaces = spaces
+                spaces = emptyList()
             ),
             sorts = ObjectSearchConstants.sortBackLinkOrAddToObject,
             fulltext = EMPTY_QUERY,

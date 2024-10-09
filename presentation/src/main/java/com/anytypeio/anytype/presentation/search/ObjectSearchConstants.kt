@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
@@ -82,7 +83,7 @@ object ObjectSearchConstants {
 
     //region LINK TO
     fun getFilterLinkTo(
-        ignore: Id?, spaces: List<Id>
+        ignore: Id?, spaces: List<Id> = emptyList()
     ) = listOf(
         DVFilter(
             relation = Relations.IS_ARCHIVED,
@@ -747,7 +748,7 @@ object ObjectSearchConstants {
     //region OBJECT TYPES
 
     fun filterTypes(
-        spaces: List<Id>,
+        spaces: List<Id> = emptyList(),
         recommendedLayouts: List<ObjectType.Layout> = emptyList(),
         excludedTypeKeys: List<TypeKey> = emptyList(),
         excludeParticipant: Boolean = true
@@ -774,11 +775,6 @@ object ObjectSearchConstants {
                         relation = Relations.LAYOUT,
                         condition = DVFilterCondition.EQUAL,
                         value = ObjectType.Layout.OBJECT_TYPE.code.toDouble()
-                    ),
-                    DVFilter(
-                        relation = Relations.SPACE_ID,
-                        condition = DVFilterCondition.IN,
-                        value = spaces
                     ),
                     DVFilter(
                         relation = Relations.UNIQUE_KEY,
@@ -1022,11 +1018,6 @@ object ObjectSearchConstants {
             relation = Relations.IS_HIDDEN,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
-        ),
-        DVFilter(
-            relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.EQUAL,
-            value = MARKETPLACE_SPACE_ID
         )
     )
 
@@ -1101,7 +1092,7 @@ object ObjectSearchConstants {
         )
     )
 
-    fun setsByObjectTypeFilters(types: List<Id>, space: Id) = listOf(
+    fun setsByObjectTypeFilters(types: List<Id>) = listOf(
         DVFilter(
             relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
@@ -1121,11 +1112,6 @@ object ObjectSearchConstants {
             relation = Relations.LAYOUT,
             condition = DVFilterCondition.IN,
             value = ObjectType.Layout.SET.code.toDouble()
-        ),
-        DVFilter(
-            relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.EQUAL,
-            value = space
         ),
         DVFilter(
             relation = Relations.SET_OF,
@@ -1246,6 +1232,7 @@ object ObjectSearchConstants {
 
     fun getSpaceViewSearchParams(subscription: String, targetSpaceId: Id): StoreSearchParams {
         return StoreSearchParams(
+            space = TODO("DROID-2916 Provide space ID"),
             subscription = subscription,
             keys = spaceViewKeys,
             limit = 1,
@@ -1263,6 +1250,7 @@ object ObjectSearchConstants {
 
     fun getSpaceMembersSearchParams(subscription: String, spaceId: Id): StoreSearchParams {
         return StoreSearchParams(
+            space = SpaceId(spaceId),
             subscription = subscription,
             filters = filterParticipants(
                 spaces = listOf(spaceId)

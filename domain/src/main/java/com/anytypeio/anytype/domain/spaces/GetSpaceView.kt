@@ -20,6 +20,7 @@ class GetSpaceView @Inject constructor(
         when(params) {
             is Params.BySpaceViewId -> {
                 val result = repo.searchObjects(
+                    space = TODO("DROID-2916"),
                     filters = buildList {
                         add(
                             DVFilter(
@@ -39,6 +40,7 @@ class GetSpaceView @Inject constructor(
             }
             is Params.BySpaceId -> {
                 val result = repo.searchObjects(
+                    space = params.space,
                     filters = buildList {
                         add(
                             DVFilter(

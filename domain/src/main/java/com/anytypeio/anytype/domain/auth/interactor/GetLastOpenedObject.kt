@@ -26,6 +26,7 @@ class GetLastOpenedObject(
             Response.Empty
         } else {
             val searchResults = blockRepo.searchObjects(
+                space = params.space,
                 limit = 1,
                 filters = listOf(
                     DVFilter(

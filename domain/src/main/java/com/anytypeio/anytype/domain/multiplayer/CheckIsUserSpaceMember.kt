@@ -24,6 +24,7 @@ class CheckIsUserSpaceMember @Inject constructor(
     override suspend fun doWork(params: SpaceId): Boolean {
         val account = auth.getCurrentAccountId()
         val results = repo.searchObjects(
+            space = params,
             limit = 0,
             filters = buildList {
                 add(
@@ -40,6 +41,7 @@ class CheckIsUserSpaceMember @Inject constructor(
                         condition = DVFilterCondition.EQUAL
                     )
                 )
+                // TODO DROID-2916 delete this filter
                 add(
                     DVFilter(
                         relation = Relations.SPACE_ID,

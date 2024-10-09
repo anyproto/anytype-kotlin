@@ -56,9 +56,12 @@ class GetDefaultObjectType @Inject constructor(
 
     private suspend fun fetchDefaultType(): Response {
         val structs = blockRepository.searchObjects(
+            // TODO DROID-2916 move space id to use case params
+            space = SpaceId(spaceManager.get()),
             limit = 1,
             fulltext = NO_VALUE,
             filters = buildList {
+                // TODO DROID-2916 might need to delete this filter
                 add(
                     DVFilter(
                         relation = Relations.UNIQUE_KEY,
@@ -71,6 +74,7 @@ class GetDefaultObjectType @Inject constructor(
                     configStorage.getOrNull()?.space
                 }
                 if (!space.isNullOrEmpty()) {
+                    // TODO DROID-2916 delete this filter
                     add(
                         DVFilter(
                             relation = Relations.SPACE_ID,
@@ -110,6 +114,7 @@ class GetDefaultObjectType @Inject constructor(
         space: SpaceId
     ): ObjectWrapper.Type? {
         val structs = blockRepository.searchObjects(
+            space = space,
             limit = 1,
             fulltext = NO_VALUE,
             filters = buildList {
@@ -156,6 +161,7 @@ class GetDefaultObjectType @Inject constructor(
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
+        // TODO DROID-2916 delete this filter
         DVFilter(
             relation = Relations.SPACE_ID,
             condition = DVFilterCondition.EQUAL,
@@ -169,7 +175,7 @@ class GetDefaultObjectType @Inject constructor(
     )
 
     /**
-     * TODO provide space to params
+     * TODO DROID-2916 provide space to params
      */
     data class Response(
         val id: TypeId,

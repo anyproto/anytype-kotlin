@@ -1478,19 +1478,13 @@ class HomeScreenViewModel(
                 }
                 searchObjects(
                     SearchObjects.Params(
+                        space = SpaceId(config.space),
                         keys = buildList {
                             add(Relations.ID)
                             add(Relations.UNIQUE_KEY)
                             add(Relations.NAME)
                         },
                         filters = buildList {
-                            add(
-                                DVFilter(
-                                    relation = Relations.SPACE_ID,
-                                    value = config.space,
-                                    condition = DVFilterCondition.EQUAL
-                                )
-                            )
                             add(
                                 DVFilter(
                                     relation = Relations.LAYOUT,

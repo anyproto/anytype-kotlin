@@ -2110,6 +2110,7 @@ class ObjectSetViewModel(
             recommendedLayouts = SupportedLayouts.createObjectLayouts
         )
         val params = GetObjectTypes.Params(
+            space = vmParams.space,
             filters = filters,
             keys = ObjectSearchConstants.defaultKeysObjectType
         )

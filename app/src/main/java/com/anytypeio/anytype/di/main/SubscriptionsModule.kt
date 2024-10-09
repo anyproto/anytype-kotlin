@@ -43,12 +43,14 @@ object SubscriptionsModule {
         repo: BlockRepository,
         channel: SubscriptionEventChannel,
         dispatchers: AppCoroutineDispatchers,
-        store: StoreOfRelations
+        store: StoreOfRelations,
+        logger: Logger
     ): RelationsSubscriptionContainer = RelationsSubscriptionContainer(
         repo = repo,
         channel = channel,
         store = store,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        logger = logger
     )
 
     @JvmStatic
@@ -58,12 +60,14 @@ object SubscriptionsModule {
         repo: BlockRepository,
         channel: SubscriptionEventChannel,
         dispatchers: AppCoroutineDispatchers,
-        store: StoreOfObjectTypes
+        store: StoreOfObjectTypes,
+        logger: Logger
     ): ObjectTypesSubscriptionContainer = ObjectTypesSubscriptionContainer(
         repo = repo,
         channel = channel,
         store = store,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        logger = logger
     )
 
     @JvmStatic
@@ -81,7 +85,7 @@ object SubscriptionsModule {
     @Singleton
     fun relationsSubscriptionManager(
         subscription: RelationsSubscriptionContainer,
-        spaceManager: SpaceManager
+        spaceManager: SpaceManager,
     ): RelationsSubscriptionManager = RelationsSubscriptionManager(
         container = subscription,
         spaceManager = spaceManager

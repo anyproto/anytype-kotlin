@@ -85,6 +85,7 @@ class SelectObjectTypeViewModel(
             query.onStart { emit(EMPTY_QUERY) }.flatMapLatest { query ->
                 val types = getObjectTypes.stream(
                     GetObjectTypes.Params(
+                        space = vmParams.space,
                         sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                         filters = ObjectSearchConstants.filterTypes(
                             spaces = buildList {

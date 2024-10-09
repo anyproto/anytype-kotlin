@@ -1047,6 +1047,9 @@ class HomeScreenViewModel(
                     )
                 }
                 WidgetView.AllContent.ALL_CONTENT_WIDGET_ID -> {
+                    if (mode.value == InteractionMode.Edit) {
+                        return@launch
+                    }
                     navigation(
                         Navigation.OpenAllContent(
                             space = space

@@ -70,6 +70,7 @@ import com.anytypeio.anytype.core_ui.foundation.DismissBackground
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Medium
@@ -403,7 +404,7 @@ private fun ContentItems(
                             .padding(horizontal = 16.dp)
                             .bottomBorder()
                             .animateItem()
-                            .noRippleClickable {
+                            .noRippleThrottledClickable {
                                 onTypeClicked(item)
                             },
                         item = item
@@ -416,7 +417,7 @@ private fun ContentItems(
                             .padding(horizontal = 16.dp)
                             .bottomBorder()
                             .animateItem()
-                            .noRippleClickable {
+                            .noRippleThrottledClickable {
                                 onRelationClicked(item)
                             },
                         item = item
@@ -531,7 +532,7 @@ fun RowScope.Item(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                if (description != null) {
+                if (!description.isNullOrBlank()) {
                     Text(
                         text = description,
                         style = Relations3,

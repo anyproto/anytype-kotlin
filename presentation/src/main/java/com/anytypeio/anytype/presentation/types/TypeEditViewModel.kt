@@ -33,6 +33,8 @@ class TypeEditViewModel(
     private val unicodeIconFlow = MutableStateFlow(icon)
     private val originalNameFlow = MutableStateFlow(name)
 
+    private var isReadOnly = false
+
     val uiState: StateFlow<TypeEditState> = combine(
         unicodeIconFlow,
         originalNameFlow
@@ -55,7 +57,12 @@ class TypeEditViewModel(
         TypeEditState.Idle
     )
 
+    fun onStart(isReadOnly: Boolean) {
+        this.isReadOnly = isReadOnly
+    }
+
     fun openEmojiPicker() {
+        if (isReadOnly) return
         navigate(Navigation.SelectEmoji)
     }
 

@@ -4,6 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsDictionary.libraryScreenRelation
+import com.anytypeio.anytype.analytics.base.EventsDictionary.libraryScreenType
+import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -735,6 +738,10 @@ class AllContentViewModel(
         viewModelScope.launch {
             commands.emit(Command.OpenTypeEditing(item))
         }
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = libraryScreenType
+        )
     }
 
     fun onRelationClicked(item: UiContentItem.Relation) {
@@ -747,6 +754,12 @@ class AllContentViewModel(
                     iconUnicode = item.format.simpleIcon() ?: 0,
                     readOnly = item.readOnly
                 )
+            )
+        }
+        viewModelScope.launch {
+            viewModelScope.sendEvent(
+                analytics = analytics,
+                eventName = libraryScreenRelation
             )
         }
     }

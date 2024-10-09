@@ -104,7 +104,7 @@ class GetDefaultObjectType @Inject constructor(
             limit = 1,
             fulltext = NO_VALUE,
             filters = buildList {
-                addAll(filterObjectTypeLibrary(space))
+                addAll(filterObjectTypeLibrary())
                 add(
                     DVFilter(
                         relation = Relations.ID,
@@ -126,7 +126,7 @@ class GetDefaultObjectType @Inject constructor(
         return structs.firstOrNull()?.mapToObjectWrapperType()
     }
 
-    private fun filterObjectTypeLibrary(space: SpaceId) = listOf(
+    private fun filterObjectTypeLibrary() = listOf(
         DVFilter(
             relation = Relations.LAYOUT,
             condition = DVFilterCondition.EQUAL,
@@ -146,12 +146,6 @@ class GetDefaultObjectType @Inject constructor(
             relation = Relations.IS_HIDDEN,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
-        ),
-        // TODO DROID-2916 delete this filter
-        DVFilter(
-            relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.EQUAL,
-            value = space.id
         ),
         DVFilter(
             relation = Relations.RESTRICTIONS,

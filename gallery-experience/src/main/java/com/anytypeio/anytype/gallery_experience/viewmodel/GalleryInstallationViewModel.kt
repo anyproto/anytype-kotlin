@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.gallery_experience.DownloadGalleryManifest
 import com.anytypeio.anytype.domain.gallery_experience.ImportExperience
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -45,7 +46,8 @@ class GalleryInstallationViewModel(
     private val urlBuilder: UrlBuilder,
     private val spaceGradientProvider: SpaceGradientProvider,
     private val userPermissionProvider: UserPermissionProvider,
-    private val eventProcessChannel: EventProcessImportChannel
+    private val eventProcessChannel: EventProcessImportChannel,
+    private val configStorage: ConfigStorage
 ) : ViewModel() {
 
     val mainState = MutableStateFlow<GalleryInstallationState>(GalleryInstallationState.Loading)
@@ -83,28 +85,33 @@ class GalleryInstallationViewModel(
 
     fun onInstallClicked() {
         viewModelScope.launch {
-            getSpaceViews.async(
-                TODO("DROID-2916 Provide tech SPACE")
-            ).fold(
-                onSuccess = { spaces ->
-                    Timber.d("GetSpaceViews success, spaceViews: $spaces")
-                    val filteredSpaces = filterSpacesByPermissions(spaces)
-                    spacesViewState.value = GalleryInstallationSpacesState(
-                        spaces = filteredSpaces.map {
-                            it.toView(urlBuilder, spaceGradientProvider)
-                        },
-                        isNewButtonVisible = filteredSpaces.size < MAX_SPACE_COUNT
-                    )
-                    command.emit(GalleryInstallationNavigation.Spaces)
-                },
-                onFailure = { error ->
-                    Timber.e(error, "GetSpaceViews failed")
-                    errorState.emit("Get Spaces error: ${error.message}")
-                }
-            )
-            analytics.sendEvent(
-                eventName = EventsDictionary.clickGalleryInstall
-            )
+            val techSpace = configStorage.getOrNull()?.techSpace
+            if (techSpace != null) {
+                getSpaceViews.async(
+                    SpaceId(techSpace)
+                ).fold(
+                    onSuccess = { spaces ->
+                        Timber.d("GetSpaceViews success, spaceViews: $spaces")
+                        val filteredSpaces = filterSpacesByPermissions(spaces)
+                        spacesViewState.value = GalleryInstallationSpacesState(
+                            spaces = filteredSpaces.map {
+                                it.toView(urlBuilder, spaceGradientProvider)
+                            },
+                            isNewButtonVisible = filteredSpaces.size < MAX_SPACE_COUNT
+                        )
+                        command.emit(GalleryInstallationNavigation.Spaces)
+                    },
+                    onFailure = { error ->
+                        Timber.e(error, "GetSpaceViews failed")
+                        errorState.emit("Get Spaces error: ${error.message}")
+                    }
+                )
+                analytics.sendEvent(
+                    eventName = EventsDictionary.clickGalleryInstall
+                )
+            } else {
+                Timber.e("Tech space not found during gallery installation")
+            }
         }
     }
 

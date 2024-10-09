@@ -43,7 +43,7 @@
     <string name="space">Alan</string>
     <string name="space_name">Alan ismi</string>
     <string name="default_space">Giriş alanı</string>
-    <string name="space_settings_apply_random_gradient">Apply random solid color</string>
+    <string name="space_settings_apply_random_gradient">Rastgele düz renk uygula</string>
     <string name="space_settings_apply_upload_image">Resim yükle</string>
     <string name="delete_space">Alanı sil</string>
     <string name="you_can_store">Dosyalarınızın %1$s kadarını şifrelenmiş yedekleme düğümümüzde ücretsiz olarak saklayabilirsiniz. Sınıra ulaşırsanız dosyalar yalnızca yerel olarak depolanacaktır.</string>

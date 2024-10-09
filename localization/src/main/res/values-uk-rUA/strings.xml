@@ -43,7 +43,7 @@
     <string name="space">Простір</string>
     <string name="space_name">Назва простору</string>
     <string name="default_space">Entry space</string>
-    <string name="space_settings_apply_random_gradient">Apply random gradient</string>
+    <string name="space_settings_apply_random_gradient">Apply random solid color</string>
     <string name="space_settings_apply_upload_image">Upload image</string>
     <string name="delete_space">Видалити простір </string>
     <string name="you_can_store">You can store up to %1$s of your files on our encrypted backup node for free. If you reach the limit, files will be stored only locally.</string>

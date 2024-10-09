@@ -43,7 +43,7 @@
     <string name="space">空间</string>
     <string name="space_name">空间名称</string>
     <string name="default_space">默认空间</string>
-    <string name="space_settings_apply_random_gradient">应用随机渐变色</string>
+    <string name="space_settings_apply_random_gradient">Apply random solid color</string>
     <string name="space_settings_apply_upload_image">上传图像</string>
     <string name="delete_space">删除空间</string>
     <string name="you_can_store">您可以在我们的节点上免费加密备份存储多达 %1$s 的文件。如果达到限制，文件将仅存储在本地。</string>

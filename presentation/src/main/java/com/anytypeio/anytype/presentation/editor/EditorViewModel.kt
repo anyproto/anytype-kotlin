@@ -5100,9 +5100,6 @@ class EditorViewModel(
                 space = vmParams.space,
                 sorts = sorts,
                 filters = ObjectSearchConstants.filterTypes(
-                    spaces = buildList {
-                        add(vmParams.space.id)
-                    },
                     recommendedLayouts = SupportedLayouts.editorLayouts
                 ),
                 keys = ObjectSearchConstants.defaultKeysObjectType
@@ -6224,9 +6221,6 @@ class EditorViewModel(
             val params = GetObjectTypes.Params(
                 sorts = emptyList(),
                 filters = ObjectSearchConstants.filterTypes(
-                    spaces = buildList {
-                        add(vmParams.space.id)
-                    },
                     recommendedLayouts = SupportedLayouts.createObjectLayouts
                 ),
                 keys = ObjectSearchConstants.defaultKeysObjectType,

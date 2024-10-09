@@ -85,15 +85,10 @@ class SelectObjectTypeViewModel(
             query.onStart { emit(EMPTY_QUERY) }.flatMapLatest { query ->
                 val types = getObjectTypes.stream(
                     GetObjectTypes.Params(
+                        // TODO DROID-2916 Merge with marketplace object types query results
                         space = vmParams.space,
                         sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                         filters = ObjectSearchConstants.filterTypes(
-                            spaces = buildList {
-                                add(vmParams.space.id)
-                                if (query.isNotEmpty()) {
-                                    add(Marketplace.MARKETPLACE_SPACE_ID)
-                                }
-                            },
                             recommendedLayouts = SupportedLayouts.createObjectLayouts,
                             excludedTypeKeys = vmParams.excludedTypeKeys
                         ),

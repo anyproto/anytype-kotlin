@@ -689,7 +689,6 @@ object ObjectSearchConstants {
     //region OBJECT TYPES
 
     fun filterTypes(
-        spaces: List<Id> = emptyList(),
         recommendedLayouts: List<ObjectType.Layout> = emptyList(),
         excludedTypeKeys: List<TypeKey> = emptyList(),
         excludeParticipant: Boolean = true

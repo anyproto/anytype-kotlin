@@ -65,7 +65,6 @@ class MyTypesDelegate @Inject constructor(
                 Relations.RESTRICTIONS
             ),
             filters = ObjectSearchConstants.filterTypes(
-                spaces = listOf(space),
                 excludeParticipant = false
             )
         )

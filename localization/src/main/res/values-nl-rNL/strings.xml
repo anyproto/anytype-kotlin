@@ -43,7 +43,7 @@
     <string name="space">Ruimte</string>
     <string name="space_name">Naam ruimte</string>
     <string name="default_space">Startruimte</string>
-    <string name="space_settings_apply_random_gradient">Pas willekeurig verloop toe</string>
+    <string name="space_settings_apply_random_gradient">Apply random solid color</string>
     <string name="space_settings_apply_upload_image">Upload afbeelding</string>
     <string name="delete_space">Verwijder ruimte</string>
     <string name="you_can_store">Je kunt maximaal %1$s van je bestanden gratis opslaan op onze versleutelde back-up node. Als de limiet is bereikt, zullen bestanden alleen lokaal worden opgeslagen.</string>

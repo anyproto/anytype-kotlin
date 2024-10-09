@@ -83,7 +83,9 @@ class GalleryInstallationViewModel(
 
     fun onInstallClicked() {
         viewModelScope.launch {
-            getSpaceViews.async(Unit).fold(
+            getSpaceViews.async(
+                TODO("DROID-2916 Provide tech SPACE")
+            ).fold(
                 onSuccess = { spaces ->
                     Timber.d("GetSpaceViews success, spaceViews: $spaces")
                     val filteredSpaces = filterSpacesByPermissions(spaces)

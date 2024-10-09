@@ -146,13 +146,15 @@ object SubscriptionsModule {
         @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
         container: StorelessSubscriptionContainer,
         awaitAccountStartManager: AwaitAccountStartManager,
-        logger: Logger
+        logger: Logger,
+        configStorage: ConfigStorage
     ) : SpaceViewSubscriptionContainer = SpaceViewSubscriptionContainer.Default(
         dispatchers = dispatchers,
         scope = scope,
         container = container,
         awaitAccountStart = awaitAccountStartManager,
-        logger = logger
+        logger = logger,
+        config = configStorage
     )
 
     @JvmStatic

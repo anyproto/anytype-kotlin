@@ -80,6 +80,7 @@ class DefaultUserPermissionProvider @Inject constructor(
         logger.logInfo("Starting DefaultUserPermissionProvider")
         clear()
         jobs += scope.launch(dispatchers.io) {
+            return@launch
             val account = repo.getCurrentAccountId()
             container.subscribe(
                 StoreSearchParams(

@@ -1517,7 +1517,7 @@ En concreto,
     <string name="all_content_sort_date_created">Fecha de creación</string>
     <string name="all_content_sort_date_used">Date last used</string>
     <string name="all_content_sort_name">Nombre</string>
-    <string name="all_content">Todos los objetos</string>
+    <string name="all_content">All Objects</string>
     <string name="allContent_group_today">Hoy</string>
     <string name="allContent_group_yesterday">Ayer</string>
     <string name="allContent_group_prev_7">Últimos 7 días</string>

@@ -69,20 +69,6 @@ class GetDefaultObjectType @Inject constructor(
                         value = ObjectTypeUniqueKeys.NOTE
                     )
                 )
-                val space = spaceManager.get().ifEmpty {
-                    // Fallback to default space.
-                    configStorage.getOrNull()?.space
-                }
-                if (!space.isNullOrEmpty()) {
-                    // TODO DROID-2916 delete this filter
-                    add(
-                        DVFilter(
-                            relation = Relations.SPACE_ID,
-                            condition = DVFilterCondition.EQUAL,
-                            value = space
-                        )
-                    )
-                }
             },
             offset = 0,
             sorts = emptyList(),

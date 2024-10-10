@@ -43,7 +43,7 @@
     <string name="space">Spazio</string>
     <string name="space_name">Nome dello Spazio</string>
     <string name="default_space">Spazio d\'ingresso</string>
-    <string name="space_settings_apply_random_gradient">Apply random solid color</string>
+    <string name="space_settings_apply_random_gradient">Applica colore tinta unita casuale</string>
     <string name="space_settings_apply_upload_image">Upload image</string>
     <string name="delete_space">Elimina spazio</string>
     <string name="you_can_store">Puoi archiviare gratuitamente fino a %1$s di file personali sul nostro nodo di backup crittografato. Se raggiungi il limite, i file verranno archiviati solo localmente.</string>
@@ -1497,7 +1497,7 @@ Please provide specific details of your needs here.</string>
     <string name="version_history_error_get_version">Errore nell\'ottenere la cronologia delle versioni</string>
     <string name="version_history_error_get_members">Errore nell\'ottenere i membri</string>
     <string name="new_object">Nuovo oggetto</string>
-    <string name="vault_my_spaces">My Spaces</string>
+    <string name="vault_my_spaces">I miei Spazi</string>
     <string name="all_content_title_all_content">Tutti gli oggetti</string>
     <string name="all_content_title_only_unlinked">Solo non collegati</string>
     <string name="all_content_title_only_unlinked_description">Oggetti non collegati che non hanno un collegamento diretto o un backlink con altri oggetti nel grafo.</string>
@@ -1518,7 +1518,7 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_sort_date_created">Data di creazione</string>
     <string name="all_content_sort_date_used">Date last used</string>
     <string name="all_content_sort_name">Nome</string>
-    <string name="all_content">All Objects</string>
+    <string name="all_content">Tutti gli Oggetti</string>
     <string name="allContent_group_today">Oggi</string>
     <string name="allContent_group_yesterday">Ieri</string>
     <string name="allContent_group_prev_7">Ultimi 7 giorni</string>
